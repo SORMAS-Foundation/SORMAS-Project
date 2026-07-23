@@ -82,4 +82,35 @@ public class CronExpressionValidatorTest {
 	public void rejectsMalformedOrOutOfRangeExpressions(String expression) {
 		assertFalse(CronExpressionValidator.isValid(expression), expression);
 	}
+
+	@Test
+	public void incrementsAreOnlyValidOnTheFirstThreeFields() {
+
+		assertTrue(CronExpressionValidator.isFieldValid(CronExpressionValidator.SECOND, "*/10"));
+		assertTrue(CronExpressionValidator.isFieldValid(CronExpressionValidator.MINUTE, "*/10"));
+		assertTrue(CronExpressionValidator.isFieldValid(CronExpressionValidator.HOUR, "*/2"));
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.DAY_OF_MONTH, "*/2"));
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.MONTH, "*/2"));
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.DAY_OF_WEEK, "*/2"));
+	}
+
+	@Test
+	public void eachFieldEnforcesItsOwnRange() {
+
+		assertTrue(CronExpressionValidator.isFieldValid(CronExpressionValidator.MINUTE, "59"));
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.MINUTE, "60"));
+		assertTrue(CronExpressionValidator.isFieldValid(CronExpressionValidator.HOUR, "23"));
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.HOUR, "24"));
+		assertTrue(CronExpressionValidator.isFieldValid(CronExpressionValidator.DAY_OF_MONTH, "31"));
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.DAY_OF_MONTH, "0"));
+		assertTrue(CronExpressionValidator.isFieldValid(CronExpressionValidator.MONTH, "12"));
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.MONTH, "13"));
+		assertTrue(CronExpressionValidator.isFieldValid(CronExpressionValidator.DAY_OF_WEEK, "7"));
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.DAY_OF_WEEK, "8"));
+	}
+
+	@Test
+	public void anEmptyFieldIsNotValid() {
+		assertFalse(CronExpressionValidator.isFieldValid(CronExpressionValidator.MINUTE, ""));
+	}
 }
