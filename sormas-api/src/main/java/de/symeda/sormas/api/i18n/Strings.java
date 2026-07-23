@@ -1033,6 +1033,11 @@ public interface Strings {
 	String infoCreateNewSampleDiscardsChangesCase = "infoCreateNewSampleDiscardsChangesCase";
 	String infoCreateNewSampleDiscardsChangesContact = "infoCreateNewSampleDiscardsChangesContact";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
+	String infoCronSummaryDailyAt = "infoCronSummaryDailyAt";
+	String infoCronSummaryDisabled = "infoCronSummaryDisabled";
+	String infoCronSummaryEveryNHours = "infoCronSummaryEveryNHours";
+	String infoCronSummaryEveryNMinutes = "infoCronSummaryEveryNMinutes";
+	String infoCronSummaryHourlyAt = "infoCronSummaryHourlyAt";
 	String infoCrowdinLocalization = "infoCrowdinLocalization";
 	String infoCustomExport = "infoCustomExport";
 	String infoCustomizableEnumConfigurationInfo = "infoCustomizableEnumConfigurationInfo";

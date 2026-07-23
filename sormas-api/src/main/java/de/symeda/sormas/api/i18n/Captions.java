@@ -1221,6 +1221,13 @@ public interface Captions {
 	String countryArchivedCountries = "countryArchivedCountries";
 	String createSymptomJournalAccountButton = "createSymptomJournalAccountButton";
 	String creationDate = "creationDate";
+	String cronFieldDayOfMonth = "cronFieldDayOfMonth";
+	String cronFieldDayOfWeek = "cronFieldDayOfWeek";
+	String cronFieldHour = "cronFieldHour";
+	String cronFieldMinute = "cronFieldMinute";
+	String cronFieldMonth = "cronFieldMonth";
+	String cronFieldSecond = "cronFieldSecond";
+	String cronJobEnabled = "cronJobEnabled";
 	String CustomizableEnum_hasDetails = "CustomizableEnum.hasDetails";
 	String CustomizableEnum_hasDetails_short = "CustomizableEnum.hasDetails.short";
 	String CustomizableEnumValue_active = "CustomizableEnumValue.active";

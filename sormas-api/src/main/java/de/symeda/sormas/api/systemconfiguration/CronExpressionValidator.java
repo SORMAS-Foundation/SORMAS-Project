@@ -29,9 +29,9 @@ public final class CronExpressionValidator {
 	public static final int DAY_OF_WEEK = 5;
 	public static final int FIELD_COUNT = 6;
 
-	static final int[] LOWER_BOUNDS = {
+	public static final int[] LOWER_BOUNDS = {
 		0, 0, 0, 1, 1, 0 };
-	static final int[] UPPER_BOUNDS = {
+	public static final int[] UPPER_BOUNDS = {
 		59, 59, 23, 31, 12, 7 };
 
 	public static final String VALUE_PATTERN = buildValuePattern();
@@ -101,7 +101,7 @@ public final class CronExpressionValidator {
 		return true;
 	}
 
-	static boolean allowsIncrement(int fieldIndex) {
+	public static boolean allowsIncrement(int fieldIndex) {
 		return fieldIndex == SECOND || fieldIndex == MINUTE || fieldIndex == HOUR;
 	}
 
