@@ -146,10 +146,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			fluidRowLocs(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, "") +
 			fluidRowLocs(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, "") +
 			fluidRowLocs(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP) +
 			fluidRowLocs(EpiDataDto.SEX_WORKER, EpiDataDto.CONTACT_WITH_SEX_WORKER) +
-			fluidRowLocs(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, "") +
 			loc(LOC_PROPHYLAXIS_STATUS)+
 			fluidRowLocs("PROPHYLAXIS_LAYOUT")+
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
@@ -286,6 +286,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
+		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class).setVisible(true);
 		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, ComboBox.class);
 		ComboBox motherCountryOfBirth = addInfrastructureField(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH);
 		motherCountryOfBirth.addItems(countries);
@@ -293,7 +294,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		motherCitizenship.addItems(countries);
 		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class).setVisible(true);
 		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class).setVisible(true);
-		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class).setVisible(true);
 		includeContagiousDates(periodReferenceDate, disease);
 
 		FieldHelper.setVisibleWhen(

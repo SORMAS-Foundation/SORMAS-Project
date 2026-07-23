@@ -563,8 +563,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		} else {
 			defaultSetting = null;
 		}
+
 		settingField.setValue(defaultSetting);
 		settingField.setEnabled(!isVectorBorneAutoSetting);
+
+		// allows to show all adequate sub settings once a default was selected.
+		updateSubSettingsFieldItems(category, defaultSetting);
+
 		settingDetailsField.setValue(null);
 		settingDetailsField.setVisible(false);
 
@@ -692,7 +697,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 			// Update field items (these methods clear the field values)
 			updateSettingFieldItems(category);
-			updateSubSettingsFieldItems(category, setting);
+			if (setting != null) {
+				// fixes edge-case where for Syphilis sub-settings are automatically set to Direct Contact Person to Person
+				// setting in this context is null, so removes the previously set subsettings.
+				updateSubSettingsFieldItems(category, setting);
+			}
 			updateContactFactorsFieldItems(category, setting);
 			updateProtectiveMeasuresFieldItems(category, setting);
 

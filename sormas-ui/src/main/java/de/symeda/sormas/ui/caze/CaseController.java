@@ -219,7 +219,7 @@ public class CaseController {
 			new Notification(
 				I18nProperties.getString(Strings.headingCreateNewCaseIssue),
 				I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
-				Notification.Type.ERROR_MESSAGE,
+				Type.ERROR_MESSAGE,
 				false).show(Page.getCurrent());
 			return;
 		}
@@ -263,7 +263,7 @@ public class CaseController {
 			new Notification(
 				I18nProperties.getString(Strings.headingCreateNewCaseIssue),
 				I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
-				Notification.Type.ERROR_MESSAGE,
+				Type.ERROR_MESSAGE,
 				false).show(Page.getCurrent());
 			return;
 		}
@@ -393,7 +393,7 @@ public class CaseController {
 						caze.getDisease()));
 
 			HorizontalLayout infoComponent = VaadinUiUtil.createInfoComponent(infoText);
-			infoComponent.setWidth(600, Sizeable.Unit.PIXELS);
+			infoComponent.setWidth(600, Unit.PIXELS);
 			CommitDiscardWrapperComponent<HorizontalLayout> convertToCaseConfirmComponent = new CommitDiscardWrapperComponent<>(infoComponent);
 			convertToCaseConfirmComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionYesForAll));
 			convertToCaseConfirmComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionNo));
@@ -441,7 +441,7 @@ public class CaseController {
 		Runnable callback) {
 
 		ConvertToCaseSelectionField convertToCaseSelectionField = new ConvertToCaseSelectionField(caze, matchingContacts, matchingEventParticipants);
-		convertToCaseSelectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+		convertToCaseSelectionField.setWidth(1280, Unit.PIXELS);
 
 		CommitDiscardWrapperComponent<ConvertToCaseSelectionField> convertToCaseSelectComponent =
 			new CommitDiscardWrapperComponent<>(convertToCaseSelectionField);
@@ -1443,11 +1443,13 @@ public class CaseController {
 		// Exposure start date and end date should be calculated based on the incubation period.
 		// For most diseases, the incubation period is counted back from the symptom onset date; for Syphilis,
 		// it is counted back from the diagnosis date (the oldest doctor declaration's date of diagnosis) instead.
-		Date exposurePeriodReferenceDate;
+		Date exposurePeriodReferenceDate = null;
 		if (caze.getDisease() == Disease.SYPHILIS) {
 			SurveillanceReportDto oldestDoctorReport = new CaseNotifierSideViewController().getOldestDoctorDeclarationReport(caze);
 			exposurePeriodReferenceDate = oldestDoctorReport != null ? oldestDoctorReport.getDateOfDiagnosis() : null;
-		} else {
+		}
+
+		if (exposurePeriodReferenceDate == null) {
 			exposurePeriodReferenceDate = caze.getSymptoms().getOnsetDate();
 		}
 
@@ -1708,7 +1710,7 @@ public class CaseController {
 
 				// popup configuration
 				popupWindow.addCloseListener(e -> popupWindow.close());
-				popupWindow.setWidth(600, Sizeable.Unit.PIXELS);
+				popupWindow.setWidth(600, Unit.PIXELS);
 
 				return;
 			}
@@ -2019,13 +2021,13 @@ public class CaseController {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoCasesSelected),
 				I18nProperties.getString(Strings.messageNoCasesSelected),
-				Notification.Type.WARNING_MESSAGE,
+				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 			return;
 		}
 
 		if (!selectedRows.stream().allMatch(caze -> caze.getDisease().equals(selectedRows.stream().findAny().get().getDisease()))) {
-			new Notification(I18nProperties.getString(Strings.messageBulkCasesWithDifferentDiseasesSelected), Notification.Type.WARNING_MESSAGE)
+			new Notification(I18nProperties.getString(Strings.messageBulkCasesWithDifferentDiseasesSelected), Type.WARNING_MESSAGE)
 				.show(Page.getCurrent());
 			return;
 		}
