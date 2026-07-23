@@ -42,12 +42,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
 import de.symeda.sormas.api.systemconfiguration.CronJobRunOutcome;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -55,8 +50,6 @@ import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.systemconfiguration.event.SystemConfigurationValueChangedEvent;
 
 public class CronSchedulerTest extends AbstractBeanTest {
-
-	private static final String CRON_CATEGORY_NAME = "CRON";
 
 	@Mock
 	private CronService cronService;
@@ -72,44 +65,12 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		setConfigurationValue(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_CASES.getDefaultExpression());
 	}
 
-	private SystemConfigurationValueDto setConfigurationValue(CronJob job, String expression) {
-
-		SystemConfigurationValueFacade configurationValues = getBean(SystemConfigurationValueFacade.class);
-		List<String> existingUuids = configurationValues.getAllUuids();
-		SystemConfigurationValueDto value = existingUuids.isEmpty()
-			? buildConfigurationValue(job)
-			: configurationValues.getByUuids(existingUuids)
-				.stream()
-				.filter(candidate -> job.getConfigKey().equals(candidate.getKey()))
-				.findFirst()
-				.orElseGet(() -> buildConfigurationValue(job));
-		value.setValue(expression);
-		return configurationValues.save(value);
+	private void setConfigurationValue(CronJob job, String expression) {
+		configurationHelper().setConfigurationValue(job, expression);
 	}
 
-	private SystemConfigurationValueDto buildConfigurationValue(CronJob job) {
-
-		SystemConfigurationValueDto value = SystemConfigurationValueDto.build();
-		value.setKey(job.getConfigKey());
-		value.setCategory(cronCategoryReference());
-		value.setOptional(true);
-		value.setEncrypt(false);
-		value.setPattern(CronExpressionValidator.VALUE_PATTERN);
-		return value;
-	}
-
-	private SystemConfigurationCategoryReferenceDto cronCategoryReference() {
-
-		SystemConfigurationCategoryFacade categories = getSystemConfigurationCategoryFacade();
-		SystemConfigurationCategoryReferenceDto existing = categories.getCategoryReferenceDtoByName(CRON_CATEGORY_NAME);
-		if (existing != null) {
-			return existing;
-		}
-
-		SystemConfigurationCategoryDto category = SystemConfigurationCategoryDto.build();
-		category.setName(CRON_CATEGORY_NAME);
-		category.setCaption("Scheduled jobs");
-		return categories.getReferenceByUuid(categories.save(category).getUuid());
+	private CronTestConfigurationHelper configurationHelper() {
+		return new CronTestConfigurationHelper(getBean(SystemConfigurationValueFacade.class), getSystemConfigurationCategoryFacade());
 	}
 
 	@Test

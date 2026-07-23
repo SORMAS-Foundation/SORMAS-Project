@@ -16,6 +16,8 @@
 package de.symeda.sormas.backend.common.cron;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -109,6 +111,22 @@ public class CronScheduler {
 		} catch (Exception e) {
 			logger.error("Scheduled job execution failed for timer info {}", timerInfo, e);
 		}
+	}
+
+	public Map<CronJob, Date> getNextFireTimes() {
+
+		Map<CronJob, Date> nextFireTimes = new HashMap<>();
+		for (Timer timer : timerService.getTimers()) {
+			try {
+				Object info = timer.getInfo();
+				if (info instanceof CronJob) {
+					nextFireTimes.put((CronJob) info, timer.getNextTimeout());
+				}
+			} catch (Exception e) {
+				logger.warn("Could not read the next timeout of a scheduled job timer", e);
+			}
+		}
+		return nextFireTimes;
 	}
 
 	public void reschedule(CronJob job) {
