@@ -37,10 +37,12 @@ import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
+import de.symeda.sormas.api.systemconfiguration.CronJobRunOutcome;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryReferenceDto;
@@ -225,5 +227,18 @@ public class CronSchedulerTest extends AbstractBeanTest {
 			new SystemConfigurationValueChangedEvent("CRON.NO_SUCH_JOB"));
 
 		verify(timerService, never()).createCalendarTimer(any(), any());
+	}
+
+	@Test
+	public void aSuccessfulDispatchIsRecorded() {
+
+		javax.ejb.Timer timer = org.mockito.Mockito.mock(javax.ejb.Timer.class);
+		org.mockito.Mockito.when(timer.getInfo()).thenReturn(CronJob.CLEAN_UP_TEMPORARY_FILES);
+
+		getBean(CronScheduler.class).executeJob(timer);
+
+		Optional<CronJobRun> recorded = getBean(InMemoryCronJobRunRepository.class).findLatest(CronJob.CLEAN_UP_TEMPORARY_FILES);
+		assertTrue(recorded.isPresent());
+		assertEquals(CronJobRunOutcome.SUCCESS, recorded.get().getOutcome());
 	}
 }

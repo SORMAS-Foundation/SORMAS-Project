@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.common.cron;
 
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RunAs;
@@ -37,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
+import de.symeda.sormas.api.systemconfiguration.CronJobRunOutcome;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.CronService;
@@ -59,6 +62,9 @@ public class CronScheduler {
 
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
+
+	@EJB
+	private CronJobRunRepository cronJobRunRepository;
 
 	@PostConstruct
 	public void scheduleAllJobs() {
@@ -84,10 +90,17 @@ public class CronScheduler {
 	public void executeJob(Timer timer) {
 
 		Object timerInfo = null;
+		Date start = new Date();
 		try {
 			timerInfo = timer.getInfo();
 			CronJob job = (CronJob) timerInfo;
-			job.execute(cronService);
+			try {
+				job.execute(cronService);
+				cronJobRunRepository.record(job, new CronJobRun(start, new Date(), CronJobRunOutcome.SUCCESS, null));
+			} catch (Exception e) {
+				cronJobRunRepository.record(job, new CronJobRun(start, new Date(), CronJobRunOutcome.FAILED, e.getMessage()));
+				throw e;
+			}
 		} catch (Exception e) {
 			logger.error("Scheduled job execution failed for timer info {}", timerInfo, e);
 		}
