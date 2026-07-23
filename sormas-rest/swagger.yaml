@@ -26801,6 +26801,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        arthralgia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         arthritis:
           type: string
           enum:
@@ -26897,6 +26903,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        bonyAbnormalities:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         breathlessness:
           type: string
           enum:
@@ -26915,7 +26927,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        centralNervousSystemDamage:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         cerebralMalaria:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        chancre:
           type: string
           enum:
           - "YES"
@@ -26948,6 +26972,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        clinicalCriteriaMet:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         clinicalManifestation:
           type: string
           enum:
@@ -26971,6 +27001,18 @@ components:
           - "NO"
           - UNKNOWN
         coma:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        condylomaLata:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        condylomaVenereum:
           type: string
           enum:
           - "YES"
@@ -27274,6 +27316,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        generalizedLymphadenopathy:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         glasgowComaScale:
           type: integer
           format: int32
@@ -27320,6 +27368,18 @@ components:
           - "NO"
           - UNKNOWN
         hemorrhagicSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        hepatomegaly:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        hepatosplenomegaly:
           type: string
           enum:
           - "YES"
@@ -27508,6 +27568,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        lowGradeFever:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         lymphadenopathy:
           type: string
           enum:
@@ -27527,6 +27593,12 @@ components:
           - "NO"
           - UNKNOWN
         lymphadenopathyInguinal:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        maculopapularRash:
           type: string
           enum:
           - "YES"
@@ -27552,6 +27624,12 @@ components:
           - UNKNOWN
           - OTHER
         malaise:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        malnutrition:
           type: string
           enum:
           - "YES"
@@ -27609,6 +27687,18 @@ components:
           - VERTEBRAE
           - UNKNOWN
           - OTHER
+        mucocutaneousLesion:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        mucousPatches:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         musclePain:
           type: string
           enum:
@@ -27627,6 +27717,18 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        nephroticSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        neurologicalManifestations:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         nocturnalCough:
           type: string
           enum:
@@ -27634,6 +27736,12 @@ components:
           - "NO"
           - UNKNOWN
         noseBleeding:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        ocularManifestations:
           type: string
           enum:
           - "YES"
@@ -27795,6 +27903,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        patchyAlopecia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         patientIllLocation:
           type: string
           maxLength: 512
@@ -27843,6 +27957,12 @@ components:
           - UNKNOWN
         pseudonymized:
           type: boolean
+        pseudoparalysis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         purpuricRash:
           type: string
           enum:
@@ -27862,6 +27982,12 @@ components:
           - "NO"
           - UNKNOWN
         redBloodVomit:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        refractoryRhinitis:
           type: string
           enum:
           - "YES"
@@ -28028,6 +28154,30 @@ components:
           enum:
           - "YES"
           - "NO"
+          - UNKNOWN
+        syphilisInfectionSite:
+          type: string
+          enum:
+          - GENITAL
+          - ANORECTAL
+          - PHARYNGEAL
+          - UNKNOWN
+          - OTHER
+        syphilisInfectiousness:
+          type: string
+          enum:
+          - INFECTIOUS
+          - NOT_INFECTIOUS
+          - UNKNOWN
+        syphilisStage:
+          type: string
+          enum:
+          - PRIMARY_SYPHILIS
+          - SECONDARY_SYPHILIS
+          - EARLY_LATENT_SYPHILIS
+          - LATE_LATENT_SYPHILIS
+          - TERTIARY_SYPHILIS
+          - NEUROLOGICAL_SYPHILIS
           - UNKNOWN
         temperature:
           type: number
