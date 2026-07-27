@@ -22,5 +22,7 @@ import javax.ejb.Remote;
 @Remote
 public interface CronJobFacade {
 
+	String CRON_CONFIGURATION_CATEGORY = "CRON";
+
 	List<CronJobStatusDto> getAllJobStatuses();
 }

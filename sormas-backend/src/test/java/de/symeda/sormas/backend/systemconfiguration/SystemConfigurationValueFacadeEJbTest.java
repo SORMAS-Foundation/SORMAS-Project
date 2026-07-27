@@ -15,13 +15,22 @@
 package de.symeda.sormas.backend.systemconfiguration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.systemconfiguration.CronJobFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -33,6 +42,42 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     @BeforeEach
     void setUp() {
         createSystemConfigurationDefaultCategory();
+    }
+
+    @Test
+    void cronConfigurationValuesAreHiddenFromTheGeneralListButRemainDirectlyAccessible() {
+
+        final SystemConfigurationValue generalValue = createSystemConfigurationValue("GENERAL_TEST_KEY");
+
+        final SystemConfigurationCategory cronCategory = new SystemConfigurationCategory();
+        cronCategory.setUuid(DataHelper.createUuid());
+        cronCategory.setName(CronJobFacade.CRON_CONFIGURATION_CATEGORY);
+        getSystemConfigurationCategoryService().ensurePersisted(cronCategory);
+
+        final SystemConfigurationValue cronValue = new SystemConfigurationValue();
+        cronValue.setUuid(DataHelper.createUuid());
+        cronValue.setKey("CRON.ARCHIVE_CASES");
+        cronValue.setValue("0 15 1 * * *");
+        cronValue.setCategory(cronCategory);
+        cronValue.setEncrypt(false);
+        getSystemConfigurationValueService().ensurePersisted(cronValue);
+
+        final SystemConfigurationValueCriteria criteria = new SystemConfigurationValueCriteria();
+        final List<String> listedKeys = getSystemConfigurationValueFacade().getIndexList(criteria, 0, 100, Collections.emptyList())
+            .stream()
+            .map(SystemConfigurationValueIndexDto::getKey)
+            .collect(Collectors.toList());
+
+        assertThat(listedKeys, hasItem(generalValue.getKey()));
+        assertThat(listedKeys, not(hasItem(cronValue.getKey())));
+        assertThat(getSystemConfigurationValueFacade().count(criteria), is((long) listedKeys.size()));
+
+        final List<String> directlyAccessibleKeys = getSystemConfigurationValueFacade()
+            .getByUuids(getSystemConfigurationValueFacade().getAllUuids())
+            .stream()
+            .map(SystemConfigurationValueDto::getKey)
+            .collect(Collectors.toList());
+        assertThat(directlyAccessibleKeys, hasItem(cronValue.getKey()));
     }
 
     /**

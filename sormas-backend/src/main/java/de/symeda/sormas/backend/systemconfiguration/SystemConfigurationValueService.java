@@ -23,6 +23,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.systemconfiguration.CronJobFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -105,6 +106,11 @@ public class SystemConfigurationValueService extends AdoServiceWithUserFilterAnd
             filter =
                 CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCategory().get(AbstractDomainObject.UUID), criteria.getCategory().getUuid()));
         }
+
+        filter = CriteriaBuilderHelper.and(
+            cb,
+            filter,
+            cb.notEqual(joins.getCategory().get(SystemConfigurationCategory.NAME_FIELD_NAME), CronJobFacade.CRON_CONFIGURATION_CATEGORY));
 
         return filter;
     }
