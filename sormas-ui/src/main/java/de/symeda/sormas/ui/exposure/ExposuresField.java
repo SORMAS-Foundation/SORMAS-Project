@@ -41,6 +41,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -267,6 +268,10 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		exposure.getLocation().setDistrict(user.getDistrict());
 		exposure.getLocation().setCommunity(user.getCommunity());
 		exposure.setReportingUser(user.toReference());
+		if (disease == Disease.SYPHILIS) {
+			// Direct contact is selected by default when creating a new exposure for Syphilis
+			exposure.setExposureCategory(ExposureCategory.DIRECT_CONTACT);
+		}
 		return exposure;
 	}
 

@@ -65,6 +65,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.InfectionSource;
@@ -120,7 +121,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
 	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections.unmodifiableList(
-		Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE, Disease.SALMONELLOSIS, Disease.SHIGELLOSIS));
+		Arrays.asList(
+			Disease.CRYPTOSPORIDIOSIS,
+			Disease.GIARDIASIS,
+			Disease.MALARIA,
+			Disease.DENGUE,
+			Disease.SALMONELLOSIS,
+			Disease.SHIGELLOSIS,
+			Disease.SYPHILIS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -138,6 +146,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			fluidRowLocs(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, "") +
+			fluidRowLocs(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, "") +
+			fluidRowLocs(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP) +
+			fluidRowLocs(EpiDataDto.SEX_WORKER, EpiDataDto.CONTACT_WITH_SEX_WORKER) +
 			loc(LOC_PROPHYLAXIS_STATUS)+
 			fluidRowLocs("PROPHYLAXIS_LAYOUT")+
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
@@ -274,7 +286,22 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
+		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class);
+		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, ComboBox.class);
+		ComboBox motherCountryOfBirth = addInfrastructureField(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH);
+		motherCountryOfBirth.addItems(countries);
+		ComboBox motherCitizenship = addInfrastructureField(EpiDataDto.MOTHER_CITIZENSHIP);
+		motherCitizenship.addItems(countries);
+		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class);
+		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class);
 		includeContagiousDates(symptomOnsetDate, disease);
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP),
+			EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION,
+			ProbableRouteOfTransmission.MOTHER_TO_CHILD_TRANSMISSION,
+			true);
 
 		TextField clusterTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
 		FieldHelper

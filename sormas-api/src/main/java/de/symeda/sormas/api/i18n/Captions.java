@@ -1643,6 +1643,7 @@ public interface Captions {
 	String EpiData_clusterRelated = "EpiData.clusterRelated";
 	String EpiData_clusterType = "EpiData.clusterType";
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
+	String EpiData_contactWithSexWorker = "EpiData.contactWithSexWorker";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_country = "EpiData.country";
 	String EpiData_country_SHIG = "EpiData.country.SHIG";
@@ -1658,9 +1659,14 @@ public interface Captions {
 	String EpiData_largeOutbreaksArea = "EpiData.largeOutbreaksArea";
 	String EpiData_modeOfTransmission = "EpiData.modeOfTransmission";
 	String EpiData_modeOfTransmissionType = "EpiData.modeOfTransmissionType";
+	String EpiData_motherCitizenship = "EpiData.motherCitizenship";
+	String EpiData_motherCountryOfBirth = "EpiData.motherCountryOfBirth";
 	String EpiData_otherDetails = "EpiData.otherDetails";
 	String EpiData_placeOfInfection = "EpiData.placeOfInfection";
+	String EpiData_probableRouteOfTransmission = "EpiData.probableRouteOfTransmission";
 	String EpiData_residenceAtOnset = "EpiData.residenceAtOnset";
+	String EpiData_sexWorker = "EpiData.sexWorker";
+	String EpiData_typeOfClinicalService = "EpiData.typeOfClinicalService";
 	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
 	String epipulseActiveExports = "epipulseActiveExports";
 	String epipulseAllExports = "epipulseAllExports";
