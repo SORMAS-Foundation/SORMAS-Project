@@ -15,23 +15,31 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.CronJobRunOutcome;
 import de.symeda.sormas.api.systemconfiguration.CronJobStatusDto;
+import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 
 public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 
 	private static final long serialVersionUID = 1L;
 
-	public ScheduledJobsGrid() {
+	private static final int EDIT_COLUMN_WIDTH = 60;
+
+	public ScheduledJobsGrid(Consumer<CronJobStatusDto> editHandler) {
 
 		super(CronJobStatusDto.class);
 		setSizeFull();
@@ -48,8 +56,26 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		addColumn(this::describeDuration).setId("duration").setCaption(I18nProperties.getCaption(Captions.cronJobDuration));
 		addColumn(this::describeOutcome).setId("outcome").setCaption(I18nProperties.getCaption(Captions.cronJobOutcome));
 
+		addEditColumn(editHandler);
+
 		setDescriptionGenerator(this::describeRow);
 		reload();
+	}
+
+	private void addEditColumn(Consumer<CronJobStatusDto> editHandler) {
+
+		List<Column<CronJobStatusDto, ?>> columnOrder = new ArrayList<>(getColumns());
+
+		Column<CronJobStatusDto, String> editColumn = addColumn(status -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
+		editColumn.setId(FilteredGrid.ACTION_BTN_ID);
+		editColumn.setCaption(I18nProperties.getCaption(Captions.edit));
+		editColumn.setSortable(false);
+		editColumn.setWidth(EDIT_COLUMN_WIDTH);
+
+		columnOrder.add(0, editColumn);
+		setColumnOrder(columnOrder.toArray(new Column[0]));
+
+		addItemClickListener(new ShowDetailsListener<>(FilteredGrid.ACTION_BTN_ID, editHandler::accept));
 	}
 
 	public void reload() {

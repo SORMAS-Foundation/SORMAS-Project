@@ -39,12 +39,7 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 
 		super(VIEW_NAME);
 
-		grid = new ScheduledJobsGrid();
-		grid.addItemClickListener(event -> {
-			if (event.getMouseEventDetails().isDoubleClick()) {
-				openScheduleEditor(event.getItem());
-			}
-		});
+		grid = new ScheduledJobsGrid(this::openScheduleEditor);
 
 		HorizontalLayout toolbar = new HorizontalLayout();
 		toolbar.addComponent(ButtonHelper.createButton(Captions.cronJobRefresh, event -> grid.reload()));
