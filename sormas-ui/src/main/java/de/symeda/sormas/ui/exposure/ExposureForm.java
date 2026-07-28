@@ -549,14 +549,24 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		List<ExposureSetting> settings = ExposureSetting.getValues(category);
 		FieldHelper.updateItems(settingField, settings);
 
-		// Clear the field and its dependent details field
 		// if the disease is Malaria or Dengue and the category is VECTOR_BORNE, preselect MOSQUITO_BORNE as setting (since it's the only valid option in this case)
-		ExposureSetting defaultSetting =
-			Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE
-				? ExposureSetting.MOSQUITO_BORNE
-				: null;
+		boolean isVectorBorneAutoSetting =
+			Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE;
+		// Syphilis: Direct contact defaults to Person to person, but remains editable (other settings are available)
+		boolean isSyphilisDirectContact = disease == Disease.SYPHILIS && category == ExposureCategory.DIRECT_CONTACT;
+
+		ExposureSetting defaultSetting;
+		if (isVectorBorneAutoSetting) {
+			defaultSetting = ExposureSetting.MOSQUITO_BORNE;
+		} else if (isSyphilisDirectContact) {
+			defaultSetting = ExposureSetting.PERSON_TO_PERSON;
+		} else {
+			defaultSetting = null;
+		}
+
 		settingField.setValue(defaultSetting);
-		settingField.setEnabled(defaultSetting == null);
+		settingField.setEnabled(!isVectorBorneAutoSetting);
+
 		settingDetailsField.setValue(null);
 		settingDetailsField.setVisible(false);
 
@@ -684,7 +694,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 			// Update field items (these methods clear the field values)
 			updateSettingFieldItems(category);
-			updateSubSettingsFieldItems(category, setting);
+			if (setting != null) {
+				// fixes edge-case where for Syphilis sub-settings are automatically set to Direct Contact Person to Person
+				// setting in this context is null, so removes the previously set subsettings.
+				updateSubSettingsFieldItems(category, setting);
+			}
 			updateContactFactorsFieldItems(category, setting);
 			updateProtectiveMeasuresFieldItems(category, setting);
 

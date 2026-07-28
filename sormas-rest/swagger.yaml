@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.104.0-SNAPSHOT
+  version: 1.105.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -2856,6 +2856,7 @@ paths:
                   - CRYPTOSPORIDIOSIS
                   - SHIGELLOSIS
                   - SALMONELLOSIS
+                  - SYPHILIS
                   - OTHER
                   - UNDEFINED
           description: default response
@@ -4536,6 +4537,7 @@ paths:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
       requestBody:
@@ -4869,6 +4871,7 @@ paths:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
       responses:
@@ -8869,6 +8872,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         districtId:
@@ -8999,6 +9003,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -9103,6 +9108,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -9517,6 +9523,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -9980,6 +9987,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -10470,6 +10478,11 @@ components:
           $ref: '#/components/schemas/UserReferenceDto'
         symptoms:
           $ref: '#/components/schemas/SymptomsDto'
+        syphilisPresentation:
+          type: string
+          enum:
+          - ACQUIRED
+          - CONGENITAL
         therapy:
           $ref: '#/components/schemas/TherapyDto'
         treatmentNotApplicable:
@@ -10648,6 +10661,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -10994,6 +11008,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         firstName:
@@ -11138,6 +11153,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11416,6 +11432,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12024,6 +12041,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -12288,6 +12306,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -12647,6 +12666,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13106,6 +13126,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13395,6 +13416,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14218,6 +14240,7 @@ components:
             - CRYPTOSPORIDIOSIS
             - SHIGELLOSIS
             - SALMONELLOSIS
+            - SYPHILIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -14477,6 +14500,7 @@ components:
             - CRYPTOSPORIDIOSIS
             - SHIGELLOSIS
             - SALMONELLOSIS
+            - SYPHILIS
             - OTHER
             - UNDEFINED
     DashboardCaseMeasureDto:
@@ -14773,6 +14797,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -14870,6 +14895,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -15052,6 +15078,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         eventCount:
@@ -15150,6 +15177,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         notACaseCriteria:
@@ -15260,6 +15288,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         eventParticipantFollowUpDuration:
@@ -16535,6 +16564,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         eventDiseaseDetails:
@@ -16707,6 +16737,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -16996,6 +17027,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17498,6 +17530,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17716,6 +17749,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         event:
@@ -18678,6 +18712,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -18834,6 +18869,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -18927,6 +18963,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19330,6 +19367,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19544,6 +19582,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         personUuid:
@@ -20012,6 +20051,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -20176,6 +20216,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -20342,6 +20383,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         districtName:
@@ -20498,6 +20540,20 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        hivPrep:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        hivStatus:
+          type: string
+          enum:
+          - NEGATIVE
+          - POSITIVE
+          - KNOWN_POSITIVE
+          - NEW_DIAGNOSIS
+          - UNKNOWN
         immunodeficiencyIncludingHiv:
           type: string
           enum:
@@ -20531,6 +20587,12 @@ components:
           - UNKNOWN
         medicationDetails:
           type: string
+        mentalHealthDisorder:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         obesity:
           type: string
           enum:
@@ -20562,6 +20624,40 @@ components:
           - "NO"
           - UNKNOWN
         sickleCellDisease:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        stiProphylaxis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        substanceUseDisorder:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        substanceUseDisorderDetails:
+          type: string
+        syphilisDateOfFirstDose:
+          type: string
+          format: date-time
+        syphilisDrugUsed:
+          type: string
+        syphilisNumberOfDoses:
+          type: integer
+          format: int32
+        syphilisOrOtherStis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        treatedForSyphilis:
           type: string
           enum:
           - "YES"
@@ -20778,6 +20874,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -21013,6 +21110,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -21295,6 +21393,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -21792,6 +21891,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         healthFacilityLat:
@@ -22100,6 +22200,7 @@ components:
             - CRYPTOSPORIDIOSIS
             - SHIGELLOSIS
             - SALMONELLOSIS
+            - SYPHILIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -22192,6 +22293,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -23264,6 +23366,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         testedDiseaseDetails:
@@ -23584,6 +23687,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -24658,6 +24762,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -25137,6 +25242,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25697,6 +25803,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25917,6 +26024,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26057,6 +26165,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26417,6 +26526,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -26691,6 +26801,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        arthralgia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         arthritis:
           type: string
           enum:
@@ -26787,6 +26903,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        bonyAbnormalities:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         breathlessness:
           type: string
           enum:
@@ -26805,7 +26927,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        centralNervousSystemDamage:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         cerebralMalaria:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        chancre:
           type: string
           enum:
           - "YES"
@@ -26838,6 +26972,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        clinicalCriteriaMet:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         clinicalManifestation:
           type: string
           enum:
@@ -26861,6 +27001,18 @@ components:
           - "NO"
           - UNKNOWN
         coma:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        condylomaLata:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        condylomaVenereum:
           type: string
           enum:
           - "YES"
@@ -27164,6 +27316,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        generalizedLymphadenopathy:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         glasgowComaScale:
           type: integer
           format: int32
@@ -27210,6 +27368,18 @@ components:
           - "NO"
           - UNKNOWN
         hemorrhagicSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        hepatomegaly:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        hepatosplenomegaly:
           type: string
           enum:
           - "YES"
@@ -27398,6 +27568,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        lowGradeFever:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         lymphadenopathy:
           type: string
           enum:
@@ -27417,6 +27593,12 @@ components:
           - "NO"
           - UNKNOWN
         lymphadenopathyInguinal:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        maculopapularRash:
           type: string
           enum:
           - "YES"
@@ -27442,6 +27624,12 @@ components:
           - UNKNOWN
           - OTHER
         malaise:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        malnutrition:
           type: string
           enum:
           - "YES"
@@ -27499,6 +27687,18 @@ components:
           - VERTEBRAE
           - UNKNOWN
           - OTHER
+        mucocutaneousLesion:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        mucousPatches:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         musclePain:
           type: string
           enum:
@@ -27517,6 +27717,18 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        nephroticSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        neurologicalManifestations:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         nocturnalCough:
           type: string
           enum:
@@ -27524,6 +27736,12 @@ components:
           - "NO"
           - UNKNOWN
         noseBleeding:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        ocularManifestations:
           type: string
           enum:
           - "YES"
@@ -27685,6 +27903,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        patchyAlopecia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         patientIllLocation:
           type: string
           maxLength: 512
@@ -27733,6 +27957,12 @@ components:
           - UNKNOWN
         pseudonymized:
           type: boolean
+        pseudoparalysis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         purpuricRash:
           type: string
           enum:
@@ -27752,6 +27982,12 @@ components:
           - "NO"
           - UNKNOWN
         redBloodVomit:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        refractoryRhinitis:
           type: string
           enum:
           - "YES"
@@ -27918,6 +28154,30 @@ components:
           enum:
           - "YES"
           - "NO"
+          - UNKNOWN
+        syphilisInfectionSite:
+          type: string
+          enum:
+          - GENITAL
+          - ANORECTAL
+          - PHARYNGEAL
+          - UNKNOWN
+          - OTHER
+        syphilisInfectiousness:
+          type: string
+          enum:
+          - INFECTIOUS
+          - NOT_INFECTIOUS
+          - UNKNOWN
+        syphilisStage:
+          type: string
+          enum:
+          - PRIMARY_SYPHILIS
+          - SECONDARY_SYPHILIS
+          - EARLY_LATENT_SYPHILIS
+          - LATE_LATENT_SYPHILIS
+          - TERTIARY_SYPHILIS
+          - NEUROLOGICAL_SYPHILIS
           - UNKNOWN
         temperature:
           type: number
@@ -28374,6 +28634,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -29180,6 +29441,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -29666,6 +29928,7 @@ components:
             - CRYPTOSPORIDIOSIS
             - SHIGELLOSIS
             - SALMONELLOSIS
+            - SYPHILIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -30334,6 +30597,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -30460,6 +30724,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         id:
@@ -30639,6 +30904,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         numberOfCases:

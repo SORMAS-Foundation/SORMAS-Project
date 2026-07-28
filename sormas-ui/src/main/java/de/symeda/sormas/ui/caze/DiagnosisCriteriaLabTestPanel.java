@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.caze;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,11 +76,12 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 	private static final String TEST_RESULT_KEY_RESULT = "RESULT";
 	private static final String TEST_RESULT_KEY_DATE = "DATE";
 
+	private static final Map<String, String> PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES;
+
 	private Disease disease;
 	private List<PathogenTestDto> pathogenTests;
 
 	private Map<String, Map<String, String>> testDetails = new HashMap<>();
-	private List<String> positiveNegativeResult = Arrays.asList(PathogenTestResultType.POSITIVE.name(), PathogenTestResultType.NEGATIVE.name());
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -98,6 +98,14 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
                 + fluidRowLocs(6, CULTURE_TEST_LOC, 4, CULTURE_TEST_RESULT_LOC, 2, CULTURE_TEST_RESULT_DATE_LOC);
     //@formatter:on
 
+	static {
+		Map<String, String> map = new HashMap<>();
+		map.put(PathogenTestResultType.POSITIVE.name(), TEST_RESULT_POS);
+		map.put(PathogenTestResultType.NEGATIVE.name(), TEST_RESULT_NEG);
+		map.put(PathogenTestResultType.PENDING.name(), TEST_RESULT_ONGOING);
+		PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES = map;
+	}
+
 	public DiagnosisCriteriaLabTestPanel(Disease disease, List<PathogenTestDto> pathogenTests) {
 		setWidth(100, Sizeable.Unit.PERCENTAGE);
 		this.addStyleNames(CssStyles.VSPACE_3);
@@ -113,18 +121,14 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 	private void initTestResultDetails() {
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			if (!testDetails.containsKey(pathogenTest.getTestType().name())) {
-				String testResult = null;
 				String testDate = null;
-				if (positiveNegativeResult.contains(pathogenTest.getTestResult().name())) {
-					testResult = pathogenTest.getTestResult().name();
-				}
 
 				if (pathogenTest.getTestDateTime() != null) {
 					testDate = DateFormatHelper.formatDate(pathogenTest.getTestDateTime());
 				}
 
 				Map<String, String> testResultDetails = new HashMap<>();
-				testResultDetails.put(TEST_RESULT_KEY_RESULT, testResult);
+				testResultDetails.put(TEST_RESULT_KEY_RESULT, pathogenTest.getTestResult() != null ? pathogenTest.getTestResult().name() : "");
 				testResultDetails.put(TEST_RESULT_KEY_DATE, testDate);
 				testResultDetails.put(
 					PathogenTestDto.RIFAMPICIN_RESISTANT,
@@ -148,7 +152,9 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			TextField igraTestResultDate = addTextFieldComponent(IGRA_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.IGRA.name())) {
 				igraTest.setValue(TEST_TYPE_YES);
-				igraTestResult.setValue(testDetails.get(PathogenTestType.IGRA.name()).get(TEST_RESULT_KEY_RESULT));
+				final String resultValue =
+					PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES.get(testDetails.get(PathogenTestType.IGRA.name()).get(TEST_RESULT_KEY_RESULT));
+				igraTestResult.setValue(resultValue);
 				igraTestResultDate.setValue(testDetails.get(PathogenTestType.IGRA.name()).get(TEST_RESULT_KEY_DATE));
 			} else {
 				igraTest.setValue(TEST_TYPE_NO);
@@ -159,7 +165,9 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			TextField tstTestResultDate = addTextFieldComponent(TST_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.TST.name())) {
 				tstTest.setValue(TEST_TYPE_YES);
-				tstTestResult.setValue(testDetails.get(PathogenTestType.TST.name()).get(TEST_RESULT_KEY_RESULT));
+				final String resultValue =
+					PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES.get(testDetails.get(PathogenTestType.TST.name()).get(TEST_RESULT_KEY_RESULT));
+				tstTestResult.setValue(resultValue);
 				tstTestResultDate.setValue(testDetails.get(PathogenTestType.TST.name()).get(TEST_RESULT_KEY_DATE));
 			} else {
 				tstTest.setValue(TEST_TYPE_NO);
@@ -176,7 +184,9 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.ISONIAZID_RESISTANT));
 			if (testDetails.containsKey(PathogenTestType.PCR_RT_PCR.name())) {
 				pcrTest.setValue(TEST_TYPE_YES);
-				pcrTestResult.setValue(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(TEST_RESULT_KEY_RESULT));
+				final String resultValue =
+					PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES.get(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(TEST_RESULT_KEY_RESULT));
+				pcrTestResult.setValue(resultValue);
 				pcrTestResultDate.setValue(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(TEST_RESULT_KEY_DATE));
 
 				String pcrRifampicinStr = testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(PathogenTestDto.RIFAMPICIN_RESISTANT);
@@ -202,15 +212,21 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			TextField microscopyTestScale = addTextFieldComponent(MICROSCOPY_TEST_SCALE_LOC, "", false);
 			if (testDetails.containsKey(PathogenTestType.MICROSCOPY.name())) {
 				microscopyTest.setValue(TEST_TYPE_YES);
-				microscopyTestResult.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get(TEST_RESULT_KEY_RESULT));
+				final String resultValue =
+					PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES.get(testDetails.get(PathogenTestType.MICROSCOPY.name()).get(TEST_RESULT_KEY_RESULT));
+				microscopyTestResult.setValue(resultValue);
 				microscopyTestResultDate.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get(TEST_RESULT_KEY_DATE));
-				microscopyTestScale.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get(PathogenTestDto.TEST_SCALE));
+				final String testScale = testDetails.get(PathogenTestType.MICROSCOPY.name()).get(PathogenTestDto.TEST_SCALE);
+				microscopyTestScale.setValue(testScale != null ? testScale : "");
 				microscopyTestScale.setCaption(I18nProperties.getCaption(Captions.PathogenTest_testScale));
 			} else if (testDetails.containsKey(PathogenTestType.ACID_FAST_STAIN.name())) {
 				microscopyTest.setValue(TEST_TYPE_YES);
-				microscopyTestResult.setValue(testDetails.get(PathogenTestType.ACID_FAST_STAIN.name()).get(TEST_RESULT_KEY_RESULT));
+				final String resultValue =
+					PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES.get(testDetails.get(PathogenTestType.ACID_FAST_STAIN.name()).get(TEST_RESULT_KEY_RESULT));
+				microscopyTestResult.setValue(resultValue);
 				microscopyTestResultDate.setValue(testDetails.get(PathogenTestType.ACID_FAST_STAIN.name()).get(TEST_RESULT_KEY_DATE));
-				microscopyTestScale.setValue(testDetails.get(PathogenTestType.ACID_FAST_STAIN.name()).get(PathogenTestDto.SMEAR_GRADE));
+				final String smearGrade = testDetails.get(PathogenTestType.ACID_FAST_STAIN.name()).get(PathogenTestDto.SMEAR_GRADE);
+				microscopyTestScale.setValue(smearGrade != null ? smearGrade : "");
 				microscopyTestScale.setCaption(I18nProperties.getCaption(Captions.PathogenTest_smearGrade));
 			} else {
 				microscopyTest.setValue(TEST_TYPE_NO);
@@ -222,7 +238,9 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			TextField cultureTestResultDate = addTextFieldComponent(CULTURE_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.CULTURE.name())) {
 				cultureTest.setValue(TEST_TYPE_YES);
-				cultureTestResult.setValue(testDetails.get(PathogenTestType.CULTURE.name()).get(TEST_RESULT_KEY_RESULT));
+				final String resultValue =
+					PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES.get(testDetails.get(PathogenTestType.CULTURE.name()).get(TEST_RESULT_KEY_RESULT));
+				cultureTestResult.setValue(resultValue);
 				cultureTestResultDate.setValue(testDetails.get(PathogenTestType.CULTURE.name()).get(TEST_RESULT_KEY_DATE));
 			} else {
 				cultureTest.setValue(TEST_TYPE_NO);

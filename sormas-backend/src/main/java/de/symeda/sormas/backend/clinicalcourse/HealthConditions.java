@@ -2,14 +2,21 @@ package de.symeda.sormas.backend.clinicalcourse;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+
+import java.util.Date;
 
 @Entity
 public class HealthConditions extends AbstractDomainObject {
@@ -58,6 +65,18 @@ public class HealthConditions extends AbstractDomainObject {
 	private String medicationDetails;
 	private YesNoUnknown chronicDisease;
 	private String chronicDiseaseDetails;
+
+	private HivStatus hivStatus;
+	private YesNoUnknown mentalHealthDisorder;
+	private YesNoUnknown substanceUseDisorder;
+	private String substanceUseDisorderDetails;
+	private YesNoUnknown stiProphylaxis;
+	private YesNoUnknown hivPrep;
+	private YesNoUnknown treatedForSyphilis;
+	private String syphilisDrugUsed;
+	private Integer syphilisNumberOfDoses;
+	private Date syphilisDateOfFirstDose;
+	private YesNoUnknown syphilisOrOtherStis;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
@@ -384,6 +403,102 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setChronicDiseaseDetails(String chronicDiseaseDetails) {
 		this.chronicDiseaseDetails = chronicDiseaseDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public HivStatus getHivStatus() {
+		return hivStatus;
+	}
+
+	public void setHivStatus(HivStatus hivStatus) {
+		this.hivStatus = hivStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getMentalHealthDisorder() {
+		return mentalHealthDisorder;
+	}
+
+	public void setMentalHealthDisorder(YesNoUnknown mentalHealthDisorder) {
+		this.mentalHealthDisorder = mentalHealthDisorder;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSubstanceUseDisorder() {
+		return substanceUseDisorder;
+	}
+
+	public void setSubstanceUseDisorder(YesNoUnknown substanceUseDisorder) {
+		this.substanceUseDisorder = substanceUseDisorder;
+	}
+
+	public String getSubstanceUseDisorderDetails() {
+		return substanceUseDisorderDetails;
+	}
+
+	public void setSubstanceUseDisorderDetails(String substanceUseDisorderDetails) {
+		this.substanceUseDisorderDetails = substanceUseDisorderDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getStiProphylaxis() {
+		return stiProphylaxis;
+	}
+
+	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
+		this.stiProphylaxis = stiProphylaxis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHivPrep() {
+		return hivPrep;
+	}
+
+	public void setHivPrep(YesNoUnknown hivPrep) {
+		this.hivPrep = hivPrep;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatedForSyphilis() {
+		return treatedForSyphilis;
+	}
+
+	public void setTreatedForSyphilis(YesNoUnknown treatedForSyphilis) {
+		this.treatedForSyphilis = treatedForSyphilis;
+	}
+
+	public String getSyphilisDrugUsed() {
+		return syphilisDrugUsed;
+	}
+
+	public void setSyphilisDrugUsed(String syphilisDrugUsed) {
+		this.syphilisDrugUsed = syphilisDrugUsed;
+	}
+
+	public Integer getSyphilisNumberOfDoses() {
+		return syphilisNumberOfDoses;
+	}
+
+	public void setSyphilisNumberOfDoses(Integer syphilisNumberOfDoses) {
+		this.syphilisNumberOfDoses = syphilisNumberOfDoses;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getSyphilisDateOfFirstDose() {
+		return syphilisDateOfFirstDose;
+	}
+
+	public void setSyphilisDateOfFirstDose(Date syphilisDateOfFirstDose) {
+		this.syphilisDateOfFirstDose = syphilisDateOfFirstDose;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSyphilisOrOtherStis() {
+		return syphilisOrOtherStis;
+	}
+
+	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
+		this.syphilisOrOtherStis = syphilisOrOtherStis;
 	}
 
 }

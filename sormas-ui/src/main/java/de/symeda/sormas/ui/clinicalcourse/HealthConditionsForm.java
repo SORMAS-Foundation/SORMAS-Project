@@ -21,6 +21,8 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.FORMER_SMO
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HEPATITIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_ART;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_PREP;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_STATUS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.I18N_PREFIX;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_INCLUDING_HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV;
@@ -29,12 +31,21 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALARIA;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALARIA_INFECTED_YEAR;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MEDICATION_DETAILS;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MENTAL_HEALTH_DISORDER;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.ON_MEDICATION;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_CONDITIONS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.PREVIOUS_TUBERCULOSIS_TREATMENT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.RECURRENT_BRONCHIOLITIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SICKLE_CELL_DISEASE;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.STI_PROPHYLAXIS;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SUBSTANCE_USE_DISORDER;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SUBSTANCE_USE_DISORDER_DETAILS;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SYPHILIS_DATE_OF_FIRST_DOSE;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SYPHILIS_DRUG_USED;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SYPHILIS_NUMBER_OF_DOSES;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SYPHILIS_OR_OTHER_STIS;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TREATED_FOR_SYPHILIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS_INFECTION_YEAR;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES;
@@ -99,12 +110,21 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 					fluidRow(
 							fluidColumn(6, 0, locs(
 									TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,"IMMUNODEFICIENCY_INCLUDING_HIV_LAYOUT",
-									 HIV, HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME,
-									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT", ON_MEDICATION, MEDICATION_DETAILS)),
+									 HIV, HIV_ART, CONGENITAL_SYPHILIS, SYPHILIS_OR_OTHER_STIS, DOWN_SYNDROME,
+									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, MENTAL_HEALTH_DISORDER, SUBSTANCE_USE_DISORDER, SUBSTANCE_USE_DISORDER_DETAILS,
+									RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT", ON_MEDICATION, MEDICATION_DETAILS)),
 							fluidColumn(6, 0, locs(
 									"TUBERCULOSIS_INFECTION_YEAR_LAYOUT","COMPLIANCE_WITH_TREATMENT_LAYOUT",CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
 									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE, VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES, EXPOSED_TO_MOSQUITO_BORNE_VIRUSES,"MOSQUITO_BORNE_VIRUSE_LAYOUT",CHRONIC_DISEASE, CHRONIC_DISEASE_DETAILS))
+					) + fluidRow(
+							fluidColumn(6, 0, locs(
+									TREATED_FOR_SYPHILIS, SYPHILIS_DRUG_USED, SYPHILIS_NUMBER_OF_DOSES, SYPHILIS_DATE_OF_FIRST_DOSE)),
+							fluidColumn(6, 0, locs())
+					) + fluidRow(
+							fluidColumn(6, 0, locs(
+									HIV_STATUS, STI_PROPHYLAXIS, HIV_PREP)),
+							fluidColumn(6, 0, locs())
 					) + loc(OTHER_CONDITIONS) + loc(CONFIDENTIAL_LABEL_LOC);
 	//@formatter:on
 
@@ -118,12 +138,20 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		HIV_ART,
 		CHRONIC_LIVER_DISEASE,
 		MALIGNANCY_CHEMOTHERAPY,
+		MENTAL_HEALTH_DISORDER,
+		SUBSTANCE_USE_DISORDER,
+		SUBSTANCE_USE_DISORDER_DETAILS,
+		TREATED_FOR_SYPHILIS,
+		SYPHILIS_DRUG_USED,
+		SYPHILIS_NUMBER_OF_DOSES,
+		SYPHILIS_DATE_OF_FIRST_DOSE,
 		CHRONIC_HEART_FAILURE,
 		CHRONIC_PULMONARY_DISEASE,
 		CHRONIC_KIDNEY_DISEASE,
 		CHRONIC_NEUROLOGIC_CONDITION,
 		DOWN_SYNDROME,
 		CONGENITAL_SYPHILIS,
+		SYPHILIS_OR_OTHER_STIS,
 		IMMUNODEFICIENCY_OTHER_THAN_HIV,
 		CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
 		OBESITY,
@@ -139,7 +167,10 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		ON_MEDICATION,
 		MEDICATION_DETAILS,
 		CHRONIC_DISEASE,
-		CHRONIC_DISEASE_DETAILS);
+		CHRONIC_DISEASE_DETAILS,
+		HIV_STATUS,
+		STI_PROPHYLAXIS,
+		HIV_PREP);
 
 	private boolean vaccinationListener = false;
 
@@ -179,6 +210,14 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), SUBSTANCE_USE_DISORDER_DETAILS, SUBSTANCE_USE_DISORDER, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(SYPHILIS_DRUG_USED, SYPHILIS_NUMBER_OF_DOSES, SYPHILIS_DATE_OF_FIRST_DOSE),
+			TREATED_FOR_SYPHILIS,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
 
 		// Mutual exclusivity: Current smoker and Former smoker
 		NullableOptionGroup currentSmokerField = (NullableOptionGroup) getFieldGroup().getField(CURRENT_SMOKER);

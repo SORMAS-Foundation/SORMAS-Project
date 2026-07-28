@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.clinicalcourse;
 
+import java.util.Date;
+
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -64,6 +66,17 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String MEDICATION_DETAILS = "medicationDetails";
 	public static final String CHRONIC_DISEASE = "chronicDisease";
 	public static final String CHRONIC_DISEASE_DETAILS = "chronicDiseaseDetails";
+	public static final String HIV_STATUS = "hivStatus";
+	public static final String MENTAL_HEALTH_DISORDER = "mentalHealthDisorder";
+	public static final String SUBSTANCE_USE_DISORDER = "substanceUseDisorder";
+	public static final String SUBSTANCE_USE_DISORDER_DETAILS = "substanceUseDisorderDetails";
+	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
+	public static final String HIV_PREP = "hivPrep";
+	public static final String TREATED_FOR_SYPHILIS = "treatedForSyphilis";
+	public static final String SYPHILIS_DRUG_USED = "syphilisDrugUsed";
+	public static final String SYPHILIS_NUMBER_OF_DOSES = "syphilisNumberOfDoses";
+	public static final String SYPHILIS_DATE_OF_FIRST_DOSE = "syphilisDateOfFirstDose";
+	public static final String SYPHILIS_OR_OTHER_STIS = "syphilisOrOtherStis";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -73,7 +86,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.SYPHILIS }, hide = true)
 	private YesNoUnknown asplenia;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -83,10 +97,14 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.SYPHILIS }, hide = true)
 	private YesNoUnknown hiv;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.SYPHILIS }, hide = true)
 	private YesNoUnknown hivArt;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS }, hide = true)
@@ -113,11 +131,13 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.SYPHILIS }, hide = true)
 	private YesNoUnknown downSyndrome;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = Disease.SYPHILIS, hide = true)
 	private YesNoUnknown congenitalSyphilis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -211,6 +231,41 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	private String chronicDiseaseDetails;
+
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private HivStatus hivStatus;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private YesNoUnknown mentalHealthDisorder;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private YesNoUnknown substanceUseDisorder;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	@SensitiveData
+	private String substanceUseDisorderDetails;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private YesNoUnknown stiProphylaxis;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private YesNoUnknown hivPrep;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private YesNoUnknown treatedForSyphilis;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private String syphilisDrugUsed;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private Integer syphilisNumberOfDoses;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private Date syphilisDateOfFirstDose;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private YesNoUnknown syphilisOrOtherStis;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -536,6 +591,94 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setChronicDiseaseDetails(String chronicDiseaseDetails) {
 		this.chronicDiseaseDetails = chronicDiseaseDetails;
+	}
+
+	public HivStatus getHivStatus() {
+		return hivStatus;
+	}
+
+	public void setHivStatus(HivStatus hivStatus) {
+		this.hivStatus = hivStatus;
+	}
+
+	public YesNoUnknown getMentalHealthDisorder() {
+		return mentalHealthDisorder;
+	}
+
+	public void setMentalHealthDisorder(YesNoUnknown mentalHealthDisorder) {
+		this.mentalHealthDisorder = mentalHealthDisorder;
+	}
+
+	public YesNoUnknown getSubstanceUseDisorder() {
+		return substanceUseDisorder;
+	}
+
+	public void setSubstanceUseDisorder(YesNoUnknown substanceUseDisorder) {
+		this.substanceUseDisorder = substanceUseDisorder;
+	}
+
+	public String getSubstanceUseDisorderDetails() {
+		return substanceUseDisorderDetails;
+	}
+
+	public void setSubstanceUseDisorderDetails(String substanceUseDisorderDetails) {
+		this.substanceUseDisorderDetails = substanceUseDisorderDetails;
+	}
+
+	public YesNoUnknown getStiProphylaxis() {
+		return stiProphylaxis;
+	}
+
+	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
+		this.stiProphylaxis = stiProphylaxis;
+	}
+
+	public YesNoUnknown getHivPrep() {
+		return hivPrep;
+	}
+
+	public void setHivPrep(YesNoUnknown hivPrep) {
+		this.hivPrep = hivPrep;
+	}
+
+	public YesNoUnknown getTreatedForSyphilis() {
+		return treatedForSyphilis;
+	}
+
+	public void setTreatedForSyphilis(YesNoUnknown treatedForSyphilis) {
+		this.treatedForSyphilis = treatedForSyphilis;
+	}
+
+	public String getSyphilisDrugUsed() {
+		return syphilisDrugUsed;
+	}
+
+	public void setSyphilisDrugUsed(String syphilisDrugUsed) {
+		this.syphilisDrugUsed = syphilisDrugUsed;
+	}
+
+	public Integer getSyphilisNumberOfDoses() {
+		return syphilisNumberOfDoses;
+	}
+
+	public void setSyphilisNumberOfDoses(Integer syphilisNumberOfDoses) {
+		this.syphilisNumberOfDoses = syphilisNumberOfDoses;
+	}
+
+	public Date getSyphilisDateOfFirstDose() {
+		return syphilisDateOfFirstDose;
+	}
+
+	public void setSyphilisDateOfFirstDose(Date syphilisDateOfFirstDose) {
+		this.syphilisDateOfFirstDose = syphilisDateOfFirstDose;
+	}
+
+	public YesNoUnknown getSyphilisOrOtherStis() {
+		return syphilisOrOtherStis;
+	}
+
+	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
+		this.syphilisOrOtherStis = syphilisOrOtherStis;
 	}
 
 }
