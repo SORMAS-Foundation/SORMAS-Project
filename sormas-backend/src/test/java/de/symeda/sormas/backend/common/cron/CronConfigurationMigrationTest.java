@@ -59,45 +59,33 @@ public class CronConfigurationMigrationTest {
 		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
 		properties.put("hibernate.hbm2ddl.auto", "none");
 
-		EntityManagerFactory entityManagerFactory = null;
-		EntityManager entityManager = null;
-		try {
-			entityManagerFactory = Persistence.createEntityManagerFactory("beanTestPU", properties);
-			entityManager = entityManagerFactory.createEntityManager();
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("beanTestPU", properties);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-			@SuppressWarnings("unchecked")
-			List<Object[]> rows = entityManager
-				.createNativeQuery(
-					"SELECT v.config_key, v.config_value, v.value_pattern, c.name "
-						+ "FROM systemconfigurationvalue v JOIN systemconfigurationcategory c ON c.id = v.category_id "
-						+ "WHERE v.config_key LIKE 'CRON.%'")
-				.getResultList();
+		@SuppressWarnings("unchecked")
+		List<Object[]> rows = entityManager
+			.createNativeQuery(
+				"SELECT v.config_key, v.config_value, v.value_pattern, c.name "
+					+ "FROM systemconfigurationvalue v JOIN systemconfigurationcategory c ON c.id = v.category_id "
+					+ "WHERE v.config_key LIKE 'CRON.%'")
+			.getResultList();
 
-			Map<String, Object[]> rowsByKey = rows.stream().collect(Collectors.toMap(row -> (String) row[0], row -> row));
+		Map<String, Object[]> rowsByKey = rows.stream().collect(Collectors.toMap(row -> (String) row[0], row -> row));
 
-			assertEquals(CronJob.values().length, rowsByKey.size());
+		assertEquals(CronJob.values().length, rowsByKey.size());
 
-			for (CronJob job : CronJob.values()) {
-				Object[] row = rowsByKey.get(job.getConfigKey());
-				assertNotNull(row, job.getConfigKey());
-				assertEquals(job.getDefaultExpression(), row[1], job.getConfigKey());
-				assertEquals(CronExpressionValidator.VALUE_PATTERN, row[2], job.getConfigKey());
-				assertEquals("CRON", row[3], job.getConfigKey());
-			}
-
-			java.util.regex.Pattern stored = java.util.regex.Pattern.compile((String) rowsByKey.values().iterator().next()[2]);
-			assertFalse(stored.matcher("0 */70 * * * *").matches(), "stored pattern must reject an out of range increment");
-			assertFalse(stored.matcher("0 0 0 */2 * *").matches(), "stored pattern must reject an increment on day of month");
-			assertTrue(stored.matcher("0 15 1 * * *").matches());
-			assertTrue(stored.matcher("").matches());
-		} finally {
-			if (entityManager != null) {
-				entityManager.close();
-			}
-			if (entityManagerFactory != null) {
-				entityManagerFactory.close();
-			}
-			container.stop();
+		for (CronJob job : CronJob.values()) {
+			Object[] row = rowsByKey.get(job.getConfigKey());
+			assertNotNull(row, job.getConfigKey());
+			assertEquals(job.getDefaultExpression(), row[1], job.getConfigKey());
+			assertEquals(CronExpressionValidator.VALUE_PATTERN, row[2], job.getConfigKey());
+			assertEquals("CRON", row[3], job.getConfigKey());
 		}
+
+		java.util.regex.Pattern stored = java.util.regex.Pattern.compile((String) rowsByKey.values().iterator().next()[2]);
+		assertFalse(stored.matcher("0 */70 * * * *").matches(), "stored pattern must reject an out of range increment");
+		assertFalse(stored.matcher("0 0 0 */2 * *").matches(), "stored pattern must reject an increment on day of month");
+		assertTrue(stored.matcher("0 15 1 * * *").matches());
+		assertTrue(stored.matcher("").matches());
 	}
 }
