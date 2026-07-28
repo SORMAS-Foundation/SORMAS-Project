@@ -97,6 +97,7 @@ public enum Disease
 	SHIGELLOSIS(true, true, true, false, true, 14, false, false, false, true, 0, 7, true, 1, 7),
 	SALMONELLOSIS(true, true, true, false, true, 14, false, false, false, true, 1, 3, false, 0, 0),
 	SYPHILIS(true, true, true, false, false, 0, true, false, false, true, 10, 90, false, 0, 0),
+	YERSINIOSIS(true, true, true, false, true, 14, false, false, false, true, 1, 14, false, 0, 0),
 	OTHER(true, true, true, false, true, 21, false, false, false, false, 0, 0, false, 0, 0),
 	UNDEFINED(true, true, true, false, true, 0, false, false, false, false, 0, 0, false, 0, 0);
 
