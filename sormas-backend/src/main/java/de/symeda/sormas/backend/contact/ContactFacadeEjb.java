@@ -1684,6 +1684,9 @@ public class ContactFacadeEjb
 		target.setVaccinationDoseTwoDate(source.getVaccinationDoseTwoDate());
 		target.setVaccinationProposed(source.isVaccinationProposed());
 		target.setImmuneGlobulinProposed(source.isImmuneGlobulinProposed());
+		target.setPregnant(source.getPregnant());
+		target.setPostpartum(source.getPostpartum());
+		target.setTrimester(source.getTrimester());
 
 		return target;
 	}
@@ -2041,6 +2044,9 @@ public class ContactFacadeEjb
 		target.setVaccinationDoseTwoDate(source.getVaccinationDoseTwoDate());
 		target.setVaccinationProposed(source.isVaccinationProposed());
 		target.setImmuneGlobulinProposed(source.isImmuneGlobulinProposed());
+		target.setPregnant(source.getPregnant());
+		target.setPostpartum(source.getPostpartum());
+		target.setTrimester(source.getTrimester());
 		return target;
 	}
 

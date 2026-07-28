@@ -80,6 +80,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -117,6 +119,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
 	private static final String PROPHYLAXIS_LOC = "prophylaxisLoc";
+	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -162,6 +165,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS) +
 					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 					fluidRowLocs(ContactDto.HEALTH_CONDITIONS) +
+					loc(MEDICAL_INFORMATION_LOC) +
+					fluidRowLocs(ContactDto.PREGNANT, ContactDto.POSTPARTUM) + fluidRowLocs(ContactDto.TRIMESTER, "") +
 					fluidRow(fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 6, 0,ContactDto.VACCINATION_STATUS), oneOfTwoCol(ContactDto.VACCINATION_DOSE_ONE_DATE), oneOfTwoCol(ContactDto.VACCINATION_DOSE_TWO_DATE)) +
 					fluidRowLocs(ContactDto.VACCINATION_PROPOSED, ContactDto.IMMUNE_GLOBULIN_PROPOSED) +
 					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
@@ -174,7 +179,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
                     + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS) +
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
-					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);;
+					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
     //@formatter:on
 
 	private final ViewMode viewMode;
@@ -208,8 +213,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private DateField lastContactDate;
 	private DateField reportDate;
 	private Button toCaseButton;
+	private PersonDto person;
 
-	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized, boolean inJurisdiction) {
+	public ContactDataForm(Disease disease, PersonDto person, ViewMode viewMode, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
@@ -224,6 +230,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		this.diseaseHasFollowUp = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
 		this.isPseudonymized = isPseudonymized;
 		this.inJurisdiction = inJurisdiction;
+		this.person = person;
 		addFields();
 	}
 
@@ -255,6 +262,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		prophylaxisLabel.addStyleName(H3);
 		getContent().addComponent(prophylaxisLabel, PROPHYLAXIS_LOC);
 		prophylaxisLabel.setVisible(Disease.INVASIVE_MENINGOCOCCAL_INFECTION == disease);
+
+		Label medicalInfoLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
+		medicalInfoLabel.addStyleName(H3);
+		getContent().addComponent(medicalInfoLabel, MEDICAL_INFORMATION_LOC);
 
 		addField(ContactDto.CONTACT_CLASSIFICATION, NullableOptionGroup.class);
 		addField(ContactDto.CONTACT_STATUS, NullableOptionGroup.class);
@@ -570,6 +581,17 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.END_OF_QUARANTINE_REASON,
 			Collections.singletonList(EndOfQuarantineReason.OTHER),
 			true);
+		addFields(NullableOptionGroup.class, CaseDataDto.POSTPARTUM, ContactDto.PREGNANT);
+		Field<?> trimesterField = addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
+		boolean isMale = person.getSex() != null && Sex.MALE.equals(person.getSex());
+
+		setVisibleClear(!isMale, CaseDataDto.POSTPARTUM, ContactDto.PREGNANT);
+
+		if (!isMale) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
+		} else {
+			trimesterField.setVisible(false);
+		}
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
