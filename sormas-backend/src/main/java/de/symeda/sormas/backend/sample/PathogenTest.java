@@ -194,6 +194,8 @@ public class PathogenTest extends DeletableAdo {
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
+	private String sequenceId;
+	private Boolean seroConversion;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -837,7 +839,6 @@ public class PathogenTest extends DeletableAdo {
 		this.quantitativeUnit = quantitativeUnit;
 	}
 
-
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getQuantitativeBoolean() {
 		return quantitativeBoolean;
@@ -863,6 +864,23 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
 		this.westernBlotInterpretation = westernBlotInterpretation;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(String sequenceId) {
+		this.sequenceId = sequenceId;
+	}
+
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
 	}
 
 }

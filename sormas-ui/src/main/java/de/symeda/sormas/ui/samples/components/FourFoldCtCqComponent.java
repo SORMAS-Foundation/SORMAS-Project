@@ -20,8 +20,6 @@ package de.symeda.sormas.ui.samples.components;
 import com.vaadin.ui.CheckBox;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -47,6 +45,7 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 	private final CtCqValueComponent ctCqValueComponent;
 
 	private CheckBox fourFoldIncrease;
+	private CheckBox seroConversion;
 
 	private Disease currentDisease;
 	private PathogenTestType currentTestType;
@@ -70,11 +69,25 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 		fourFoldIncrease.setEnabled(false);
 		addComponent(fourFoldIncrease);
 
+		seroConversion = createCheckBox(PathogenTestDto.SERO_CONVERSION, PathogenTestDto.I18N_PREFIX);
+		CssStyles.style(seroConversion, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
+		addComponent(seroConversion);
+
+		addRow(
+			new float[] {
+				2.4f,
+				2.4f,
+				5 },
+			fourFoldIncrease,
+			seroConversion,
+			createSpacer());
+
 		addComponent(ctCqValueComponent);
 	}
 
 	private void bindFields() {
 		binder.forField(fourFoldIncrease).bind(PathogenTestDto::isFourFoldIncreaseAntibodyTiter, PathogenTestDto::setFourFoldIncreaseAntibodyTiter);
+		binder.forField(seroConversion).bind(PathogenTestDto::getSeroConversion, PathogenTestDto::setSeroConversion);
 	}
 
 	private void wireEvents() {
@@ -125,19 +138,20 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 		if (antibodyTest && positive) {
 			fourFoldIncrease.setVisible(true);
 			fourFoldIncrease.setEnabled(true);
+			seroConversion.setVisible(true);
+			seroConversion.setEnabled(true);
 		} else {
 			fourFoldIncrease.setVisible(false);
 			fourFoldIncrease.setEnabled(false);
 			fourFoldIncrease.clear();
+			seroConversion.setVisible(false);
+			seroConversion.setEnabled(false);
+			seroConversion.clear();
 		}
-		fourFoldIncrease.setCaption(
-			currentDisease == Disease.DENGUE
-				? I18nProperties.getCaption(Captions.PathogenTest_fourFoldIncreaseAntibodyTiter_DENGUE)
-				: I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER));
 	}
 
 	private void syncSelfVisibility() {
-		setVisible(fourFoldIncrease.isVisible() || ctCqValueComponent.isVisible());
+		setVisible(fourFoldIncrease.isVisible() || ctCqValueComponent.isVisible() || seroConversion.isVisible());
 	}
 
 	@Override
