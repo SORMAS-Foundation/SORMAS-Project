@@ -16972,4 +16972,12 @@ ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS trimester varchar(2
 
 INSERT INTO schema_version (version_number, comment) VALUES (653, 'Incorporated new disease Mumps to SORMAS');
 
+-- 14232 Mumps exposure changes
+ALTER TABLE epidata                 ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+UPDATE diseaseconfiguration         SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET' WHERE disease = 'MUMPS';
+
+ALTER TABLE epidata_history         ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+UPDATE diseaseconfiguration_history SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET' WHERE disease = 'MUMPS';
+
+INSERT INTO schema_version (version_number, comment) VALUES (654, 'Included Mumps exposure details');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

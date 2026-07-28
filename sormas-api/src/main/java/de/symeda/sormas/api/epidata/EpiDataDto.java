@@ -74,6 +74,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 	public static final String PLACE_OF_INFECTION = "placeOfInfection";
 	public static final String RESIDENCE_AT_ONSET = "residenceAtOnset";
+	public static final String CLUSTER_IDENTIFIER = "clusterIdentifier";
 	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
 	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
 	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
@@ -93,19 +94,22 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS })
 	private YesNoUnknown importedCase;
 
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.MUMPS })
 	private ClusterType clusterType;
 
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.MUMPS })
 	private boolean clusterRelated;
 
 	@HideForCountriesExcept(countries = {
@@ -113,6 +117,11 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.MEASLES })
 	private String clusterTypeText;
+
+	@Diseases({
+		Disease.MUMPS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String clusterIdentifier;
 
 	@Diseases({
 		Disease.AFP,
@@ -153,7 +162,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS })
 	private CountryReferenceDto country;
 
 	@Valid
@@ -451,6 +461,14 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
 		this.contactWithSexWorker = contactWithSexWorker;
+	}
+
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
 	}
 
 	private static void validateDateRange(Date from, Date to, String fromName, String toName) {
