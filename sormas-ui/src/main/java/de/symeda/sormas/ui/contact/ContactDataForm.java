@@ -585,7 +585,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Field<?> trimesterField = addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		boolean isMale = person.getSex() != null && Sex.MALE.equals(person.getSex());
 
-		setVisibleClear(!isMale, CaseDataDto.POSTPARTUM, ContactDto.PREGNANT);
+		setVisibleClear(!isMale, CaseDataDto.POSTPARTUM, ContactDto.PREGNANT, CaseDataDto.TRIMESTER);
 
 		if (!isMale) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
