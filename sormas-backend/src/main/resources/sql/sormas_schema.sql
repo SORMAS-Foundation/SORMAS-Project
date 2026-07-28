@@ -16959,4 +16959,22 @@ ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS contactwithsexworker varcha
 
 INSERT INTO schema_version (version_number, comment) VALUES (652, 'Syphilis - Epidata #14212');
 
+-- #13969 - Yersiniosis symptoms
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS pseudoappendicularsyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS pseudoappendicularsyndrome varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS necrotizingenterocolitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS necrotizingenterocolitis varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS reactivearthritis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS reactivearthritis varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS erythemanodosum varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS erythemanodosum varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS symptomenddate TIMESTAMP;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS symptomenddate TIMESTAMP;
+
+INSERT INTO schema_version (version_number, comment) VALUES (653, '#13969 - Yersiniosis specific symptoms');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
