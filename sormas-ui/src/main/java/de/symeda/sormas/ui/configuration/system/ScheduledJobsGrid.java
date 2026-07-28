@@ -43,6 +43,7 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 
 		super(CronJobStatusDto.class);
 		setSizeFull();
+		setSelectionMode(SelectionMode.NONE);
 		removeAllColumns();
 
 		addColumn(CronJobStatusDto::getJobName).setId("jobName").setCaption(I18nProperties.getCaption(Captions.cronJobName));

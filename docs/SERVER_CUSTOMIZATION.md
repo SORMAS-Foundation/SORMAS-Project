@@ -120,7 +120,7 @@ A value is six space-separated fields in the order `second minute hour day-of-mo
 day-of-week`. Note that this is **not** the five-field Unix cron format: the first field is
 seconds, and a five-field value is rejected. Every field accepts `*`, a number, a range (`1-5`),
 or a list (`1,13`). An increment (`*/10`, `1-5/2`) is additionally accepted, but only in the
-second, minute and hour fields; the day-of-month, month and day-of-week fields do not support
+second, minute and hour fields. The day-of-month, month and day-of-week fields do not support
 increments, matching what the underlying EJB timer service allows. Times are interpreted in the
 server's default timezone, unchanged from the previous behaviour.
 
@@ -140,7 +140,7 @@ Leaving a value **empty disables the job entirely**. Disabled jobs are listed wi
 the server log at every startup. Take care when disabling data-lifecycle jobs such as
 `CRON.DELETE_EXPIRED_ENTITIES` or `CRON.ARCHIVE_CASES`, as these may be required for compliance.
 
-Changes take effect as soon as they are saved; no restart is needed. Rescheduling only affects
+Changes take effect as soon as they are saved & no restart is needed. Rescheduling only affects
 future executions, so moving a job from 03:00 to 01:00 at 02:00 on a given day means it will not
 run again until the following day.
 
