@@ -17005,12 +17005,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (655, 'Added  Mumps 
 ALTER TABLE pathogentest            ADD COLUMN IF NOT EXISTS sequenceid varchar(255);
 ALTER TABLE pathogentest            ADD COLUMN IF NOT EXISTS seroconversion boolean;
 UPDATE pathogentest                 SET seroconversion = false WHERE seroconversion IS NULL;
-ALTER TABLE pathogentest            ALTER COLUMN seroconversion SET NOT NULL;
 
 ALTER TABLE pathogentest_history    ADD COLUMN IF NOT EXISTS sequenceid varchar(255);
 ALTER TABLE pathogentest_history    ADD COLUMN IF NOT EXISTS seroconversion boolean;
 UPDATE pathogentest_history         SET seroconversion = false WHERE seroconversion IS NULL;
-ALTER TABLE pathogentest_history    ALTER COLUMN seroconversion SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (656, 'Included Mumps sample and pathogen test changes');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

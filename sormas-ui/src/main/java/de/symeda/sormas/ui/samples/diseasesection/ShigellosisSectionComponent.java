@@ -162,7 +162,7 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 		if (!isSerotype) {
 			setVisibleClear(false, serotypeTF);
 		}
-		if (!isSerotype && !showDrugSusceptibilityForm) {
+		if (!isSerotype) {
 			setVisibleClear(false, serotypingMethodCBF, serotypingMethodTF);
 		}
 

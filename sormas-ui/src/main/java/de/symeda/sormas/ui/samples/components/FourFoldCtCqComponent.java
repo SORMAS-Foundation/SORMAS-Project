@@ -73,15 +73,7 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 		CssStyles.style(seroConversion, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
 		seroConversion.setVisible(false);
 		seroConversion.setEnabled(false);
-		addRow(
-			new float[] {
-				2.4f,
-				2.4f,
-				5 },
-			fourFoldIncrease,
-			seroConversion,
-			createSpacer());
-		addComponent(ctCqValueComponent);
+		addComponents(ctCqValueComponent, fourFoldIncrease, seroConversion);
 	}
 
 	private void bindFields() {
