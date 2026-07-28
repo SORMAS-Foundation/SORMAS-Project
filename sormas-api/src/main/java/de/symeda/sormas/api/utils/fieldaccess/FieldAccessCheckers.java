@@ -146,4 +146,18 @@ public class FieldAccessCheckers<T> {
 
 		return null;
 	}
+
+	/**
+	 * Checks if the enum value is deprecated
+	 * 
+	 * @param enumVal
+	 * @return
+	 */
+	public static boolean isDeprecated(Enum<?> enumVal) {
+		try {
+			return enumVal.getDeclaringClass().getField(enumVal.name()).isAnnotationPresent(Deprecated.class);
+		} catch (NoSuchFieldException e) {
+			return false;
+		}
+	}
 }
