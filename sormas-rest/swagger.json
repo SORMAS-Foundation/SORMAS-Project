@@ -17610,6 +17610,10 @@
           "clusterTypeText" : {
             "type" : "string"
           },
+          "contactWithSexWorker" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "contactWithSourceCaseKnown" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -17666,6 +17670,12 @@
             "maxLength" : 512,
             "minLength" : 0
           },
+          "motherCitizenship" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
+          "motherCountryOfBirth" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
           "otherDetails" : {
             "type" : "string"
           },
@@ -17674,6 +17684,10 @@
             "maxLength" : 255,
             "minLength" : 0
           },
+          "probableRouteOfTransmission" : {
+            "type" : "string",
+            "enum" : [ "HETEROSEXUAL_CONTACT", "MSM_HOMO_OR_BISEXUAL_MALE", "MOTHER_TO_CHILD_TRANSMISSION", "OTHER", "UNKNOWN" ]
+          },
           "pseudonymized" : {
             "type" : "boolean"
           },
@@ -17681,6 +17695,14 @@
             "type" : "string",
             "maxLength" : 255,
             "minLength" : 0
+          },
+          "sexWorker" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "typeOfClinicalService" : {
+            "type" : "string",
+            "enum" : [ "INFECTIOUS_DISEASE_CLINIC", "GENERAL_PRACTITIONER", "DERMATOLOGY_VENEREOLOGY_CLINIC", "GYNAECOLOGY_CLINIC", "DEDICATED_STI_CLINIC", "UROLOGY", "ANTENATAL_CARE", "FAMILY_PLANNING_CLINIC", "HOSPITAL_EMERGENCY_DEPARTMENT", "YOUTH_CLINIC", "COMBINED_SERVICE", "OTHER_PRIMARY_CARE", "OTHER" ]
           },
           "uuid" : {
             "type" : "string",
