@@ -21,8 +21,11 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
+import de.symeda.sormas.api.systemconfiguration.CronJobFacade;
 import de.symeda.sormas.api.systemconfiguration.CronJobStatusDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -58,10 +61,6 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 
 	private void openScheduleEditor(CronJobStatusDto status) {
 
-		if (status.getConfigValueUuid() == null) {
-			return;
-		}
-
 		CronExpressionField field = new CronExpressionField();
 		field.setValue(status.getExpression());
 
@@ -78,11 +77,30 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 				if (!field.isExpressionValid()) {
 					return false;
 				}
-				SystemConfigurationValueDto value = FacadeProvider.getSystemConfigurationValueFacade().getByUuid(status.getConfigValueUuid());
-				value.setValue(field.getValue());
-				FacadeProvider.getSystemConfigurationValueFacade().save(value);
+				saveScheduleExpression(status, field.getValue());
 				grid.reload();
 				return true;
 			});
+	}
+
+	private void saveScheduleExpression(CronJobStatusDto status, String expression) {
+
+		SystemConfigurationValueFacade facade = FacadeProvider.getSystemConfigurationValueFacade();
+		SystemConfigurationValueDto value =
+			status.getConfigValueUuid() != null ? facade.getByUuid(status.getConfigValueUuid()) : buildConfigurationValue(status);
+		value.setValue(expression);
+		facade.save(value);
+	}
+
+	private SystemConfigurationValueDto buildConfigurationValue(CronJobStatusDto status) {
+
+		SystemConfigurationValueDto value = SystemConfigurationValueDto.build();
+		value.setKey(status.getConfigKey());
+		value.setCategory(
+			FacadeProvider.getSystemConfigurationCategoryFacade().getCategoryReferenceDtoByName(CronJobFacade.CRON_CONFIGURATION_CATEGORY));
+		value.setOptional(true);
+		value.setEncrypt(false);
+		value.setPattern(CronExpressionValidator.VALUE_PATTERN);
+		return value;
 	}
 }

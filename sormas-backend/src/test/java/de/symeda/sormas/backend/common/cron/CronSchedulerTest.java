@@ -243,4 +243,33 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		assertEquals(liveNextTimeout, nextFireTimes.get(CronJob.ARCHIVE_EVENTS));
 		assertFalse(nextFireTimes.containsKey(CronJob.ARCHIVE_CASES));
 	}
+
+	@Test
+	public void aFailedBulkCancellationAtStartupSchedulesNothing() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		org.mockito.Mockito.when(timerService.getTimers()).thenThrow(new IllegalStateException("timer store unavailable"));
+
+		assertDoesNotThrow(() -> getBean(CronScheduler.class).scheduleAllJobs());
+
+		verify(timerService, never()).createCalendarTimer(any(), any());
+
+		reset(timerService);
+	}
+
+	@Test
+	public void aFailedRescheduleKeepsTheExistingTimer() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		reset(timerService);
+
+		javax.ejb.Timer existingTimer = org.mockito.Mockito.mock(javax.ejb.Timer.class);
+		org.mockito.Mockito.when(existingTimer.getInfo()).thenReturn(CronJob.ARCHIVE_CASES);
+		org.mockito.Mockito.when(timerService.getTimers()).thenReturn(Arrays.asList(existingTimer));
+		org.mockito.Mockito.doThrow(new IllegalStateException("cannot create timer")).when(timerService).createCalendarTimer(any(), any());
+
+		getBean(CronScheduler.class).reschedule(CronJob.ARCHIVE_CASES);
+
+		verify(existingTimer, never()).cancel();
+	}
 }

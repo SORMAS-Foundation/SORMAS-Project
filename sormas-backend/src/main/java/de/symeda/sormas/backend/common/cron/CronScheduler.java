@@ -15,8 +15,10 @@
 
 package de.symeda.sormas.backend.common.cron;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -75,7 +77,8 @@ public class CronScheduler {
 			try {
 				cancelAllTimers();
 			} catch (Exception e) {
-				logger.error("Failed to cancel existing timers", e);
+				logger.error("Could not cancel existing scheduled job timers, skipping scheduling to avoid duplicate timers", e);
+				return;
 			}
 			for (CronJob job : CronJob.values()) {
 				try {
@@ -141,12 +144,14 @@ public class CronScheduler {
 		}
 
 		synchronized (this) {
-			cancelTimer(job);
+			List<Timer> previousTimers = timersOf(job);
 			try {
 				scheduleJob(job, configured == null ? job.getDefaultExpression() : configured);
 			} catch (Exception e) {
-				logger.error("Failed to schedule job {} with configuration key {}", job, job.getConfigKey(), e);
+				logger.error("Failed to schedule job {} with configuration key {}. The current schedule is kept", job, job.getConfigKey(), e);
+				return;
 			}
+			cancelTimers(previousTimers);
 		}
 	}
 
@@ -200,11 +205,19 @@ public class CronScheduler {
 		}
 	}
 
-	private void cancelTimer(CronJob job) {
+	private List<Timer> timersOf(CronJob job) {
+		List<Timer> matching = new ArrayList<>();
 		for (Timer timer : timerService.getTimers()) {
 			if (job.equals(timer.getInfo())) {
-				timer.cancel();
+				matching.add(timer);
 			}
+		}
+		return matching;
+	}
+
+	private void cancelTimers(List<Timer> timers) {
+		for (Timer timer : timers) {
+			timer.cancel();
 		}
 	}
 }

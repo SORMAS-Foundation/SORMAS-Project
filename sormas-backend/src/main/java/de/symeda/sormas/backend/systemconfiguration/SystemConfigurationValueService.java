@@ -110,7 +110,9 @@ public class SystemConfigurationValueService extends AdoServiceWithUserFilterAnd
         filter = CriteriaBuilderHelper.and(
             cb,
             filter,
-            cb.notEqual(joins.getCategory().get(SystemConfigurationCategory.NAME_FIELD_NAME), CronJobFacade.CRON_CONFIGURATION_CATEGORY));
+            cb.or(
+                cb.isNull(joins.getCategory().get(SystemConfigurationCategory.NAME_FIELD_NAME)),
+                cb.notEqual(joins.getCategory().get(SystemConfigurationCategory.NAME_FIELD_NAME), CronJobFacade.CRON_CONFIGURATION_CATEGORY)));
 
         return filter;
     }
