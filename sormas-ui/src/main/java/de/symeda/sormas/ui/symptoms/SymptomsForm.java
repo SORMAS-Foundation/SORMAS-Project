@@ -216,7 +216,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRow(fluidColumn(8,4, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
                     loc(CLINICAL_PRESENTATION_HEADING)+
 					fluidRow(fluidColumn(6, 0, locsCss(VSPACE_3, ASYMPTOMATIC)), fluidColumn(6, 0, locsCss(VSPACE_3, UNEXPLAINED_BLEEDING))) +
-					                    fluidRowLocs(DATE_OF_ONSET_KNOWN, TUBERCULOSIS_ONSET_DATE_LOC, "") +
+					fluidRowLocs(DATE_OF_ONSET_KNOWN, TUBERCULOSIS_ONSET_DATE_LOC, "") +
                     fluidRowLocs(CLINICAL_PRESENTATION_STATUS, TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC) +
                     fluidRow(
                             fluidColumn(6, 0,
@@ -1290,13 +1290,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Change captions for giardiasis and Cryptosporidiosis
 		if (isParasiticInfectiousDiseases) {
-			parentTimeOffWorkField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool));
-			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDaysDuration));
 			getField(OTHER_COMPLICATIONS).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplications_CryptoGiardia));
 			getField(OTHER_COMPLICATIONS_TEXT).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplicationsText_CryptoGiardia));
 		}
 
-		if (isYersiniosis) {
+		if (isParasiticInfectiousDiseases || isYersiniosis) {
 			parentTimeOffWorkField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool));
 			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDaysDuration));
 		}
