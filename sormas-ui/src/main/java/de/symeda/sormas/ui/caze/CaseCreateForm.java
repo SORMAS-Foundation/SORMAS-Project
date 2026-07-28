@@ -41,6 +41,7 @@ import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -127,6 +128,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
         + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
 		+ fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION)
+		+ fluidRowLocs(CaseDataDto.REPORTING_EXCLUDED)
         + fluidRowLocs(CaseDataDto.CASE_REFERENCE_NUMBER, CaseDataDto.EXTERNAL_ID)
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
@@ -315,7 +317,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		cbPointOfEntry.setImmediate(true);
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
-
+		Field<?> reportingExcludedField = addField(CaseDataDto.REPORTING_EXCLUDED, NullableOptionGroup.class);
+		reportingExcludedField.setVisible(false);
 		TextField tfDepartment = addField(CaseDataDto.DEPARTMENT, TextField.class);
 		tfDepartment.setVisible(false);
 		if (convertedTravelEntry != null) {
@@ -592,6 +595,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityOrHome.unselect(TypeOfPlace.HOME);
 			classificationField.setValue(Sets.newHashSet(getValue().getCaseClassification()));
 			classificationField.select(getValue().getCaseClassification());
+		}
+		// For Mumps, reportingExcluded should be visible.
+		Field<?> reportingExcludedField = getField(CaseDataDto.REPORTING_EXCLUDED);
+		if (newDisease == Disease.MUMPS) {
+			reportingExcludedField.setVisible(true);
+		} else {
+			reportingExcludedField.setVisible(false);
 		}
 	}
 

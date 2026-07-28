@@ -603,13 +603,22 @@
       fill: #a04000;
     }
   }
-   .background-disease-shigellosis {
-    background-color: #bd1307;
-    fill: #bd1307;
+  .background-disease-shigellosis {
+    background-color: #DAAA69;
+    fill: #DAAA69;
 
     &.background-darker {
-      background-color: #DAAA69;
-      fill: #DAAA69;
+      background-color: #bd1307;
+      fill: #bd1307;
+    }
+  }
+  .background-disease-mumps {
+    background-color: #697eda;
+    fill: #697eda;
+
+    &.background-darker {
+      background-color: #07098e;
+      fill: #07098e;
     }
   }
 }

@@ -546,6 +546,8 @@ public final class CssStyles {
 			return "background-disease-salmonellosis";
 		case SHIGELLOSIS:
 			return "background-disease-shigellosis";
+		case MUMPS:
+			return "background-disease-mumps";
 		case UNDEFINED:
 		default:
 			return "background-disease-undefined";

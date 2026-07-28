@@ -249,6 +249,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String TREATMENT_STARTED = "treatmentStarted";
 	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
 	public static final String TREATMENT_START_DATE = "treatmentStartDate";
+	// Mumps changes
+	public static final String REPORTING_EXCLUDED = "reportingExcluded";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -721,6 +723,10 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.TUBERCULOSIS })
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
+
+	@Diseases(value = {
+		Disease.MUMPS })
+	private YesNoUnknown reportingExcluded;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -2004,6 +2010,14 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setTreatmentStartDate(Date treatmentStartDate) {
 		this.treatmentStartDate = treatmentStartDate;
+	}
+
+	public YesNoUnknown getReportingExcluded() {
+		return reportingExcluded;
+	}
+
+	public void setReportingExcluded(YesNoUnknown reportingExcluded) {
+		this.reportingExcluded = reportingExcluded;
 	}
 
 	@JsonIgnore
