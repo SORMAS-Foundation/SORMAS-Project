@@ -1297,6 +1297,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		if (isYersiniosis) {
+			parentTimeOffWorkField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool));
 			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDaysDuration));
 		}
 
@@ -1306,7 +1307,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		getField(TEMPERATURE_SOURCE).setVisible(!hideTemperature);
 
 		DateComparisonValidator.addStartEndValidators(onsetDateField, getField(OFFSET_DATE));
-		DateComparisonValidator.addStartEndValidators(getField(OFFSET_DATE), getField(SYMPTOM_END_DATE));
+		DateComparisonValidator.addStartEndValidators(onsetDateField, getField(SYMPTOM_END_DATE));
 
 		// Navigate to hospitalization view when overnight stay required is set to yes
 		overNightStayRequiredField.addValueChangeListener(e -> {

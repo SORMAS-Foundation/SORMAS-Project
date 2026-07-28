@@ -1519,7 +1519,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		SALMONELLOSIS,
 		SYPHILIS,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	@HideForCountries
 	@Outbreaks
 	private Date onsetDate;
@@ -1587,7 +1588,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		SALMONELLOSIS,
 		SYPHILIS,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String onsetSymptom;
@@ -1987,6 +1989,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		SALMONELLOSIS,
 		SHIGELLOSIS,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
@@ -2903,7 +2906,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		DENGUE,
 		SYPHILIS,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState otherClinicalPresentation;
 
@@ -2916,7 +2920,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		DENGUE,
 		SYPHILIS,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private String otherClinicalPresentationText;
 
