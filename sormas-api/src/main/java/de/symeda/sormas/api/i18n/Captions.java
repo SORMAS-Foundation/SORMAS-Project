@@ -1644,6 +1644,7 @@ public interface Captions {
 	String EpiData_airportWorker = "EpiData.airportWorker";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
 	String EpiData_caseImportedStatus = "EpiData.caseImportedStatus";
+	String EpiData_clusterIdentifier = "EpiData.clusterIdentifier";
 	String EpiData_clusterRelated = "EpiData.clusterRelated";
 	String EpiData_clusterType = "EpiData.clusterType";
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
