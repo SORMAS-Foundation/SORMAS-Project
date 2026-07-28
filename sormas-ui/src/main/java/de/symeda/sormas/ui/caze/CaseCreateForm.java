@@ -596,13 +596,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			classificationField.setValue(Sets.newHashSet(getValue().getCaseClassification()));
 			classificationField.select(getValue().getCaseClassification());
 		}
-		// For Mumps, reportingExcluded should be visible.
-		Field<?> reportingExcludedField = getField(CaseDataDto.REPORTING_EXCLUDED);
-		if (newDisease == Disease.MUMPS) {
-			reportingExcludedField.setVisible(true);
-		} else {
-			reportingExcludedField.setVisible(false);
-		}
+		// Only for Mumps, reportingExcluded should be visible, for other diseases, it's not required.
+		setVisibleClear(newDisease == Disease.MUMPS, CaseDataDto.REPORTING_EXCLUDED);
 	}
 
 	private void setNoneFacility() {
