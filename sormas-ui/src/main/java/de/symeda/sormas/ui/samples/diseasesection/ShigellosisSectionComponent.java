@@ -68,6 +68,8 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 		// Shigellosis species
 		specie = createComboBox(PathogenTestDto.SPECIE);
 		specie.setItemCaptionGenerator(PathogenSpecie::toString);
+		// loading eagerly - to avoids paging desync issue #14202
+		specie.setPageLength(0);
 		specie.setVisible(false);
 		updateComboBoxByDiseaseAndTestType(specie, PathogenSpecie.class, disease, currentTestType);
 
