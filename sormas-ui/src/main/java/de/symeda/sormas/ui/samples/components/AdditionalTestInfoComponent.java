@@ -24,6 +24,7 @@ import com.vaadin.ui.RadioButtonGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.ui.samples.events.DiseaseChangedEvent;
 import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
 import de.symeda.sormas.ui.utils.FormComponent;
 import de.symeda.sormas.ui.utils.FormEventBus;
@@ -72,6 +73,11 @@ public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> 
 			if (currentTestType != null) {
 				updateReferenceLaboratory(testType, currentDisease);
 			}
+		}));
+
+		track(eventBus.on(DiseaseChangedEvent.class, event -> {
+			currentDisease = event.getDisease();
+			updateReferenceLaboratory(currentTestType, currentDisease);
 		}));
 	}
 

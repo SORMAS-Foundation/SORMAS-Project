@@ -2853,7 +2853,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState shivering;
 
-	// asymptomatic should be available for all diseases.
+	@Diseases(value = {
+		TUBERCULOSIS }, hide = true)
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })

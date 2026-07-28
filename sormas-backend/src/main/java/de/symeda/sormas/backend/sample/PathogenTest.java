@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.util.Date;
 
@@ -866,7 +867,7 @@ public class PathogenTest extends DeletableAdo {
 		this.westernBlotInterpretation = westernBlotInterpretation;
 	}
 
-	@Column(columnDefinition = "text")
+	@Column(length = CHARACTER_LIMIT_SMALL)
 	public String getSequenceId() {
 		return sequenceId;
 	}
@@ -875,6 +876,7 @@ public class PathogenTest extends DeletableAdo {
 		this.sequenceId = sequenceId;
 	}
 
+	@Column(name = "seroconversion", nullable = true)
 	public Boolean getSeroConversion() {
 		return seroConversion;
 	}

@@ -71,8 +71,8 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 
 		seroConversion = createCheckBox(PathogenTestDto.SERO_CONVERSION, PathogenTestDto.I18N_PREFIX);
 		CssStyles.style(seroConversion, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
-		addComponent(seroConversion);
-
+		seroConversion.setVisible(false);
+		seroConversion.setEnabled(false);
 		addRow(
 			new float[] {
 				2.4f,
@@ -81,7 +81,6 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 			fourFoldIncrease,
 			seroConversion,
 			createSpacer());
-
 		addComponent(ctCqValueComponent);
 	}
 
