@@ -2857,6 +2857,7 @@ paths:
                   - SHIGELLOSIS
                   - SALMONELLOSIS
                   - SYPHILIS
+                  - YERSINIOSIS
                   - OTHER
                   - UNDEFINED
           description: default response
@@ -4538,6 +4539,7 @@ paths:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
       requestBody:
@@ -4872,6 +4874,7 @@ paths:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
       responses:
@@ -8873,6 +8876,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         districtId:
@@ -9004,6 +9008,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -9109,6 +9114,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -9524,6 +9530,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -9988,6 +9995,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -10662,6 +10670,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -11009,6 +11018,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         firstName:
@@ -11154,6 +11164,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11433,6 +11444,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12042,6 +12054,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -12307,6 +12320,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -12667,6 +12681,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13127,6 +13142,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13417,6 +13433,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14241,6 +14258,7 @@ components:
             - SHIGELLOSIS
             - SALMONELLOSIS
             - SYPHILIS
+            - YERSINIOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -14501,6 +14519,7 @@ components:
             - SHIGELLOSIS
             - SALMONELLOSIS
             - SYPHILIS
+            - YERSINIOSIS
             - OTHER
             - UNDEFINED
     DashboardCaseMeasureDto:
@@ -14798,6 +14817,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -14896,6 +14916,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -15079,6 +15100,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         eventCount:
@@ -15178,6 +15200,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         notACaseCriteria:
@@ -15289,6 +15312,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         eventParticipantFollowUpDuration:
@@ -16605,6 +16629,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         eventDiseaseDetails:
@@ -16778,6 +16803,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -17068,6 +17094,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17571,6 +17598,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17790,6 +17818,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         event:
@@ -18753,6 +18782,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -18910,6 +18940,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -19004,6 +19035,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19408,6 +19440,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19623,6 +19656,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         personUuid:
@@ -20092,6 +20126,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -20257,6 +20292,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -20424,6 +20460,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         districtName:
@@ -20915,6 +20952,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -21151,6 +21189,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -21434,6 +21473,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -21932,6 +21972,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         healthFacilityLat:
@@ -22241,6 +22282,7 @@ components:
             - SHIGELLOSIS
             - SALMONELLOSIS
             - SYPHILIS
+            - YERSINIOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -22334,6 +22376,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -23407,6 +23450,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         testedDiseaseDetails:
@@ -23728,6 +23772,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -24803,6 +24848,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -25283,6 +25329,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25844,6 +25891,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26065,6 +26113,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26206,6 +26255,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26567,6 +26617,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -28675,6 +28726,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -29482,6 +29534,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -29969,6 +30022,7 @@ components:
             - SHIGELLOSIS
             - SALMONELLOSIS
             - SYPHILIS
+            - YERSINIOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -30638,6 +30692,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -30765,6 +30820,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         id:
@@ -30945,6 +31001,7 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
           - OTHER
           - UNDEFINED
         numberOfCases:

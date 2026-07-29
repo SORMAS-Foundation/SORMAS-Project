@@ -175,12 +175,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MUCOCUTANEOUS_LESION));
 
 	private static final Map<SyphilisStage, List<String>> SYPHILIS_STAGE_SYMPTOMS_DICTIONARY = Map.of(
-			SyphilisStage.PRIMARY_SYPHILIS,
-			List.of(CHANCRE),
-			SyphilisStage.SECONDARY_SYPHILIS,
-			List.of(MACULOPAPULAR_RASH, CONDYLOMA_VENEREUM, MUCOUS_PATCHES, GENERALIZED_LYMPHADENOPATHY, PATCHY_ALOPECIA),
-			SyphilisStage.NEUROLOGICAL_SYPHILIS,
-			List.of(NEUROLOGICAL_MANIFESTATIONS));
+		SyphilisStage.PRIMARY_SYPHILIS,
+		List.of(CHANCRE),
+		SyphilisStage.SECONDARY_SYPHILIS,
+		List.of(MACULOPAPULAR_RASH, CONDYLOMA_VENEREUM, MUCOUS_PATCHES, GENERALIZED_LYMPHADENOPATHY, PATCHY_ALOPECIA),
+		SyphilisStage.NEUROLOGICAL_SYPHILIS,
+		List.of(NEUROLOGICAL_MANIFESTATIONS));
 
 	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections
 		.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, OTHER_NEUROLOGICAL_SYMPTOMS));
@@ -198,6 +198,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	final boolean isParasiticInfectiousDiseases;
 	final boolean isFoodborneGastrointestinal;
 	final boolean isSyphilis;
+	final boolean isYersiniosis;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -215,7 +216,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRow(fluidColumn(8,4, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
                     loc(CLINICAL_PRESENTATION_HEADING)+
 					fluidRow(fluidColumn(6, 0, locsCss(VSPACE_3, ASYMPTOMATIC)), fluidColumn(6, 0, locsCss(VSPACE_3, UNEXPLAINED_BLEEDING))) +
-					                    fluidRowLocs(DATE_OF_ONSET_KNOWN, TUBERCULOSIS_ONSET_DATE_LOC, "") +
+					fluidRowLocs(DATE_OF_ONSET_KNOWN, TUBERCULOSIS_ONSET_DATE_LOC, "") +
                     fluidRowLocs(CLINICAL_PRESENTATION_STATUS, TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC) +
                     fluidRow(
                             fluidColumn(6, 0,
@@ -240,8 +241,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRowLocsCss(VSPACE_3, SYMPTOM_CURRENT_STATUS, DURATION_OF_SYMPTOMS) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
-					fluidRowLocsCss(VSPACE_3, OFFSET_DATE,"") +
-					fluidRowLocsCss(VSPACE_3, CLINICAL_MANIFESTATION,CLINICAL_MANIFESTATION_TEXT) ;
+					fluidRowLocsCss(VSPACE_3, OFFSET_DATE, SYMPTOM_END_DATE) +
+					fluidRowLocsCss(VSPACE_3, CLINICAL_MANIFESTATION, CLINICAL_MANIFESTATION_TEXT);
 	//@formatter:on
 
 	private static String createSymptomGroupLayout(SymptomGroup symptomGroup, String loc) {
@@ -320,7 +321,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 		isLuxDengue = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.DENGUE;
 		isParasiticInfectiousDiseases = ImmutableList.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease);
-		isFoodborneGastrointestinal = disease == Disease.SALMONELLOSIS;
+		isYersiniosis = disease == Disease.YERSINIOSIS;
+		isFoodborneGastrointestinal = disease == Disease.SALMONELLOSIS || isYersiniosis;
 		isSyphilis = disease == Disease.SYPHILIS;
 
 		addFields();
@@ -614,6 +616,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			METABOLIC_ACIDOSIS,
 			DISSEMINATED_INTRA_VASCULAR_COAGULATION,
 			OFFSET_DATE,
+			SYMPTOM_END_DATE,
 			CLINICAL_MANIFESTATION_TEXT,
 			CEREBRAL_MALARIA,
 			SCANT_HEMORRHAGE,
@@ -646,7 +649,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			HEPATOSPLENOMEGALY,
 			LOW_GRADE_FEVER,
 			MUCOCUTANEOUS_LESION,
-			MACULOPAPULAR_RASH);
+			MACULOPAPULAR_RASH,
+			PSEUDO_APPENDICULAR_SYNDROME,
+			NECROTIZING_ENTEROCOLITIS,
+			REACTIVE_ARTHRITIS,
+			ERYTHEMA_NODOSUM);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -1024,7 +1031,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			HEPATOSPLENOMEGALY,
 			LOW_GRADE_FEVER,
 			MUCOCUTANEOUS_LESION,
-			MACULOPAPULAR_RASH);
+			MACULOPAPULAR_RASH,
+			PSEUDO_APPENDICULAR_SYNDROME,
+			NECROTIZING_ENTEROCOLITIS,
+			REACTIVE_ARTHRITIS,
+			ERYTHEMA_NODOSUM);
 
 		// Set visibilities
 
@@ -1279,10 +1290,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Change captions for giardiasis and Cryptosporidiosis
 		if (isParasiticInfectiousDiseases) {
-			parentTimeOffWorkField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool));
-			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDays_giardiasis));
 			getField(OTHER_COMPLICATIONS).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplications_CryptoGiardia));
 			getField(OTHER_COMPLICATIONS_TEXT).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplicationsText_CryptoGiardia));
+		}
+
+		if (isParasiticInfectiousDiseases || isYersiniosis) {
+			parentTimeOffWorkField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool));
+			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDaysDuration));
 		}
 
 		// temperature and its source hide for LUX's Dengue, Tuberculosis (#14029), and Syphilis
@@ -1291,6 +1305,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		getField(TEMPERATURE_SOURCE).setVisible(!hideTemperature);
 
 		DateComparisonValidator.addStartEndValidators(onsetDateField, getField(OFFSET_DATE));
+		DateComparisonValidator.addStartEndValidators(onsetDateField, getField(SYMPTOM_END_DATE));
 
 		// Navigate to hospitalization view when overnight stay required is set to yes
 		overNightStayRequiredField.addValueChangeListener(e -> {
