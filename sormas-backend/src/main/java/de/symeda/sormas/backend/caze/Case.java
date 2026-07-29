@@ -135,7 +135,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String RABIES_TYPE = "rabiesType";
 	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
-	public static final String YERSINIOSIS_SPECIES = "yersiniosisSpecies";
+	public static final String DISEASE_SPECIES = "diseaseSpecies";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
@@ -606,8 +606,8 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		return diseaseSpecies;
 	}
 
-	public void setDiseaseSpecies(PathogenSpecie yersiniosisSpecies) {
-		this.diseaseSpecies = yersiniosisSpecies;
+	public void setDiseaseSpecies(PathogenSpecie diseaseSpecies) {
+		this.diseaseSpecies = diseaseSpecies;
 	}
 
 	@Enumerated(EnumType.STRING)
