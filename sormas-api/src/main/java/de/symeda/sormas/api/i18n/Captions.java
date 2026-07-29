@@ -690,6 +690,7 @@ public interface Captions {
 	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
 	String CaseData_differentPointOfEntryJurisdiction = "CaseData.differentPointOfEntryJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_diseaseSpecies = "CaseData.diseaseSpecies";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
@@ -823,7 +824,6 @@ public interface Captions {
 	String CaseData_vaccinationStatusUpdate = "CaseData.vaccinationStatusUpdate";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
-	String CaseData_yersiniosisSpecies = "CaseData.yersiniosisSpecies";
 	String caseDataEnterHomeAddressNow = "caseDataEnterHomeAddressNow";
 	String caseDefaultView = "caseDefaultView";
 	String caseDeletedCases = "caseDeletedCases";

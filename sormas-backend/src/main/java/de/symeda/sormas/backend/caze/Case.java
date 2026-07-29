@@ -67,7 +67,6 @@ import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
-import de.symeda.sormas.api.caze.YersiniosisSpecies;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -75,6 +74,7 @@ import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -283,7 +283,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private DengueFeverType dengueFeverType;
 	private RabiesType rabiesType;
 	private SyphilisPresentation syphilisPresentation;
-	private YersiniosisSpecies yersiniosisSpecies;
+	private PathogenSpecie diseaseSpecies;
 
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
@@ -602,12 +602,12 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YersiniosisSpecies getYersiniosisSpecies() {
-		return yersiniosisSpecies;
+	public PathogenSpecie getDiseaseSpecies() {
+		return diseaseSpecies;
 	}
 
-	public void setYersiniosisSpecies(YersiniosisSpecies yersiniosisSpecies) {
-		this.yersiniosisSpecies = yersiniosisSpecies;
+	public void setDiseaseSpecies(PathogenSpecie yersiniosisSpecies) {
+		this.diseaseSpecies = yersiniosisSpecies;
 	}
 
 	@Enumerated(EnumType.STRING)
