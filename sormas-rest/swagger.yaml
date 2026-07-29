@@ -27317,6 +27317,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        erythemaNodosum:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         excessSalivation:
           type: string
           enum:
@@ -27808,6 +27814,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        necrotizingEnterocolitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         nephroticSyndrome:
           type: string
           enum:
@@ -28046,6 +28058,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        pseudoAppendicularSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         pseudonymized:
           type: boolean
         pseudoparalysis:
@@ -28067,6 +28085,12 @@ components:
           - "NO"
           - UNKNOWN
         rapidBreathing:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        reactiveArthritis:
           type: string
           enum:
           - "YES"
@@ -28234,6 +28258,9 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        symptomEndDate:
+          type: string
+          format: date-time
         symptomatic:
           type: boolean
         symptomsComments:

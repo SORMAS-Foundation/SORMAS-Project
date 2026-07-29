@@ -25853,6 +25853,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "erythemaNodosum" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "excessSalivation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26188,6 +26192,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "necrotizingEnterocolitis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "nephroticSyndrome" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26369,6 +26377,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "pseudoAppendicularSyndrome" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "pseudonymized" : {
             "type" : "boolean"
           },
@@ -26385,6 +26397,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "rapidBreathing" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "reactiveArthritis" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26499,6 +26515,10 @@
           "symptomCurrentStatus" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "symptomEndDate" : {
+            "type" : "string",
+            "format" : "date-time"
           },
           "symptomatic" : {
             "type" : "boolean"
