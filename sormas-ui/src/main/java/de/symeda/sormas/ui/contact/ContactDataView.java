@@ -107,7 +107,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		Disease.GIARDIASIS, 
 		Disease.CRYPTOSPORIDIOSIS, 
 		Disease.SALMONELLOSIS, 
-		Disease.SHIGELLOSIS));
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS));
 	//@formatter:on
 
 	public ContactDataView() {

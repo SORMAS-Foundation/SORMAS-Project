@@ -254,6 +254,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 							fluidColumn(6, 0, locs(
 									CaseDataDto.DISEASE_DETAILS,
+									CaseDataDto.YERSINIOSIS_SPECIES,
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
@@ -573,6 +574,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.YERSINIOSIS_SPECIES, ComboBox.class);
 
 		ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
 		presentationField.setNullSelectionAllowed(false);
@@ -1100,8 +1102,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
-				new PersonReferenceDto(person.getUuid())))
-			.setCaption(null);
+				new PersonReferenceDto(person.getUuid()))).setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
@@ -1258,6 +1259,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.DISEASE,
 				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
 				Arrays.asList(Disease.SYPHILIS));
+		}
+		if (isVisibleAllowed(CaseDataDto.YERSINIOSIS_SPECIES)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.YERSINIOSIS_SPECIES),
+				CaseDataDto.DISEASE,
+				Arrays.asList(Disease.YERSINIOSIS),
+				true);
 		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(
