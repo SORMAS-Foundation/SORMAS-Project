@@ -7,12 +7,14 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,7 +38,10 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
+import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
@@ -75,10 +80,18 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
 import de.symeda.sormas.backend.patch.EqualValueOverrideHelper;
+import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
+import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.CollectionPatchMapper;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
 
 class DataPatcherImplTest extends AbstractBeanTest {
+
+	@BeforeEach
+	void setUp() {
+		// CDI look-up not easily achievable within this therefore setting the singleton before each test "in-case".
+		getBean(CollectionPatchMapper.class).setValueMapperRegistry(getBean(ValueMapperRegistry.class));
+	}
 
 	@Test
 	void patch_aliasUsage() {
@@ -1091,6 +1104,68 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(1, exposures.size()),
 			() -> Assertions.assertEquals(ExposureType.WORK, exposures.get(0).getExposureType()),
 			() -> Assertions.assertEquals("market visit", exposures.get(0).getDescription()));
+	}
+
+	@Test
+	void patch_exposure_collection_fields() {
+		// PREPARE
+		Disease disease = Disease.GIARDIASIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setPatchDictionary(
+					Map.of(
+						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.SUB_SETTINGS),
+						"CLOSED_POORLY_VENTILATED,,SHARED_HIGH_OCCUPANCY,EATING_AT_HOME",
+						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.PROTECTIVE_MEASURES),
+						"FACE_TO_FACE_15MIN,,WEARING_PPE,COILS",
+						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.CONTACT_FACTORS),
+						"DURATION_OF_EXPOSURE,PROXIMITY_AND_DURATION,EGG,")));
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<ExposureDto> exposures = actualCase.getEpiData().getExposures();
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(1, exposures.size()),
+			() -> Assertions.assertEquals(
+				Set.of(ExposureSubSetting.CLOSED_POORLY_VENTILATED, ExposureSubSetting.SHARED_HIGH_OCCUPANCY, ExposureSubSetting.EATING_AT_HOME),
+				exposures.get(0).getSubSettings()),
+			() -> Assertions.assertEquals(
+				Set.of(ExposureProtectiveMeasure.FACE_TO_FACE_15MIN, ExposureProtectiveMeasure.WEARING_PPE, ExposureProtectiveMeasure.COILS),
+				exposures.get(0).getProtectiveMeasures()),
+			() -> Assertions.assertEquals(
+				Set.of(ExposureContactFactor.DURATION_OF_EXPOSURE, ExposureContactFactor.PROXIMITY_AND_DURATION, ExposureContactFactor.EGG),
+				exposures.get(0).getContactFactors()));
+	}
+
+	@Test
+	void patch_exposure_collection_field_directSetValue() {
+		// PREPARE
+		Disease disease = Disease.GIARDIASIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		Set<ExposureSubSetting> expectedSubSettings =
+			Set.of(ExposureSubSetting.CLOSED_POORLY_VENTILATED, ExposureSubSetting.SHARED_HIGH_OCCUPANCY, ExposureSubSetting.EATING_AT_HOME);
+
+		// EXECUTE — the value is already a Set of the expected element type, not a comma-separated
+		// String: ValueMapperRegistry short-circuits on targetType.isInstance(value) and stores it
+		// as-is, without ever routing through CollectionPatchMapper.
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setPatchDictionary(Map.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.SUB_SETTINGS), expectedSubSettings)));
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<ExposureDto> exposures = actualCase.getEpiData().getExposures();
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(1, exposures.size()),
+			() -> Assertions.assertEquals(expectedSubSettings, exposures.get(0).getSubSettings()));
 	}
 
 	@Test

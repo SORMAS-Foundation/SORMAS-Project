@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.patch.mapping;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -54,6 +56,16 @@ public class ValueMapperRegistry {
 		}
 
 		if (targetType.isInstance(value)) {
+			if (Collection.class.isAssignableFrom(targetType)) {
+				// Making sure it's appropriate type
+				Optional<?> anyElement = ((Collection<?>) value).stream().findAny();
+				if (anyElement.isPresent()) {
+					if (anyElement.get().getClass() != request.getCollectionSubType()) {
+						return ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE);
+					}
+				}
+			}
+
 			return ValueMappingResult.withData((T) targetType.cast(value));
 		}
 
