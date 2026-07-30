@@ -2858,6 +2858,7 @@ paths:
                   - SALMONELLOSIS
                   - SYPHILIS
                   - YERSINIOSIS
+                  - MUMPS
                   - OTHER
                   - UNDEFINED
           description: default response
@@ -4540,6 +4541,7 @@ paths:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
       requestBody:
@@ -4875,6 +4877,7 @@ paths:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
       responses:
@@ -8877,6 +8880,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         districtId:
@@ -9009,6 +9013,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -9115,6 +9120,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -9531,6 +9537,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -9996,6 +10003,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -10460,6 +10468,12 @@ components:
           format: double
           maximum: 180
           minimum: -180
+        reportingExcluded:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         reportingUser:
           $ref: '#/components/schemas/UserReferenceDto'
         responsibleCommunity:
@@ -10698,6 +10712,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -11046,6 +11061,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         firstName:
@@ -11192,6 +11208,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11472,6 +11489,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12082,6 +12100,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -12348,6 +12367,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -12709,6 +12729,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12809,6 +12830,18 @@ components:
           type: boolean
         person:
           $ref: '#/components/schemas/PersonReferenceDto'
+        postpartum:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        pregnant:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         prescribedDrug:
           type: string
           enum:
@@ -12980,6 +13013,13 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        trimester:
+          type: string
+          enum:
+          - FIRST
+          - SECOND
+          - THIRD
+          - UNKNOWN
         uuid:
           type: string
           maxLength: 36
@@ -13170,6 +13210,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13461,6 +13502,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14286,6 +14328,7 @@ components:
             - SALMONELLOSIS
             - SYPHILIS
             - YERSINIOSIS
+            - MUMPS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -14547,6 +14590,7 @@ components:
             - SALMONELLOSIS
             - SYPHILIS
             - YERSINIOSIS
+            - MUMPS
             - OTHER
             - UNDEFINED
     DashboardCaseMeasureDto:
@@ -14845,6 +14889,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -14944,6 +14989,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -15128,6 +15174,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         eventCount:
@@ -15228,6 +15275,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         notACaseCriteria:
@@ -15340,6 +15388,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         eventParticipantFollowUpDuration:
@@ -16657,6 +16706,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         eventDiseaseDetails:
@@ -16831,6 +16881,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -17122,6 +17173,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17626,6 +17678,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17846,6 +17899,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         event:
@@ -18810,6 +18864,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -18968,6 +19023,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -19063,6 +19119,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19468,6 +19525,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19684,6 +19742,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         personUuid:
@@ -20154,6 +20213,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -20320,6 +20380,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -20488,6 +20549,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         districtName:
@@ -20986,6 +21048,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -21223,6 +21286,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -21507,6 +21571,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -22006,6 +22071,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         healthFacilityLat:
@@ -22316,6 +22382,7 @@ components:
             - SALMONELLOSIS
             - SYPHILIS
             - YERSINIOSIS
+            - MUMPS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -22410,6 +22477,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -23487,6 +23555,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         testedDiseaseDetails:
@@ -23809,6 +23878,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -24885,6 +24955,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -25366,6 +25437,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25928,6 +26000,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26150,6 +26223,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26292,6 +26366,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26654,6 +26729,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -28790,6 +28866,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -29601,6 +29678,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -30089,6 +30167,7 @@ components:
             - SALMONELLOSIS
             - SYPHILIS
             - YERSINIOSIS
+            - MUMPS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -30759,6 +30838,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -30887,6 +30967,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         id:
@@ -31068,6 +31149,7 @@ components:
           - SALMONELLOSIS
           - SYPHILIS
           - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         numberOfCases:
