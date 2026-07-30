@@ -10002,6 +10002,33 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        diseaseSpecies:
+          type: string
+          enum:
+          - MYCOBATERIUM_AFRICANUM
+          - MYCOBATERIUM_BOVIS
+          - MYCOBATERIUM_TUBERCULOSIS
+          - OTHER_MTBC_MEMBER
+          - SPP
+          - FALCIPARUM
+          - VIVAX
+          - MALARIAE
+          - OVALE
+          - KNOWLESI
+          - CYNOMOLGI
+          - NOT_SPECIFIED
+          - COINFECTION
+          - BOYDII
+          - DYSENTERIAE
+          - FLEXNERI
+          - SONNEI
+          - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
+          - OTHER
+          - UNKNOWN
+          - NOT_APPLICABLE
         diseaseVariant:
           $ref: '#/components/schemas/DiseaseVariant'
         diseaseVariantDetails:
@@ -20605,6 +20632,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        highIronLevel:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         hiv:
           type: string
           enum:
@@ -23266,6 +23299,9 @@ components:
           - FLEXNERI
           - SONNEI
           - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
@@ -27317,6 +27353,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        erythemaNodosum:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         excessSalivation:
           type: string
           enum:
@@ -27808,6 +27850,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        necrotizingEnterocolitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         nephroticSyndrome:
           type: string
           enum:
@@ -28046,6 +28094,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        pseudoAppendicularSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         pseudonymized:
           type: boolean
         pseudoparalysis:
@@ -28067,6 +28121,12 @@ components:
           - "NO"
           - UNKNOWN
         rapidBreathing:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        reactiveArthritis:
           type: string
           enum:
           - "YES"
@@ -28234,6 +28294,9 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        symptomEndDate:
+          type: string
+          format: date-time
         symptomatic:
           type: boolean
         symptomsComments:
@@ -29185,6 +29248,9 @@ components:
           - FLEXNERI
           - SONNEI
           - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE

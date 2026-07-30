@@ -690,6 +690,7 @@ public interface Captions {
 	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
 	String CaseData_differentPointOfEntryJurisdiction = "CaseData.differentPointOfEntryJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_diseaseSpecies = "CaseData.diseaseSpecies";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
@@ -1978,6 +1979,7 @@ public interface Captions {
 	String Exposure_protectiveMeasuresDetails = "Exposure.protectiveMeasuresDetails";
 	String Exposure_rawFoodContact = "Exposure.rawFoodContact";
 	String Exposure_rawFoodContactText = "Exposure.rawFoodContactText";
+	String Exposure_regularFoodShoppingLocations = "Exposure.regularFoodShoppingLocations";
 	String Exposure_riskArea = "Exposure.riskArea";
 	String Exposure_seatNumber = "Exposure.seatNumber";
 	String Exposure_sexualContact = "Exposure.sexualContact";
@@ -1998,6 +2000,8 @@ public interface Captions {
 	String Exposure_typeOfChildcareFacility = "Exposure.typeOfChildcareFacility";
 	String Exposure_typeOfPlace = "Exposure.typeOfPlace";
 	String Exposure_typeOfPlaceDetails = "Exposure.typeOfPlaceDetails";
+	String Exposure_usualDietRestrictions = "Exposure.usualDietRestrictions";
+	String Exposure_usualDietRestrictionsDetails = "Exposure.usualDietRestrictionsDetails";
 	String Exposure_waterSource = "Exposure.waterSource";
 	String Exposure_waterSourceDetails = "Exposure.waterSourceDetails";
 	String Exposure_wearingMask = "Exposure.wearingMask";
@@ -2141,6 +2145,7 @@ public interface Captions {
 	String HealthConditions_exposedToMosquitoBorneVirusesText = "HealthConditions.exposedToMosquitoBorneVirusesText";
 	String HealthConditions_formerSmoker = "HealthConditions.formerSmoker";
 	String HealthConditions_hepatitis = "HealthConditions.hepatitis";
+	String HealthConditions_highIronLevel = "HealthConditions.highIronLevel";
 	String HealthConditions_hiv = "HealthConditions.hiv";
 	String HealthConditions_hivArt = "HealthConditions.hivArt";
 	String HealthConditions_hivPrep = "HealthConditions.hivPrep";
@@ -2414,6 +2419,8 @@ public interface Captions {
 	String passportNumber = "passportNumber";
 	String PathogenTest = "PathogenTest";
 	String PathogenTest_antibodyTitre = "PathogenTest.antibodyTitre";
+	String PathogenTest_biotype = "PathogenTest.biotype";
+	String PathogenTest_biotypeText = "PathogenTest.biotypeText";
 	String PathogenTest_cqValue = "PathogenTest.cqValue";
 	String PathogenTest_ctValueE = "PathogenTest.ctValueE";
 	String PathogenTest_ctValueN = "PathogenTest.ctValueN";
@@ -2493,7 +2500,11 @@ public interface Captions {
 	String PathogenTest_tubeNilGT10 = "PathogenTest.tubeNilGT10";
 	String PathogenTest_typingId = "PathogenTest.typingId";
 	String PathogenTest_viaLims = "PathogenTest.viaLims";
+	String PathogenTest_virulenceGenesDetails = "PathogenTest.virulenceGenesDetails";
+	String PathogenTest_virulenceGenesDetected = "PathogenTest.virulenceGenesDetected";
 	String PathogenTest_westernBlotInterpretation = "PathogenTest.westernBlotInterpretation";
+	String PathogenTest_wgsClusterId = "PathogenTest.wgsClusterId";
+	String PathogenTest_wgsPerformed = "PathogenTest.wgsPerformed";
 	String pathogenTestAdd = "pathogenTestAdd";
 	String pathogenTestCreateNew = "pathogenTestCreateNew";
 	String pathogenTestNewResult = "pathogenTestNewResult";
@@ -2581,6 +2592,7 @@ public interface Captions {
 	String Person_placeOfBirthRegion = "Person.placeOfBirthRegion";
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_salutation = "Person.salutation";
+	String Person_schoolNurseryName = "Person.schoolNurseryName";
 	String Person_sex = "Person.sex";
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_uuid = "Person.uuid";

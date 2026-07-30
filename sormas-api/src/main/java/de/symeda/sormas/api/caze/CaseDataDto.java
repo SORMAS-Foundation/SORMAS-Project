@@ -63,6 +63,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.notifier.NotifierReferenceDto;
+import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
@@ -118,6 +119,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
 	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
+	public static final String DISEASE_SPECIES = "diseaseSpecies";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
@@ -279,6 +281,12 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@Diseases({
 		Disease.SYPHILIS })
 	private SyphilisPresentation syphilisPresentation;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	@Diseases({
+		Disease.YERSINIOSIS })
+	@Outbreaks
+	private PathogenSpecie diseaseSpecies;
 	@NotNull(message = Validations.validPerson)
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
@@ -1017,6 +1025,14 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setSyphilisPresentation(SyphilisPresentation syphilisPresentation) {
 		this.syphilisPresentation = syphilisPresentation;
+	}
+
+	public PathogenSpecie getDiseaseSpecies() {
+		return diseaseSpecies;
+	}
+
+	public void setDiseaseSpecies(PathogenSpecie diseaseSpecies) {
+		this.diseaseSpecies = diseaseSpecies;
 	}
 
 	public FacilityReferenceDto getHealthFacility() {

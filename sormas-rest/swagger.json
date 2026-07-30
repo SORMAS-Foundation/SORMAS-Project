@@ -12381,6 +12381,10 @@
             "maxLength" : 512,
             "minLength" : 0
           },
+          "diseaseSpecies" : {
+            "type" : "string",
+            "enum" : [ "MYCOBATERIUM_AFRICANUM", "MYCOBATERIUM_BOVIS", "MYCOBATERIUM_TUBERCULOSIS", "OTHER_MTBC_MEMBER", "SPP", "FALCIPARUM", "VIVAX", "MALARIAE", "OVALE", "KNOWLESI", "CYNOMOLGI", "NOT_SPECIFIED", "COINFECTION", "BOYDII", "DYSENTERIAE", "FLEXNERI", "SONNEI", "SHIGELLA_SPP", "YERSINIA_ENTEROCOLITICA", "YERSINIA_PSEUDOTUBERCULOSIS", "YERSINIA_SPP", "OTHER", "UNKNOWN", "NOT_APPLICABLE" ]
+          },
           "diseaseVariant" : {
             "$ref" : "#/components/schemas/DiseaseVariant"
           },
@@ -20355,6 +20359,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "highIronLevel" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "hiv" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -22746,7 +22754,7 @@
           },
           "specie" : {
             "type" : "string",
-            "enum" : [ "MYCOBATERIUM_AFRICANUM", "MYCOBATERIUM_BOVIS", "MYCOBATERIUM_TUBERCULOSIS", "OTHER_MTBC_MEMBER", "SPP", "FALCIPARUM", "VIVAX", "MALARIAE", "OVALE", "KNOWLESI", "CYNOMOLGI", "NOT_SPECIFIED", "COINFECTION", "BOYDII", "DYSENTERIAE", "FLEXNERI", "SONNEI", "SHIGELLA_SPP", "OTHER", "UNKNOWN", "NOT_APPLICABLE" ]
+            "enum" : [ "MYCOBATERIUM_AFRICANUM", "MYCOBATERIUM_BOVIS", "MYCOBATERIUM_TUBERCULOSIS", "OTHER_MTBC_MEMBER", "SPP", "FALCIPARUM", "VIVAX", "MALARIAE", "OVALE", "KNOWLESI", "CYNOMOLGI", "NOT_SPECIFIED", "COINFECTION", "BOYDII", "DYSENTERIAE", "FLEXNERI", "SONNEI", "SHIGELLA_SPP", "YERSINIA_ENTEROCOLITICA", "YERSINIA_PSEUDOTUBERCULOSIS", "YERSINIA_SPP", "OTHER", "UNKNOWN", "NOT_APPLICABLE" ]
           },
           "specieText" : {
             "type" : "string",
@@ -25853,6 +25861,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "erythemaNodosum" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "excessSalivation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26188,6 +26200,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "necrotizingEnterocolitis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "nephroticSyndrome" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26369,6 +26385,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "pseudoAppendicularSyndrome" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "pseudonymized" : {
             "type" : "boolean"
           },
@@ -26385,6 +26405,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "rapidBreathing" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "reactiveArthritis" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26499,6 +26523,10 @@
           "symptomCurrentStatus" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "symptomEndDate" : {
+            "type" : "string",
+            "format" : "date-time"
           },
           "symptomatic" : {
             "type" : "boolean"
@@ -27203,7 +27231,7 @@
           },
           "specie" : {
             "type" : "string",
-            "enum" : [ "MYCOBATERIUM_AFRICANUM", "MYCOBATERIUM_BOVIS", "MYCOBATERIUM_TUBERCULOSIS", "OTHER_MTBC_MEMBER", "SPP", "FALCIPARUM", "VIVAX", "MALARIAE", "OVALE", "KNOWLESI", "CYNOMOLGI", "NOT_SPECIFIED", "COINFECTION", "BOYDII", "DYSENTERIAE", "FLEXNERI", "SONNEI", "SHIGELLA_SPP", "OTHER", "UNKNOWN", "NOT_APPLICABLE" ]
+            "enum" : [ "MYCOBATERIUM_AFRICANUM", "MYCOBATERIUM_BOVIS", "MYCOBATERIUM_TUBERCULOSIS", "OTHER_MTBC_MEMBER", "SPP", "FALCIPARUM", "VIVAX", "MALARIAE", "OVALE", "KNOWLESI", "CYNOMOLGI", "NOT_SPECIFIED", "COINFECTION", "BOYDII", "DYSENTERIAE", "FLEXNERI", "SONNEI", "SHIGELLA_SPP", "YERSINIA_ENTEROCOLITICA", "YERSINIA_PSEUDOTUBERCULOSIS", "YERSINIA_SPP", "OTHER", "UNKNOWN", "NOT_APPLICABLE" ]
           },
           "strainCallStatus" : {
             "type" : "string",
