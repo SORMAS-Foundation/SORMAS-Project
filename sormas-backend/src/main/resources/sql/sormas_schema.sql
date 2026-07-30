@@ -16983,4 +16983,14 @@ ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS diseasespecies varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (654, '#13971 - Added disease species field for yersiniosis and/or other diseases.');
 
+-- #13972 - Yersinoisis health conditions fields and person values
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS highironlevel varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS highironlevel varchar(255);
+
+INSERT INTO customizableenumvalue (id, uuid, changedate, creationdate, datatype, value, caption, diseases, defaultvalue, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', 'STUDENT', 'Student', 'YERSINIOSIS', true, jsonb_build_object('hasDetails', true));
+
+INSERT INTO schema_version (version_number, comment) VALUES (655, '#13972 - Yersinoisis added health conditions fields and student occupation type.');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
