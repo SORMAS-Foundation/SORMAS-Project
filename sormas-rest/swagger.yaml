@@ -20632,6 +20632,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        highIronLevel:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         hiv:
           type: string
           enum:
