@@ -10002,6 +10002,33 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        diseaseSpecies:
+          type: string
+          enum:
+          - MYCOBATERIUM_AFRICANUM
+          - MYCOBATERIUM_BOVIS
+          - MYCOBATERIUM_TUBERCULOSIS
+          - OTHER_MTBC_MEMBER
+          - SPP
+          - FALCIPARUM
+          - VIVAX
+          - MALARIAE
+          - OVALE
+          - KNOWLESI
+          - CYNOMOLGI
+          - NOT_SPECIFIED
+          - COINFECTION
+          - BOYDII
+          - DYSENTERIAE
+          - FLEXNERI
+          - SONNEI
+          - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
+          - OTHER
+          - UNKNOWN
+          - NOT_APPLICABLE
         diseaseVariant:
           $ref: '#/components/schemas/DiseaseVariant'
         diseaseVariantDetails:
@@ -23266,6 +23293,9 @@ components:
           - FLEXNERI
           - SONNEI
           - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
@@ -29212,6 +29242,9 @@ components:
           - FLEXNERI
           - SONNEI
           - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
