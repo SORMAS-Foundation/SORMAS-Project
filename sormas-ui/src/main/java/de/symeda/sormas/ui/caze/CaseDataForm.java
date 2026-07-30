@@ -236,6 +236,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocsCss(VSPACE_3, CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
 							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER) +
 					fluidRowLocs(CaseDataDto.NOT_A_CASE_REASON_DETAILS) +
+					fluidRowLocs(CaseDataDto.REPORTING_EXCLUDED) +
 					fluidRow(
 							fluidColumnLoc(3, 0, CaseDataDto.CLASSIFICATION_DATE),
 							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 5, 0, CaseDataDto.CLASSIFICATION_USER),
@@ -732,6 +733,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, NullableOptionGroup.class);
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
+		addField(CaseDataDto.REPORTING_EXCLUDED, NullableOptionGroup.class);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

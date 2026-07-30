@@ -16884,7 +16884,7 @@ ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS syphilispresentation varchar(
 
 INSERT INTO schema_version (version_number, comment) VALUES (650, 'SORMAS-Luxembourg Syphilis case data adaptations #14207');
 
--- Syphilis Symptoms 
+-- Syphilis Symptoms
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS patchyalopecia varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS chancre varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS condylomavenereum varchar(255);
@@ -16992,5 +16992,18 @@ VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION
 
 INSERT INTO schema_version (version_number, comment) VALUES (655, '#13972 - Yersinoisis added health conditions fields and student occupation type.');
 
+
+-- 14229 - Incorporated new disease Mumps to SORMAS.
+ALTER TABLE cases                   ADD COLUMN IF NOT EXISTS reportingexcluded varchar(255);
+ALTER TABLE contact                 ADD COLUMN IF NOT EXISTS pregnant varchar(255);
+ALTER TABLE contact                 ADD COLUMN IF NOT EXISTS postpartum varchar(255);
+ALTER TABLE contact                 ADD COLUMN IF NOT EXISTS trimester varchar(255);
+
+ALTER TABLE cases_history           ADD COLUMN IF NOT EXISTS reportingexcluded varchar(255);
+ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS pregnant varchar(255);
+ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS postpartum varchar(255);
+ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS trimester varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (656, 'Incorporated new disease Mumps to SORMAS');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
