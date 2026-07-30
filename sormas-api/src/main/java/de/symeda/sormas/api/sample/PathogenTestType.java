@@ -79,6 +79,18 @@ public enum PathogenTestType {
 	IGA_SERUM_ANTIBODY,
 
 	@Diseases(value = {
+		Disease.SYPHILIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	NON_TREPONEMAL_TEST,
+
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	TREPONEMAL_TEST,
+
+	@Diseases(value = {
 		Disease.CORONAVIRUS,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -254,7 +266,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.SYPHILIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -407,6 +420,7 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SYPHILIS,
 		Disease.MEASLES })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
