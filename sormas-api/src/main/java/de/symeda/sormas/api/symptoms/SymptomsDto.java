@@ -2863,19 +2863,11 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState shivering;
 
-	@Diseases({
-		INVASIVE_MENINGOCOCCAL_INFECTION,
-		INVASIVE_PNEUMOCOCCAL_INFECTION,
-		PERTUSSIS,
-		MEASLES,
-		GIARDIASIS,
-		CRYPTOSPORIDIOSIS,
-		RESPIRATORY_SYNCYTIAL_VIRUS,
-		MALARIA,
-		SYPHILIS,
-		DENGUE,
-		SHIGELLOSIS,
-		YERSINIOSIS })
+	// Hiding the asymptomatic symptom for all countries of TUBERCULOSIS.
+	// For now TB has been implemented for LUX only,
+	// When we implement it for other countries, we should consider it, based on symptoms requirements.
+	@Diseases(value = {
+		TUBERCULOSIS }, hide = true)
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
