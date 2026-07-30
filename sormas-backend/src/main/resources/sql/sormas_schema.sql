@@ -16977,4 +16977,10 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS symptomenddate TIMESTAMP;
 
 INSERT INTO schema_version (version_number, comment) VALUES (653, '#13969 - Yersiniosis specific symptoms');
 
+-- #13971 - Yersiniosis fields and configuration
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS diseasespecies varchar(255);
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS diseasespecies varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (654, '#13971 - Added disease species field for yersiniosis and/or other diseases.');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
