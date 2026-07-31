@@ -16756,7 +16756,7 @@
             "type" : "array",
             "items" : {
               "type" : "string",
-              "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE", "MEDICAL_CARE", "LAB", "OTHER" ]
+              "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE", "MEDICAL_CARE", "LAB", "RESPIRATORY_DROPLET", "OTHER" ]
             },
             "uniqueItems" : true
           },
@@ -17620,12 +17620,17 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "clusterIdentifier" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
           "clusterRelated" : {
             "type" : "boolean"
           },
           "clusterType" : {
             "type" : "string",
-            "enum" : [ "KINDERGARTEN_OR_CHILDCARE", "FAMILY", "MILITARY", "NOSOCOMIAL", "SCHOOL", "SPORTS_TEAM", "UNIVERSITY", "OTHER" ]
+            "enum" : [ "KINDERGARTEN_OR_CHILDCARE", "FAMILY", "MILITARY", "NOSOCOMIAL", "SCHOOL", "SPORTS_TEAM", "UNIVERSITY", "NOT_APPLICABLE", "UNKNOWN", "OTHER" ]
           },
           "clusterTypeText" : {
             "type" : "string"
@@ -18986,7 +18991,7 @@
           },
           "exposureCategory" : {
             "type" : "string",
-            "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE", "MEDICAL_CARE", "LAB", "OTHER" ]
+            "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE", "MEDICAL_CARE", "LAB", "RESPIRATORY_DROPLET", "OTHER" ]
           },
           "exposureComment" : {
             "type" : "string"
@@ -25707,7 +25712,7 @@
           },
           "clinicalManifestation" : {
             "type" : "string",
-            "enum" : [ "ASYMPTOMATIC", "NO_SIGN_OF_SEVERITY", "SIGN_OF_SEVERITY", "UNKNOWN", "OTHER" ]
+            "enum" : [ "ASYMPTOMATIC", "NO_SIGN_OF_SEVERITY", "SIGN_OF_SEVERITY", "MENINGOENCEPHALITIS", "ORCHITIS", "PAROTID_SWELLING", "UNKNOWN", "OTHER" ]
           },
           "clinicalManifestationText" : {
             "type" : "string"
@@ -26228,6 +26233,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "noComplications" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "nocturnalCough" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26269,6 +26278,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "orchitis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "otherClinicalPresentation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26281,6 +26294,15 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "otherComplicationsText" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "otherGeneralSymptoms" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "otherGeneralSymptomsText" : {
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
@@ -26341,6 +26363,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "palpitations" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "pancreatitis" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26461,6 +26487,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "runnyNose" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "salivarySwelling" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26597,6 +26627,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "unilateralCataracts" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "unknownComplications" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },

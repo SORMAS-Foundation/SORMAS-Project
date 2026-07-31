@@ -15409,6 +15409,7 @@ components:
             - WATER_BORNE
             - MEDICAL_CARE
             - LAB
+            - RESPIRATORY_DROPLET
             - OTHER
           uniqueItems: true
         extendedClassification:
@@ -16393,6 +16394,10 @@ components:
         changeDate:
           type: string
           format: date-time
+        clusterIdentifier:
+          type: string
+          maxLength: 512
+          minLength: 0
         clusterRelated:
           type: boolean
         clusterType:
@@ -16405,6 +16410,8 @@ components:
           - SCHOOL
           - SPORTS_TEAM
           - UNIVERSITY
+          - NOT_APPLICABLE
+          - UNKNOWN
           - OTHER
         clusterTypeText:
           type: string
@@ -18296,6 +18303,7 @@ components:
           - WATER_BORNE
           - MEDICAL_CARE
           - LAB
+          - RESPIRATORY_DROPLET
           - OTHER
         exposureComment:
           type: string
@@ -27187,6 +27195,9 @@ components:
           - ASYMPTOMATIC
           - NO_SIGN_OF_SEVERITY
           - SIGN_OF_SEVERITY
+          - MENINGOENCEPHALITIS
+          - ORCHITIS
+          - PAROTID_SWELLING
           - UNKNOWN
           - OTHER
         clinicalManifestationText:
@@ -27944,6 +27955,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        noComplications:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         nocturnalCough:
           type: string
           enum:
@@ -27996,6 +28013,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        orchitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         otherClinicalPresentation:
           type: string
           enum:
@@ -28011,6 +28034,16 @@ components:
           - "NO"
           - UNKNOWN
         otherComplicationsText:
+          type: string
+          maxLength: 512
+          minLength: 0
+        otherGeneralSymptoms:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        otherGeneralSymptomsText:
           type: string
           maxLength: 512
           minLength: 0
@@ -28083,6 +28116,12 @@ components:
           - "NO"
           - UNKNOWN
         palpitations:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        pancreatitis:
           type: string
           enum:
           - "YES"
@@ -28254,6 +28293,12 @@ components:
           - "NO"
           - UNKNOWN
         runnyNose:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        salivarySwelling:
           type: string
           enum:
           - "YES"
@@ -28447,6 +28492,12 @@ components:
           - "NO"
           - UNKNOWN
         unilateralCataracts:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        unknownComplications:
           type: string
           enum:
           - "YES"
