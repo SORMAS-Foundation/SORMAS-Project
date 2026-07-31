@@ -104,6 +104,44 @@ public enum GenoType {
 	@Diseases({
 		Disease.CRYPTOSPORIDIOSIS })
 	CRYPTOSPORIDIUM_SPECIES,
+	// mumps genotypes
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_A,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_B,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_C,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_D,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_F,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_G,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_H,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_I,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_J,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_K,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_L,
+	@Diseases({
+		Disease.MUMPS })
+	MUMPV_N,
+
 	OTHER,
 	UNKNOWN;
 

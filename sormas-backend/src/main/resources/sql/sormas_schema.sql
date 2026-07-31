@@ -17026,4 +17026,15 @@ ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptom
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(512);
 ALTER TABLE epidata_history         ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
 INSERT INTO schema_version (version_number, comment) VALUES (657, '#14231, #14232 Mumps symptom and exposure changes');
+
+-- 14233 Mumps sample and pathogen test changes
+ALTER TABLE pathogentest            ADD COLUMN IF NOT EXISTS sequenceid varchar(255);
+ALTER TABLE pathogentest            ADD COLUMN IF NOT EXISTS seroconversion boolean;
+UPDATE pathogentest                 SET seroconversion = false WHERE seroconversion IS NULL;
+
+ALTER TABLE pathogentest_history    ADD COLUMN IF NOT EXISTS sequenceid varchar(255);
+ALTER TABLE pathogentest_history    ADD COLUMN IF NOT EXISTS seroconversion boolean;
+UPDATE pathogentest_history         SET seroconversion = false WHERE seroconversion IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (658, 'Included Mumps sample and pathogen test changes');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

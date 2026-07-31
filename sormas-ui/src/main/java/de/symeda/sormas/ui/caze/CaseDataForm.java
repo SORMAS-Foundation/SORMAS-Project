@@ -734,7 +734,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, NullableOptionGroup.class);
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
 		addField(CaseDataDto.REPORTING_EXCLUDED, NullableOptionGroup.class);
-
+		setVisibleClear(Disease.MUMPS == disease, CaseDataDto.REPORTING_EXCLUDED);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
@@ -1104,7 +1104,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
-				new PersonReferenceDto(person.getUuid()))).setCaption(null);
+				new PersonReferenceDto(person.getUuid())))
+			.setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
@@ -1222,6 +1223,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+			setVisibleClear(disease == Disease.MUMPS, CaseDataDto.REPORTING_EXCLUDED);
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();

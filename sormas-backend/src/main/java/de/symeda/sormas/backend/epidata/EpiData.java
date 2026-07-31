@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -364,7 +366,7 @@ public class EpiData extends AbstractDomainObject {
 		this.contactWithSexWorker = contactWithSexWorker;
 	}
 
-	@Column(columnDefinition = "text")
+	@Column(length = CHARACTER_LIMIT_SMALL)
 	public String getClusterIdentifier() {
 		return clusterIdentifier;
 	}

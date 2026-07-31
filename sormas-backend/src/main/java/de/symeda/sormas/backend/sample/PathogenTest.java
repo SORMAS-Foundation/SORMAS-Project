@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.util.Date;
 
@@ -194,6 +195,8 @@ public class PathogenTest extends DeletableAdo {
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
+	private String sequenceId;
+	private Boolean seroConversion;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -837,7 +840,6 @@ public class PathogenTest extends DeletableAdo {
 		this.quantitativeUnit = quantitativeUnit;
 	}
 
-
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getQuantitativeBoolean() {
 		return quantitativeBoolean;
@@ -863,6 +865,24 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
 		this.westernBlotInterpretation = westernBlotInterpretation;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(String sequenceId) {
+		this.sequenceId = sequenceId;
+	}
+
+	@Column(name = "seroconversion", nullable = true)
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
 	}
 
 }
