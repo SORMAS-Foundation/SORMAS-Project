@@ -5895,7 +5895,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.salivarySwelling = salivarySwelling;
 	}
 
-	@Order(370)
+	@Order(371)
 	public YesNoUnknown getNoComplications() {
 		return noComplications;
 	}
@@ -5904,7 +5904,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.noComplications = noComplications;
 	}
 
-	@Order(371)
+	@Order(372)
 	public YesNoUnknown getUnknownComplications() {
 		return unknownComplications;
 	}
@@ -5913,7 +5913,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.unknownComplications = unknownComplications;
 	}
 
-	@Order(372)
+	@Order(373)
 	public SymptomState getOrchitis() {
 		return orchitis;
 	}
@@ -5922,7 +5922,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.orchitis = orchitis;
 	}
 
-	@Order(373)
+	@Order(374)
 	public SymptomState getPancreatitis() {
 		return pancreatitis;
 	}
@@ -5931,7 +5931,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.pancreatitis = pancreatitis;
 	}
 
-	@Order(374)
+	@Order(375)
 	public YesNoUnknown getOtherGeneralSymptoms() {
 		return otherGeneralSymptoms;
 	}
@@ -5940,7 +5940,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.otherGeneralSymptoms = otherGeneralSymptoms;
 	}
 
-	@Order(375)
+	@Order(376)
 	public String getOtherGeneralSymptomsText() {
 		return otherGeneralSymptomsText;
 	}

@@ -17006,15 +17006,16 @@ ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS trimester varchar(2
 
 INSERT INTO schema_version (version_number, comment) VALUES (656, '#14229 - Incorporated new disease Mumps to SORMAS');
 
--- 14231 Mumps symptom changes
+-- 14231, 14232 Mumps symptom and exposure changes
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS salivaryswelling varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS orchitis varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS nocomplications varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS unknowncomplications varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS pancreatitis varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS othergeneralsymptoms varchar(255);
-ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(255);
-
+ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(512);
+ALTER TABLE epidata                 ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+UPDATE diseaseconfiguration         SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET' WHERE disease = 'MUMPS';
 
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS salivaryswelling varchar(255);
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS orchitis varchar(255);
@@ -17022,7 +17023,8 @@ ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS nocomplications var
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS unknowncomplications varchar(255);
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS pancreatitis varchar(255);
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptoms varchar(255);
-ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(255);
-
-INSERT INTO schema_version (version_number, comment) VALUES (657, '#14231 - Added  Mumps symptoms');
+ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(512);
+ALTER TABLE epidata_history         ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+UPDATE diseaseconfiguration_history SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET' WHERE disease = 'MUMPS';
+INSERT INTO schema_version (version_number, comment) VALUES (657, '#14231, #14232 Mumps symptom and exposure changes');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
