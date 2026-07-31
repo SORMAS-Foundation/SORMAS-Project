@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples.components;
 
 import com.vaadin.ui.CheckBox;
 
+import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -50,6 +51,7 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 	private Disease currentDisease;
 	private PathogenTestType currentTestType;
 	private PathogenTestResultType currentTestResult;
+	HorizontalLayout horizontalLayout = new HorizontalLayout();
 
 	public FourFoldCtCqComponent(FormEventBus eventBus, int caseSampleCount, boolean isLuxembourg, Disease initialDisease) {
 		super(PathogenTestDto.class);
@@ -67,13 +69,18 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 		CssStyles.style(fourFoldIncrease, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
-		addComponent(fourFoldIncrease);
 
 		seroConversion = createCheckBox(PathogenTestDto.SERO_CONVERSION, PathogenTestDto.I18N_PREFIX);
 		CssStyles.style(seroConversion, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
 		seroConversion.setVisible(false);
 		seroConversion.setEnabled(false);
-		addComponents(ctCqValueComponent, fourFoldIncrease, seroConversion);
+
+		horizontalLayout.setSpacing(true);
+		// displaying the fourFoldIncrease & seroConversion checkboxes in a same line for all diseases.
+		horizontalLayout.addComponents(fourFoldIncrease, createSpacer(), seroConversion);
+		addComponent(horizontalLayout);
+
+		addComponents(ctCqValueComponent);
 	}
 
 	private void bindFields() {
