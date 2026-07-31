@@ -96,4 +96,11 @@ public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> 
 			performedByReferenceLaboratory.clear();
 		}
 	}
+
+	@Override
+	public void setDto(PathogenTestDto dto) {
+		super.setDto(dto);
+		currentTestType = dto != null ? dto.getTestType() : null;
+		updateReferenceLaboratory(currentTestType, currentDisease);
+	}
 }

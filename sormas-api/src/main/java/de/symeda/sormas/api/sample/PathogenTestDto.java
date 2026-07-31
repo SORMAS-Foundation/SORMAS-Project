@@ -259,13 +259,16 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
 		Disease.MEASLES,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MUMPS })
 	private GenoType genoType;
 
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MUMPS })
 	private String genoTypeText;
 
 	@SensitiveData
