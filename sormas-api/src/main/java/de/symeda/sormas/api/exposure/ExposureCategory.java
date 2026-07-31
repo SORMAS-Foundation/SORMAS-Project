@@ -31,6 +31,7 @@ public enum ExposureCategory {
 	WATER_BORNE,
 	MEDICAL_CARE,
 	LAB,
+	RESPIRATORY_DROPLET,
 	OTHER;
 
 	public boolean hasNoSetting() {

@@ -67,6 +67,7 @@ public class EpiData extends AbstractDomainObject {
 	private ClusterType clusterType;
 	private String clusterTypeText;
 	private boolean clusterRelated;
+	private String clusterIdentifier;
 
 	// Giardiasis & Cryptosporidiosis specific
 	private InfectionSource infectionSource;
@@ -362,4 +363,14 @@ public class EpiData extends AbstractDomainObject {
 	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
 		this.contactWithSexWorker = contactWithSexWorker;
 	}
+
+	@Column(columnDefinition = "text")
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
 }
