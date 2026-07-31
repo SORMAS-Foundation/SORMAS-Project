@@ -22633,7 +22633,7 @@
           },
           "genoType" : {
             "type" : "string",
-            "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "OTHER", "UNKNOWN" ]
+            "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "MUMPV_A", "MUMPV_B", "MUMPV_C", "MUMPV_D", "MUMPV_F", "MUMPV_G", "MUMPV_H", "MUMPV_I", "MUMPV_J", "MUMPV_K", "MUMPV_L", "MUMPV_N", "OTHER", "UNKNOWN" ]
           },
           "genoTypeText" : {
             "type" : "string"
@@ -22745,6 +22745,14 @@
           },
           "sample" : {
             "$ref" : "#/components/schemas/SampleReferenceDto"
+          },
+          "sequenceId" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "seroConversion" : {
+            "type" : "boolean"
           },
           "seroGroupSpecification" : {
             "type" : "string",
@@ -27150,7 +27158,7 @@
           },
           "genoType" : {
             "type" : "string",
-            "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "OTHER", "UNKNOWN" ]
+            "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "MUMPV_A", "MUMPV_B", "MUMPV_C", "MUMPV_D", "MUMPV_F", "MUMPV_G", "MUMPV_H", "MUMPV_I", "MUMPV_J", "MUMPV_K", "MUMPV_L", "MUMPV_N", "OTHER", "UNKNOWN" ]
           },
           "isoniazidMic" : {
             "type" : "string"

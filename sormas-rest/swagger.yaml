@@ -23201,6 +23201,18 @@ components:
           - CRYPTOSPORIDIUM_HOMINIS
           - CRYPTOSPORIDIUM_PARVUM
           - CRYPTOSPORIDIUM_SPECIES
+          - MUMPV_A
+          - MUMPV_B
+          - MUMPV_C
+          - MUMPV_D
+          - MUMPV_F
+          - MUMPV_G
+          - MUMPV_H
+          - MUMPV_I
+          - MUMPV_J
+          - MUMPV_K
+          - MUMPV_L
+          - MUMPV_N
           - OTHER
           - UNKNOWN
         genoTypeText:
@@ -23301,6 +23313,12 @@ components:
           - INDETERMINATE
         sample:
           $ref: '#/components/schemas/SampleReferenceDto'
+        sequenceId:
+          type: string
+          maxLength: 255
+          minLength: 0
+        seroConversion:
+          type: boolean
         seroGroupSpecification:
           type: string
           enum:
@@ -29185,6 +29203,18 @@ components:
           - CRYPTOSPORIDIUM_HOMINIS
           - CRYPTOSPORIDIUM_PARVUM
           - CRYPTOSPORIDIUM_SPECIES
+          - MUMPV_A
+          - MUMPV_B
+          - MUMPV_C
+          - MUMPV_D
+          - MUMPV_F
+          - MUMPV_G
+          - MUMPV_H
+          - MUMPV_I
+          - MUMPV_J
+          - MUMPV_K
+          - MUMPV_L
+          - MUMPV_N
           - OTHER
           - UNKNOWN
         isoniazidMic:
