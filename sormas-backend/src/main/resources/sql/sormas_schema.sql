@@ -16959,6 +16959,40 @@ ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS contactwithsexworker varcha
 
 INSERT INTO schema_version (version_number, comment) VALUES (652, 'Syphilis - Epidata #14212');
 
+-- #13969 - Yersiniosis symptoms
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS pseudoappendicularsyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS pseudoappendicularsyndrome varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS necrotizingenterocolitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS necrotizingenterocolitis varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS reactivearthritis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS reactivearthritis varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS erythemanodosum varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS erythemanodosum varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS symptomenddate TIMESTAMP;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS symptomenddate TIMESTAMP;
+
+INSERT INTO schema_version (version_number, comment) VALUES (653, '#13969 - Yersiniosis specific symptoms');
+
+-- #13971 - Yersiniosis fields and configuration
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS diseasespecies varchar(255);
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS diseasespecies varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (654, '#13971 - Added disease species field for yersiniosis and/or other diseases.');
+
+-- #13972 - Yersinoisis health conditions fields and person values
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS highironlevel varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS highironlevel varchar(255);
+
+INSERT INTO customizableenumvalue (id, uuid, changedate, creationdate, datatype, value, caption, diseases, defaultvalue, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', 'STUDENT', 'Student', 'YERSINIOSIS', true, jsonb_build_object('hasDetails', true));
+
+INSERT INTO schema_version (version_number, comment) VALUES (655, '#13972 - Yersinoisis added health conditions fields and student occupation type.');
+
+
 -- 14229 - Incorporated new disease Mumps to SORMAS.
 ALTER TABLE cases                   ADD COLUMN IF NOT EXISTS reportingexcluded varchar(255);
 ALTER TABLE contact                 ADD COLUMN IF NOT EXISTS pregnant varchar(255);
@@ -16970,16 +17004,7 @@ ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS pregnant varchar(25
 ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS postpartum varchar(255);
 ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS trimester varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (653, 'Incorporated new disease Mumps to SORMAS');
-
--- 14232 Mumps exposure changes
-ALTER TABLE epidata                 ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
-UPDATE diseaseconfiguration         SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET' WHERE disease = 'MUMPS';
-
-ALTER TABLE epidata_history         ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
-UPDATE diseaseconfiguration_history SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET' WHERE disease = 'MUMPS';
-
-INSERT INTO schema_version (version_number, comment) VALUES (654, 'Included Mumps exposure details');
+INSERT INTO schema_version (version_number, comment) VALUES (656, '#14229 - Incorporated new disease Mumps to SORMAS');
 
 -- 14231 Mumps symptom changes
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS salivaryswelling varchar(255);
@@ -16999,5 +17024,5 @@ ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS pancreatitis varcha
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptoms varchar(255);
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (655, 'Added  Mumps symptoms');
+INSERT INTO schema_version (version_number, comment) VALUES (657, '#14231 - Added  Mumps symptoms');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

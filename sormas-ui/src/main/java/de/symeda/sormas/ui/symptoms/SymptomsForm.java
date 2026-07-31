@@ -201,6 +201,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.PERTUSSIS,
 		Disease.SHIGELLOSIS);
+	// other complicated symptom for onset field listener action
+	private List<String> otherComplicatedSymptoms =
+		Arrays.asList(LESIONS_THAT_ITCH, OTHER_COMPLICATIONS_TEXT, UNKNOWN_COMPLICATIONS, OTHER_NEUROLOGICAL_SYMPTOMS_TEXT);
+
 	final boolean isLuxDengue;
 	final boolean isParasiticInfectiousDiseases;
 	final boolean isFoodborneGastrointestinal;
@@ -1040,12 +1044,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MUCOCUTANEOUS_LESION,
 			MACULOPAPULAR_RASH,
 			SALIVARY_SWELLING,
-			NO_COMPLICATIONS,
-			UNKNOWN_COMPLICATIONS,
 			ORCHITIS,
-			PANCREATITIS,
-			OTHER_GENERAL_SYMPTOMS,
-			OTHER_GENERAL_SYMPTOMS_TEXT);
+			PANCREATITIS);
 
 		// Set visibilities
 
@@ -1508,17 +1508,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return false;
 	}
 
-	public boolean isAnySymptomVisible(FieldGroup fieldGroup, List<String> sourcePropertyIds, List<Object> sourceValues) {
-		return true;
-	}
-
 	@SuppressWarnings("rawtypes")
 	private void addListenerForOnsetFields(ComboBox onsetSymptom, DateField onsetDateField) {
 		List<String> allPropertyIds =
 			Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
-		allPropertyIds.add(LESIONS_THAT_ITCH);
-		allPropertyIds.add(OTHER_COMPLICATIONS_TEXT);
-		allPropertyIds.add(OTHER_NEUROLOGICAL_SYMPTOMS_TEXT);
+		allPropertyIds.addAll(otherComplicatedSymptoms);
 		allPropertyIds.addAll(SYPHILIS_ACQUIRED_ONLY_FIELD_IDS);
 		allPropertyIds.addAll(SYPHILIS_CONGENITAL_ONLY_FIELD_IDS);
 		for (Object sourcePropertyId : allPropertyIds) {
