@@ -407,13 +407,25 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox occupationTypeField = addCustomizableEnumField(PersonDto.OCCUPATION_TYPE);
 		TextField occupationTypeDetailsField = addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
 		occupationTypeDetailsField.setVisible(false);
+		String defaultOccupationDetailsCaption = occupationTypeDetailsField.getCaption();
 		FieldHelper.updateItems(
 			occupationTypeField,
 			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, disease));
 		occupationTypeField.addValueChangeListener(e -> {
 			OccupationType occupationType = (OccupationType) e.getProperty().getValue();
 			occupationTypeDetailsField.setVisible(occupationType != null && occupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
+			boolean isStudent = occupationType != null && "STUDENT".equals(occupationType.getValue());
+			boolean useSchoolCaption = Disease.YERSINIOSIS.equals(disease) && isStudent && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+			occupationTypeDetailsField
+				.setCaption(useSchoolCaption ? I18nProperties.getCaption(Captions.Person_schoolNurseryName) : defaultOccupationDetailsCaption);
 		});
+		OccupationType initialOccupationType = (OccupationType) occupationTypeField.getValue();
+		occupationTypeDetailsField
+			.setVisible(initialOccupationType != null && initialOccupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
+		boolean isStudent = initialOccupationType != null && "STUDENT".equals(initialOccupationType.getValue());
+		boolean useSchoolCaption = Disease.YERSINIOSIS.equals(disease) && isStudent && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		occupationTypeDetailsField
+			.setCaption(useSchoolCaption ? I18nProperties.getCaption(Captions.Person_schoolNurseryName) : defaultOccupationDetailsCaption);
 
 		addFields(PersonDto.ARMED_FORCES_RELATION_TYPE, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
