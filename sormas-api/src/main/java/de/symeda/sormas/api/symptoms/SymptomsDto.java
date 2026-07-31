@@ -388,6 +388,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String TENESMUS = "tenesmus";
 	public static final String BLOODY_DIARRHEA = "bloodyDiarrhea";
 	public static final String HAEMOLYTIC_UREMIC_SYNDROME = "haemolyticUremicSyndrome";
+	// Mumps specific symptoms
+	public static final String SALIVARY_SWELLING = "salivarySwelling";
+	public static final String NO_COMPLICATIONS = "noComplications";
+	public static final String UNKNOWN_COMPLICATIONS = "unknownComplications";
+	public static final String ORCHITIS = "orchitis";
+	public static final String PANCREATITIS = "pancreatitis";
+	public static final String OTHER_GENERAL_SYMPTOMS = "otherGeneralSymptoms";
+	public static final String OTHER_GENERAL_SYMPTOMS_TEXT = "otherGeneralSymptomsText";
 
 	// Syphilis-specific symptoms
 	public static final String PATCHY_ALOPECIA = "patchyAlopecia";
@@ -2652,6 +2660,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		MUMPS,
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -2679,6 +2688,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
+		MUMPS,
 		UNDEFINED,
 		OTHER })
 	@DependantOn(OTHER_COMPLICATIONS)
@@ -2690,7 +2700,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		MALARIA,
 		CRYPTOSPORIDIOSIS,
-		GIARDIASIS })
+		GIARDIASIS,
+		MUMPS })
 	private String otherComplicationsText;
 
 	@Diseases({
@@ -2881,7 +2892,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		SHIGELLOSIS,
 		YERSINIOSIS,
-		 MUMPS})
+		MUMPS })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -3059,10 +3070,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE })
 	private SymptomState coldSkin;
 	@Diseases({
-		DENGUE })
+		DENGUE,
+		MUMPS })
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
-		DENGUE })
+		DENGUE,
+		MUMPS })
 	private SymptomState encephalitis;
 	@Diseases({
 		DENGUE })
@@ -3193,7 +3206,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private Date offsetDate;
 
 	@Diseases({
-		DENGUE })
+		DENGUE,
+		MUMPS })
 	@Outbreaks
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })

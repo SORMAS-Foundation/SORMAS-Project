@@ -17004,26 +17004,18 @@ ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS pregnant varchar(25
 ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS postpartum varchar(255);
 ALTER TABLE contact_history         ADD COLUMN IF NOT EXISTS trimester varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (656, 'Incorporated new disease Mumps to SORMAS');
+INSERT INTO schema_version (version_number, comment) VALUES (656, '#14229 - Incorporated new disease Mumps to SORMAS');
 
--- 14232 Mumps exposure changes
-ALTER TABLE epidata                 ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
-UPDATE diseaseconfiguration         SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET' WHERE disease = 'MUMPS';
-
-ALTER TABLE epidata_history         ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
-UPDATE diseaseconfiguration_history SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET' WHERE disease = 'MUMPS';
-
-INSERT INTO schema_version (version_number, comment) VALUES (654, 'Included Mumps exposure details');
-
--- 14231 Mumps symptom changes
+-- 14231, 14232 Mumps symptom and exposure changes
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS salivaryswelling varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS orchitis varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS nocomplications varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS unknowncomplications varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS pancreatitis varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS othergeneralsymptoms varchar(255);
-ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(255);
-
+ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(512);
+ALTER TABLE epidata                 ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+UPDATE diseaseconfiguration         SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,RESPIRATORY_DROPLET', changedate = now() WHERE disease = 'MUMPS';
 
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS salivaryswelling varchar(255);
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS orchitis varchar(255);
@@ -17031,9 +17023,9 @@ ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS nocomplications var
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS unknowncomplications varchar(255);
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS pancreatitis varchar(255);
 ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptoms varchar(255);
-ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(255);
-
-INSERT INTO schema_version (version_number, comment) VALUES (655, 'Added  Mumps symptoms');
+ALTER TABLE symptoms_history        ADD COLUMN IF NOT EXISTS othergeneralsymptomstext varchar(512);
+ALTER TABLE epidata_history         ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (657, '#14231, #14232 Mumps symptom and exposure changes');
 
 -- 14233 Mumps sample and pathogen test changes
 ALTER TABLE pathogentest            ADD COLUMN IF NOT EXISTS sequenceid varchar(255);
@@ -17044,5 +17036,5 @@ ALTER TABLE pathogentest_history    ADD COLUMN IF NOT EXISTS sequenceid varchar(
 ALTER TABLE pathogentest_history    ADD COLUMN IF NOT EXISTS seroconversion boolean;
 UPDATE pathogentest_history         SET seroconversion = false WHERE seroconversion IS NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (656, 'Included Mumps sample and pathogen test changes');
+INSERT INTO schema_version (version_number, comment) VALUES (658, 'Included Mumps sample and pathogen test changes');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
