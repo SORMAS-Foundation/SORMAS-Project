@@ -2892,7 +2892,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		SHIGELLOSIS,
 		YERSINIOSIS,
-		 MUMPS})
+		MUMPS })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
