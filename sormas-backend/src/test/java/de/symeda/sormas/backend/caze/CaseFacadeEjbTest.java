@@ -91,6 +91,7 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -1375,23 +1376,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getCaseFacade().getRelevantCasesForVaccination(notRelevantVaccinationForCase1).isEmpty());
 		// IPI vaccination test
 		final Date today = new Date();
-		caze1 = creator.createCase(surveillanceSupervisor.toReference(), cazePerson1.toReference(), Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING,
-				DateUtils.addDays(today, -1),
-				rdcf);
+		caze1 = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			cazePerson1.toReference(),
+			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addDays(today, -1),
+			rdcf);
 		cases1.add(caze1);
 		VaccinationDto ipiVaccincation = creator.createVaccinationWithDetails(
-				caze1.getReportingUser(),
-				immunization.toReference(),
-				HealthConditionsDto.build(),
-				DateHelper.subtractDays(new Date(), 7),
-				Vaccine.PNEUMOVAX_23_MERCK,
-				VaccineManufacturer.MERCK,
-				VaccinationInfoSource.UNKNOWN,
-				"inn1",
-				"123",
-				"code123",
-				"1");
+			caze1.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 7),
+			Vaccine.PNEUMOVAX_23_MERCK,
+			VaccineManufacturer.MERCK,
+			VaccinationInfoSource.UNKNOWN,
+			"inn1",
+			"123",
+			"code123",
+			"1");
 		assertEquals(getCaseFacade().getRelevantCasesForVaccination(ipiVaccincation), cases1);
 	}
 
@@ -3512,7 +3517,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		// Test-result filter narrows to the matching case only.
-		List<CaseIndexDto> positives = getCaseFacade().getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE), 0, 100, null);
+		List<CaseIndexDto> positives =
+			getCaseFacade().getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE), 0, 100, null);
 		assertEquals(1, positives.size());
 		assertEquals(caseA.getUuid(), positives.get(0).getUuid());
 
@@ -3559,10 +3565,36 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			t.setSerotypeText("Cross C");
 		});
 
-		List<CaseIndexDto> crossSampleMatches = getCaseFacade()
-			.getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).serogroup("cross c"), 0, 100, null);
+		List<CaseIndexDto> crossSampleMatches =
+			getCaseFacade().getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).serogroup("cross c"), 0, 100, null);
 		assertEquals(1, crossSampleMatches.size());
 		assertEquals(caseC.getUuid(), crossSampleMatches.get(0).getUuid());
+	}
+
+	@Test
+	public void testFilterByHasDoctorDeclaration() {
+		PersonDto personDto = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caseWithDoctorDeclaration = creator.createCase(
+			surveillanceOfficer.toReference(),
+			personDto.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		// Create a doctor declaration surveillance report for the first case
+		SurveillanceReportDto doctorDeclaration =
+			SurveillanceReportDto.build(caseWithDoctorDeclaration.toReference(), surveillanceOfficer.toReference());
+		doctorDeclaration.setReportingType(ReportingType.DOCTOR);
+		doctorDeclaration.setReportDate(new Date());
+		getSurveillanceReportFacade().save(doctorDeclaration);
+
+		final CaseCriteria criteriaWithDoctorDeclaration = new CaseCriteria();
+		criteriaWithDoctorDeclaration.setHasDoctorDeclaration(Boolean.TRUE);
+		List<CaseIndexDto> casesWithDoctorDeclaration = getCaseFacade().getIndexList(criteriaWithDoctorDeclaration, 0, 100, null);
+		assertThat(casesWithDoctorDeclaration, hasSize(1));
+		assertEquals(caseWithDoctorDeclaration.getUuid(), casesWithDoctorDeclaration.get(0).getUuid());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

@@ -79,6 +79,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.SurveyResponseStatus;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -866,6 +867,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				.where(cb.equal(clinicalVisitRoot.get(ClinicalVisit.CLINICAL_COURSE), from.get(Case.CLINICAL_COURSE)));
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.or(cb.exists(prescriptionSubquery), cb.exists(treatmentSubquery), cb.exists(clinicalVisitSubquery)));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getHasDoctorDeclaration())) {
+			Subquery<Long> doctorDeclarationSubquery = cq.subquery(Long.class);
+			Root<SurveillanceReport> surveillanceReportRoot = doctorDeclarationSubquery.from(SurveillanceReport.class);
+			doctorDeclarationSubquery.select(surveillanceReportRoot.get(SurveillanceReport.ID))
+				.where(
+					cb.equal(surveillanceReportRoot.get(SurveillanceReport.CAZE), from),
+					cb.equal(surveillanceReportRoot.get(SurveillanceReport.REPORTING_TYPE), ReportingType.DOCTOR));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(doctorDeclarationSubquery));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
