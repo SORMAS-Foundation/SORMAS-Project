@@ -3583,7 +3583,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		// Create a doctor declaration surveillance report for the first case
 		SurveillanceReportDto doctorDeclaration =
 			SurveillanceReportDto.build(caseWithDoctorDeclaration.toReference(), surveillanceOfficer.toReference());
 		doctorDeclaration.setReportingType(ReportingType.DOCTOR);
