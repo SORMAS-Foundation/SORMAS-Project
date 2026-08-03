@@ -709,10 +709,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		NullableOptionGroup asymptomaticNOG = addField(ASYMPTOMATIC);
 		addField(CLINICAL_MANIFESTATION);
 
+		// Asymptomatic excluded elements
+		// For Mumps, its possible to have a case with an asymptomatic symptoms along with no complicated symptoms
+		List<String> nonAsymptomaticFields = Arrays.asList(ASYMPTOMATIC, NO_COMPLICATIONS);
+
 		// toggling the onset Symptom and date based on asymptomatic
 		asymptomaticNOG.addValueChangeListener(e -> {
 			boolean isSymptomatic = !SymptomState.YES.equals(asymptomaticNOG.getNullableValue());
-			editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
+
+			editableAllowedFields().stream().filter(field -> !nonAsymptomaticFields.contains(field.getId())).forEach(field -> {
 				if (!isSymptomatic) {
 					field.clear();
 				}
