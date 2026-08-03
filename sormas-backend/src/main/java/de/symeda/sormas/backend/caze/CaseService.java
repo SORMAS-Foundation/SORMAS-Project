@@ -869,9 +869,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				.and(cb, filter, cb.or(cb.exists(prescriptionSubquery), cb.exists(treatmentSubquery), cb.exists(clinicalVisitSubquery)));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getHasDoctorDeclaration())) {
-			Subquery<Long> doctorDeclarationSubquery = cq.subquery(Long.class);
+			Subquery<Integer> doctorDeclarationSubquery = cq.subquery(Integer.class);
 			Root<SurveillanceReport> surveillanceReportRoot = doctorDeclarationSubquery.from(SurveillanceReport.class);
-			doctorDeclarationSubquery.select(surveillanceReportRoot.get(SurveillanceReport.ID))
+			doctorDeclarationSubquery.select(cb.literal(1))
 				.where(
 					cb.equal(surveillanceReportRoot.get(SurveillanceReport.CAZE), from),
 					cb.equal(surveillanceReportRoot.get(SurveillanceReport.REPORTING_TYPE), ReportingType.DOCTOR));
