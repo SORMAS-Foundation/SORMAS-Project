@@ -128,7 +128,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			Disease.DENGUE,
 			Disease.SALMONELLOSIS,
 			Disease.SHIGELLOSIS,
-			Disease.SYPHILIS));
+			Disease.SYPHILIS,
+			Disease.MUMPS));
+	private static final List<Disease> CLUSTER_ALLOWED_DISEASES = Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -146,6 +148,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			loc(LOC_CLUSTER_TYPE_HEADING)+
+			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
+			fluidRowLocs(8, EpiDataDto.CLUSTER_IDENTIFIER,4,null) +
 			fluidRowLocs(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, "") +
 			fluidRowLocs(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, "") +
 			fluidRowLocs(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP) +
@@ -158,8 +163,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
 			loc(EpiDataDto.ACTIVITIES_AS_CASE) +
 			loc(LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE) +
-			loc(LOC_CLUSTER_TYPE_HEADING)+
-			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
+
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
 			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) +
@@ -266,8 +270,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		}
 
 		addField(EpiDataDto.CASE_IMPORTED_STATUS);
-		addField(EpiDataDto.CLUSTER_TYPE);
-		addField(EpiDataDto.CLUSTER_RELATED);
+		Field<?> clusterTypeField = addField(EpiDataDto.CLUSTER_TYPE);
+		clusterTypeField.setVisible(false);
+		Field<?> clusterRelatedField = addField(EpiDataDto.CLUSTER_RELATED);
+		Field<?> clusterIdentifierField = addField(EpiDataDto.CLUSTER_IDENTIFIER);
+		clusterIdentifierField.setVisible(false);
 
 		addField(EpiDataDto.MODE_OF_TRANSMISSION);
 		addField(EpiDataDto.MODE_OF_TRANSMISSION_TYPE);
@@ -304,8 +311,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			true);
 
 		TextField clusterTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), EpiDataDto.CLUSTER_TYPE, EpiDataDto.CLUSTER_RELATED, Collections.singletonList(Boolean.TRUE), true);
+		clusterRelatedField.addValueChangeListener(e -> {
+			boolean clusterValue = (boolean) e.getProperty().getValue();
+			setVisibleClear(isVisibleAllowed(EpiDataDto.CLUSTER_IDENTIFIER) && clusterValue, EpiDataDto.CLUSTER_IDENTIFIER);
+			setVisibleClear(isVisibleAllowed(EpiDataDto.CLUSTER_TYPE) && clusterValue, EpiDataDto.CLUSTER_TYPE);
+		});
+
 		FieldHelper.setVisibleWhen(getField(EpiDataDto.CLUSTER_TYPE), Arrays.asList(clusterTypeTF), Arrays.asList(ClusterType.OTHER), true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -544,7 +555,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			new MultilineLabel(divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataFieldsHint)), ContentMode.HTML),
 			LOC_EPI_DATA_FIELDS_HINT);
 
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.MEASLES == disease) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && CLUSTER_ALLOWED_DISEASES.contains(disease)) {
 			getContent().addComponent(
 				new MultilineLabel(h3(I18nProperties.getString(Strings.headingClusterType)) + divsCss(VSPACE_3), ContentMode.HTML),
 				LOC_CLUSTER_TYPE_HEADING);

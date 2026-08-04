@@ -17,18 +17,21 @@ package de.symeda.sormas.api.epidata;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ClusterType {
-    KINDERGARTEN_OR_CHILDCARE,
-    FAMILY,
-    MILITARY,
-    NOSOCOMIAL,
-    SCHOOL,
-    SPORTS_TEAM,
-    UNIVERSITY,
-    OTHER;
 
-    @Override
-    public String toString() {
-        return I18nProperties.getEnumCaption(this);
-    }
+	KINDERGARTEN_OR_CHILDCARE,
+	FAMILY,
+	MILITARY,
+	NOSOCOMIAL,
+	SCHOOL,
+	SPORTS_TEAM,
+	UNIVERSITY,
+	NOT_APPLICABLE,
+	UNKNOWN,
+	OTHER;
+
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 
 }

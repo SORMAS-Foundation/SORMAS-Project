@@ -182,8 +182,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		SyphilisStage.NEUROLOGICAL_SYPHILIS,
 		List.of(NEUROLOGICAL_MANIFESTATIONS));
 
-	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections
-		.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, OTHER_NEUROLOGICAL_SYMPTOMS));
+	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections.unmodifiableList(
+		Arrays.asList(
+			PARENT_TIME_OFF_WORK,
+			JAUNDICE_WITHIN_24_HOURS_OF_BIRTH,
+			DATE_OF_ONSET_KNOWN,
+			OTHER_NEUROLOGICAL_SYMPTOMS,
+			OTHER_GENERAL_SYMPTOMS,
+			UNKNOWN_COMPLICATIONS,
+			NO_COMPLICATIONS));
 	private static final List<String> COMBO_BOX_FIELDS = Collections.unmodifiableList(Arrays.asList(CLINICAL_MANIFESTATION));
 
 	private static Map<String, List<String>> symptomGroupMap = new HashMap<>();
@@ -194,6 +201,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.PERTUSSIS,
 		Disease.SHIGELLOSIS);
+	// other complicated symptom for onset field listener action
+	private List<String> otherComplicatedSymptoms =
+		Arrays.asList(LESIONS_THAT_ITCH, OTHER_COMPLICATIONS_TEXT, UNKNOWN_COMPLICATIONS, OTHER_NEUROLOGICAL_SYMPTOMS_TEXT);
+
 	final boolean isLuxDengue;
 	final boolean isParasiticInfectiousDiseases;
 	final boolean isFoodborneGastrointestinal;
@@ -653,7 +664,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			PSEUDO_APPENDICULAR_SYNDROME,
 			NECROTIZING_ENTEROCOLITIS,
 			REACTIVE_ARTHRITIS,
-			ERYTHEMA_NODOSUM);
+			ERYTHEMA_NODOSUM,
+			SALIVARY_SWELLING,
+			NO_COMPLICATIONS,
+			UNKNOWN_COMPLICATIONS,
+			ORCHITIS,
+			PANCREATITIS,
+			OTHER_GENERAL_SYMPTOMS,
+			OTHER_GENERAL_SYMPTOMS_TEXT);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -1031,11 +1049,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			HEPATOSPLENOMEGALY,
 			LOW_GRADE_FEVER,
 			MUCOCUTANEOUS_LESION,
-			MACULOPAPULAR_RASH,
 			PSEUDO_APPENDICULAR_SYNDROME,
 			NECROTIZING_ENTEROCOLITIS,
 			REACTIVE_ARTHRITIS,
-			ERYTHEMA_NODOSUM);
+			ERYTHEMA_NODOSUM,
+			MACULOPAPULAR_RASH,
+			SALIVARY_SWELLING,
+			ORCHITIS,
+			PANCREATITIS);
 
 		// Set visibilities
 
@@ -1325,6 +1346,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			.setVisibleWhen(getFieldGroup(), OTHER_NEUROLOGICAL_SYMPTOMS_TEXT, OTHER_NEUROLOGICAL_SYMPTOMS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), CLINICAL_MANIFESTATION_TEXT, CLINICAL_MANIFESTATION, Arrays.asList(ClinicalManifestation.OTHER), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_GENERAL_SYMPTOMS_TEXT, OTHER_GENERAL_SYMPTOMS, Arrays.asList(YesNoUnknown.YES), true);
 	}
 
 	private void symptomGroupVisibility() {
@@ -1501,17 +1523,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return false;
 	}
 
-	public boolean isAnySymptomVisible(FieldGroup fieldGroup, List<String> sourcePropertyIds, List<Object> sourceValues) {
-		return true;
-	}
-
 	@SuppressWarnings("rawtypes")
 	private void addListenerForOnsetFields(ComboBox onsetSymptom, DateField onsetDateField) {
 		List<String> allPropertyIds =
 			Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
-		allPropertyIds.add(LESIONS_THAT_ITCH);
-		allPropertyIds.add(OTHER_COMPLICATIONS_TEXT);
-		allPropertyIds.add(OTHER_NEUROLOGICAL_SYMPTOMS_TEXT);
+		allPropertyIds.addAll(otherComplicatedSymptoms);
 		allPropertyIds.addAll(SYPHILIS_ACQUIRED_ONLY_FIELD_IDS);
 		allPropertyIds.addAll(SYPHILIS_CONGENITAL_ONLY_FIELD_IDS);
 		for (Object sourcePropertyId : allPropertyIds) {

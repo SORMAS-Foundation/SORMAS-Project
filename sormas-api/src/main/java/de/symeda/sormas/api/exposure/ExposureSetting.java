@@ -40,8 +40,8 @@ public enum ExposureSetting {
 
 	PREGNANCY_OR_DELIVERY(ExposureCategory.VERTICAL_TRANSMISSION),
 
-	OTHER(ExposureCategory.AIR_BORNE),
-	UNKNOWN(ExposureCategory.AIR_BORNE);
+	OTHER(ExposureCategory.AIR_BORNE, ExposureCategory.RESPIRATORY_DROPLET),
+	UNKNOWN(ExposureCategory.AIR_BORNE, ExposureCategory.RESPIRATORY_DROPLET);
 
 	private final Set<ExposureCategory> categories;
 
