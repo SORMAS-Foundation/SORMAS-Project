@@ -692,7 +692,7 @@ public final class ExternalMessageMapper {
 						Mapping.of(
 							pathogenTest::setLab,
 							pathogenTest.getLab(),
-							processingFacade.getFacilityReference(sourceTestReport.getTestLabExternalIds()),
+							processingFacade.getFacilityReference(externalMessage.getReporterExternalIds()),
 							PathogenTestDto.LAB),
 						Mapping.of(
 							pathogenTest::setLabDetails,
