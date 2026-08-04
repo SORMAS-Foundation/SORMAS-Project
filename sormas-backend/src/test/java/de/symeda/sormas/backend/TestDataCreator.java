@@ -2009,6 +2009,25 @@ public class TestDataCreator {
 	}
 
 	public FacilityDto createFacility(
+			String facilityName,
+			String externalId,
+			RegionReferenceDto region,
+			DistrictReferenceDto district,
+			CommunityReferenceDto community,
+			FacilityType type) {
+
+		FacilityDto facility = FacilityDto.build();
+		facility.setName(facilityName);
+		facility.setExternalID(externalId);
+		facility.setType(type == null ? FacilityType.HOSPITAL : type);
+		facility.setCommunity(community);
+		facility.setDistrict(district);
+		facility.setRegion(region);
+		beanTest.getFacilityFacade().save(facility);
+		return facility;
+	}
+
+	public FacilityDto createFacility(
 		String facilityName,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,

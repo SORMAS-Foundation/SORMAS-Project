@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.junit.jupiter.api.Test;
 
@@ -214,10 +215,8 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 	public void testMapToPathogenTestSetsLab() {
 		// Create a lab facility with external ID
 		var rdcf = creator.createRDCF();
-		FacilityDto labFacility = creator.createFacility("TestLab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		String labExternalId = "testLabExternalId";
-		labFacility.setExternalID(labExternalId);
-		getFacilityFacade().save(labFacility);
+		FacilityDto labFacility = creator.createFacility("TestLab", labExternalId, rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 
 		// Create external message with reporterExternalIds pointing to the lab
 		ExternalMessageDto externalMessage = ExternalMessageDto.build();
@@ -226,9 +225,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		// Create test report and pathogen test
 		TestReportDto testReport = TestReportDto.build();
 		PathogenTestDto pathogenTest = new PathogenTestDto();
-
-		// Initially lab should be null
-		assertNull(pathogenTest.getLab());
+		pathogenTest.setDrugSusceptibility(new DrugSusceptibilityDto());
 
 		// Create mapper and map to pathogen test
 		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessage, getExternalMessageProcessingFacade());
