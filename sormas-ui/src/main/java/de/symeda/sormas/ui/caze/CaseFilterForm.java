@@ -104,6 +104,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
 			CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY,
 			CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
+			CaseCriteria.HAS_DOCTOR_DECLARATION,
 			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
 			CaseCriteria.WITH_EXTENDED_QUARANTINE,
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
@@ -338,6 +339,17 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
 					I18nProperties.getCaption(Captions.caseFilterCasesWithCaseManagementData),
 					I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithCaseManagementData),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+		}
+
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.HAS_DOCTOR_DECLARATION,
+					I18nProperties.getCaption(Captions.caseFilterHasDoctorDeclaration),
+					I18nProperties.getDescription(Descriptions.descCaseFilterHasDoctorDeclaration),
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 

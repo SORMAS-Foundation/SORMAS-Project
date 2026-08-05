@@ -885,6 +885,7 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
+	String caseFilterHasDoctorDeclaration = "caseFilterHasDoctorDeclaration";
 	String caseFilterIncludeCasesFromOtherJurisdictions = "caseFilterIncludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";

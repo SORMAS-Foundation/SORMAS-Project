@@ -40,6 +40,7 @@ public interface Descriptions {
 	String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
 	String descCaseFilterCasesWithReinfection = "descCaseFilterCasesWithReinfection";
 	String descCaseFilterExcludeSharedCases = "descCaseFilterExcludeSharedCases";
+	String descCaseFilterHasDoctorDeclaration = "descCaseFilterHasDoctorDeclaration";
 	String descCaseFilterIncludeCasesFromOtherJurisdictions = "descCaseFilterIncludeCasesFromOtherJurisdictions";
 	String descCaseFilterOnlyCasesWithFulfilledReferenceDefinition = "descCaseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String descCaseFilterOnlyFromOtherInstances = "descCaseFilterOnlyFromOtherInstances";
