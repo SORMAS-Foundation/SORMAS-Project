@@ -107,23 +107,39 @@ public class MessagingService {
 		Messenger messenger)
 		throws NotificationDeliveryFailedException {
 
+		NotificationDeliveryFailedException firstDeliveryFailure = null;
+
 		for (Map.Entry<User, String> entry : userMessages.entrySet()) {
 			final User recipient = entry.getKey();
 			final String messageContent = entry.getValue();
 
-			// Don't send notifications to users that initiated an action
-			if (recipient.equals(userService.getCurrentUser()) || !recipient.isActive()) {
-				return;
+			final boolean recipientInitiatedTheAction = recipient.equals(userService.getCurrentUser());
+			if (recipientInitiatedTheAction || !recipient.isActive()) {
+				continue;
 			}
 
 			final String recipientUuid = recipient.getUuid();
 
-			messenger.send(
-				String.format(I18nProperties.getEnumCaption(subject), subjectParameters),
-				messageContent,
-				contactInfoSupplier.apply(recipient),
-				recipientUuid,
-				"user");
+			try {
+				messenger.send(
+					String.format(I18nProperties.getEnumCaption(subject), subjectParameters),
+					messageContent,
+					contactInfoSupplier.apply(recipient),
+					recipientUuid,
+					"user");
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error("Failed to deliver a notification to recipient with UUID {}.", recipientUuid, e);
+				if (firstDeliveryFailure == null) {
+					firstDeliveryFailure = e;
+				}
+			}
+		}
+
+		if (firstDeliveryFailure != null) {
+			throw new NotificationDeliveryFailedException(
+				firstDeliveryFailure.getMessage(),
+				firstDeliveryFailure.getMessageType(),
+				firstDeliveryFailure.getCause());
 		}
 	}
 

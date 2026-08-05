@@ -16938,7 +16938,7 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS maculopapularrash varchar(
 INSERT INTO schema_version (version_number, comment) VALUES (651, 'Add Syphilis specific symptoms for #14209');
 
 
--- Syphilis EpiData 
+-- Syphilis EpiData
 UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,VERTICAL_TRANSMISSION,MEDICAL_CARE' WHERE disease = 'SYPHILIS';
 
 ALTER TABLE epidata ADD COLUMN IF NOT EXISTS typeofclinicalservice varchar(255);
@@ -17037,4 +17037,65 @@ ALTER TABLE pathogentest_history    ADD COLUMN IF NOT EXISTS seroconversion bool
 UPDATE pathogentest_history         SET seroconversion = false WHERE seroconversion IS NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (658, 'Included Mumps sample and pathogen test changes');
+
+-- 2026-07-21 Make scheduled job intervals configurable #13818
+
+ALTER TABLE systemconfigurationvalue ALTER COLUMN value_pattern TYPE text;
+ALTER TABLE systemconfigurationvalue_history ALTER COLUMN value_pattern TYPE text;
+
+DO $$
+DECLARE
+    cron_category_id      BIGINT;
+    cron_value_pattern    TEXT := '(\s*|(\*(/((0?[1-9])|[1-5][0-9]))?|((0?[0-9])|[1-5][0-9])(-((0?[0-9])|[1-5][0-9]))?(/((0?[1-9])|[1-5][0-9]))?(,((0?[0-9])|[1-5][0-9])(-((0?[0-9])|[1-5][0-9]))?)*) (\*(/((0?[1-9])|[1-5][0-9]))?|((0?[0-9])|[1-5][0-9])(-((0?[0-9])|[1-5][0-9]))?(/((0?[1-9])|[1-5][0-9]))?(,((0?[0-9])|[1-5][0-9])(-((0?[0-9])|[1-5][0-9]))?)*) (\*(/((0?[1-9])|1[0-9]|2[0-3]))?|((0?[0-9])|1[0-9]|2[0-3])(-((0?[0-9])|1[0-9]|2[0-3]))?(/((0?[1-9])|1[0-9]|2[0-3]))?(,((0?[0-9])|1[0-9]|2[0-3])(-((0?[0-9])|1[0-9]|2[0-3]))?)*) (\*|((0?[1-9])|[1-2][0-9]|3[0-1])(-((0?[1-9])|[1-2][0-9]|3[0-1]))?(,((0?[1-9])|[1-2][0-9]|3[0-1])(-((0?[1-9])|[1-2][0-9]|3[0-1]))?)*) (\*|((0?[1-9])|1[0-2])(-((0?[1-9])|1[0-2]))?(,((0?[1-9])|1[0-2])(-((0?[1-9])|1[0-2]))?)*) (\*|(0?[0-7])(-(0?[0-7]))?(,(0?[0-7])(-(0?[0-7]))?)*))';
+    job                   RECORD;
+BEGIN
+    SELECT id INTO cron_category_id FROM systemconfigurationcategory WHERE name = 'CRON';
+
+    IF cron_category_id IS NULL THEN
+        INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description)
+        VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CRON',
+                'i18n/Scheduled jobs/categoryCron', 'i18n/Scheduled jobs/categoryCron')
+        RETURNING id INTO cron_category_id;
+    END IF;
+
+    FOR job IN
+        SELECT * FROM (VALUES
+            ('SEND_NEW_AND_DUE_TASK_MESSAGES',       '0 */10 * * * *', 'SendNewAndDueTaskMessages'),
+            ('CALCULATE_CASE_COMPLETION',            '0 */2 * * * *',  'CalculateCaseCompletion'),
+            ('DELETE_EXPIRED_FEATURE_CONFIGURATIONS','0 0 1 * * *',    'DeleteExpiredFeatureConfigurations'),
+            ('GENERATE_AUTOMATIC_TASKS',             '0 5 1 * * *',    'GenerateAutomaticTasks'),
+            ('CLEAN_UP_TEMPORARY_FILES',             '0 10 1 * * *',   'CleanUpTemporaryFiles'),
+            ('ARCHIVE_CASES',                        '0 15 1 * * *',   'ArchiveCases'),
+            ('ARCHIVE_EVENTS',                       '0 20 1 * * *',   'ArchiveEvents'),
+            ('CLEANUP_DELETED_DOCUMENTS',            '0 25 1 * * *',   'CleanupDeletedDocuments'),
+            ('DELETE_SYSTEM_EVENTS',                 '0 30 1 * * *',   'DeleteSystemEvents'),
+            ('FETCH_EXTERNAL_MESSAGES',              '0 0 * * * *',    'FetchExternalMessages'),
+            ('FETCH_SURVEY_RESPONSES',               '0 0 * * * *',    'FetchSurveyResponses'),
+            ('UPDATE_IMMUNIZATION_STATUSES',         '0 40 1 * * *',   'UpdateImmunizationStatuses'),
+            ('SYNC_INFRA_WITH_CENTRAL',              '0 50 1 * * *',   'SyncInfraWithCentral'),
+            ('DELETE_EXPIRED_ENTITIES',              '0 55 1 * * *',   'DeleteExpiredEntities'),
+            ('ARCHIVE_CONTACTS',                     '0 15 2 * * *',   'ArchiveContacts'),
+            ('ARCHIVE_EVENT_PARTICIPANTS',           '0 20 2 * * *',   'ArchiveEventParticipants'),
+            ('ARCHIVE_IMMUNIZATIONS',                '0 25 2 * * *',   'ArchiveImmunizations'),
+            ('ARCHIVE_TRAVEL_ENTRY',                 '0 30 2 * * *',   'ArchiveTravelEntry'),
+            ('DELETE_EXPIRED_SPECIAL_CASE_ACCESSES', '0 30 2 * * *',   'DeleteExpiredSpecialCaseAccesses'),
+            ('SYNC_USERS_FROM_AUTH_PROVIDER',        '0 35 2 * * *',   'SyncUsersFromAuthProvider'),
+            ('SOFT_DELETE_OLD_NEGATIVE_SAMPLES',     '0 40 2 * * *',   'SoftDeleteOldNegativeSamples')
+        ) AS t(job_key, default_expression, description_suffix)
+    LOOP
+        INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional,
+                                             value_pattern, value_encrypt, data_provider, validation_message,
+                                             changedate, creationdate, id, uuid)
+        VALUES ('CRON.' || job.job_key, job.default_expression,
+                'i18n/infoSystemConfigurationValueDescriptionCron' || job.description_suffix,
+                cron_category_id, true, cron_value_pattern, false, null,
+                'i18n/systemConfigurationValueValidationCronExpression',
+                now(), now(), nextval('entity_seq'), generate_base32_uuid())
+        ON CONFLICT (config_key) DO NOTHING;
+    END LOOP;
+END $$
+LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (659, 'Make scheduled job intervals configurable #13818');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
