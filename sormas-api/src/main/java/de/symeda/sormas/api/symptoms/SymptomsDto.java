@@ -56,6 +56,7 @@ import static de.symeda.sormas.api.Disease.MALARIA;
 import static de.symeda.sormas.api.Disease.MATERNAL_DEATHS;
 import static de.symeda.sormas.api.Disease.MEASLES;
 import static de.symeda.sormas.api.Disease.MONKEYPOX;
+import static de.symeda.sormas.api.Disease.MUMPS;
 import static de.symeda.sormas.api.Disease.M_PNEUMONIAE;
 import static de.symeda.sormas.api.Disease.NEONATAL_TETANUS;
 import static de.symeda.sormas.api.Disease.NEW_INFLUENZA;
@@ -89,6 +90,7 @@ import static de.symeda.sormas.api.Disease.UNSPECIFIED_VHF;
 import static de.symeda.sormas.api.Disease.WEST_NILE_FEVER;
 import static de.symeda.sormas.api.Disease.YAWS_ENDEMIC_SYPHILIS;
 import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
+import static de.symeda.sormas.api.Disease.YERSINIOSIS;
 
 import java.util.Date;
 
@@ -386,6 +388,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String TENESMUS = "tenesmus";
 	public static final String BLOODY_DIARRHEA = "bloodyDiarrhea";
 	public static final String HAEMOLYTIC_UREMIC_SYNDROME = "haemolyticUremicSyndrome";
+	// Mumps specific symptoms
+	public static final String SALIVARY_SWELLING = "salivarySwelling";
+	public static final String NO_COMPLICATIONS = "noComplications";
+	public static final String UNKNOWN_COMPLICATIONS = "unknownComplications";
+	public static final String ORCHITIS = "orchitis";
+	public static final String PANCREATITIS = "pancreatitis";
+	public static final String OTHER_GENERAL_SYMPTOMS = "otherGeneralSymptoms";
+	public static final String OTHER_GENERAL_SYMPTOMS_TEXT = "otherGeneralSymptomsText";
 
 	// Syphilis-specific symptoms
 	public static final String PATCHY_ALOPECIA = "patchyAlopecia";
@@ -413,6 +423,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String MUCOCUTANEOUS_LESION = "mucocutaneousLesion";
 	public static final String MACULOPAPULAR_RASH = "maculopapularRash";
 
+	// Yersiniosis symptoms
+	public static final String PSEUDO_APPENDICULAR_SYNDROME = "pseudoAppendicularSyndrome";
+	public static final String NECROTIZING_ENTEROCOLITIS = "necrotizingEnterocolitis";
+	public static final String REACTIVE_ARTHRITIS = "reactiveArthritis";
+	public static final String ERYTHEMA_NODOSUM = "erythemaNodosum";
+	public static final String SYMPTOM_END_DATE = "symptomEndDate";
+
 	// Fields are declared in the order they should appear in the import template
 
 	public static SymptomsDto build() {
@@ -438,6 +455,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		SALMONELLOSIS,
+		YERSINIOSIS,
 		UNDEFINED,
 		DENGUE,
 		SHIGELLOSIS,
@@ -463,6 +481,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
 		SALMONELLOSIS,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -528,6 +547,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		UNSPECIFIED_VHF,
 		SALMONELLOSIS,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER })
 	@Complication(value = {
@@ -728,12 +748,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		SALMONELLOSIS,
 		SHIGELLOSIS,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	@Complication({
-		SHIGELLOSIS, })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	private SymptomState dehydration;
 
 	@Diseases({
@@ -755,6 +777,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		SALMONELLOSIS,
 		SHIGELLOSIS,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER })
 	@Complication({
@@ -852,6 +875,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		RABIES,
 		ANTHRAX,
 		CORONAVIRUS,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -889,6 +913,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		SHIGELLOSIS,
 		SYPHILIS,
+		YERSINIOSIS,
+		MUMPS,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -1037,6 +1063,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		MALARIA,
 		SALMONELLOSIS,
+		YERSINIOSIS,
 		DENGUE,
 		UNDEFINED,
 		OTHER })
@@ -1372,6 +1399,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		MALARIA,
 		SALMONELLOSIS,
+		YERSINIOSIS,
 		DENGUE,
 		UNDEFINED,
 		OTHER })
@@ -1501,7 +1529,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		SALMONELLOSIS,
 		SYPHILIS,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS,
+		MUMPS })
 	@HideForCountries
 	@Outbreaks
 	private Date onsetDate;
@@ -1569,7 +1599,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		SALMONELLOSIS,
 		SYPHILIS,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS,
+		MUMPS })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String onsetSymptom;
@@ -1644,6 +1676,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		SALMONELLOSIS,
 		UNDEFINED,
+		YERSINIOSIS,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -1668,6 +1701,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		SALMONELLOSIS,
 		UNDEFINED,
+		YERSINIOSIS,
 		OTHER })
 	@Outbreaks
 	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
@@ -1967,6 +2001,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		SALMONELLOSIS,
 		SHIGELLOSIS,
+		YERSINIOSIS,
+		MUMPS,
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
@@ -2162,6 +2198,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		SALMONELLOSIS,
 		DENGUE,
+		YERSINIOSIS,
 		OTHER })
 	@Outbreaks
 	@HideForCountries
@@ -2623,6 +2660,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		MUMPS,
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -2650,6 +2688,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
+		MUMPS,
 		UNDEFINED,
 		OTHER })
 	@DependantOn(OTHER_COMPLICATIONS)
@@ -2661,7 +2700,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		MALARIA,
 		CRYPTOSPORIDIOSIS,
-		GIARDIASIS })
+		GIARDIASIS,
+		MUMPS })
 	private String otherComplicationsText;
 
 	@Diseases({
@@ -2700,11 +2740,13 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		SHIGELLOSIS,
 		UNSPECIFIED_VHF,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
 	@Complication({
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	@HideForCountries
 	private SymptomState sepsis;
@@ -2848,7 +2890,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		SYPHILIS,
 		DENGUE,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS,
+		MUMPS })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -2860,10 +2904,12 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
-		DENGUE })
+		DENGUE,
+		MUMPS })
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
-		DENGUE })
+		DENGUE,
+		MUMPS })
 	private SymptomState meningitis;
 
 	@Diseases({
@@ -2879,7 +2925,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		DENGUE,
 		SYPHILIS,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState otherClinicalPresentation;
 
@@ -2892,7 +2939,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		DENGUE,
 		SYPHILIS,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private String otherClinicalPresentationText;
 
@@ -2903,6 +2951,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		DENGUE,
 		SYPHILIS,
+		MUMPS,
 		MALARIA })
 	@Complication({
 		MEASLES })
@@ -2925,12 +2974,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		RESPIRATORY_SYNCYTIAL_VIRUS,
 		GIARDIASIS,
+		YERSINIOSIS,
 		CRYPTOSPORIDIOSIS })
 	private YesNoUnknown parentTimeOffWork;
 
 	@Diseases({
 		RESPIRATORY_SYNCYTIAL_VIRUS,
 		GIARDIASIS,
+		YERSINIOSIS,
 		CRYPTOSPORIDIOSIS })
 	@DependantOn("parentTimeOffWork")
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -2951,11 +3002,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
-		SYPHILIS })
+		SYPHILIS,
+		YERSINIOSIS })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState weightLoss;
 	@Diseases({
 		GIARDIASIS,
+		YERSINIOSIS,
 		CRYPTOSPORIDIOSIS })
 	@DependantOn(WEIGHT_LOSS)
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -2966,13 +3019,15 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
 		DENGUE,
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	private SymptomState symptomCurrentStatus;
 
 	@Diseases({
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
+		YERSINIOSIS,
 		DENGUE })
 	@DependantOn(SYMPTOM_CURRENT_STATUS)
 	private Integer durationOfSymptoms;
@@ -2985,11 +3040,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState reoccurrence;
 	@Diseases({
 		GIARDIASIS,
+		YERSINIOSIS,
 		CRYPTOSPORIDIOSIS })
 	@Complication()
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState overnightStayRequired;
 	@Diseases({
+		YERSINIOSIS,
 		GIARDIASIS })
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState bloating;
@@ -3013,10 +3070,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE })
 	private SymptomState coldSkin;
 	@Diseases({
-		DENGUE })
+		DENGUE,
+		MUMPS })
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
-		DENGUE })
+		DENGUE,
+		MUMPS })
 	private SymptomState encephalitis;
 	@Diseases({
 		DENGUE })
@@ -3147,7 +3206,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private Date offsetDate;
 
 	@Diseases({
-		DENGUE })
+		DENGUE,
+		MUMPS })
 	@Outbreaks
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -3338,6 +3398,86 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		SYPHILIS })
 	private YesNoUnknown clinicalCriteriaMet;
+
+	// Yersiniosis-specific symptoms
+	@Diseases({
+		YERSINIOSIS })
+	@Complication()
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState pseudoAppendicularSyndrome;
+
+	@Diseases({
+		YERSINIOSIS })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		YERSINIOSIS })
+	private SymptomState necrotizingEnterocolitis;
+
+	@Diseases({
+		YERSINIOSIS })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		YERSINIOSIS })
+	private SymptomState reactiveArthritis;
+
+	@Diseases({
+		YERSINIOSIS })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		YERSINIOSIS })
+	private SymptomState erythemaNodosum;
+
+	@Diseases({
+		YERSINIOSIS,
+		GIARDIASIS,
+		CRYPTOSPORIDIOSIS })
+	@HideForCountries
+	@Outbreaks
+	private Date symptomEndDate;
+
+	@Diseases({
+		MUMPS })
+	@Outbreaks
+	@Complication({
+		MUMPS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState salivarySwelling;
+	@Diseases({
+		MUMPS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private YesNoUnknown noComplications;
+	@Diseases({
+		MUMPS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		MUMPS })
+	private YesNoUnknown unknownComplications;
+
+	@Diseases({
+		MUMPS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		MUMPS })
+	private SymptomState orchitis;
+
+	@Diseases({
+		MUMPS })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Complication({
+		MUMPS })
+	private SymptomState pancreatitis;
+
+	@Diseases({
+		MUMPS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private YesNoUnknown otherGeneralSymptoms;
+
+	@Diseases({
+		MUMPS })
+	@DependantOn(OTHER_GENERAL_SYMPTOMS)
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String otherGeneralSymptomsText;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -5700,4 +5840,113 @@ public class SymptomsDto extends PseudonymizableDto {
 	public void setClinicalCriteriaMet(YesNoUnknown clinicalCriteriaMet) {
 		this.clinicalCriteriaMet = clinicalCriteriaMet;
 	}
+
+	@Order(364)
+	public SymptomState getPseudoAppendicularSyndrome() {
+		return pseudoAppendicularSyndrome;
+	}
+
+	public void setPseudoAppendicularSyndrome(SymptomState pseudoAppendicularSyndrome) {
+		this.pseudoAppendicularSyndrome = pseudoAppendicularSyndrome;
+	}
+
+	@Order(365)
+	public SymptomState getNecrotizingEnterocolitis() {
+		return necrotizingEnterocolitis;
+	}
+
+	public void setNecrotizingEnterocolitis(SymptomState necrotizingEnterocolitis) {
+		this.necrotizingEnterocolitis = necrotizingEnterocolitis;
+	}
+
+	@Order(366)
+	public SymptomState getReactiveArthritis() {
+		return reactiveArthritis;
+	}
+
+	public void setReactiveArthritis(SymptomState reactiveArthritis) {
+		this.reactiveArthritis = reactiveArthritis;
+	}
+
+	@Order(367)
+	public SymptomState getErythemaNodosum() {
+		return erythemaNodosum;
+	}
+
+	public void setErythemaNodosum(SymptomState erythemaNodosum) {
+		this.erythemaNodosum = erythemaNodosum;
+	}
+
+	@Order(368)
+	public Date getSymptomEndDate() {
+		return symptomEndDate;
+	}
+
+	public void setSymptomEndDate(Date symptomEndDate) {
+		this.symptomEndDate = symptomEndDate;
+	}
+
+	@Order(369)
+	public SymptomState getSalivarySwelling() {
+		return salivarySwelling;
+	}
+
+	public void setSalivarySwelling(SymptomState salivarySwelling) {
+		this.salivarySwelling = salivarySwelling;
+	}
+
+	@Order(371)
+	public YesNoUnknown getNoComplications() {
+		return noComplications;
+	}
+
+	public void setNoComplications(YesNoUnknown noComplications) {
+		this.noComplications = noComplications;
+	}
+
+	@Order(372)
+	public YesNoUnknown getUnknownComplications() {
+		return unknownComplications;
+	}
+
+	public void setUnknownComplications(YesNoUnknown unknownComplications) {
+		this.unknownComplications = unknownComplications;
+	}
+
+	@Order(373)
+	public SymptomState getOrchitis() {
+		return orchitis;
+	}
+
+	public void setOrchitis(SymptomState orchitis) {
+		this.orchitis = orchitis;
+	}
+
+	@Order(374)
+	public SymptomState getPancreatitis() {
+		return pancreatitis;
+	}
+
+	public void setPancreatitis(SymptomState pancreatitis) {
+		this.pancreatitis = pancreatitis;
+	}
+
+	@Order(375)
+	public YesNoUnknown getOtherGeneralSymptoms() {
+		return otherGeneralSymptoms;
+	}
+
+	public void setOtherGeneralSymptoms(YesNoUnknown otherGeneralSymptoms) {
+		this.otherGeneralSymptoms = otherGeneralSymptoms;
+	}
+
+	@Order(376)
+	public String getOtherGeneralSymptomsText() {
+		return otherGeneralSymptomsText;
+	}
+
+	public void setOtherGeneralSymptomsText(String otherGeneralSymptomsText) {
+		this.otherGeneralSymptomsText = otherGeneralSymptomsText;
+	}
+
 }

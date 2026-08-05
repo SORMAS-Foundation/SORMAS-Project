@@ -133,6 +133,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String QUANTITATIVE_BOOLEAN = "quantitativeBoolean";
 	public static final String SMEAR_GRADE = "smearGrade";
 	public static final String WESTERN_BLOT_INTERPRETATION = "westernBlotInterpretation";
+	public static final String SEQUENCE_ID = "sequenceId";
+	public static final String SERO_CONVERSION = "seroConversion";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -257,13 +259,16 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
 		Disease.MEASLES,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MUMPS })
 	private GenoType genoType;
 
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MUMPS })
 	private String genoTypeText;
 
 	@SensitiveData
@@ -343,6 +348,10 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
+	// Sequencing ID/reference text
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String sequenceId;
+	private Boolean seroConversion;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -1019,6 +1028,22 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
 		this.westernBlotInterpretation = westernBlotInterpretation;
+	}
+
+	public String getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(String sequenceId) {
+		this.sequenceId = sequenceId;
+	}
+
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
 	}
 
 	@Override

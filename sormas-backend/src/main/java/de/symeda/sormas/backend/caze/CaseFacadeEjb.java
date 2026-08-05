@@ -3123,6 +3123,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
 		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setDiseaseSpecies(source.getDiseaseSpecies());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setScreeningType(source.getScreeningType());
@@ -3296,6 +3297,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setTreatmentStarted(source.getTreatmentStarted());
 		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
 		target.setTreatmentStartDate(source.getTreatmentStartDate());
+		target.setReportingExcluded(source.getReportingExcluded());
 
 		return target;
 	}
@@ -3326,6 +3328,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
 		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setDiseaseSpecies(source.getDiseaseSpecies());
 		if (source.getReportDate() != null) {
 			target.setReportDate(source.getReportDate());
 		} else {
@@ -3531,6 +3534,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setTreatmentStarted(source.getTreatmentStarted());
 		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
 		target.setTreatmentStartDate(source.getTreatmentStartDate());
+		target.setReportingExcluded(source.getReportingExcluded());
 
 		return target;
 	}

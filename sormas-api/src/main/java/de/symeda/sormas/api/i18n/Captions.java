@@ -690,6 +690,7 @@ public interface Captions {
 	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
 	String CaseData_differentPointOfEntryJurisdiction = "CaseData.differentPointOfEntryJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_diseaseSpecies = "CaseData.diseaseSpecies";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
@@ -792,6 +793,7 @@ public interface Captions {
 	String CaseData_reinfectionStatus = "CaseData.reinfectionStatus";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
+	String CaseData_reportingExcluded = "CaseData.reportingExcluded";
 	String CaseData_reportingUser = "CaseData.reportingUser";
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
@@ -1082,6 +1084,8 @@ public interface Captions {
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
 	String Contact_personUuid = "Contact.personUuid";
+	String Contact_postpartum = "Contact.postpartum";
+	String Contact_pregnant = "Contact.pregnant";
 	String Contact_prescribedDrug = "Contact.prescribedDrug";
 	String Contact_prescribedDrugText = "Contact.prescribedDrugText";
 	String Contact_previousQuarantineTo = "Contact.previousQuarantineTo";
@@ -1123,6 +1127,7 @@ public interface Captions {
 	String Contact_symptomJournalStatus = "Contact.symptomJournalStatus";
 	String Contact_tracingApp = "Contact.tracingApp";
 	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
+	String Contact_trimester = "Contact.trimester";
 	String Contact_uuid = "Contact.uuid";
 	String Contact_vaccinationDoseOneDate = "Contact.vaccinationDoseOneDate";
 	String Contact_vaccinationDoseTwoDate = "Contact.vaccinationDoseTwoDate";
@@ -1661,6 +1666,7 @@ public interface Captions {
 	String EpiData_airportWorker = "EpiData.airportWorker";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
 	String EpiData_caseImportedStatus = "EpiData.caseImportedStatus";
+	String EpiData_clusterIdentifier = "EpiData.clusterIdentifier";
 	String EpiData_clusterRelated = "EpiData.clusterRelated";
 	String EpiData_clusterType = "EpiData.clusterType";
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
@@ -1994,6 +2000,7 @@ public interface Captions {
 	String Exposure_protectiveMeasuresDetails = "Exposure.protectiveMeasuresDetails";
 	String Exposure_rawFoodContact = "Exposure.rawFoodContact";
 	String Exposure_rawFoodContactText = "Exposure.rawFoodContactText";
+	String Exposure_regularFoodShoppingLocations = "Exposure.regularFoodShoppingLocations";
 	String Exposure_riskArea = "Exposure.riskArea";
 	String Exposure_seatNumber = "Exposure.seatNumber";
 	String Exposure_sexualContact = "Exposure.sexualContact";
@@ -2014,6 +2021,8 @@ public interface Captions {
 	String Exposure_typeOfChildcareFacility = "Exposure.typeOfChildcareFacility";
 	String Exposure_typeOfPlace = "Exposure.typeOfPlace";
 	String Exposure_typeOfPlaceDetails = "Exposure.typeOfPlaceDetails";
+	String Exposure_usualDietRestrictions = "Exposure.usualDietRestrictions";
+	String Exposure_usualDietRestrictionsDetails = "Exposure.usualDietRestrictionsDetails";
 	String Exposure_waterSource = "Exposure.waterSource";
 	String Exposure_waterSourceDetails = "Exposure.waterSourceDetails";
 	String Exposure_wearingMask = "Exposure.wearingMask";
@@ -2157,6 +2166,7 @@ public interface Captions {
 	String HealthConditions_exposedToMosquitoBorneVirusesText = "HealthConditions.exposedToMosquitoBorneVirusesText";
 	String HealthConditions_formerSmoker = "HealthConditions.formerSmoker";
 	String HealthConditions_hepatitis = "HealthConditions.hepatitis";
+	String HealthConditions_highIronLevel = "HealthConditions.highIronLevel";
 	String HealthConditions_hiv = "HealthConditions.hiv";
 	String HealthConditions_hivArt = "HealthConditions.hivArt";
 	String HealthConditions_hivPrep = "HealthConditions.hivPrep";
@@ -2430,6 +2440,8 @@ public interface Captions {
 	String passportNumber = "passportNumber";
 	String PathogenTest = "PathogenTest";
 	String PathogenTest_antibodyTitre = "PathogenTest.antibodyTitre";
+	String PathogenTest_biotype = "PathogenTest.biotype";
+	String PathogenTest_biotypeText = "PathogenTest.biotypeText";
 	String PathogenTest_cqValue = "PathogenTest.cqValue";
 	String PathogenTest_ctValueE = "PathogenTest.ctValueE";
 	String PathogenTest_ctValueN = "PathogenTest.ctValueN";
@@ -2471,6 +2483,8 @@ public interface Captions {
 	String PathogenTest_rsv_testedDiseaseVariant = "PathogenTest.rsv.testedDiseaseVariant";
 	String PathogenTest_rsv_testedDiseaseVariantDetails = "PathogenTest.rsv.testedDiseaseVariantDetails";
 	String PathogenTest_rsvSubtype = "PathogenTest.rsvSubtype";
+	String PathogenTest_sequenceId = "PathogenTest.sequenceId";
+	String PathogenTest_seroConversion = "PathogenTest.seroConversion";
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
 	String PathogenTest_seroGroupSpecificationText = "PathogenTest.seroGroupSpecificationText";
 	String PathogenTest_serotype = "PathogenTest.serotype";
@@ -2507,7 +2521,11 @@ public interface Captions {
 	String PathogenTest_tubeNilGT10 = "PathogenTest.tubeNilGT10";
 	String PathogenTest_typingId = "PathogenTest.typingId";
 	String PathogenTest_viaLims = "PathogenTest.viaLims";
+	String PathogenTest_virulenceGenesDetails = "PathogenTest.virulenceGenesDetails";
+	String PathogenTest_virulenceGenesDetected = "PathogenTest.virulenceGenesDetected";
 	String PathogenTest_westernBlotInterpretation = "PathogenTest.westernBlotInterpretation";
+	String PathogenTest_wgsClusterId = "PathogenTest.wgsClusterId";
+	String PathogenTest_wgsPerformed = "PathogenTest.wgsPerformed";
 	String pathogenTestAdd = "pathogenTestAdd";
 	String pathogenTestCreateNew = "pathogenTestCreateNew";
 	String pathogenTestNewResult = "pathogenTestNewResult";
@@ -2595,6 +2613,7 @@ public interface Captions {
 	String Person_placeOfBirthRegion = "Person.placeOfBirthRegion";
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_salutation = "Person.salutation";
+	String Person_schoolNurseryName = "Person.schoolNurseryName";
 	String Person_sex = "Person.sex";
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_uuid = "Person.uuid";
@@ -3170,6 +3189,7 @@ public interface Captions {
 	String Symptoms_eggyBurps = "Symptoms.eggyBurps";
 	String Symptoms_encephalitis = "Symptoms.encephalitis";
 	String Symptoms_erraticBehaviour = "Symptoms.erraticBehaviour";
+	String Symptoms_erythemaNodosum = "Symptoms.erythemaNodosum";
 	String Symptoms_excessSalivation = "Symptoms.excessSalivation";
 	String Symptoms_excitation = "Symptoms.excitation";
 	String Symptoms_eyeIrritation = "Symptoms.eyeIrritation";
@@ -3260,8 +3280,10 @@ public interface Captions {
 	String Symptoms_musclePain = "Symptoms.musclePain";
 	String Symptoms_nausea = "Symptoms.nausea";
 	String Symptoms_neckStiffness = "Symptoms.neckStiffness";
+	String Symptoms_necrotizingEnterocolitis = "Symptoms.necrotizingEnterocolitis";
 	String Symptoms_nephroticSyndrome = "Symptoms.nephroticSyndrome";
 	String Symptoms_neurologicalManifestations = "Symptoms.neurologicalManifestations";
+	String Symptoms_noComplications = "Symptoms.noComplications";
 	String Symptoms_nocturnalCough = "Symptoms.nocturnalCough";
 	String Symptoms_noseBleeding = "Symptoms.noseBleeding";
 	String Symptoms_ocularManifestations = "Symptoms.ocularManifestations";
@@ -3272,12 +3294,15 @@ public interface Captions {
 	String Symptoms_onsetSymptom = "Symptoms.onsetSymptom";
 	String Symptoms_opisthotonus = "Symptoms.opisthotonus";
 	String Symptoms_oralUlcers = "Symptoms.oralUlcers";
+	String Symptoms_orchitis = "Symptoms.orchitis";
 	String Symptoms_otherClinicalPresentation = "Symptoms.otherClinicalPresentation";
 	String Symptoms_otherClinicalPresentationText = "Symptoms.otherClinicalPresentationText";
 	String Symptoms_otherComplications = "Symptoms.otherComplications";
 	String Symptoms_otherComplications_CryptoGiardia = "Symptoms.otherComplications.CryptoGiardia";
 	String Symptoms_otherComplicationsText = "Symptoms.otherComplicationsText";
 	String Symptoms_otherComplicationsText_CryptoGiardia = "Symptoms.otherComplicationsText.CryptoGiardia";
+	String Symptoms_otherGeneralSymptoms = "Symptoms.otherGeneralSymptoms";
+	String Symptoms_otherGeneralSymptomsText = "Symptoms.otherGeneralSymptomsText";
 	String Symptoms_otherHemorrhagicSymptoms = "Symptoms.otherHemorrhagicSymptoms";
 	String Symptoms_otherHemorrhagicSymptomsText = "Symptoms.otherHemorrhagicSymptomsText";
 	String Symptoms_otherMajorSiteDetails = "Symptoms.otherMajorSiteDetails";
@@ -3293,6 +3318,7 @@ public interface Captions {
 	String Symptoms_palpableLiver = "Symptoms.palpableLiver";
 	String Symptoms_palpableSpleen = "Symptoms.palpableSpleen";
 	String Symptoms_palpitations = "Symptoms.palpitations";
+	String Symptoms_pancreatitis = "Symptoms.pancreatitis";
 	String Symptoms_paradoxicalBreathing = "Symptoms.paradoxicalBreathing";
 	String Symptoms_paralysis = "Symptoms.paralysis";
 	String Symptoms_parentTimeOffWork = "Symptoms.parentTimeOffWork";
@@ -3307,10 +3333,12 @@ public interface Captions {
 	String Symptoms_plasmaLeakageSign = "Symptoms.plasmaLeakageSign";
 	String Symptoms_pneumoniaClinicalOrRadiologic = "Symptoms.pneumoniaClinicalOrRadiologic";
 	String Symptoms_polydipsia = "Symptoms.polydipsia";
+	String Symptoms_pseudoAppendicularSyndrome = "Symptoms.pseudoAppendicularSyndrome";
 	String Symptoms_pseudoparalysis = "Symptoms.pseudoparalysis";
 	String Symptoms_purpuricRash = "Symptoms.purpuricRash";
 	String Symptoms_radiolucentBoneDisease = "Symptoms.radiolucentBoneDisease";
 	String Symptoms_rapidBreathing = "Symptoms.rapidBreathing";
+	String Symptoms_reactiveArthritis = "Symptoms.reactiveArthritis";
 	String Symptoms_redBloodVomit = "Symptoms.redBloodVomit";
 	String Symptoms_refractoryRhinitis = "Symptoms.refractoryRhinitis";
 	String Symptoms_refusalFeedorDrink = "Symptoms.refusalFeedorDrink";
@@ -3320,6 +3348,7 @@ public interface Captions {
 	String Symptoms_respiratoryRate = "Symptoms.respiratoryRate";
 	String Symptoms_restlessness = "Symptoms.restlessness";
 	String Symptoms_runnyNose = "Symptoms.runnyNose";
+	String Symptoms_salivarySwelling = "Symptoms.salivarySwelling";
 	String Symptoms_scantHemorrhage = "Symptoms.scantHemorrhage";
 	String Symptoms_seizures = "Symptoms.seizures";
 	String Symptoms_sepsis = "Symptoms.sepsis";
@@ -3341,6 +3370,7 @@ public interface Captions {
 	String Symptoms_swollenGlands = "Symptoms.swollenGlands";
 	String Symptoms_symptomatic = "Symptoms.symptomatic";
 	String Symptoms_symptomCurrentStatus = "Symptoms.symptomCurrentStatus";
+	String Symptoms_symptomEndDate = "Symptoms.symptomEndDate";
 	String Symptoms_symptomOnset = "Symptoms.symptomOnset";
 	String Symptoms_symptomsComments = "Symptoms.symptomsComments";
 	String Symptoms_symptomsNotOccurred = "Symptoms.symptomsNotOccurred";
@@ -3356,11 +3386,12 @@ public interface Captions {
 	String Symptoms_tenesmus = "Symptoms.tenesmus";
 	String Symptoms_throbocytopenia = "Symptoms.throbocytopenia";
 	String Symptoms_timeOffWorkDays = "Symptoms.timeOffWorkDays";
-	String Symptoms_timeOffWorkDays_giardiasis = "Symptoms.timeOffWorkDays.giardiasis";
+	String Symptoms_timeOffWorkDaysDuration = "Symptoms.timeOffWorkDaysDuration";
 	String Symptoms_timeOffWorkOrSchool = "Symptoms.timeOffWorkOrSchool";
 	String Symptoms_tremor = "Symptoms.tremor";
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";
+	String Symptoms_unknownComplications = "Symptoms.unknownComplications";
 	String Symptoms_unknownSymptom = "Symptoms.unknownSymptom";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";

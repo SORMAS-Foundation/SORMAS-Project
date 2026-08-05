@@ -305,6 +305,18 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLowGradeFever(source.getLowGradeFever());
 		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
 		target.setMaculopapularRash(source.getMaculopapularRash());
+		target.setPseudoAppendicularSyndrome(source.getPseudoAppendicularSyndrome());
+		target.setNecrotizingEnterocolitis(source.getNecrotizingEnterocolitis());
+		target.setReactiveArthritis(source.getReactiveArthritis());
+		target.setErythemaNodosum(source.getErythemaNodosum());
+		target.setSymptomEndDate(source.getSymptomEndDate());
+		target.setSalivarySwelling(source.getSalivarySwelling());
+		target.setOrchitis(source.getOrchitis());
+		target.setPancreatitis(source.getPancreatitis());
+		target.setNoComplications(source.getNoComplications());
+		target.setUnknownComplications(source.getUnknownComplications());
+		target.setOtherGeneralSymptoms(source.getOtherGeneralSymptoms());
+		target.setOtherGeneralSymptomsText(source.getOtherGeneralSymptomsText());
 		return target;
 	}
 
@@ -593,6 +605,18 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLowGradeFever(source.getLowGradeFever());
 		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
 		target.setMaculopapularRash(source.getMaculopapularRash());
+		target.setPseudoAppendicularSyndrome(source.getPseudoAppendicularSyndrome());
+		target.setNecrotizingEnterocolitis(source.getNecrotizingEnterocolitis());
+		target.setReactiveArthritis(source.getReactiveArthritis());
+		target.setErythemaNodosum(source.getErythemaNodosum());
+		target.setSymptomEndDate(source.getSymptomEndDate());
+		target.setSalivarySwelling(source.getSalivarySwelling());
+		target.setOrchitis(source.getOrchitis());
+		target.setPancreatitis(source.getPancreatitis());
+		target.setNoComplications(source.getNoComplications());
+		target.setUnknownComplications(source.getUnknownComplications());
+		target.setOtherGeneralSymptoms(source.getOtherGeneralSymptoms());
+		target.setOtherGeneralSymptomsText(source.getOtherGeneralSymptomsText());
 		return target;
 	}
 

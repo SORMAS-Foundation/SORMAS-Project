@@ -2857,6 +2857,8 @@ paths:
                   - SHIGELLOSIS
                   - SALMONELLOSIS
                   - SYPHILIS
+                  - YERSINIOSIS
+                  - MUMPS
                   - OTHER
                   - UNDEFINED
           description: default response
@@ -4538,6 +4540,8 @@ paths:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
       requestBody:
@@ -4872,6 +4876,8 @@ paths:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
       responses:
@@ -8873,6 +8879,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         districtId:
@@ -9004,6 +9012,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -9109,6 +9119,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -9524,6 +9536,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -9988,12 +10002,41 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
           type: string
           maxLength: 512
           minLength: 0
+        diseaseSpecies:
+          type: string
+          enum:
+          - MYCOBATERIUM_AFRICANUM
+          - MYCOBATERIUM_BOVIS
+          - MYCOBATERIUM_TUBERCULOSIS
+          - OTHER_MTBC_MEMBER
+          - SPP
+          - FALCIPARUM
+          - VIVAX
+          - MALARIAE
+          - OVALE
+          - KNOWLESI
+          - CYNOMOLGI
+          - NOT_SPECIFIED
+          - COINFECTION
+          - BOYDII
+          - DYSENTERIAE
+          - FLEXNERI
+          - SONNEI
+          - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
+          - OTHER
+          - UNKNOWN
+          - NOT_APPLICABLE
         diseaseVariant:
           $ref: '#/components/schemas/DiseaseVariant'
         diseaseVariantDetails:
@@ -10425,6 +10468,12 @@ components:
           format: double
           maximum: 180
           minimum: -180
+        reportingExcluded:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         reportingUser:
           $ref: '#/components/schemas/UserReferenceDto'
         responsibleCommunity:
@@ -10662,6 +10711,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -11009,6 +11060,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         firstName:
@@ -11154,6 +11207,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11433,6 +11488,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12042,6 +12099,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -12307,6 +12366,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -12667,6 +12728,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12767,6 +12830,18 @@ components:
           type: boolean
         person:
           $ref: '#/components/schemas/PersonReferenceDto'
+        postpartum:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        pregnant:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         prescribedDrug:
           type: string
           enum:
@@ -12938,6 +13013,13 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        trimester:
+          type: string
+          enum:
+          - FIRST
+          - SECOND
+          - THIRD
+          - UNKNOWN
         uuid:
           type: string
           maxLength: 36
@@ -13127,6 +13209,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13417,6 +13501,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14241,6 +14327,8 @@ components:
             - SHIGELLOSIS
             - SALMONELLOSIS
             - SYPHILIS
+            - YERSINIOSIS
+            - MUMPS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -14501,6 +14589,8 @@ components:
             - SHIGELLOSIS
             - SALMONELLOSIS
             - SYPHILIS
+            - YERSINIOSIS
+            - MUMPS
             - OTHER
             - UNDEFINED
     DashboardCaseMeasureDto:
@@ -14798,6 +14888,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -14896,6 +14988,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -15079,6 +15173,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         eventCount:
@@ -15178,6 +15274,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         notACaseCriteria:
@@ -15289,6 +15387,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         eventParticipantFollowUpDuration:
@@ -15309,6 +15409,7 @@ components:
             - WATER_BORNE
             - MEDICAL_CARE
             - LAB
+            - RESPIRATORY_DROPLET
             - OTHER
           uniqueItems: true
         extendedClassification:
@@ -16293,6 +16394,10 @@ components:
         changeDate:
           type: string
           format: date-time
+        clusterIdentifier:
+          type: string
+          maxLength: 512
+          minLength: 0
         clusterRelated:
           type: boolean
         clusterType:
@@ -16305,6 +16410,8 @@ components:
           - SCHOOL
           - SPORTS_TEAM
           - UNIVERSITY
+          - NOT_APPLICABLE
+          - UNKNOWN
           - OTHER
         clusterTypeText:
           type: string
@@ -16605,6 +16712,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         eventDiseaseDetails:
@@ -16778,6 +16887,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -17068,6 +17179,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17571,6 +17684,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17790,6 +17905,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         event:
@@ -18186,6 +18303,7 @@ components:
           - WATER_BORNE
           - MEDICAL_CARE
           - LAB
+          - RESPIRATORY_DROPLET
           - OTHER
         exposureComment:
           type: string
@@ -18753,6 +18871,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -18910,6 +19030,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -19004,6 +19126,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19408,6 +19532,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19623,6 +19749,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         personUuid:
@@ -20092,6 +20220,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -20257,6 +20387,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -20424,6 +20556,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         districtName:
@@ -20563,6 +20697,12 @@ components:
           - "NO"
           - UNKNOWN
         hepatitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        highIronLevel:
           type: string
           enum:
           - "YES"
@@ -20915,6 +21055,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -21151,6 +21293,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -21434,6 +21578,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -21932,6 +22078,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         healthFacilityLat:
@@ -22241,6 +22389,8 @@ components:
             - SHIGELLOSIS
             - SALMONELLOSIS
             - SYPHILIS
+            - YERSINIOSIS
+            - MUMPS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -22334,6 +22484,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -23049,6 +23201,18 @@ components:
           - CRYPTOSPORIDIUM_HOMINIS
           - CRYPTOSPORIDIUM_PARVUM
           - CRYPTOSPORIDIUM_SPECIES
+          - MUMPV_A
+          - MUMPV_B
+          - MUMPV_C
+          - MUMPV_D
+          - MUMPV_F
+          - MUMPV_G
+          - MUMPV_H
+          - MUMPV_I
+          - MUMPV_J
+          - MUMPV_K
+          - MUMPV_L
+          - MUMPV_N
           - OTHER
           - UNKNOWN
         genoTypeText:
@@ -23149,6 +23313,12 @@ components:
           - INDETERMINATE
         sample:
           $ref: '#/components/schemas/SampleReferenceDto'
+        sequenceId:
+          type: string
+          maxLength: 255
+          minLength: 0
+        seroConversion:
+          type: boolean
         seroGroupSpecification:
           type: string
           enum:
@@ -23223,6 +23393,9 @@ components:
           - FLEXNERI
           - SONNEI
           - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
@@ -23407,6 +23580,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         testedDiseaseDetails:
@@ -23728,6 +23903,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -24803,6 +24980,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -25283,6 +25462,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25844,6 +26025,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26065,6 +26248,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26206,6 +26391,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26567,6 +26754,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -27024,6 +27213,9 @@ components:
           - ASYMPTOMATIC
           - NO_SIGN_OF_SEVERITY
           - SIGN_OF_SEVERITY
+          - MENINGOENCEPHALITIS
+          - ORCHITIS
+          - PAROTID_SWELLING
           - UNKNOWN
           - OTHER
         clinicalManifestationText:
@@ -27261,6 +27453,12 @@ components:
           - "NO"
           - UNKNOWN
         erraticBehaviour:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        erythemaNodosum:
           type: string
           enum:
           - "YES"
@@ -27757,6 +27955,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        necrotizingEnterocolitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         nephroticSyndrome:
           type: string
           enum:
@@ -27764,6 +27968,12 @@ components:
           - "NO"
           - UNKNOWN
         neurologicalManifestations:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        noComplications:
           type: string
           enum:
           - "YES"
@@ -27821,6 +28031,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        orchitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         otherClinicalPresentation:
           type: string
           enum:
@@ -27836,6 +28052,16 @@ components:
           - "NO"
           - UNKNOWN
         otherComplicationsText:
+          type: string
+          maxLength: 512
+          minLength: 0
+        otherGeneralSymptoms:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        otherGeneralSymptomsText:
           type: string
           maxLength: 512
           minLength: 0
@@ -27908,6 +28134,12 @@ components:
           - "NO"
           - UNKNOWN
         palpitations:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        pancreatitis:
           type: string
           enum:
           - "YES"
@@ -27995,6 +28227,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        pseudoAppendicularSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         pseudonymized:
           type: boolean
         pseudoparalysis:
@@ -28016,6 +28254,12 @@ components:
           - "NO"
           - UNKNOWN
         rapidBreathing:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        reactiveArthritis:
           type: string
           enum:
           - "YES"
@@ -28067,6 +28311,12 @@ components:
           - "NO"
           - UNKNOWN
         runnyNose:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        salivarySwelling:
           type: string
           enum:
           - "YES"
@@ -28183,6 +28433,9 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        symptomEndDate:
+          type: string
+          format: date-time
         symptomatic:
           type: boolean
         symptomsComments:
@@ -28257,6 +28510,12 @@ components:
           - "NO"
           - UNKNOWN
         unilateralCataracts:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        unknownComplications:
           type: string
           enum:
           - "YES"
@@ -28675,6 +28934,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         district:
@@ -28942,6 +29203,18 @@ components:
           - CRYPTOSPORIDIUM_HOMINIS
           - CRYPTOSPORIDIUM_PARVUM
           - CRYPTOSPORIDIUM_SPECIES
+          - MUMPV_A
+          - MUMPV_B
+          - MUMPV_C
+          - MUMPV_D
+          - MUMPV_F
+          - MUMPV_G
+          - MUMPV_H
+          - MUMPV_I
+          - MUMPV_J
+          - MUMPV_K
+          - MUMPV_L
+          - MUMPV_N
           - OTHER
           - UNKNOWN
         isoniazidMic:
@@ -29133,6 +29406,9 @@ components:
           - FLEXNERI
           - SONNEI
           - SHIGELLA_SPP
+          - YERSINIA_ENTEROCOLITICA
+          - YERSINIA_PSEUDOTUBERCULOSIS
+          - YERSINIA_SPP
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
@@ -29482,6 +29758,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -29969,6 +30247,8 @@ components:
             - SHIGELLOSIS
             - SALMONELLOSIS
             - SYPHILIS
+            - YERSINIOSIS
+            - MUMPS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -30638,6 +30918,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -30765,6 +31047,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         id:
@@ -30945,6 +31229,8 @@ components:
           - SHIGELLOSIS
           - SALMONELLOSIS
           - SYPHILIS
+          - YERSINIOSIS
+          - MUMPS
           - OTHER
           - UNDEFINED
         numberOfCases:

@@ -74,6 +74,7 @@ import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -134,6 +135,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String RABIES_TYPE = "rabiesType";
 	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
+	public static final String DISEASE_SPECIES = "diseaseSpecies";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
@@ -281,6 +283,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private DengueFeverType dengueFeverType;
 	private RabiesType rabiesType;
 	private SyphilisPresentation syphilisPresentation;
+	private PathogenSpecie diseaseSpecies;
 
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
@@ -475,6 +478,8 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private String healthFacilityDepartment;
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
+	// Mumps changes
+	private YesNoUnknown reportingExcluded;
 
 	public static Case build() {
 		Case caze = new Case();
@@ -596,6 +601,15 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setSyphilisPresentation(SyphilisPresentation presentation) {
 		this.syphilisPresentation = presentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenSpecie getDiseaseSpecies() {
+		return diseaseSpecies;
+	}
+
+	public void setDiseaseSpecies(PathogenSpecie diseaseSpecies) {
+		this.diseaseSpecies = diseaseSpecies;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -1993,4 +2007,15 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public void setTreatmentStartDate(Date treatmentStartDate) {
 		this.treatmentStartDate = treatmentStartDate;
 	}
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getReportingExcluded() {
+		return reportingExcluded;
+	}
+
+	public void setReportingExcluded(YesNoUnknown reportingExcluded) {
+		this.reportingExcluded = reportingExcluded;
+	}
+
 }

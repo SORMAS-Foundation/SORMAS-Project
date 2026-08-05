@@ -47,6 +47,7 @@ public class HealthConditionsMapper {
 		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
 		target.setTuberculosis(source.getTuberculosis());
 		target.setDownSyndrome(source.getDownSyndrome());
+		target.setHighIronLevel(source.getHighIronLevel());
 		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
 		target.setOtherConditions(source.getOtherConditions());
 		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
@@ -106,6 +107,7 @@ public class HealthConditionsMapper {
 		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
 		target.setTuberculosis(source.getTuberculosis());
 		target.setDownSyndrome(source.getDownSyndrome());
+		target.setHighIronLevel(source.getHighIronLevel());
 		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
 		target.setOtherConditions(source.getOtherConditions());
 		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());

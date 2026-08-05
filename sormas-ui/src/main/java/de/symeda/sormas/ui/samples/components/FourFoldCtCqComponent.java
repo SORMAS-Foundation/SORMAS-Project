@@ -19,9 +19,8 @@ package de.symeda.sormas.ui.samples.components;
 
 import com.vaadin.ui.CheckBox;
 
+import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -47,10 +46,12 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 	private final CtCqValueComponent ctCqValueComponent;
 
 	private CheckBox fourFoldIncrease;
+	private CheckBox seroConversion;
 
 	private Disease currentDisease;
 	private PathogenTestType currentTestType;
 	private PathogenTestResultType currentTestResult;
+	HorizontalLayout horizontalLayout = new HorizontalLayout();
 
 	public FourFoldCtCqComponent(FormEventBus eventBus, int caseSampleCount, boolean isLuxembourg, Disease initialDisease) {
 		super(PathogenTestDto.class);
@@ -68,13 +69,23 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 		CssStyles.style(fourFoldIncrease, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
-		addComponent(fourFoldIncrease);
 
-		addComponent(ctCqValueComponent);
+		seroConversion = createCheckBox(PathogenTestDto.SERO_CONVERSION, PathogenTestDto.I18N_PREFIX);
+		CssStyles.style(seroConversion, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
+		seroConversion.setVisible(false);
+		seroConversion.setEnabled(false);
+
+		horizontalLayout.setSpacing(true);
+		// displaying the fourFoldIncrease & seroConversion checkboxes in a same line for all diseases.
+		horizontalLayout.addComponents(fourFoldIncrease, createSpacer(), seroConversion);
+		addComponent(horizontalLayout);
+
+		addComponents(ctCqValueComponent);
 	}
 
 	private void bindFields() {
 		binder.forField(fourFoldIncrease).bind(PathogenTestDto::isFourFoldIncreaseAntibodyTiter, PathogenTestDto::setFourFoldIncreaseAntibodyTiter);
+		binder.forField(seroConversion).bind(PathogenTestDto::getSeroConversion, PathogenTestDto::setSeroConversion);
 	}
 
 	private void wireEvents() {
@@ -125,19 +136,20 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 		if (antibodyTest && positive) {
 			fourFoldIncrease.setVisible(true);
 			fourFoldIncrease.setEnabled(true);
+			seroConversion.setVisible(true);
+			seroConversion.setEnabled(true);
 		} else {
 			fourFoldIncrease.setVisible(false);
 			fourFoldIncrease.setEnabled(false);
 			fourFoldIncrease.clear();
+			seroConversion.setVisible(false);
+			seroConversion.setEnabled(false);
+			seroConversion.clear();
 		}
-		fourFoldIncrease.setCaption(
-			currentDisease == Disease.DENGUE
-				? I18nProperties.getCaption(Captions.PathogenTest_fourFoldIncreaseAntibodyTiter_DENGUE)
-				: I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER));
 	}
 
 	private void syncSelfVisibility() {
-		setVisible(fourFoldIncrease.isVisible() || ctCqValueComponent.isVisible());
+		setVisible(fourFoldIncrease.isVisible() || ctCqValueComponent.isVisible() || seroConversion.isVisible());
 	}
 
 	@Override
