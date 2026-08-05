@@ -12091,6 +12091,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "hasDoctorDeclaration" : {
+            "type" : "boolean"
+          },
           "healthFacility" : {
             "$ref" : "#/components/schemas/FacilityReferenceDto"
           },
@@ -12962,6 +12965,9 @@
           "followUpVisitsTo" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "hasDoctorDeclaration" : {
+            "type" : "boolean"
           },
           "healthFacility" : {
             "$ref" : "#/components/schemas/FacilityReferenceDto"

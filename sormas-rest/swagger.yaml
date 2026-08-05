@@ -9644,6 +9644,8 @@ components:
         followUpVisitsTo:
           type: string
           format: date-time
+        hasDoctorDeclaration:
+          type: boolean
         healthFacility:
           $ref: '#/components/schemas/FacilityReferenceDto'
         includeCasesFromOtherJurisdictions:
@@ -10819,6 +10821,8 @@ components:
         followUpVisitsTo:
           type: string
           format: date-time
+        hasDoctorDeclaration:
+          type: boolean
         healthFacility:
           $ref: '#/components/schemas/FacilityReferenceDto'
         includeCasesFromOtherJurisdictions:
