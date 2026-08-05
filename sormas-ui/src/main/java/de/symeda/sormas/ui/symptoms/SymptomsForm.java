@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.symptoms;
 
 import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.H4;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
@@ -42,6 +43,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.ImmutableList;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ThemeResource;
@@ -55,6 +58,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
@@ -137,6 +141,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String TUBERCULOSIS_ONSET_DATE_LOC = "tuberculosisOnsetDateLoc";
 	private static final String TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC = "tuberculosisClinicalPresentationDetailsLoc";
 	private static final String STAGE_HEADING_LOC = "stageHeadingLoc";
+	private static final String CLINICAL_MANIFESTATION_HEADING_LOC = "clinicalManifestationHeadingLoc";
+	private static final String CLINICAL_MANIFESTATION_LABELS_LOC = "clinicalManifestationLabelsLoc";
 
 	// Fields only relevant for acquired syphilis, hidden when the case presentation is congenital syphilis
 	private static final List<String> SYPHILIS_ACQUIRED_ONLY_FIELD_IDS = Collections.unmodifiableList(
@@ -202,8 +208,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Disease.PERTUSSIS,
 		Disease.SHIGELLOSIS);
 	// other complicated symptom for onset field listener action
-	private List<String> otherComplicatedSymptoms =
-		Arrays.asList(LESIONS_THAT_ITCH, OTHER_COMPLICATIONS_TEXT, UNKNOWN_COMPLICATIONS, OTHER_NEUROLOGICAL_SYMPTOMS_TEXT);
+	private static final List<String> OTHER_COMPLICATED_SYMPTOMS = Collections
+		.unmodifiableList(Arrays.asList(LESIONS_THAT_ITCH, OTHER_COMPLICATIONS_TEXT, UNKNOWN_COMPLICATIONS, OTHER_NEUROLOGICAL_SYMPTOMS_TEXT));
+
+	// for Mumps few symptoms should display as labels at clinical manifestation of the disease according to case definition section.
+	private static final List<String> MUMPS_REPORTING_SYMPTOMS =
+		Collections.unmodifiableList(Arrays.asList(OTHER_COMPLICATIONS_TEXT, MENINGITIS, SALIVARY_SWELLING, ORCHITIS));
 
 	final boolean isLuxDengue;
 	final boolean isParasiticInfectiousDiseases;
@@ -253,6 +263,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
 					fluidRowLocsCss(VSPACE_3, OFFSET_DATE, SYMPTOM_END_DATE) +
+					loc(CLINICAL_MANIFESTATION_HEADING_LOC) +
+					loc(CLINICAL_MANIFESTATION_LABELS_LOC) +
 					fluidRowLocsCss(VSPACE_3, CLINICAL_MANIFESTATION, CLINICAL_MANIFESTATION_TEXT);
 	//@formatter:on
 
@@ -298,6 +310,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private List<String> monkeypoxImageFieldIds;
 	private boolean isListenerAction = false;
 	private CaseSymptomSideViewComponent caseSymptomSideViewComponent;
+	private VerticalLayout clinicalManifestationLayout;
+	private Map<Field<?>, Label> symptomLabelMap = new HashMap<>();
 
 	public SymptomsForm(
 		CaseDataDto caze,
@@ -338,6 +352,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addFields();
 		hideValidationUntilNextCommit();
+
+		clinicalManifestationLayout = new VerticalLayout();
+		clinicalManifestationLayout.setSpacing(false);
+		clinicalManifestationLayout.setMargin(false);
+
+		getContent().addComponent(clinicalManifestationLayout, CLINICAL_MANIFESTATION_LABELS_LOC);
 	}
 
 	@Override
@@ -373,6 +393,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		Label stageHeadingLabel = createLabel(I18nProperties.getString(Strings.headingStage), H3, STAGE_HEADING_LOC);
 		stageHeadingLabel.setVisible(false);
+
+		Label clinicalManifestationLabel =
+			createLabel(I18nProperties.getCaption(Captions.Symptoms_clinicalManifestation), H4, CLINICAL_MANIFESTATION_HEADING_LOC);
+		clinicalManifestationLabel.setVisible(Disease.MUMPS == disease);
 
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);
@@ -1532,7 +1556,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private void addListenerForOnsetFields(ComboBox onsetSymptom, DateField onsetDateField) {
 		List<String> allPropertyIds =
 			Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
-		allPropertyIds.addAll(otherComplicatedSymptoms);
+		allPropertyIds.addAll(OTHER_COMPLICATED_SYMPTOMS);
 		allPropertyIds.addAll(SYPHILIS_ACQUIRED_ONLY_FIELD_IDS);
 		allPropertyIds.addAll(SYPHILIS_CONGENITAL_ONLY_FIELD_IDS);
 		for (Object sourcePropertyId : allPropertyIds) {
@@ -1565,7 +1589,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				ComboBox cmCb = getField(CLINICAL_MANIFESTATION);
 				DateField offsetDate = getField(OFFSET_DATE);
 
-				boolean hasOnsetSymptoms = onsetSymptom.isEnabled();
+				// If the disease is Dengue and any of the symptoms is set to yes,
+				// then the ClinicalManifestation field should be defaulting to "Disease with sign of severity (WHO definition)" and offset date should be enabled based on onset symptom visibility.
+				boolean hasOnsetSymptoms = onsetSymptom.isEnabled() && Disease.DENGUE == disease;
 				offsetDate.setEnabled(hasOnsetSymptoms);
 				if (!hasOnsetSymptoms) {
 					offsetDate.clear();
@@ -1573,12 +1599,54 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				} else if (cmCb.getValue() == null) {
 					cmCb.setValue(ClinicalManifestation.SIGN_OF_SEVERITY);
 				}
+
+				// if the disease is Mumps and  the symptom is in the listed reporting one, then it should display as label.
+				boolean isMumpsReportedSymptom = Disease.MUMPS == disease && MUMPS_REPORTING_SYMPTOMS.contains(sourceField.getId());
+				if (isMumpsReportedSymptom) {
+					cmCb.setVisible(false);
+					toggleSymptomsInClinicalManifestationLayout(sourceField);
+				} else {
+					cmCb.setVisible(hasOnsetSymptoms);
+				}
 			});
 		}
 		onsetSymptom.setEnabled(false); // will be updated by listener if needed
 
 		// make onsetDate editable for diseases that have no symptoms (a.k. no first symptom)
 		onsetDateField.setEnabled(!onsetSymptom.isVisible());
+	}
+
+	/**
+	 * toggling the symptoms in clinical manifestation section.
+	 * 
+	 * @param symptomField
+	 */
+	private void toggleSymptomsInClinicalManifestationLayout(Field<?> symptomField) {
+
+		Object sourceFieldObj = FieldHelper.getNullableSourceFieldValue(symptomField);
+
+		if (FieldHelper.getNullableSourceFieldValue(symptomField) == SymptomState.YES) {
+			// Only add if not already present
+			if (!symptomLabelMap.containsKey(symptomField)) {
+				Label label = new Label(symptomField.getCaption());
+				label.addStyleNames(CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
+				symptomLabelMap.put(symptomField, label);
+				clinicalManifestationLayout.addComponent(label);
+			}
+		} else if (sourceFieldObj instanceof String
+			&& StringUtils.isNotBlank(symptomField.getValue().toString())
+			&& !symptomLabelMap.containsKey(symptomField)) {
+			Label label = new Label(symptomField.getValue().toString());
+			label.addStyleNames(CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
+			symptomLabelMap.put(symptomField, label);
+			clinicalManifestationLayout.addComponent(label);
+		} else {
+			// Retrieve and remove the exact Label component created earlier
+			Component labelToRemove = symptomLabelMap.remove(symptomField);
+			if (labelToRemove != null) {
+				clinicalManifestationLayout.removeComponent(labelToRemove);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
