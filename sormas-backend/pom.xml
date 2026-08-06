@@ -175,6 +175,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j-export-fo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.docx4j</groupId>
 			<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 		</dependency>
 

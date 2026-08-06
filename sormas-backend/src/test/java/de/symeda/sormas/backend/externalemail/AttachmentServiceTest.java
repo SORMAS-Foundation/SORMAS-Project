@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -99,7 +100,7 @@ public class AttachmentServiceTest {
 		/*
 		 * Set this to true if you want to keep the encrypted file for verification.
 		 */
-		boolean keepEncryptedFile = false;
+		boolean keepEncryptedFile = true;
 
 		// Keep file only once
 		if (keepEncryptedFile) {
@@ -111,6 +112,75 @@ public class AttachmentServiceTest {
 		// Cleanup
 		if (encryptedPdf.exists()) {
 			encryptedPdf.delete();
+		}
+	}
+
+	/**
+	 * Tests the DOCX to PDF conversion using the converter.
+	 *
+	 * @param tempDir
+	 *            handled by JUnit
+	 * @throws Exception
+	 *             if conversion fails
+	 */
+	@Test
+	public void testDocxToPdfConversion(@TempDir Path tempDir) throws Exception {
+		// Setup
+		AttachmentService victim = new AttachmentService();
+		ConfigFacadeEjbLocal configFacade = mock(ConfigFacadeEjbLocal.class);
+
+		// Inject mock configFacade using reflection
+		try {
+			Field configFacadeField = AttachmentService.class.getDeclaredField("configFacade");
+			configFacadeField.setAccessible(true);
+			configFacadeField.set(victim, configFacade);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			throw new RuntimeException("Failed to inject configFacade mock", e);
+		}
+
+		// Configure temp directory path
+		String tempPath = tempDir.toString();
+		when(configFacade.getTempFilesPath()).thenReturn(tempPath);
+
+		// Load test DOCX from resources
+		ClassLoader classLoader = getClass().getClassLoader();
+		File docxFile = new File(classLoader.getResource("docx/ordonnance-test.docx").getFile());
+
+		String password = "password";
+		Map<File, String> result = victim.createEncryptedPdfs(Map.of(docxFile, "name-of-result.docx"), password);
+
+		Map.Entry<File, String> fileStringEntry = result.entrySet().stream().findFirst().orElseThrow();
+
+		File convertedPdf = fileStringEntry.getKey();
+
+		// Assert - check if the converted PDF file exists
+		assertTrue(convertedPdf.exists(), "Converted PDF file should exist");
+
+		// Verify it's a valid PDF by loading it
+		try {
+			PDDocument pdfDoc = Loader.loadPDF(convertedPdf, password);
+			assertTrue(pdfDoc.getNumberOfPages() > 0, "PDF should have at least one page");
+			pdfDoc.close();
+		} catch (IOException e) {
+			convertedPdf.delete();
+			throw new AssertionError("Failed to load converted PDF: " + e.getMessage(), e);
+		}
+
+		/*
+		 * Set this to true if you want to keep the encrypted file for verification.
+		 */
+		boolean keepEncryptedFile = true;
+
+		// Keep file only once
+		if (keepEncryptedFile) {
+			String keepPath = "target/test-output/docx-to-pdf-verification.pdf";
+			Files.copy(convertedPdf.toPath(), Paths.get(keepPath), StandardCopyOption.REPLACE_EXISTING);
+			System.out.println("Verification file kept at: " + new File(keepPath).getAbsolutePath());
+		}
+
+		// Cleanup
+		if (convertedPdf.exists()) {
+			convertedPdf.delete();
 		}
 	}
 }

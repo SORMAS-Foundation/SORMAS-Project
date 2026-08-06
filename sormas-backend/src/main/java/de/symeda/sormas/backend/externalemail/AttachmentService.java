@@ -41,6 +41,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.docx4j.Docx4J;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -72,7 +74,7 @@ public class AttachmentService {
 
 	// @formatter:off
     private final Map<String, PdfConverter> converters = Map.of(
-            DOCX_FILE_EXTENSION, new DocXConverter(),
+            DOCX_FILE_EXTENSION, new Docx4jFopDocXConverter(),
             IMAGE_FILE_EXTENSTIONS, new ImageConverter()
     );
     // @formatter:on
@@ -150,7 +152,7 @@ public class AttachmentService {
 		}
 	}
 
-	private class DocXConverter implements PdfConverter {
+	private class XdocReportDocXConverter implements PdfConverter {
 
 		@Override
 		public File convert(File file) throws IOException {
@@ -162,6 +164,26 @@ public class AttachmentService {
 				fr.opensagres.poi.xwpf.converter.pdf.PdfConverter.getInstance().convert(document, outputStream, options);
 			} catch (FileNotFoundException e) {
 				throw new RuntimeException(e);
+			}
+
+			return new File(convertedFilePath);
+		}
+	}
+
+	private class Docx4jFopDocXConverter implements PdfConverter {
+
+		@Override
+		public File convert(File file) throws IOException {
+			String convertedFilePath = getTmpFilePathForConversion() + PDF_FILE_EXTENSION;
+
+			try (InputStream is = new FileInputStream(file); OutputStream os = new FileOutputStream(convertedFilePath)) {
+
+				WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(is);
+
+				Docx4J.toPDF(wordMLPackage, os);
+
+			} catch (Exception e) {
+				throw new IOException("Failed to convert DOCX to PDF", e);
 			}
 
 			return new File(convertedFilePath);
