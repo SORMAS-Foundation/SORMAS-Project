@@ -1633,18 +1633,23 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				symptomLabelMap.put(symptomField, label);
 				clinicalManifestationLayout.addComponent(label);
 			}
-		} else if (sourceFieldObj instanceof String
-			&& StringUtils.isNotBlank(symptomField.getValue().toString())
-			&& !symptomLabelMap.containsKey(symptomField)) {
-			Label label = new Label(symptomField.getValue().toString());
-			label.addStyleNames(CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
-			symptomLabelMap.put(symptomField, label);
+		} else if (sourceFieldObj instanceof String && StringUtils.isNotBlank((String) sourceFieldObj)) {
+			Label label = symptomLabelMap.get(symptomField);
+			if (label == null) {
+				label = new Label((String) sourceFieldObj);
+				label.addStyleNames(CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
+				symptomLabelMap.put(symptomField, label);
+			} else {
+				label.setValue((String) sourceFieldObj);
+			}
 			clinicalManifestationLayout.addComponent(label);
 		} else {
-			// Retrieve and remove the exact Label component created earlier
-			Component labelToRemove = symptomLabelMap.remove(symptomField);
-			if (labelToRemove != null) {
-				clinicalManifestationLayout.removeComponent(labelToRemove);
+			Label label = symptomLabelMap.get(symptomField);
+			if (label != null) {
+				clinicalManifestationLayout.removeComponent(label);
+				symptomLabelMap.remove(symptomField);
+			} else {
+				// nothing needs to be done, the symptom is not in the clinical manifestation layout.
 			}
 		}
 	}
