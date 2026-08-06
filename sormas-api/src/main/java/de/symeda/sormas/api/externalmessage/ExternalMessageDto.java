@@ -31,7 +31,9 @@ import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
@@ -128,6 +130,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String MALARIA_INFECTED_YEAR = "malariaInfectedYear";
 	public static final String AIRPORT_WORKER = "airportWorker";
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
+	public static final String HIV_STATUS = "hivStatus";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
+	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -291,6 +298,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private YesNoUnknown healthcareProfessional;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
+
+	private HivStatus hivStatus;
+	private ProbableRouteOfTransmission probableRouteOfTransmission;
+	private YesNoUnknown contactWithSexWorker;
+	private CountryReferenceDto motherCountryOfBirth;
+	private CountryReferenceDto motherCitizenship;
 
 	/**
 	 * Will only be present for: {@link ExternalMessageType#SURVEY_RESPONSE} to represent the pair.
@@ -1062,6 +1075,46 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setModeOfTransmissionType(String modeOfTransmissionType) {
 		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	public HivStatus getHivStatus() {
+		return hivStatus;
+	}
+
+	public void setHivStatus(HivStatus hivStatus) {
+		this.hivStatus = hivStatus;
+	}
+
+	public ProbableRouteOfTransmission getProbableRouteOfTransmission() {
+		return probableRouteOfTransmission;
+	}
+
+	public void setProbableRouteOfTransmission(ProbableRouteOfTransmission probableRouteOfTransmission) {
+		this.probableRouteOfTransmission = probableRouteOfTransmission;
+	}
+
+	public YesNoUnknown getContactWithSexWorker() {
+		return contactWithSexWorker;
+	}
+
+	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+		this.contactWithSexWorker = contactWithSexWorker;
+	}
+
+	public CountryReferenceDto getMotherCountryOfBirth() {
+		return motherCountryOfBirth;
+	}
+
+	public void setMotherCountryOfBirth(CountryReferenceDto motherCountryOfBirth) {
+		this.motherCountryOfBirth = motherCountryOfBirth;
+	}
+
+	public CountryReferenceDto getMotherCitizenship() {
+		return motherCitizenship;
+	}
+
+	public void setMotherCitizenship(CountryReferenceDto motherCitizenship) {
+		this.motherCitizenship = motherCitizenship;
 	}
 
 	@Nullable

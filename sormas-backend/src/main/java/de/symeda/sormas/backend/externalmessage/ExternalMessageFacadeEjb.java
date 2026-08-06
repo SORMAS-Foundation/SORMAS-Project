@@ -297,6 +297,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setHivStatus(source.getHivStatus());
+		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setContactWithSexWorker(source.getContactWithSexWorker());
+		target.setMotherCountryOfBirth(countryService.getByReferenceDto(source.getMotherCountryOfBirth()));
+		target.setMotherCitizenship(countryService.getByReferenceDto(source.getMotherCitizenship()));
 
 		ExternalSurveyResponseData surveyResponseData = source.getSurveyResponseData();
 
@@ -629,6 +634,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setHivStatus(source.getHivStatus());
+		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setContactWithSexWorker(source.getContactWithSexWorker());
+		target.setMotherCountryOfBirth(CountryFacadeEjb.toReferenceDto(source.getMotherCountryOfBirth()));
+		target.setMotherCitizenship(CountryFacadeEjb.toReferenceDto(source.getMotherCitizenship()));
 
 		ExternalMessageAdditionalDataType additionalDataType = source.getAdditionalDataType();
 		String additionalDataJson = source.getAdditionalDataJson();
