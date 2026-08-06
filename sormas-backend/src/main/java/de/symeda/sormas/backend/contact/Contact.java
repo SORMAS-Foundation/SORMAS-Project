@@ -44,6 +44,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -315,6 +316,9 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	private boolean immuneGlobulinProposed;
 
 	private Long personId;
+	private YesNoUnknown pregnant;
+	private YesNoUnknown postpartum;
+	private Trimester trimester;
 
 	public static Contact build() {
 		Contact contact = new Contact();
@@ -1231,5 +1235,32 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setImmuneGlobulinProposed(boolean immuneGlobulinProposed) {
 		this.immuneGlobulinProposed = immuneGlobulinProposed;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPregnant() {
+		return pregnant;
+	}
+
+	public void setPregnant(YesNoUnknown pregnant) {
+		this.pregnant = pregnant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPostpartum() {
+		return postpartum;
+	}
+
+	public void setPostpartum(YesNoUnknown postpartum) {
+		this.postpartum = postpartum;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
 	}
 }

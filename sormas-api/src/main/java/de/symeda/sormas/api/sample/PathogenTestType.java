@@ -38,6 +38,8 @@ public enum PathogenTestType {
 	// tests (#13951). The qualitative result is the Pos/Neg outcome; TEXT carries the organism identifier
 	// and NUMERIC carries the CFU/mL count. The legacy constants remain @NotSelectableForNewTests so
 	// historic records and case-classification rules keep working.
+	@Diseases(value = {
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -71,7 +73,8 @@ public enum PathogenTestType {
 	IGG_SERUM_ANTIBODY,
 
 	@Diseases(value = {
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -101,7 +104,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
 
@@ -177,14 +181,16 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MULTIPLEX_PCR,
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -199,7 +205,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	NASBA,
@@ -214,28 +221,32 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TMA,
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	CRISPR_DIAGNOSTICS,
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	LINE_PROBE_ASSAY,
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	SANGER_SEQUENCING,
@@ -259,7 +270,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DNA_MICROARRAY,
@@ -322,7 +334,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.MEASLES,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MUMPS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GENOTYPING,
@@ -366,7 +379,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ANTIBODY_DETECTION,
@@ -385,7 +399,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -410,7 +425,8 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
-		Disease.MALARIA })
+		Disease.MALARIA,
+		Disease.MUMPS })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	INDIRECT_FLUORESCENT_ANTIBODY,
@@ -438,14 +454,16 @@ public enum PathogenTestType {
 		"RAPID_ANTIGEN_DETECTION",
 		"RDT" })
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATERAL_FLOW_ASSAY,
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOFLUORESCENCE_ASSAY,
@@ -459,14 +477,16 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	// Positive/Negative interpretation plus the reciprocal titre (#14105): TEXT alone rendered no result
 	// field. The titre ('1:160') is kept as text, not a Float numeric value, like NEUTRALIZING_ANTIBODIES.
@@ -505,7 +525,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
@@ -524,7 +545,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MICROSCOPY,
@@ -538,7 +560,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GRAM_STAIN,
@@ -546,7 +569,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
@@ -554,7 +578,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
@@ -562,7 +587,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -579,7 +605,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -589,7 +616,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -599,7 +627,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
@@ -607,7 +636,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
@@ -615,7 +645,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -659,7 +690,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
@@ -687,7 +719,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.MUMPS }, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------

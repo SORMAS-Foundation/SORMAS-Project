@@ -111,6 +111,7 @@ import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.survey.alias.PathAliasFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.api.systemconfiguration.CronJobFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
@@ -589,6 +590,10 @@ public class FacadeProvider {
 
 	public static SystemConfigurationCategoryFacade getSystemConfigurationCategoryFacade() {
 		return get().lookupEjbRemote(SystemConfigurationCategoryFacade.class);
+	}
+
+	public static CronJobFacade getCronJobFacade() {
+		return get().lookupEjbRemote(CronJobFacade.class);
 	}
 
 	public static NotifierFacade getNotifierFacade() {

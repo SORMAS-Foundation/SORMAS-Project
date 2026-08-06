@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,6 +69,7 @@ public class EpiData extends AbstractDomainObject {
 	private ClusterType clusterType;
 	private String clusterTypeText;
 	private boolean clusterRelated;
+	private String clusterIdentifier;
 
 	// Giardiasis & Cryptosporidiosis specific
 	private InfectionSource infectionSource;
@@ -362,4 +365,14 @@ public class EpiData extends AbstractDomainObject {
 	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
 		this.contactWithSexWorker = contactWithSexWorker;
 	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
 }

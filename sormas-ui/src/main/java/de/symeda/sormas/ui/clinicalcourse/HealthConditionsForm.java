@@ -19,6 +19,7 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.EXPOSED_TO
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.EXPOSED_TO_MOSQUITO_BORNE_VIRUSES_TEXT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.FORMER_SMOKER;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HEPATITIS;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIGH_IRON_LEVEL;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_ART;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_PREP;
@@ -110,7 +111,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 					fluidRow(
 							fluidColumn(6, 0, locs(
 									TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,"IMMUNODEFICIENCY_INCLUDING_HIV_LAYOUT",
-									 HIV, HIV_ART, CONGENITAL_SYPHILIS, SYPHILIS_OR_OTHER_STIS, DOWN_SYNDROME,
+									HIV, HIV_ART, CONGENITAL_SYPHILIS, SYPHILIS_OR_OTHER_STIS, DOWN_SYNDROME, HIGH_IRON_LEVEL,
 									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, MENTAL_HEALTH_DISORDER, SUBSTANCE_USE_DISORDER, SUBSTANCE_USE_DISORDER_DETAILS,
 									RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT", ON_MEDICATION, MEDICATION_DETAILS)),
 							fluidColumn(6, 0, locs(
@@ -150,6 +151,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		CHRONIC_KIDNEY_DISEASE,
 		CHRONIC_NEUROLOGIC_CONDITION,
 		DOWN_SYNDROME,
+		HIGH_IRON_LEVEL,
 		CONGENITAL_SYPHILIS,
 		SYPHILIS_OR_OTHER_STIS,
 		IMMUNODEFICIENCY_OTHER_THAN_HIV,

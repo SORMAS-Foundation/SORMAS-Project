@@ -275,6 +275,7 @@ public interface Validations {
 	String systemConfigurationValueInvalidKey = "systemConfigurationValueInvalidKey";
 	String systemConfigurationValueInvalidValue = "systemConfigurationValueInvalidValue";
 	String systemConfigurationValuePatternNotMatched = "systemConfigurationValuePatternNotMatched";
+	String systemConfigurationValueValidationCronExpression = "systemConfigurationValueValidationCronExpression";
 	String systemConfigurationValueValidationInvalidBackgroundColor = "systemConfigurationValueValidationInvalidBackgroundColor";
 	String systemConfigurationValueValidationMenuSubtitle = "systemConfigurationValueValidationMenuSubtitle";
 	String systemConfigurationValueValidationNotADirectory = "systemConfigurationValueValidationNotADirectory";

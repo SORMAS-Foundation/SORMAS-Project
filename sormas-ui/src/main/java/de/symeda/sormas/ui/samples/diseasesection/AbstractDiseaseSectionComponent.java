@@ -126,12 +126,12 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 	 *
 	 * @param components
 	 */
-	public void setVisibleClear(AbstractComponent... components) {
+	public void setVisibleClear(boolean isVisible, AbstractComponent... components) {
 		if (components == null) {
 			return;
 		}
 		for (AbstractComponent component : components) {
-			component.setVisible(false);
+			component.setVisible(isVisible);
 			if (component instanceof HasValue) {
 				((HasValue<?>) component).clear();
 			}

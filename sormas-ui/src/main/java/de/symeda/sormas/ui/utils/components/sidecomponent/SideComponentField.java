@@ -141,6 +141,7 @@ public class SideComponentField extends HorizontalLayout {
 				PathogenTestType.BEIJINGGENOTYPING,
 				PathogenTestType.SPOLIGOTYPING,
 				PathogenTestType.MIRU_PATTERN_CODE));
+		map.put(Disease.MUMPS, Arrays.asList(PathogenTestType.GENOTYPING));
 		map.replaceAll((disease, testTypes) -> Collections.unmodifiableList(testTypes));
 		VARIANT_MAP = Collections.unmodifiableMap(map);
 	}
@@ -194,6 +195,16 @@ public class SideComponentField extends HorizontalLayout {
 				variant = StringUtils.abbreviate((pathogenTest.getSerotypeText() != null ? pathogenTest.getSerotypeText().toString() : ""), 125);
 			} else {
 				variant = StringUtils.abbreviate((pathogenTest.getSerotype() != null ? pathogenTest.getSerotype().toString() : ""), 125);
+			}
+
+		} else if (pathogenTest.getTestedDisease() == Disease.MUMPS
+			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(pathogenTest.getTestType()::equals)) {
+			if (!DataHelper.isNullOrEmpty(pathogenTest.getGenoTypeText())) {
+				variant = StringUtils.abbreviate(pathogenTest.getGenoTypeText(), 125);
+			} else if (pathogenTest.getGenoType() != null) {
+				variant = StringUtils.abbreviate((pathogenTest.getGenoType() != null ? pathogenTest.getGenoType().toString() : ""), 125);
+			} else {
+				variant = null;
 			}
 
 		} else {

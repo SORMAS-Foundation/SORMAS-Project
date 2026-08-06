@@ -54,6 +54,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String MUST_HAVE_NO_GEO_COORDINATES = "mustHaveNoGeoCoordinates";
 	public static final String MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY = "mustBePortHealthCaseWithoutFacility";
 	public static final String MUST_HAVE_CASE_MANAGEMENT_DATA = "mustHaveCaseManagementData";
+	public static final String HAS_DOCTOR_DECLARATION = "hasDoctorDeclaration";
 	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
 	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
@@ -126,6 +127,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
+	private Boolean hasDoctorDeclaration;
 	private Boolean withoutResponsibleOfficer;
 	private Boolean withExtendedQuarantine;
 	private Boolean withReducedQuarantine;
@@ -411,6 +413,14 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public Boolean getMustHaveCaseManagementData() {
 		return mustHaveCaseManagementData;
+	}
+
+	public void setHasDoctorDeclaration(Boolean hasDoctorDeclaration) {
+		this.hasDoctorDeclaration = hasDoctorDeclaration;
+	}
+
+	public Boolean getHasDoctorDeclaration() {
+		return hasDoctorDeclaration;
 	}
 
 	public void setWithoutResponsibleOfficer(Boolean withoutResponsibleOfficer) {

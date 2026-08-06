@@ -15,13 +15,32 @@
 
 package de.symeda.sormas.api.symptoms;
 
+import static de.symeda.sormas.api.Disease.DENGUE;
+import static de.symeda.sormas.api.Disease.MUMPS;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum ClinicalManifestation {
 
+	@Diseases({
+		DENGUE })
 	ASYMPTOMATIC,
+	@Diseases({
+		DENGUE })
 	NO_SIGN_OF_SEVERITY,
+	@Diseases({
+		DENGUE })
 	SIGN_OF_SEVERITY,
+	@Diseases({
+		MUMPS })
+	MENINGOENCEPHALITIS,
+	@Diseases({
+		MUMPS })
+	ORCHITIS,
+	@Diseases({
+		MUMPS })
+	PAROTID_SWELLING,
 	UNKNOWN,
 	OTHER;
 

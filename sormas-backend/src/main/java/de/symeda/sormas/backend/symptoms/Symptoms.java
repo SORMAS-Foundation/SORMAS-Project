@@ -320,6 +320,14 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState haemolyticUremicSyndrome;
 	private SymptomState bloodyDiarrhea;
 	private SymptomState wateryDiarrhea;
+	// Unilateral or bilateral swelling of the parotid gland or other salivary glands
+	private SymptomState salivarySwelling;
+	private SymptomState orchitis;
+	private SymptomState pancreatitis;
+	private YesNoUnknown noComplications;
+	private YesNoUnknown unknownComplications;
+	private YesNoUnknown otherGeneralSymptoms;
+	private String otherGeneralSymptomsText;
 
 	// Syphilis-specific symptoms
 	private SymptomState patchyAlopecia;
@@ -2824,4 +2832,67 @@ public class Symptoms extends AbstractDomainObject {
 	public void setSymptomEndDate(Date symptomEndDate) {
 		this.symptomEndDate = symptomEndDate;
 	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSalivarySwelling() {
+		return salivarySwelling;
+	}
+
+	public void setSalivarySwelling(SymptomState salivarySwelling) {
+		this.salivarySwelling = salivarySwelling;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOrchitis() {
+		return orchitis;
+	}
+
+	public void setOrchitis(SymptomState orchitis) {
+		this.orchitis = orchitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getNoComplications() {
+		return noComplications;
+	}
+
+	public void setNoComplications(YesNoUnknown noComplications) {
+		this.noComplications = noComplications;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getUnknownComplications() {
+		return unknownComplications;
+	}
+
+	public void setUnknownComplications(YesNoUnknown unknownComplications) {
+		this.unknownComplications = unknownComplications;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPancreatitis() {
+		return pancreatitis;
+	}
+
+	public void setPancreatitis(SymptomState pancreatitis) {
+		this.pancreatitis = pancreatitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getOtherGeneralSymptoms() {
+		return otherGeneralSymptoms;
+	}
+
+	public void setOtherGeneralSymptoms(YesNoUnknown otherGeneralSymptoms) {
+		this.otherGeneralSymptoms = otherGeneralSymptoms;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getOtherGeneralSymptomsText() {
+		return otherGeneralSymptomsText;
+	}
+
+	public void setOtherGeneralSymptomsText(String otherGeneralSymptomsText) {
+		this.otherGeneralSymptomsText = otherGeneralSymptomsText;
+	}
+
 }

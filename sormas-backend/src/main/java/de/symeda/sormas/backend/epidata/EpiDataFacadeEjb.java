@@ -155,6 +155,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setCaseImportedStatus(source.getCaseImportedStatus());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.isClusterRelated());
+		target.setClusterIdentifier(source.getClusterIdentifier());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		target.setInfectionSource(source.getInfectionSource());
@@ -354,6 +355,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setCaseImportedStatus(source.getCaseImportedStatus());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.isClusterRelated());
+		target.setClusterIdentifier(source.getClusterIdentifier());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		target.setInfectionSource(source.getInfectionSource());
