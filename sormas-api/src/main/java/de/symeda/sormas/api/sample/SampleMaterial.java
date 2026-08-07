@@ -465,6 +465,7 @@ public enum SampleMaterial {
 	LOWER_RESPIRATORY_TRACT,
 
 	@Diseases({
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
@@ -597,8 +598,6 @@ public enum SampleMaterial {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ULCER_SWAB,
 
-	@Diseases(value = {
-		Disease.SALMONELLOSIS }, hide = true)
 	UNKNOWN,
 
 	@Deprecated
