@@ -236,51 +236,49 @@ public class AttachmentService {
         try (PDDocument document = Loader.loadPDF(pdfFile)) {
             replaceText(document, replacementContext);
             document.save(outputFile);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return outputFile;
     }
 
-//    public static PDDocument replaceText(PDDocument document, Map<String, String> replacementContext) throws IOException {
-//        Map<String, String> actualReplacementContext = replacementContext.entrySet().stream()
-//                .filter(entry -> StringUtils.isNotBlank(entry.getKey()) && StringUtils.isNotBlank(entry.getValue()))
-//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-//
-//        if (MapUtils.isEmpty(actualReplacementContext)) {
-//            return document;
-//        }
-//
-//        for (PDPage page : document.getPages()) {
-//            PDFStreamParser parser = new PDFStreamParser(page);
-//            List<Object> tokens = parser.parse(); // parse() once - it already returns the tokens in PDFBox 3
-//
-//            for (int j = 0; j < tokens.size(); j++) {
-//                Object token = tokens.get(j);
-//                if (!(token instanceof Operator)) {
-//                    continue;
-//                }
-//
-//                Operator op = (Operator) token;
-//
-//                switch (op.getName()) {
-//                    case "Tj":
-//                        replaceInTj(tokens, j, actualReplacementContext);
-//                        break;
-//                    case "TJ":
-//                        replaceInTJ(tokens, j, actualReplacementContext);
-//                        break;
-//                    default:
-//                        break;
-//                }
-//            }
-//
-//            writeTokensBack(document, page, tokens);
-//        }
-//
-//        return document;
-//    }
+    public static PDDocument replaceText(PDDocument document, Map<String, String> replacementContext) throws IOException {
+        Map<String, String> actualReplacementContext = replacementContext.entrySet().stream()
+                .filter(entry -> StringUtils.isNotBlank(entry.getKey()) && StringUtils.isNotBlank(entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (MapUtils.isEmpty(actualReplacementContext)) {
+            return document;
+        }
+
+        for (PDPage page : document.getPages()) {
+            PDFStreamParser parser = new PDFStreamParser(page);
+            List<Object> tokens = parser.parse(); // parse() once - it already returns the tokens in PDFBox 3
+
+            for (int j = 0; j < tokens.size(); j++) {
+                Object token = tokens.get(j);
+                if (!(token instanceof Operator)) {
+                    continue;
+                }
+
+                Operator op = (Operator) token;
+
+                switch (op.getName()) {
+                    case "Tj":
+                        replaceInTj(tokens, j, actualReplacementContext);
+                        break;
+                    case "TJ":
+                        replaceInTJ(tokens, j, actualReplacementContext);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            writeTokensBack(document, page, tokens);
+        }
+
+        return document;
+    }
 
     private static void replaceInTj(List<Object> tokens, int operatorIndex, Map<String, String> replacementContext) {
         COSString previous = (COSString) tokens.get(operatorIndex - 1);
@@ -327,49 +325,6 @@ public class AttachmentService {
             new ContentStreamWriter(out).writeTokens(tokens);
         }
         page.setContents(updatedStream);
-    }
-
-
-    public static void replaceText(PDDocument document, Map<String, String> replacementContext) throws Exception {
-        for (PDPage page : document.getPages()) {
-            PDFStreamParser parser = new PDFStreamParser(page);
-            List<Object> tokens = parser.parse();
-
-            for (Object token : tokens) {
-                if (token instanceof COSString) {
-                    replaceInCosString((COSString) token, replacementContext);
-                } else if (token instanceof COSArray) {
-                    COSArray array = (COSArray) token;
-                    for (int j = 0; j < array.size(); j++) {
-                        COSBase item = array.get(j);
-                        if (item instanceof COSString) {
-                            replaceInCosString((COSString) item, replacementContext);
-                        }
-                    }
-                }
-            }
-
-            PDStream newContents = new PDStream(document);
-            try (OutputStream out = newContents.createOutputStream(COSName.FLATE_DECODE)) {
-                new ContentStreamWriter(out).writeTokens(tokens);
-            }
-            page.setContents(newContents);
-        }
-    }
-
-    private static void replaceInCosString(COSString cosString, Map<String, String> replacementContext) {
-        String original = cosString.getString();
-        String updated = original;
-
-        for (Map.Entry<String, String> entry : replacementContext.entrySet()) {
-            if (updated.contains(entry.getKey())) {
-                updated = updated.replace(entry.getKey(), entry.getValue());
-            }
-        }
-
-        if (!updated.equals(original)) {
-            cosString.setValue(updated.getBytes());
-        }
     }
 
 }
