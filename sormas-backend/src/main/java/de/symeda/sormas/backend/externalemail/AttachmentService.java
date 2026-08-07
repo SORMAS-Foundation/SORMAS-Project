@@ -39,6 +39,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.docx4j.Docx4J;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -46,6 +47,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -56,6 +58,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -252,7 +255,9 @@ public class AttachmentService {
 
         for (PDPage page : document.getPages()) {
             PDFStreamParser parser = new PDFStreamParser(page);
-            List<Object> tokens = parser.parse(); // parse() once - it already returns the tokens in PDFBox 3
+            List<Object> tokens = parser.parse();
+
+            PDFont currentFont = null;
 
             for (int j = 0; j < tokens.size(); j++) {
                 Object token = tokens.get(j);
@@ -263,11 +268,14 @@ public class AttachmentService {
                 Operator op = (Operator) token;
 
                 switch (op.getName()) {
+                    case "Tf":
+                        currentFont = resolveFont(tokens, j, page);
+                        break;
                     case "Tj":
-                        replaceInTj(tokens, j, actualReplacementContext);
+                        replaceInTj(tokens, j, actualReplacementContext, currentFont);
                         break;
                     case "TJ":
-                        replaceInTJ(tokens, j, actualReplacementContext);
+                        replaceInTJ(tokens, j, actualReplacementContext, currentFont);
                         break;
                     default:
                         break;
@@ -280,42 +288,98 @@ public class AttachmentService {
         return document;
     }
 
-    private static void replaceInTj(List<Object> tokens, int operatorIndex, Map<String, String> replacementContext) {
-        COSString previous = (COSString) tokens.get(operatorIndex - 1);
-        String updated = previous.getString();
+    private static PDFont resolveFont(List<Object> tokens, int tfIndex, PDPage page) {
+        // operands for "Tf" are: /FontName size Tf  -> font name is 2 tokens back
+        if (tfIndex >= 2 && tokens.get(tfIndex - 2) instanceof COSName) {
+            COSName fontName = (COSName) tokens.get(tfIndex - 2);
+            try {
+                return page.getResources().getFont(fontName);
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        return null;
+    }
 
+    private static void replaceInTj(List<Object> tokens, int operatorIndex,
+                                    Map<String, String> replacementContext, PDFont font) {
+        if (font == null) return;
+
+        COSString previous = (COSString) tokens.get(operatorIndex - 1);
+        String decoded = decodeWithFont(previous, font);
+        if (decoded == null) return;
+
+        String updated = decoded;
         for (Map.Entry<String, String> entry : replacementContext.entrySet()) {
             updated = updated.replace(entry.getKey(), entry.getValue());
         }
 
-        previous.setValue(updated.getBytes(StandardCharsets.UTF_8));
+        if (!updated.equals(decoded)) {
+            encodeInto(previous, updated, font);
+        }
     }
 
-    private static void replaceInTJ(List<Object> tokens, int operatorIndex, Map<String, String> replacementContext) {
-        COSArray previous = (COSArray) tokens.get(operatorIndex - 1);
+    private static void replaceInTJ(List<Object> tokens, int operatorIndex,
+                                    Map<String, String> replacementContext, PDFont font) {
+        if (font == null) return;
 
+        COSArray array = (COSArray) tokens.get(operatorIndex - 1);
+
+        // Decode each string element individually via the font, keep numbers untouched
         StringBuilder combined = new StringBuilder();
-        for (int k = 0; k < previous.size(); k++) {
-            COSBase element = previous.getObject(k);
+        List<Integer> stringElementIndices = new ArrayList<>();
+        for (int k = 0; k < array.size(); k++) {
+            COSBase element = array.getObject(k);
             if (element instanceof COSString) {
-                combined.append(((COSString) element).getString());
+                String decoded = decodeWithFont((COSString) element, font);
+                if (decoded != null) {
+                    combined.append(decoded);
+                    stringElementIndices.add(k);
+                }
             }
         }
 
-        String replacement = replacementContext.get(combined.toString().trim());
-        if (replacement == null) {
-            return;
+        String key = combined.toString().trim();
+        String replacement = replacementContext.get(key);
+        if (replacement == null || stringElementIndices.isEmpty()) {
+            return; // no whole-run match; leave array untouched to preserve spacing
         }
 
-        COSBase first = previous.getObject(0);
-        if (!(first instanceof COSString)) {
-            return; // array doesn't start with a string (e.g. leading kerning number) - skip rather than crash
+        // Put the full replacement into the FIRST string element (preserves its position),
+        // blank out the other string elements but KEEP the numbers between them so
+        // kerning/justification spacing for the rest of the line is unaffected.
+        int firstIdx = stringElementIndices.get(0);
+        encodeInto((COSString) array.getObject(firstIdx), replacement, font);
+
+        for (int i = 1; i < stringElementIndices.size(); i++) {
+            int idx = stringElementIndices.get(i);
+            ((COSString) array.getObject(idx)).setValue(new byte[0]); // empty, not removed
         }
+    }
 
-        ((COSString) first).setValue(replacement.getBytes(StandardCharsets.UTF_8));
+    private static String decodeWithFont(COSString cosString, PDFont font) {
+        byte[] bytes = cosString.getBytes();
+        StringBuilder sb = new StringBuilder();
+        try (ByteArrayInputStream in = new ByteArrayInputStream(bytes)) {
+            while (in.available() > 0) {
+                int code = font.readCode(in);
+                String unicode = font.toUnicode(code);
+                if (unicode != null) {
+                    sb.append(unicode);
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return sb.toString();
+    }
 
-        for (int k = previous.size() - 1; k > 0; k--) {
-            previous.remove(k);
+    private static void encodeInto(COSString cosString, String text, PDFont font) {
+        try {
+            cosString.setValue(font.encode(text));
+        } catch (IllegalArgumentException | IOException e) {
+            // replacement text has a character not in this font's embedded subset
+            System.err.println("Cannot encode '" + text + "' with font " + font.getName() + ": " + e.getMessage());
         }
     }
 
@@ -326,5 +390,4 @@ public class AttachmentService {
         }
         page.setContents(updatedStream);
     }
-
 }
