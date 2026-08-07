@@ -183,4 +183,79 @@ public class AttachmentServiceTest {
 			convertedPdf.delete();
 		}
 	}
+
+
+	@Test
+	public void testEditPdf(@TempDir Path tempDir) throws IOException {
+		// Setup
+		AttachmentService attachmentService = new AttachmentService();
+		ConfigFacadeEjbLocal configFacade = mock(ConfigFacadeEjbLocal.class);
+
+		// Inject mock configFacade using reflection
+		try {
+			Field configFacadeField = AttachmentService.class.getDeclaredField("configFacade");
+			configFacadeField.setAccessible(true);
+			configFacadeField.set(attachmentService, configFacade);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			throw new RuntimeException("Failed to inject configFacade mock", e);
+		}
+
+		// Configure temp directory path
+		String tempPath = tempDir.toString();
+		when(configFacade.getTempFilesPath()).thenReturn(tempPath);
+
+		// Load test PDF from resources
+		ClassLoader classLoader = getClass().getClassLoader();
+		File originalPdfFile = new File(classLoader.getResource("pdfs/pdf-to-replace.pdf").getFile());
+
+		// Load original PDF to get metadata for comparison
+		PDDocument originalDoc = Loader.loadPDF(originalPdfFile);
+		int originalPageCount = originalDoc.getNumberOfPages();
+		originalDoc.close();
+
+		// Execute
+		File edited = attachmentService.replaceText(originalPdfFile, Map.of(
+				"«$person.firstName»", "John",
+				"«$person.lastName»", "Doe",
+				"«$houseNumber»", "5",
+				"«$person.address.street»", "Rue de Paris",
+				"«$ postalCode»", "123456",// TODO: warning must be edited in the original file. variable name seems off.
+				"«$person.address.city»", "Luxembourg"
+		));
+
+		// Assert - check if the encrypted file exists
+		assertTrue(edited.exists(), "Encrypted PDF file should exist");
+
+		// Verify encrypted PDF is valid by loading it with the password and comparing content
+		try {
+			PDDocument encryptedDoc = Loader.loadPDF(edited, "test-password");
+			int encryptedPageCount = encryptedDoc.getNumberOfPages();
+
+			// Assert same number of pages - proves document structure is preserved
+			assertEquals(originalPageCount, encryptedPageCount, "Page count should be the same after encryption");
+
+			encryptedDoc.close();
+		} catch (IOException e) {
+			edited.delete();
+			throw new AssertionError("Failed to load encrypted PDF with password: " + e.getMessage(), e);
+		}
+
+		/*
+		 * Set this to true if you want to keep the encrypted file for verification.
+		 */
+		boolean keepEncryptedFile = true;
+
+		// Keep file only once
+		if (keepEncryptedFile) {
+			String keepPath = "target/test-output/encrypted-verification.pdf";
+			Files.copy(edited.toPath(), Paths.get(keepPath), StandardCopyOption.REPLACE_EXISTING);
+			System.out.println("Verification file kept at: " + new File(keepPath).getAbsolutePath());
+		}
+
+		// Cleanup
+		if (edited.exists()) {
+			edited.delete();
+		}
+	}
+
 }
