@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.sample;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -16,7 +17,6 @@ public class SampleMaterialSalmonellosisTest {
 		SampleMaterial.CEREBROSPINAL_FLUID,
 		SampleMaterial.STOOL,
 		SampleMaterial.URINE,
-		SampleMaterial.OTHER,
 		SampleMaterial.CLINICAL_SAMPLE,
 		SampleMaterial.PUS,
 		SampleMaterial.UNKNOWN);
@@ -25,6 +25,9 @@ public class SampleMaterialSalmonellosisTest {
 	public void everySalm19SpecimenIsVisibleForSalmonellosis() {
 		DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.SALMONELLOSIS);
 		for (SampleMaterial material : SALM_19_MATERIALS) {
+			assertFalse(
+				material.isDeprecated(),
+				material.name() + " is a retired sample material and must not be a SALM-19 mapping target");
 			assertTrue(
 				checker.isVisible(SampleMaterial.class, material.name()),
 				material.name() + " must be selectable for Salmonellosis (SALM-19 specimen list)");
