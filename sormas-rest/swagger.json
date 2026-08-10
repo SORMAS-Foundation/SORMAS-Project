@@ -25726,7 +25726,7 @@
           },
           "clinicalManifestation" : {
             "type" : "string",
-            "enum" : [ "ASYMPTOMATIC", "NO_SIGN_OF_SEVERITY", "SIGN_OF_SEVERITY", "MENINGOENCEPHALITIS", "ORCHITIS", "PAROTID_SWELLING", "UNKNOWN", "OTHER" ]
+            "enum" : [ "ASYMPTOMATIC", "NO_SIGN_OF_SEVERITY", "SIGN_OF_SEVERITY", "UNKNOWN", "OTHER" ]
           },
           "clinicalManifestationText" : {
             "type" : "string"

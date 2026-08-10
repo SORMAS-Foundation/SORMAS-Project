@@ -27217,9 +27217,6 @@ components:
           - ASYMPTOMATIC
           - NO_SIGN_OF_SEVERITY
           - SIGN_OF_SEVERITY
-          - MENINGOENCEPHALITIS
-          - ORCHITIS
-          - PAROTID_SWELLING
           - UNKNOWN
           - OTHER
         clinicalManifestationText:
