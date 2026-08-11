@@ -297,6 +297,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setClusterIdentifier(source.getClusterIdentifier());
+		target.setClusterType(source.getClusterType());
+		target.setClusterTypeText(source.getClusterTypeText());
+		target.setClusterRelated(source.getClusterRelated());
 
 		ExternalSurveyResponseData surveyResponseData = source.getSurveyResponseData();
 
@@ -629,6 +633,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setClusterIdentifier(source.getClusterIdentifier());
+		target.setClusterType(source.getClusterType());
+		target.setClusterTypeText(source.getClusterTypeText());
+		target.setClusterRelated(source.getClusterRelated());
 
 		ExternalMessageAdditionalDataType additionalDataType = source.getAdditionalDataType();
 		String additionalDataJson = source.getAdditionalDataJson();

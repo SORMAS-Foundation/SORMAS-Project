@@ -49,6 +49,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
@@ -245,6 +246,12 @@ public class ExternalMessage extends AbstractDomainObject {
 	private YesNoUnknown healthcareProfessional;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
+
+	// Mumps cluster changes
+	private String clusterIdentifier;
+	private ClusterType clusterType;
+	private String clusterTypeText;
+	private Boolean clusterRelated;
 
 	private ExternalMessageAdditionalDataType additionalDataType;
 
@@ -1074,4 +1081,41 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.additionalDataJson = additionalData;
 		return this;
 	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
+	}
+
+	@Column
+	public Boolean getClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(Boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
 }

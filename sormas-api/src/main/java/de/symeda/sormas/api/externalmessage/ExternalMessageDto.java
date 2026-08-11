@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
@@ -291,6 +292,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private YesNoUnknown healthcareProfessional;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
+
+	// MUMPS changes - Cluster changes
+	private String clusterIdentifier;
+	private ClusterType clusterType;
+	private String clusterTypeText;
+	private Boolean clusterRelated;
 
 	/**
 	 * Will only be present for: {@link ExternalMessageType#SURVEY_RESPONSE} to represent the pair.
@@ -1073,4 +1080,37 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.surveyResponseData = surveyResponseData;
 		return this;
 	}
+
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
+	}
+
+	public Boolean getClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(Boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
 }

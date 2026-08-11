@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
@@ -237,6 +238,16 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			}
 			break;
 		}
+		EpiDataDto epiDataDto = caseDto.getEpiData();
+		epiDataDto.setClusterIdentifier(externalMessageDto.getClusterIdentifier());
+		epiDataDto.setClusterType(externalMessageDto.getClusterType());
+		epiDataDto.setClusterTypeText(externalMessageDto.getClusterTypeText());
+		// cluster related is true if any of the cluster fields are not null, otherwise false
+		boolean isClusterRelated = Boolean.TRUE.equals(externalMessageDto.getClusterRelated())
+			|| externalMessageDto.getClusterType() != null
+			|| externalMessageDto.getClusterIdentifier() != null
+			|| externalMessageDto.getClusterTypeText() != null ? true : false;
+		epiDataDto.setClusterRelated(isClusterRelated);
 
 		caseDto.setCaseClassification(caseClassification);
 		caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
