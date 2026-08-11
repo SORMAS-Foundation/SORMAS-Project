@@ -239,15 +239,23 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			break;
 		}
 		EpiDataDto epiDataDto = caseDto.getEpiData();
-		epiDataDto.setClusterIdentifier(externalMessageDto.getClusterIdentifier());
-		epiDataDto.setClusterType(externalMessageDto.getClusterType());
-		epiDataDto.setClusterTypeText(externalMessageDto.getClusterTypeText());
-		// cluster related is true if any of the cluster fields are not null, otherwise false
-		boolean isClusterRelated = Boolean.TRUE.equals(externalMessageDto.getClusterRelated())
+		// cluster related boolean flag is setting true if it has true value or any of the cluster fields are not null
+		// It's possible to get the cluster data without cluster related flag being set to true, so we need to check the other fields as well,
+		// If any of the cluster fields are not null, we consider the case as cluster related
+		boolean hasClusterUpdate = externalMessageDto.getClusterRelated() != null
 			|| externalMessageDto.getClusterType() != null
 			|| externalMessageDto.getClusterIdentifier() != null
-			|| externalMessageDto.getClusterTypeText() != null ? true : false;
-		epiDataDto.setClusterRelated(isClusterRelated);
+			|| externalMessageDto.getClusterTypeText() != null;
+		if (hasClusterUpdate) {
+			epiDataDto.setClusterIdentifier(externalMessageDto.getClusterIdentifier());
+			epiDataDto.setClusterType(externalMessageDto.getClusterType());
+			epiDataDto.setClusterTypeText(externalMessageDto.getClusterTypeText());
+			epiDataDto.setClusterRelated(
+				Boolean.TRUE.equals(externalMessageDto.getClusterRelated())
+					|| externalMessageDto.getClusterType() != null
+					|| externalMessageDto.getClusterIdentifier() != null
+					|| externalMessageDto.getClusterTypeText() != null);
+		}
 
 		caseDto.setCaseClassification(caseClassification);
 		caseDto.setInvestigationStatus(InvestigationStatus.PENDING);

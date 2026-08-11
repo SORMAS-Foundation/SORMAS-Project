@@ -294,8 +294,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String modeOfTransmissionType;
 
 	// MUMPS changes - Cluster changes
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String clusterIdentifier;
 	private ClusterType clusterType;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String clusterTypeText;
 	private Boolean clusterRelated;
 
