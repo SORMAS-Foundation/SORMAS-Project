@@ -3489,6 +3489,8 @@ public interface Captions {
 	String TestReport_prescriberPhysicianCode = "TestReport.prescriberPhysicianCode";
 	String TestReport_prescriberPostalCode = "TestReport.prescriberPostalCode";
 	String TestReport_specie = "TestReport.specie";
+	String TestReport_syphilisSerologyMethod = "TestReport.syphilisSerologyMethod";
+	String TestReport_syphilisSerologyMethodText = "TestReport.syphilisSerologyMethodText";
 	String TestReport_testDateTime = "TestReport.testDateTime";
 	String TestReport_testLabCity = "TestReport.testLabCity";
 	String TestReport_testLabExternalId = "TestReport.testLabExternalId";

@@ -22,6 +22,7 @@ import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -72,6 +73,8 @@ public class TestReportDto extends EntityDto {
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
+	public static final String SYPHILIS_SEROLOGY_METHOD = "syphilisSerologyMethod";
+	public static final String SYPHILIS_SEROLOGY_METHOD_TEXT = "syphilisSerologyMethodText";
 
 	@NotNull(message = Validations.requiredField)
 	private SampleReportReferenceDto sampleReport;
@@ -215,6 +218,9 @@ public class TestReportDto extends EntityDto {
 	private String seroGroupSpecificationText;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
+	private SyphilisSerologyMethod syphilisSerologyMethod;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String syphilisSerologyMethodText;
 	private Serotype serotype;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String serotypeText;
@@ -900,6 +906,22 @@ public class TestReportDto extends EntityDto {
 
 	public void setSeroTypingMethodText(String seroTypingMethodText) {
 		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	public SyphilisSerologyMethod getSyphilisSerologyMethod() {
+		return syphilisSerologyMethod;
+	}
+
+	public void setSyphilisSerologyMethod(SyphilisSerologyMethod syphilisSerologyMethod) {
+		this.syphilisSerologyMethod = syphilisSerologyMethod;
+	}
+
+	public String getSyphilisSerologyMethodText() {
+		return syphilisSerologyMethodText;
+	}
+
+	public void setSyphilisSerologyMethodText(String syphilisSerologyMethodText) {
+		this.syphilisSerologyMethodText = syphilisSerologyMethodText;
 	}
 
 	public Serotype getSerotype() {
