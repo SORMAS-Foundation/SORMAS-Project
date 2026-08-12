@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,9 +64,15 @@ public class SyphilisSerologyMethodTest {
 	}
 
 	@Test
-	public void everyMethodRendersACaption() {
-		for (SyphilisSerologyMethod method : SyphilisSerologyMethod.values()) {
-			assertFalse(method.toString().isBlank(), method.name() + " must render a caption");
-		}
+	public void everyMethodRendersItsConfiguredCaption() {
+		assertEquals("VDRL", SyphilisSerologyMethod.VDRL.toString());
+		assertEquals("RPR", SyphilisSerologyMethod.RPR.toString());
+		assertEquals("TRUST", SyphilisSerologyMethod.TRUST.toString());
+		assertEquals("TPPA / TPHA", SyphilisSerologyMethod.TPPA_TPHA.toString());
+		assertEquals("FTA-ABS", SyphilisSerologyMethod.FTA_ABS.toString());
+		assertEquals("EIA", SyphilisSerologyMethod.EIA.toString());
+		assertEquals("CLIA", SyphilisSerologyMethod.CLIA.toString());
+		assertEquals("Rapid test (RDT)", SyphilisSerologyMethod.RDT.toString());
+		assertEquals("Other", SyphilisSerologyMethod.OTHER.toString());
 	}
 }
