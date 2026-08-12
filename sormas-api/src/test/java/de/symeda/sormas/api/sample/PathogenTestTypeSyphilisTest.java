@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.sample;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,9 +21,11 @@ public class PathogenTestTypeSyphilisTest {
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.MICROSCOPY,
 		PathogenTestType.NAAT,
+		PathogenTestType.NON_TREPONEMAL_TESTS,
 		PathogenTestType.OTHER,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
+		PathogenTestType.TREPONEMAL_TESTS,
 		PathogenTestType.WESTERN_BLOT);
 
 	static final List<PathogenTestType> TRIMMED = List.of(
@@ -87,5 +92,28 @@ public class PathogenTestTypeSyphilisTest {
 				checker.isVisible(PathogenTestType.class, type.name()),
 				type.name() + " leaks into the Syphilis method picker — add it to APPROVED or to a hide-list");
 		}
+	}
+
+	@Test
+	public void bothSerologySubcategoriesAreSerologicalTests() {
+		assertThat(PathogenTestType.getCategory(PathogenTestType.NON_TREPONEMAL_TESTS), is(PathogenTestCategory.SEROLOGICAL_TESTS));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.TREPONEMAL_TESTS), is(PathogenTestCategory.SEROLOGICAL_TESTS));
+	}
+
+	@Test
+	public void onlyNonTreponemalTestsCarryATitre() {
+		assertThat(
+			PathogenTestType.getResultValueTypes(PathogenTestType.NON_TREPONEMAL_TESTS),
+			containsInAnyOrder(ResultValueType.QUALITATIVE, ResultValueType.NUMERIC));
+		assertThat(
+			PathogenTestType.getResultValueTypes(PathogenTestType.TREPONEMAL_TESTS),
+			containsInAnyOrder(ResultValueType.QUALITATIVE));
+	}
+
+	@Test
+	public void bothSerologySubcategoriesAreScopedToSyphilis() {
+		DiseaseFieldVisibilityChecker measles = new DiseaseFieldVisibilityChecker(Disease.MEASLES);
+		assertFalse(measles.isVisible(PathogenTestType.class, PathogenTestType.NON_TREPONEMAL_TESTS.name()));
+		assertFalse(measles.isVisible(PathogenTestType.class, PathogenTestType.TREPONEMAL_TESTS.name()));
 	}
 }

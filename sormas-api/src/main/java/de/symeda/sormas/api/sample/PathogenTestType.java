@@ -447,6 +447,20 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
 
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
+	NON_TREPONEMAL_TESTS,
+
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	TREPONEMAL_TESTS,
+
 	// ----------------------------------------------------------------------------------------------
 	// Antigen Detection
 	// ----------------------------------------------------------------------------------------------
