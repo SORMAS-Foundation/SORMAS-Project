@@ -55,6 +55,8 @@ public final class DiseaseSectionFactory {
 			return new RsvSectionComponent();
 		case MUMPS:
 			return new MumpsSectionComponent();
+		case SYPHILIS:
+			return new SyphilisSectionComponent();
 		default:
 			return new DefaultSectionComponent();
 		}
