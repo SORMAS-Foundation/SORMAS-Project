@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.samples.diseasesection;
 
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -12,6 +13,7 @@ public class SyphilisSectionComponent extends AbstractDiseaseSectionComponent {
 
 	private ComboBox<SyphilisSerologyMethod> serologyMethodField;
 	private TextField serologyMethodTextField;
+	private Label serologyMethodTextSpacer;
 
 	private PathogenTestType currentTestType;
 
@@ -23,8 +25,9 @@ public class SyphilisSectionComponent extends AbstractDiseaseSectionComponent {
 
 		serologyMethodTextField = createTextField(PathogenTestDto.SYPHILIS_SEROLOGY_METHOD_TEXT);
 		serologyMethodTextField.setVisible(false);
+		serologyMethodTextSpacer = createSpacer();
 
-		addRow(serologyMethodField, serologyMethodTextField);
+		addToggleRow(serologyMethodField, serologyMethodTextField, serologyMethodTextSpacer);
 
 		binder.forField(serologyMethodField)
 			.bind(PathogenTestDto::getSyphilisSerologyMethod, PathogenTestDto::setSyphilisSerologyMethod);
@@ -35,8 +38,9 @@ public class SyphilisSectionComponent extends AbstractDiseaseSectionComponent {
 	@Override
 	protected void wireVisibility() {
 		track(serologyMethodField.addValueChangeListener(event -> {
-			boolean showText = event.getValue() == SyphilisSerologyMethod.OTHER;
+			boolean showText = event.getValue() == SyphilisSerologyMethod.OTHER && serologyMethodField.isVisible();
 			serologyMethodTextField.setVisible(showText);
+			serologyMethodTextSpacer.setVisible(!showText);
 			if (!showText) {
 				serologyMethodTextField.clear();
 			}
@@ -44,21 +48,27 @@ public class SyphilisSectionComponent extends AbstractDiseaseSectionComponent {
 		}));
 
 		track(eventBus.on(TestTypeChangedEvent.class, event -> {
+			PathogenTestType previousTestType = currentTestType;
 			currentTestType = event.getTestType();
+			if (currentTestType != previousTestType && isSerologySubcategory(previousTestType)) {
+				serologyMethodField.clear();
+			}
 			updateVisibility();
 		}));
 	}
 
+	private static boolean isSerologySubcategory(PathogenTestType testType) {
+		return testType == PathogenTestType.NON_TREPONEMAL_TESTS || testType == PathogenTestType.TREPONEMAL_TESTS;
+	}
+
 	private void updateVisibility() {
-		boolean visible =
-			currentTestType == PathogenTestType.NON_TREPONEMAL_TESTS || currentTestType == PathogenTestType.TREPONEMAL_TESTS;
+		boolean visible = isSerologySubcategory(currentTestType);
 		serologyMethodField.setVisible(visible);
 		if (visible) {
 			updateComboBoxByDiseaseAndTestType(serologyMethodField, SyphilisSerologyMethod.class, disease, currentTestType);
 		} else {
-			serologyMethodField.clear();
-			serologyMethodTextField.setVisible(false);
-			serologyMethodTextField.clear();
+			setVisibleClear(false, serologyMethodField, serologyMethodTextField);
+			serologyMethodTextSpacer.setVisible(true);
 		}
 		updateRowAndSelfVisibility();
 	}
