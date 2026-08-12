@@ -291,7 +291,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private SyphilisSerologyMethod syphilisSerologyMethod;
 	@Diseases(value = {
 		Disease.SYPHILIS })
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String syphilisSerologyMethodText;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)

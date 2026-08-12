@@ -219,7 +219,7 @@ public class TestReportDto extends EntityDto {
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
 	private SyphilisSerologyMethod syphilisSerologyMethod;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String syphilisSerologyMethodText;
 	private Serotype serotype;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
