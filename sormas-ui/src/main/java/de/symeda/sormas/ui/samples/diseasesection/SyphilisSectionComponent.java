@@ -38,12 +38,10 @@ public class SyphilisSectionComponent extends AbstractDiseaseSectionComponent {
 	@Override
 	protected void wireVisibility() {
 		track(serologyMethodField.addValueChangeListener(event -> {
-			boolean showText = event.getValue() == SyphilisSerologyMethod.OTHER && serologyMethodField.isVisible();
-			serologyMethodTextField.setVisible(showText);
-			serologyMethodTextSpacer.setVisible(!showText);
-			if (!showText) {
-				serologyMethodTextField.clear();
+			if (!serologyMethodField.isVisible()) {
+			    return;
 			}
+			updateSerologyMethodTextVisibility(true);
 			updateRowAndSelfVisibility();
 		}));
 
@@ -57,6 +55,15 @@ public class SyphilisSectionComponent extends AbstractDiseaseSectionComponent {
 		}));
 	}
 
+	private void updateSerologyMethodTextVisibility(boolean clearText) {
+		boolean showText = serologyMethodField.getValue() == SyphilisSerologyMethod.OTHER && serologyMethodField.isVisible();
+		serologyMethodTextField.setVisible(showText);
+		serologyMethodTextSpacer.setVisible(!showText);
+		if (clearText && !showText) {
+		    serologyMethodTextField.clear();
+		}
+	}
+
 	private static boolean isSerologySubcategory(PathogenTestType testType) {
 		return testType == PathogenTestType.NON_TREPONEMAL_TESTS || testType == PathogenTestType.TREPONEMAL_TESTS;
 	}
@@ -66,6 +73,7 @@ public class SyphilisSectionComponent extends AbstractDiseaseSectionComponent {
 		serologyMethodField.setVisible(visible);
 		if (visible) {
 			updateComboBoxByDiseaseAndTestType(serologyMethodField, SyphilisSerologyMethod.class, disease, currentTestType);
+			updateSerologyMethodTextVisibility(false);
 		} else {
 			setVisibleClear(false, serologyMethodField, serologyMethodTextField);
 			serologyMethodTextSpacer.setVisible(true);
