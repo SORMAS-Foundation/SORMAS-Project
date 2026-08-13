@@ -41,13 +41,13 @@ public interface Descriptions {
 	String descCaseFilterCasesWithReinfection = "descCaseFilterCasesWithReinfection";
 	String descCaseFilterExcludeSharedCases = "descCaseFilterExcludeSharedCases";
 	String descCaseFilterHasDoctorDeclaration = "descCaseFilterHasDoctorDeclaration";
-	String descCaseFilterWithoutDoctorDeclaration = "descCaseFilterWithoutDoctorDeclaration";
 	String descCaseFilterIncludeCasesFromOtherJurisdictions = "descCaseFilterIncludeCasesFromOtherJurisdictions";
 	String descCaseFilterOnlyCasesWithFulfilledReferenceDefinition = "descCaseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String descCaseFilterOnlyFromOtherInstances = "descCaseFilterOnlyFromOtherInstances";
 	String descCaseFilterPortHealthWithoutFacility = "descCaseFilterPortHealthWithoutFacility";
 	String descCaseFilterRelatedToEvent = "descCaseFilterRelatedToEvent";
 	String descCaseFilterWithExtendedQuarantine = "descCaseFilterWithExtendedQuarantine";
+	String descCaseFilterWithoutDoctorDeclaration = "descCaseFilterWithoutDoctorDeclaration";
 	String descCaseFilterWithoutGeo = "descCaseFilterWithoutGeo";
 	String descCaseFilterWithoutResponsibleUser = "descCaseFilterWithoutResponsibleUser";
 	String descCaseFilterWithReducedQuarantine = "descCaseFilterWithReducedQuarantine";
