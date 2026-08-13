@@ -877,6 +877,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 					cb.equal(surveillanceReportRoot.get(SurveillanceReport.REPORTING_TYPE), ReportingType.DOCTOR));
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(doctorDeclarationSubquery));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getWithoutDoctorDeclaration())) {
+			Subquery<Integer> doctorDeclarationSubquery = cq.subquery(Integer.class);
+			Root<SurveillanceReport> surveillanceReportRoot = doctorDeclarationSubquery.from(SurveillanceReport.class);
+			doctorDeclarationSubquery.select(cb.literal(1))
+				.where(
+					cb.equal(surveillanceReportRoot.get(SurveillanceReport.CAZE), from),
+					cb.equal(surveillanceReportRoot.get(SurveillanceReport.REPORTING_TYPE), ReportingType.DOCTOR));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(cb.exists(doctorDeclarationSubquery)));
+		}
 		if (Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
 		}
