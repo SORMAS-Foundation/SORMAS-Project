@@ -91,7 +91,8 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SPECIMEN_CONDITION),
 				140));
 		// removing the CONFIRMED_NO_SYMPTOMS & CONFIRMED_UNKNOWN_SYMPTOMS case classifications
-		// from samples filter grid for non-German countries
+		// from samples filter grid of other countries.
+		// It's valid only for Germany.
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(
 				FieldConfiguration.withCaptionAndPixelSized(
