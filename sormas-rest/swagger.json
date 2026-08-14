@@ -19412,6 +19412,23 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "clusterIdentifier" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "clusterRelated" : {
+            "type" : "boolean"
+          },
+          "clusterType" : {
+            "type" : "string",
+            "enum" : [ "KINDERGARTEN_OR_CHILDCARE", "FAMILY", "MILITARY", "NOSOCOMIAL", "SCHOOL", "SPORTS_TEAM", "UNIVERSITY", "NOT_APPLICABLE", "UNKNOWN", "OTHER" ]
+          },
+          "clusterTypeText" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
           "complianceWithTreatment" : {
             "type" : "string",
             "enum" : [ "NO_COMPLIANCE", "TREATMENT_COMPLETED", "TREATMENT_FAILED", "TREATMENT_NOT_COMPLETED", "UNKNOWN", "NOT_APPLICABLE" ]

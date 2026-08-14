@@ -19041,6 +19041,29 @@ components:
         changeDate:
           type: string
           format: date-time
+        clusterIdentifier:
+          type: string
+          maxLength: 255
+          minLength: 0
+        clusterRelated:
+          type: boolean
+        clusterType:
+          type: string
+          enum:
+          - KINDERGARTEN_OR_CHILDCARE
+          - FAMILY
+          - MILITARY
+          - NOSOCOMIAL
+          - SCHOOL
+          - SPORTS_TEAM
+          - UNIVERSITY
+          - NOT_APPLICABLE
+          - UNKNOWN
+          - OTHER
+        clusterTypeText:
+          type: string
+          maxLength: 255
+          minLength: 0
         complianceWithTreatment:
           type: string
           enum:
