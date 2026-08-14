@@ -194,7 +194,7 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 		enumValues = getCustomizableEnumFacade().getByUuids(getCustomizableEnumValueService().getAllUuids());
 		CustomizableEnumValueDto pathogenTypeEnumValueDto =
 			enumValues.stream().filter(e -> "GRIP_2".equals(e.getValue()) && CustomizableEnumType.PATHOGEN.equals(e.getDataType())).findFirst().get();
-		occupationTypeEnumValueDto.setDiseases(Set.of(Disease.NEW_INFLUENZA));
+		pathogenTypeEnumValueDto.setDiseases(Set.of(Disease.NEW_INFLUENZA));
 		assertDoesNotThrow(() -> {
 			getCustomizableEnumFacade().save(pathogenTypeEnumValueDto);
 		});
