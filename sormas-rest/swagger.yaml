@@ -9803,6 +9803,8 @@ components:
           type: boolean
         withReducedQuarantine:
           type: boolean
+        withoutDoctorDeclaration:
+          type: boolean
         withoutResponsibleOfficer:
           type: boolean
     CaseDataDto:
@@ -10985,6 +10987,8 @@ components:
         withOwnership:
           type: boolean
         withReducedQuarantine:
+          type: boolean
+        withoutDoctorDeclaration:
           type: boolean
         withoutResponsibleOfficer:
           type: boolean
