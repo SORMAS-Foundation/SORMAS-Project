@@ -93,14 +93,12 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 		// removing the CONFIRMED_NO_SYMPTOMS & CONFIRMED_UNKNOWN_SYMPTOMS case classifications
 		// from samples filter grid of other countries.
 		// It's valid only for Germany.
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			addField(
-				FieldConfiguration.withCaptionAndPixelSized(
-					SampleCriteria.CASE_CLASSIFICATION,
-					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION),
-					140));
-		} else {
-			final ComboBox caseClassification = addField(FieldConfiguration.pixelSized(SampleCriteria.CASE_CLASSIFICATION, 140));
+		ComboBox caseClassification = addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				SampleCriteria.CASE_CLASSIFICATION,
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION),
+				140));
+		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			caseClassification.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
 			caseClassification.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
 		}
