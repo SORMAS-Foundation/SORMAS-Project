@@ -1,9 +1,13 @@
 package de.symeda.sormas.backend.customizableenum;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
 import java.util.List;
@@ -11,15 +15,23 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumHelper;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
 
 public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
+
+	@Mock
+	private CaseService service;
 
 	@BeforeEach
 	public void createCustomEnums() {
@@ -108,5 +120,83 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(CustomizableEnumHelper.isValidEnumValue("INVALID-VALUE"));
 		assertFalse(CustomizableEnumHelper.isValidEnumValue("INVALID$VALUE"));
 
+	}
+
+	/**
+	 * Test that the enum datatype is validated before updating diseases.
+	 * Before removing diseases for disease variants, should check it's been mapped to any cases or not.
+	 */
+	@Test
+	public void testEnumDatatypeBeforeUpdatingDiseases() {
+		List<CustomizableEnumValueDto> enumValues;
+
+		// add the new disease variant
+		CustomizableEnumValue enumValue = new CustomizableEnumValue();
+		enumValue.setDataType(CustomizableEnumType.DISEASE_VARIANT);
+		enumValue.setValue("D");
+		Set<Disease> diseases = new HashSet<>();
+		diseases.add(Disease.NEW_INFLUENZA);
+		diseases.add(Disease.PERTUSSIS);
+		diseases.add(Disease.CORONAVIRUS);
+		enumValue.setDiseases(diseases);
+		enumValue.setCaption("Type D");
+		enumValue.setActive(true);
+		getCustomizableEnumValueService().ensurePersisted(enumValue);
+
+		getCustomizableEnumFacade().loadData();
+		enumValues = getCustomizableEnumFacade().getByUuids(getCustomizableEnumValueService().getAllUuids());
+		CustomizableEnumValueDto diseaseVariantEnumValueDto = enumValues.stream()
+			.filter(e -> "D".equals(e.getValue()) && CustomizableEnumType.DISEASE_VARIANT.equals(e.getDataType()))
+			.findFirst()
+			.get();
+		diseaseVariantEnumValueDto.setDiseases(Set.of(Disease.NEW_INFLUENZA));
+
+		Case caze = new Case();
+		caze.setUuid("123");
+		when(service.findBy(any(), anyBoolean())).thenReturn(List.of(caze));
+		ValidationRuntimeException exception = assertThrows(ValidationRuntimeException.class, () -> {
+			getCustomizableEnumFacade().save(diseaseVariantEnumValueDto);
+		});
+		assertTrue(exception.getMessage().contains("case IDs 123 and therefore cannot be deleted or deactivated"));
+
+		// add the new occupationType
+		enumValue = new CustomizableEnumValue();
+		enumValue.setDataType(CustomizableEnumType.OCCUPATION_TYPE);
+		enumValue.setValue("STUDENT");
+		enumValue.setCaption("Student");
+		enumValue.setDiseases(Set.of(Disease.NEW_INFLUENZA, Disease.DENGUE));
+		enumValue.setActive(true);
+		getCustomizableEnumValueService().ensurePersisted(enumValue);
+
+		getCustomizableEnumFacade().loadData();
+
+		enumValues = getCustomizableEnumFacade().getByUuids(getCustomizableEnumValueService().getAllUuids());
+		CustomizableEnumValueDto occupationTypeEnumValueDto = enumValues.stream()
+			.filter(e -> "STUDENT".equals(e.getValue()) && CustomizableEnumType.OCCUPATION_TYPE.equals(e.getDataType()))
+			.findFirst()
+			.get();
+		occupationTypeEnumValueDto.setDiseases(Set.of(Disease.NEW_INFLUENZA));
+		assertDoesNotThrow(() -> {
+			getCustomizableEnumFacade().save(occupationTypeEnumValueDto);
+		});
+
+		// add the new occupationType
+		enumValue = new CustomizableEnumValue();
+		enumValue.setDataType(CustomizableEnumType.PATHOGEN);
+		enumValue.setValue("GRIP_2");
+		enumValue.setCaption("Grip 2");
+		enumValue.setDiseases(Set.of(Disease.NEW_INFLUENZA, Disease.DENGUE));
+		enumValue.setActive(true);
+		getCustomizableEnumValueService().ensurePersisted(enumValue);
+
+		getCustomizableEnumFacade().loadData();
+
+		enumValues = getCustomizableEnumFacade().getByUuids(getCustomizableEnumValueService().getAllUuids());
+		CustomizableEnumValueDto pathogenTypeEnumValueDto =
+			enumValues.stream().filter(e -> "GRIP_2".equals(e.getValue()) && CustomizableEnumType.PATHOGEN.equals(e.getDataType())).findFirst().get();
+		occupationTypeEnumValueDto.setDiseases(Set.of(Disease.NEW_INFLUENZA));
+		assertDoesNotThrow(() -> {
+			getCustomizableEnumFacade().save(pathogenTypeEnumValueDto);
+		});
 	}
 }
