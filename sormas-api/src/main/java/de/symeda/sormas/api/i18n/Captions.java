@@ -898,6 +898,7 @@ public interface Captions {
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
+	String caseFilterWithoutDoctorDeclaration = "caseFilterWithoutDoctorDeclaration";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleUser = "caseFilterWithoutResponsibleUser";
 	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";

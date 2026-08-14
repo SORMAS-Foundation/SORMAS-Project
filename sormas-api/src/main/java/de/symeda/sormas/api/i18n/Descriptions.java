@@ -47,6 +47,7 @@ public interface Descriptions {
 	String descCaseFilterPortHealthWithoutFacility = "descCaseFilterPortHealthWithoutFacility";
 	String descCaseFilterRelatedToEvent = "descCaseFilterRelatedToEvent";
 	String descCaseFilterWithExtendedQuarantine = "descCaseFilterWithExtendedQuarantine";
+	String descCaseFilterWithoutDoctorDeclaration = "descCaseFilterWithoutDoctorDeclaration";
 	String descCaseFilterWithoutGeo = "descCaseFilterWithoutGeo";
 	String descCaseFilterWithoutResponsibleUser = "descCaseFilterWithoutResponsibleUser";
 	String descCaseFilterWithReducedQuarantine = "descCaseFilterWithReducedQuarantine";
