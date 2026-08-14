@@ -115,11 +115,14 @@ public class EpiDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.MUMPS })
 	private String clusterTypeText;
 
+	// lab message(MEAS-1 & MUMP-1) has been mapped to this identifier
 	@Diseases({
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.MEASLES })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clusterIdentifier;
 

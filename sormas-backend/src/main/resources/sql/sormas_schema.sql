@@ -17098,4 +17098,19 @@ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (659, 'Make scheduled job intervals configurable #13818');
 
+-- 2026-08-06 Mumps Lab message process
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS clusterrelated boolean;
+UPDATE externalmessage              SET clusterrelated = false WHERE clusterrelated IS NULL;
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS clustertype varchar(255);
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS clustertypetext varchar(255);
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clusterrelated boolean;
+UPDATE externalmessage_history      SET clusterrelated = false WHERE clusterrelated IS NULL;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clustertype varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clustertypetext varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (660, '#14269 - Mumps lab message process');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
