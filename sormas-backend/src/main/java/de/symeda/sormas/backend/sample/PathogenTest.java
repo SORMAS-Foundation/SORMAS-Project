@@ -54,6 +54,7 @@ import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.sample.SmearGrade;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.sample.WesternBlotInterpretation;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.DeletableAdo;
@@ -115,6 +116,8 @@ public class PathogenTest extends DeletableAdo {
 	public static final String TEST_SCALE = "testScale";
 	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
 	public static final String RSV_SUBTYPE = "rsvSubtype";
+	public static final String SYPHILIS_SEROLOGY_METHOD = "syphilisSerologyMethod";
+	public static final String SYPHILIS_SEROLOGY_METHOD_TEXT = "syphilisSerologyMethodText";
 
 	private Sample sample;
 	private EnvironmentSample environmentSample;
@@ -178,6 +181,8 @@ public class PathogenTest extends DeletableAdo {
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
 	private RsvSubtype rsvSubtype;
+	private SyphilisSerologyMethod syphilisSerologyMethod;
+	private String syphilisSerologyMethodText;
 	private Float tubeNil;
 	private Boolean tubeNilGT10;
 	private Float tubeAgTb1;
@@ -675,6 +680,23 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
 		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisSerologyMethod getSyphilisSerologyMethod() {
+		return syphilisSerologyMethod;
+	}
+
+	public void setSyphilisSerologyMethod(SyphilisSerologyMethod syphilisSerologyMethod) {
+		this.syphilisSerologyMethod = syphilisSerologyMethod;
+	}
+
+	public String getSyphilisSerologyMethodText() {
+		return syphilisSerologyMethodText;
+	}
+
+	public void setSyphilisSerologyMethodText(String syphilisSerologyMethodText) {
+		this.syphilisSerologyMethodText = syphilisSerologyMethodText;
 	}
 
 	@Enumerated(EnumType.STRING)

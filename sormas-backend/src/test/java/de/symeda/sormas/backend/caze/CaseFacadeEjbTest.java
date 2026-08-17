@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.caze;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -3594,6 +3595,48 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		List<CaseIndexDto> casesWithDoctorDeclaration = getCaseFacade().getIndexList(criteriaWithDoctorDeclaration, 0, 100, null);
 		assertThat(casesWithDoctorDeclaration, hasSize(1));
 		assertEquals(caseWithDoctorDeclaration.getUuid(), casesWithDoctorDeclaration.get(0).getUuid());
+	}
+
+	@Test
+	public void testFilterByWithoutDoctorDeclaration() {
+		// Create a case without doctor declaration
+		PersonDto personDto1 = creator.createPerson("Case", "Person1", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caseWithoutDoctorDeclaration = creator.createCase(
+			surveillanceOfficer.toReference(),
+			personDto1.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		// Create a case with doctor declaration
+		PersonDto personDto2 = creator.createPerson("Case", "Person2", Sex.FEMALE, 1990, 1, 1);
+		CaseDataDto caseWithDoctorDeclaration = creator.createCase(
+			surveillanceOfficer.toReference(),
+			personDto2.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SurveillanceReportDto doctorDeclaration =
+			SurveillanceReportDto.build(caseWithDoctorDeclaration.toReference(), surveillanceOfficer.toReference());
+		doctorDeclaration.setReportingType(ReportingType.DOCTOR);
+		doctorDeclaration.setReportDate(new Date());
+		getSurveillanceReportFacade().save(doctorDeclaration);
+
+		// Test filter for cases WITHOUT doctor declaration
+		final CaseCriteria criteriaWithoutDoctorDeclaration = new CaseCriteria();
+		criteriaWithoutDoctorDeclaration.setWithoutDoctorDeclaration(Boolean.TRUE);
+		List<CaseIndexDto> casesWithoutDoctorDeclaration = getCaseFacade().getIndexList(criteriaWithoutDoctorDeclaration, 0, 100, null);
+		assertThat(casesWithoutDoctorDeclaration, hasSize(1));
+		assertEquals(caseWithoutDoctorDeclaration.getUuid(), casesWithoutDoctorDeclaration.get(0).getUuid());
+
+		// Verify that the case WITH doctor declaration is not in the results
+		assertThat(
+			casesWithoutDoctorDeclaration.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
+			not(contains(caseWithDoctorDeclaration.getUuid())));
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

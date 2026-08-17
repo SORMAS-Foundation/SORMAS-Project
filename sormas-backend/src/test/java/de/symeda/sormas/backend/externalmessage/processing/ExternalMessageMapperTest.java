@@ -40,7 +40,9 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class ExternalMessageMapperTest extends AbstractBeanTest {
@@ -234,5 +236,24 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		// Verify lab is properly set
 		FacilityReferenceDto expectedLabReference = labFacility.toReference();
 		assertEquals(expectedLabReference, pathogenTest.getLab());
+	}
+
+	@Test
+	public void testMapToPathogenTestSetsSyphilisSerologyMethod() {
+		ExternalMessageDto externalMessage = ExternalMessageDto.build();
+
+		TestReportDto testReport = TestReportDto.build();
+		testReport.setTestType(PathogenTestType.NON_TREPONEMAL_TESTS);
+		testReport.setSyphilisSerologyMethod(SyphilisSerologyMethod.VDRL);
+		testReport.setSyphilisSerologyMethodText("Screening assay");
+
+		PathogenTestDto pathogenTest = new PathogenTestDto();
+		pathogenTest.setDrugSusceptibility(new DrugSusceptibilityDto());
+
+		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessage, getExternalMessageProcessingFacade());
+		mapper.mapToPathogenTest(testReport, pathogenTest);
+
+		assertEquals(SyphilisSerologyMethod.VDRL, pathogenTest.getSyphilisSerologyMethod());
+		assertEquals("Screening assay", pathogenTest.getSyphilisSerologyMethodText());
 	}
 }

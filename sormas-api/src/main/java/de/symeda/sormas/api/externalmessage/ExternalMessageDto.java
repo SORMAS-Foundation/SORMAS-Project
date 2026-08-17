@@ -33,6 +33,7 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceD
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
@@ -298,6 +299,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private YesNoUnknown healthcareProfessional;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
+
+	// MUMPS changes - Cluster changes
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String clusterIdentifier;
+	private ClusterType clusterType;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String clusterTypeText;
+	private Boolean clusterRelated;
 
 	private HivStatus hivStatus;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
@@ -1126,4 +1135,37 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.surveyResponseData = surveyResponseData;
 		return this;
 	}
+
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
+	}
+
+	public Boolean getClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(Boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
 }

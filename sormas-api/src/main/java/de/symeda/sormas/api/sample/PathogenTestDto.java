@@ -112,6 +112,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
 	public static final String SEROTYPING_METHOD = "seroTypingMethod";
 	public static final String SERO_TYPING_METHOD_TEXT = "seroTypingMethodText";
+	public static final String SYPHILIS_SEROLOGY_METHOD = "syphilisSerologyMethod";
+	public static final String SYPHILIS_SEROLOGY_METHOD_TEXT = "syphilisSerologyMethodText";
 	public static final String SERO_GROUP_SPECIFICATION = "seroGroupSpecification";
 	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
 	public static final String GENOTYPE = "genoType";
@@ -284,6 +286,13 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private RsvSubtype rsvSubtype;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private SyphilisSerologyMethod syphilisSerologyMethod;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String syphilisSerologyMethodText;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
@@ -884,6 +893,22 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setRsvSubtype(RsvSubtype rsvSubtype) {
 		this.rsvSubtype = rsvSubtype;
+	}
+
+	public SyphilisSerologyMethod getSyphilisSerologyMethod() {
+		return syphilisSerologyMethod;
+	}
+
+	public void setSyphilisSerologyMethod(SyphilisSerologyMethod syphilisSerologyMethod) {
+		this.syphilisSerologyMethod = syphilisSerologyMethod;
+	}
+
+	public String getSyphilisSerologyMethodText() {
+		return syphilisSerologyMethodText;
+	}
+
+	public void setSyphilisSerologyMethodText(String syphilisSerologyMethodText) {
+		this.syphilisSerologyMethodText = syphilisSerologyMethodText;
 	}
 
 	public Float getTubeNil() {

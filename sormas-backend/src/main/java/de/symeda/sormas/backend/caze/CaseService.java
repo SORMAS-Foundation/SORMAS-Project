@@ -869,13 +869,10 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				.and(cb, filter, cb.or(cb.exists(prescriptionSubquery), cb.exists(treatmentSubquery), cb.exists(clinicalVisitSubquery)));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getHasDoctorDeclaration())) {
-			Subquery<Integer> doctorDeclarationSubquery = cq.subquery(Integer.class);
-			Root<SurveillanceReport> surveillanceReportRoot = doctorDeclarationSubquery.from(SurveillanceReport.class);
-			doctorDeclarationSubquery.select(cb.literal(1))
-				.where(
-					cb.equal(surveillanceReportRoot.get(SurveillanceReport.CAZE), from),
-					cb.equal(surveillanceReportRoot.get(SurveillanceReport.REPORTING_TYPE), ReportingType.DOCTOR));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(doctorDeclarationSubquery));
+			filter = CriteriaBuilderHelper.and(cb, filter, hasDoctorDeclarationPredicate(cq, cb, from));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getWithoutDoctorDeclaration())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(hasDoctorDeclarationPredicate(cq, cb, from)));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
@@ -1052,6 +1049,18 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		return filter;
+	}
+
+	private static Predicate hasDoctorDeclarationPredicate(CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Case> from) {
+		Subquery<Integer> doctorDeclarationSubquery = cq.subquery(Integer.class);
+		Root<SurveillanceReport> surveillanceReportRoot = doctorDeclarationSubquery.from(SurveillanceReport.class);
+
+		doctorDeclarationSubquery.select(cb.literal(1))
+			.where(
+				cb.equal(surveillanceReportRoot.get(SurveillanceReport.CAZE), from),
+				cb.equal(surveillanceReportRoot.get(SurveillanceReport.REPORTING_TYPE), ReportingType.DOCTOR));
+
+		return cb.exists(doctorDeclarationSubquery);
 	}
 
 	private Predicate createRelevanceStatusFilter(CaseCriteria caseCriteria, CaseQueryContext caseQueryContext) {

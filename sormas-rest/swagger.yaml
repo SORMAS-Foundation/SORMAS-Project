@@ -9803,6 +9803,8 @@ components:
           type: boolean
         withReducedQuarantine:
           type: boolean
+        withoutDoctorDeclaration:
+          type: boolean
         withoutResponsibleOfficer:
           type: boolean
     CaseDataDto:
@@ -10986,6 +10988,8 @@ components:
           type: boolean
         withReducedQuarantine:
           type: boolean
+        withoutDoctorDeclaration:
+          type: boolean
         withoutResponsibleOfficer:
           type: boolean
     CaseFollowUpDto:
@@ -11760,6 +11764,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -11847,6 +11853,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -11920,6 +11928,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -19041,6 +19051,29 @@ components:
         changeDate:
           type: string
           format: date-time
+        clusterIdentifier:
+          type: string
+          maxLength: 255
+          minLength: 0
+        clusterRelated:
+          type: boolean
+        clusterType:
+          type: string
+          enum:
+          - KINDERGARTEN_OR_CHILDCARE
+          - FAMILY
+          - MILITARY
+          - NOSOCOMIAL
+          - SCHOOL
+          - SPORTS_TEAM
+          - UNIVERSITY
+          - NOT_APPLICABLE
+          - UNKNOWN
+          - OTHER
+        clusterTypeText:
+          type: string
+          maxLength: 255
+          minLength: 0
         complianceWithTreatment:
           type: string
           enum:
@@ -23414,6 +23447,22 @@ components:
           - NOBEIJING
           - POSSBEIJING
           - UNKNOWN
+        syphilisSerologyMethod:
+          type: string
+          enum:
+          - VDRL
+          - RPR
+          - TRUST
+          - TPPA_TPHA
+          - FTA_ABS
+          - EIA
+          - CLIA
+          - RDT
+          - OTHER
+        syphilisSerologyMethodText:
+          type: string
+          maxLength: 255
+          minLength: 0
         testDateTime:
           type: string
           format: date-time
@@ -23482,6 +23531,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
@@ -25212,6 +25263,8 @@ components:
             - NEUTRALIZING_ANTIBODIES
             - INDIRECT_FLUORESCENT_ANTIBODY
             - DIRECT_FLUORESCENT_ANTIBODY
+            - NON_TREPONEMAL_TESTS
+            - TREPONEMAL_TESTS
             - LATERAL_FLOW_ASSAY
             - IMMUNOFLUORESCENCE_ASSAY
             - SLIDE_AGGLUTINATION
@@ -25655,6 +25708,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
@@ -27217,9 +27272,6 @@ components:
           - ASYMPTOMATIC
           - NO_SIGN_OF_SEVERITY
           - SIGN_OF_SEVERITY
-          - MENINGOENCEPHALITIS
-          - ORCHITIS
-          - PAROTID_SWELLING
           - UNKNOWN
           - OTHER
         clinicalManifestationText:
@@ -29433,6 +29485,22 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        syphilisSerologyMethod:
+          type: string
+          enum:
+          - VDRL
+          - RPR
+          - TRUST
+          - TPPA_TPHA
+          - FTA_ABS
+          - EIA
+          - CLIA
+          - RDT
+          - OTHER
+        syphilisSerologyMethodText:
+          type: string
+          maxLength: 255
+          minLength: 0
         testDateTime:
           type: string
           format: date-time
@@ -29516,6 +29584,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION

@@ -50,6 +50,7 @@ import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
@@ -252,6 +253,12 @@ public class ExternalMessage extends AbstractDomainObject {
 	private YesNoUnknown healthcareProfessional;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
+
+	// Mumps cluster changes
+	private String clusterIdentifier;
+	private ClusterType clusterType;
+	private String clusterTypeText;
+	private Boolean clusterRelated;
 
 	private HivStatus hivStatus;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
@@ -1068,6 +1075,63 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
+	public ExternalMessageAdditionalDataType getAdditionalDataType() {
+		return additionalDataType;
+	}
+
+	public ExternalMessage setAdditionalDataType(ExternalMessageAdditionalDataType additionalDataType) {
+		this.additionalDataType = additionalDataType;
+		return this;
+	}
+
+	@Column(columnDefinition = "json")
+	@Type(type = "json")
+	public String getAdditionalDataJson() {
+		return additionalDataJson;
+	}
+
+	public ExternalMessage setAdditionalDataJson(String additionalData) {
+		this.additionalDataJson = additionalData;
+		return this;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
+	}
+
+	@Column
+	public Boolean getClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(Boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
+	@Enumerated(EnumType.STRING)
 	public HivStatus getHivStatus() {
 		return hivStatus;
 	}
@@ -1112,24 +1176,4 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.motherCitizenship = motherCitizenship;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public ExternalMessageAdditionalDataType getAdditionalDataType() {
-		return additionalDataType;
-	}
-
-	public ExternalMessage setAdditionalDataType(ExternalMessageAdditionalDataType additionalDataType) {
-		this.additionalDataType = additionalDataType;
-		return this;
-	}
-
-	@Column(columnDefinition = "json")
-	@Type(type = "json")
-	public String getAdditionalDataJson() {
-		return additionalDataJson;
-	}
-
-	public ExternalMessage setAdditionalDataJson(String additionalData) {
-		this.additionalDataJson = additionalData;
-		return this;
-	}
 }

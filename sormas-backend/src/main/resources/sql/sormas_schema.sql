@@ -17098,6 +17098,34 @@ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (659, 'Make scheduled job intervals configurable #13818');
 
+-- 2026-08-06 Mumps Lab message process
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS clusterrelated boolean;
+UPDATE externalmessage              SET clusterrelated = false WHERE clusterrelated IS NULL;
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS clustertype varchar(255);
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS clustertypetext varchar(255);
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clusterrelated boolean;
+UPDATE externalmessage_history      SET clusterrelated = false WHERE clusterrelated IS NULL;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clustertype varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clustertypetext varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clusteridentifier varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (660, '#14269 - Mumps lab message process');
+
+-- 2026-08-12 Syphilis serology laboratory method #14220
+ALTER TABLE pathogentest         ADD COLUMN IF NOT EXISTS syphilisserologymethod varchar(255);
+ALTER TABLE pathogentest         ADD COLUMN IF NOT EXISTS syphilisserologymethodtext varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS syphilisserologymethod varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS syphilisserologymethodtext varchar(255);
+ALTER TABLE testreport           ADD COLUMN IF NOT EXISTS syphilisserologymethod varchar(255);
+ALTER TABLE testreport           ADD COLUMN IF NOT EXISTS syphilisserologymethodtext varchar(255);
+ALTER TABLE testreport_history   ADD COLUMN IF NOT EXISTS syphilisserologymethod varchar(255);
+ALTER TABLE testreport_history   ADD COLUMN IF NOT EXISTS syphilisserologymethodtext varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (661, '#14220 - Syphilis treponemal and non-treponemal serology method');
+
+
 -- Add syphilis-specific fields to ExternalMessage for Luxembourg #14239
 ALTER TABLE externalmessage ADD COLUMN hivstatus varchar(255);
 ALTER TABLE externalmessage ADD COLUMN probablerouteoftransmission varchar(255);
@@ -17113,6 +17141,6 @@ ALTER TABLE externalmessage_history ADD COLUMN contactwithsexworker varchar(255)
 ALTER TABLE externalmessage_history ADD COLUMN mothercountryofbirth_id bigint;
 ALTER TABLE externalmessage_history ADD COLUMN mothercitizenship_id bigint;
 
-INSERT INTO schema_version (version_number, comment) VALUES (660, 'Add syphilis-specific fields to ExternalMessage for Luxembourg #14239');
+INSERT INTO schema_version (version_number, comment) VALUES (662, 'Add syphilis-specific fields to ExternalMessage for Luxembourg #14239');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
