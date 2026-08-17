@@ -158,6 +158,8 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+		target.setSyphilisSerologyMethod(source.getSyphilisSerologyMethod());
+		target.setSyphilisSerologyMethodText(source.getSyphilisSerologyMethodText());
 		if (source.getSerotypeText() != null && !source.getSerotypeText().trim().isEmpty()) {
 			target.setSerotype(Serotype.fromString(source.getSerotypeText()));
 		} else {
@@ -262,6 +264,8 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+		target.setSyphilisSerologyMethod(source.getSyphilisSerologyMethod());
+		target.setSyphilisSerologyMethodText(source.getSyphilisSerologyMethodText());
 		if (source.getSerotypeText() != null && !source.getSerotypeText().trim().isEmpty()) {
 			target.setSerotype(Serotype.fromString(source.getSerotypeText()));
 		} else {

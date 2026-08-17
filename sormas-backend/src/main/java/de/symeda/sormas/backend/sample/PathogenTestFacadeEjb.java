@@ -345,6 +345,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setGenoType(source.getGenoType());
 		target.setGenoTypeText(source.getGenoTypeText());
 		target.setRsvSubtype(source.getRsvSubtype());
+		target.setSyphilisSerologyMethod(source.getSyphilisSerologyMethod());
+		target.setSyphilisSerologyMethodText(source.getSyphilisSerologyMethodText());
 		target.setAntibodyTitre(source.getAntibodyTitre());
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 		target.setRetestRequested(source.getRetestRequested());
@@ -676,6 +678,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setGenoType(source.getGenoType());
 		target.setGenoTypeText(source.getGenoTypeText());
 		target.setRsvSubtype(source.getRsvSubtype());
+		target.setSyphilisSerologyMethod(source.getSyphilisSerologyMethod());
+		target.setSyphilisSerologyMethodText(source.getSyphilisSerologyMethodText());
 		target.setAntibodyTitre(source.getAntibodyTitre());
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 		target.setRetestRequested(source.getRetestRequested());

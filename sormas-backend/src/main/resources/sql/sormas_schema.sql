@@ -17113,4 +17113,16 @@ ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS clusteridentifier v
 
 INSERT INTO schema_version (version_number, comment) VALUES (660, '#14269 - Mumps lab message process');
 
+-- 2026-08-12 Syphilis serology laboratory method #14220
+ALTER TABLE pathogentest         ADD COLUMN IF NOT EXISTS syphilisserologymethod varchar(255);
+ALTER TABLE pathogentest         ADD COLUMN IF NOT EXISTS syphilisserologymethodtext varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS syphilisserologymethod varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS syphilisserologymethodtext varchar(255);
+ALTER TABLE testreport           ADD COLUMN IF NOT EXISTS syphilisserologymethod varchar(255);
+ALTER TABLE testreport           ADD COLUMN IF NOT EXISTS syphilisserologymethodtext varchar(255);
+ALTER TABLE testreport_history   ADD COLUMN IF NOT EXISTS syphilisserologymethod varchar(255);
+ALTER TABLE testreport_history   ADD COLUMN IF NOT EXISTS syphilisserologymethodtext varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (661, '#14220 - Syphilis treponemal and non-treponemal serology method');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

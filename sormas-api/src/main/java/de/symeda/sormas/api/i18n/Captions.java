@@ -2499,6 +2499,8 @@ public interface Captions {
 	String PathogenTest_specie = "PathogenTest.specie";
 	String PathogenTest_specieText = "PathogenTest.specieText";
 	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
+	String PathogenTest_syphilisSerologyMethod = "PathogenTest.syphilisSerologyMethod";
+	String PathogenTest_syphilisSerologyMethodText = "PathogenTest.syphilisSerologyMethodText";
 	String PathogenTest_testCategory = "PathogenTest.testCategory";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
@@ -3488,6 +3490,8 @@ public interface Captions {
 	String TestReport_prescriberPhysicianCode = "TestReport.prescriberPhysicianCode";
 	String TestReport_prescriberPostalCode = "TestReport.prescriberPostalCode";
 	String TestReport_specie = "TestReport.specie";
+	String TestReport_syphilisSerologyMethod = "TestReport.syphilisSerologyMethod";
+	String TestReport_syphilisSerologyMethodText = "TestReport.syphilisSerologyMethodText";
 	String TestReport_testDateTime = "TestReport.testDateTime";
 	String TestReport_testLabCity = "TestReport.testLabCity";
 	String TestReport_testLabExternalId = "TestReport.testLabExternalId";

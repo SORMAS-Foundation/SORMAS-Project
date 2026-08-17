@@ -198,7 +198,8 @@ public class PathogenTestTypeTest {
 			PathogenTestType.IMMUNOHISTOCHEMISTRY,
 			PathogenTestType.ELECTRON_MICROSCOPY,
 			PathogenTestType.IGRA,
-			PathogenTestType.TST }) {
+			PathogenTestType.TST,
+			PathogenTestType.TREPONEMAL_TESTS }) {
 			expected.put(t, EnumSet.of(ResultValueType.QUALITATIVE));
 		}
 
@@ -232,7 +233,8 @@ public class PathogenTestTypeTest {
 			PathogenTestType.IGM_SERUM_ANTIBODY,
 			PathogenTestType.IGG_SERUM_ANTIBODY,
 			PathogenTestType.IGA_SERUM_ANTIBODY,
-			PathogenTestType.GIEMSA_STAIN }) {
+			PathogenTestType.GIEMSA_STAIN,
+			PathogenTestType.NON_TREPONEMAL_TESTS }) {
 			expected.put(t, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.NUMERIC));
 		}
 

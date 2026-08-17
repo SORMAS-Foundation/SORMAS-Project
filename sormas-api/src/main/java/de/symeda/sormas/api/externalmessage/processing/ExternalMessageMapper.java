@@ -806,6 +806,16 @@ public final class ExternalMessageMapper {
 							sourceTestReport.getRsvSubtype(),
 							PathogenTestDto.RSV_SUBTYPE),
 						Mapping.of(
+							pathogenTest::setSyphilisSerologyMethod,
+							pathogenTest.getSyphilisSerologyMethod(),
+							sourceTestReport.getSyphilisSerologyMethod(),
+							PathogenTestDto.SYPHILIS_SEROLOGY_METHOD),
+						Mapping.of(
+							pathogenTest::setSyphilisSerologyMethodText,
+							pathogenTest.getSyphilisSerologyMethodText(),
+							sourceTestReport.getSyphilisSerologyMethodText(),
+							PathogenTestDto.SYPHILIS_SEROLOGY_METHOD_TEXT),
+						Mapping.of(
 							pathogenTest::setTubeNil, // Tube nil flag
 							pathogenTest.getTubeNil(),
 							sourceTestReport.getTubeNil(),
