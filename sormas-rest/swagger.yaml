@@ -11764,6 +11764,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -11851,6 +11853,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -11924,6 +11928,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -23441,6 +23447,22 @@ components:
           - NOBEIJING
           - POSSBEIJING
           - UNKNOWN
+        syphilisSerologyMethod:
+          type: string
+          enum:
+          - VDRL
+          - RPR
+          - TRUST
+          - TPPA_TPHA
+          - FTA_ABS
+          - EIA
+          - CLIA
+          - RDT
+          - OTHER
+        syphilisSerologyMethodText:
+          type: string
+          maxLength: 255
+          minLength: 0
         testDateTime:
           type: string
           format: date-time
@@ -23509,6 +23531,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
@@ -25239,6 +25263,8 @@ components:
             - NEUTRALIZING_ANTIBODIES
             - INDIRECT_FLUORESCENT_ANTIBODY
             - DIRECT_FLUORESCENT_ANTIBODY
+            - NON_TREPONEMAL_TESTS
+            - TREPONEMAL_TESTS
             - LATERAL_FLOW_ASSAY
             - IMMUNOFLUORESCENCE_ASSAY
             - SLIDE_AGGLUTINATION
@@ -25682,6 +25708,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
@@ -29457,6 +29485,22 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        syphilisSerologyMethod:
+          type: string
+          enum:
+          - VDRL
+          - RPR
+          - TRUST
+          - TPPA_TPHA
+          - FTA_ABS
+          - EIA
+          - CLIA
+          - RDT
+          - OTHER
+        syphilisSerologyMethodText:
+          type: string
+          maxLength: 255
+          minLength: 0
         testDateTime:
           type: string
           format: date-time
@@ -29540,6 +29584,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
