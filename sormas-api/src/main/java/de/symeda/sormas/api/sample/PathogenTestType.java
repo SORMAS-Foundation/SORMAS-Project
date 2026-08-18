@@ -443,7 +443,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.SYPHILIS })
-	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
 
