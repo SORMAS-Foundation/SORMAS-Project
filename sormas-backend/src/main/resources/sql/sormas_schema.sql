@@ -17126,9 +17126,9 @@ ALTER TABLE testreport_history   ADD COLUMN IF NOT EXISTS syphilisserologymethod
 INSERT INTO schema_version (version_number, comment) VALUES (661, '#14220 - Syphilis treponemal and non-treponemal serology method');
 
 -- 2026-08-18 Luxembourg ECDC reporting exclusion
-ALTER TABLE cases ADD COLUMN IF NOT EXISTS excludefromecdcreporting boolean;
-ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS excludefromecdcreporting boolean;
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS excludefromreporting boolean;
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS excludefromreporting boolean;
 
-INSERT INTO schema_version (version_number, comment) VALUES (662, '#13991 - Add excludeFromEcdcReporting field for Luxembourg ECDC reporting');
+INSERT INTO schema_version (version_number, comment) VALUES (662, '#13991 - Add excludeFromReporting field for Luxembourg ECDC reporting');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

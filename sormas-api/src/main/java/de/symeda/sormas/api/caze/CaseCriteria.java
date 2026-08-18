@@ -88,8 +88,8 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
-	public static final String ONLY_CASES_NOT_EXCLUDED_FROM_ECDC_REPORTING = "onlyCasesNotExcludedFromEcdcReporting";
-	public static final String ONLY_CASES_EXCLUDED_FROM_ECDC_REPORTING = "onlyCasesExcludedFromEcdcReporting";
+	public static final String ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING = "onlyCasesNotExcludedFromEcdcReporting";
+	public static final String ONLY_CASES_EXCLUDED_FROM_REPORTING = "onlyCasesExcludedFromEcdcReporting";
 	public static final String PERSON_LIKE = "personLike";
 	public static final String JURISDICTION_TYPE = "jurisdictionType";
 	public static final String ENTITY_RELEVANCE_STATUS = "relevanceStatus";
@@ -169,7 +169,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
 	private Boolean onlyCasesNotExcludedFromEcdcReporting;
-	private Boolean onlyCasesExcludedFromEcdcReporting;
+	private Boolean onlyCasesExcludedFromReporting;
 	private String personLike;
 	private Boolean withOwnership;
 	private Date surveyAssignedFrom;
@@ -833,7 +833,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.onlyShowCasesWithFulfilledReferenceDefinition = onlyShowCasesWithFulfilledReferenceDefinition;
 	}
 
-	public Boolean getOnlyCasesNotExcludedFromEcdcReporting() {
+	public Boolean getOnlyCasesNotExcludedFromReporting() {
 		return onlyCasesNotExcludedFromEcdcReporting;
 	}
 
@@ -846,17 +846,12 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		return this;
 	}
 
-	public Boolean getOnlyCasesExcludedFromEcdcReporting() {
-		return onlyCasesExcludedFromEcdcReporting;
+	public Boolean getOnlyCasesExcludedFromReporting() {
+		return onlyCasesExcludedFromReporting;
 	}
 
-	public void setOnlyCasesExcludedFromEcdcReporting(Boolean onlyCasesExcludedFromEcdcReporting) {
-		this.onlyCasesExcludedFromEcdcReporting = onlyCasesExcludedFromEcdcReporting;
-	}
-
-	public CaseCriteria onlyCasesExcludedFromEcdcReporting(Boolean value) {
-		setOnlyCasesExcludedFromEcdcReporting(value);
-		return this;
+	public void setOnlyCasesExcludedFromReporting(Boolean onlyCasesExcludedFromReporting) {
+		this.onlyCasesExcludedFromReporting = onlyCasesExcludedFromReporting;
 	}
 
 	public Date getFollowUpVisitsFrom() {

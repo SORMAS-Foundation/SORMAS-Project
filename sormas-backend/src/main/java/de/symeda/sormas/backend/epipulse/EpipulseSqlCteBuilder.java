@@ -15,10 +15,13 @@
 
 package de.symeda.sormas.backend.epipulse;
 
-import java.util.StringJoiner;
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import java.util.StringJoiner;
 
 /**
  * Service for building SQL Common Table Expressions (CTEs) for Epipulse disease exports.
@@ -32,47 +35,49 @@ import javax.ejb.Stateless;
 @LocalBean
 public class EpipulseSqlCteBuilder {
 
-	/**
-	 * Joins multiple CTE fragments into a complete WITH clause.
-	 * Each CTE fragment should be a clean SQL expression without leading/trailing commas.
-	 *
-	 * @param ctes
-	 *            the CTE fragments to join
-	 * @return the complete WITH clause with proper comma separation
-	 */
-	public String joinCtes(String... ctes) {
-		StringJoiner joiner = new StringJoiner(", ", "WITH ", " ");
-		for (String cte : ctes) {
-			if (cte != null && !cte.trim().isEmpty()) {
-				joiner.add(cte.trim());
-			}
-		}
-		return joiner.toString();
-	}
+    @EJB
+    private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	/**
-	 * Builds the variables CTE that defines the export parameters.
-	 * This CTE is used by all other CTEs to access the disease, subject code, dates, etc.
-	 *
-	 * @return the variables CTE SQL fragment
-	 */
-	public String buildVariablesCte() {
-		//@formatter:off
+    /**
+     * Joins multiple CTE fragments into a complete WITH clause.
+     * Each CTE fragment should be a clean SQL expression without leading/trailing commas.
+     *
+     * @param ctes the CTE fragments to join
+     * @return the complete WITH clause with proper comma separation
+     */
+    public String joinCtes(String... ctes) {
+        StringJoiner joiner = new StringJoiner(", ", "WITH ", " ");
+        for (String cte : ctes) {
+            if (cte != null && !cte.trim().isEmpty()) {
+                joiner.add(cte.trim());
+            }
+        }
+        return joiner.toString();
+    }
+
+    /**
+     * Builds the variables CTE that defines the export parameters.
+     * This CTE is used by all other CTEs to access the disease, subject code, dates, etc.
+     *
+     * @return the variables CTE SQL fragment
+     */
+    public String buildVariablesCte() {
+        //@formatter:off
 		return "variables AS (SELECT         :disease         AS disease," +
 			   "                          :subjectCode     AS subject_code," +
 			   "                          :countryLocale   AS country_locale," +
 			   "                          CAST(:startDate AS date) AS start_date," +
 			   "                          CAST(:endDate AS date)   AS end_date)";
 		//@formatter:on
-	}
+    }
 
-	/**
-	 * Builds the config_data CTE that looks up reporting country and data source.
-	 *
-	 * @return the config_data CTE SQL fragment
-	 */
-	public String buildConfigDataCte() {
-		//@formatter:off
+    /**
+     * Builds the config_data CTE that looks up reporting country and data source.
+     *
+     * @return the config_data CTE SQL fragment
+     */
+    public String buildConfigDataCte() {
+        //@formatter:off
 		return "config_data AS (SELECT v.subject_code," +
 			   "                            (SELECT epl.code" +
 			   "                             FROM epipulse_location_configuration epl" +
@@ -84,19 +89,18 @@ public class EpipulseSqlCteBuilder {
 			   "                               AND epd.subjectcode = v.subject_code)         as datasource" +
 			   "                     FROM variables v)";
 		//@formatter:on
-	}
+    }
 
-	/**
-	 * Builds the filtered_cases CTE that selects all cases matching the export criteria.
-	 *
-	 * @param includeEpidataFields
-	 *            if true, includes additional fields required for diseases with epidemiology data
-	 *            (epidata_id, investigateddate, clinicalconfirmation)
-	 * @return the filtered_cases CTE SQL fragment
-	 */
-	public String buildFilteredCasesCte(boolean includeEpidataFields) {
-		StringBuilder cte = new StringBuilder();
-		//@formatter:off
+    /**
+     * Builds the filtered_cases CTE that selects all cases matching the export criteria.
+     *
+     * @param includeEpidataFields if true, includes additional fields required for diseases with epidemiology data
+     *                             (epidata_id, investigateddate, clinicalconfirmation)
+     * @return the filtered_cases CTE SQL fragment
+     */
+    public String buildFilteredCasesCte(boolean includeEpidataFields) {
+        StringBuilder cte = new StringBuilder();
+        //@formatter:off
 		cte.append("filtered_cases AS (SELECT c.id,")
 		   .append("                               c.uuid,")
 		   .append("                               c.deleted,")
@@ -121,20 +125,38 @@ public class EpipulseSqlCteBuilder {
 		   .append("                                 CROSS JOIN variables v")
 		   .append("                        WHERE c.disease = v.disease")
 		   .append("                          AND c.reportdate >= v.start_date")
-		   .append("                          AND c.reportdate < (v.end_date + interval '1 day')")
-		   .append("                          AND c.excludefromecdcreporting IS NOT TRUE)");
+		   .append("                          AND c.reportdate < (v.end_date + interval '1 day')");
+
+
+		appendReportingExclusionClauseIfAdequate(cte);
 		//@formatter:on
 
-		return cte.toString();
-	}
+        return cte.toString();
+    }
 
-	/**
-	 * Builds the case_all_prev_hsp_from_latest CTE that aggregates previous hospitalizations.
-	 *
-	 * @return the previous hospitalizations CTE SQL fragment
-	 */
-	public String buildPreviousHospitalizationsCte() {
-		//@formatter:off
+    /**
+     * This field would never haven been present in non-LU instances but for performance reason this is removed.
+     *
+     * @param cte builder containg the CTE Query.
+     */
+    private void appendReportingExclusionClauseIfAdequate(StringBuilder cte) {
+
+        if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+            cte
+                    .append("                          AND c.excludefromreporting IS NOT TRUE)");
+        } else {
+            // closing CTE parenthesis
+            cte.append(")");
+        }
+    }
+
+    /**
+     * Builds the case_all_prev_hsp_from_latest CTE that aggregates previous hospitalizations.
+     *
+     * @return the previous hospitalizations CTE SQL fragment
+     */
+    public String buildPreviousHospitalizationsCte() {
+        //@formatter:off
 		return "case_all_prev_hsp_from_latest AS (SELECT prev_hsp.hospitalization_id," +
 			   "                                              STRING_AGG(CONCAT_WS('|'," +
 			   "                                                                   COALESCE(prev_hsp.admittedtohealthfacility, '')," +
@@ -153,31 +175,31 @@ public class EpipulseSqlCteBuilder {
 			   "                                                                    WHERE hospitalization_id IS NOT NULL)" +
 			   "                                       GROUP BY prev_hsp.hospitalization_id)";
 		//@formatter:on
-	}
+    }
 
-	/**
-	 * Builds the case_all_samples_from_latest CTE that aggregates all samples for filtered cases.
-	 *
-	 * @return the samples CTE SQL fragment
-	 */
-	public String buildSamplesCte() {
-		//@formatter:off
+    /**
+     * Builds the case_all_samples_from_latest CTE that aggregates all samples for filtered cases.
+     *
+     * @return the samples CTE SQL fragment
+     */
+    public String buildSamplesCte() {
+        //@formatter:off
 		return "case_all_samples_from_latest AS (SELECT samples.associatedcase_id," +
 			   "                                             ARRAY_AGG(samples.id ORDER BY samples.sampledatetime DESC) as all_sample_ids_from_latest" +
 			   "                                      FROM samples" +
 			   "                                      WHERE samples.associatedcase_id IN (SELECT id FROM filtered_cases)" +
 			   "                                      GROUP BY samples.associatedcase_id)";
 		//@formatter:on
-	}
+    }
 
-	/**
-	 * Builds the sample_all_pathogen_tests_from_latest CTE that aggregates pathogen test results.
-	 * Groups by associatedcase_id to prevent duplicate rows when a case has multiple samples.
-	 *
-	 * @return the pathogen tests CTE SQL fragment
-	 */
-	public String buildPathogenTestsCte() {
-		//@formatter:off
+    /**
+     * Builds the sample_all_pathogen_tests_from_latest CTE that aggregates pathogen test results.
+     * Groups by associatedcase_id to prevent duplicate rows when a case has multiple samples.
+     *
+     * @return the pathogen tests CTE SQL fragment
+     */
+    public String buildPathogenTestsCte() {
+        //@formatter:off
 		return "sample_all_pathogen_tests_from_latest AS (SELECT case_all_samples_from_latest.associatedcase_id," +
 			   "                                                      STRING_AGG(CONCAT_WS('|'," +
 			   "                                                                           pathogentest.testtype," +
@@ -190,15 +212,15 @@ public class EpipulseSqlCteBuilder {
 			   "                                                                      (case_all_samples_from_latest.all_sample_ids_from_latest)" +
 			   "                                               GROUP BY case_all_samples_from_latest.associatedcase_id)";
 		//@formatter:on
-	}
+    }
 
-	/**
-	 * Builds the case_all_immunizations CTE that aggregates immunization records.
-	 *
-	 * @return the immunizations CTE SQL fragment
-	 */
-	public String buildImmunizationsCte() {
-		//@formatter:off
+    /**
+     * Builds the case_all_immunizations CTE that aggregates immunization records.
+     *
+     * @return the immunizations CTE SQL fragment
+     */
+    public String buildImmunizationsCte() {
+        //@formatter:off
 		return "case_all_immunizations AS (SELECT i.person_id," +
 			   "                                       STRING_AGG(CONCAT_WS('|'," +
 			   "                                                            COALESCE(to_char(i.startdate, 'YYYY-MM-DD'), '')," +
@@ -213,15 +235,15 @@ public class EpipulseSqlCteBuilder {
 			   "                                  and i.meansofimmunization IN (:meansOfImmVaccination, :meansOfImmVaccinationRecovery)" +
 			   "                                GROUP BY i.person_id)";
 		//@formatter:on
-	}
+    }
 
-	/**
-	 * Builds the case_all_vaccinations CTE that aggregates vaccination records.
-	 *
-	 * @return the vaccinations CTE SQL fragment
-	 */
-	public String buildVaccinationsCte() {
-		//@formatter:off
+    /**
+     * Builds the case_all_vaccinations CTE that aggregates vaccination records.
+     *
+     * @return the vaccinations CTE SQL fragment
+     */
+    public String buildVaccinationsCte() {
+        //@formatter:off
 		return "case_all_vaccinations AS (SELECT i.person_id," +
 			   "                                      STRING_AGG(CONCAT_WS('|'," +
 			   "                                                           COALESCE(to_char(v.vaccinationdate, 'YYYY-MM-DD'), '')," +
@@ -235,16 +257,16 @@ public class EpipulseSqlCteBuilder {
 			   "                                 and i.meansofimmunization IN (:meansOfImmVaccination, :meansOfImmVaccinationRecovery)" +
 			   "                               GROUP BY i.person_id)";
 		//@formatter:on
-	}
+    }
 
-	/**
-	 * Builds just the common SELECT field list (without the SELECT keyword or FROM clause).
-	 * This allows strategies to append disease-specific fields before the FROM clause.
-	 *
-	 * @return the common SELECT fields as a comma-separated list
-	 */
-	public String buildCommonSelectFields() {
-		//@formatter:off
+    /**
+     * Builds just the common SELECT field list (without the SELECT keyword or FROM clause).
+     * This allows strategies to append disease-specific fields before the FROM clause.
+     *
+     * @return the common SELECT fields as a comma-separated list
+     */
+    public String buildCommonSelectFields() {
+        //@formatter:off
 		return "cd.reporting_country," +
 		       "       c.deleted," +
 		       "       cd.subject_code," +
@@ -274,17 +296,17 @@ public class EpipulseSqlCteBuilder {
 		       "       case_all_immunizations.all_immunizations_from_latest," +
 		       "       case_all_vaccinations.all_vaccinations_from_latest";
 		//@formatter:on
-	}
+    }
 
-	/**
-	 * Builds the common FROM and JOIN clauses.
-	 * This includes all joins that are common to all disease exports.
-	 *
-	 * @return the FROM and JOIN clauses SQL fragment
-	 */
-	public String buildCommonFromAndJoins() {
-		StringBuilder joins = new StringBuilder();
-		//@formatter:off
+    /**
+     * Builds the common FROM and JOIN clauses.
+     * This includes all joins that are common to all disease exports.
+     *
+     * @return the FROM and JOIN clauses SQL fragment
+     */
+    public String buildCommonFromAndJoins() {
+        StringBuilder joins = new StringBuilder();
+        //@formatter:off
 		joins.append(" FROM filtered_cases c")
 		      .append("         CROSS JOIN config_data cd")
 		      .append("         LEFT JOIN region responsible_region ON c.responsibleregion_id = responsible_region.id")
@@ -315,31 +337,31 @@ public class EpipulseSqlCteBuilder {
 		      .append("    )");
 		//@formatter:on
 
-		return joins.toString();
-	}
+        return joins.toString();
+    }
 
-	/**
-	 * Builds the main SELECT clause with all common fields and joins.
-	 * This is a convenience method for diseases that don't need additional fields.
-	 *
-	 * @return the complete SELECT statement with FROM, JOINs, and ORDER BY
-	 */
-	public String buildMainSelectClause() {
-		return "SELECT " + buildCommonSelectFields() + buildCommonFromAndJoins() + " ORDER BY c.reportdate";
-	}
+    /**
+     * Builds the main SELECT clause with all common fields and joins.
+     * This is a convenience method for diseases that don't need additional fields.
+     *
+     * @return the complete SELECT statement with FROM, JOINs, and ORDER BY
+     */
+    public String buildMainSelectClause() {
+        return "SELECT " + buildCommonSelectFields() + buildCommonFromAndJoins() + " ORDER BY c.reportdate";
+    }
 
-	/**
-	 * Builds the NRL data CTE that determines if case data is based on National Reference Laboratory results.
-	 * A case has NRL data (TRUE) if any pathogen test was performed at a facility that:
-	 * 1. Has type = LABORATORY
-	 * 2. Has a name containing NRL-related keywords (national, reference, nrl)
-	 * <p>
-	 * If no NRL lab was involved, returns FALSE (data is based on clinical/non-reference-laboratory data).
-	 *
-	 * @return the NRL data CTE SQL fragment
-	 */
-	public String buildNrlDataCte() {
-		//@formatter:off
+    /**
+     * Builds the NRL data CTE that determines if case data is based on National Reference Laboratory results.
+     * A case has NRL data (TRUE) if any pathogen test was performed at a facility that:
+     * 1. Has type = LABORATORY
+     * 2. Has a name containing NRL-related keywords (national, reference, nrl)
+     * <p>
+     * If no NRL lab was involved, returns FALSE (data is based on clinical/non-reference-laboratory data).
+     *
+     * @return the NRL data CTE SQL fragment
+     */
+    public String buildNrlDataCte() {
+        //@formatter:off
 		return "nrl_data_cte AS (" +
 			   "    SELECT c.id as case_id," +
 			   "           CASE " +
@@ -362,5 +384,5 @@ public class EpipulseSqlCteBuilder {
 			   "    FROM filtered_cases c" +
 			   ")";
 		//@formatter:on
-	}
+    }
 }
