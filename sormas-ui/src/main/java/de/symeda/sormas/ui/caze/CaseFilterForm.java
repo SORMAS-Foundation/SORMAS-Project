@@ -107,6 +107,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.HAS_DOCTOR_DECLARATION,
 			CaseCriteria.WITHOUT_DOCTOR_DECLARATION,
 			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
+			CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_ECDC_REPORTING,
 			CaseCriteria.WITH_EXTENDED_QUARANTINE,
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
 			CaseCriteria.ONLY_QUARANTINE_HELP_NEEDED,

@@ -240,6 +240,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRow(
 							fluidColumnLoc(3, 0, CaseDataDto.CLASSIFICATION_DATE),
 							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 5, 0, CaseDataDto.CLASSIFICATION_USER),
+							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CaseDataDto.EXCLUDE_FROM_ECDC_REPORTING),
 							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CLASSIFIED_BY_SYSTEM_LOC)) +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_CLASSIFICATION) +
 					fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE) +
@@ -501,6 +502,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_NAME,
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL);
+
+		final boolean isLuxembourg = isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+		if (isLuxembourg) {
+			addField(CaseDataDto.EXCLUDE_FROM_ECDC_REPORTING, CheckBox.class);
+		}
 
 		UserField reportingUser = addField(CaseDataDto.REPORTING_USER, UserField.class);
 		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());

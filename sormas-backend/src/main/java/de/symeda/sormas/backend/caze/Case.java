@@ -481,7 +481,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private String otherDiagnosticCriteria;
 	// Mumps changes
 	private YesNoUnknown reportingExcluded;
-	private boolean excludeFromEcdcReporting;
+	private Boolean excludeFromEcdcReporting;
 
 	public static Case build() {
 		Case caze = new Case();
@@ -2021,11 +2021,11 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	}
 
 	@Column
-	public boolean isExcludeFromEcdcReporting() {
+	public Boolean isExcludeFromEcdcReporting() {
 		return excludeFromEcdcReporting;
 	}
 
-	public void setExcludeFromEcdcReporting(boolean excludeFromEcdcReporting) {
+	public void setExcludeFromEcdcReporting(Boolean excludeFromEcdcReporting) {
 		this.excludeFromEcdcReporting = excludeFromEcdcReporting;
 	}
 

@@ -702,6 +702,7 @@ public interface Captions {
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_eventCount = "CaseData.eventCount";
+	String CaseData_excludeFromEcdcReporting = "CaseData.excludeFromEcdcReporting";
 	String CaseData_expectedFollowUpUntil = "CaseData.expectedFollowUpUntil";
 	String CaseData_externalComments = "CaseData.externalComments";
 	String CaseData_externalData = "CaseData.externalData";

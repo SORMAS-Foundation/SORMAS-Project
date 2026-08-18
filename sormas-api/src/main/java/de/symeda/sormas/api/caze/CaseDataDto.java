@@ -738,7 +738,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private YesNoUnknown reportingExcluded;
 
 	@HideForCountriesExcept(countries = COUNTRY_CODE_LUXEMBOURG)
-	private boolean excludeFromEcdcReporting;
+	private Boolean excludeFromEcdcReporting;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -2040,11 +2040,11 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		this.reportingExcluded = reportingExcluded;
 	}
 
-	public boolean isExcludeFromEcdcReporting() {
+	public Boolean isExcludeFromEcdcReporting() {
 		return excludeFromEcdcReporting;
 	}
 
-	public void setExcludeFromEcdcReporting(boolean excludeFromEcdcReporting) {
+	public void setExcludeFromEcdcReporting(Boolean excludeFromEcdcReporting) {
 		this.excludeFromEcdcReporting = excludeFromEcdcReporting;
 	}
 

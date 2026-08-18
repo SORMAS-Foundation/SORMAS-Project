@@ -839,11 +839,6 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.onlyCasesNotExcludedFromEcdcReporting = onlyCasesNotExcludedFromEcdcReporting;
 	}
 
-	public CaseCriteria onlyCasesNotExcludedFromEcdcReporting(Boolean value) {
-		setOnlyCasesNotExcludedFromEcdcReporting(value);
-		return this;
-	}
-
 	public Date getFollowUpVisitsFrom() {
 		return followUpVisitsFrom;
 	}
