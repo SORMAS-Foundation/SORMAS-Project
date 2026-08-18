@@ -17127,19 +17127,19 @@ INSERT INTO schema_version (version_number, comment) VALUES (661, '#14220 - Syph
 
 
 -- Add syphilis-specific fields to ExternalMessage for Luxembourg #14239
-ALTER TABLE externalmessage ADD COLUMN hivstatus varchar(255);
-ALTER TABLE externalmessage ADD COLUMN probablerouteoftransmission varchar(255);
-ALTER TABLE externalmessage ADD COLUMN contactwithsexworker varchar(255);
-ALTER TABLE externalmessage ADD COLUMN mothercountryofbirth_id bigint;
-ALTER TABLE externalmessage ADD COLUMN mothercitizenship_id bigint;
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS probablerouteoftransmission varchar(255);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS contactwithsexworker varchar(255);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS mothercountryofbirth_id bigint;
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS mothercitizenship_id bigint;
 ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_mothercountryofbirth_id FOREIGN KEY (mothercountryofbirth_id) REFERENCES country(id);
 ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_mothercitizenship_id FOREIGN KEY (mothercitizenship_id) REFERENCES country(id);
 
-ALTER TABLE externalmessage_history ADD COLUMN hivstatus varchar(255);
-ALTER TABLE externalmessage_history ADD COLUMN probablerouteoftransmission varchar(255);
-ALTER TABLE externalmessage_history ADD COLUMN contactwithsexworker varchar(255);
-ALTER TABLE externalmessage_history ADD COLUMN mothercountryofbirth_id bigint;
-ALTER TABLE externalmessage_history ADD COLUMN mothercitizenship_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS probablerouteoftransmission varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS contactwithsexworker varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS mothercountryofbirth_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS mothercitizenship_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (662, 'Add syphilis-specific fields to ExternalMessage for Luxembourg #14239');
 
