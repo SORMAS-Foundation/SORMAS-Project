@@ -121,7 +121,8 @@ public class EpipulseSqlCteBuilder {
 		   .append("                                 CROSS JOIN variables v")
 		   .append("                        WHERE c.disease = v.disease")
 		   .append("                          AND c.reportdate >= v.start_date")
-		   .append("                          AND c.reportdate < (v.end_date + interval '1 day'))");
+		   .append("                          AND c.reportdate < (v.end_date + interval '1 day')")
+		   .append("                          AND COALESCE(c.excludefromecdcreporting, false) = false");
 		//@formatter:on
 
 		return cte.toString();

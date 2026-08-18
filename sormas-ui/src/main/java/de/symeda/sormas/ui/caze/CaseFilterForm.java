@@ -360,6 +360,14 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					I18nProperties.getCaption(Captions.caseFilterWithoutDoctorDeclaration),
 					I18nProperties.getDescription(Descriptions.descCaseFilterWithoutDoctorDeclaration),
 					CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_ECDC_REPORTING,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesNotExcludedFromEcdcReporting),
+					null,
+					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
 		addField(

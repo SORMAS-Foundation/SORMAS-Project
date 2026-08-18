@@ -88,6 +88,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
+	public static final String ONLY_CASES_NOT_EXCLUDED_FROM_ECDC_REPORTING = "onlyCasesNotExcludedFromEcdcReporting";
 	public static final String PERSON_LIKE = "personLike";
 	public static final String JURISDICTION_TYPE = "jurisdictionType";
 	public static final String ENTITY_RELEVANCE_STATUS = "relevanceStatus";
@@ -166,6 +167,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
+	private Boolean onlyCasesNotExcludedFromEcdcReporting;
 	private String personLike;
 	private Boolean withOwnership;
 	private Date surveyAssignedFrom;
@@ -827,6 +829,19 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setOnlyShowCasesWithFulfilledReferenceDefinition(Boolean onlyShowCasesWithFulfilledReferenceDefinition) {
 		this.onlyShowCasesWithFulfilledReferenceDefinition = onlyShowCasesWithFulfilledReferenceDefinition;
+	}
+
+	public Boolean getOnlyCasesNotExcludedFromEcdcReporting() {
+		return onlyCasesNotExcludedFromEcdcReporting;
+	}
+
+	public void setOnlyCasesNotExcludedFromEcdcReporting(Boolean onlyCasesNotExcludedFromEcdcReporting) {
+		this.onlyCasesNotExcludedFromEcdcReporting = onlyCasesNotExcludedFromEcdcReporting;
+	}
+
+	public CaseCriteria onlyCasesNotExcludedFromEcdcReporting(Boolean value) {
+		setOnlyCasesNotExcludedFromEcdcReporting(value);
+		return this;
 	}
 
 	public Date getFollowUpVisitsFrom() {

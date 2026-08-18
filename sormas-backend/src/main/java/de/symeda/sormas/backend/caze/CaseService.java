@@ -994,6 +994,12 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithDontShareWithExternalSurvTool())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesNotExcludedFromEcdcReporting())) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.isNull(from.get(Case.EXCLUDE_FROM_ECDC_REPORTING)), cb.isFalse(from.get(Case.EXCLUDE_FROM_ECDC_REPORTING))));
+		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyShowCasesWithFulfilledReferenceDefinition())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_DEFINITION), CaseReferenceDefinition.FULFILLED));
 		}
