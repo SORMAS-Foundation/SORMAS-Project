@@ -122,7 +122,7 @@ public class EpipulseSqlCteBuilder {
 		   .append("                        WHERE c.disease = v.disease")
 		   .append("                          AND c.reportdate >= v.start_date")
 		   .append("                          AND c.reportdate < (v.end_date + interval '1 day')")
-		   .append("                          AND COALESCE(c.excludefromecdcreporting, false) = false");
+		   .append("                          AND c.excludefromecdcreporting IS NOT TRUE)");
 		//@formatter:on
 
 		return cte.toString();
