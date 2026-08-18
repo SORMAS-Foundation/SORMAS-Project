@@ -480,7 +480,6 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
 	// Mumps changes
-	private YesNoUnknown reportingExcluded;
 	private Boolean excludeFromReporting;
 
 	public static Case build() {
@@ -2008,16 +2007,6 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setTreatmentStartDate(Date treatmentStartDate) {
 		this.treatmentStartDate = treatmentStartDate;
-	}
-
-	@Column
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getReportingExcluded() {
-		return reportingExcluded;
-	}
-
-	public void setReportingExcluded(YesNoUnknown reportingExcluded) {
-		this.reportingExcluded = reportingExcluded;
 	}
 
 	@Column

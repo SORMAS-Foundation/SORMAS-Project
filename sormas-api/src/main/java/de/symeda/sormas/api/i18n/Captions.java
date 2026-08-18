@@ -794,7 +794,6 @@ public interface Captions {
 	String CaseData_reinfectionStatus = "CaseData.reinfectionStatus";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
-	String CaseData_reportingExcluded = "CaseData.reportingExcluded";
 	String CaseData_reportingUser = "CaseData.reportingUser";
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
