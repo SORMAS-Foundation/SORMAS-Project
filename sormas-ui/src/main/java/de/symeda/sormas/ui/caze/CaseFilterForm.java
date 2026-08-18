@@ -108,6 +108,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.WITHOUT_DOCTOR_DECLARATION,
 			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
 			CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_ECDC_REPORTING,
+			CaseCriteria.ONLY_CASES_EXCLUDED_FROM_ECDC_REPORTING,
 			CaseCriteria.WITH_EXTENDED_QUARANTINE,
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
 			CaseCriteria.ONLY_QUARANTINE_HELP_NEEDED,
@@ -367,6 +368,14 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				FieldConfiguration.withCaptionAndStyle(
 					CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_ECDC_REPORTING,
 					I18nProperties.getCaption(Captions.caseFilterOnlyCasesNotExcludedFromEcdcReporting),
+					null,
+					CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_EXCLUDED_FROM_ECDC_REPORTING,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesExcludedFromEcdcReporting),
 					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}

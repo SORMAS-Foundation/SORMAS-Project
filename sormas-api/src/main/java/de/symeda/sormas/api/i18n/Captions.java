@@ -889,6 +889,7 @@ public interface Captions {
 	String caseFilterHasDoctorDeclaration = "caseFilterHasDoctorDeclaration";
 	String caseFilterIncludeCasesFromOtherJurisdictions = "caseFilterIncludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
+	String caseFilterOnlyCasesExcludedFromEcdcReporting = "caseFilterOnlyCasesExcludedFromEcdcReporting";
 	String caseFilterOnlyCasesNotExcludedFromEcdcReporting = "caseFilterOnlyCasesNotExcludedFromEcdcReporting";
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";

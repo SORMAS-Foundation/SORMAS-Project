@@ -1000,6 +1000,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filter,
 				cb.or(cb.isNull(from.get(Case.EXCLUDE_FROM_ECDC_REPORTING)), cb.isFalse(from.get(Case.EXCLUDE_FROM_ECDC_REPORTING))));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesExcludedFromEcdcReporting())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.EXCLUDE_FROM_ECDC_REPORTING)));
+		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyShowCasesWithFulfilledReferenceDefinition())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_DEFINITION), CaseReferenceDefinition.FULFILLED));
 		}
