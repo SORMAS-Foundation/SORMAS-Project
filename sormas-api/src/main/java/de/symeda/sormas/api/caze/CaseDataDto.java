@@ -2027,11 +2027,11 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		this.treatmentStartDate = treatmentStartDate;
 	}
 
-	public Boolean isExcludeFromEcdcReporting() {
+	public Boolean isExcludeFromReporting() {
 		return excludeFromReporting;
 	}
 
-	public void setExcludeFromEcdcReporting(Boolean excludeFromReporting) {
+	public void setExcludeFromReporting(Boolean excludeFromReporting) {
 		this.excludeFromReporting = excludeFromReporting;
 	}
 

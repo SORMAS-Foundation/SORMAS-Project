@@ -367,7 +367,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(
 					CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING,
-					I18nProperties.getCaption(Captions.caseFilterOnlyCasesNotExcludedFromEcdcReporting),
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesNotExcludedFromReporting),
 					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
 			addField(
@@ -375,7 +375,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(
 					CaseCriteria.ONLY_CASES_EXCLUDED_FROM_REPORTING,
-					I18nProperties.getCaption(Captions.caseFilterOnlyCasesExcludedFromEcdcReporting),
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesExcludedFromReporting),
 					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}

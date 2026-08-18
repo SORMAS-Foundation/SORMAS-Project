@@ -2010,11 +2010,11 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	}
 
 	@Column
-	public Boolean isExcludeFromEcdcReporting() {
+	public Boolean isExcludefromReporting() {
 		return excludeFromReporting;
 	}
 
-	public void setExcludeFromEcdcReporting(Boolean excludeFromReporting) {
+	public void setExcludefromReporting(Boolean excludeFromReporting) {
 		this.excludeFromReporting = excludeFromReporting;
 	}
 

@@ -88,8 +88,8 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
-	public static final String ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING = "onlyCasesNotExcludedFromEcdcReporting";
-	public static final String ONLY_CASES_EXCLUDED_FROM_REPORTING = "onlyCasesExcludedFromEcdcReporting";
+	public static final String ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING = "onlyCasesNotExcludedfromReporting";
+	public static final String ONLY_CASES_EXCLUDED_FROM_REPORTING = "onlyCasesExcludedfromReporting";
 	public static final String PERSON_LIKE = "personLike";
 	public static final String JURISDICTION_TYPE = "jurisdictionType";
 	public static final String ENTITY_RELEVANCE_STATUS = "relevanceStatus";
@@ -168,7 +168,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
-	private Boolean onlyCasesNotExcludedFromEcdcReporting;
+	private Boolean onlyCasesNotExcludedfromReporting;
 	private Boolean onlyCasesExcludedFromReporting;
 	private String personLike;
 	private Boolean withOwnership;
@@ -834,15 +834,15 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	}
 
 	public Boolean getOnlyCasesNotExcludedFromReporting() {
-		return onlyCasesNotExcludedFromEcdcReporting;
+		return onlyCasesNotExcludedfromReporting;
 	}
 
-	public void setOnlyCasesNotExcludedFromEcdcReporting(Boolean onlyCasesNotExcludedFromEcdcReporting) {
-		this.onlyCasesNotExcludedFromEcdcReporting = onlyCasesNotExcludedFromEcdcReporting;
+	public void setOnlyCasesNotExcludedfromReporting(Boolean onlyCasesNotExcludedfromReporting) {
+		this.onlyCasesNotExcludedfromReporting = onlyCasesNotExcludedfromReporting;
 	}
 
-	public CaseCriteria onlyCasesNotExcludedFromEcdcReporting(Boolean value) {
-		setOnlyCasesNotExcludedFromEcdcReporting(value);
+	public CaseCriteria onlyCasesNotExcludedfromReporting(Boolean value) {
+		setOnlyCasesNotExcludedfromReporting(value);
 		return this;
 	}
 

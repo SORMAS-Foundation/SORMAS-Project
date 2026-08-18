@@ -3297,8 +3297,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setTreatmentStarted(source.getTreatmentStarted());
 		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
 		target.setTreatmentStartDate(source.getTreatmentStartDate());
-		target.setReportingExcluded(source.getReportingExcluded());
-		target.setExcludeFromEcdcReporting(source.isExcludeFromEcdcReporting());
+		target.setExcludeFromReporting(source.isExcludefromReporting());
 
 		return target;
 	}
@@ -3535,8 +3534,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setTreatmentStarted(source.getTreatmentStarted());
 		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
 		target.setTreatmentStartDate(source.getTreatmentStartDate());
-		target.setReportingExcluded(source.getReportingExcluded());
-		target.setExcludeFromEcdcReporting(source.isExcludeFromEcdcReporting());
+		target.setExcludefromReporting(source.isExcludeFromReporting());
 
 		return target;
 	}
