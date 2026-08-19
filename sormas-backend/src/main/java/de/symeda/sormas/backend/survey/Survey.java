@@ -27,8 +27,10 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 
-@Entity(name = "surveys")
+@Entity(name = Survey.TABLE_NAME)
 public class Survey extends AbstractDomainObject {
+
+	public static final String TABLE_NAME = "surveys";
 
 	private static final long serialVersionUID = -4596338259032187530L;
 
