@@ -841,11 +841,6 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.onlyCasesNotExcludedFromReporting = onlyCasesNotExcludedFromReporting;
 	}
 
-	public CaseCriteria onlyCasesNotExcludedfromReporting(Boolean value) {
-		setOnlyCasesNotExcludedFromReporting(value);
-		return this;
-	}
-
 	public Boolean getOnlyCasesExcludedFromReporting() {
 		return onlyCasesExcludedFromReporting;
 	}

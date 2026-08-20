@@ -251,7 +251,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String TREATMENT_STARTED = "treatmentStarted";
 	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
 	public static final String TREATMENT_START_DATE = "treatmentStartDate";
-	// Mumps changes
+
 	public static final String EXCLUDE_FROM_REPORTING = "excludeFromReporting";
 
 	// Fields are declared in the order they should appear in the import template
@@ -2027,7 +2027,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		this.treatmentStartDate = treatmentStartDate;
 	}
 
-	public Boolean isExcludeFromReporting() {
+	public Boolean getExcludeFromReporting() {
 		return excludeFromReporting;
 	}
 
