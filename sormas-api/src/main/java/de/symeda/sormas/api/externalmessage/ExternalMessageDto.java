@@ -83,6 +83,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_BIRTH_DATE_MM = "personBirthDateMM";
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
 	public static final String PERSON_BIRTH_COUNTRY = "personBirthCountry";
+	public static final String PERSON_CITIZENSHIP = "personCitizenship";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_PHONE = "personPhone";
@@ -176,6 +177,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Integer personBirthDateYYYY;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto personBirthCountry;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private CountryReferenceDto personCitizenship;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -537,6 +540,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setPersonBirthCountry(CountryReferenceDto personBirthCountry) {
 		this.personBirthCountry = personBirthCountry;
+	}
+
+	public CountryReferenceDto getPersonCitizenship() {
+		return personCitizenship;
+	}
+
+	public void setPersonCitizenship(CountryReferenceDto personCitizenship) {
+		this.personCitizenship = personCitizenship;
 	}
 
 	public FacilityReferenceDto getPersonFacility() {
