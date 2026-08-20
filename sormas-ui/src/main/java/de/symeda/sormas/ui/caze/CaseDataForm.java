@@ -502,11 +502,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL);
 
-		final boolean isLuxembourg = isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 
-		if (isLuxembourg) {
-			addField(CaseDataDto.EXCLUDE_FROM_REPORTING, CheckBox.class);
-		}
+		addField(CaseDataDto.EXCLUDE_FROM_REPORTING, CheckBox.class);
 
 		UserField reportingUser = addField(CaseDataDto.REPORTING_USER, UserField.class);
 		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
