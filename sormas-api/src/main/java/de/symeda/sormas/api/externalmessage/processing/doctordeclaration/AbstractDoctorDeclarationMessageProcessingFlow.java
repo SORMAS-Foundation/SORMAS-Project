@@ -503,6 +503,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 				epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
 				epiData.setProbableRouteOfTransmission(externalMessageDto.getProbableRouteOfTransmission());
 				epiData.setContactWithSexWorker(externalMessageDto.getContactWithSexWorker());
+				epiData.setMotherCitizenship(externalMessageDto.getMotherCitizenship());
+				epiData.setMotherCountryOfBirth(externalMessageDto.getMotherCountryOfBirth());
 			}
 
 		} else {

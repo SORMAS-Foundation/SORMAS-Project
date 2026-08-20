@@ -208,6 +208,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
 		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());
+		target.setPersonBirthCountry(countryService.getByReferenceDto(source.getPersonBirthCountry()));
 		target.setPersonCity(source.getPersonCity());
 		target.setPersonExternalId(source.getPersonExternalId());
 		target.setPersonNationalHealthId(source.getPersonNationalHealthId());
@@ -553,6 +554,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
 		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());
+		target.setPersonBirthCountry(CountryFacadeEjb.toReferenceDto(source.getPersonBirthCountry()));
 		target.setPersonCity(source.getPersonCity());
 		target.setPersonExternalId(source.getPersonExternalId());
 		target.setPersonNationalHealthId(source.getPersonNationalHealthId());

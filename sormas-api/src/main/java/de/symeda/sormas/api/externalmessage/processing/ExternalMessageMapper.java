@@ -84,6 +84,7 @@ public final class ExternalMessageMapper {
 				Mapping.of(person::setBirthdateDD, person.getBirthdateDD(), externalMessage.getPersonBirthDateDD(), PersonDto.BIRTH_DATE_DD),
 				Mapping.of(person::setBirthdateMM, person.getBirthdateMM(), externalMessage.getPersonBirthDateMM(), PersonDto.BIRTH_DATE_MM),
 				Mapping.of(person::setBirthdateYYYY, person.getBirthdateYYYY(), externalMessage.getPersonBirthDateYYYY(), PersonDto.BIRTH_DATE_YYYY),
+				Mapping.of(person::setBirthCountry, person.getBirthCountry(), externalMessage.getPersonBirthCountry(), PersonDto.BIRTH_COUNTRY),
 				Mapping.of(person::setSex, person.getSex(), externalMessage.getPersonSex(), PersonDto.SEX),
 				Mapping.of(
 					person::setPresentCondition,

@@ -17143,4 +17143,12 @@ ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS mothercitizenship_i
 
 INSERT INTO schema_version (version_number, comment) VALUES (662, 'Add syphilis-specific fields to ExternalMessage for Luxembourg #14239');
 
+-- Add personBirthCountry field to ExternalMessage for Luxembourg
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS personbirthcountry_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personbirthcountry_id FOREIGN KEY (personbirthcountry_id) REFERENCES country(id);
+
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS personbirthcountry_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (663, 'Add personBirthCountry field to ExternalMessage for Luxembourg');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

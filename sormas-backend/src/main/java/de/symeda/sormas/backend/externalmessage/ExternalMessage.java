@@ -99,6 +99,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_BIRTH_DATE_DD = "personBirthDateDD";
 	public static final String PERSON_BIRTH_DATE_MM = "personBirthDateMM";
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
+	public static final String PERSON_BIRTH_COUNTRY = "personBirthCountry";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
@@ -172,6 +173,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
+	private Country personBirthCountry;
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
@@ -514,6 +516,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setPersonCountry(Country personCountry) {
 		this.personCountry = personCountry;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getPersonBirthCountry() {
+		return personBirthCountry;
+	}
+
+	public void setPersonBirthCountry(Country personBirthCountry) {
+		this.personBirthCountry = personBirthCountry;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
