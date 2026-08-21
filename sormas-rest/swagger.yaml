@@ -9678,6 +9678,10 @@ components:
           format: date-time
         newCaseDateType:
           $ref: '#/components/schemas/CriteriaDateType'
+        onlyCasesExcludedFromReporting:
+          type: boolean
+        onlyCasesNotExcludedFromReporting:
+          type: boolean
         onlyCasesWithDontShareWithExternalSurvTool:
           type: boolean
         onlyCasesWithEvents:
@@ -10077,6 +10081,8 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        excludeFromReporting:
+          type: boolean
         externalComments:
           type: string
           maxLength: 1000000
@@ -10472,12 +10478,6 @@ components:
           format: double
           maximum: 180
           minimum: -180
-        reportingExcluded:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
         reportingUser:
           $ref: '#/components/schemas/UserReferenceDto'
         responsibleCommunity:
@@ -10860,6 +10860,10 @@ components:
           format: date-time
         newCaseDateType:
           $ref: '#/components/schemas/CriteriaDateType'
+        onlyCasesExcludedFromReporting:
+          type: boolean
+        onlyCasesNotExcludedFromReporting:
+          type: boolean
         onlyCasesWithDontShareWithExternalSurvTool:
           type: boolean
         onlyCasesWithEvents:

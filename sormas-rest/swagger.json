@@ -12131,6 +12131,12 @@
           "newCaseDateType" : {
             "$ref" : "#/components/schemas/CriteriaDateType"
           },
+          "onlyCasesExcludedFromReporting" : {
+            "type" : "boolean"
+          },
+          "onlyCasesNotExcludedFromReporting" : {
+            "type" : "boolean"
+          },
           "onlyCasesWithDontShareWithExternalSurvTool" : {
             "type" : "boolean"
           },
@@ -12429,6 +12435,9 @@
           "epidemiologicalConfirmation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "excludeFromReporting" : {
+            "type" : "boolean"
           },
           "externalComments" : {
             "type" : "string",
@@ -12764,10 +12773,6 @@
             "maximum" : 180,
             "minimum" : -180
           },
-          "reportingExcluded" : {
-            "type" : "string",
-            "enum" : [ "YES", "NO", "UNKNOWN" ]
-          },
           "reportingUser" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           },
@@ -13012,6 +13017,12 @@
           },
           "newCaseDateType" : {
             "$ref" : "#/components/schemas/CriteriaDateType"
+          },
+          "onlyCasesExcludedFromReporting" : {
+            "type" : "boolean"
+          },
+          "onlyCasesNotExcludedFromReporting" : {
+            "type" : "boolean"
           },
           "onlyCasesWithDontShareWithExternalSurvTool" : {
             "type" : "boolean"
