@@ -702,6 +702,7 @@ public interface Captions {
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_eventCount = "CaseData.eventCount";
+	String CaseData_excludeFromReporting = "CaseData.excludeFromReporting";
 	String CaseData_expectedFollowUpUntil = "CaseData.expectedFollowUpUntil";
 	String CaseData_externalComments = "CaseData.externalComments";
 	String CaseData_externalData = "CaseData.externalData";
@@ -793,7 +794,6 @@ public interface Captions {
 	String CaseData_reinfectionStatus = "CaseData.reinfectionStatus";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
-	String CaseData_reportingExcluded = "CaseData.reportingExcluded";
 	String CaseData_reportingUser = "CaseData.reportingUser";
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
@@ -888,6 +888,8 @@ public interface Captions {
 	String caseFilterHasDoctorDeclaration = "caseFilterHasDoctorDeclaration";
 	String caseFilterIncludeCasesFromOtherJurisdictions = "caseFilterIncludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
+	String caseFilterOnlyCasesExcludedFromReporting = "caseFilterOnlyCasesExcludedFromReporting";
+	String caseFilterOnlyCasesNotExcludedFromReporting = "caseFilterOnlyCasesNotExcludedFromReporting";
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
 	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";

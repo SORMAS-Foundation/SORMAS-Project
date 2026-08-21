@@ -128,7 +128,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
         + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
 		+ fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION)
-		+ fluidRowLocs(CaseDataDto.REPORTING_EXCLUDED)
         + fluidRowLocs(CaseDataDto.CASE_REFERENCE_NUMBER, CaseDataDto.EXTERNAL_ID)
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
@@ -317,8 +316,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		cbPointOfEntry.setImmediate(true);
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
-		Field<?> reportingExcludedField = addField(CaseDataDto.REPORTING_EXCLUDED, NullableOptionGroup.class);
-		reportingExcludedField.setVisible(false);
 		TextField tfDepartment = addField(CaseDataDto.DEPARTMENT, TextField.class);
 		tfDepartment.setVisible(false);
 		if (convertedTravelEntry != null) {
@@ -559,6 +556,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			handleDiseaseChanged(disease);
 			personCreateForm.updatePresentConditionEnum(disease);
 		}
+
 	}
 
 	private void hideAndFillJurisdictionFields() {
@@ -596,8 +594,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			classificationField.setValue(Sets.newHashSet(getValue().getCaseClassification()));
 			classificationField.select(getValue().getCaseClassification());
 		}
-		// Only for Mumps, reportingExcluded should be visible, for other diseases, it's not required.
-		setVisibleClear(newDisease == Disease.MUMPS, CaseDataDto.REPORTING_EXCLUDED);
+
 	}
 
 	private void setNoneFacility() {

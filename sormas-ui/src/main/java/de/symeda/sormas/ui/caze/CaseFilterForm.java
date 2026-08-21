@@ -107,6 +107,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.HAS_DOCTOR_DECLARATION,
 			CaseCriteria.WITHOUT_DOCTOR_DECLARATION,
 			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
+			CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING,
+			CaseCriteria.ONLY_CASES_EXCLUDED_FROM_REPORTING,
 			CaseCriteria.WITH_EXTENDED_QUARANTINE,
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
 			CaseCriteria.ONLY_QUARANTINE_HELP_NEEDED,
@@ -359,6 +361,22 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CaseCriteria.WITHOUT_DOCTOR_DECLARATION,
 					I18nProperties.getCaption(Captions.caseFilterWithoutDoctorDeclaration),
 					I18nProperties.getDescription(Descriptions.descCaseFilterWithoutDoctorDeclaration),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesNotExcludedFromReporting),
+					null,
+					CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_EXCLUDED_FROM_REPORTING,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesExcludedFromReporting),
+					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 

@@ -236,10 +236,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocsCss(VSPACE_3, CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
 							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER) +
 					fluidRowLocs(CaseDataDto.NOT_A_CASE_REASON_DETAILS) +
-					fluidRowLocs(CaseDataDto.REPORTING_EXCLUDED) +
 					fluidRow(
 							fluidColumnLoc(3, 0, CaseDataDto.CLASSIFICATION_DATE),
 							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 5, 0, CaseDataDto.CLASSIFICATION_USER),
+							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CaseDataDto.EXCLUDE_FROM_REPORTING),
 							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CLASSIFIED_BY_SYSTEM_LOC)) +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_CLASSIFICATION) +
 					fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE) +
@@ -502,6 +502,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL);
 
+
+		addField(CaseDataDto.EXCLUDE_FROM_REPORTING, CheckBox.class);
+
 		UserField reportingUser = addField(CaseDataDto.REPORTING_USER, UserField.class);
 		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
@@ -733,8 +736,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, NullableOptionGroup.class);
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
-		addField(CaseDataDto.REPORTING_EXCLUDED, NullableOptionGroup.class);
-		setVisibleClear(Disease.MUMPS == disease, CaseDataDto.REPORTING_EXCLUDED);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
@@ -1223,7 +1224,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
-			setVisibleClear(disease == Disease.MUMPS, CaseDataDto.REPORTING_EXCLUDED);
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();

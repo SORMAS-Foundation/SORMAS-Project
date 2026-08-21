@@ -88,6 +88,8 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
+	public static final String ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING = "onlyCasesNotExcludedFromReporting";
+	public static final String ONLY_CASES_EXCLUDED_FROM_REPORTING = "onlyCasesExcludedFromReporting";
 	public static final String PERSON_LIKE = "personLike";
 	public static final String JURISDICTION_TYPE = "jurisdictionType";
 	public static final String ENTITY_RELEVANCE_STATUS = "relevanceStatus";
@@ -166,6 +168,8 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
+	private Boolean onlyCasesNotExcludedFromReporting;
+	private Boolean onlyCasesExcludedFromReporting;
 	private String personLike;
 	private Boolean withOwnership;
 	private Date surveyAssignedFrom;
@@ -827,6 +831,22 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setOnlyShowCasesWithFulfilledReferenceDefinition(Boolean onlyShowCasesWithFulfilledReferenceDefinition) {
 		this.onlyShowCasesWithFulfilledReferenceDefinition = onlyShowCasesWithFulfilledReferenceDefinition;
+	}
+
+	public Boolean getOnlyCasesNotExcludedFromReporting() {
+		return onlyCasesNotExcludedFromReporting;
+	}
+
+	public void setOnlyCasesNotExcludedFromReporting(Boolean onlyCasesNotExcludedFromReporting) {
+		this.onlyCasesNotExcludedFromReporting = onlyCasesNotExcludedFromReporting;
+	}
+
+	public Boolean getOnlyCasesExcludedFromReporting() {
+		return onlyCasesExcludedFromReporting;
+	}
+
+	public void setOnlyCasesExcludedFromReporting(Boolean onlyCasesExcludedFromReporting) {
+		this.onlyCasesExcludedFromReporting = onlyCasesExcludedFromReporting;
 	}
 
 	public Date getFollowUpVisitsFrom() {

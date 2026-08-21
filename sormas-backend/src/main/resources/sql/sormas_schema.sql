@@ -17125,4 +17125,38 @@ ALTER TABLE testreport_history   ADD COLUMN IF NOT EXISTS syphilisserologymethod
 
 INSERT INTO schema_version (version_number, comment) VALUES (661, '#14220 - Syphilis treponemal and non-treponemal serology method');
 
+-- 2026-08-18 reporting exclusion field
+
+ALTER TABLE cases
+RENAME COLUMN reportingexcluded TO excludefromreporting;
+
+ALTER TABLE cases_history
+RENAME COLUMN reportingexcluded TO excludefromreporting;
+
+
+ALTER TABLE cases
+ALTER COLUMN excludefromreporting TYPE BOOLEAN
+USING (
+    CASE
+        WHEN excludefromreporting = 'YES' THEN TRUE
+        WHEN excludefromreporting IS NULL THEN NULL
+        ELSE FALSE
+    END
+);
+
+
+ALTER TABLE cases_history
+ALTER COLUMN excludefromreporting TYPE BOOLEAN
+USING (
+    CASE
+        WHEN excludefromreporting = 'YES' THEN TRUE
+        WHEN excludefromreporting IS NULL THEN NULL
+        ELSE FALSE
+    END
+);
+
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (662, '#13991 - Add excludeFromReporting field for Luxembourg ECDC reporting');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
