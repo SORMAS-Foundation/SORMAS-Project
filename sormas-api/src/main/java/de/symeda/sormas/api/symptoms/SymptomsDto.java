@@ -1040,7 +1040,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	@Complication({
-		DENGUE })
+		DENGUE,
+		SYPHILIS })
 	private SymptomState jaundice;
 
 	@Diseases({
