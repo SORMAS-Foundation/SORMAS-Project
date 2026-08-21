@@ -231,6 +231,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	private void postBuildSyphilisHealthConditions(HealthConditionsDto healthConditionsDto, ExternalMessageDto externalMessageDto) {
 		healthConditionsDto.setHivStatus(externalMessageDto.getHivStatus());
+		healthConditionsDto.setStiProphylaxis(externalMessageDto.getStiProphylaxis());
 	}
 
 	/**

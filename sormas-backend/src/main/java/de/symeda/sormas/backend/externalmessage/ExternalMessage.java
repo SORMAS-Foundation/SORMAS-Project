@@ -45,6 +45,7 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.RadiographyCompatibility;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HivStatus;
@@ -101,6 +102,8 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
 	public static final String PERSON_BIRTH_COUNTRY = "personBirthCountry";
 	public static final String PERSON_CITIZENSHIP = "personCitizenship";
+	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
+	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
@@ -176,6 +179,8 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Integer personBirthDateYYYY;
 	private Country personBirthCountry;
 	private Country personCitizenship;
+	private SyphilisPresentation syphilisPresentation;
+	private YesNoUnknown stiProphylaxis;
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
@@ -536,6 +541,24 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setPersonCitizenship(Country personCitizenship) {
 		this.personCitizenship = personCitizenship;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisPresentation getSyphilisPresentation() {
+		return syphilisPresentation;
+	}
+
+	public void setSyphilisPresentation(SyphilisPresentation syphilisPresentation) {
+		this.syphilisPresentation = syphilisPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getStiProphylaxis() {
+		return stiProphylaxis;
+	}
+
+	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
+		this.stiProphylaxis = stiProphylaxis;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

@@ -17134,29 +17134,25 @@ ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS mothercountryofbirth_id big
 ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS mothercitizenship_id bigint;
 ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_mothercountryofbirth_id FOREIGN KEY (mothercountryofbirth_id) REFERENCES country(id);
 ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_mothercitizenship_id FOREIGN KEY (mothercitizenship_id) REFERENCES country(id);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS personbirthcountry_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personbirthcountry_id FOREIGN KEY (personbirthcountry_id) REFERENCES country(id);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS personcitizenship_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personcitizenship_id FOREIGN KEY (personcitizenship_id) REFERENCES country(id);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS syphilispresentation varchar(255);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS stiprophylaxis varchar(255);
 
 ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
 ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS probablerouteoftransmission varchar(255);
 ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS contactwithsexworker varchar(255);
 ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS mothercountryofbirth_id bigint;
 ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS mothercitizenship_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS personbirthcountry_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS personcitizenship_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS syphilispresentation varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS stiprophylaxis varchar(255);
+
 
 INSERT INTO schema_version (version_number, comment) VALUES (662, 'Add syphilis-specific fields to ExternalMessage for Luxembourg #14239');
 
--- Add personBirthCountry field to ExternalMessage for Luxembourg
-ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS personbirthcountry_id bigint;
-ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personbirthcountry_id FOREIGN KEY (personbirthcountry_id) REFERENCES country(id);
-
-ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS personbirthcountry_id bigint;
-
-INSERT INTO schema_version (version_number, comment) VALUES (663, 'Add personBirthCountry field to ExternalMessage for Luxembourg');
-
--- Add personCitizenship field to ExternalMessage for Luxembourg
-ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS personcitizenship_id bigint;
-ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personcitizenship_id FOREIGN KEY (personcitizenship_id) REFERENCES country(id);
-
-ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS personcitizenship_id bigint;
-
-INSERT INTO schema_version (version_number, comment) VALUES (664, 'Add personCitizenship field to ExternalMessage for Luxembourg');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

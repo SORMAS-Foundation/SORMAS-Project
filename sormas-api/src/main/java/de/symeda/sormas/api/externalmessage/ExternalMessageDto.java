@@ -28,6 +28,7 @@ import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.RadiographyCompatibility;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
@@ -84,6 +85,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
 	public static final String PERSON_BIRTH_COUNTRY = "personBirthCountry";
 	public static final String PERSON_CITIZENSHIP = "personCitizenship";
+	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
+	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_PHONE = "personPhone";
@@ -179,6 +182,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private CountryReferenceDto personBirthCountry;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto personCitizenship;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private SyphilisPresentation syphilisPresentation;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private YesNoUnknown stiProphylaxis;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -548,6 +555,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setPersonCitizenship(CountryReferenceDto personCitizenship) {
 		this.personCitizenship = personCitizenship;
+	}
+
+	public SyphilisPresentation getSyphilisPresentation() {
+		return syphilisPresentation;
+	}
+
+	public void setSyphilisPresentation(SyphilisPresentation syphilisPresentation) {
+		this.syphilisPresentation = syphilisPresentation;
+	}
+
+	public YesNoUnknown getStiProphylaxis() {
+		return stiProphylaxis;
+	}
+
+	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
+		this.stiProphylaxis = stiProphylaxis;
 	}
 
 	public FacilityReferenceDto getPersonFacility() {
