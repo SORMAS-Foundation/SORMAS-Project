@@ -230,6 +230,10 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		surveillanceReportFacade.save(surveillanceReport);
 	}
 
+	public CaseDataDto saveCase(CaseDataDto caseDto) {
+		return caseFacade.save(caseDto);
+	}
+
 	public List<SampleDto> getSamplesByLabSampleId(String labSampleId) {
 		return sampleFacade.getByLabSampleId(labSampleId);
 	}
