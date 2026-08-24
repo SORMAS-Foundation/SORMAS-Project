@@ -2,6 +2,7 @@ package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,8 +17,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -26,6 +31,7 @@ import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
@@ -240,6 +246,98 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		assertTrue(flow.exposeHasCaseActivitiesAsCaseMismatch(caze, externalMessage));
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"",
+		"[]",
+		"{}" })
+	void hasExternalExposureDataIsFalseForBlankOrEmptyJson(String exposuresJson) {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getExposures()).thenReturn(exposuresJson);
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		assertFalse(flow.exposeHasExternalExposureData(externalMessage));
+	}
+
+	@Test
+	void hasExternalExposureDataIsTrueForNonEmptyJsonArray() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getExposures()).thenReturn("[{}]");
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		assertTrue(flow.exposeHasExternalExposureData(externalMessage));
+	}
+
+	@Test
+	void hasExternalExposureDataIsTrueWhenModeOfTransmissionSetEvenIfExposuresEmpty() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getExposures()).thenReturn("[]");
+		when(externalMessage.getModeOfTransmission()).thenReturn(ModeOfTransmission.OTHER);
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		assertTrue(flow.exposeHasExternalExposureData(externalMessage));
+	}
+
+	@Test
+	void hasExternalActivitiesAsCaseDataIsFalseForEmptyJsonArray() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getActivitiesAsCase()).thenReturn("[]");
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		assertFalse(flow.exposeHasExternalActivitiesAsCaseData(externalMessage));
+	}
+
+	@Test
+	void hasExternalActivitiesAsCaseDataIsTrueForNonEmptyJsonArray() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		assertTrue(flow.exposeHasExternalActivitiesAsCaseData(externalMessage));
+	}
+
+	@Test
+	void prepareSelectedCaseDoesNotSyncExposuresForEmptyJsonArray() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getExposures()).thenReturn("[]");
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertFalse(flow.wasPostBuildExposureCalled());
+		verify(processingFacade, never()).saveCase(any(CaseDataDto.class));
+	}
+
+	@Test
+	void prepareSelectedCaseDoesNotSyncActivitiesForEmptyJsonArray() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getActivitiesAsCase()).thenReturn("[]");
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertFalse(flow.wasPostBuildActivitiesAsCaseCalled());
+		verify(processingFacade, never()).saveCase(any(CaseDataDto.class));
+	}
+
+	@Test
+	void postBuildActivitiesAsCaseDeserializesActivitiesIntoCase() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		when(processingFacade.saveCase(any(CaseDataDto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+
+		flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		List<ActivityAsCaseDto> activities = caze.getEpiData().getActivitiesAsCase();
+		assertNotNull(activities);
+		assertEquals(1, activities.size());
+		assertEquals(ActivityAsCaseType.UNKNOWN, activities.get(0).getActivityAsCaseType());
+	}
+
 	private static class TestDoctorDeclarationFlow extends AbstractDoctorDeclarationMessageProcessingFlow {
 
 		private boolean postBuildHospitalizationCalled;
@@ -267,6 +365,14 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 			return hasCaseActivitiesAsCaseMismatch(caze, externalMessage);
 		}
 
+		private boolean exposeHasExternalExposureData(ExternalMessageDto externalMessage) {
+			return hasExternalExposureData(externalMessage);
+		}
+
+		private boolean exposeHasExternalActivitiesAsCaseData(ExternalMessageDto externalMessage) {
+			return hasExternalActivitiesAsCaseData(externalMessage);
+		}
+
 		private boolean wasPostBuildHospitalizationCalled() {
 			return postBuildHospitalizationCalled;
 		}
@@ -291,6 +397,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		@Override
 		protected void postBuildActivitiesAsCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
 			postBuildActivitiesAsCaseCalled = true;
+			super.postBuildActivitiesAsCase(caseDto, externalMessageDto);
 
 			if (activityPostBuildMutatesExposureData) {
 				caseDto.getEpiData().setExposureDetailsKnown(YesNoUnknown.NO);
