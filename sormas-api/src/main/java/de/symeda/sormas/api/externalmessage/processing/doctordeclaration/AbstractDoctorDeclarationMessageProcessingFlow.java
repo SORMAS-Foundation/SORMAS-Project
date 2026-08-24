@@ -693,7 +693,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		try {
 			JsonNode node = OBJECT_MAPPER.readTree(json);
-			return (node.isArray() || node.isObject()) && node.isEmpty();
+			return node.isNull() || ((node.isArray() || node.isObject()) && node.isEmpty());
 		} catch (JsonProcessingException e) {
 			return false; // Not valid JSON
 		}

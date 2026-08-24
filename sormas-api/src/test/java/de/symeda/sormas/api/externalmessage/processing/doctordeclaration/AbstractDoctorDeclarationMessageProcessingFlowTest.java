@@ -250,7 +250,8 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 	@ValueSource(strings = {
 		"",
 		"[]",
-		"{}" })
+		"{}",
+		"null" })
 	void hasExternalExposureDataIsFalseForBlankOrEmptyJson(String exposuresJson) {
 		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
 		when(externalMessage.getExposures()).thenReturn(exposuresJson);
