@@ -134,6 +134,67 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 	}
 
 	@Test
+	void prepareSelectedCaseSyncsExposuresWhenOnlyActivitiesFieldsAreTouched() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getExposures()).thenReturn("[{}]");
+
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		when(processingFacade.saveCase(any(CaseDataDto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+		caze.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.NO);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertTrue(flow.wasPostBuildExposureCalled());
+		assertFalse(flow.wasPostBuildActivitiesAsCaseCalled());
+		verify(processingFacade).saveCase(caze);
+	}
+
+	@Test
+	void prepareSelectedCaseSyncsActivitiesWhenOnlyExposureFieldsAreTouched() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
+
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		when(processingFacade.saveCase(any(CaseDataDto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+		caze.getEpiData().setExposureDetailsKnown(YesNoUnknown.NO);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertTrue(flow.wasPostBuildActivitiesAsCaseCalled());
+		assertFalse(flow.wasPostBuildExposureCalled());
+		verify(processingFacade).saveCase(caze);
+	}
+
+	@Test
+	void prepareSelectedCaseEvaluatesExposureAndActivitySyncBeforeEpiDataMutation() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
+		when(externalMessage.getExposures()).thenReturn("[{}]");
+
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		when(processingFacade.saveCase(any(CaseDataDto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		flow.enableActivityPostBuildMutatesExposureData();
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertTrue(flow.wasPostBuildActivitiesAsCaseCalled());
+		assertTrue(flow.wasPostBuildExposureCalled());
+		verify(processingFacade).saveCase(caze);
+	}
+
+	@Test
 	void hasCaseSymptomsMismatchDependsOnUserDefinedCaseValues() {
 		SymptomsDto externalSymptoms = SymptomsDto.build();
 		externalSymptoms.setFever(SymptomState.YES);
@@ -183,6 +244,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		private boolean postBuildHospitalizationCalled;
 		private boolean postBuildActivitiesAsCaseCalled;
 		private boolean postBuildExposureCalled;
+		private boolean activityPostBuildMutatesExposureData;
 
 		private TestDoctorDeclarationFlow(ExternalMessageDto externalMessage, ExternalMessageProcessingFacade processingFacade) {
 			super(externalMessage, mock(UserDto.class), mock(ExternalMessageMapper.class), processingFacade);
@@ -216,6 +278,10 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 			return postBuildExposureCalled;
 		}
 
+		private void enableActivityPostBuildMutatesExposureData() {
+			activityPostBuildMutatesExposureData = true;
+		}
+
 		@Override
 		protected void postBuildHospitalization(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
 			postBuildHospitalizationCalled = true;
@@ -224,6 +290,10 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		@Override
 		protected void postBuildActivitiesAsCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
 			postBuildActivitiesAsCaseCalled = true;
+
+			if (activityPostBuildMutatesExposureData) {
+				caseDto.getEpiData().setExposureDetailsKnown(YesNoUnknown.NO);
+			}
 		}
 
 		@Override
