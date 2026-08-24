@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -27,7 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
@@ -75,6 +78,8 @@ import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
 public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends AbstractMessageProcessingFlowBase {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	protected AbstractDoctorDeclarationMessageProcessingFlow(
 		ExternalMessageDto externalMessage,
@@ -348,15 +353,15 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			|| StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityDepartment());
 	}
 
-	private boolean hasExternalExposureData(ExternalMessageDto externalMessage) {
+	protected boolean hasExternalExposureData(ExternalMessageDto externalMessage) {
 		boolean hasAirportWorker = externalMessage.getAirportWorker() != null;
 		boolean hasHealthCareProfessional = externalMessage.getHealthcareProfessional() != null;
 		boolean hasModeOfTransmission = externalMessage.getModeOfTransmission() != null;
-		return StringUtils.isNotBlank(externalMessage.getExposures()) || hasAirportWorker || hasHealthCareProfessional || hasModeOfTransmission;
+		return !isEmptyJson(externalMessage.getExposures()) || hasAirportWorker || hasHealthCareProfessional || hasModeOfTransmission;
 	}
 
-	private boolean hasExternalActivitiesAsCaseData(ExternalMessageDto externalMessage) {
-		return StringUtils.isNotBlank(externalMessage.getActivitiesAsCase());
+	protected boolean hasExternalActivitiesAsCaseData(ExternalMessageDto externalMessage) {
+		return !isEmptyJson(externalMessage.getActivitiesAsCase());
 	}
 
 	private boolean hasAnyUserDefinedCaseSymptomsValues(CaseDataDto caze) {
@@ -450,9 +455,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			final ArrayList<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
 
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
 				List<ActivityAsCaseDto> deserialActivityAsCaseDtos =
-					objectMapper.readValue(externalMessageDto.getActivitiesAsCase(), new TypeReference<List<ActivityAsCaseDto>>() {
+					deserializeEmbeddedList(externalMessageDto.getActivitiesAsCase(), new TypeReference<List<ActivityAsCaseDto>>() {
 					});
 				for (ActivityAsCaseDto activityAsCaseDto : deserialActivityAsCaseDtos) {
 					ActivityAsCaseDto newActivityAsCase = ActivityAsCaseDto.build(activityAsCaseDto.getActivityAsCaseType());
@@ -513,9 +517,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			final ArrayList<ExposureDto> exposures = new ArrayList<>();
 
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
 				List<ExposureDto> deserialExposureDtos =
-					objectMapper.readValue(externalMessageDto.getExposures(), new TypeReference<List<ExposureDto>>() {
+					deserializeEmbeddedList(externalMessageDto.getExposures(), new TypeReference<List<ExposureDto>>() {
 					});
 				for (ExposureDto exposureDto : deserialExposureDtos) {
 					ExposureDto newExposure = ExposureDto.build(exposureDto.getExposureType());
@@ -681,6 +684,26 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		}
 
 		return hospitalFacilityReference;
+	}
+
+	public boolean isEmptyJson(String json) {
+		if (StringUtils.isBlank(json)) {
+			return true;
+		}
+
+		try {
+			JsonNode node = OBJECT_MAPPER.readTree(json);
+			return (node.isArray() || node.isObject()) && node.isEmpty();
+		} catch (JsonProcessingException e) {
+			return false; // Not valid JSON
+		}
+	}
+
+	public <T> List<T> deserializeEmbeddedList(String jsonString, TypeReference<List<T>> typeReference) throws JsonProcessingException {
+		if (StringUtils.isBlank(jsonString)) {
+			return Collections.emptyList();
+		}
+		return OBJECT_MAPPER.readValue(jsonString, typeReference);
 	}
 
 }
