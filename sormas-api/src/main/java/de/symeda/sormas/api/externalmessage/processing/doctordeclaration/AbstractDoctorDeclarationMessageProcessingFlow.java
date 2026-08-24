@@ -297,6 +297,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	@Override
 	protected CaseDataDto prepareSelectedCase(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		boolean caseUpdated = false;
+		boolean shouldSyncActivitiesAsCase = shouldSyncSelectedCaseActivitiesAsCase(caze, externalMessage);
+		boolean shouldSyncExposures = shouldSyncSelectedCaseExposures(caze, externalMessage);
 
 		if (shouldSyncSelectedCaseSymptoms(caze, externalMessage)) {
 			SymptomsDto caseSymptoms = caze.getSymptoms();
@@ -309,12 +311,12 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			caseUpdated = true;
 		}
 
-		if (shouldSyncSelectedCaseActivitiesAsCase(caze, externalMessage)) {
+		if (shouldSyncActivitiesAsCase) {
 			postBuildActivitiesAsCase(caze, externalMessage);
 			caseUpdated = true;
 		}
 
-		if (shouldSyncSelectedCaseExposures(caze, externalMessage)) {
+		if (shouldSyncExposures) {
 			postBuildExposure(caze, externalMessage);
 			caseUpdated = true;
 		}
@@ -378,11 +380,20 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	}
 
 	private boolean hasAnyUserDefinedCaseExposureValues(CaseDataDto caze) {
-		return DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(caze.getEpiData(), EpiDataDto.class);
+		return DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(
+			caze.getEpiData(),
+			EpiDataDto.class,
+			List.of(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN, EpiDataDto.ACTIVITIES_AS_CASE));
 	}
 
 	private boolean hasAnyUserDefinedCaseActivitiesAsCaseValues(CaseDataDto caze) {
-		return DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(caze.getEpiData(), EpiDataDto.class);
+		EpiDataDto epiData = caze.getEpiData();
+		if (epiData == null) {
+			return false;
+		}
+
+		// we only test for activityAsCaseDetailsKnown because activities as case list is only reachable if it is set to yes/no
+		return epiData.getActivityAsCaseDetailsKnown() != null && !YesNoUnknown.UNKNOWN.equals(epiData.getActivityAsCaseDetailsKnown());
 	}
 
 	@Override
