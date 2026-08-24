@@ -215,6 +215,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 	void hasCaseHospitalizationMismatchDependsOnUserDefinedCaseValues() {
 		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
 		when(externalMessage.getHospitalizationAdmissionDate()).thenReturn(new Date());
+		when(externalMessage.getHospitalizationFacilityName()).thenReturn("General Hospital");
 
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
 		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);

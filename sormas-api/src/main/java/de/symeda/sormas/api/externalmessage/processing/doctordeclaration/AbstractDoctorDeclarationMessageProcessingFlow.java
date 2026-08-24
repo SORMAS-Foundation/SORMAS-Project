@@ -343,10 +343,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	}
 
 	private boolean hasExternalHospitalizationData(ExternalMessageDto externalMessage) {
-		return externalMessage.getHospitalizationAdmissionDate() != null
-			|| externalMessage.getHospitalizationDischargeDate() != null
-			|| externalMessage.getAdmittedToHealthFacility() != null
-			|| StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityName())
+		return StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityName())
 			|| StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityExternalId())
 			|| StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityDepartment());
 	}
