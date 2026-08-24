@@ -271,6 +271,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String TREATMENT_STARTED = "treatmentStarted";
 	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
 	public static final String TREATMENT_START_DATE = "treatmentStartDate";
+	public static final String EXCLUDE_FROM_REPORTING = "excludeFromReporting";
 
 	private Person person;
 	private String description;
@@ -479,7 +480,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
 	// Mumps changes
-	private YesNoUnknown reportingExcluded;
+	private Boolean excludeFromReporting;
 
 	public static Case build() {
 		Case caze = new Case();
@@ -2009,13 +2010,12 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	}
 
 	@Column
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getReportingExcluded() {
-		return reportingExcluded;
+	public Boolean isExcludeFromReporting() {
+		return excludeFromReporting;
 	}
 
-	public void setReportingExcluded(YesNoUnknown reportingExcluded) {
-		this.reportingExcluded = reportingExcluded;
+	public void setExcludeFromReporting(Boolean excludeFromReporting) {
+		this.excludeFromReporting = excludeFromReporting;
 	}
 
 }
