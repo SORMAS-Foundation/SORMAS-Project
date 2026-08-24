@@ -703,7 +703,11 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		if (StringUtils.isBlank(jsonString)) {
 			return Collections.emptyList();
 		}
-		return OBJECT_MAPPER.readValue(jsonString, typeReference);
+		final List<T> list = OBJECT_MAPPER.readValue(jsonString, typeReference);
+		if (list == null) {
+			return Collections.emptyList();
+		}
+		return list;
 	}
 
 }
