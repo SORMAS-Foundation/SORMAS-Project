@@ -16,9 +16,9 @@
 package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -28,7 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
@@ -61,6 +63,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
+import de.symeda.sormas.api.utils.DtoUserDefinedValuesHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
@@ -75,6 +78,8 @@ import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
 public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends AbstractMessageProcessingFlowBase {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	protected AbstractDoctorDeclarationMessageProcessingFlow(
 		ExternalMessageDto externalMessage,
@@ -288,8 +293,107 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	}
 
 	@Override
+	protected CaseDataDto prepareSelectedCase(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		boolean caseUpdated = false;
+		boolean shouldSyncActivitiesAsCase = shouldSyncSelectedCaseActivitiesAsCase(caze, externalMessage);
+		boolean shouldSyncExposures = shouldSyncSelectedCaseExposures(caze, externalMessage);
+
+		if (shouldSyncSelectedCaseSymptoms(caze, externalMessage)) {
+			SymptomsDto caseSymptoms = caze.getSymptoms();
+			if (caseSymptoms == null) {
+				caseSymptoms = SymptomsDto.build();
+				caze.setSymptoms(caseSymptoms);
+			}
+
+			DtoCopyHelper.copyDtoValues(caseSymptoms, externalMessage.getCaseSymptoms(), true, "uuid");
+			caseUpdated = true;
+		}
+
+		if (shouldSyncActivitiesAsCase) {
+			postBuildActivitiesAsCase(caze, externalMessage);
+			caseUpdated = true;
+		}
+
+		if (shouldSyncExposures) {
+			postBuildExposure(caze, externalMessage);
+			caseUpdated = true;
+		}
+
+		if (shouldSyncSelectedCaseHospitalization(caze, externalMessage)) {
+			postBuildHospitalization(caze, externalMessage);
+			caseUpdated = true;
+		}
+
+		return caseUpdated ? getExternalMessageProcessingFacade().saveCase(caze) : caze;
+	}
+
+	private boolean shouldSyncSelectedCaseSymptoms(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return hasExternalSymptomsData(externalMessage) && !hasAnyUserDefinedCaseSymptomsValues(caze);
+	}
+
+	private boolean shouldSyncSelectedCaseHospitalization(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return hasExternalHospitalizationData(externalMessage) && !hasAnyUserDefinedCaseHospitalizationValues(caze);
+	}
+
+	private boolean shouldSyncSelectedCaseExposures(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return hasExternalExposureData(externalMessage) && !hasAnyUserDefinedCaseExposureValues(caze);
+	}
+
+	private boolean shouldSyncSelectedCaseActivitiesAsCase(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return hasExternalActivitiesAsCaseData(externalMessage) && !hasAnyUserDefinedCaseActivitiesAsCaseValues(caze);
+	}
+
+	private boolean hasExternalSymptomsData(ExternalMessageDto externalMessage) {
+		return externalMessage.getCaseSymptoms() != null && SymptomsComparisonHelper.hasAnyUserDefinedSymptoms(externalMessage.getCaseSymptoms());
+	}
+
+	private boolean hasExternalHospitalizationData(ExternalMessageDto externalMessage) {
+		return StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityName())
+			|| StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityExternalId())
+			|| StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityDepartment());
+	}
+
+	protected boolean hasExternalExposureData(ExternalMessageDto externalMessage) {
+		boolean hasAirportWorker = externalMessage.getAirportWorker() != null;
+		boolean hasHealthCareProfessional = externalMessage.getHealthcareProfessional() != null;
+		boolean hasModeOfTransmission = externalMessage.getModeOfTransmission() != null;
+		return !isEmptyJson(externalMessage.getExposures()) || hasAirportWorker || hasHealthCareProfessional || hasModeOfTransmission;
+	}
+
+	protected boolean hasExternalActivitiesAsCaseData(ExternalMessageDto externalMessage) {
+		return !isEmptyJson(externalMessage.getActivitiesAsCase());
+	}
+
+	private boolean hasAnyUserDefinedCaseSymptomsValues(CaseDataDto caze) {
+		return SymptomsComparisonHelper.hasAnyUserDefinedSymptoms(caze.getSymptoms());
+	}
+
+	private boolean hasAnyUserDefinedCaseHospitalizationValues(CaseDataDto caze) {
+		return DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(caze.getHospitalization(), HospitalizationDto.class)
+			|| (caze.getHealthFacility() != null && !FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid()))
+			|| StringUtils.isNotBlank(caze.getDepartment());
+	}
+
+	private boolean hasAnyUserDefinedCaseExposureValues(CaseDataDto caze) {
+		return DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(
+			caze.getEpiData(),
+			EpiDataDto.class,
+			List.of(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN, EpiDataDto.ACTIVITIES_AS_CASE));
+	}
+
+	private boolean hasAnyUserDefinedCaseActivitiesAsCaseValues(CaseDataDto caze) {
+		EpiDataDto epiData = caze.getEpiData();
+		if (epiData == null) {
+			return false;
+		}
+
+		// we only test for activityAsCaseDetailsKnown because activities as case list is only reachable if it is set to yes/no
+		return epiData.getActivityAsCaseDetailsKnown() != null && !YesNoUnknown.UNKNOWN.equals(epiData.getActivityAsCaseDetailsKnown());
+	}
+
+	@Override
 	protected boolean hasCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		boolean symptomsMismatch = SymptomsComparisonHelper.hasCaseSymptomsMismatch(caze.getSymptoms(), externalMessage.getCaseSymptoms());
+		boolean symptomsMismatch = hasExternalSymptomsData(externalMessage) && hasAnyUserDefinedCaseSymptomsValues(caze);
 
 		if (symptomsMismatch) {
 			logger.debug("[MESSAGE PROCESSING] Symptoms mismatch detected for existing case with UUID: {}", caze.getUuid());
@@ -300,41 +404,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	@Override
 	protected boolean hasCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		// Check if there is hospitalization data in the external message
-		if (externalMessage.getHospitalizationAdmissionDate() == null
-			&& externalMessage.getHospitalizationDischargeDate() == null
-			&& externalMessage.getAdmittedToHealthFacility() == null
-			&& externalMessage.getHospitalizationFacilityName() == null
-			&& externalMessage.getHospitalizationFacilityExternalId() == null) {
-			return false;
-		}
-
-		// Compare with existing hospitalization data
-		HospitalizationDto existingHospitalization = caze.getHospitalization();
-		if (existingHospitalization == null) {
-			// If there's external hospitalization data but no existing hospitalization, it's a mismatch
-			return true;
-		}
-
-		// Check for differences in key hospitalization fields
-		boolean admissionDateMismatch =
-			!Objects.equals(existingHospitalization.getAdmissionDate(), externalMessage.getHospitalizationAdmissionDate());
-		boolean dischargeDateMismatch =
-			!Objects.equals(existingHospitalization.getDischargeDate(), externalMessage.getHospitalizationDischargeDate());
-		boolean admittedMismatch =
-			!Objects.equals(existingHospitalization.getAdmittedToHealthFacility(), externalMessage.getAdmittedToHealthFacility());
-
-		boolean hospitalizationFacilityNameMismatch =
-			!Objects.equals(
-				caze.getHealthFacility() != null ? caze.getHealthFacility().getCaption() : null,
-				externalMessage.getHospitalizationFacilityName());
-		boolean hospitalizationFacilityExternalIdMismatch =
-			!Objects.equals(
-				caze.getHealthFacility() != null ? caze.getHealthFacility().getExternalId() : null,
-				externalMessage.getHospitalizationFacilityExternalId());
-
-		boolean mismatch = admissionDateMismatch || dischargeDateMismatch || admittedMismatch
-			|| hospitalizationFacilityNameMismatch || hospitalizationFacilityExternalIdMismatch;
+		boolean mismatch = hasExternalHospitalizationData(externalMessage) && hasAnyUserDefinedCaseHospitalizationValues(caze);
 
 		if (mismatch) {
 			logger.debug("[MESSAGE PROCESSING] Hospitalization mismatch detected for existing case with UUID: {}", caze.getUuid());
@@ -345,20 +415,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	@Override
 	protected boolean hasCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		// Check if there are exposures in the external message
-		if (externalMessage.getExposures() == null || externalMessage.getExposures().isEmpty()) {
-			return false;
-		}
-
-		// Check if the case already has exposures
-		EpiDataDto epiData = caze.getEpiData();
-		if (epiData == null || epiData.getExposures() == null || epiData.getExposures().isEmpty()) {
-			// If there are external exposures but no existing exposures, it's a mismatch
-			return true;
-		}
-
-		// If both have exposures, consider it a mismatch (user should be informed to review)
-		boolean mismatch = true;
+		boolean mismatch = hasExternalExposureData(externalMessage) && hasAnyUserDefinedCaseExposureValues(caze);
 
 		if (mismatch) {
 			logger.debug("[MESSAGE PROCESSING] Exposures mismatch detected for existing case with UUID: {}", caze.getUuid());
@@ -369,20 +426,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	@Override
 	protected boolean hasCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		// Check if there are activities as case in the external message
-		if (externalMessage.getActivitiesAsCase() == null || externalMessage.getActivitiesAsCase().isEmpty()) {
-			return false;
-		}
-
-		// Check if the case already has activities as case
-		EpiDataDto epiData = caze.getEpiData();
-		if (epiData == null || epiData.getActivitiesAsCase() == null || epiData.getActivitiesAsCase().isEmpty()) {
-			// If there are external activities but no existing activities, it's a mismatch
-			return true;
-		}
-
-		// If both have activities, consider it a mismatch (user should be informed to review)
-		boolean mismatch = true;
+		boolean mismatch = hasExternalActivitiesAsCaseData(externalMessage) && hasAnyUserDefinedCaseActivitiesAsCaseValues(caze);
 
 		if (mismatch) {
 			logger.debug("[MESSAGE PROCESSING] Activities as case mismatch detected for existing case with UUID: {}", caze.getUuid());
@@ -411,9 +455,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			final ArrayList<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
 
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
 				List<ActivityAsCaseDto> deserialActivityAsCaseDtos =
-					objectMapper.readValue(externalMessageDto.getActivitiesAsCase(), new TypeReference<List<ActivityAsCaseDto>>() {
+					deserializeEmbeddedList(externalMessageDto.getActivitiesAsCase(), new TypeReference<List<ActivityAsCaseDto>>() {
 					});
 				for (ActivityAsCaseDto activityAsCaseDto : deserialActivityAsCaseDtos) {
 					ActivityAsCaseDto newActivityAsCase = ActivityAsCaseDto.build(activityAsCaseDto.getActivityAsCaseType());
@@ -459,14 +502,23 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	 *            The external message containing exposure data in JSON format.
 	 */
 	protected void postBuildExposure(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		EpiDataDto epiData = caseDto.getEpiData();
+		if (epiData == null) {
+			epiData = EpiDataDto.build();
+			caseDto.setEpiData(epiData);
+		}
+
+		epiData.setAirportWorker(externalMessageDto.getAirportWorker());
+		epiData.setHealthcareProfessional(externalMessageDto.getHealthcareProfessional());
+		epiData.setModeOfTransmission(externalMessageDto.getModeOfTransmission());
+		epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
 
 		if (externalMessageDto.getExposures() != null && !externalMessageDto.getExposures().isEmpty()) {
 			final ArrayList<ExposureDto> exposures = new ArrayList<>();
 
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
 				List<ExposureDto> deserialExposureDtos =
-					objectMapper.readValue(externalMessageDto.getExposures(), new TypeReference<List<ExposureDto>>() {
+					deserializeEmbeddedList(externalMessageDto.getExposures(), new TypeReference<List<ExposureDto>>() {
 					});
 				for (ExposureDto exposureDto : deserialExposureDtos) {
 					ExposureDto newExposure = ExposureDto.build(exposureDto.getExposureType());
@@ -482,20 +534,10 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			}
 
 			if (!exposures.isEmpty()) {
-				EpiDataDto epiData = caseDto.getEpiData();
-				if (epiData == null) {
-					epiData = EpiDataDto.build();
-					caseDto.setEpiData(epiData);
-				}
-
 				epiData.setExposureDetailsKnown(YesNoUnknown.YES);
 				epiData.setExposures(exposures);
-				epiData.setAirportWorker(externalMessageDto.getAirportWorker());
-				epiData.setHealthcareProfessional(externalMessageDto.getHealthcareProfessional());
-				epiData.setModeOfTransmission(externalMessageDto.getModeOfTransmission());
-				epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
-			}
 
+			}
 		} else {
 			logger.debug("[POST BUILD CASE] No exposures to set for case with UUID: {}", caseDto.getUuid());
 		}
@@ -642,6 +684,30 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		}
 
 		return hospitalFacilityReference;
+	}
+
+	public boolean isEmptyJson(String json) {
+		if (StringUtils.isBlank(json)) {
+			return true;
+		}
+
+		try {
+			JsonNode node = OBJECT_MAPPER.readTree(json);
+			return node.isNull() || ((node.isArray() || node.isObject()) && node.isEmpty());
+		} catch (JsonProcessingException e) {
+			return false; // Not valid JSON
+		}
+	}
+
+	public <T> List<T> deserializeEmbeddedList(String jsonString, TypeReference<List<T>> typeReference) throws JsonProcessingException {
+		if (StringUtils.isBlank(jsonString)) {
+			return Collections.emptyList();
+		}
+		final List<T> list = OBJECT_MAPPER.readValue(jsonString, typeReference);
+		if (list == null) {
+			return Collections.emptyList();
+		}
+		return list;
 	}
 
 }
