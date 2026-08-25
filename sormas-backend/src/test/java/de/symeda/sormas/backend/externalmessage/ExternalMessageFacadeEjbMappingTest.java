@@ -150,6 +150,9 @@ public class ExternalMessageFacadeEjbMappingTest {
 		when(countryService.getByReferenceDto(source.getPersonCountry())).thenReturn(country);
 		when(facilityService.getByReferenceDto(source.getPersonFacility())).thenReturn(facility);
 
+		when(countryService.getByReferenceDto(source.getPersonBirthCountry())).thenReturn(country);
+		when(countryService.getByReferenceDto(source.getPersonCitizenship())).thenReturn(country);
+
 		final SymptomsDto symptomsDto = new SymptomsDto();
 		source.setCaseSymptoms(symptomsDto);
 		when(symptomsFacadeEjb.fillOrBuildEntity(symptomsDto, null, true)).thenReturn(new Symptoms());
