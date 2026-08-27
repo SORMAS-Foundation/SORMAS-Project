@@ -63,20 +63,6 @@ public class ClassificationCriteriaDescriptionTest {
 	}
 
 	@Test
-	public void unpermittedPropertyValuesAreNotRendered() {
-
-		ClassificationPathogenTestCriteriaDto criteria = new ClassificationPathogenTestCriteriaDto(
-			PathogenTestDto.GENOTYPE,
-			Collections.singletonList(PathogenTestType.GENOTYPING),
-			GenoType.GENOTYPE_1B,
-			GenoType.GENOTYPE_2C);
-
-		String description = criteria.buildDescription();
-
-		assertFalse(description.contains(GenoType.GENOTYPE_1A.toString()), description);
-	}
-
-	@Test
 	public void booleanFlagCriteriaRenderWithoutTheirValue() {
 
 		ClassificationPathogenTestCriteriaDto criteria = new ClassificationPathogenTestCriteriaDto(

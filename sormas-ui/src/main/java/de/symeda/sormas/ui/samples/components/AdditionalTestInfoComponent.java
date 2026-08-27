@@ -85,12 +85,6 @@ public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> 
 		}));
 	}
 
-	/**
-	 * Updating the reference laboratory value
-	 * 
-	 * @param testType
-	 * @param currentDisease
-	 */
 	private void updateReferenceLaboratory(PathogenTestType testType, Disease currentDisease) {
 		boolean isReferenceLabTargetTest = REFERENCE_LAB_DEFAULT_DISEASES.contains(currentDisease)
 			&& Arrays.asList(PathogenTestType.ISOLATION, PathogenTestType.GENOTYPING).contains(testType);

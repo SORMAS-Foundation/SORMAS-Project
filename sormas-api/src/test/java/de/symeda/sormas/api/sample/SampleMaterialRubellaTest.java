@@ -18,14 +18,14 @@ public class SampleMaterialRubellaTest {
 		SampleMaterial.NP_SWAB,
 		SampleMaterial.CLINICAL_SAMPLE,
 		SampleMaterial.SALIVA,
-		SampleMaterial.URINE,
-		SampleMaterial.OTHER);
+		SampleMaterial.URINE);
 
 	private final DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.RUBELLA);
 
 	@Test
 	public void everyApprovedSpecimenIsSelectableForRubella() {
 		for (SampleMaterial material : APPROVED) {
+			assertFalse(material.isDeprecated(), material.name() + " is retired and cannot be on the Rubella specimen list");
 			assertTrue(
 				checker.isVisible(SampleMaterial.class, material.name()),
 				material.name() + " must be selectable for Rubella (#14293 specimen list)");

@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.sample;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -47,6 +48,30 @@ public class GenoTypeRubellaTest {
 			assertTrue(
 				congenitalRubellaChecker.isVisible(GenoType.class, genoType.name()),
 				genoType.name() + " must be selectable for Congenital Rubella Syndrome (#14293 genotype list)");
+		}
+	}
+
+	@Test
+	public void noUnapprovedGenotypeIsSelectableForRubella() {
+		for (GenoType genoType : GenoType.values()) {
+			if (RUBE6_GENOTYPES.contains(genoType) || genoType == GenoType.UNKNOWN) {
+				continue;
+			}
+			assertFalse(
+				rubellaChecker.isVisible(GenoType.class, genoType.name()),
+				genoType.name() + " leaks into the Rubella genotype picker — hide it (#14293)");
+		}
+	}
+
+	@Test
+	public void noUnapprovedGenotypeIsSelectableForCongenitalRubella() {
+		for (GenoType genoType : GenoType.values()) {
+			if (RUBE6_GENOTYPES.contains(genoType) || genoType == GenoType.UNKNOWN) {
+				continue;
+			}
+			assertFalse(
+				congenitalRubellaChecker.isVisible(GenoType.class, genoType.name()),
+				genoType.name() + " leaks into the Congenital Rubella Syndrome genotype picker — hide it (#14293)");
 		}
 	}
 

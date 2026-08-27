@@ -57,6 +57,7 @@ public final class DiseaseSectionFactory {
 			return new MumpsSectionComponent();
 		case SYPHILIS:
 			return new SyphilisSectionComponent();
+		// Shared because the GenoType sets match; swapDiseaseSection skips re-init.
 		case RUBELLA:
 		case CONGENITAL_RUBELLA:
 			return new RubellaSectionComponent();
