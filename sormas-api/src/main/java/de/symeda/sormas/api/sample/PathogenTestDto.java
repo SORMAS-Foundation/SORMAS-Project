@@ -262,7 +262,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	private GenoType genoType;
 
 	@SensitiveData
@@ -270,7 +272,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	private String genoTypeText;
 
 	@SensitiveData
