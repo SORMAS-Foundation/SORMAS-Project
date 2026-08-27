@@ -45,11 +45,14 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.RadiographyCompatibility;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.epidata.ClusterType;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
@@ -97,6 +100,10 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_BIRTH_DATE_DD = "personBirthDateDD";
 	public static final String PERSON_BIRTH_DATE_MM = "personBirthDateMM";
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
+	public static final String PERSON_BIRTH_COUNTRY = "personBirthCountry";
+	public static final String PERSON_CITIZENSHIP = "personCitizenship";
+	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
+	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
@@ -141,6 +148,11 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 	public static final String AIRPORT_WORKER = "airportWorker";
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
+	public static final String HIV_STATUS = "hivStatus";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
+	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
 
 	private ExternalMessageType type;
 	private Disease disease;
@@ -165,6 +177,10 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
+	private Country personBirthCountry;
+	private Country personCitizenship;
+	private SyphilisPresentation syphilisPresentation;
+	private YesNoUnknown stiProphylaxis;
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
@@ -252,6 +268,12 @@ public class ExternalMessage extends AbstractDomainObject {
 	private ClusterType clusterType;
 	private String clusterTypeText;
 	private Boolean clusterRelated;
+
+	private HivStatus hivStatus;
+	private ProbableRouteOfTransmission probableRouteOfTransmission;
+	private YesNoUnknown contactWithSexWorker;
+	private Country motherCountryOfBirth;
+	private Country motherCitizenship;
 
 	private ExternalMessageAdditionalDataType additionalDataType;
 
@@ -501,6 +523,42 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setPersonCountry(Country personCountry) {
 		this.personCountry = personCountry;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getPersonBirthCountry() {
+		return personBirthCountry;
+	}
+
+	public void setPersonBirthCountry(Country personBirthCountry) {
+		this.personBirthCountry = personBirthCountry;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getPersonCitizenship() {
+		return personCitizenship;
+	}
+
+	public void setPersonCitizenship(Country personCitizenship) {
+		this.personCitizenship = personCitizenship;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisPresentation getSyphilisPresentation() {
+		return syphilisPresentation;
+	}
+
+	public void setSyphilisPresentation(SyphilisPresentation syphilisPresentation) {
+		this.syphilisPresentation = syphilisPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getStiProphylaxis() {
+		return stiProphylaxis;
+	}
+
+	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
+		this.stiProphylaxis = stiProphylaxis;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -1116,6 +1174,51 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setClusterRelated(Boolean clusterRelated) {
 		this.clusterRelated = clusterRelated;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public HivStatus getHivStatus() {
+		return hivStatus;
+	}
+
+	public void setHivStatus(HivStatus hivStatus) {
+		this.hivStatus = hivStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ProbableRouteOfTransmission getProbableRouteOfTransmission() {
+		return probableRouteOfTransmission;
+	}
+
+	public void setProbableRouteOfTransmission(ProbableRouteOfTransmission probableRouteOfTransmission) {
+		this.probableRouteOfTransmission = probableRouteOfTransmission;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getContactWithSexWorker() {
+		return contactWithSexWorker;
+	}
+
+	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+		this.contactWithSexWorker = contactWithSexWorker;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getMotherCountryOfBirth() {
+		return motherCountryOfBirth;
+	}
+
+	public void setMotherCountryOfBirth(Country motherCountryOfBirth) {
+		this.motherCountryOfBirth = motherCountryOfBirth;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getMotherCitizenship() {
+		return motherCitizenship;
+	}
+
+	public void setMotherCitizenship(Country motherCitizenship) {
+		this.motherCitizenship = motherCitizenship;
 	}
 
 }

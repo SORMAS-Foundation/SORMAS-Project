@@ -2048,6 +2048,7 @@ public interface Captions {
 	String ExternalMessage = "ExternalMessage";
 	String ExternalMessage_assignee = "ExternalMessage.assignee";
 	String ExternalMessage_caseReportDate = "ExternalMessage.caseReportDate";
+	String ExternalMessage_contactWithSexWorker = "ExternalMessage.contactWithSexWorker";
 	String externalMessage_deleteNewlyCreatedCase = "externalMessage.deleteNewlyCreatedCase";
 	String externalMessage_deleteNewlyCreatedContact = "externalMessage.deleteNewlyCreatedContact";
 	String externalMessage_deleteNewlyCreatedEventParticipant = "externalMessage.deleteNewlyCreatedEventParticipant";
@@ -2055,10 +2056,13 @@ public interface Captions {
 	String ExternalMessage_disease = "ExternalMessage.disease";
 	String ExternalMessage_diseaseVariant = "ExternalMessage.diseaseVariant";
 	String ExternalMessage_diseaseVariantDetails = "ExternalMessage.diseaseVariantDetails";
+	String ExternalMessage_hivStatus = "ExternalMessage.hivStatus";
 	String ExternalMessage_labExternalId = "ExternalMessage.labExternalId";
 	String ExternalMessage_labMessageDetails = "ExternalMessage.labMessageDetails";
 	String ExternalMessage_labSampleId = "ExternalMessage.labSampleId";
 	String ExternalMessage_messageDateTime = "ExternalMessage.messageDateTime";
+	String ExternalMessage_motherCitizenship = "ExternalMessage.motherCitizenship";
+	String ExternalMessage_motherCountryOfBirth = "ExternalMessage.motherCountryOfBirth";
 	String ExternalMessage_personBirthDate = "ExternalMessage.personBirthDate";
 	String ExternalMessage_personBirthDateDD = "ExternalMessage.personBirthDateDD";
 	String ExternalMessage_personBirthDateMM = "ExternalMessage.personBirthDateMM";
@@ -2074,6 +2078,7 @@ public interface Captions {
 	String ExternalMessage_personPostalCode = "ExternalMessage.personPostalCode";
 	String ExternalMessage_personSex = "ExternalMessage.personSex";
 	String ExternalMessage_personStreet = "ExternalMessage.personStreet";
+	String ExternalMessage_probableRouteOfTransmission = "ExternalMessage.probableRouteOfTransmission";
 	String ExternalMessage_reporterCity = "ExternalMessage.reporterCity";
 	String ExternalMessage_reporterName = "ExternalMessage.reporterName";
 	String ExternalMessage_reporterPostalCode = "ExternalMessage.reporterPostalCode";

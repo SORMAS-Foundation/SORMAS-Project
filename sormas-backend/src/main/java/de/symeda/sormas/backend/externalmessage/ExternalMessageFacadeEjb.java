@@ -208,6 +208,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
 		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());
+		target.setPersonBirthCountry(countryService.getByReferenceDto(source.getPersonBirthCountry()));
+		target.setPersonCitizenship(countryService.getByReferenceDto(source.getPersonCitizenship()));
+		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setStiProphylaxis(source.getStiProphylaxis());
 		target.setPersonCity(source.getPersonCity());
 		target.setPersonExternalId(source.getPersonExternalId());
 		target.setPersonNationalHealthId(source.getPersonNationalHealthId());
@@ -297,6 +301,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setHivStatus(source.getHivStatus());
+		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setContactWithSexWorker(source.getContactWithSexWorker());
+		target.setMotherCountryOfBirth(countryService.getByReferenceDto(source.getMotherCountryOfBirth()));
+		target.setMotherCitizenship(countryService.getByReferenceDto(source.getMotherCitizenship()));
 		target.setClusterIdentifier(source.getClusterIdentifier());
 		target.setClusterType(source.getClusterType());
 		target.setClusterTypeText(source.getClusterTypeText());
@@ -548,6 +557,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
 		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());
+		target.setPersonBirthCountry(CountryFacadeEjb.toReferenceDto(source.getPersonBirthCountry()));
+		target.setPersonCitizenship(CountryFacadeEjb.toReferenceDto(source.getPersonCitizenship()));
+		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setStiProphylaxis(source.getStiProphylaxis());
 		target.setPersonCity(source.getPersonCity());
 		target.setPersonExternalId(source.getPersonExternalId());
 		target.setPersonNationalHealthId(source.getPersonNationalHealthId());
@@ -637,6 +650,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setClusterType(source.getClusterType());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.getClusterRelated());
+		target.setHivStatus(source.getHivStatus());
+		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setContactWithSexWorker(source.getContactWithSexWorker());
+		target.setMotherCountryOfBirth(CountryFacadeEjb.toReferenceDto(source.getMotherCountryOfBirth()));
+		target.setMotherCitizenship(CountryFacadeEjb.toReferenceDto(source.getMotherCitizenship()));
 
 		ExternalMessageAdditionalDataType additionalDataType = source.getAdditionalDataType();
 		String additionalDataJson = source.getAdditionalDataJson();

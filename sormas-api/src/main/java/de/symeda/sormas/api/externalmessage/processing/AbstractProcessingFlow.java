@@ -192,6 +192,7 @@ public abstract class AbstractProcessingFlow {
 		caseDto.setReportingUser(user.toReference());
 		caseDto.setReportDate(
 			externalMessageDto.getCaseReportDate() != null ? externalMessageDto.getCaseReportDate() : externalMessageDto.getMessageDateTime());
+		caseDto.setSyphilisPresentation(externalMessageDto.getSyphilisPresentation());
 
 		if (processingFacade.isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			caseDto.setResponsibleRegion(processingFacade.getDefaultRegionReference());
