@@ -4,11 +4,24 @@ Perform these steps against Luxembourg's SORMAS server admin UI (Configuration >
 
 ## Disease.RUBELLA (#14288)
 
+- Set `primaryDisease` to true. Without it Rubella will not appear in the disease dropdown when
+  adding a new case: `CaseCreateForm` builds that field with `addDiseaseField(DISEASE, showNonPrimaryDiseases=false, ...)`,
+  so it lists active **and primary** diseases only. `Disease.RUBELLA`'s enum defaults ship with both
+  `primaryDisease` and `caseSurveillanceEnabled` false, unlike Measles, Mumps, Syphilis and Congenital Rubella.
 - Set `caseSurveillanceEnabled` to true.
 - Set `incubationPeriodEnabled` to true.
 - Set `minIncubationPeriod` to 12.
 - Set `maxIncubationPeriod` to 23.
 - Decide and record whether `aggregateReportingEnabled` stays on alongside case surveillance - the two do not conflict.
+
+## Applying changes (#14288)
+
+- Saving through the admin UI is enough; no server restart is needed. `DiseaseConfigurationController`'s
+  commit listener calls `saveDiseaseConfiguration(...)` and then `loadData()`, which repopulates the static
+  maps that back the disease dropdowns (`primaryDiseases`, `caseSurveillanceDiseases`, `activeDiseases`).
+- The reload lives in that UI controller, **not** in the facade. `saveDiseaseConfiguration` on its own does not
+  refresh anything, so a change applied by any other route - REST, a script, direct SQL - persists but leaves the
+  caches stale until someone saves through the UI or the domain restarts.
 
 ## Feature toggle (#14289)
 
@@ -22,7 +35,8 @@ Perform these steps against Luxembourg's SORMAS server admin UI (Configuration >
 
 ## Exposure and travel history (#14292)
 
-- Set `DiseaseConfigurationDto.exposureCategories` for Rubella to Airborne and Mother-to-child transmission.
+- Set `DiseaseConfigurationDto.exposureCategories` for Rubella to Air-Borne and Vertical transmission. "Vertical transmission" is the caption SORMAS uses for
+  mother-to-child transmission - there is no exposure category literally named "Mother-to-child".
 - Confirm the "Hospital" caption on `ClusterType.NOSOCOMIAL` reads correctly for Luxembourg's ECDC report - no enum change needed, caption only.
 - Confirm in the running UI that the four Activities-as-a-case TYPE OF PLACE values (School, Education and childcare, Nursing home, Asylum seekers shelter) are available for Rubella cases - already true for Luxembourg, no code change.
 - "Place of residence of patient at time of disease onset" uses the existing free-text `residenceAtOnset` field - confirmed 2026-08-27, no country dropdown needed. No admin action, recorded here for reference only.
