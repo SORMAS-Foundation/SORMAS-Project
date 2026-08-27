@@ -142,6 +142,53 @@ public enum GenoType {
 		Disease.MUMPS })
 	MUMPV_N,
 
+	// RUBE-6 rubella genotype nomenclature (WHO 2007)
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1A,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1B,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1C,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1D,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1E,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1F,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1G,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1H,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1I,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_1J,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_2A,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_2B,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_2C,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_NA,
+	@Diseases({
+		Disease.RUBELLA })
+	GENOTYPE_UNK,
+
 	OTHER,
 	UNKNOWN;
 
