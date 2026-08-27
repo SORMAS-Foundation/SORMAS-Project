@@ -20,9 +20,11 @@ package de.symeda.sormas.backend.caze.classification;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
@@ -66,6 +68,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -89,6 +92,11 @@ import de.symeda.sormas.backend.sample.PathogenTestService;
  */
 @Stateless(name = "CaseClassificationFacade")
 public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
+
+	private static final int RUBELLA_RECENT_VACCINATION_DAYS = 42;
+
+	private static final Set<Disease> DISEASES_WITH_VACCINATION_DEPENDENT_CLASSIFICATION =
+		EnumSet.of(Disease.YELLOW_FEVER, Disease.RUBELLA);
 
 	@EJB
 	private PersonService personService;
@@ -120,7 +128,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			.collect(Collectors.toList());
 		List<EventDto> caseEvents = eventFacade.getAllByCase(caze);
 		Date lastVaccinationDate = null;
-		if (caze.getDisease() == Disease.YELLOW_FEVER && caze.getVaccinationStatus() == VaccinationStatus.VACCINATED) {
+		if (DISEASES_WITH_VACCINATION_DEPENDENT_CLASSIFICATION.contains(caze.getDisease())
+			&& caze.getVaccinationStatus() == VaccinationStatus.VACCINATED) {
 			lastVaccinationDate =
 				immunizationService.getLastVaccinationDateBefore(caze.getPerson().getUuid(), caze.getDisease(), CaseLogic.getStartDate(caze));
 		}
@@ -418,6 +427,53 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(suspect, positiveTestResult(Disease.PLAGUE, PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR));
 		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.PLAGUE));
 
+		// Rubella
+		suspect = allOf(
+			symptom(SymptomsDto.SKIN_RASH),
+			xOf(
+				1,
+				symptom(SymptomsDto.LYMPHADENOPATHY_CERVICAL),
+				symptom(SymptomsDto.LYMPHADENOPATHY_SUBOCCIPITAL),
+				symptom(SymptomsDto.LYMPHADENOPATHY_RETROAURICULAR),
+				symptom(SymptomsDto.ARTHRALGIA),
+				symptom(SymptomsDto.ARTHRITIS)));
+		probable = allOf(suspect, epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN));
+		ClassificationCriteriaDto rubellaLaboratoryCriteria = xOf(
+			1,
+			positiveTestResult(Disease.RUBELLA, PathogenTestType.ISOLATION),
+			positiveTestResult(Disease.RUBELLA, PathogenTestType.PCR_RT_PCR, PathogenTestType.GENOTYPING),
+			positiveTestResult(Disease.RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY),
+			xOfSub(
+				1,
+				false,
+				sampleTest(PathogenTestDto.SERO_CONVERSION, Arrays.asList(PathogenTestType.IGG_SERUM_ANTIBODY), true),
+				sampleTest(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, Arrays.asList(PathogenTestType.IGG_SERUM_ANTIBODY), true)));
+		// Genotype 1A is the vaccine lineage and cannot evidence a wild type
+		ClassificationCriteriaDto rubellaWildTypeStrainDetection = allOf(
+			positiveTestResult(Disease.RUBELLA, PathogenTestType.GENOTYPING),
+			sampleTest(
+				PathogenTestDto.GENOTYPE,
+				Arrays.asList(PathogenTestType.GENOTYPING),
+				GenoType.GENOTYPE_1B,
+				GenoType.GENOTYPE_1C,
+				GenoType.GENOTYPE_1D,
+				GenoType.GENOTYPE_1E,
+				GenoType.GENOTYPE_1F,
+				GenoType.GENOTYPE_1G,
+				GenoType.GENOTYPE_1H,
+				GenoType.GENOTYPE_1I,
+				GenoType.GENOTYPE_1J,
+				GenoType.GENOTYPE_2A,
+				GenoType.GENOTYPE_2B,
+				GenoType.GENOTYPE_2C));
+		confirmed = allOf(
+			suspect,
+			xOf(
+				1,
+				allOf(vaccinationDateNotInStartDateRange(RUBELLA_RECENT_VACCINATION_DAYS), rubellaLaboratoryCriteria),
+				rubellaWildTypeStrainDetection));
+		addCriteria(Disease.RUBELLA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.RUBELLA));
+
 		// Congenital rubella
 		suspect = allOf(
 			xOf(
@@ -435,21 +491,40 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.DEVELOPMENTAL_DELAY),
 				symptom(SymptomsDto.MENINGOENCEPHALITIS),
 				symptom(SymptomsDto.RADIOLUCENT_BONE_DISEASE)));
-		probable = xOf(
+		ClassificationCriteriaDto[] crsCategoryAConditions = {
+			oneOfCompact(symptom(SymptomsDto.BILATERAL_CATARACTS), symptom(SymptomsDto.UNILATERAL_CATARACTS)),
+			symptom(SymptomsDto.CONGENITAL_GLAUCOMA),
+			symptom(SymptomsDto.CONGENITAL_HEART_DISEASE),
+			symptom(SymptomsDto.HEARINGLOSS),
+			symptom(SymptomsDto.PIGMENTARY_RETINOPATHY) };
+		ClassificationCriteriaDto[] crsCategoryBConditions = {
+			symptom(SymptomsDto.PURPURIC_RASH),
+			symptom(SymptomsDto.SPLENOMEGALY),
+			symptom(SymptomsDto.MICROCEPHALY),
+			symptom(SymptomsDto.DEVELOPMENTAL_DELAY),
+			symptom(SymptomsDto.MENINGOENCEPHALITIS),
+			symptom(SymptomsDto.RADIOLUCENT_BONE_DISEASE),
+			symptom(SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, YesNoUnknown.YES) };
+		ClassificationCriteriaDto crsClinicalCriteria = xOf(
 			1,
-			xOf(
-				2,
-				oneOfCompact(
-					symptom(SymptomsDto.BILATERAL_CATARACTS),
-					symptom(SymptomsDto.UNILATERAL_CATARACTS),
-					symptom(SymptomsDto.CONGENITAL_GLAUCOMA)),
-				symptom(SymptomsDto.CONGENITAL_HEART_DISEASE),
-				symptom(SymptomsDto.HEARINGLOSS),
-				symptom(SymptomsDto.PIGMENTARY_RETINOPATHY)),
-			allOfTogether(
-				xOfSub(
+			xOf(2, crsCategoryAConditions),
+			allOfTogether(xOfSub(1, false, crsCategoryAConditions), xOfSub(1, false, crsCategoryBConditions)));
+		ClassificationCriteriaDto crsLaboratoryCriteria = xOf(
+			1,
+			positiveTestResult(Disease.CONGENITAL_RUBELLA, PathogenTestType.ISOLATION),
+			positiveTestResult(Disease.CONGENITAL_RUBELLA, PathogenTestType.PCR_RT_PCR, PathogenTestType.GENOTYPING),
+			positiveTestResult(Disease.CONGENITAL_RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY));
+		probable = configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			? allOf(
+				noneOf(crsLaboratoryCriteria),
+				xOf(
 					1,
-					false,
+					allOf(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), xOfSub(1, false, crsCategoryAConditions)),
+					crsClinicalCriteria))
+			: xOf(
+				1,
+				xOf(
+					2,
 					oneOfCompact(
 						symptom(SymptomsDto.BILATERAL_CATARACTS),
 						symptom(SymptomsDto.UNILATERAL_CATARACTS),
@@ -457,22 +532,41 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					symptom(SymptomsDto.CONGENITAL_HEART_DISEASE),
 					symptom(SymptomsDto.HEARINGLOSS),
 					symptom(SymptomsDto.PIGMENTARY_RETINOPATHY)),
-				xOfSub(
+				allOfTogether(
+					xOfSub(
+						1,
+						false,
+						oneOfCompact(
+							symptom(SymptomsDto.BILATERAL_CATARACTS),
+							symptom(SymptomsDto.UNILATERAL_CATARACTS),
+							symptom(SymptomsDto.CONGENITAL_GLAUCOMA)),
+						symptom(SymptomsDto.CONGENITAL_HEART_DISEASE),
+						symptom(SymptomsDto.HEARINGLOSS),
+						symptom(SymptomsDto.PIGMENTARY_RETINOPATHY)),
+					xOfSub(
+						1,
+						false,
+						symptom(SymptomsDto.PURPURIC_RASH),
+						symptom(SymptomsDto.SPLENOMEGALY),
+						symptom(SymptomsDto.MICROCEPHALY),
+						symptom(SymptomsDto.DEVELOPMENTAL_DELAY),
+						symptom(SymptomsDto.MENINGOENCEPHALITIS),
+						symptom(SymptomsDto.RADIOLUCENT_BONE_DISEASE))));
+		confirmed = configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			? allOf(
+				crsLaboratoryCriteria,
+				xOf(
 					1,
-					false,
-					symptom(SymptomsDto.PURPURIC_RASH),
-					symptom(SymptomsDto.SPLENOMEGALY),
-					symptom(SymptomsDto.MICROCEPHALY),
-					symptom(SymptomsDto.DEVELOPMENTAL_DELAY),
-					symptom(SymptomsDto.MENINGOENCEPHALITIS),
-					symptom(SymptomsDto.RADIOLUCENT_BONE_DISEASE))));
-		confirmed = allOf(
-			suspect,
-			positiveTestResult(
-				Disease.CONGENITAL_RUBELLA,
-				PathogenTestType.ISOLATION,
-				PathogenTestType.IGM_SERUM_ANTIBODY,
-				PathogenTestType.PCR_RT_PCR));
+					symptom(SymptomsDto.STILLBORN_INFANT),
+					epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN),
+					xOfSub(1, false, crsCategoryAConditions)))
+			: allOf(
+				suspect,
+				positiveTestResult(
+					Disease.CONGENITAL_RUBELLA,
+					PathogenTestType.ISOLATION,
+					PathogenTestType.IGM_SERUM_ANTIBODY,
+					PathogenTestType.PCR_RT_PCR));
 		addCriteria(
 			Disease.CONGENITAL_RUBELLA,
 			DateHelper.getDateZero(2020, 11, 6),
@@ -723,6 +817,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	private ClassificationSymptomsCriteriaDto symptom(String propertyId, String addition) {
 		return new ClassificationSymptomsCriteriaDto(propertyId, addition);
+	}
+
+	private ClassificationSymptomsCriteriaDto symptom(String propertyId, YesNoUnknown propertyValue) {
+		return new ClassificationSymptomsCriteriaDto(propertyId, propertyValue);
 	}
 
 	private ClassificationEpiDataCriteriaDto epiData(String propertyId) {
