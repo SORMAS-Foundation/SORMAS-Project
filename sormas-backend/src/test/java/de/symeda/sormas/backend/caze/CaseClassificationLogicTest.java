@@ -47,6 +47,7 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -1061,6 +1062,268 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testAutomaticClassificationForRubella() {
+
+		// Possible
+		CaseDataDto caze = buildSuspectCaseBasis(Disease.RUBELLA);
+		caze.getSymptoms().setLymphadenopathyCervical(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildSuspectCaseBasis(Disease.RUBELLA);
+		caze.getSymptoms().setLymphadenopathySuboccipital(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildSuspectCaseBasis(Disease.RUBELLA);
+		caze.getSymptoms().setLymphadenopathyRetroauricular(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildSuspectCaseBasis(Disease.RUBELLA);
+		caze.getSymptoms().setArthralgia(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildSuspectCaseBasis(Disease.RUBELLA);
+		caze.getSymptoms().setArthritis(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// Probable
+		caze = buildSuspectCase(Disease.RUBELLA);
+		caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Confirmed by isolation of the virus
+		caze = getCaseFacade().save(buildSuspectCase(Disease.RUBELLA));
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		// Confirmed by detection of viral nucleic acid
+		caze = getCaseFacade().save(buildSuspectCase(Disease.RUBELLA));
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		caze = getCaseFacade().save(buildSuspectCase(Disease.RUBELLA));
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.GENOTYPING, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		// Confirmed by IgM antibody detection
+		caze = getCaseFacade().save(buildSuspectCase(Disease.RUBELLA));
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		// Confirmed by IgG seroconversion
+		caze = getCaseFacade().save(buildSuspectCase(Disease.RUBELLA));
+		PathogenTestDto iggTest =
+			creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		iggTest.setSeroConversion(true);
+		getPathogenTestFacade().savePathogenTest(iggTest);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		// Confirmed by a significant rise in IgG antibody titre
+		caze = getCaseFacade().save(buildSuspectCase(Disease.RUBELLA));
+		iggTest = creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		iggTest.setFourFoldIncreaseAntibodyTiter(true);
+		getPathogenTestFacade().savePathogenTest(iggTest);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
+	public void ruleOutFalsePositivesForRubella() {
+
+		// Possible
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.RUBELLA);
+		fillSymptoms(caze.getSymptoms());
+		caze.getSymptoms().setSkinRash(SymptomState.NO);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+
+		caze.getSymptoms().setSkinRash(SymptomState.YES);
+		caze.getSymptoms().setLymphadenopathyCervical(SymptomState.NO);
+		caze.getSymptoms().setLymphadenopathySuboccipital(SymptomState.NO);
+		caze.getSymptoms().setLymphadenopathyRetroauricular(SymptomState.NO);
+		caze.getSymptoms().setArthralgia(SymptomState.NO);
+		caze.getSymptoms().setArthritis(SymptomState.NO);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+
+		// Probable
+		caze = buildSuspectCase(Disease.RUBELLA);
+		fillEpiData(caze.getEpiData());
+		caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.NO);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// A plain positive IgG result is neither seroconversion nor a titre rise
+		caze = getCaseFacade().save(buildSuspectCase(Disease.RUBELLA));
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testRubellaConfirmationIsBlockedByRecentVaccination() {
+
+		CaseDataDto caze = buildRecentlyVaccinatedRubellaCase(10);
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildRecentlyVaccinatedRubellaCase(60);
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testRubellaConfirmationAfterRecentVaccinationNeedsWildTypeStrain() {
+
+		CaseDataDto caze = buildRecentlyVaccinatedRubellaCase(10);
+		PathogenTestDto genotyping =
+			creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.GENOTYPING, PathogenTestResultType.POSITIVE);
+		genotyping.setGenoType(GenoType.GENOTYPE_1A);
+		genotyping = getPathogenTestFacade().savePathogenTest(genotyping);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		genotyping.setGenoType(GenoType.GENOTYPE_2B);
+		getPathogenTestFacade().savePathogenTest(genotyping);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testAutomaticClassificationForCongenitalRubellaOnLuxembourgServer() {
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+		// Probable by two conditions of category A
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setCongenitalHeartDisease(SymptomState.YES);
+		caze.getSymptoms().setHearingloss(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Cataracts and congenital glaucoma are two distinct conditions of category A
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setBilateralCataracts(SymptomState.YES);
+		caze.getSymptoms().setCongenitalGlaucoma(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Probable by one condition of category A and one of category B
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setPigmentaryRetinopathy(SymptomState.YES);
+		caze.getSymptoms().setJaundiceWithin24HoursOfBirth(YesNoUnknown.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Probable by an epidemiological link and one condition of category A
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setHearingloss(SymptomState.YES);
+		caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Confirmed: stillborn meeting the laboratory criteria
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setStillbornInfant(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		creator.createPathogenTest(caze, Disease.CONGENITAL_RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		// Confirmed: infant, laboratory criteria and an epidemiological link
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+		caze = getCaseFacade().save(caze);
+		creator.createPathogenTest(caze, Disease.CONGENITAL_RUBELLA, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		// Confirmed: infant, laboratory criteria and a category A condition
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setCongenitalHeartDisease(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		creator.createPathogenTest(caze, Disease.CONGENITAL_RUBELLA, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
+	public void ruleOutFalsePositivesForCongenitalRubellaOnLuxembourgServer() {
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+		// Two conditions of category B alone do not meet the clinical criteria
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setSplenomegaly(SymptomState.YES);
+		caze.getSymptoms().setMicrocephaly(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// Laboratory criteria met, but nothing that confirms the case
+		creator.createPathogenTest(caze, Disease.CONGENITAL_RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// An epidemiological link without any condition of category A is not enough
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setPurpuricRash(SymptomState.YES);
+		caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testAutomaticClassificationForCongenitalRubellaOnNonLuxembourgServer() {
+
+		// Suspect by any single one of the clinical conditions
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setSplenomegaly(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// Probable by two of the grouped major conditions
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setCongenitalHeartDisease(SymptomState.YES);
+		caze.getSymptoms().setHearingloss(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Cataracts and glaucoma stay grouped into one major condition
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setBilateralCataracts(SymptomState.YES);
+		caze.getSymptoms().setCongenitalGlaucoma(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// Probable by one major and one minor condition
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setHearingloss(SymptomState.YES);
+		caze.getSymptoms().setPurpuricRash(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Confirmed by a positive test and one condition, without an epi link
+		caze = creator.createUnclassifiedCase(Disease.CONGENITAL_RUBELLA);
+		caze.getSymptoms().setSplenomegaly(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		creator.createPathogenTest(caze, Disease.CONGENITAL_RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
 	public void testAutomaticClassificationForIMI() {
 
 		// Suspect
@@ -1547,6 +1810,9 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			caze.getSymptoms().setFever(SymptomState.YES);
 			caze.getSymptoms().setSkinRash(SymptomState.YES);
 			break;
+		case RUBELLA:
+			caze.getSymptoms().setSkinRash(SymptomState.YES);
+			break;
 		case CHOLERA:
 			PersonDto casePerson = getPersonFacade().getByUuid(caze.getPerson().getUuid());
 			casePerson.setApproximateAge(5);
@@ -1604,6 +1870,9 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			break;
 		case MEASLES:
 			caze.getSymptoms().setCough(SymptomState.YES);
+			break;
+		case RUBELLA:
+			caze.getSymptoms().setLymphadenopathyRetroauricular(SymptomState.YES);
 			break;
 		case CHOLERA:
 			caze.getSymptoms().setDehydration(SymptomState.YES);
@@ -1691,6 +1960,15 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 				creator.createPathogenTest(caze, testedDisease, testType, PathogenTestResultType.POSITIVE);
 			}
 		}
+	}
+
+	private CaseDataDto buildRecentlyVaccinatedRubellaCase(int daysSinceVaccination) {
+
+		CaseDataDto caze = buildSuspectCase(Disease.RUBELLA);
+		caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		createImmunizationWithVaccination(caze, DateHelper.subtractDays(new Date(), daysSinceVaccination));
+
+		return getCaseFacade().save(caze);
 	}
 
 	private void createImmunizationWithVaccination(CaseDataDto caze, Date vaccinationDate) {
