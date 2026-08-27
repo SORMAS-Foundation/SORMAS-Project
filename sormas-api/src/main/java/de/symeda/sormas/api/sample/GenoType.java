@@ -144,49 +144,64 @@ public enum GenoType {
 
 	// RUBE-6 rubella genotype nomenclature (WHO 2007)
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1A,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1B,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1C,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1D,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1E,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1F,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1G,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1H,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1I,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_1J,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_2A,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_2B,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_2C,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_NA,
 	@Diseases({
-		Disease.RUBELLA })
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	GENOTYPE_UNK,
 
 	OTHER,

@@ -57,6 +57,9 @@ public final class DiseaseSectionFactory {
 			return new MumpsSectionComponent();
 		case SYPHILIS:
 			return new SyphilisSectionComponent();
+		case RUBELLA:
+		case CONGENITAL_RUBELLA:
+			return new RubellaSectionComponent();
 		default:
 			return new DefaultSectionComponent();
 		}
