@@ -1379,6 +1379,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_imi_pneumoniaClinicalOrRadiologic));
 		} else if (Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease) {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_ipi_pneumoniaClinicalOrRadiologic));
+		} else if (Disease.RUBELLA == disease) {
+			getField(ARTHRITIS).setCaption(I18nProperties.getCaption(Captions.Symptoms_arthritis_RUBELLA));
 		}
 
 		if (symptomsContext == SymptomsContext.CASE && caze != null && caze.getDisease() == Disease.PLAGUE) {
