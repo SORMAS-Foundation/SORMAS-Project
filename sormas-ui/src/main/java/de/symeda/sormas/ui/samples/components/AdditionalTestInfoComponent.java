@@ -88,11 +88,10 @@ public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> 
 	 * @param currentDisease
 	 */
 	private void updateReferenceLaboratory(PathogenTestType testType, Disease currentDisease) {
-		// Select the performedByReferenceLaboratory field, if the test is Isolation || Genotyping of Mumps
-		boolean isMumpsTargetTest =
-			currentDisease == Disease.MUMPS && Arrays.asList(PathogenTestType.ISOLATION, PathogenTestType.GENOTYPING).contains(testType);
-		performedByReferenceLaboratory.setValue(isMumpsTargetTest ? true : null);
-		if (!isMumpsTargetTest) {
+		boolean isReferenceLabTargetTest = (currentDisease == Disease.MUMPS || currentDisease == Disease.RUBELLA)
+			&& Arrays.asList(PathogenTestType.ISOLATION, PathogenTestType.GENOTYPING).contains(testType);
+		performedByReferenceLaboratory.setValue(isReferenceLabTargetTest ? true : null);
+		if (!isReferenceLabTargetTest) {
 			performedByReferenceLaboratory.clear();
 		}
 	}
