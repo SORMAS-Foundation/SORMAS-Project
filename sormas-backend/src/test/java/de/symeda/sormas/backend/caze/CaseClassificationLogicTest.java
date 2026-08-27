@@ -1171,6 +1171,27 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testRubellaIsNoCaseWhenAnotherDiseaseIsConfirmedInstead() {
+
+		CaseDataDto caze = getCaseFacade().save(buildSuspectCase(Disease.RUBELLA));
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.NEGATIVE);
+		creator.createPathogenTest(caze, Disease.MEASLES, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.NO_CASE, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testRubellaLaboratoryResultWithoutRashDoesNotClassify() {
+
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.RUBELLA);
+		caze.getSymptoms().setLymphadenopathyRetroauricular(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		creator.createPathogenTest(caze, Disease.RUBELLA, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+	}
+
+	@Test
 	public void testRubellaConfirmationIsBlockedByRecentVaccination() {
 
 		CaseDataDto caze = buildRecentlyVaccinatedRubellaCase(10);

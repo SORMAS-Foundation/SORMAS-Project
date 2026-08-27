@@ -85,7 +85,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 
 	protected StringBuilder appendDescValues(StringBuilder stringBuilder) {
 
-		if (propertyValues.size() == 1 && propertyValues.get(0) instanceof YesNoUnknown) {
+		if (propertyValues.size() == 1 && (propertyValues.get(0) instanceof YesNoUnknown || propertyValues.get(0) instanceof Boolean)) {
 			return stringBuilder;
 		}
 
