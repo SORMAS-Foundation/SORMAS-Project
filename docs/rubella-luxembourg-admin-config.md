@@ -19,3 +19,10 @@ Perform these steps against Luxembourg's SORMAS server admin UI (Configuration >
 - Rubella and Congenital Rubella already show as two separate entries in case lists, pickers, and dashboards.
 - New cases already default to case classification "Not yet classified" for every disease.
 - The classification info button activates automatically once Task 7 (#14296) registers a Rubella/CRS ruleset.
+
+## Exposure and travel history (#14292)
+
+- Set `DiseaseConfigurationDto.exposureCategories` for Rubella to Airborne and Mother-to-child transmission.
+- Confirm the "Hospital" caption on `ClusterType.NOSOCOMIAL` reads correctly for Luxembourg's ECDC report - no enum change needed, caption only.
+- Confirm in the running UI that the four Activities-as-a-case TYPE OF PLACE values (School, Education and childcare, Nursing home, Asylum seekers shelter) are available for Rubella cases - already true for Luxembourg, no code change.
+- "Place of residence of patient at time of disease onset" uses the existing free-text `residenceAtOnset` field - confirmed 2026-08-27, no country dropdown needed. No admin action, recorded here for reference only.
