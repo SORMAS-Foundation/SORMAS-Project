@@ -436,7 +436,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.LYMPHADENOPATHY_SUBOCCIPITAL),
 				symptom(SymptomsDto.LYMPHADENOPATHY_RETROAURICULAR),
 				symptom(SymptomsDto.ARTHRALGIA),
-				symptom(SymptomsDto.ARTHRITIS)));
+				symptom(SymptomsDto.ARTHRITIS, Disease.RUBELLA.name())));
 		probable = allOf(suspect, epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN));
 		ClassificationCriteriaDto rubellaLaboratoryCriteria = xOf(
 			1,
