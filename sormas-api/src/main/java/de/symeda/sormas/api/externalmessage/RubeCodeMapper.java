@@ -38,7 +38,7 @@ public class RubeCodeMapper {
 		Map.entry("NA", GenoType.GENOTYPE_NA),
 		Map.entry("UNK", GenoType.GENOTYPE_UNK));
 
-	public GenoType mapGenotype(String rawCode) {
+	public static GenoType mapGenotype(String rawCode) {
 		if (rawCode == null) {
 			return null;
 		}

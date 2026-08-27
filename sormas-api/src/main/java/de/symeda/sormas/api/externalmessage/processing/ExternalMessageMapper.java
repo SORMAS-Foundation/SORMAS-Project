@@ -1082,15 +1082,16 @@ public final class ExternalMessageMapper {
 
 				));
 
-			// RUBE-9: "NOTEST" has no PathogenTestResultType match; make it explicit.
-			if ("NOTEST".equalsIgnoreCase(sourceTestReport.getTestResultText())) {
+			// RUBE-9: "NOTEST" means not performed -> NOT_DONE, not NOT_APPLICABLE.
+			String rawResultCode = sourceTestReport.getTestResultText();
+			if (rawResultCode != null && "NOTEST".equalsIgnoreCase(rawResultCode.trim())) {
 				changedFields.addAll(
 					map(
 						Stream.of(
 							Mapping.of(
 								pathogenTest::setTestResult,
 								pathogenTest.getTestResult(),
-								PathogenTestResultType.NOT_APPLICABLE,
+								PathogenTestResultType.NOT_DONE,
 								PathogenTestDto.TEST_RESULT),
 							Mapping.of(
 								pathogenTest::setTestResultText,
