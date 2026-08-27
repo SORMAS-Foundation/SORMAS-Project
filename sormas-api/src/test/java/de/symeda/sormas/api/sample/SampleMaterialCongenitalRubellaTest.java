@@ -18,14 +18,14 @@ public class SampleMaterialCongenitalRubellaTest {
 		SampleMaterial.NP_SWAB,
 		SampleMaterial.CLINICAL_SAMPLE,
 		SampleMaterial.SALIVA,
-		SampleMaterial.URINE,
-		SampleMaterial.OTHER);
+		SampleMaterial.URINE);
 
 	private final DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.CONGENITAL_RUBELLA);
 
 	@Test
 	public void everyApprovedSpecimenIsSelectableForCongenitalRubella() {
 		for (SampleMaterial material : APPROVED) {
+			assertFalse(material.isDeprecated(), material.name() + " is retired and cannot be on the Congenital Rubella Syndrome specimen list");
 			assertTrue(
 				checker.isVisible(SampleMaterial.class, material.name()),
 				material.name() + " must be selectable for Congenital Rubella Syndrome (#14293 specimen list)");
