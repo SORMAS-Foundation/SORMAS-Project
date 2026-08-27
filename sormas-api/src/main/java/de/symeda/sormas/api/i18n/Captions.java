@@ -3130,6 +3130,7 @@ public interface Captions {
 	String Symptoms_apnoea_PERTUSSIS = "Symptoms.apnoea.PERTUSSIS";
 	String Symptoms_arthralgia = "Symptoms.arthralgia";
 	String Symptoms_arthritis = "Symptoms.arthritis";
+	String Symptoms_arthritis_RUBELLA = "Symptoms.arthritis.RUBELLA";
 	String Symptoms_ascendingFlaccidParalysis = "Symptoms.ascendingFlaccidParalysis";
 	String Symptoms_asymptomatic = "Symptoms.asymptomatic";
 	String Symptoms_backache = "Symptoms.backache";
