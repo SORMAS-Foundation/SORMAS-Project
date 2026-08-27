@@ -472,7 +472,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				1,
 				allOf(vaccinationDateNotInStartDateRange(RUBELLA_RECENT_VACCINATION_DAYS), rubellaLaboratoryCriteria),
 				rubellaWildTypeStrainDetection));
-		addCriteria(Disease.RUBELLA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.RUBELLA));
+		addCriteria(Disease.RUBELLA, DateHelper.getDateZero(2026, 8, 27), suspect, probable, confirmed, notACase(Disease.RUBELLA));
 
 		// Congenital rubella
 		suspect = allOf(
@@ -569,7 +569,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					PathogenTestType.PCR_RT_PCR));
 		addCriteria(
 			Disease.CONGENITAL_RUBELLA,
-			DateHelper.getDateZero(2020, 11, 6),
+			DateHelper.getDateZero(2026, 8, 27),
 			suspect,
 			probable,
 			confirmed,
