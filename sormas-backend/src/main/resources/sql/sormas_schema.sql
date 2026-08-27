@@ -17289,7 +17289,7 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS thrombocytopenicpurpura va
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS rubellaarthritis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS greggstriad varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (664, '#14291 - Add Congenital Rubella Syndrome specific symptoms and complications');
+INSERT INTO schema_version (version_number, comment) VALUES (665, '#14291 - Add Congenital Rubella Syndrome specific symptoms and complications');
 
 UPDATE diseaseconfiguration
 SET exposurecategories = 'DIRECT_CONTACT,VERTICAL_TRANSMISSION', changedate = now()
