@@ -208,6 +208,14 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 		addFields(fieldsList);
 
+		Field<?> stiProphylaxis = getField(STI_PROPHYLAXIS);
+		stiProphylaxis
+			.setCaption(String.format(I18nProperties.getCaption(Captions.HealthConditions_stiProphylaxis), I18nProperties.getEnumCaption(disease)));
+
+		Field<?> hivPreExposure = getField(HIV_PREP);
+		hivPreExposure
+			.setCaption(String.format(I18nProperties.getCaption(Captions.HealthConditions_hivPrep), I18nProperties.getEnumCaption(disease)));
+
 		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
 		otherConditions.setRows(6);
 		otherConditions.setDescription(

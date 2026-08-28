@@ -1562,6 +1562,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS,
 		SHIGELLOSIS,
 		YERSINIOSIS,
+		GONOCOCCAL_INFECTION,
 		MUMPS })
 	@HideForCountries
 	@Outbreaks
@@ -2924,6 +2925,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		GONOCOCCAL_INFECTION })
+	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState arthritis;
 
 	@Diseases({

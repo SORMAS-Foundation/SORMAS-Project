@@ -89,7 +89,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	private YesNoUnknown asplenia;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -136,7 +137,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
-		Disease.YERSINIOSIS }, hide = true)
+		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	private YesNoUnknown downSyndrome;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -146,7 +148,9 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = Disease.SYPHILIS, hide = true)
+	@Diseases(value = {
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	private YesNoUnknown congenitalSyphilis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -278,7 +282,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		Disease.SYPHILIS })
 	private Date syphilisDateOfFirstDose;
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private YesNoUnknown syphilisOrOtherStis;
 	@Diseases(value = {
 		Disease.GONOCOCCAL_INFECTION })
