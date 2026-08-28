@@ -75,12 +75,16 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private static final String COLUMN_DESCRIPTION = ExposureDto.DESCRIPTION;
 	private static final String COLUMN_PROPHYLAXIS_ADHERENCE = ExposureDto.PROPHYLAXIS_ADHERENCE;
 
+	private static final Map<Disease, ExposureCategory> DEFAULT_DISEASE_EXPOSURE_CATEGORY_DICTIONARY =
+		Map.of(Disease.SYPHILIS, ExposureCategory.DIRECT_CONTACT, Disease.GONOCOCCAL_INFECTION, ExposureCategory.DIRECT_CONTACT);
+
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private Supplier<List<ContactReferenceDto>> getSourceContactsCallback;
 	private Class<? extends EntityDto> epiDataParentClass;
 	private boolean isPseudonymized;
 	private boolean isEditAllowed;
 	private Disease disease;
+
 	private final Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> pendingCustomizableFieldValues = new HashMap<>();
 
 	public ExposuresField(
@@ -268,10 +272,8 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		exposure.getLocation().setDistrict(user.getDistrict());
 		exposure.getLocation().setCommunity(user.getCommunity());
 		exposure.setReportingUser(user.toReference());
-		if (disease == Disease.SYPHILIS) {
-			// Direct contact is selected by default when creating a new exposure for Syphilis
-			exposure.setExposureCategory(ExposureCategory.DIRECT_CONTACT);
-		}
+		// if defined for disease sets default category, otherwise null.
+		exposure.setExposureCategory(DEFAULT_DISEASE_EXPOSURE_CATEGORY_DICTIONARY.get(disease));
 		return exposure;
 	}
 
