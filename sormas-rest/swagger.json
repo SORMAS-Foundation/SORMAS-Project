@@ -19450,6 +19450,10 @@
             "type" : "string",
             "enum" : [ "NO_COMPLIANCE", "TREATMENT_COMPLETED", "TREATMENT_FAILED", "TREATMENT_NOT_COMPLETED", "UNKNOWN", "NOT_APPLICABLE" ]
           },
+          "contactWithSexWorker" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
@@ -19493,6 +19497,10 @@
           "hivArt" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "hivStatus" : {
+            "type" : "string",
+            "enum" : [ "NEGATIVE", "POSITIVE", "KNOWN_POSITIVE", "NEW_DIAGNOSIS", "UNKNOWN" ]
           },
           "hospitalizationAdmissionDate" : {
             "type" : "string",
@@ -19539,6 +19547,12 @@
           "modeOfTransmissionType" : {
             "type" : "string"
           },
+          "motherCitizenship" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
+          "motherCountryOfBirth" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
           "notifierAddress" : {
             "type" : "string",
             "maxLength" : 1000000,
@@ -19582,6 +19596,9 @@
             "maxLength" : 1000000,
             "minLength" : 0
           },
+          "personBirthCountry" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
           "personBirthDateDD" : {
             "type" : "integer",
             "format" : "int32"
@@ -19593,6 +19610,9 @@
           "personBirthDateYYYY" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "personCitizenship" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
           },
           "personCity" : {
             "type" : "string",
@@ -19696,6 +19716,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "probableRouteOfTransmission" : {
+            "type" : "string",
+            "enum" : [ "HETEROSEXUAL_CONTACT", "MSM_HOMO_OR_BISEXUAL_MALE", "MOTHER_TO_CHILD_TRANSMISSION", "OTHER", "UNKNOWN" ]
+          },
           "pseudonymized" : {
             "type" : "boolean"
           },
@@ -19756,11 +19780,19 @@
             "type" : "string",
             "enum" : [ "UNPROCESSED", "PROCESSED", "FORWARDED", "UNCLEAR" ]
           },
+          "stiProphylaxis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "surveillanceReport" : {
             "$ref" : "#/components/schemas/SurveillanceReportReferenceDto"
           },
           "surveyResponseData" : {
             "$ref" : "#/components/schemas/ExternalSurveyResponseData"
+          },
+          "syphilisPresentation" : {
+            "type" : "string",
+            "enum" : [ "ACQUIRED", "CONGENITAL" ]
           },
           "treatmentNotApplicable" : {
             "type" : "boolean"
