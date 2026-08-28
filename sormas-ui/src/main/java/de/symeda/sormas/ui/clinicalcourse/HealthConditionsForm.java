@@ -18,6 +18,8 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.DOWN_SYNDR
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.EXPOSED_TO_MOSQUITO_BORNE_VIRUSES;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.EXPOSED_TO_MOSQUITO_BORNE_VIRUSES_TEXT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.FORMER_SMOKER;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.GONORRHOEA_HIV_PREP;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.GONORRHOEA_STI_PROPHYLAXIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HEPATITIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIGH_IRON_LEVEL;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV;
@@ -36,6 +38,7 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MENTAL_HEA
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.ON_MEDICATION;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_CONDITIONS;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.PREVIOUS_GONORRHOEA;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.PREVIOUS_TUBERCULOSIS_TREATMENT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.RECURRENT_BRONCHIOLITIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SICKLE_CELL_DISEASE;
@@ -113,7 +116,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 									TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,"IMMUNODEFICIENCY_INCLUDING_HIV_LAYOUT",
 									HIV, HIV_ART, CONGENITAL_SYPHILIS, SYPHILIS_OR_OTHER_STIS, DOWN_SYNDROME, HIGH_IRON_LEVEL,
 									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, MENTAL_HEALTH_DISORDER, SUBSTANCE_USE_DISORDER, SUBSTANCE_USE_DISORDER_DETAILS,
-									RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT", ON_MEDICATION, MEDICATION_DETAILS)),
+									RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT", ON_MEDICATION, MEDICATION_DETAILS,
+									PREVIOUS_GONORRHOEA, GONORRHOEA_STI_PROPHYLAXIS, GONORRHOEA_HIV_PREP)),
 							fluidColumn(6, 0, locs(
 									"TUBERCULOSIS_INFECTION_YEAR_LAYOUT","COMPLIANCE_WITH_TREATMENT_LAYOUT",CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
@@ -172,7 +176,10 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		CHRONIC_DISEASE_DETAILS,
 		HIV_STATUS,
 		STI_PROPHYLAXIS,
-		HIV_PREP);
+		HIV_PREP,
+		PREVIOUS_GONORRHOEA,
+		GONORRHOEA_STI_PROPHYLAXIS,
+		GONORRHOEA_HIV_PREP);
 
 	private boolean vaccinationListener = false;
 

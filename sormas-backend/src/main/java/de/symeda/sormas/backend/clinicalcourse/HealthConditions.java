@@ -76,6 +76,9 @@ public class HealthConditions extends AbstractDomainObject {
 	private Integer syphilisNumberOfDoses;
 	private Date syphilisDateOfFirstDose;
 	private YesNoUnknown syphilisOrOtherStis;
+	private YesNoUnknown previousGonorrhoea;
+	private YesNoUnknown gonorrhoeaStiProphylaxis;
+	private YesNoUnknown gonorrhoeaHivPrep;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
@@ -507,6 +510,33 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
 		this.syphilisOrOtherStis = syphilisOrOtherStis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPreviousGonorrhoea() {
+		return previousGonorrhoea;
+	}
+
+	public void setPreviousGonorrhoea(YesNoUnknown previousGonorrhoea) {
+		this.previousGonorrhoea = previousGonorrhoea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getGonorrhoeaStiProphylaxis() {
+		return gonorrhoeaStiProphylaxis;
+	}
+
+	public void setGonorrhoeaStiProphylaxis(YesNoUnknown gonorrhoeaStiProphylaxis) {
+		this.gonorrhoeaStiProphylaxis = gonorrhoeaStiProphylaxis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getGonorrhoeaHivPrep() {
+		return gonorrhoeaHivPrep;
+	}
+
+	public void setGonorrhoeaHivPrep(YesNoUnknown gonorrhoeaHivPrep) {
+		this.gonorrhoeaHivPrep = gonorrhoeaHivPrep;
 	}
 
 }

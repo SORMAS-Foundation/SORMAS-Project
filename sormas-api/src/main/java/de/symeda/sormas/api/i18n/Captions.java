@@ -339,9 +339,11 @@ public interface Captions {
 	String AefiInvestigation_aefiClassificationDetails = "AefiInvestigation.aefiClassificationDetails";
 	String AefiInvestigation_aefiClassificationSubType = "AefiInvestigation.aefiClassificationSubType";
 	String AefiInvestigation_allCasesInClusterReceivedVaccineFromSameVial = "AefiInvestigation.allCasesInClusterReceivedVaccineFromSameVial";
-	String AefiInvestigation_allCasesInClusterReceivedVaccineFromSameVialDetails = "AefiInvestigation.allCasesInClusterReceivedVaccineFromSameVialDetails";
+	String AefiInvestigation_allCasesInClusterReceivedVaccineFromSameVialDetails =
+		"AefiInvestigation.allCasesInClusterReceivedVaccineFromSameVialDetails";
 	String AefiInvestigation_anyOtherItemInRefrigerator = "AefiInvestigation.anyOtherItemInRefrigerator";
-	String AefiInvestigation_anyStorageTemperatureDeviationOutsideTwoToEightDegrees = "AefiInvestigation.anyStorageTemperatureDeviationOutsideTwoToEightDegrees";
+	String AefiInvestigation_anyStorageTemperatureDeviationOutsideTwoToEightDegrees =
+		"AefiInvestigation.anyStorageTemperatureDeviationOutsideTwoToEightDegrees";
 	String AefiInvestigation_autopsyDate = "AefiInvestigation.autopsyDate";
 	String AefiInvestigation_autopsyDone = "AefiInvestigation.autopsyDone";
 	String AefiInvestigation_autopsyPlannedDateTime = "AefiInvestigation.autopsyPlannedDateTime";
@@ -377,7 +379,8 @@ public interface Captions {
 	String AefiInvestigation_errorPrescribingVaccine = "AefiInvestigation.errorPrescribingVaccine";
 	String AefiInvestigation_errorPrescribingVaccineDetails = "AefiInvestigation.errorPrescribingVaccineDetails";
 	String AefiInvestigation_eventIsAStressResponseRelatedToImmunization = "AefiInvestigation.eventIsAStressResponseRelatedToImmunization";
-	String AefiInvestigation_eventIsAStressResponseRelatedToImmunizationDetails = "AefiInvestigation.eventIsAStressResponseRelatedToImmunizationDetails";
+	String AefiInvestigation_eventIsAStressResponseRelatedToImmunizationDetails =
+		"AefiInvestigation.eventIsAStressResponseRelatedToImmunizationDetails";
 	String AefiInvestigation_externalId = "AefiInvestigation.externalId";
 	String AefiInvestigation_familyHistoryOfDiseaseOrAllergy = "AefiInvestigation.familyHistoryOfDiseaseOrAllergy";
 	String AefiInvestigation_familyHistoryOfDiseaseOrAllergyDetails = "AefiInvestigation.familyHistoryOfDiseaseOrAllergyDetails";
@@ -385,8 +388,10 @@ public interface Captions {
 	String AefiInvestigation_formCompletionDate = "AefiInvestigation.formCompletionDate";
 	String AefiInvestigation_historyOfAllergyToVaccineDrugOrFood = "AefiInvestigation.historyOfAllergyToVaccineDrugOrFood";
 	String AefiInvestigation_historyOfAllergyToVaccineDrugOrFoodDetails = "AefiInvestigation.historyOfAllergyToVaccineDrugOrFoodDetails";
-	String AefiInvestigation_historyOfHospitalizationInLastThirtyDaysWithCause = "AefiInvestigation.historyOfHospitalizationInLastThirtyDaysWithCause";
-	String AefiInvestigation_historyOfHospitalizationInLastThirtyDaysWithCauseDetails = "AefiInvestigation.historyOfHospitalizationInLastThirtyDaysWithCauseDetails";
+	String AefiInvestigation_historyOfHospitalizationInLastThirtyDaysWithCause =
+		"AefiInvestigation.historyOfHospitalizationInLastThirtyDaysWithCause";
+	String AefiInvestigation_historyOfHospitalizationInLastThirtyDaysWithCauseDetails =
+		"AefiInvestigation.historyOfHospitalizationInLastThirtyDaysWithCauseDetails";
 	String AefiInvestigation_hospitalizationDate = "AefiInvestigation.hospitalizationDate";
 	String AefiInvestigation_injectionTechniqueAdditionalDetails = "AefiInvestigation.injectionTechniqueAdditionalDetails";
 	String AefiInvestigation_investigationCaseId = "AefiInvestigation.investigationCaseId";
@@ -398,13 +403,17 @@ public interface Captions {
 	String AefiInvestigation_keySymptomDateTime = "AefiInvestigation.keySymptomDateTime";
 	String AefiInvestigation_lastTrainingReceivedByVaccinatorDate = "AefiInvestigation.lastTrainingReceivedByVaccinatorDate";
 	String AefiInvestigation_nonTouchTechniqueFollowed = "AefiInvestigation.nonTouchTechniqueFollowed";
-	String AefiInvestigation_numberImmunizedConcernedVaccineSameBatchNumberLocationDetails = "AefiInvestigation.numberImmunizedConcernedVaccineSameBatchNumberLocationDetails";
-	String AefiInvestigation_numberImmunizedConcernedVaccineSameBatchNumberOtherLocations = "AefiInvestigation.numberImmunizedConcernedVaccineSameBatchNumberOtherLocations";
+	String AefiInvestigation_numberImmunizedConcernedVaccineSameBatchNumberLocationDetails =
+		"AefiInvestigation.numberImmunizedConcernedVaccineSameBatchNumberLocationDetails";
+	String AefiInvestigation_numberImmunizedConcernedVaccineSameBatchNumberOtherLocations =
+		"AefiInvestigation.numberImmunizedConcernedVaccineSameBatchNumberOtherLocations";
 	String AefiInvestigation_numberImmunizedFromConcernedVaccineVial = "AefiInvestigation.numberImmunizedFromConcernedVaccineVial";
 	String AefiInvestigation_numberImmunizedWithConcernedVaccineInSameSession = "AefiInvestigation.numberImmunizedWithConcernedVaccineInSameSession";
-	String AefiInvestigation_numberOfAefiReportedFromVaccineDistributionCenterLastThirtyDays = "AefiInvestigation.numberOfAefiReportedFromVaccineDistributionCenterLastThirtyDays";
+	String AefiInvestigation_numberOfAefiReportedFromVaccineDistributionCenterLastThirtyDays =
+		"AefiInvestigation.numberOfAefiReportedFromVaccineDistributionCenterLastThirtyDays";
 	String AefiInvestigation_numberOfCasesDetectedInCluster = "AefiInvestigation.numberOfCasesDetectedInCluster";
-	String AefiInvestigation_numberOfSimilarEventsReportedSamePeriodAndLocality = "AefiInvestigation.numberOfSimilarEventsReportedSamePeriodAndLocality";
+	String AefiInvestigation_numberOfSimilarEventsReportedSamePeriodAndLocality =
+		"AefiInvestigation.numberOfSimilarEventsReportedSamePeriodAndLocality";
 	String AefiInvestigation_numberOfThoseAffectedNotVaccinated = "AefiInvestigation.numberOfThoseAffectedNotVaccinated";
 	String AefiInvestigation_numberOfThoseAffectedVaccinated = "AefiInvestigation.numberOfThoseAffectedVaccinated";
 	String AefiInvestigation_numberOfThoseAffectedVaccinatedUnknown = "AefiInvestigation.numberOfThoseAffectedVaccinatedUnknown";
@@ -425,7 +434,8 @@ public interface Captions {
 	String AefiInvestigation_placeOfVaccination = "AefiInvestigation.placeOfVaccination";
 	String AefiInvestigation_placeOfVaccinationDetails = "AefiInvestigation.placeOfVaccinationDetails";
 	String AefiInvestigation_preExistingIllnessThirtyDaysOrCongenitalDisorder = "AefiInvestigation.preExistingIllnessThirtyDaysOrCongenitalDisorder";
-	String AefiInvestigation_preExistingIllnessThirtyDaysOrCongenitalDisorderDetails = "AefiInvestigation.preExistingIllnessThirtyDaysOrCongenitalDisorderDetails";
+	String AefiInvestigation_preExistingIllnessThirtyDaysOrCongenitalDisorderDetails =
+		"AefiInvestigation.preExistingIllnessThirtyDaysOrCongenitalDisorderDetails";
 	String AefiInvestigation_provisionalOrFinalDiagnosis = "AefiInvestigation.provisionalOrFinalDiagnosis";
 	String AefiInvestigation_reconstitutionAdditionalDetails = "AefiInvestigation.reconstitutionAdditionalDetails";
 	String AefiInvestigation_reportDate = "AefiInvestigation.reportDate";
@@ -445,14 +455,17 @@ public interface Captions {
 	String AefiInvestigation_responsibleRegion = "AefiInvestigation.responsibleRegion";
 	String AefiInvestigation_sameReconstitutionSyringeForEachVaccination = "AefiInvestigation.sameReconstitutionSyringeForEachVaccination";
 	String AefiInvestigation_sameReconstitutionSyringeForEachVaccineVial = "AefiInvestigation.sameReconstitutionSyringeForEachVaccineVial";
-	String AefiInvestigation_sameReconstitutionSyringeUsedForMultipleVialsOfSameVaccine = "AefiInvestigation.sameReconstitutionSyringeUsedForMultipleVialsOfSameVaccine";
-	String AefiInvestigation_sameReconstitutionSyringeUsedForReconstitutingDifferentVaccines = "AefiInvestigation.sameReconstitutionSyringeUsedForReconstitutingDifferentVaccines";
+	String AefiInvestigation_sameReconstitutionSyringeUsedForMultipleVialsOfSameVaccine =
+		"AefiInvestigation.sameReconstitutionSyringeUsedForMultipleVialsOfSameVaccine";
+	String AefiInvestigation_sameReconstitutionSyringeUsedForReconstitutingDifferentVaccines =
+		"AefiInvestigation.sameReconstitutionSyringeUsedForReconstitutingDifferentVaccines";
 	String AefiInvestigation_seriousAefiInfoSource = "AefiInvestigation.seriousAefiInfoSource";
 	String AefiInvestigation_seriousAefiInfoSourceDetails = "AefiInvestigation.seriousAefiInfoSourceDetails";
 	String AefiInvestigation_seriousAefiVerbalAutopsyInfoSourceDetails = "AefiInvestigation.seriousAefiVerbalAutopsyInfoSourceDetails";
 	String AefiInvestigation_signsAndSymptomsFromTimeOfVaccination = "AefiInvestigation.signsAndSymptomsFromTimeOfVaccination";
 	String AefiInvestigation_similarEventsReportedSamePeriodAndLocality = "AefiInvestigation.similarEventsReportedSamePeriodAndLocality";
-	String AefiInvestigation_similarEventsReportedSamePeriodAndLocalityDetails = "AefiInvestigation.similarEventsReportedSamePeriodAndLocalityDetails";
+	String AefiInvestigation_similarEventsReportedSamePeriodAndLocalityDetails =
+		"AefiInvestigation.similarEventsReportedSamePeriodAndLocalityDetails";
 	String AefiInvestigation_statusOnDateOfInvestigation = "AefiInvestigation.statusOnDateOfInvestigation";
 	String AefiInvestigation_storageTemperatureMonitoringAdditionalDetails = "AefiInvestigation.storageTemperatureMonitoringAdditionalDetails";
 	String AefiInvestigation_syringesUsedAdditionalDetails = "AefiInvestigation.syringesUsedAdditionalDetails";
@@ -471,7 +484,8 @@ public interface Captions {
 	String AefiInvestigation_vaccinationFacilityDetails = "AefiInvestigation.vaccinationFacilityDetails";
 	String AefiInvestigation_vaccineAdministeredIncorrectly = "AefiInvestigation.vaccineAdministeredIncorrectly";
 	String AefiInvestigation_vaccineAdministeredIncorrectlyDetails = "AefiInvestigation.vaccineAdministeredIncorrectlyDetails";
-	String AefiInvestigation_vaccineCarrierReturnedFromSiteOnSameDateAsVaccination = "AefiInvestigation.vaccineCarrierReturnedFromSiteOnSameDateAsVaccination";
+	String AefiInvestigation_vaccineCarrierReturnedFromSiteOnSameDateAsVaccination =
+		"AefiInvestigation.vaccineCarrierReturnedFromSiteOnSameDateAsVaccination";
 	String AefiInvestigation_vaccineCarrierSentToSiteOnSameDateAsVaccination = "AefiInvestigation.vaccineCarrierSentToSiteOnSameDateAsVaccination";
 	String AefiInvestigation_vaccineCarrierType = "AefiInvestigation.vaccineCarrierType";
 	String AefiInvestigation_vaccineCarrierTypeDetails = "AefiInvestigation.vaccineCarrierTypeDetails";
@@ -2174,6 +2188,8 @@ public interface Captions {
 	String HealthConditions_exposedToMosquitoBorneViruses = "HealthConditions.exposedToMosquitoBorneViruses";
 	String HealthConditions_exposedToMosquitoBorneVirusesText = "HealthConditions.exposedToMosquitoBorneVirusesText";
 	String HealthConditions_formerSmoker = "HealthConditions.formerSmoker";
+	String HealthConditions_gonorrhoeaHivPrep = "HealthConditions.gonorrhoeaHivPrep";
+	String HealthConditions_gonorrhoeaStiProphylaxis = "HealthConditions.gonorrhoeaStiProphylaxis";
 	String HealthConditions_hepatitis = "HealthConditions.hepatitis";
 	String HealthConditions_highIronLevel = "HealthConditions.highIronLevel";
 	String HealthConditions_hiv = "HealthConditions.hiv";
@@ -2192,6 +2208,7 @@ public interface Captions {
 	String HealthConditions_obesity = "HealthConditions.obesity";
 	String HealthConditions_onMedication = "HealthConditions.onMedication";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
+	String HealthConditions_previousGonorrhoea = "HealthConditions.previousGonorrhoea";
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
@@ -3117,6 +3134,7 @@ public interface Captions {
 	String Symptoms_acuteEncephalitis = "Symptoms.acuteEncephalitis";
 	String Symptoms_acuteKidneyFailure = "Symptoms.acuteKidneyFailure";
 	String Symptoms_acuteRespiratoryDistressSyndrome = "Symptoms.acuteRespiratoryDistressSyndrome";
+	String Symptoms_acuteSalpingitis = "Symptoms.acuteSalpingitis";
 	String Symptoms_aerophobia = "Symptoms.aerophobia";
 	String Symptoms_agitation = "Symptoms.agitation";
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
@@ -3150,6 +3168,7 @@ public interface Captions {
 	String Symptoms_bulgingFontanelle = "Symptoms.bulgingFontanelle";
 	String Symptoms_centralNervousSystemDamage = "Symptoms.centralNervousSystemDamage";
 	String Symptoms_cerebralMalaria = "Symptoms.cerebralMalaria";
+	String Symptoms_cervicitis = "Symptoms.cervicitis";
 	String Symptoms_chancre = "Symptoms.chancre";
 	String Symptoms_chestPain = "Symptoms.chestPain";
 	String Symptoms_chestPressure = "Symptoms.chestPressure";
@@ -3162,6 +3181,17 @@ public interface Captions {
 	String Symptoms_clinicalPresentationStatus = "Symptoms.clinicalPresentationStatus";
 	String Symptoms_coldSkin = "Symptoms.coldSkin";
 	String Symptoms_coma = "Symptoms.coma";
+	String Symptoms_concurrentStiChlamydia = "Symptoms.concurrentStiChlamydia";
+	String Symptoms_concurrentStiGenitalHerpes = "Symptoms.concurrentStiGenitalHerpes";
+	String Symptoms_concurrentStiGenitalWarts = "Symptoms.concurrentStiGenitalWarts";
+	String Symptoms_concurrentStiHeading = "Symptoms.concurrentStiHeading";
+	String Symptoms_concurrentStiInfectiousSyphilis = "Symptoms.concurrentStiInfectiousSyphilis";
+	String Symptoms_concurrentStiLgv = "Symptoms.concurrentStiLgv";
+	String Symptoms_concurrentStiMycoplasmaGenitalium = "Symptoms.concurrentStiMycoplasmaGenitalium";
+	String Symptoms_concurrentStiOther = "Symptoms.concurrentStiOther";
+	String Symptoms_concurrentStiOtherText = "Symptoms.concurrentStiOtherText";
+	String Symptoms_concurrentStiTrichomonasVaginalis = "Symptoms.concurrentStiTrichomonasVaginalis";
+	String Symptoms_concurrentStiUnknown = "Symptoms.concurrentStiUnknown";
 	String Symptoms_condylomaLata = "Symptoms.condylomaLata";
 	String Symptoms_condylomaVenereum = "Symptoms.condylomaVenereum";
 	String Symptoms_confusedDisoriented = "Symptoms.confusedDisoriented";
@@ -3199,6 +3229,7 @@ public interface Captions {
 	String Symptoms_dysuria = "Symptoms.dysuria";
 	String Symptoms_eggyBurps = "Symptoms.eggyBurps";
 	String Symptoms_encephalitis = "Symptoms.encephalitis";
+	String Symptoms_epididymitis = "Symptoms.epididymitis";
 	String Symptoms_erraticBehaviour = "Symptoms.erraticBehaviour";
 	String Symptoms_erythemaNodosum = "Symptoms.erythemaNodosum";
 	String Symptoms_excessSalivation = "Symptoms.excessSalivation";
@@ -3219,6 +3250,18 @@ public interface Captions {
 	String Symptoms_fluidInLungCavityXray = "Symptoms.fluidInLungCavityXray";
 	String Symptoms_generalizedLymphadenopathy = "Symptoms.generalizedLymphadenopathy";
 	String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
+	String Symptoms_gonococcalArthritis = "Symptoms.gonococcalArthritis";
+	String Symptoms_gonococcalInfectionSiteAnorectal = "Symptoms.gonococcalInfectionSiteAnorectal";
+	String Symptoms_gonococcalInfectionSiteBlood = "Symptoms.gonococcalInfectionSiteBlood";
+	String Symptoms_gonococcalInfectionSiteCerebrospinalFluid = "Symptoms.gonococcalInfectionSiteCerebrospinalFluid";
+	String Symptoms_gonococcalInfectionSiteEye = "Symptoms.gonococcalInfectionSiteEye";
+	String Symptoms_gonococcalInfectionSiteGenital = "Symptoms.gonococcalInfectionSiteGenital";
+	String Symptoms_gonococcalInfectionSiteHeading = "Symptoms.gonococcalInfectionSiteHeading";
+	String Symptoms_gonococcalInfectionSiteJointFluid = "Symptoms.gonococcalInfectionSiteJointFluid";
+	String Symptoms_gonococcalInfectionSiteOther = "Symptoms.gonococcalInfectionSiteOther";
+	String Symptoms_gonococcalInfectionSiteOtherText = "Symptoms.gonococcalInfectionSiteOtherText";
+	String Symptoms_gonococcalInfectionSitePharyngeal = "Symptoms.gonococcalInfectionSitePharyngeal";
+	String Symptoms_gonococcalInfectionSiteUnknown = "Symptoms.gonococcalInfectionSiteUnknown";
 	String Symptoms_guillainBarreSyndrome = "Symptoms.guillainBarreSyndrome";
 	String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
 	String Symptoms_haemolyticUremicSyndrome = "Symptoms.haemolyticUremicSyndrome";
@@ -3294,7 +3337,9 @@ public interface Captions {
 	String Symptoms_necrotizingEnterocolitis = "Symptoms.necrotizingEnterocolitis";
 	String Symptoms_nephroticSyndrome = "Symptoms.nephroticSyndrome";
 	String Symptoms_neurologicalManifestations = "Symptoms.neurologicalManifestations";
+	String Symptoms_newbornConjunctivitis = "Symptoms.newbornConjunctivitis";
 	String Symptoms_noComplications = "Symptoms.noComplications";
+	String Symptoms_noConcurrentSti = "Symptoms.noConcurrentSti";
 	String Symptoms_nocturnalCough = "Symptoms.nocturnalCough";
 	String Symptoms_noseBleeding = "Symptoms.noseBleeding";
 	String Symptoms_ocularManifestations = "Symptoms.ocularManifestations";
@@ -3337,13 +3382,16 @@ public interface Captions {
 	String Symptoms_paresthesiaAroundWound = "Symptoms.paresthesiaAroundWound";
 	String Symptoms_patchyAlopecia = "Symptoms.patchyAlopecia";
 	String Symptoms_patientIllLocation = "Symptoms.patientIllLocation";
+	String Symptoms_pelvicInflammatoryDisease = "Symptoms.pelvicInflammatoryDisease";
 	String Symptoms_persistentVomiting = "Symptoms.persistentVomiting";
 	String Symptoms_pharyngealErythema = "Symptoms.pharyngealErythema";
 	String Symptoms_pharyngealExudate = "Symptoms.pharyngealExudate";
+	String Symptoms_pharyngitis = "Symptoms.pharyngitis";
 	String Symptoms_pigmentaryRetinopathy = "Symptoms.pigmentaryRetinopathy";
 	String Symptoms_plasmaLeakageSign = "Symptoms.plasmaLeakageSign";
 	String Symptoms_pneumoniaClinicalOrRadiologic = "Symptoms.pneumoniaClinicalOrRadiologic";
 	String Symptoms_polydipsia = "Symptoms.polydipsia";
+	String Symptoms_proctitis = "Symptoms.proctitis";
 	String Symptoms_pseudoAppendicularSyndrome = "Symptoms.pseudoAppendicularSyndrome";
 	String Symptoms_pseudoparalysis = "Symptoms.pseudoparalysis";
 	String Symptoms_purpuricRash = "Symptoms.purpuricRash";
@@ -3405,6 +3453,7 @@ public interface Captions {
 	String Symptoms_unknownComplications = "Symptoms.unknownComplications";
 	String Symptoms_unknownSymptom = "Symptoms.unknownSymptom";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
+	String Symptoms_urethritis = "Symptoms.urethritis";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";
 	String Symptoms_wateryDiarrhea = "Symptoms.wateryDiarrhea";

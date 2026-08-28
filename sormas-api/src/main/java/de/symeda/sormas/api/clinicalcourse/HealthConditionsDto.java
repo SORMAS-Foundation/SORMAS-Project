@@ -78,6 +78,9 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String SYPHILIS_NUMBER_OF_DOSES = "syphilisNumberOfDoses";
 	public static final String SYPHILIS_DATE_OF_FIRST_DOSE = "syphilisDateOfFirstDose";
 	public static final String SYPHILIS_OR_OTHER_STIS = "syphilisOrOtherStis";
+	public static final String PREVIOUS_GONORRHOEA = "previousGonorrhoea";
+	public static final String GONORRHOEA_STI_PROPHYLAXIS = "gonorrhoeaStiProphylaxis";
+	public static final String GONORRHOEA_HIV_PREP = "gonorrhoeaHivPrep";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -99,7 +102,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@Diseases(value = {
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTIONS }, hide = true)
 	private YesNoUnknown hiv;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -240,13 +244,16 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private String chronicDiseaseDetails;
 
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTIONS })
 	private HivStatus hivStatus;
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTIONS })
 	private YesNoUnknown mentalHealthDisorder;
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTIONS })
 	private YesNoUnknown substanceUseDisorder;
 	@Diseases(value = {
 		Disease.SYPHILIS })
@@ -273,6 +280,15 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private YesNoUnknown syphilisOrOtherStis;
+	@Diseases(value = {
+		Disease.GONOCOCCAL_INFECTIONS })
+	private YesNoUnknown previousGonorrhoea;
+	@Diseases(value = {
+		Disease.GONOCOCCAL_INFECTIONS })
+	private YesNoUnknown gonorrhoeaStiProphylaxis;
+	@Diseases(value = {
+		Disease.GONOCOCCAL_INFECTIONS })
+	private YesNoUnknown gonorrhoeaHivPrep;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -695,6 +711,30 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
 		this.syphilisOrOtherStis = syphilisOrOtherStis;
+	}
+
+	public YesNoUnknown getPreviousGonorrhoea() {
+		return previousGonorrhoea;
+	}
+
+	public void setPreviousGonorrhoea(YesNoUnknown previousGonorrhoea) {
+		this.previousGonorrhoea = previousGonorrhoea;
+	}
+
+	public YesNoUnknown getGonorrhoeaStiProphylaxis() {
+		return gonorrhoeaStiProphylaxis;
+	}
+
+	public void setGonorrhoeaStiProphylaxis(YesNoUnknown gonorrhoeaStiProphylaxis) {
+		this.gonorrhoeaStiProphylaxis = gonorrhoeaStiProphylaxis;
+	}
+
+	public YesNoUnknown getGonorrhoeaHivPrep() {
+		return gonorrhoeaHivPrep;
+	}
+
+	public void setGonorrhoeaHivPrep(YesNoUnknown gonorrhoeaHivPrep) {
+		this.gonorrhoeaHivPrep = gonorrhoeaHivPrep;
 	}
 
 }
