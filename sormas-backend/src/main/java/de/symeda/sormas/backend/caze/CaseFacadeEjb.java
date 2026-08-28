@@ -381,6 +381,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
 	implements CaseFacade {
 
+	public static final List<Disease> CONFIRMED_CASE_CLASSIFICATION_DISEASES =
+		Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GONOCOCCAL_INFECTION);
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -2274,7 +2276,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		updateTasksOnCaseChanged(newCase, existingCase);
 		if ((existingCase == null || existingCase.getDisease() != newCase.getDisease())
-			&& Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GONOCOCCAL_INFECTION).contains(newCase.getDisease())) {
+			&& CONFIRMED_CASE_CLASSIFICATION_DISEASES.contains(newCase.getDisease())) {
 			newCase.setCaseClassification(CaseClassification.CONFIRMED);
 			newCase.setClassificationDate(newCase.getReportDate());
 			newCase.setClassificationUser(newCase.getReportingUser());

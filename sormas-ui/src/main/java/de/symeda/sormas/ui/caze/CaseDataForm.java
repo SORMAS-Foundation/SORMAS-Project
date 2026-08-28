@@ -1386,7 +1386,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		CaseClassificationCalculationMode caseClassificationCalculationMode =
 			FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease);
 		// If case classification is not disabled for the disease.
-		if (CaseClassificationCalculationMode.DISABLED != caseClassificationCalculationMode && disease != Disease.GONOCOCCAL_INFECTION) {
+		if (CaseClassificationCalculationMode.DISABLED != caseClassificationCalculationMode) {
 			// If automatic classification is enabled for the disease and it has the classification criteria.
 			if (FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isAutomaticEnabled()
 				&& diseaseClassificationExists()) {
