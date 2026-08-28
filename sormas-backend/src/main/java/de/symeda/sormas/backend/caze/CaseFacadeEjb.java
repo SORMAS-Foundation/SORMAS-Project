@@ -2274,7 +2274,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		updateTasksOnCaseChanged(newCase, existingCase);
 		if ((existingCase == null || existingCase.getDisease() != newCase.getDisease())
-			&& Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GONOCOCCAL_INFECTIONS).contains(newCase.getDisease())) {
+			&& Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GONOCOCCAL_INFECTION).contains(newCase.getDisease())) {
 			newCase.setCaseClassification(CaseClassification.CONFIRMED);
 			newCase.setClassificationDate(newCase.getReportDate());
 			newCase.setClassificationUser(newCase.getReportingUser());

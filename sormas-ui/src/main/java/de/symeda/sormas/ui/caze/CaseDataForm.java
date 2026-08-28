@@ -351,7 +351,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 
-	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS, Disease.GONOCOCCAL_INFECTIONS);
+	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS, Disease.GONOCOCCAL_INFECTION);
 	//@formatter:on
 
 	private CustomizableFieldsGroup caseDataGeneralPanel;
@@ -999,7 +999,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		NullableOptionGroup pregnantField = addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
 		NullableOptionGroup postpartumField = addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
-		if (Disease.GONOCOCCAL_INFECTIONS == disease) {
+		if (Disease.GONOCOCCAL_INFECTION == disease) {
 			setupMutuallyExclusiveFields(pregnantField, postpartumField);
 		}
 		Field<?> trimesterField = addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
@@ -1386,7 +1386,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		CaseClassificationCalculationMode caseClassificationCalculationMode =
 			FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease);
 		// If case classification is not disabled for the disease.
-		if (CaseClassificationCalculationMode.DISABLED != caseClassificationCalculationMode && disease != Disease.GONOCOCCAL_INFECTIONS) {
+		if (CaseClassificationCalculationMode.DISABLED != caseClassificationCalculationMode && disease != Disease.GONOCOCCAL_INFECTION) {
 			// If automatic classification is enabled for the disease and it has the classification criteria.
 			if (FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isAutomaticEnabled()
 				&& diseaseClassificationExists()) {

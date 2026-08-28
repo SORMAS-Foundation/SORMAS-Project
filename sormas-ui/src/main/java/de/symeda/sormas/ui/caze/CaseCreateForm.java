@@ -587,7 +587,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityOrHome.select(TypeOfPlace.HOME);
 			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
 			classificationField.select(CaseClassification.CONFIRMED);
-		} else if (newDisease == Disease.GONOCOCCAL_INFECTIONS) {
+		} else if (newDisease == Disease.GONOCOCCAL_INFECTION) {
 			facilityOrHome.setValue(null);
 			facilityOrHome.unselect(TypeOfPlace.HOME);
 			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));

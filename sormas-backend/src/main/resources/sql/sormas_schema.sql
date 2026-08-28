@@ -17193,13 +17193,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (663, 'Add syphilis-
 
 -- Gonococcal infections case data and symptoms
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS previousgonorrhoea varchar(255);
-ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS gonorrhoeastiprophylaxis varchar(255);
-ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS gonorrhoeahivprep varchar(255);
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS previousgonorrhoea varchar(255);
-ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS gonorrhoeastiprophylaxis varchar(255);
-ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS gonorrhoeahivprep varchar(255);
 
-ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalarthritis varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS cervicitis varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS newbornconjunctivitis varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS epididymitis varchar(255);
@@ -17230,7 +17225,6 @@ ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstiother varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstiothertext varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstiunknown varchar(255);
 
-ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalarthritis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS cervicitis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS newbornconjunctivitis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS epididymitis varchar(255);

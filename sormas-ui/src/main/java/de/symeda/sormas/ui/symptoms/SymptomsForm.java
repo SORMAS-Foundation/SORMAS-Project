@@ -212,7 +212,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.PERTUSSIS,
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTIONS);
+		Disease.GONOCOCCAL_INFECTION);
 	// other complicated symptom for onset field listener action
 	private static final List<String> OTHER_COMPLICATED_SYMPTOMS = Collections
 		.unmodifiableList(Arrays.asList(LESIONS_THAT_ITCH, OTHER_COMPLICATIONS_TEXT, UNKNOWN_COMPLICATIONS, OTHER_NEUROLOGICAL_SYMPTOMS_TEXT));
@@ -415,8 +415,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			createLabel(I18nProperties.getCaption(Captions.Symptoms_gonococcalInfectionSiteHeading), H3, GONOCOCCAL_INFECTION_SITE_HEADING_LOC);
 		Label concurrentStiHeadingLabel =
 			createLabel(I18nProperties.getCaption(Captions.Symptoms_concurrentStiHeading), H3, CONCURRENT_STI_HEADING_LOC);
-		gonococcalInfectionSiteHeadingLabel.setVisible(disease == Disease.GONOCOCCAL_INFECTIONS);
-		concurrentStiHeadingLabel.setVisible(disease == Disease.GONOCOCCAL_INFECTIONS);
+		gonococcalInfectionSiteHeadingLabel.setVisible(disease == Disease.GONOCOCCAL_INFECTION);
+		concurrentStiHeadingLabel.setVisible(disease == Disease.GONOCOCCAL_INFECTION);
 		Label clinicalPresentationHeadingLabel =
 			createLabel(I18nProperties.getString(Strings.headingClinicalPresentation), H3, CLINICAL_PRESENTATION_HEADING);
 
@@ -725,7 +725,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			PANCREATITIS,
 			OTHER_GENERAL_SYMPTOMS,
 			OTHER_GENERAL_SYMPTOMS_TEXT,
-			GONOCOCCAL_ARTHRITIS,
 			CERVICITIS,
 			NEWBORN_CONJUNCTIVITIS,
 			EPIDIDYMITIS,
@@ -810,7 +809,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			});
 		});
 
-		if (disease == Disease.GONOCOCCAL_INFECTIONS) {
+		if (disease == Disease.GONOCOCCAL_INFECTION) {
 			NullableOptionGroup noConcurrentStiField = getField(NO_CONCURRENT_STI);
 			List<String> concurrentStiFields = Arrays.asList(
 				CONCURRENT_STI_CHLAMYDIA,

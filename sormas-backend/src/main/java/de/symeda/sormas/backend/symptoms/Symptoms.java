@@ -354,7 +354,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SyphilisStage syphilisStage;
 	private SyphilisInfectiousness syphilisInfectiousness;
 	private YesNoUnknown clinicalCriteriaMet;
-	private SymptomState gonococcalArthritis;
 	private SymptomState cervicitis;
 	private SymptomState newbornConjunctivitis;
 	private SymptomState epididymitis;
@@ -2924,15 +2923,6 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOtherGeneralSymptomsText(String otherGeneralSymptomsText) {
 		this.otherGeneralSymptomsText = otherGeneralSymptomsText;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public SymptomState getGonococcalArthritis() {
-		return gonococcalArthritis;
-	}
-
-	public void setGonococcalArthritis(SymptomState gonococcalArthritis) {
-		this.gonococcalArthritis = gonococcalArthritis;
 	}
 
 	@Enumerated(EnumType.STRING)

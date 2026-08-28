@@ -41,7 +41,7 @@ import static de.symeda.sormas.api.Disease.ENTEROVIRUS;
 import static de.symeda.sormas.api.Disease.EVD;
 import static de.symeda.sormas.api.Disease.FHA;
 import static de.symeda.sormas.api.Disease.GIARDIASIS;
-import static de.symeda.sormas.api.Disease.GONOCOCCAL_INFECTIONS;
+import static de.symeda.sormas.api.Disease.GONOCOCCAL_INFECTION;
 import static de.symeda.sormas.api.Disease.GUINEA_WORM;
 import static de.symeda.sormas.api.Disease.HIV;
 import static de.symeda.sormas.api.Disease.H_METAPNEUMOVIRUS;
@@ -424,7 +424,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String MUCOCUTANEOUS_LESION = "mucocutaneousLesion";
 	public static final String MACULOPAPULAR_RASH = "maculopapularRash";
 
-	public static final String GONOCOCCAL_ARTHRITIS = "gonococcalArthritis";
 	public static final String CERVICITIS = "cervicitis";
 	public static final String NEWBORN_CONJUNCTIVITIS = "newbornConjunctivitis";
 	public static final String EPIDIDYMITIS = "epididymitis";
@@ -1971,6 +1970,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		SYPHILIS,
+		GONOCOCCAL_INFECTION,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState soreThroat;
@@ -2923,7 +2923,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState hemorrhagicRash;
 
 	@Diseases({
-		INVASIVE_MENINGOCOCCAL_INFECTION })
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		GONOCOCCAL_INFECTION })
 	private SymptomState arthritis;
 
 	@Diseases({
@@ -2951,7 +2952,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS,
 		SHIGELLOSIS,
 		YERSINIOSIS,
-		GONOCOCCAL_INFECTIONS })
+		GONOCOCCAL_INFECTION })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState otherClinicalPresentation;
 
@@ -2966,7 +2967,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS,
 		SHIGELLOSIS,
 		YERSINIOSIS,
-		GONOCOCCAL_INFECTIONS })
+		GONOCOCCAL_INFECTION })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private String otherClinicalPresentationText;
 
@@ -2979,7 +2980,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS,
 		MUMPS,
 		MALARIA,
-		GONOCOCCAL_INFECTIONS })
+		GONOCOCCAL_INFECTION })
 	@Complication({
 		MEASLES })
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -3410,74 +3411,71 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState maculopapularRash;
 
-	@Diseases(GONOCOCCAL_INFECTIONS)
-	@SymptomGrouping(SymptomGroup.GENERAL)
-	private SymptomState gonococcalArthritis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM)
 	private SymptomState cervicitis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState newbornConjunctivitis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM)
 	private SymptomState epididymitis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.ENT)
 	private SymptomState pharyngitis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM)
 	private SymptomState pelvicInflammatoryDisease;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM)
 	private SymptomState proctitis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM)
 	private SymptomState acuteSalpingitis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM)
 	private SymptomState urethritis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSiteAnorectal;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSiteBlood;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSiteCerebrospinalFluid;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSiteEye;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSiteGenital;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSiteJointFluid;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSitePharyngeal;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSiteUnknown;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState gonococcalInfectionSiteOther;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private String gonococcalInfectionSiteOtherText;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState noConcurrentSti;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiChlamydia;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiGenitalHerpes;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiLgv;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiMycoplasmaGenitalium;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiInfectiousSyphilis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiTrichomonasVaginalis;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiGenitalWarts;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiOther;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private String concurrentStiOtherText;
-	@Diseases(GONOCOCCAL_INFECTIONS)
+	@Diseases(GONOCOCCAL_INFECTION)
 	private SymptomState concurrentStiUnknown;
 
 	@Diseases({
@@ -6044,14 +6042,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setOtherGeneralSymptomsText(String otherGeneralSymptomsText) {
 		this.otherGeneralSymptomsText = otherGeneralSymptomsText;
-	}
-
-	public SymptomState getGonococcalArthritis() {
-		return gonococcalArthritis;
-	}
-
-	public void setGonococcalArthritis(SymptomState gonococcalArthritis) {
-		this.gonococcalArthritis = gonococcalArthritis;
 	}
 
 	public SymptomState getCervicitis() {

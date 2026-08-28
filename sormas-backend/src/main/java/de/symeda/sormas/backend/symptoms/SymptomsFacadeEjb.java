@@ -305,7 +305,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLowGradeFever(source.getLowGradeFever());
 		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
 		target.setMaculopapularRash(source.getMaculopapularRash());
-		target.setGonococcalArthritis(source.getGonococcalArthritis());
 		target.setCervicitis(source.getCervicitis());
 		target.setNewbornConjunctivitis(source.getNewbornConjunctivitis());
 		target.setEpididymitis(source.getEpididymitis());
@@ -635,7 +634,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLowGradeFever(source.getLowGradeFever());
 		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
 		target.setMaculopapularRash(source.getMaculopapularRash());
-		target.setGonococcalArthritis(source.getGonococcalArthritis());
 		target.setCervicitis(source.getCervicitis());
 		target.setNewbornConjunctivitis(source.getNewbornConjunctivitis());
 		target.setEpididymitis(source.getEpididymitis());
