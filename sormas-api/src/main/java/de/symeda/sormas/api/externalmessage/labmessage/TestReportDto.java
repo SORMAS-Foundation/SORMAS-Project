@@ -24,6 +24,7 @@ import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
+import de.symeda.sormas.api.therapy.SusceptibilityMethod;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -213,6 +214,22 @@ public class TestReportDto extends EntityDto {
 	private DrugSusceptibilityType penicillinSusceptibility;
 	private String erythromycinMic;
 	private DrugSusceptibilityType erythromycinSusceptibility;
+	private String cefiximeMic;
+	private DrugSusceptibilityType cefiximeSusceptibility;
+	private SusceptibilityMethod cefiximeMethod;
+	private String tetracyclineMic;
+	private DrugSusceptibilityType tetracyclineSusceptibility;
+	private SusceptibilityMethod tetracyclineMethod;
+	private String gentamicinMic;
+	private DrugSusceptibilityType gentamicinSusceptibility;
+	private SusceptibilityMethod gentamicinMethod;
+	private String spectinomycinMic;
+	private DrugSusceptibilityType spectinomycinSusceptibility;
+	private SusceptibilityMethod spectinomycinMethod;
+	private String porBAllele;
+	private String tbpBAllele;
+	private String sequenceType;
+	private String genogroup;
 
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
@@ -875,6 +892,39 @@ public class TestReportDto extends EntityDto {
 	public void setErythromycinSusceptibility(DrugSusceptibilityType erythromycinSusceptibility) {
 		this.erythromycinSusceptibility = erythromycinSusceptibility;
 	}
+
+	public String getCefiximeMic() { return cefiximeMic; }
+	public void setCefiximeMic(String value) { cefiximeMic = value; }
+	public DrugSusceptibilityType getCefiximeSusceptibility() { return cefiximeSusceptibility; }
+	public void setCefiximeSusceptibility(DrugSusceptibilityType value) { cefiximeSusceptibility = value; }
+	public SusceptibilityMethod getCefiximeMethod() { return cefiximeMethod; }
+	public void setCefiximeMethod(SusceptibilityMethod value) { cefiximeMethod = value; }
+	public String getTetracyclineMic() { return tetracyclineMic; }
+	public void setTetracyclineMic(String value) { tetracyclineMic = value; }
+	public DrugSusceptibilityType getTetracyclineSusceptibility() { return tetracyclineSusceptibility; }
+	public void setTetracyclineSusceptibility(DrugSusceptibilityType value) { tetracyclineSusceptibility = value; }
+	public SusceptibilityMethod getTetracyclineMethod() { return tetracyclineMethod; }
+	public void setTetracyclineMethod(SusceptibilityMethod value) { tetracyclineMethod = value; }
+	public String getGentamicinMic() { return gentamicinMic; }
+	public void setGentamicinMic(String value) { gentamicinMic = value; }
+	public DrugSusceptibilityType getGentamicinSusceptibility() { return gentamicinSusceptibility; }
+	public void setGentamicinSusceptibility(DrugSusceptibilityType value) { gentamicinSusceptibility = value; }
+	public SusceptibilityMethod getGentamicinMethod() { return gentamicinMethod; }
+	public void setGentamicinMethod(SusceptibilityMethod value) { gentamicinMethod = value; }
+	public String getSpectinomycinMic() { return spectinomycinMic; }
+	public void setSpectinomycinMic(String value) { spectinomycinMic = value; }
+	public DrugSusceptibilityType getSpectinomycinSusceptibility() { return spectinomycinSusceptibility; }
+	public void setSpectinomycinSusceptibility(DrugSusceptibilityType value) { spectinomycinSusceptibility = value; }
+	public SusceptibilityMethod getSpectinomycinMethod() { return spectinomycinMethod; }
+	public void setSpectinomycinMethod(SusceptibilityMethod value) { spectinomycinMethod = value; }
+	public String getPorBAllele() { return porBAllele; }
+	public void setPorBAllele(String value) { porBAllele = value; }
+	public String getTbpBAllele() { return tbpBAllele; }
+	public void setTbpBAllele(String value) { tbpBAllele = value; }
+	public String getSequenceType() { return sequenceType; }
+	public void setSequenceType(String value) { sequenceType = value; }
+	public String getGenogroup() { return genogroup; }
+	public void setGenogroup(String value) { genogroup = value; }
 
 	public SeroGroupSpecification getSeroGroupSpecification() {
 		return seroGroupSpecification;

@@ -27,6 +27,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -332,7 +333,12 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		List<SampleMaterial> items = Arrays.stream(SampleMaterial.values())
 			.filter(
 				material -> material == selectedMaterial
-					|| (!material.isDeprecated() && isVisibleForCountry(material, countryChecker) && diseaseVisible.contains(material)))
+					|| (!material.isDeprecated()
+						&& diseaseVisible.contains(material)
+						&& (isVisibleForCountry(material, countryChecker)
+							|| (material == SampleMaterial.CONJUNCTIVAL_SWAB
+								&& disease == Disease.GONOCOCCAL_INFECTION
+								&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)))))
 			.sorted(Comparator.comparing(SampleMaterial::toString, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
 

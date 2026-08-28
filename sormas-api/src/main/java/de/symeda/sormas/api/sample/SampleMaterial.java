@@ -475,7 +475,8 @@ public enum SampleMaterial {
 	@Diseases({
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	GENITAL_SWAB,
 
 	@Diseases({
@@ -545,8 +546,6 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {

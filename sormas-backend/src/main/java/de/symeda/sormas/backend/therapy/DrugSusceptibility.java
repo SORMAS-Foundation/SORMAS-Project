@@ -158,6 +158,18 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private String trimethoprimSulfamethoxazoleMic;
 	private DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility;
 	private SusceptibilityMethod trimethoprimSulfamethoxazoleMethod;
+	private String cefiximeMic;
+	private DrugSusceptibilityType cefiximeSusceptibility;
+	private SusceptibilityMethod cefiximeMethod;
+	private String tetracyclineMic;
+	private DrugSusceptibilityType tetracyclineSusceptibility;
+	private SusceptibilityMethod tetracyclineMethod;
+	private String gentamicinMic;
+	private DrugSusceptibilityType gentamicinSusceptibility;
+	private SusceptibilityMethod gentamicinMethod;
+	private String spectinomycinMic;
+	private DrugSusceptibilityType spectinomycinSusceptibility;
+	private SusceptibilityMethod spectinomycinMethod;
 
 	@Column(length = 512)
 	public String getAmikacinMic() {
@@ -752,4 +764,41 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	public void setTrimethoprimSulfamethoxazoleMethod(SusceptibilityMethod trimethoprimSulfamethoxazoleMethod) {
 		this.trimethoprimSulfamethoxazoleMethod = trimethoprimSulfamethoxazoleMethod;
 	}
+
+	@Column(length = 512)
+	public String getCefiximeMic() { return cefiximeMic; }
+	public void setCefiximeMic(String value) { this.cefiximeMic = value; }
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCefiximeSusceptibility() { return cefiximeSusceptibility; }
+	public void setCefiximeSusceptibility(DrugSusceptibilityType value) { this.cefiximeSusceptibility = value; }
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCefiximeMethod() { return cefiximeMethod; }
+	public void setCefiximeMethod(SusceptibilityMethod value) { this.cefiximeMethod = value; }
+	@Column(length = 512)
+	public String getTetracyclineMic() { return tetracyclineMic; }
+	public void setTetracyclineMic(String value) { this.tetracyclineMic = value; }
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getTetracyclineSusceptibility() { return tetracyclineSusceptibility; }
+	public void setTetracyclineSusceptibility(DrugSusceptibilityType value) { this.tetracyclineSusceptibility = value; }
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getTetracyclineMethod() { return tetracyclineMethod; }
+	public void setTetracyclineMethod(SusceptibilityMethod value) { this.tetracyclineMethod = value; }
+	@Column(length = 512)
+	public String getGentamicinMic() { return gentamicinMic; }
+	public void setGentamicinMic(String value) { this.gentamicinMic = value; }
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getGentamicinSusceptibility() { return gentamicinSusceptibility; }
+	public void setGentamicinSusceptibility(DrugSusceptibilityType value) { this.gentamicinSusceptibility = value; }
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getGentamicinMethod() { return gentamicinMethod; }
+	public void setGentamicinMethod(SusceptibilityMethod value) { this.gentamicinMethod = value; }
+	@Column(length = 512)
+	public String getSpectinomycinMic() { return spectinomycinMic; }
+	public void setSpectinomycinMic(String value) { this.spectinomycinMic = value; }
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getSpectinomycinSusceptibility() { return spectinomycinSusceptibility; }
+	public void setSpectinomycinSusceptibility(DrugSusceptibilityType value) { this.spectinomycinSusceptibility = value; }
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getSpectinomycinMethod() { return spectinomycinMethod; }
+	public void setSpectinomycinMethod(SusceptibilityMethod value) { this.spectinomycinMethod = value; }
 }

@@ -282,12 +282,18 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.DENGUE,
 		Disease.SHIGELLOSIS,
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
 		ResultValueType.NUMERIC })
 	NAAT,
+
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -338,10 +344,16 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GENOTYPING,
+
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	PENICILLINASE_ACTIVITY,
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
@@ -711,7 +723,8 @@ public enum PathogenTestType {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	// AST has no result value type of its own — its result is the drug-susceptibility grid, not a
 	// Positive/Negative/numeric/text value. The empty set hides the Test result selector and all quantitative
@@ -931,6 +944,9 @@ public enum PathogenTestType {
 	 *            the test method (may be {@code null})
 	 */
 	public static boolean cqInputApplies(Disease disease, PathogenTestType testType) {
-		return testType == PCR_RT_PCR || testType == CQ_VALUE_DETECTION || (disease == Disease.MALARIA && testType == Q_PCR);
+		return testType == PCR_RT_PCR
+			|| testType == CQ_VALUE_DETECTION
+			|| (disease == Disease.MALARIA && testType == Q_PCR)
+			|| (disease == Disease.GONOCOCCAL_INFECTION && testType == NAAT);
 	}
 }
