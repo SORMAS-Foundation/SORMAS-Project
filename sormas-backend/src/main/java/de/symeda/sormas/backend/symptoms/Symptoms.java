@@ -357,7 +357,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState cervicitis;
 	private SymptomState newbornConjunctivitis;
 	private SymptomState epididymitis;
-	private SymptomState pharyngitis;
 	private SymptomState pelvicInflammatoryDisease;
 	private SymptomState proctitis;
 	private SymptomState acuteSalpingitis;
@@ -2950,15 +2949,6 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setEpididymitis(SymptomState epididymitis) {
 		this.epididymitis = epididymitis;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public SymptomState getPharyngitis() {
-		return pharyngitis;
-	}
-
-	public void setPharyngitis(SymptomState pharyngitis) {
-		this.pharyngitis = pharyngitis;
 	}
 
 	@Enumerated(EnumType.STRING)

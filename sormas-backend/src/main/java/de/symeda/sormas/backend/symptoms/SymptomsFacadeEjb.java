@@ -308,7 +308,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCervicitis(source.getCervicitis());
 		target.setNewbornConjunctivitis(source.getNewbornConjunctivitis());
 		target.setEpididymitis(source.getEpididymitis());
-		target.setPharyngitis(source.getPharyngitis());
 		target.setPelvicInflammatoryDisease(source.getPelvicInflammatoryDisease());
 		target.setProctitis(source.getProctitis());
 		target.setAcuteSalpingitis(source.getAcuteSalpingitis());
@@ -637,7 +636,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCervicitis(source.getCervicitis());
 		target.setNewbornConjunctivitis(source.getNewbornConjunctivitis());
 		target.setEpididymitis(source.getEpididymitis());
-		target.setPharyngitis(source.getPharyngitis());
 		target.setPelvicInflammatoryDisease(source.getPelvicInflammatoryDisease());
 		target.setProctitis(source.getProctitis());
 		target.setAcuteSalpingitis(source.getAcuteSalpingitis());

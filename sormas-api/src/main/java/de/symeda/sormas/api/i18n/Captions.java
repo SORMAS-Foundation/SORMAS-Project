@@ -2188,8 +2188,6 @@ public interface Captions {
 	String HealthConditions_exposedToMosquitoBorneViruses = "HealthConditions.exposedToMosquitoBorneViruses";
 	String HealthConditions_exposedToMosquitoBorneVirusesText = "HealthConditions.exposedToMosquitoBorneVirusesText";
 	String HealthConditions_formerSmoker = "HealthConditions.formerSmoker";
-	String HealthConditions_gonorrhoeaHivPrep = "HealthConditions.gonorrhoeaHivPrep";
-	String HealthConditions_gonorrhoeaStiProphylaxis = "HealthConditions.gonorrhoeaStiProphylaxis";
 	String HealthConditions_hepatitis = "HealthConditions.hepatitis";
 	String HealthConditions_highIronLevel = "HealthConditions.highIronLevel";
 	String HealthConditions_hiv = "HealthConditions.hiv";
@@ -3250,7 +3248,6 @@ public interface Captions {
 	String Symptoms_fluidInLungCavityXray = "Symptoms.fluidInLungCavityXray";
 	String Symptoms_generalizedLymphadenopathy = "Symptoms.generalizedLymphadenopathy";
 	String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
-	String Symptoms_gonococcalArthritis = "Symptoms.gonococcalArthritis";
 	String Symptoms_gonococcalInfectionSiteAnorectal = "Symptoms.gonococcalInfectionSiteAnorectal";
 	String Symptoms_gonococcalInfectionSiteBlood = "Symptoms.gonococcalInfectionSiteBlood";
 	String Symptoms_gonococcalInfectionSiteCerebrospinalFluid = "Symptoms.gonococcalInfectionSiteCerebrospinalFluid";
@@ -3386,7 +3383,6 @@ public interface Captions {
 	String Symptoms_persistentVomiting = "Symptoms.persistentVomiting";
 	String Symptoms_pharyngealErythema = "Symptoms.pharyngealErythema";
 	String Symptoms_pharyngealExudate = "Symptoms.pharyngealExudate";
-	String Symptoms_pharyngitis = "Symptoms.pharyngitis";
 	String Symptoms_pigmentaryRetinopathy = "Symptoms.pigmentaryRetinopathy";
 	String Symptoms_plasmaLeakageSign = "Symptoms.plasmaLeakageSign";
 	String Symptoms_pneumoniaClinicalOrRadiologic = "Symptoms.pneumoniaClinicalOrRadiologic";

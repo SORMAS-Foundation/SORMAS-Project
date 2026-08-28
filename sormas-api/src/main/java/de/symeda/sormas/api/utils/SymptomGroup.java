@@ -12,7 +12,6 @@ public enum SymptomGroup {
 	NERVOUS_SYSTEM,
 	SKIN,
 	REPRODUCTIVE_GENITAL_SYSTEM,
-	ENT,
 	OTHER;
 
 	@Override

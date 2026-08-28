@@ -17198,7 +17198,6 @@ ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS previousgonorrhoea
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS cervicitis varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS newbornconjunctivitis varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS epididymitis varchar(255);
-ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS pharyngitis varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS pelvicinflammatorydisease varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS proctitis varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acutesalpingitis varchar(255);
@@ -17228,7 +17227,6 @@ ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstiunknown varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS cervicitis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS newbornconjunctivitis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS epididymitis varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS pharyngitis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS pelvicinflammatorydisease varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS proctitis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acutesalpingitis varchar(255);

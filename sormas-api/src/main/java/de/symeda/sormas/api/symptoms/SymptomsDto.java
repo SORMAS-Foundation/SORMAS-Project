@@ -427,7 +427,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String CERVICITIS = "cervicitis";
 	public static final String NEWBORN_CONJUNCTIVITIS = "newbornConjunctivitis";
 	public static final String EPIDIDYMITIS = "epididymitis";
-	public static final String PHARYNGITIS = "pharyngitis";
 	public static final String PELVIC_INFLAMMATORY_DISEASE = "pelvicInflammatoryDisease";
 	public static final String PROCTITIS = "proctitis";
 	public static final String ACUTE_SALPINGITIS = "acuteSalpingitis";
@@ -3421,9 +3420,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM)
 	private SymptomState epididymitis;
 	@Diseases(GONOCOCCAL_INFECTION)
-	@SymptomGrouping(SymptomGroup.ENT)
-	private SymptomState pharyngitis;
-	@Diseases(GONOCOCCAL_INFECTION)
 	@SymptomGrouping(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM)
 	private SymptomState pelvicInflammatoryDisease;
 	@Diseases(GONOCOCCAL_INFECTION)
@@ -6066,14 +6062,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setEpididymitis(SymptomState epididymitis) {
 		this.epididymitis = epididymitis;
-	}
-
-	public SymptomState getPharyngitis() {
-		return pharyngitis;
-	}
-
-	public void setPharyngitis(SymptomState pharyngitis) {
-		this.pharyngitis = pharyngitis;
 	}
 
 	public SymptomState getPelvicInflammatoryDisease() {

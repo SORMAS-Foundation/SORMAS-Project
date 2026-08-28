@@ -259,7 +259,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					createSymptomGroupLayout(SymptomGroup.NERVOUS_SYSTEM, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.SKIN, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM, REPRODUCTIVE_GENITAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					createSymptomGroupLayout(SymptomGroup.ENT, ENT_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					fluidRow(fluidColumn(6, 0, loc("LAYOUT_SKIN_RASH_ONSET_DATE"))) +
 					createSymptomGroupLayout(SymptomGroup.OTHER, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					loc(GONOCOCCAL_INFECTION_SITE_HEADING_LOC) +
@@ -409,7 +408,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			createLabel(SymptomGroup.NERVOUS_SYSTEM.toString(), H3, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		final Label skinSymptomsHeadingLabel = createLabel(SymptomGroup.SKIN.toString(), H3, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		createLabel(SymptomGroup.REPRODUCTIVE_GENITAL_SYSTEM.toString(), H3, REPRODUCTIVE_GENITAL_SIGNS_AND_SYMPTOMS_HEADING_LOC);
-		createLabel(SymptomGroup.ENT.toString(), H3, ENT_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		final Label otherSymptomsHeadingLabel = createLabel(SymptomGroup.OTHER.toString(), H3, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		Label gonococcalInfectionSiteHeadingLabel =
 			createLabel(I18nProperties.getCaption(Captions.Symptoms_gonococcalInfectionSiteHeading), H3, GONOCOCCAL_INFECTION_SITE_HEADING_LOC);
@@ -728,7 +726,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CERVICITIS,
 			NEWBORN_CONJUNCTIVITIS,
 			EPIDIDYMITIS,
-			PHARYNGITIS,
 			PELVIC_INFLAMMATORY_DISEASE,
 			PROCTITIS,
 			ACUTE_SALPINGITIS,
