@@ -8,6 +8,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.enterprise.inject.Instance;
@@ -71,6 +73,102 @@ class ValueMapperRegistryTest extends AbstractUnitTest {
 
 		// CHECK
 		assertSame(value, result.getData());
+	}
+
+	// ---- map: already-typed collection values ----
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void map_collectionValueAlreadyTargetType_matchingSubType_returnsCastValue() {
+		// PREPARE
+		ValuePatchRequest request = new ValuePatchRequest();
+		Set<String> value = Set.of("A", "B");
+		request.setValue(value).setTargetType(Set.class).setCollectionSubType(String.class);
+
+		// EXECUTE
+		ValueMappingResult<Set> result = victim.map(request);
+
+		// CHECK
+		assertSame(value, result.getData());
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void map_collectionValueAlreadyTargetType_mismatchingSubType_returnsInvalidValueType() {
+		// PREPARE — collectionSubType declares String, but the Set actually holds Integers
+		ValuePatchRequest request = new ValuePatchRequest();
+		Set<Integer> value = Set.of(1, 2);
+		request.setValue(value).setTargetType(Set.class).setCollectionSubType(String.class);
+
+		// EXECUTE
+		ValueMappingResult<Set> result = victim.map(request);
+
+		// CHECK
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, result.getDataPatchFailureCause());
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void map_collectionValueAlreadyTargetType_noCollectionSubTypeSet_returnsInvalidValueType() {
+		// PREPARE — collectionSubType left unset (null), so any actual element class mismatches it
+		ValuePatchRequest request = new ValuePatchRequest();
+		Set<String> value = Set.of("A");
+		request.setValue(value).setTargetType(Set.class);
+
+		// EXECUTE
+		ValueMappingResult<Set> result = victim.map(request);
+
+		// CHECK
+		assertEquals(DataPatchFailureCause.TECHNICAL, result.getDataPatchFailureCause());
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void map_emptyCollectionValueAlreadyTargetType_returnsCastValueWithoutSubTypeCheck() {
+		// PREPARE — nothing to inspect, so the sub-type check is skipped entirely
+		ValuePatchRequest request = new ValuePatchRequest();
+		Set<String> value = Set.of();
+		request.setValue(value).setTargetType(Set.class).setCollectionSubType(String.class);
+
+		// EXECUTE
+		ValueMappingResult<Set> result = victim.map(request);
+
+		// CHECK
+		assertSame(value, result.getData());
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void map_collectionValueAlreadyTargetType_subTypeElement_matchesViaIsInstance() {
+		// PREPARE — collectionSubType declares Number, elements are Integer: exact-class matching
+		// would have rejected this, isInstance correctly accepts the subtype.
+		ValuePatchRequest request = new ValuePatchRequest();
+		Set<Integer> value = Set.of(1, 2);
+		request.setValue(value).setTargetType(Set.class).setCollectionSubType(Number.class);
+
+		// EXECUTE
+		ValueMappingResult<Set> result = victim.map(request);
+
+		// CHECK
+		assertSame(value, result.getData());
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void map_collectionValueAlreadyTargetType_mismatchNotInFirstElement_stillReturnsInvalidValueType() {
+		// PREPARE — first element matches collectionSubType, a later one doesn't: every element must
+		// be checked, not just a sampled one (the previous implementation used findAny()).
+		ValuePatchRequest request = new ValuePatchRequest();
+		LinkedHashSet<Object> value = new LinkedHashSet<>();
+		value.add("A");
+		value.add(42);
+		request.setValue(value).setTargetType(Set.class).setCollectionSubType(String.class);
+
+		// EXECUTE
+		ValueMappingResult<Set> result = victim.map(request);
+
+		// CHECK
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, result.getDataPatchFailureCause());
 	}
 
 	@Test
