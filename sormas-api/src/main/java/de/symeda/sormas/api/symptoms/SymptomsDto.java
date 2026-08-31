@@ -1093,7 +1093,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GENERAL)
 	private YesNoUnknown jaundiceWithin24HoursOfBirth;
 
 	@Diseases({
@@ -2203,7 +2203,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.SKIN)
+	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState purpuricRash;
 
 	@Diseases({
@@ -2217,13 +2217,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState developmentalDelay;
 
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState splenomegaly;
 
 	@Diseases({
@@ -2235,7 +2235,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState radiolucentBoneDisease;
 
 	@Diseases({
@@ -2265,7 +2265,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState stillbornInfant;
 
 	@Diseases({
-		CONGENITAL_RUBELLA })
+		CONGENITAL_RUBELLA,
+		RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState unknownClinicalPresentation;
@@ -3543,6 +3544,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		SYPHILIS,
+		CONGENITAL_RUBELLA })
+	@Complication({
 		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState hepatosplenomegaly;
