@@ -1381,6 +1381,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_ipi_pneumoniaClinicalOrRadiologic));
 		} else if (Disease.RUBELLA == disease) {
 			getField(ARTHRITIS).setCaption(I18nProperties.getCaption(Captions.Symptoms_arthritis_RUBELLA));
+			getField(SKIN_RASH).setCaption(I18nProperties.getCaption(Captions.Symptoms_skinRash_RUBELLA));
 		}
 
 		if (symptomsContext == SymptomsContext.CASE && caze != null && caze.getDisease() == Disease.PLAGUE) {

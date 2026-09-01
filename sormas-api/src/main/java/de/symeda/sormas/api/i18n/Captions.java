@@ -3413,6 +3413,7 @@ public interface Captions {
 	String Symptoms_skinBruising = "Symptoms.skinBruising";
 	String Symptoms_skinRash = "Symptoms.skinRash";
 	String Symptoms_skinRash_lu_MEASLES = "Symptoms.skinRash.lu-MEASLES";
+	String Symptoms_skinRash_RUBELLA = "Symptoms.skinRash.RUBELLA";
 	String Symptoms_skinRashOnsetDate = "Symptoms.skinRashOnsetDate";
 	String Symptoms_skinUlcers = "Symptoms.skinUlcers";
 	String Symptoms_soreThroat = "Symptoms.soreThroat";
