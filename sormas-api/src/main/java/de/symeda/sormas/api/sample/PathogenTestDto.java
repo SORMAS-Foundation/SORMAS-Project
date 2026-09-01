@@ -884,14 +884,37 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.genoTypeText = genoTypeText;
 	}
 
-	public String getPorBAllele() { return porBAllele; }
-	public void setPorBAllele(String value) { this.porBAllele = value; }
-	public String getTbpBAllele() { return tbpBAllele; }
-	public void setTbpBAllele(String value) { this.tbpBAllele = value; }
-	public String getSequenceType() { return sequenceType; }
-	public void setSequenceType(String value) { this.sequenceType = value; }
-	public String getGenogroup() { return genogroup; }
-	public void setGenogroup(String value) { this.genogroup = value; }
+	public String getPorBAllele() {
+		return porBAllele;
+	}
+
+	public void setPorBAllele(String value) {
+		this.porBAllele = value;
+	}
+
+	public String getTbpBAllele() {
+		return tbpBAllele;
+	}
+
+	public void setTbpBAllele(String value) {
+		this.tbpBAllele = value;
+	}
+
+	public String getSequenceType() {
+		return sequenceType;
+	}
+
+	public void setSequenceType(String value) {
+		this.sequenceType = value;
+	}
+
+	public String getGenogroup() {
+		return genogroup;
+	}
+
+	public void setGenogroup(String value) {
+		this.genogroup = value;
+	}
 
 	public String getSeroTypingMethodText() {
 		return seroTypingMethodText;
