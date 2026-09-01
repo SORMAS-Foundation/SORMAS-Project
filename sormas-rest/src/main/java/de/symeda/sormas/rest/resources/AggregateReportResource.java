@@ -15,9 +15,12 @@
 
 package de.symeda.sormas.rest.resources;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -29,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.report.AggregateAnonymizeDataDto;
 import de.symeda.sormas.api.report.AggregateCaseCountDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
@@ -39,6 +43,11 @@ import de.symeda.sormas.rest.resources.base.EntityDtoResource;
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 public class AggregateReportResource extends EntityDtoResource<AggregateReportDto> {
 
+	private static final String DATE_PATTERN = "^\\d{4}\\-(0[1-9]|1[012])\\-(0[1-9]|[12][0-9]|3[01])$";
+
+	// Compile the pattern
+	private static final Pattern pattern = Pattern.compile(DATE_PATTERN);
+	
 	@GET
 	@Path("/all/{since}")
 	public List<AggregateReportDto> getAllAggregateReports(@PathParam("since") long since) {
@@ -71,5 +80,26 @@ public class AggregateReportResource extends EntityDtoResource<AggregateReportDt
 	@Override
 	public Response postEntityDtos(List<AggregateReportDto> aggregateReportDtos) {
 		return super.postEntityDtos(aggregateReportDtos);
+	}
+	
+	@GET
+	@Path("/anonymize/{fromDate}/{toDate}")
+	public List<AggregateAnonymizeDataDto> getAggregateAnonymizeData(@PathParam("toDate") String toDate,
+			@PathParam("fromDate") String fromDate) {
+
+		if (toDate != null && !toDate.isEmpty() && fromDate != null && !fromDate.isEmpty()) {
+			if (isValidDate(toDate) && isValidDate(fromDate)) {
+				List<AggregateAnonymizeDataDto> result = FacadeProvider.getAggregateReportFacade()
+						.getAggregateAnonymizeData(toDate, fromDate);
+				return result;
+			}
+		}
+		List<AggregateAnonymizeDataDto> empty = new ArrayList<>();
+		return empty;
+	}
+
+	public static boolean isValidDate(String date) {
+		Matcher matcher = pattern.matcher(date);
+		return matcher.matches();
 	}
 }
