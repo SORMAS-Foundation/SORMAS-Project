@@ -429,7 +429,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 		// Rubella
 		suspect = allOf(
-			symptom(SymptomsDto.SKIN_RASH),
+			symptom(SymptomsDto.SKIN_RASH, Disease.RUBELLA.name()),
 			xOf(
 				1,
 				symptom(SymptomsDto.LYMPHADENOPATHY_CERVICAL),
