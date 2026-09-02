@@ -78,6 +78,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String SYPHILIS_NUMBER_OF_DOSES = "syphilisNumberOfDoses";
 	public static final String SYPHILIS_DATE_OF_FIRST_DOSE = "syphilisDateOfFirstDose";
 	public static final String SYPHILIS_OR_OTHER_STIS = "syphilisOrOtherStis";
+	public static final String PREVIOUS_GONORRHOEA = "previousGonorrhoea";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -88,7 +89,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	private YesNoUnknown asplenia;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -99,7 +101,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@Diseases(value = {
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	private YesNoUnknown hiv;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -134,7 +137,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
-		Disease.YERSINIOSIS }, hide = true)
+		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	private YesNoUnknown downSyndrome;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -144,7 +148,9 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = Disease.SYPHILIS, hide = true)
+	@Diseases(value = {
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	private YesNoUnknown congenitalSyphilis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -240,23 +246,28 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private String chronicDiseaseDetails;
 
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private HivStatus hivStatus;
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private YesNoUnknown mentalHealthDisorder;
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private YesNoUnknown substanceUseDisorder;
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	@SensitiveData
 	private String substanceUseDisorderDetails;
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private YesNoUnknown stiProphylaxis;
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private YesNoUnknown hivPrep;
 	@Diseases(value = {
 		Disease.SYPHILIS })
@@ -271,8 +282,12 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		Disease.SYPHILIS })
 	private Date syphilisDateOfFirstDose;
 	@Diseases(value = {
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private YesNoUnknown syphilisOrOtherStis;
+	@Diseases(value = {
+		Disease.GONOCOCCAL_INFECTION })
+	private YesNoUnknown previousGonorrhoea;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -695,6 +710,14 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
 		this.syphilisOrOtherStis = syphilisOrOtherStis;
+	}
+
+	public YesNoUnknown getPreviousGonorrhoea() {
+		return previousGonorrhoea;
+	}
+
+	public void setPreviousGonorrhoea(YesNoUnknown previousGonorrhoea) {
+		this.previousGonorrhoea = previousGonorrhoea;
 	}
 
 }

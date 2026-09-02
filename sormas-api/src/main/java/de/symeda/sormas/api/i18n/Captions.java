@@ -2192,6 +2192,7 @@ public interface Captions {
 	String HealthConditions_obesity = "HealthConditions.obesity";
 	String HealthConditions_onMedication = "HealthConditions.onMedication";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
+	String HealthConditions_previousGonorrhoea = "HealthConditions.previousGonorrhoea";
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
@@ -3117,6 +3118,7 @@ public interface Captions {
 	String Symptoms_acuteEncephalitis = "Symptoms.acuteEncephalitis";
 	String Symptoms_acuteKidneyFailure = "Symptoms.acuteKidneyFailure";
 	String Symptoms_acuteRespiratoryDistressSyndrome = "Symptoms.acuteRespiratoryDistressSyndrome";
+	String Symptoms_acuteSalpingitis = "Symptoms.acuteSalpingitis";
 	String Symptoms_aerophobia = "Symptoms.aerophobia";
 	String Symptoms_agitation = "Symptoms.agitation";
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
@@ -3150,6 +3152,7 @@ public interface Captions {
 	String Symptoms_bulgingFontanelle = "Symptoms.bulgingFontanelle";
 	String Symptoms_centralNervousSystemDamage = "Symptoms.centralNervousSystemDamage";
 	String Symptoms_cerebralMalaria = "Symptoms.cerebralMalaria";
+	String Symptoms_cervicitis = "Symptoms.cervicitis";
 	String Symptoms_chancre = "Symptoms.chancre";
 	String Symptoms_chestPain = "Symptoms.chestPain";
 	String Symptoms_chestPressure = "Symptoms.chestPressure";
@@ -3162,6 +3165,17 @@ public interface Captions {
 	String Symptoms_clinicalPresentationStatus = "Symptoms.clinicalPresentationStatus";
 	String Symptoms_coldSkin = "Symptoms.coldSkin";
 	String Symptoms_coma = "Symptoms.coma";
+	String Symptoms_concurrentStiChlamydia = "Symptoms.concurrentStiChlamydia";
+	String Symptoms_concurrentStiGenitalHerpes = "Symptoms.concurrentStiGenitalHerpes";
+	String Symptoms_concurrentStiGenitalWarts = "Symptoms.concurrentStiGenitalWarts";
+	String Symptoms_concurrentStiHeading = "Symptoms.concurrentStiHeading";
+	String Symptoms_concurrentStiInfectiousSyphilis = "Symptoms.concurrentStiInfectiousSyphilis";
+	String Symptoms_concurrentStiLgv = "Symptoms.concurrentStiLgv";
+	String Symptoms_concurrentStiMycoplasmaGenitalium = "Symptoms.concurrentStiMycoplasmaGenitalium";
+	String Symptoms_concurrentStiOther = "Symptoms.concurrentStiOther";
+	String Symptoms_concurrentStiOtherText = "Symptoms.concurrentStiOtherText";
+	String Symptoms_concurrentStiTrichomonasVaginalis = "Symptoms.concurrentStiTrichomonasVaginalis";
+	String Symptoms_concurrentStiUnknown = "Symptoms.concurrentStiUnknown";
 	String Symptoms_condylomaLata = "Symptoms.condylomaLata";
 	String Symptoms_condylomaVenereum = "Symptoms.condylomaVenereum";
 	String Symptoms_confusedDisoriented = "Symptoms.confusedDisoriented";
@@ -3199,6 +3213,7 @@ public interface Captions {
 	String Symptoms_dysuria = "Symptoms.dysuria";
 	String Symptoms_eggyBurps = "Symptoms.eggyBurps";
 	String Symptoms_encephalitis = "Symptoms.encephalitis";
+	String Symptoms_epididymitis = "Symptoms.epididymitis";
 	String Symptoms_erraticBehaviour = "Symptoms.erraticBehaviour";
 	String Symptoms_erythemaNodosum = "Symptoms.erythemaNodosum";
 	String Symptoms_excessSalivation = "Symptoms.excessSalivation";
@@ -3219,6 +3234,17 @@ public interface Captions {
 	String Symptoms_fluidInLungCavityXray = "Symptoms.fluidInLungCavityXray";
 	String Symptoms_generalizedLymphadenopathy = "Symptoms.generalizedLymphadenopathy";
 	String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
+	String Symptoms_gonococcalInfectionSiteAnorectal = "Symptoms.gonococcalInfectionSiteAnorectal";
+	String Symptoms_gonococcalInfectionSiteBlood = "Symptoms.gonococcalInfectionSiteBlood";
+	String Symptoms_gonococcalInfectionSiteCerebrospinalFluid = "Symptoms.gonococcalInfectionSiteCerebrospinalFluid";
+	String Symptoms_gonococcalInfectionSiteEye = "Symptoms.gonococcalInfectionSiteEye";
+	String Symptoms_gonococcalInfectionSiteGenital = "Symptoms.gonococcalInfectionSiteGenital";
+	String Symptoms_gonococcalInfectionSiteHeading = "Symptoms.gonococcalInfectionSiteHeading";
+	String Symptoms_gonococcalInfectionSiteJointFluid = "Symptoms.gonococcalInfectionSiteJointFluid";
+	String Symptoms_gonococcalInfectionSiteOther = "Symptoms.gonococcalInfectionSiteOther";
+	String Symptoms_gonococcalInfectionSiteOtherText = "Symptoms.gonococcalInfectionSiteOtherText";
+	String Symptoms_gonococcalInfectionSitePharyngeal = "Symptoms.gonococcalInfectionSitePharyngeal";
+	String Symptoms_gonococcalInfectionSiteUnknown = "Symptoms.gonococcalInfectionSiteUnknown";
 	String Symptoms_guillainBarreSyndrome = "Symptoms.guillainBarreSyndrome";
 	String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
 	String Symptoms_haemolyticUremicSyndrome = "Symptoms.haemolyticUremicSyndrome";
@@ -3294,7 +3320,9 @@ public interface Captions {
 	String Symptoms_necrotizingEnterocolitis = "Symptoms.necrotizingEnterocolitis";
 	String Symptoms_nephroticSyndrome = "Symptoms.nephroticSyndrome";
 	String Symptoms_neurologicalManifestations = "Symptoms.neurologicalManifestations";
+	String Symptoms_newbornConjunctivitis = "Symptoms.newbornConjunctivitis";
 	String Symptoms_noComplications = "Symptoms.noComplications";
+	String Symptoms_noConcurrentSti = "Symptoms.noConcurrentSti";
 	String Symptoms_nocturnalCough = "Symptoms.nocturnalCough";
 	String Symptoms_noseBleeding = "Symptoms.noseBleeding";
 	String Symptoms_ocularManifestations = "Symptoms.ocularManifestations";
@@ -3337,6 +3365,7 @@ public interface Captions {
 	String Symptoms_paresthesiaAroundWound = "Symptoms.paresthesiaAroundWound";
 	String Symptoms_patchyAlopecia = "Symptoms.patchyAlopecia";
 	String Symptoms_patientIllLocation = "Symptoms.patientIllLocation";
+	String Symptoms_pelvicInflammatoryDisease = "Symptoms.pelvicInflammatoryDisease";
 	String Symptoms_persistentVomiting = "Symptoms.persistentVomiting";
 	String Symptoms_pharyngealErythema = "Symptoms.pharyngealErythema";
 	String Symptoms_pharyngealExudate = "Symptoms.pharyngealExudate";
@@ -3344,6 +3373,7 @@ public interface Captions {
 	String Symptoms_plasmaLeakageSign = "Symptoms.plasmaLeakageSign";
 	String Symptoms_pneumoniaClinicalOrRadiologic = "Symptoms.pneumoniaClinicalOrRadiologic";
 	String Symptoms_polydipsia = "Symptoms.polydipsia";
+	String Symptoms_proctitis = "Symptoms.proctitis";
 	String Symptoms_pseudoAppendicularSyndrome = "Symptoms.pseudoAppendicularSyndrome";
 	String Symptoms_pseudoparalysis = "Symptoms.pseudoparalysis";
 	String Symptoms_purpuricRash = "Symptoms.purpuricRash";
@@ -3405,6 +3435,7 @@ public interface Captions {
 	String Symptoms_unknownComplications = "Symptoms.unknownComplications";
 	String Symptoms_unknownSymptom = "Symptoms.unknownSymptom";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
+	String Symptoms_urethritis = "Symptoms.urethritis";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";
 	String Symptoms_wateryDiarrhea = "Symptoms.wateryDiarrhea";

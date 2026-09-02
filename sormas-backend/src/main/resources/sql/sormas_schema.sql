@@ -17191,4 +17191,68 @@ INSERT INTO schema_version (version_number, comment) VALUES (663, 'Add syphilis-
 
 
 
+-- Gonococcal infections case data and symptoms
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS previousgonorrhoea varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS previousgonorrhoea varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS cervicitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS newbornconjunctivitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS epididymitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS pelvicinflammatorydisease varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS proctitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acutesalpingitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS urethritis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteanorectal varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteblood varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsitecerebrospinalfluid varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteeye varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsitegenital varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsitejointfluid varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsitepharyngeal varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteunknown varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteother varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteothertext varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS noconcurrentsti varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstichlamydia varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstigenitalherpes varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstilgv varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstimycoplasmagenitalium varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstiinfectioussyphilis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstitrichomonasvaginalis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstigenitalwarts varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstiother varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstiothertext varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS concurrentstiunknown varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS cervicitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS newbornconjunctivitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS epididymitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS pelvicinflammatorydisease varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS proctitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acutesalpingitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS urethritis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteanorectal varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteblood varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsitecerebrospinalfluid varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteeye varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsitegenital varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsitejointfluid varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsitepharyngeal varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteunknown varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteother varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS gonococcalinfectionsiteothertext varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS noconcurrentsti varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstichlamydia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstigenitalherpes varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstilgv varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstimycoplasmagenitalium varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstiinfectioussyphilis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstitrichomonasvaginalis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstigenitalwarts varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstiother varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstiothertext varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstiunknown varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (664, 'Add Gonococcal infections case data and symptoms');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

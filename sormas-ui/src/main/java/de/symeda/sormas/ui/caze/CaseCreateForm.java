@@ -41,7 +41,6 @@ import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -586,6 +585,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		if (newDisease == Disease.INFLUENZA) {
 			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.HOME));
 			facilityOrHome.select(TypeOfPlace.HOME);
+			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
+			classificationField.select(CaseClassification.CONFIRMED);
+		} else if (newDisease == Disease.GONOCOCCAL_INFECTION) {
+			facilityOrHome.setValue(null);
+			facilityOrHome.unselect(TypeOfPlace.HOME);
 			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
 			classificationField.select(CaseClassification.CONFIRMED);
 		} else {

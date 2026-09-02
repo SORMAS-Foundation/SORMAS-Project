@@ -351,7 +351,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 
-	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS);
+	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS, Disease.GONOCOCCAL_INFECTION);
 	//@formatter:on
 
 	private CustomizableFieldsGroup caseDataGeneralPanel;
@@ -501,7 +501,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_NAME,
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL);
-
 
 		addField(CaseDataDto.EXCLUDE_FROM_REPORTING, CheckBox.class);
 
@@ -997,9 +996,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
+		NullableOptionGroup pregnantField = addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
-		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		NullableOptionGroup postpartumField = addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		if (Disease.GONOCOCCAL_INFECTION == disease) {
+			setupMutuallyExclusiveFields(pregnantField, postpartumField);
+		}
 		Field<?> trimesterField = addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		boolean isMale = Sex.MALE.equals(person.getSex());
 		if (!isMale) {

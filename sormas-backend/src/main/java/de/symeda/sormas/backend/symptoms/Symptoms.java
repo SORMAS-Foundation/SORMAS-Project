@@ -354,6 +354,34 @@ public class Symptoms extends AbstractDomainObject {
 	private SyphilisStage syphilisStage;
 	private SyphilisInfectiousness syphilisInfectiousness;
 	private YesNoUnknown clinicalCriteriaMet;
+	private SymptomState cervicitis;
+	private SymptomState newbornConjunctivitis;
+	private SymptomState epididymitis;
+	private SymptomState pelvicInflammatoryDisease;
+	private SymptomState proctitis;
+	private SymptomState acuteSalpingitis;
+	private SymptomState urethritis;
+	private SymptomState gonococcalInfectionSiteAnorectal;
+	private SymptomState gonococcalInfectionSiteBlood;
+	private SymptomState gonococcalInfectionSiteCerebrospinalFluid;
+	private SymptomState gonococcalInfectionSiteEye;
+	private SymptomState gonococcalInfectionSiteGenital;
+	private SymptomState gonococcalInfectionSiteJointFluid;
+	private SymptomState gonococcalInfectionSitePharyngeal;
+	private SymptomState gonococcalInfectionSiteUnknown;
+	private SymptomState gonococcalInfectionSiteOther;
+	private String gonococcalInfectionSiteOtherText;
+	private SymptomState noConcurrentSti;
+	private SymptomState concurrentStiChlamydia;
+	private SymptomState concurrentStiGenitalHerpes;
+	private SymptomState concurrentStiLgv;
+	private SymptomState concurrentStiMycoplasmaGenitalium;
+	private SymptomState concurrentStiInfectiousSyphilis;
+	private SymptomState concurrentStiTrichomonasVaginalis;
+	private SymptomState concurrentStiGenitalWarts;
+	private SymptomState concurrentStiOther;
+	private String concurrentStiOtherText;
+	private SymptomState concurrentStiUnknown;
 
 	// Yersiniosis-specific symptoms
 	private SymptomState pseudoAppendicularSyndrome;
@@ -2832,6 +2860,7 @@ public class Symptoms extends AbstractDomainObject {
 	public void setSymptomEndDate(Date symptomEndDate) {
 		this.symptomEndDate = symptomEndDate;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getSalivarySwelling() {
 		return salivarySwelling;
@@ -2893,6 +2922,258 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOtherGeneralSymptomsText(String otherGeneralSymptomsText) {
 		this.otherGeneralSymptomsText = otherGeneralSymptomsText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCervicitis() {
+		return cervicitis;
+	}
+
+	public void setCervicitis(SymptomState cervicitis) {
+		this.cervicitis = cervicitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNewbornConjunctivitis() {
+		return newbornConjunctivitis;
+	}
+
+	public void setNewbornConjunctivitis(SymptomState newbornConjunctivitis) {
+		this.newbornConjunctivitis = newbornConjunctivitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEpididymitis() {
+		return epididymitis;
+	}
+
+	public void setEpididymitis(SymptomState epididymitis) {
+		this.epididymitis = epididymitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPelvicInflammatoryDisease() {
+		return pelvicInflammatoryDisease;
+	}
+
+	public void setPelvicInflammatoryDisease(SymptomState pelvicInflammatoryDisease) {
+		this.pelvicInflammatoryDisease = pelvicInflammatoryDisease;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getProctitis() {
+		return proctitis;
+	}
+
+	public void setProctitis(SymptomState proctitis) {
+		this.proctitis = proctitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteSalpingitis() {
+		return acuteSalpingitis;
+	}
+
+	public void setAcuteSalpingitis(SymptomState acuteSalpingitis) {
+		this.acuteSalpingitis = acuteSalpingitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getUrethritis() {
+		return urethritis;
+	}
+
+	public void setUrethritis(SymptomState urethritis) {
+		this.urethritis = urethritis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteAnorectal() {
+		return gonococcalInfectionSiteAnorectal;
+	}
+
+	public void setGonococcalInfectionSiteAnorectal(SymptomState gonococcalInfectionSiteAnorectal) {
+		this.gonococcalInfectionSiteAnorectal = gonococcalInfectionSiteAnorectal;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteBlood() {
+		return gonococcalInfectionSiteBlood;
+	}
+
+	public void setGonococcalInfectionSiteBlood(SymptomState gonococcalInfectionSiteBlood) {
+		this.gonococcalInfectionSiteBlood = gonococcalInfectionSiteBlood;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteCerebrospinalFluid() {
+		return gonococcalInfectionSiteCerebrospinalFluid;
+	}
+
+	public void setGonococcalInfectionSiteCerebrospinalFluid(SymptomState gonococcalInfectionSiteCerebrospinalFluid) {
+		this.gonococcalInfectionSiteCerebrospinalFluid = gonococcalInfectionSiteCerebrospinalFluid;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteEye() {
+		return gonococcalInfectionSiteEye;
+	}
+
+	public void setGonococcalInfectionSiteEye(SymptomState gonococcalInfectionSiteEye) {
+		this.gonococcalInfectionSiteEye = gonococcalInfectionSiteEye;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteGenital() {
+		return gonococcalInfectionSiteGenital;
+	}
+
+	public void setGonococcalInfectionSiteGenital(SymptomState gonococcalInfectionSiteGenital) {
+		this.gonococcalInfectionSiteGenital = gonococcalInfectionSiteGenital;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteJointFluid() {
+		return gonococcalInfectionSiteJointFluid;
+	}
+
+	public void setGonococcalInfectionSiteJointFluid(SymptomState gonococcalInfectionSiteJointFluid) {
+		this.gonococcalInfectionSiteJointFluid = gonococcalInfectionSiteJointFluid;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSitePharyngeal() {
+		return gonococcalInfectionSitePharyngeal;
+	}
+
+	public void setGonococcalInfectionSitePharyngeal(SymptomState gonococcalInfectionSitePharyngeal) {
+		this.gonococcalInfectionSitePharyngeal = gonococcalInfectionSitePharyngeal;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteUnknown() {
+		return gonococcalInfectionSiteUnknown;
+	}
+
+	public void setGonococcalInfectionSiteUnknown(SymptomState gonococcalInfectionSiteUnknown) {
+		this.gonococcalInfectionSiteUnknown = gonococcalInfectionSiteUnknown;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteOther() {
+		return gonococcalInfectionSiteOther;
+	}
+
+	public void setGonococcalInfectionSiteOther(SymptomState gonococcalInfectionSiteOther) {
+		this.gonococcalInfectionSiteOther = gonococcalInfectionSiteOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getGonococcalInfectionSiteOtherText() {
+		return gonococcalInfectionSiteOtherText;
+	}
+
+	public void setGonococcalInfectionSiteOtherText(String gonococcalInfectionSiteOtherText) {
+		this.gonococcalInfectionSiteOtherText = gonococcalInfectionSiteOtherText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNoConcurrentSti() {
+		return noConcurrentSti;
+	}
+
+	public void setNoConcurrentSti(SymptomState noConcurrentSti) {
+		this.noConcurrentSti = noConcurrentSti;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiChlamydia() {
+		return concurrentStiChlamydia;
+	}
+
+	public void setConcurrentStiChlamydia(SymptomState concurrentStiChlamydia) {
+		this.concurrentStiChlamydia = concurrentStiChlamydia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiGenitalHerpes() {
+		return concurrentStiGenitalHerpes;
+	}
+
+	public void setConcurrentStiGenitalHerpes(SymptomState concurrentStiGenitalHerpes) {
+		this.concurrentStiGenitalHerpes = concurrentStiGenitalHerpes;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiLgv() {
+		return concurrentStiLgv;
+	}
+
+	public void setConcurrentStiLgv(SymptomState concurrentStiLgv) {
+		this.concurrentStiLgv = concurrentStiLgv;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiMycoplasmaGenitalium() {
+		return concurrentStiMycoplasmaGenitalium;
+	}
+
+	public void setConcurrentStiMycoplasmaGenitalium(SymptomState concurrentStiMycoplasmaGenitalium) {
+		this.concurrentStiMycoplasmaGenitalium = concurrentStiMycoplasmaGenitalium;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiInfectiousSyphilis() {
+		return concurrentStiInfectiousSyphilis;
+	}
+
+	public void setConcurrentStiInfectiousSyphilis(SymptomState concurrentStiInfectiousSyphilis) {
+		this.concurrentStiInfectiousSyphilis = concurrentStiInfectiousSyphilis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiTrichomonasVaginalis() {
+		return concurrentStiTrichomonasVaginalis;
+	}
+
+	public void setConcurrentStiTrichomonasVaginalis(SymptomState concurrentStiTrichomonasVaginalis) {
+		this.concurrentStiTrichomonasVaginalis = concurrentStiTrichomonasVaginalis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiGenitalWarts() {
+		return concurrentStiGenitalWarts;
+	}
+
+	public void setConcurrentStiGenitalWarts(SymptomState concurrentStiGenitalWarts) {
+		this.concurrentStiGenitalWarts = concurrentStiGenitalWarts;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiOther() {
+		return concurrentStiOther;
+	}
+
+	public void setConcurrentStiOther(SymptomState concurrentStiOther) {
+		this.concurrentStiOther = concurrentStiOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getConcurrentStiOtherText() {
+		return concurrentStiOtherText;
+	}
+
+	public void setConcurrentStiOtherText(String concurrentStiOtherText) {
+		this.concurrentStiOtherText = concurrentStiOtherText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiUnknown() {
+		return concurrentStiUnknown;
+	}
+
+	public void setConcurrentStiUnknown(SymptomState concurrentStiUnknown) {
+		this.concurrentStiUnknown = concurrentStiUnknown;
 	}
 
 }
