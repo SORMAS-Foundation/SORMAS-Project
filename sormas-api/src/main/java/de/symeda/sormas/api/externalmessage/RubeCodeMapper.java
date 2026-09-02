@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.externalmessage;
 
+import java.util.Locale;
 import java.util.Map;
 
 import de.symeda.sormas.api.sample.GenoType;
@@ -42,6 +43,6 @@ public class RubeCodeMapper {
 		if (rawCode == null) {
 			return null;
 		}
-		return GENOTYPE_CODES.get(rawCode.trim().toUpperCase());
+		return GENOTYPE_CODES.get(rawCode.trim().toUpperCase(Locale.ROOT));
 	}
 }

@@ -3,6 +3,7 @@ package de.symeda.sormas.api.externalmessage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,19 @@ public class RubeCodeMapperTest {
 
 	@Test
 	public void mapGenotypeIsCaseInsensitive() {
-		EXPECTED_GENOTYPE_CODES.forEach((code, expected) -> assertEquals(expected, RubeCodeMapper.mapGenotype(code.toLowerCase()), code));
+		EXPECTED_GENOTYPE_CODES.forEach((code, expected) -> assertEquals(expected, RubeCodeMapper.mapGenotype(code.toLowerCase(Locale.ROOT)), code));
+	}
+
+	@Test
+	public void mapGenotypeIgnoresTheDefaultLocale() {
+		// Turkish uppercases "i" to "İ", which would miss the "1I" key.
+		Locale original = Locale.getDefault();
+		try {
+			Locale.setDefault(new Locale("tr", "TR"));
+			assertEquals(GenoType.GENOTYPE_1I, RubeCodeMapper.mapGenotype("1i"));
+		} finally {
+			Locale.setDefault(original);
+		}
 	}
 
 	@Test
