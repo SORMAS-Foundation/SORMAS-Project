@@ -155,6 +155,14 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState thrombocytopenia;
 	private SymptomState lymphadenopathySuboccipital;
 	private SymptomState lymphadenopathyRetroauricular;
+	private SymptomState stillbornInfant;
+	private SymptomState unknownClinicalPresentation;
+	private SymptomState neurologicalComplications;
+	private SymptomState lowBirthWeight;
+	private SymptomState hepatitis;
+	private SymptomState thrombocytopenicPurpura;
+	private SymptomState rubellaArthritis;
+	private SymptomState greggsTriad;
 	private SymptomState chillsSweats;
 	private SymptomState bedridden;
 	private SymptomState oralUlcers;
@@ -1189,6 +1197,78 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setLymphadenopathyRetroauricular(SymptomState lymphadenopathyRetroauricular) {
 		this.lymphadenopathyRetroauricular = lymphadenopathyRetroauricular;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getStillbornInfant() {
+		return stillbornInfant;
+	}
+
+	public void setStillbornInfant(SymptomState stillbornInfant) {
+		this.stillbornInfant = stillbornInfant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getUnknownClinicalPresentation() {
+		return unknownClinicalPresentation;
+	}
+
+	public void setUnknownClinicalPresentation(SymptomState unknownClinicalPresentation) {
+		this.unknownClinicalPresentation = unknownClinicalPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNeurologicalComplications() {
+		return neurologicalComplications;
+	}
+
+	public void setNeurologicalComplications(SymptomState neurologicalComplications) {
+		this.neurologicalComplications = neurologicalComplications;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLowBirthWeight() {
+		return lowBirthWeight;
+	}
+
+	public void setLowBirthWeight(SymptomState lowBirthWeight) {
+		this.lowBirthWeight = lowBirthWeight;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHepatitis() {
+		return hepatitis;
+	}
+
+	public void setHepatitis(SymptomState hepatitis) {
+		this.hepatitis = hepatitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getThrombocytopenicPurpura() {
+		return thrombocytopenicPurpura;
+	}
+
+	public void setThrombocytopenicPurpura(SymptomState thrombocytopenicPurpura) {
+		this.thrombocytopenicPurpura = thrombocytopenicPurpura;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRubellaArthritis() {
+		return rubellaArthritis;
+	}
+
+	public void setRubellaArthritis(SymptomState rubellaArthritis) {
+		this.rubellaArthritis = rubellaArthritis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGreggsTriad() {
+		return greggsTriad;
+	}
+
+	public void setGreggsTriad(SymptomState greggsTriad) {
+		this.greggsTriad = greggsTriad;
 	}
 
 	@Enumerated(EnumType.STRING)

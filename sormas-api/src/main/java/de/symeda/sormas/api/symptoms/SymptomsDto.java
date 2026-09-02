@@ -236,6 +236,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String THROMBOCYTOPENIA = "thrombocytopenia";
 	public static final String LYMPHADENOPATHY_SUBOCCIPITAL = "lymphadenopathySuboccipital";
 	public static final String LYMPHADENOPATHY_RETROAURICULAR = "lymphadenopathyRetroauricular";
+	public static final String STILLBORN_INFANT = "stillbornInfant";
+	public static final String UNKNOWN_CLINICAL_PRESENTATION = "unknownClinicalPresentation";
+	public static final String NEUROLOGICAL_COMPLICATIONS = "neurologicalComplications";
+	public static final String LOW_BIRTH_WEIGHT = "lowBirthWeight";
+	public static final String HEPATITIS = "hepatitis";
+	public static final String THROMBOCYTOPENIC_PURPURA = "thrombocytopenicPurpura";
+	public static final String RUBELLA_ARTHRITIS = "rubellaArthritis";
+	public static final String GREGGS_TRIAD = "greggsTriad";
 	public static final String MALAISE = "malaise";
 	public static final String MENINGOENCEPHALITIS = "meningoencephalitis";
 	public static final String MICROCEPHALY = "microcephaly";
@@ -1383,8 +1391,11 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState bronchitis;
 
 	@Diseases({
-		RUBELLA })
+		RUBELLA,
+		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		CONGENITAL_RUBELLA })
 	private SymptomState myocarditis;
 
 	@Diseases({
@@ -2184,6 +2195,9 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		CONGENITAL_RUBELLA })
 	private SymptomState microcephaly;
 
 	@Diseases({
@@ -2229,6 +2243,58 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String congenitalHeartDiseaseDetails;
+
+	@Diseases({
+		CONGENITAL_RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState stillbornInfant;
+
+	@Diseases({
+		CONGENITAL_RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState unknownClinicalPresentation;
+
+	@Diseases({
+		CONGENITAL_RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		CONGENITAL_RUBELLA })
+	private SymptomState neurologicalComplications;
+
+	@Diseases({
+		CONGENITAL_RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		CONGENITAL_RUBELLA })
+	private SymptomState lowBirthWeight;
+
+	@Diseases({
+		CONGENITAL_RUBELLA })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Complication({
+		CONGENITAL_RUBELLA })
+	private SymptomState hepatitis;
+
+	@Diseases({
+		CONGENITAL_RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		CONGENITAL_RUBELLA })
+	private SymptomState thrombocytopenicPurpura;
+
+	@Diseases({
+		CONGENITAL_RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		CONGENITAL_RUBELLA })
+	private SymptomState rubellaArthritis;
+
+	@Diseases({
+		CONGENITAL_RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		CONGENITAL_RUBELLA })
+	private SymptomState greggsTriad;
 
 	@Diseases({
 		AFP,
@@ -2736,7 +2802,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MUMPS,
 		UNDEFINED,
 		OTHER,
-		RUBELLA })
+		RUBELLA,
+		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	@HideForCountries
 	private SymptomState otherComplications;
@@ -2777,7 +2844,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
 		MUMPS,
-		RUBELLA })
+		RUBELLA,
+		CONGENITAL_RUBELLA })
 	private String otherComplicationsText;
 
 	@Diseases({
@@ -2997,7 +3065,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS,
 		SHIGELLOSIS,
 		YERSINIOSIS,
-		GONOCOCCAL_INFECTION })
+		GONOCOCCAL_INFECTION,
+		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState otherClinicalPresentation;
 
@@ -3145,12 +3214,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		DENGUE,
 		MUMPS,
-		RUBELLA })
+		RUBELLA,
+		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
 		DENGUE,
 		MUMPS,
-		RUBELLA })
+		RUBELLA,
+		CONGENITAL_RUBELLA })
 	private SymptomState encephalitis;
 	@Diseases({
 		DENGUE })
@@ -3439,12 +3510,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState arthralgia;
 
 	@Diseases({
-		SYPHILIS })
+		SYPHILIS,
+		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState hepatomegaly;
 
 	@Diseases({
-		SYPHILIS })
+		SYPHILIS,
+		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState hepatosplenomegaly;
 
@@ -6362,6 +6435,70 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setLymphadenopathyRetroauricular(SymptomState lymphadenopathyRetroauricular) {
 		this.lymphadenopathyRetroauricular = lymphadenopathyRetroauricular;
+	}
+
+	public SymptomState getStillbornInfant() {
+		return stillbornInfant;
+	}
+
+	public void setStillbornInfant(SymptomState stillbornInfant) {
+		this.stillbornInfant = stillbornInfant;
+	}
+
+	public SymptomState getUnknownClinicalPresentation() {
+		return unknownClinicalPresentation;
+	}
+
+	public void setUnknownClinicalPresentation(SymptomState unknownClinicalPresentation) {
+		this.unknownClinicalPresentation = unknownClinicalPresentation;
+	}
+
+	public SymptomState getNeurologicalComplications() {
+		return neurologicalComplications;
+	}
+
+	public void setNeurologicalComplications(SymptomState neurologicalComplications) {
+		this.neurologicalComplications = neurologicalComplications;
+	}
+
+	public SymptomState getLowBirthWeight() {
+		return lowBirthWeight;
+	}
+
+	public void setLowBirthWeight(SymptomState lowBirthWeight) {
+		this.lowBirthWeight = lowBirthWeight;
+	}
+
+	public SymptomState getHepatitis() {
+		return hepatitis;
+	}
+
+	public void setHepatitis(SymptomState hepatitis) {
+		this.hepatitis = hepatitis;
+	}
+
+	public SymptomState getThrombocytopenicPurpura() {
+		return thrombocytopenicPurpura;
+	}
+
+	public void setThrombocytopenicPurpura(SymptomState thrombocytopenicPurpura) {
+		this.thrombocytopenicPurpura = thrombocytopenicPurpura;
+	}
+
+	public SymptomState getRubellaArthritis() {
+		return rubellaArthritis;
+	}
+
+	public void setRubellaArthritis(SymptomState rubellaArthritis) {
+		this.rubellaArthritis = rubellaArthritis;
+	}
+
+	public SymptomState getGreggsTriad() {
+		return greggsTriad;
+	}
+
+	public void setGreggsTriad(SymptomState greggsTriad) {
+		this.greggsTriad = greggsTriad;
 	}
 
 }
