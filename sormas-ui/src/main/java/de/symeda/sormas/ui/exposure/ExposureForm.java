@@ -552,13 +552,14 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		// if the disease is Malaria or Dengue and the category is VECTOR_BORNE, preselect MOSQUITO_BORNE as setting (since it's the only valid option in this case)
 		boolean isVectorBorneAutoSetting =
 			Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE;
-		// Syphilis: Direct contact defaults to Person to person, but remains editable (other settings are available)
-		boolean isSyphilisDirectContact = disease == Disease.SYPHILIS && category == ExposureCategory.DIRECT_CONTACT;
+		// Sexually transmitted infections: Direct contact defaults to Person to person, but remains editable (other settings are available)
+		boolean isSexuallyTransmittedInfectionDirectContact =
+			(disease == Disease.SYPHILIS || disease == Disease.GONOCOCCAL_INFECTION) && category == ExposureCategory.DIRECT_CONTACT;
 
 		ExposureSetting defaultSetting;
 		if (isVectorBorneAutoSetting) {
 			defaultSetting = ExposureSetting.MOSQUITO_BORNE;
-		} else if (isSyphilisDirectContact) {
+		} else if (isSexuallyTransmittedInfectionDirectContact) {
 			defaultSetting = ExposureSetting.PERSON_TO_PERSON;
 		} else {
 			defaultSetting = null;

@@ -85,7 +85,9 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
 	private YesNoUnknown contactWithSourceCaseKnown;
+	@Diseases(value = Disease.GONOCOCCAL_INFECTION, hide = true)
 	private YesNoUnknown highTransmissionRiskArea;
+	@Diseases(value = Disease.GONOCOCCAL_INFECTION, hide = true)
 	private YesNoUnknown largeOutbreaksArea;
 	@Diseases({
 		Disease.MEASLES })
@@ -177,7 +179,7 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	private String otherDetails;
 	// airport worker should be applicable for all countries and diseases.
-	@Diseases
+	@Diseases(value = Disease.GONOCOCCAL_INFECTION, hide = true)
 	@HideForCountriesExcept
 	private YesNoUnknown airportWorker;
 	@Diseases({
@@ -202,7 +204,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private String residenceAtOnset;
 
 	@Diseases({
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
 
 	@Diseases({
@@ -218,7 +221,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown sexWorker;
 
 	@Diseases({
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private YesNoUnknown contactWithSexWorker;
 
 	@Diseases({

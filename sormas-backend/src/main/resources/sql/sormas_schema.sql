@@ -17255,4 +17255,10 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstiunknown varch
 
 INSERT INTO schema_version (version_number, comment) VALUES (664, 'Add Gonococcal infections case data and symptoms');
 
+UPDATE diseaseconfiguration
+SET exposurecategories = 'DIRECT_CONTACT,VERTICAL_TRANSMISSION', changedate = now()
+WHERE disease = 'GONOCOCCAL_INFECTION';
+
+INSERT INTO schema_version (version_number, comment) VALUES (665, 'Configure Gonococcal infection epidemiological data');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
