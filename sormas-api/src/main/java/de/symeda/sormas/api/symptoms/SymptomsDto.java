@@ -6419,6 +6419,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setConcurrentStiUnknown(SymptomState concurrentStiUnknown) {
 		this.concurrentStiUnknown = concurrentStiUnknown;
+	}
+
 	public SymptomState getBronchitis() {
 		return bronchitis;
 	}
