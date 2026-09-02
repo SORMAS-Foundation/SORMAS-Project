@@ -115,6 +115,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLymphadenopathyInguinal(source.getLymphadenopathyInguinal());
 		target.setLymphadenopathyAxillary(source.getLymphadenopathyAxillary());
 		target.setLymphadenopathyCervical(source.getLymphadenopathyCervical());
+		target.setBronchitis(source.getBronchitis());
+		target.setMyocarditis(source.getMyocarditis());
+		target.setPericarditis(source.getPericarditis());
+		target.setThrombocytopenia(source.getThrombocytopenia());
+		target.setLymphadenopathySuboccipital(source.getLymphadenopathySuboccipital());
+		target.setLymphadenopathyRetroauricular(source.getLymphadenopathyRetroauricular());
 		target.setMeningealSigns(source.getMeningealSigns());
 		target.setChillsSweats(source.getChillsSweats());
 		target.setLesionsThatItch(source.getLesionsThatItch());
@@ -442,6 +448,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLymphadenopathyInguinal(source.getLymphadenopathyInguinal());
 		target.setLymphadenopathyAxillary(source.getLymphadenopathyAxillary());
 		target.setLymphadenopathyCervical(source.getLymphadenopathyCervical());
+		target.setBronchitis(source.getBronchitis());
+		target.setMyocarditis(source.getMyocarditis());
+		target.setPericarditis(source.getPericarditis());
+		target.setThrombocytopenia(source.getThrombocytopenia());
+		target.setLymphadenopathySuboccipital(source.getLymphadenopathySuboccipital());
+		target.setLymphadenopathyRetroauricular(source.getLymphadenopathyRetroauricular());
 		target.setMeningealSigns(source.getMeningealSigns());
 		target.setChillsSweats(source.getChillsSweats());
 		target.setLesionsThatItch(source.getLesionsThatItch());

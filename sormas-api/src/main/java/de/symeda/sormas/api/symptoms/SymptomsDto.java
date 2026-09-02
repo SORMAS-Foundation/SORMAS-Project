@@ -230,6 +230,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String LYMPHADENOPATHY_AXILLARY = "lymphadenopathyAxillary";
 	public static final String LYMPHADENOPATHY_CERVICAL = "lymphadenopathyCervical";
 	public static final String LYMPHADENOPATHY_INGUINAL = "lymphadenopathyInguinal";
+	public static final String BRONCHITIS = "bronchitis";
+	public static final String MYOCARDITIS = "myocarditis";
+	public static final String PERICARDITIS = "pericarditis";
+	public static final String THROMBOCYTOPENIA = "thrombocytopenia";
+	public static final String LYMPHADENOPATHY_SUBOCCIPITAL = "lymphadenopathySuboccipital";
+	public static final String LYMPHADENOPATHY_RETROAURICULAR = "lymphadenopathyRetroauricular";
 	public static final String MALAISE = "malaise";
 	public static final String MENINGOENCEPHALITIS = "meningoencephalitis";
 	public static final String MICROCEPHALY = "microcephaly";
@@ -688,7 +694,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
-		OTHER })
+		OTHER,
+		RUBELLA })
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
@@ -945,7 +952,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS,
 		YERSINIOSIS,
 		MUMPS,
-		OTHER })
+		OTHER,
+		RUBELLA })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState fever;
@@ -1352,7 +1360,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MONKEYPOX,
 		POLIO,
 		UNDEFINED,
-		OTHER })
+		OTHER,
+		RUBELLA })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState lymphadenopathyCervical;
@@ -1367,6 +1376,36 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState lymphadenopathyInguinal;
+
+	@Diseases({
+		RUBELLA })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState bronchitis;
+
+	@Diseases({
+		RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState myocarditis;
+
+	@Diseases({
+		RUBELLA })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState pericarditis;
+
+	@Diseases({
+		RUBELLA })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState thrombocytopenia;
+
+	@Diseases({
+		RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState lymphadenopathySuboccipital;
+
+	@Diseases({
+		RUBELLA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState lymphadenopathyRetroauricular;
 
 	@Diseases({
 		AFP,
@@ -1749,7 +1788,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		POLIO,
 		UNDEFINED,
-		OTHER })
+		OTHER,
+		RUBELLA })
 	@Complication({
 		MEASLES })
 	@HideForCountries
@@ -1942,11 +1982,11 @@ public class SymptomsDto extends PseudonymizableDto {
 		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER,
-		CORONAVIRUS })
+		CORONAVIRUS,
+		RUBELLA })
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
-	/** Maculopapular rash */
 	private SymptomState skinRash;
 
 	@Diseases({
@@ -2695,7 +2735,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		MUMPS,
 		UNDEFINED,
-		OTHER })
+		OTHER,
+		RUBELLA })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	@HideForCountries
 	private SymptomState otherComplications;
@@ -2723,7 +2764,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		MUMPS,
 		UNDEFINED,
-		OTHER })
+		OTHER,
+		RUBELLA })
 	@DependantOn(OTHER_COMPLICATIONS)
 	@SymptomGrouping(SymptomGroup.OTHER)
 	@HideForCountries
@@ -2734,7 +2776,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
-		MUMPS })
+		MUMPS,
+		RUBELLA })
 	private String otherComplicationsText;
 
 	@Diseases({
@@ -2924,7 +2967,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION,
-		GONOCOCCAL_INFECTION })
+		GONOCOCCAL_INFECTION,
+		RUBELLA })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState arthritis;
 
@@ -3100,11 +3144,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState coldSkin;
 	@Diseases({
 		DENGUE,
-		MUMPS })
+		MUMPS,
+		RUBELLA })
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
 		DENGUE,
-		MUMPS })
+		MUMPS,
+		RUBELLA })
 	private SymptomState encephalitis;
 	@Diseases({
 		DENGUE })
@@ -3257,24 +3303,28 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState cerebralMalaria;
 
 	@Diseases({
-		DENGUE })
+		DENGUE,
+		RUBELLA })
 	@Outbreaks
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_LUXEMBOURG })
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
-		DENGUE })
+		DENGUE,
+		RUBELLA })
 	private YesNoUnknown otherNeurologicalSymptoms;
 
 	@Diseases({
-		DENGUE })
+		DENGUE,
+		RUBELLA })
 	@Outbreaks
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_LUXEMBOURG })
 	@DependantOn(OTHER_NEUROLOGICAL_SYMPTOMS)
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
-		DENGUE })
+		DENGUE,
+		RUBELLA })
 	private String otherNeurologicalSymptomsText;
 
 	@Diseases({
@@ -3383,7 +3433,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState nephroticSyndrome;
 
 	@Diseases({
-		SYPHILIS })
+		SYPHILIS,
+		RUBELLA })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState arthralgia;
 
@@ -3561,7 +3612,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState pancreatitis;
 
 	@Diseases({
-		MUMPS })
+		MUMPS,
+		RUBELLA })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private YesNoUnknown otherGeneralSymptoms;
 
@@ -6264,6 +6316,52 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setConcurrentStiUnknown(SymptomState concurrentStiUnknown) {
 		this.concurrentStiUnknown = concurrentStiUnknown;
+	public SymptomState getBronchitis() {
+		return bronchitis;
+	}
+
+	public void setBronchitis(SymptomState bronchitis) {
+		this.bronchitis = bronchitis;
+	}
+
+	public SymptomState getMyocarditis() {
+		return myocarditis;
+	}
+
+	public void setMyocarditis(SymptomState myocarditis) {
+		this.myocarditis = myocarditis;
+	}
+
+	public SymptomState getPericarditis() {
+		return pericarditis;
+	}
+
+	public void setPericarditis(SymptomState pericarditis) {
+		this.pericarditis = pericarditis;
+	}
+
+	public SymptomState getThrombocytopenia() {
+		return thrombocytopenia;
+	}
+
+	public void setThrombocytopenia(SymptomState thrombocytopenia) {
+		this.thrombocytopenia = thrombocytopenia;
+	}
+
+	public SymptomState getLymphadenopathySuboccipital() {
+		return lymphadenopathySuboccipital;
+	}
+
+	public void setLymphadenopathySuboccipital(SymptomState lymphadenopathySuboccipital) {
+		this.lymphadenopathySuboccipital = lymphadenopathySuboccipital;
+	}
+
+	public SymptomState getLymphadenopathyRetroauricular() {
+		return lymphadenopathyRetroauricular;
+	}
+
+	public void setLymphadenopathyRetroauricular(SymptomState lymphadenopathyRetroauricular) {
+		this.lymphadenopathyRetroauricular = lymphadenopathyRetroauricular;
 	}
 
 }

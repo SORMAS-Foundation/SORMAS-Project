@@ -149,6 +149,12 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState lymphadenopathyInguinal;
 	private SymptomState lymphadenopathyAxillary;
 	private SymptomState lymphadenopathyCervical;
+	private SymptomState bronchitis;
+	private SymptomState myocarditis;
+	private SymptomState pericarditis;
+	private SymptomState thrombocytopenia;
+	private SymptomState lymphadenopathySuboccipital;
+	private SymptomState lymphadenopathyRetroauricular;
 	private SymptomState chillsSweats;
 	private SymptomState bedridden;
 	private SymptomState oralUlcers;
@@ -1129,6 +1135,60 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setLymphadenopathyCervical(SymptomState lymphadenopathyCervical) {
 		this.lymphadenopathyCervical = lymphadenopathyCervical;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBronchitis() {
+		return bronchitis;
+	}
+
+	public void setBronchitis(SymptomState bronchitis) {
+		this.bronchitis = bronchitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMyocarditis() {
+		return myocarditis;
+	}
+
+	public void setMyocarditis(SymptomState myocarditis) {
+		this.myocarditis = myocarditis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPericarditis() {
+		return pericarditis;
+	}
+
+	public void setPericarditis(SymptomState pericarditis) {
+		this.pericarditis = pericarditis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getThrombocytopenia() {
+		return thrombocytopenia;
+	}
+
+	public void setThrombocytopenia(SymptomState thrombocytopenia) {
+		this.thrombocytopenia = thrombocytopenia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLymphadenopathySuboccipital() {
+		return lymphadenopathySuboccipital;
+	}
+
+	public void setLymphadenopathySuboccipital(SymptomState lymphadenopathySuboccipital) {
+		this.lymphadenopathySuboccipital = lymphadenopathySuboccipital;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLymphadenopathyRetroauricular() {
+		return lymphadenopathyRetroauricular;
+	}
+
+	public void setLymphadenopathyRetroauricular(SymptomState lymphadenopathyRetroauricular) {
+		this.lymphadenopathyRetroauricular = lymphadenopathyRetroauricular;
 	}
 
 	@Enumerated(EnumType.STRING)

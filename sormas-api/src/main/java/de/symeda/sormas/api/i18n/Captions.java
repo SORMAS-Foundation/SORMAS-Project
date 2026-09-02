@@ -3148,6 +3148,7 @@ public interface Captions {
 	String Symptoms_blueLips = "Symptoms.blueLips";
 	String Symptoms_bonyAbnormalities = "Symptoms.bonyAbnormalities";
 	String Symptoms_breathlessness = "Symptoms.breathlessness";
+	String Symptoms_bronchitis = "Symptoms.bronchitis";
 	String Symptoms_buboesGroinArmpitNeck = "Symptoms.buboesGroinArmpitNeck";
 	String Symptoms_bulgingFontanelle = "Symptoms.bulgingFontanelle";
 	String Symptoms_centralNervousSystemDamage = "Symptoms.centralNervousSystemDamage";
@@ -3301,6 +3302,8 @@ public interface Captions {
 	String Symptoms_lymphadenopathyAxillary = "Symptoms.lymphadenopathyAxillary";
 	String Symptoms_lymphadenopathyCervical = "Symptoms.lymphadenopathyCervical";
 	String Symptoms_lymphadenopathyInguinal = "Symptoms.lymphadenopathyInguinal";
+	String Symptoms_lymphadenopathyRetroauricular = "Symptoms.lymphadenopathyRetroauricular";
+	String Symptoms_lymphadenopathySuboccipital = "Symptoms.lymphadenopathySuboccipital";
 	String Symptoms_maculopapularRash = "Symptoms.maculopapularRash";
 	String Symptoms_majorSite = "Symptoms.majorSite";
 	String Symptoms_malaise = "Symptoms.malaise";
@@ -3315,6 +3318,7 @@ public interface Captions {
 	String Symptoms_mucocutaneousLesion = "Symptoms.mucocutaneousLesion";
 	String Symptoms_mucousPatches = "Symptoms.mucousPatches";
 	String Symptoms_musclePain = "Symptoms.musclePain";
+	String Symptoms_myocarditis = "Symptoms.myocarditis";
 	String Symptoms_nausea = "Symptoms.nausea";
 	String Symptoms_neckStiffness = "Symptoms.neckStiffness";
 	String Symptoms_necrotizingEnterocolitis = "Symptoms.necrotizingEnterocolitis";
@@ -3366,6 +3370,7 @@ public interface Captions {
 	String Symptoms_patchyAlopecia = "Symptoms.patchyAlopecia";
 	String Symptoms_patientIllLocation = "Symptoms.patientIllLocation";
 	String Symptoms_pelvicInflammatoryDisease = "Symptoms.pelvicInflammatoryDisease";
+	String Symptoms_pericarditis = "Symptoms.pericarditis";
 	String Symptoms_persistentVomiting = "Symptoms.persistentVomiting";
 	String Symptoms_pharyngealErythema = "Symptoms.pharyngealErythema";
 	String Symptoms_pharyngealExudate = "Symptoms.pharyngealExudate";
@@ -3426,6 +3431,7 @@ public interface Captions {
 	String Symptoms_temperatureSource = "Symptoms.temperatureSource";
 	String Symptoms_tenesmus = "Symptoms.tenesmus";
 	String Symptoms_throbocytopenia = "Symptoms.throbocytopenia";
+	String Symptoms_thrombocytopenia = "Symptoms.thrombocytopenia";
 	String Symptoms_timeOffWorkDays = "Symptoms.timeOffWorkDays";
 	String Symptoms_timeOffWorkDaysDuration = "Symptoms.timeOffWorkDaysDuration";
 	String Symptoms_timeOffWorkOrSchool = "Symptoms.timeOffWorkOrSchool";
