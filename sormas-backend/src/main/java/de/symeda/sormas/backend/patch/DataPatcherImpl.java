@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.patch;
 
 import java.util.AbstractMap;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -300,9 +301,16 @@ public class DataPatcherImpl implements DataPatcher {
 		}
 		Class<?> targetType = nestedPropertyTypeTuple.getFirst();
 
+		Class<?> collectionSubType = null;
+		if (Collection.class.isAssignableFrom(targetType)) {
+			logger.info("Subtype will be computed as the targetType is a collectionType: [{}]", targetType);
+			collectionSubType = PropertyAccessor.getCollectionGenericType(target, relativeFieldName);
+		}
+
 		ValueMappingResult<?> result = valueMapperRegistry.map(
 			new ValuePatchRequest().setValue(untypedTargetValue)
 				.setTargetType(targetType)
+				.setCollectionSubType(collectionSubType)
 				.setInputLanguages(request.getInputLanguages())
 				.setAllowFallbackValues(request.isAllowFallbackValues()));
 

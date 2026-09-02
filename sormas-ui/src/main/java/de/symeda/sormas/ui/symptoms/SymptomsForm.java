@@ -130,7 +130,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC = "nervousSystemSignsAndSymptomsHeadingLoc";
 	private static final String SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC = "skinSignsAndSymptomsHeadingLoc";
 	private static final String REPRODUCTIVE_GENITAL_SIGNS_AND_SYMPTOMS_HEADING_LOC = "reproductiveGenitalSignsAndSymptomsHeadingLoc";
-	private static final String ENT_SIGNS_AND_SYMPTOMS_HEADING_LOC = "entSignsAndSymptomsHeadingLoc";
 	private static final String OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC = "otherSignsAndSymptomsHeadingLoc";
 	private static final String GONOCOCCAL_INFECTION_SITE_HEADING_LOC = "gonococcalInfectionSiteHeadingLoc";
 	private static final String CONCURRENT_STI_HEADING_LOC = "concurrentStiHeadingLoc";
