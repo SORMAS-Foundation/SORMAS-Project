@@ -3246,6 +3246,7 @@ public interface Captions {
 	String Symptoms_gonococcalInfectionSiteOtherText = "Symptoms.gonococcalInfectionSiteOtherText";
 	String Symptoms_gonococcalInfectionSitePharyngeal = "Symptoms.gonococcalInfectionSitePharyngeal";
 	String Symptoms_gonococcalInfectionSiteUnknown = "Symptoms.gonococcalInfectionSiteUnknown";
+	String Symptoms_greggsTriad = "Symptoms.greggsTriad";
 	String Symptoms_guillainBarreSyndrome = "Symptoms.guillainBarreSyndrome";
 	String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
 	String Symptoms_haemolyticUremicSyndrome = "Symptoms.haemolyticUremicSyndrome";
@@ -3255,6 +3256,7 @@ public interface Captions {
 	String Symptoms_height = "Symptoms.height";
 	String Symptoms_hemorrhagicRash = "Symptoms.hemorrhagicRash";
 	String Symptoms_hemorrhagicSyndrome = "Symptoms.hemorrhagicSyndrome";
+	String Symptoms_hepatitis = "Symptoms.hepatitis";
 	String Symptoms_hepatomegaly = "Symptoms.hepatomegaly";
 	String Symptoms_hepatosplenomegaly = "Symptoms.hepatosplenomegaly";
 	String Symptoms_hiccups = "Symptoms.hiccups";
@@ -3297,6 +3299,7 @@ public interface Captions {
 	String Symptoms_lossOfSmell = "Symptoms.lossOfSmell";
 	String Symptoms_lossOfTaste = "Symptoms.lossOfTaste";
 	String Symptoms_lossSkinTurgor = "Symptoms.lossSkinTurgor";
+	String Symptoms_lowBirthWeight = "Symptoms.lowBirthWeight";
 	String Symptoms_lowGradeFever = "Symptoms.lowGradeFever";
 	String Symptoms_lymphadenopathy = "Symptoms.lymphadenopathy";
 	String Symptoms_lymphadenopathyAxillary = "Symptoms.lymphadenopathyAxillary";
@@ -3323,6 +3326,7 @@ public interface Captions {
 	String Symptoms_neckStiffness = "Symptoms.neckStiffness";
 	String Symptoms_necrotizingEnterocolitis = "Symptoms.necrotizingEnterocolitis";
 	String Symptoms_nephroticSyndrome = "Symptoms.nephroticSyndrome";
+	String Symptoms_neurologicalComplications = "Symptoms.neurologicalComplications";
 	String Symptoms_neurologicalManifestations = "Symptoms.neurologicalManifestations";
 	String Symptoms_newbornConjunctivitis = "Symptoms.newbornConjunctivitis";
 	String Symptoms_noComplications = "Symptoms.noComplications";
@@ -3393,6 +3397,7 @@ public interface Captions {
 	String Symptoms_respiratoryFatigue = "Symptoms.respiratoryFatigue";
 	String Symptoms_respiratoryRate = "Symptoms.respiratoryRate";
 	String Symptoms_restlessness = "Symptoms.restlessness";
+	String Symptoms_rubellaArthritis = "Symptoms.rubellaArthritis";
 	String Symptoms_runnyNose = "Symptoms.runnyNose";
 	String Symptoms_salivarySwelling = "Symptoms.salivarySwelling";
 	String Symptoms_scantHemorrhage = "Symptoms.scantHemorrhage";
@@ -3411,6 +3416,7 @@ public interface Captions {
 	String Symptoms_skinUlcers = "Symptoms.skinUlcers";
 	String Symptoms_soreThroat = "Symptoms.soreThroat";
 	String Symptoms_splenomegaly = "Symptoms.splenomegaly";
+	String Symptoms_stillbornInfant = "Symptoms.stillbornInfant";
 	String Symptoms_stomachBleeding = "Symptoms.stomachBleeding";
 	String Symptoms_sunkenEyesFontanelle = "Symptoms.sunkenEyesFontanelle";
 	String Symptoms_swollenGlands = "Symptoms.swollenGlands";
@@ -3432,12 +3438,14 @@ public interface Captions {
 	String Symptoms_tenesmus = "Symptoms.tenesmus";
 	String Symptoms_throbocytopenia = "Symptoms.throbocytopenia";
 	String Symptoms_thrombocytopenia = "Symptoms.thrombocytopenia";
+	String Symptoms_thrombocytopenicPurpura = "Symptoms.thrombocytopenicPurpura";
 	String Symptoms_timeOffWorkDays = "Symptoms.timeOffWorkDays";
 	String Symptoms_timeOffWorkDaysDuration = "Symptoms.timeOffWorkDaysDuration";
 	String Symptoms_timeOffWorkOrSchool = "Symptoms.timeOffWorkOrSchool";
 	String Symptoms_tremor = "Symptoms.tremor";
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";
+	String Symptoms_unknownClinicalPresentation = "Symptoms.unknownClinicalPresentation";
 	String Symptoms_unknownComplications = "Symptoms.unknownComplications";
 	String Symptoms_unknownSymptom = "Symptoms.unknownSymptom";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";

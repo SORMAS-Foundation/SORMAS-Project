@@ -17270,6 +17270,26 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstiothertext var
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstiunknown varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (664, 'Add Gonococcal infections case data and symptoms');
+-- 14291 Congenital Rubella Syndrome specific symptoms and complications
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS stillborninfant varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS unknownclinicalpresentation varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS neurologicalcomplications varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS lowbirthweight varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hepatitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS thrombocytopenicpurpura varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS rubellaarthritis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS greggstriad varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS stillborninfant varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS unknownclinicalpresentation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS neurologicalcomplications varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lowbirthweight varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS hepatitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS thrombocytopenicpurpura varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS rubellaarthritis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS greggstriad varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (664, '#14291 - Add Congenital Rubella Syndrome specific symptoms and complications');
 
 UPDATE diseaseconfiguration
 SET exposurecategories = 'DIRECT_CONTACT,VERTICAL_TRANSMISSION', changedate = now()
