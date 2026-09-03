@@ -13,6 +13,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilit
 public class SampleMaterialCongenitalRubellaTest {
 
 	private static final List<SampleMaterial> APPROVED = List.of(
+		SampleMaterial.BLOOD,
 		SampleMaterial.DRY_BLOOD,
 		SampleMaterial.EDTA_WHOLE_BLOOD,
 		SampleMaterial.NP_SWAB,

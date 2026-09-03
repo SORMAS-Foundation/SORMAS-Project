@@ -39,9 +39,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MUMPS,
 		Disease.TUBERCULOSIS,
-		Disease.PERTUSSIS,
-		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.PERTUSSIS }, hide = true)
 	BLOOD,
 
 	@Diseases(value = {
