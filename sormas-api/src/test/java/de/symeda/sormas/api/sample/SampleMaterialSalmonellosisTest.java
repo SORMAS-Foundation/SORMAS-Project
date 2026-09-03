@@ -12,25 +12,39 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilit
 
 public class SampleMaterialSalmonellosisTest {
 
-	private static final List<SampleMaterial> SALM_19_MATERIALS = List.of(
+	private static final List<SampleMaterial> MATRIX_MATERIALS = List.of(
+		SampleMaterial.ABSCESS_SWAB,
 		SampleMaterial.BLOOD,
+		SampleMaterial.BONE_MARROW,
 		SampleMaterial.CEREBROSPINAL_FLUID,
-		SampleMaterial.STOOL,
-		SampleMaterial.URINE,
 		SampleMaterial.CLINICAL_SAMPLE,
-		SampleMaterial.PUS,
-		SampleMaterial.UNKNOWN);
+		SampleMaterial.RECTAL_SWAB,
+		SampleMaterial.STOOL,
+		SampleMaterial.URINE);
+
+	// Withdrawn by the sample/test matrix after #14223 had allowed them.
+	private static final List<SampleMaterial> WITHDRAWN_MATERIALS = List.of(SampleMaterial.PUS, SampleMaterial.UNKNOWN);
 
 	@Test
-	public void everySalm19SpecimenIsVisibleForSalmonellosis() {
+	public void everyMatrixSpecimenIsVisibleForSalmonellosis() {
 		DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.SALMONELLOSIS);
-		for (SampleMaterial material : SALM_19_MATERIALS) {
+		for (SampleMaterial material : MATRIX_MATERIALS) {
 			assertFalse(
 				material.isDeprecated(),
-				material.name() + " is a retired sample material and must not be a SALM-19 mapping target");
+				material.name() + " is a retired sample material and must not be a Salmonellosis mapping target");
 			assertTrue(
 				checker.isVisible(SampleMaterial.class, material.name()),
-				material.name() + " must be selectable for Salmonellosis (SALM-19 specimen list)");
+				material.name() + " must be selectable for Salmonellosis (sample/test matrix)");
+		}
+	}
+
+	@Test
+	public void withdrawnSpecimensAreHiddenForSalmonellosis() {
+		DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.SALMONELLOSIS);
+		for (SampleMaterial material : WITHDRAWN_MATERIALS) {
+			assertFalse(
+				checker.isVisible(SampleMaterial.class, material.name()),
+				material.name() + " must not be selectable for Salmonellosis (sample/test matrix)");
 		}
 	}
 }

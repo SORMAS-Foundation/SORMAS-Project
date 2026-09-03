@@ -2,7 +2,6 @@ package de.symeda.sormas.api.sample;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
@@ -56,7 +55,16 @@ public class SampleMaterialTest {
 
 		assertThat(
 			visibleForSalmonellosis,
-			hasItems(SampleMaterial.BONE, SampleMaterial.NP_SWAB, SampleMaterial.OROPHARYNGEAL_SWAB, SampleMaterial.TISSUE));
+			containsInAnyOrder(
+				SampleMaterial.ABSCESS_SWAB,
+				SampleMaterial.BLOOD,
+				SampleMaterial.BONE_MARROW,
+				SampleMaterial.CEREBROSPINAL_FLUID,
+				SampleMaterial.CLINICAL_SAMPLE,
+				SampleMaterial.OTHER,
+				SampleMaterial.RECTAL_SWAB,
+				SampleMaterial.STOOL,
+				SampleMaterial.URINE));
 	}
 
 	@Test
