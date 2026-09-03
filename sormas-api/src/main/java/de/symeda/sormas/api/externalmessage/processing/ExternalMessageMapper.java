@@ -1081,6 +1081,24 @@ public final class ExternalMessageMapper {
 							PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY))
 
 				));
+
+			// RUBE-9: "NOTEST" means not performed -> NOT_DONE, not NOT_APPLICABLE.
+			String rawResultCode = sourceTestReport.getTestResultText();
+			if (rawResultCode != null && "NOTEST".equalsIgnoreCase(rawResultCode.trim())) {
+				changedFields.addAll(
+					map(
+						Stream.of(
+							Mapping.of(
+								pathogenTest::setTestResult,
+								pathogenTest.getTestResult(),
+								PathogenTestResultType.NOT_DONE,
+								PathogenTestDto.TEST_RESULT),
+							Mapping.of(
+								pathogenTest::setTestResultText,
+								pathogenTest.getTestResultText(),
+								"NOTEST",
+								PathogenTestDto.TEST_RESULT_TEXT))));
+			}
 		}
 
 		changedFields.addAll(

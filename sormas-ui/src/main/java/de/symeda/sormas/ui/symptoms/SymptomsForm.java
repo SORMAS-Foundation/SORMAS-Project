@@ -562,6 +562,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LYMPHADENOPATHY_AXILLARY,
 			LYMPHADENOPATHY_CERVICAL,
 			LYMPHADENOPATHY_INGUINAL,
+			BRONCHITIS,
+			MYOCARDITIS,
+			PERICARDITIS,
+			THROMBOCYTOPENIA,
+			LYMPHADENOPATHY_SUBOCCIPITAL,
+			LYMPHADENOPATHY_RETROAURICULAR,
 			CHILLS_SWEATS,
 			BEDRIDDEN,
 			ORAL_ULCERS,
@@ -594,6 +600,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			DEVELOPMENTAL_DELAY,
 			CONGENITAL_HEART_DISEASE_TYPE,
 			CONGENITAL_HEART_DISEASE_DETAILS,
+			STILLBORN_INFANT,
+			UNKNOWN_CLINICAL_PRESENTATION,
+			NEUROLOGICAL_COMPLICATIONS,
+			LOW_BIRTH_WEIGHT,
+			HEPATITIS,
+			THROMBOCYTOPENIC_PURPURA,
+			RUBELLA_ARTHRITIS,
+			GREGGS_TRIAD,
 			JAUNDICE_WITHIN_24_HOURS_OF_BIRTH,
 			PATIENT_ILL_LOCATION,
 			HYDROPHOBIA,
@@ -1005,6 +1019,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LYMPHADENOPATHY_AXILLARY,
 			LYMPHADENOPATHY_CERVICAL,
 			LYMPHADENOPATHY_INGUINAL,
+			BRONCHITIS,
+			MYOCARDITIS,
+			PERICARDITIS,
+			THROMBOCYTOPENIA,
+			LYMPHADENOPATHY_SUBOCCIPITAL,
+			LYMPHADENOPATHY_RETROAURICULAR,
 			CHILLS_SWEATS,
 			BEDRIDDEN,
 			ORAL_ULCERS,
@@ -1035,6 +1055,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MICROCEPHALY,
 			MENINGOENCEPHALITIS,
 			DEVELOPMENTAL_DELAY,
+			STILLBORN_INFANT,
+			UNKNOWN_CLINICAL_PRESENTATION,
+			NEUROLOGICAL_COMPLICATIONS,
+			LOW_BIRTH_WEIGHT,
+			HEPATITIS,
+			THROMBOCYTOPENIC_PURPURA,
+			RUBELLA_ARTHRITIS,
+			GREGGS_TRIAD,
 			PURPURIC_RASH,
 			PIGMENTARY_RETINOPATHY,
 			CONVULSION,
@@ -1351,6 +1379,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_imi_pneumoniaClinicalOrRadiologic));
 		} else if (Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease) {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_ipi_pneumoniaClinicalOrRadiologic));
+		} else if (Disease.RUBELLA == disease) {
+			getField(ARTHRITIS).setCaption(I18nProperties.getCaption(Captions.Symptoms_arthritis_RUBELLA));
+			getField(SKIN_RASH).setCaption(I18nProperties.getCaption(Captions.Symptoms_skinRash_RUBELLA));
 		}
 
 		if (symptomsContext == SymptomsContext.CASE && caze != null && caze.getDisease() == Disease.PLAGUE) {

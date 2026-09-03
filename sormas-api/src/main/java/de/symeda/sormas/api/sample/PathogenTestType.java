@@ -40,7 +40,9 @@ public enum PathogenTestType {
 	// historic records and case-classification rules keep working.
 	@Diseases(value = {
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -80,7 +82,9 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -99,7 +103,9 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
 
@@ -120,7 +126,9 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@NotSelectableForNewTests
 	CQ_VALUE_DETECTION,
 
@@ -178,7 +186,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MULTIPLEX_PCR,
@@ -187,7 +197,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -204,7 +216,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	NASBA,
@@ -221,7 +235,9 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TMA,
@@ -230,7 +246,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	CRISPR_DIAGNOSTICS,
@@ -239,7 +257,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	LINE_PROBE_ASSAY,
@@ -248,7 +268,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	SANGER_SEQUENCING,
@@ -274,7 +296,9 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DNA_MICROARRAY,
@@ -338,7 +362,9 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GENOTYPING,
@@ -384,7 +410,9 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ANTIBODY_DETECTION,
@@ -404,7 +432,9 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -431,7 +461,9 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.MALARIA,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	INDIRECT_FLUORESCENT_ANTIBODY,
@@ -475,7 +507,9 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATERAL_FLOW_ASSAY,
@@ -484,7 +518,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOFLUORESCENCE_ASSAY,
@@ -500,7 +536,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
@@ -509,7 +547,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	// Positive/Negative interpretation plus the reciprocal titre (#14105): TEXT alone rendered no result
 	// field. The titre ('1:160') is kept as text, not a Float numeric value, like NEUTRALIZING_ANTIBODIES.
@@ -523,6 +563,9 @@ public enum PathogenTestType {
 	// ----------------------------------------------------------------------------------------------
 
 	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
+	@Diseases(value = {
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -532,7 +575,9 @@ public enum PathogenTestType {
 
 	// Superseded by the merged ISOLATION entry for new tests (#13951). Kept for historic records.
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	@NotSelectableForNewTests
@@ -540,7 +585,9 @@ public enum PathogenTestType {
 
 	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	@NotSelectableForNewTests
@@ -550,7 +597,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
@@ -570,7 +619,9 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MICROSCOPY,
@@ -586,7 +637,9 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GRAM_STAIN,
@@ -596,7 +649,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
@@ -605,7 +660,9 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
@@ -615,7 +672,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -634,7 +693,9 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -646,7 +707,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -658,7 +721,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
@@ -668,7 +733,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
@@ -678,7 +745,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -724,7 +793,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
@@ -754,7 +825,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA }, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------
