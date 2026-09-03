@@ -38,9 +38,7 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MUMPS,
-		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.MUMPS }, hide = true)
 	BLOOD,
 
 	@Diseases(value = {
