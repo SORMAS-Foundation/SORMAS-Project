@@ -17255,74 +17255,10 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS concurrentstiunknown varch
 
 INSERT INTO schema_version (version_number, comment) VALUES (664, 'Add Gonococcal infections case data and symptoms');
 
--- Gonococcal infection samples and pathogen tests
-ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS porballele varchar(255);
-ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tbpballele varchar(255);
-ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS sequencetype varchar(255);
-ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS genogroup varchar(255);
-ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS porballele varchar(255);
-ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tbpballele varchar(255);
-ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS sequencetype varchar(255);
-ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS genogroup varchar(255);
+UPDATE diseaseconfiguration
+SET exposurecategories = 'DIRECT_CONTACT,VERTICAL_TRANSMISSION', changedate = now()
+WHERE disease = 'GONOCOCCAL_INFECTION';
 
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
-
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS porballele varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tbpballele varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS sequencetype varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS genogroup varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS porballele varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tbpballele varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS sequencetype varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS genogroup varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
-
-INSERT INTO schema_version (version_number, comment) VALUES (665, 'Adapt samples and pathogen tests for Gonococcal infection');
+INSERT INTO schema_version (version_number, comment) VALUES (665, 'Configure Gonococcal infection epidemiological data');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -129,6 +129,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			Disease.SALMONELLOSIS,
 			Disease.SHIGELLOSIS,
 			Disease.SYPHILIS,
+			Disease.GONOCOCCAL_INFECTION,
 			Disease.MUMPS));
 	private static final List<Disease> CLUSTER_ALLOWED_DISEASES = Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS));
 
@@ -153,8 +154,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(8, EpiDataDto.CLUSTER_IDENTIFIER,4,null) +
 			fluidRowLocs(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, "") +
 			fluidRowLocs(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, "") +
-			fluidRowLocs(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP) +
 			fluidRowLocs(EpiDataDto.SEX_WORKER, EpiDataDto.CONTACT_WITH_SEX_WORKER) +
+			fluidRowLocs(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP) +
 			loc(LOC_PROPHYLAXIS_STATUS)+
 			fluidRowLocs("PROPHYLAXIS_LAYOUT")+
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
@@ -343,6 +344,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		contactWithSourceCasePanel.updateFieldsDisplay();
 		getContent().addComponent(contactWithSourceCasePanel, LOC_CUSTOMIZABLE_FIELDS_CONTACT_WITH_SOURCE_CASE);
 
+		TextArea additionalDetails = addField(EpiDataDto.OTHER_DETAILS, TextArea.class);
+		additionalDetails.setRows(6);
+		additionalDetails.setDescription(
+			I18nProperties.getPrefixDescription(EpiDataDto.I18N_PREFIX, EpiDataDto.OTHER_DETAILS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
+		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
+
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
@@ -369,12 +377,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			});
 		}
 
-		TextArea additionalDetails = addField(EpiDataDto.OTHER_DETAILS, TextArea.class);
-		additionalDetails.setRows(6);
-		additionalDetails.setDescription(
-			I18nProperties.getPrefixDescription(EpiDataDto.I18N_PREFIX, EpiDataDto.OTHER_DETAILS, "") + "\n"
-				+ I18nProperties.getDescription(Descriptions.descGdpr));
-		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
 	}
 
 	/**
