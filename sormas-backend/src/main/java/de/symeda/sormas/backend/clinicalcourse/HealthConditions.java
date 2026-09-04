@@ -76,6 +76,7 @@ public class HealthConditions extends AbstractDomainObject {
 	private Integer syphilisNumberOfDoses;
 	private Date syphilisDateOfFirstDose;
 	private YesNoUnknown syphilisOrOtherStis;
+	private YesNoUnknown previousGonorrhoea;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
@@ -507,6 +508,15 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
 		this.syphilisOrOtherStis = syphilisOrOtherStis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPreviousGonorrhoea() {
+		return previousGonorrhoea;
+	}
+
+	public void setPreviousGonorrhoea(YesNoUnknown previousGonorrhoea) {
+		this.previousGonorrhoea = previousGonorrhoea;
 	}
 
 }

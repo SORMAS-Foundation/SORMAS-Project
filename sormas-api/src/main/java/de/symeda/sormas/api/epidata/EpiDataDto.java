@@ -85,7 +85,9 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
 	private YesNoUnknown contactWithSourceCaseKnown;
+	@Diseases(value = Disease.GONOCOCCAL_INFECTION, hide = true)
 	private YesNoUnknown highTransmissionRiskArea;
+	@Diseases(value = Disease.GONOCOCCAL_INFECTION, hide = true)
 	private YesNoUnknown largeOutbreaksArea;
 	@Diseases({
 		Disease.MEASLES })
@@ -115,11 +117,14 @@ public class EpiDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.MUMPS })
 	private String clusterTypeText;
 
+	// lab message(MEAS-1 & MUMP-1) has been mapped to this identifier
 	@Diseases({
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.MEASLES })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clusterIdentifier;
 
@@ -174,7 +179,7 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	private String otherDetails;
 	// airport worker should be applicable for all countries and diseases.
-	@Diseases
+	@Diseases(value = Disease.GONOCOCCAL_INFECTION, hide = true)
 	@HideForCountriesExcept
 	private YesNoUnknown airportWorker;
 	@Diseases({
@@ -199,7 +204,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private String residenceAtOnset;
 
 	@Diseases({
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
 
 	@Diseases({
@@ -215,7 +221,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown sexWorker;
 
 	@Diseases({
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	private YesNoUnknown contactWithSexWorker;
 
 	@Diseases({

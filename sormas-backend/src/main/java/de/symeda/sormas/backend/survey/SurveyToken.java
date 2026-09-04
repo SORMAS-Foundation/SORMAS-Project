@@ -30,8 +30,10 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.document.Document;
 
-@Entity(name = "surveytokens")
+@Entity(name = SurveyToken.TABLE_NAME)
 public class SurveyToken extends AbstractDomainObject {
+
+	public static final String TABLE_NAME = "surveytokens";
 
 	private static final long serialVersionUID = -2865609720432906419L;
 

@@ -2859,6 +2859,7 @@ paths:
                   - SYPHILIS
                   - YERSINIOSIS
                   - MUMPS
+                  - GONOCOCCAL_INFECTION
                   - OTHER
                   - UNDEFINED
           description: default response
@@ -4542,6 +4543,7 @@ paths:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
       requestBody:
@@ -4878,6 +4880,7 @@ paths:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
       responses:
@@ -8881,6 +8884,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         districtId:
@@ -9014,6 +9018,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -9121,6 +9126,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -9538,6 +9544,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -9644,6 +9651,8 @@ components:
         followUpVisitsTo:
           type: string
           format: date-time
+        hasDoctorDeclaration:
+          type: boolean
         healthFacility:
           $ref: '#/components/schemas/FacilityReferenceDto'
         includeCasesFromOtherJurisdictions:
@@ -9676,6 +9685,10 @@ components:
           format: date-time
         newCaseDateType:
           $ref: '#/components/schemas/CriteriaDateType'
+        onlyCasesExcludedFromReporting:
+          type: boolean
+        onlyCasesNotExcludedFromReporting:
+          type: boolean
         onlyCasesWithDontShareWithExternalSurvTool:
           type: boolean
         onlyCasesWithEvents:
@@ -9800,6 +9813,8 @@ components:
         withOwnership:
           type: boolean
         withReducedQuarantine:
+          type: boolean
+        withoutDoctorDeclaration:
           type: boolean
         withoutResponsibleOfficer:
           type: boolean
@@ -10004,6 +10019,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -10073,6 +10089,8 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        excludeFromReporting:
+          type: boolean
         externalComments:
           type: string
           maxLength: 1000000
@@ -10468,12 +10486,6 @@ components:
           format: double
           maximum: 180
           minimum: -180
-        reportingExcluded:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
         reportingUser:
           $ref: '#/components/schemas/UserReferenceDto'
         responsibleCommunity:
@@ -10713,6 +10725,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -10819,6 +10832,8 @@ components:
         followUpVisitsTo:
           type: string
           format: date-time
+        hasDoctorDeclaration:
+          type: boolean
         healthFacility:
           $ref: '#/components/schemas/FacilityReferenceDto'
         includeCasesFromOtherJurisdictions:
@@ -10854,6 +10869,10 @@ components:
           format: date-time
         newCaseDateType:
           $ref: '#/components/schemas/CriteriaDateType'
+        onlyCasesExcludedFromReporting:
+          type: boolean
+        onlyCasesNotExcludedFromReporting:
+          type: boolean
         onlyCasesWithDontShareWithExternalSurvTool:
           type: boolean
         onlyCasesWithEvents:
@@ -10982,6 +11001,8 @@ components:
           type: boolean
         withReducedQuarantine:
           type: boolean
+        withoutDoctorDeclaration:
+          type: boolean
         withoutResponsibleOfficer:
           type: boolean
     CaseFollowUpDto:
@@ -11062,6 +11083,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         firstName:
@@ -11209,6 +11231,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11490,6 +11513,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11756,6 +11780,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -11843,6 +11869,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -11916,6 +11944,8 @@ components:
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
+              - NON_TREPONEMAL_TESTS
+              - TREPONEMAL_TESTS
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
@@ -12101,6 +12131,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -12368,6 +12399,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -12730,6 +12762,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13211,6 +13244,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13503,6 +13537,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14329,6 +14364,7 @@ components:
             - SYPHILIS
             - YERSINIOSIS
             - MUMPS
+            - GONOCOCCAL_INFECTION
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -14591,6 +14627,7 @@ components:
             - SYPHILIS
             - YERSINIOSIS
             - MUMPS
+            - GONOCOCCAL_INFECTION
             - OTHER
             - UNDEFINED
     DashboardCaseMeasureDto:
@@ -14890,6 +14927,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -14990,6 +15028,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -15175,6 +15214,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         eventCount:
@@ -15276,6 +15316,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         notACaseCriteria:
@@ -15389,6 +15430,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         eventParticipantFollowUpDuration:
@@ -16714,6 +16756,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         eventDiseaseDetails:
@@ -16889,6 +16932,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -17181,6 +17225,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17686,6 +17731,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17907,6 +17953,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         event:
@@ -18873,6 +18920,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19032,11 +19080,35 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         changeDate:
           type: string
           format: date-time
+        clusterIdentifier:
+          type: string
+          maxLength: 255
+          minLength: 0
+        clusterRelated:
+          type: boolean
+        clusterType:
+          type: string
+          enum:
+          - KINDERGARTEN_OR_CHILDCARE
+          - FAMILY
+          - MILITARY
+          - NOSOCOMIAL
+          - SCHOOL
+          - SPORTS_TEAM
+          - UNIVERSITY
+          - NOT_APPLICABLE
+          - UNKNOWN
+          - OTHER
+        clusterTypeText:
+          type: string
+          maxLength: 255
+          minLength: 0
         complianceWithTreatment:
           type: string
           enum:
@@ -19046,6 +19118,12 @@ components:
           - TREATMENT_NOT_COMPLETED
           - UNKNOWN
           - NOT_APPLICABLE
+        contactWithSexWorker:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         creationDate:
           type: string
           format: date-time
@@ -19128,6 +19206,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19159,6 +19238,14 @@ components:
           enum:
           - "YES"
           - "NO"
+          - UNKNOWN
+        hivStatus:
+          type: string
+          enum:
+          - NEGATIVE
+          - POSITIVE
+          - KNOWN_POSITIVE
+          - NEW_DIAGNOSIS
           - UNKNOWN
         hospitalizationAdmissionDate:
           type: string
@@ -19218,6 +19305,10 @@ components:
           - UNKNOWN
         modeOfTransmissionType:
           type: string
+        motherCitizenship:
+          $ref: '#/components/schemas/CountryReferenceDto'
+        motherCountryOfBirth:
+          $ref: '#/components/schemas/CountryReferenceDto'
         notifierAddress:
           type: string
           maxLength: 1000000
@@ -19252,6 +19343,8 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        personBirthCountry:
+          $ref: '#/components/schemas/CountryReferenceDto'
         personBirthDateDD:
           type: integer
           format: int32
@@ -19261,6 +19354,8 @@ components:
         personBirthDateYYYY:
           type: integer
           format: int32
+        personCitizenship:
+          $ref: '#/components/schemas/CountryReferenceDto'
         personCity:
           type: string
           maxLength: 255
@@ -19356,6 +19451,14 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        probableRouteOfTransmission:
+          type: string
+          enum:
+          - HETEROSEXUAL_CONTACT
+          - MSM_HOMO_OR_BISEXUAL_MALE
+          - MOTHER_TO_CHILD_TRANSMISSION
+          - OTHER
+          - UNKNOWN
         pseudonymized:
           type: boolean
         radiographyCompatibility:
@@ -19406,10 +19509,21 @@ components:
           - PROCESSED
           - FORWARDED
           - UNCLEAR
+        stiProphylaxis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         surveillanceReport:
           $ref: '#/components/schemas/SurveillanceReportReferenceDto'
         surveyResponseData:
           $ref: '#/components/schemas/ExternalSurveyResponseData'
+        syphilisPresentation:
+          type: string
+          enum:
+          - ACQUIRED
+          - CONGENITAL
         treatmentNotApplicable:
           type: boolean
         treatmentStarted:
@@ -19534,6 +19648,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19751,6 +19866,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         personUuid:
@@ -20222,6 +20338,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -20389,6 +20506,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -20558,6 +20676,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         districtName:
@@ -20789,6 +20908,12 @@ components:
           type: string
           maxLength: 4096
           minLength: 0
+        previousGonorrhoea:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         previousTuberculosisTreatment:
           type: string
           enum:
@@ -21057,6 +21182,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -21295,6 +21421,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -21580,6 +21707,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -22080,6 +22208,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         healthFacilityLat:
@@ -22391,6 +22520,7 @@ components:
             - SYPHILIS
             - YERSINIOSIS
             - MUMPS
+            - GONOCOCCAL_INFECTION
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -22486,6 +22616,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -23410,6 +23541,22 @@ components:
           - NOBEIJING
           - POSSBEIJING
           - UNKNOWN
+        syphilisSerologyMethod:
+          type: string
+          enum:
+          - VDRL
+          - RPR
+          - TRUST
+          - TPPA_TPHA
+          - FTA_ABS
+          - EIA
+          - CLIA
+          - RDT
+          - OTHER
+        syphilisSerologyMethodText:
+          type: string
+          maxLength: 255
+          minLength: 0
         testDateTime:
           type: string
           format: date-time
@@ -23478,6 +23625,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
@@ -23582,6 +23731,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         testedDiseaseDetails:
@@ -23905,6 +24055,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         changeDate:
@@ -24982,6 +25133,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -25208,6 +25360,8 @@ components:
             - NEUTRALIZING_ANTIBODIES
             - INDIRECT_FLUORESCENT_ANTIBODY
             - DIRECT_FLUORESCENT_ANTIBODY
+            - NON_TREPONEMAL_TESTS
+            - TREPONEMAL_TESTS
             - LATERAL_FLOW_ASSAY
             - IMMUNOFLUORESCENCE_ASSAY
             - SLIDE_AGGLUTINATION
@@ -25464,6 +25618,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25651,6 +25806,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
@@ -26027,6 +26184,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26250,6 +26408,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26393,6 +26552,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26756,6 +26916,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -26982,6 +27143,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        acuteSalpingitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         aerophobia:
           type: string
           enum:
@@ -27168,6 +27335,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        cervicitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         chancre:
           type: string
           enum:
@@ -27213,9 +27386,6 @@ components:
           - ASYMPTOMATIC
           - NO_SIGN_OF_SEVERITY
           - SIGN_OF_SEVERITY
-          - MENINGOENCEPHALITIS
-          - ORCHITIS
-          - PAROTID_SWELLING
           - UNKNOWN
           - OTHER
         clinicalManifestationText:
@@ -27233,6 +27403,62 @@ components:
           - "NO"
           - UNKNOWN
         coma:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiChlamydia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiGenitalHerpes:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiGenitalWarts:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiInfectiousSyphilis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiLgv:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiMycoplasmaGenitalium:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiOther:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiOtherText:
+          type: string
+        concurrentStiTrichomonasVaginalis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        concurrentStiUnknown:
           type: string
           enum:
           - "YES"
@@ -27452,6 +27678,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        epididymitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         erraticBehaviour:
           type: string
           enum:
@@ -27563,6 +27795,62 @@ components:
         glasgowComaScale:
           type: integer
           format: int32
+        gonococcalInfectionSiteAnorectal:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        gonococcalInfectionSiteBlood:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        gonococcalInfectionSiteCerebrospinalFluid:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        gonococcalInfectionSiteEye:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        gonococcalInfectionSiteGenital:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        gonococcalInfectionSiteJointFluid:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        gonococcalInfectionSiteOther:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        gonococcalInfectionSiteOtherText:
+          type: string
+        gonococcalInfectionSitePharyngeal:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        gonococcalInfectionSiteUnknown:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         guillainBarreSyndrome:
           type: string
           enum:
@@ -27973,7 +28261,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        newbornConjunctivitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         noComplications:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        noConcurrentSti:
           type: string
           enum:
           - "YES"
@@ -28185,6 +28485,12 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        pelvicInflammatoryDisease:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         persistentVomiting:
           type: string
           enum:
@@ -28222,6 +28528,12 @@ components:
           - "NO"
           - UNKNOWN
         polydipsia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        proctitis:
           type: string
           enum:
           - "YES"
@@ -28528,6 +28840,12 @@ components:
           - "NO"
           - UNKNOWN
         uproariousness:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        urethritis:
           type: string
           enum:
           - "YES"
@@ -28936,6 +29254,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         district:
@@ -29429,6 +29748,22 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        syphilisSerologyMethod:
+          type: string
+          enum:
+          - VDRL
+          - RPR
+          - TRUST
+          - TPPA_TPHA
+          - FTA_ABS
+          - EIA
+          - CLIA
+          - RDT
+          - OTHER
+        syphilisSerologyMethodText:
+          type: string
+          maxLength: 255
+          minLength: 0
         testDateTime:
           type: string
           format: date-time
@@ -29512,6 +29847,8 @@ components:
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
+          - NON_TREPONEMAL_TESTS
+          - TREPONEMAL_TESTS
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
@@ -29760,6 +30097,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -30249,6 +30587,7 @@ components:
             - SYPHILIS
             - YERSINIOSIS
             - MUMPS
+            - GONOCOCCAL_INFECTION
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -30920,6 +31259,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -31049,6 +31389,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         id:
@@ -31231,6 +31572,7 @@ components:
           - SYPHILIS
           - YERSINIOSIS
           - MUMPS
+          - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
         numberOfCases:

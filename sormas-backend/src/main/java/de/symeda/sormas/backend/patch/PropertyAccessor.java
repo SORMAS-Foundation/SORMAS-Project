@@ -1,6 +1,9 @@
 package de.symeda.sormas.backend.patch;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
@@ -123,6 +126,50 @@ public class PropertyAccessor {
 			logger.info("Could not get property value for [{}], [{}]", name, bean, e);
 			return Optional.empty();
 		}
+	}
+
+	public static Class<?> getCollectionGenericType(final Object bean, final String fieldName) {
+		if (bean == null || fieldName == null || fieldName.isEmpty()) {
+			return null;
+		}
+
+		boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == -1;
+
+		if (notNestedPath) {
+			return getCollectionGenericType(bean.getClass(), fieldName);
+		}
+
+		String leafPath = fieldName.substring(fieldName.lastIndexOf(PATH_SEPARATOR) + 1);
+
+		return getNestedProperty(bean, fieldName.substring(0, fieldName.lastIndexOf(PATH_SEPARATOR)))
+			.map(leafParent -> getCollectionGenericType(leafParent.getClass(), leafPath))
+			.orElse(null);
+	}
+
+	private static Class<?> getCollectionGenericType(final Class<?> beanClass, final String fieldName) {
+		Class<?> currentClass = beanClass;
+
+		while (currentClass != null) {
+			try {
+				Field field = currentClass.getDeclaredField(fieldName);
+				Type genericType = field.getGenericType();
+
+				if (genericType instanceof ParameterizedType) {
+					Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+
+					if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+						return (Class<?>) typeArguments[0];
+					}
+				}
+
+				return null;
+			} catch (NoSuchFieldException e) {
+				currentClass = currentClass.getSuperclass();
+			}
+		}
+
+		logger.info("Could not get collection generic type for field [{}] on [{}]", fieldName, beanClass);
+		return null;
 	}
 
 	public static Optional<Exception> setNestedProperty(final Object bean, final String name, final Object value) {

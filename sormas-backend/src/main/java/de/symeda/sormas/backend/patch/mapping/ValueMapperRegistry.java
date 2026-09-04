@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.patch.mapping;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,21 @@ public class ValueMapperRegistry {
 		}
 
 		if (targetType.isInstance(value)) {
+			if (Collection.class.isAssignableFrom(targetType)) {
+
+				Class<T> collectionSubType = request.getCollectionSubType();
+				if (collectionSubType == null) {
+					logger.error("Subtype must be present, was not for: [{}]", request);
+					return ValueMappingResult.withCause(DataPatchFailureCause.TECHNICAL);
+				}
+
+				// Making sure every element is of the appropriate type; empty collections trivially pass.
+				boolean allElementsMatch = ((Collection<?>) value).stream().allMatch(collectionSubType::isInstance);
+				if (!allElementsMatch) {
+					return ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE);
+				}
+			}
+
 			return ValueMappingResult.withData((T) targetType.cast(value));
 		}
 

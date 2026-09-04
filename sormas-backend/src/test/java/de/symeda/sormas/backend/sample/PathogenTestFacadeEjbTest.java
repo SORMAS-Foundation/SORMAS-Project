@@ -32,6 +32,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
@@ -113,6 +114,39 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		assertNull(reloadedSmearOnly.getQuantitativeUnit());
 		assertNull(reloadedSmearOnly.getQuantitativeBoolean());
 		assertNull(reloadedSmearOnly.getWesternBlotInterpretation());
+	}
+
+	@Test
+	public void testSyphilisSerologyMethodRoundTrip() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		test.setTestType(PathogenTestType.TREPONEMAL_TESTS);
+		test.setTestResult(PathogenTestResultType.POSITIVE);
+		test.setSyphilisSerologyMethod(SyphilisSerologyMethod.OTHER);
+		test.setSyphilisSerologyMethodText("In-house immunoblot");
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
+
+		assertEquals(SyphilisSerologyMethod.OTHER, reloaded.getSyphilisSerologyMethod());
+		assertEquals("In-house immunoblot", reloaded.getSyphilisSerologyMethodText());
+
+		final PathogenTestDto nonTreponemal = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		nonTreponemal.setTestType(PathogenTestType.NON_TREPONEMAL_TESTS);
+		nonTreponemal.setTestResult(PathogenTestResultType.POSITIVE);
+		nonTreponemal.setSyphilisSerologyMethod(SyphilisSerologyMethod.RPR);
+		nonTreponemal.setQuantitativeValue(8.0f);
+
+		final PathogenTestDto reloadedNonTreponemal = getPathogenTestFacade().savePathogenTest(nonTreponemal);
+
+		assertEquals(SyphilisSerologyMethod.RPR, reloadedNonTreponemal.getSyphilisSerologyMethod());
+		assertEquals(8.0f, reloadedNonTreponemal.getQuantitativeValue());
+		assertNull(reloadedNonTreponemal.getSyphilisSerologyMethodText());
 	}
 
 	@Test
