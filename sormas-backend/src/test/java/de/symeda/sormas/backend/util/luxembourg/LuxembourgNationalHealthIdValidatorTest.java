@@ -21,9 +21,12 @@ package de.symeda.sormas.backend.util.luxembourg;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
+
+import java.util.Optional;
 
 public class LuxembourgNationalHealthIdValidatorTest {
 
@@ -51,5 +54,21 @@ public class LuxembourgNationalHealthIdValidatorTest {
 		assertThat(LuxembourgNationalHealthIdValidator.isValid("1980010145718", 1980, 1, 1), is(false));
 		assertThat(LuxembourgNationalHealthIdValidator.isValid("1980010145723", 1980, 1, 1), is(false));
 		assertThat(LuxembourgNationalHealthIdValidator.isValid("1980010345728", 1980, 1, null), is(false));
+	}
+
+	@Test
+	void test_non_standard_validation() {
+		Optional<LuxembourgNationalHealthIdValidator.FailureCause> validWithCause = LuxembourgNationalHealthIdValidator.isValidWithCause("3980010145721");
+
+		System.out.println("validWithCause = " + validWithCause);
+		Assertions.assertTrue(validWithCause.isEmpty());
+	}
+
+	@Test
+	void test_without_birthdate() {
+		Optional<LuxembourgNationalHealthIdValidator.FailureCause> validWithCause = LuxembourgNationalHealthIdValidator.isValidWithCause("3980010145721");
+
+		System.out.println("validWithCause = " + validWithCause);
+		Assertions.assertTrue(validWithCause.isEmpty());
 	}
 }

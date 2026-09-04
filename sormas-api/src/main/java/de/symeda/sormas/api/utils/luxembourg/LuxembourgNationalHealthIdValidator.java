@@ -15,53 +15,77 @@
 
 package de.symeda.sormas.api.utils.luxembourg;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LuxembourgNationalHealthIdValidator {
 
-	/**
-	 * - AAAA = année de naissance
-	 * - MM = mois de naissance
-	 * - JJ = jour de naissance
-	 * - XXX = numéro aléatoire unique par date de naissance
-	 * - C1 = numéro de contrôle calculé sur AAAAMMJJXXX suivant l’algorithme LUHN 10
-	 * - C2 = numéro de contrôle calculé sur AAAAMMJJXXX suivant l’algorithme VERHOEFF
-	 */
-	private static final Pattern NATIONAL_HEALTH_ID_PATTERN = Pattern.compile("(\\d{4})(\\d{2})(\\d{2})(\\d{3})(\\d)(\\d)");
+    /**
+     * - AAAA = année de naissance
+     * - MM = mois de naissance
+     * - JJ = jour de naissance
+     * - XXX = numéro aléatoire unique par date de naissance
+     * - C1 = numéro de contrôle calculé sur AAAAMMJJXXX suivant l’algorithme LUHN 10
+     * - C2 = numéro de contrôle calculé sur AAAAMMJJXXX suivant l’algorithme VERHOEFF
+     */
+    private static final Pattern NATIONAL_HEALTH_ID_PATTERN = Pattern.compile("(\\d{4})(\\d{2})(\\d{2})(\\d{3})(\\d)(\\d)");
 
-	public static boolean isValid(String nationalHealthId, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
-		if (nationalHealthId == null) {
-			return false;
-		}
+    public static Optional<FailureCause> isValidWithCause(String nationalHealthId) {
+        return isValidWithCause(nationalHealthId, null, null, null);
+    }
 
-		Matcher patternMatcher = NATIONAL_HEALTH_ID_PATTERN.matcher(nationalHealthId);
-		if (!patternMatcher.matches()) {
-			return false;
-		}
+    public static Optional<FailureCause> isValidWithCause(String nationalHealthId, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
+        if (nationalHealthId == null) {
+            return Optional.of(FailureCause.EMPTY);
+        }
 
-		String yyyy = patternMatcher.group(1);
-		String mm = patternMatcher.group(2);
-		String dd = patternMatcher.group(3);
-		String xxx = patternMatcher.group(4);
-		String c1 = patternMatcher.group(5);
-		String c2 = patternMatcher.group(6);
+        Matcher patternMatcher = NATIONAL_HEALTH_ID_PATTERN.matcher(nationalHealthId);
+        if (!patternMatcher.matches()) {
+            return Optional.of(FailureCause.PATTERN);
+        }
 
-		if (isNullOrEquals(birthdateYYYY, Integer.parseInt(yyyy))
-			&& isNullOrEquals(birthdateMM, Integer.parseInt(mm))
-			&& isNullOrEquals(birthdateDD, Integer.parseInt(dd))) {
-			String iNumber = yyyy + mm + dd + xxx;
+        String yyyy = patternMatcher.group(1);
+        String mm = patternMatcher.group(2);
+        String dd = patternMatcher.group(3);
+        String xxx = patternMatcher.group(4);
+        String c1 = patternMatcher.group(5);
+        String c2 = patternMatcher.group(6);
 
-			if (CheckDigitLuhn.checkDigit(iNumber + c1) && CheckDigitVerhoeff.checkDigit(iNumber + c2)) {
-				return true;
-			}
-		}
+        int birthDateWithinNationalHealthId = Integer.parseInt(yyyy);
+        if (nationalHealthId.startsWith("3")) {
+            birthDateWithinNationalHealthId = birthDateWithinNationalHealthId + 2000;
+        }
 
-		return false;
-	}
+        if (!(birthdateYYYY == null && birthdateMM == null && birthdateDD == null)) {
+            if (!(isNullOrEquals(birthdateYYYY, birthDateWithinNationalHealthId)
+                    && isNullOrEquals(birthdateMM, Integer.parseInt(mm))
+                    && isNullOrEquals(birthdateDD, Integer.parseInt(dd)))) {
 
-	private static boolean isNullOrEquals(Integer personBirthdateFieldValue, int yyyy) {
-		return personBirthdateFieldValue == null || personBirthdateFieldValue == yyyy;
-	}
+                return Optional.of(FailureCause.BIRTHDATE);
+            }
+        }
 
+        String iNumber = yyyy + mm + dd + xxx;
+        if (!(CheckDigitLuhn.checkDigit(iNumber + c1) && CheckDigitVerhoeff.checkDigit(iNumber + c2))) {
+            return Optional.of(FailureCause.CHECK_DIGIT);
+        }
+
+        return Optional.empty();
+    }
+
+    public static boolean isValid(String nationalHealthId, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
+        return isValidWithCause(nationalHealthId, birthdateYYYY, birthdateMM, birthdateDD).isEmpty();
+    }
+
+    private static boolean isNullOrEquals(Integer personBirthdateFieldValue, int yyyy) {
+        return personBirthdateFieldValue == null || personBirthdateFieldValue == yyyy;
+    }
+
+    public enum FailureCause {
+        EMPTY,
+        CHECK_DIGIT,
+        PATTERN,
+        BIRTHDATE
+    }
 }
