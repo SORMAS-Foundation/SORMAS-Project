@@ -292,7 +292,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
-		target.setTestResult(source.getTestResult());
+		if (source.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
+			|| (source.getTestedDisease() == Disease.GONOCOCCAL_INFECTION && source.getTestType() == PathogenTestType.GENOTYPING)) {
+			target.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
+		} else {
+			target.setTestResult(source.getTestResult());
+		}
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
@@ -344,6 +349,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setGenoType(source.getGenoType());
 		target.setGenoTypeText(source.getGenoTypeText());
+		target.setPorBAllele(source.getPorBAllele());
+		target.setTbpBAllele(source.getTbpBAllele());
+		target.setSequenceType(source.getSequenceType());
+		target.setGenogroup(source.getGenogroup());
 		target.setRsvSubtype(source.getRsvSubtype());
 		target.setSyphilisSerologyMethod(source.getSyphilisSerologyMethod());
 		target.setSyphilisSerologyMethodText(source.getSyphilisSerologyMethodText());
@@ -627,7 +636,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setLab(facilityService.getByReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setLabUser(userService.getByReferenceDto(source.getLabUser()));
-		target.setTestResult(source.getTestResult());
+		if (source.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
+			|| (source.getTestedDisease() == Disease.GONOCOCCAL_INFECTION && source.getTestType() == PathogenTestType.GENOTYPING)) {
+			target.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
+		} else {
+			target.setTestResult(source.getTestResult());
+		}
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
@@ -677,6 +691,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setGenoType(source.getGenoType());
 		target.setGenoTypeText(source.getGenoTypeText());
+		target.setPorBAllele(source.getPorBAllele());
+		target.setTbpBAllele(source.getTbpBAllele());
+		target.setSequenceType(source.getSequenceType());
+		target.setGenogroup(source.getGenogroup());
 		target.setRsvSubtype(source.getRsvSubtype());
 		target.setSyphilisSerologyMethod(source.getSyphilisSerologyMethod());
 		target.setSyphilisSerologyMethodText(source.getSyphilisSerologyMethodText());

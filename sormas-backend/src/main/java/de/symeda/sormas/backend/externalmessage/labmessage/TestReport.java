@@ -49,6 +49,7 @@ import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
+import de.symeda.sormas.api.therapy.SusceptibilityMethod;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 
@@ -176,6 +177,22 @@ public class TestReport extends AbstractDomainObject {
 	private DrugSusceptibilityType penicillinSusceptibility;
 	private String erythromycinMic;
 	private DrugSusceptibilityType erythromycinSusceptibility;
+	private String cefiximeMic;
+	private DrugSusceptibilityType cefiximeSusceptibility;
+	private SusceptibilityMethod cefiximeMethod;
+	private String tetracyclineMic;
+	private DrugSusceptibilityType tetracyclineSusceptibility;
+	private SusceptibilityMethod tetracyclineMethod;
+	private String gentamicinMic;
+	private DrugSusceptibilityType gentamicinSusceptibility;
+	private SusceptibilityMethod gentamicinMethod;
+	private String spectinomycinMic;
+	private DrugSusceptibilityType spectinomycinSusceptibility;
+	private SusceptibilityMethod spectinomycinMethod;
+	private String porBAllele;
+	private String tbpBAllele;
+	private String sequenceType;
+	private String genogroup;
 
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
@@ -890,6 +907,55 @@ public class TestReport extends AbstractDomainObject {
 	public void setErythromycinSusceptibility(DrugSusceptibilityType erythromycinSusceptibility) {
 		this.erythromycinSusceptibility = erythromycinSusceptibility;
 	}
+
+	@Column(length = 512)
+	public String getCefiximeMic() { return cefiximeMic; }
+	public void setCefiximeMic(String value) { cefiximeMic = value; }
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCefiximeSusceptibility() { return cefiximeSusceptibility; }
+	public void setCefiximeSusceptibility(DrugSusceptibilityType value) { cefiximeSusceptibility = value; }
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCefiximeMethod() { return cefiximeMethod; }
+	public void setCefiximeMethod(SusceptibilityMethod value) { cefiximeMethod = value; }
+	@Column(length = 512)
+	public String getTetracyclineMic() { return tetracyclineMic; }
+	public void setTetracyclineMic(String value) { tetracyclineMic = value; }
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getTetracyclineSusceptibility() { return tetracyclineSusceptibility; }
+	public void setTetracyclineSusceptibility(DrugSusceptibilityType value) { tetracyclineSusceptibility = value; }
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getTetracyclineMethod() { return tetracyclineMethod; }
+	public void setTetracyclineMethod(SusceptibilityMethod value) { tetracyclineMethod = value; }
+	@Column(length = 512)
+	public String getGentamicinMic() { return gentamicinMic; }
+	public void setGentamicinMic(String value) { gentamicinMic = value; }
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getGentamicinSusceptibility() { return gentamicinSusceptibility; }
+	public void setGentamicinSusceptibility(DrugSusceptibilityType value) { gentamicinSusceptibility = value; }
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getGentamicinMethod() { return gentamicinMethod; }
+	public void setGentamicinMethod(SusceptibilityMethod value) { gentamicinMethod = value; }
+	@Column(length = 512)
+	public String getSpectinomycinMic() { return spectinomycinMic; }
+	public void setSpectinomycinMic(String value) { spectinomycinMic = value; }
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getSpectinomycinSusceptibility() { return spectinomycinSusceptibility; }
+	public void setSpectinomycinSusceptibility(DrugSusceptibilityType value) { spectinomycinSusceptibility = value; }
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getSpectinomycinMethod() { return spectinomycinMethod; }
+	public void setSpectinomycinMethod(SusceptibilityMethod value) { spectinomycinMethod = value; }
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPorBAllele() { return porBAllele; }
+	public void setPorBAllele(String value) { porBAllele = value; }
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTbpBAllele() { return tbpBAllele; }
+	public void setTbpBAllele(String value) { tbpBAllele = value; }
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSequenceType() { return sequenceType; }
+	public void setSequenceType(String value) { sequenceType = value; }
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getGenogroup() { return genogroup; }
+	public void setGenogroup(String value) { genogroup = value; }
 
 	@Enumerated(EnumType.STRING)
 	public SeroGroupSpecification getSeroGroupSpecification() {

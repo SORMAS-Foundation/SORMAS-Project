@@ -118,6 +118,10 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
 	public static final String GENOTYPE = "genoType";
 	public static final String GENOTYPE_TEXT = "genoTypeText";
+	public static final String POR_B_ALLELE = "porBAllele";
+	public static final String TBP_B_ALLELE = "tbpBAllele";
+	public static final String SEQUENCE_TYPE = "sequenceType";
+	public static final String GENOGROUP = "genogroup";
 	public static final String RSV_SUBTYPE = "rsvSubtype";
 	public static final String TUBE_NIL = "tubeNil";
 	public static final String TUBE_NIL_GT10 = "tubeNilGT10";
@@ -272,6 +276,23 @@ public class PathogenTestDto extends PseudonymizableDto {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MUMPS })
 	private String genoTypeText;
+
+	@SensitiveData
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String porBAllele;
+	@SensitiveData
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String tbpBAllele;
+	@SensitiveData
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String sequenceType;
+	@SensitiveData
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String genogroup;
 
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
@@ -861,6 +882,38 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setGenoTypeText(String genoTypeText) {
 		this.genoTypeText = genoTypeText;
+	}
+
+	public String getPorBAllele() {
+		return porBAllele;
+	}
+
+	public void setPorBAllele(String value) {
+		this.porBAllele = value;
+	}
+
+	public String getTbpBAllele() {
+		return tbpBAllele;
+	}
+
+	public void setTbpBAllele(String value) {
+		this.tbpBAllele = value;
+	}
+
+	public String getSequenceType() {
+		return sequenceType;
+	}
+
+	public void setSequenceType(String value) {
+		this.sequenceType = value;
+	}
+
+	public String getGenogroup() {
+		return genogroup;
+	}
+
+	public void setGenogroup(String value) {
+		this.genogroup = value;
 	}
 
 	public String getSeroTypingMethodText() {

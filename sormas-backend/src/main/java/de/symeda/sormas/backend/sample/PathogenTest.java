@@ -178,6 +178,10 @@ public class PathogenTest extends DeletableAdo {
 	private String seroTypingMethodText;
 	private GenoType genoType;
 	private String genoTypeText;
+	private String porBAllele;
+	private String tbpBAllele;
+	private String sequenceType;
+	private String genogroup;
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
 	private RsvSubtype rsvSubtype;
@@ -714,6 +718,42 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setGenoTypeText(String genoTypeText) {
 		this.genoTypeText = genoTypeText;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPorBAllele() {
+		return porBAllele;
+	}
+
+	public void setPorBAllele(String value) {
+		this.porBAllele = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTbpBAllele() {
+		return tbpBAllele;
+	}
+
+	public void setTbpBAllele(String value) {
+		this.tbpBAllele = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSequenceType() {
+		return sequenceType;
+	}
+
+	public void setSequenceType(String value) {
+		this.sequenceType = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getGenogroup() {
+		return genogroup;
+	}
+
+	public void setGenogroup(String value) {
+		this.genogroup = value;
 	}
 
 	public String getSeroTypingMethodText() {
