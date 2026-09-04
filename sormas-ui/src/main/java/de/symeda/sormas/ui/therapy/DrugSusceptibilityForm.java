@@ -21,7 +21,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Collections;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,19 +28,16 @@ import java.util.Optional;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.data.validator.RegexpValidator;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
-import de.symeda.sormas.api.therapy.SusceptibilityMethod;
 import de.symeda.sormas.api.utils.AnnotationFieldHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -289,10 +285,30 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
 		addMethodField(DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_METHOD);
 
-		addDrugRow(CEFIXIME_LABEL_LOC, Drug.CEFIXIME, DrugSusceptibilityDto.CEFIXIME_METHOD, DrugSusceptibilityDto.CEFIXIME_MIC, DrugSusceptibilityDto.CEFIXIME_SUSCEPTIBILITY);
-		addDrugRow(TETRACYCLINE_LABEL_LOC, Drug.TETRACYCLINE, DrugSusceptibilityDto.TETRACYCLINE_METHOD, DrugSusceptibilityDto.TETRACYCLINE_MIC, DrugSusceptibilityDto.TETRACYCLINE_SUSCEPTIBILITY);
-		addDrugRow(GENTAMICIN_LABEL_LOC, Drug.GENTAMICIN, DrugSusceptibilityDto.GENTAMICIN_METHOD, DrugSusceptibilityDto.GENTAMICIN_MIC, DrugSusceptibilityDto.GENTAMICIN_SUSCEPTIBILITY);
-		addDrugRow(SPECTINOMYCIN_LABEL_LOC, Drug.SPECTINOMYCIN, DrugSusceptibilityDto.SPECTINOMYCIN_METHOD, DrugSusceptibilityDto.SPECTINOMYCIN_MIC, DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY);
+		addDrugRow(
+			CEFIXIME_LABEL_LOC,
+			Drug.CEFIXIME,
+			DrugSusceptibilityDto.CEFIXIME_METHOD,
+			DrugSusceptibilityDto.CEFIXIME_MIC,
+			DrugSusceptibilityDto.CEFIXIME_SUSCEPTIBILITY);
+		addDrugRow(
+			TETRACYCLINE_LABEL_LOC,
+			Drug.TETRACYCLINE,
+			DrugSusceptibilityDto.TETRACYCLINE_METHOD,
+			DrugSusceptibilityDto.TETRACYCLINE_MIC,
+			DrugSusceptibilityDto.TETRACYCLINE_SUSCEPTIBILITY);
+		addDrugRow(
+			GENTAMICIN_LABEL_LOC,
+			Drug.GENTAMICIN,
+			DrugSusceptibilityDto.GENTAMICIN_METHOD,
+			DrugSusceptibilityDto.GENTAMICIN_MIC,
+			DrugSusceptibilityDto.GENTAMICIN_SUSCEPTIBILITY);
+		addDrugRow(
+			SPECTINOMYCIN_LABEL_LOC,
+			Drug.SPECTINOMYCIN,
+			DrugSusceptibilityDto.SPECTINOMYCIN_METHOD,
+			DrugSusceptibilityDto.SPECTINOMYCIN_MIC,
+			DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY);
 
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
 	}
@@ -430,9 +446,13 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 					DrugSusceptibilityDto.AZITHROMYCIN_SUSCEPTIBILITY,
 					Optional.ofNullable(drugSusceptibilityDto.getAzithromycinSusceptibility())),
 				Map.entry(DrugSusceptibilityDto.CEFIXIME_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getCefiximeSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.TETRACYCLINE_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getTetracyclineSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.TETRACYCLINE_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getTetracyclineSusceptibility())),
 				Map.entry(DrugSusceptibilityDto.GENTAMICIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getGentamicinSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getSpectinomycinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getSpectinomycinSusceptibility())),
 				Map.entry(
 					DrugSusceptibilityDto.CEFTAZIDIME_SUSCEPTIBILITY,
 					Optional.ofNullable(drugSusceptibilityDto.getCeftazidimeSusceptibility())),
@@ -547,8 +567,6 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		List<String> applicableFieldIds =
 			AnnotationFieldHelper.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, disease, pathogenTestType);
 
-		configureGonococcalAstFields(disease, applicableFieldIds);
-
 		boolean hasVisibleFields = !applicableFieldIds.isEmpty();
 		setHeaderVisible(hasVisibleFields);
 
@@ -559,36 +577,6 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		updateDrugLabelsVisibility(applicableFieldIds);
 
 		return hasVisibleFields;
-	}
-
-	private void configureGonococcalAstFields(Disease disease, List<String> applicableFieldIds) {
-		if (drugLabelsByMicFieldId != null) {
-			drugLabelsByMicFieldId.keySet().forEach(id -> ((TextField) getField(id)).removeAllValidators());
-		}
-		if (disease != Disease.GONOCOCCAL_INFECTION) {
-			return;
-		}
-		List<SusceptibilityMethod> methods = Arrays.asList(SusceptibilityMethod.BREAKPOINT, SusceptibilityMethod.ETEST, SusceptibilityMethod.MIC);
-		List<DrugSusceptibilityType> results = Arrays.asList(
-			DrugSusceptibilityType.SUSCEPTIBLE,
-			DrugSusceptibilityType.INTERMEDIATE,
-			DrugSusceptibilityType.RESISTANT,
-			DrugSusceptibilityType.UNKNOWN);
-		for (String fieldId : applicableFieldIds) {
-			if (fieldId.endsWith("Method")) {
-				ComboBox field = getField(fieldId);
-				FieldHelper.updateItems(field, methods);
-			} else if (fieldId.endsWith("Susceptibility")) {
-				ComboBox field = getField(fieldId);
-				FieldHelper.updateItems(field, results);
-			} else if (fieldId.endsWith("Mic")) {
-				TextField field = getField(fieldId);
-				field.addValidator(
-					new RegexpValidator(
-						"^(?:\\d+(?:\\.\\d+)?)?$",
-						I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, I18nProperties.getString(Strings.promptMicValue))));
-			}
-		}
 	}
 
 	/** Toggles the form heading and the column headers together. */
