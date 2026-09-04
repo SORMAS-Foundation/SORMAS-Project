@@ -809,8 +809,6 @@ public enum PathogenTestType {
 
 	// DIRECT_MICROSCOPY and RAPID_ANTIBODY_TEST had no successor, so their records land here with the former
 	// caption preserved in the free-text companion field.
-	@Diseases(value = {
-		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@LegacyEnumNames({
 		"DIRECT_MICROSCOPY",
 		"RAPID_ANTIBODY_TEST" })
