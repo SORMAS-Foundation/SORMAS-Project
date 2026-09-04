@@ -23,23 +23,37 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
+import de.symeda.sormas.backend.AbstractUnitTest;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentService;
+import de.symeda.sormas.backend.document.DocumentStorageService;
 
-@ExtendWith(MockitoExtension.class)
-public class AttachmentServiceTest {
+public class AttachmentServiceTest extends AbstractUnitTest {
+
+	@InjectMocks
+	private AttachmentService victim;
+
+	@Mock
+	private DocumentService documentService;
+	@Mock
+	private DocumentStorageService documentStorageService;
+	@Mock
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+
+	@Mock
+	private SystemConfigurationValueFacade systemConfigurationValueEjb;
 
 	/**
 	 * Meant to make sure the PDF is not broken after encrypting it.
@@ -52,14 +66,13 @@ public class AttachmentServiceTest {
 	@Test
 	public void testEncryptPdf(@TempDir Path tempDir) throws IOException {
 		// Setup
-		AttachmentService attachmentService = new AttachmentService();
 		ConfigFacadeEjbLocal configFacade = mock(ConfigFacadeEjbLocal.class);
 
 		// Inject mock configFacade using reflection
 		try {
 			Field configFacadeField = AttachmentService.class.getDeclaredField("configFacade");
 			configFacadeField.setAccessible(true);
-			configFacadeField.set(attachmentService, configFacade);
+			configFacadeField.set(victim, configFacade);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new RuntimeException("Failed to inject configFacade mock", e);
 		}
@@ -78,7 +91,7 @@ public class AttachmentServiceTest {
 		originalDoc.close();
 
 		// Execute
-		File encryptedPdf = attachmentService.encryptPdf(originalPdfFile, "test-password");
+		File encryptedPdf = victim.encryptPdf(originalPdfFile, "test-password");
 
 		// Assert - check if the encrypted file exists
 		assertTrue(encryptedPdf.exists(), "Encrypted PDF file should exist");
@@ -95,18 +108,6 @@ public class AttachmentServiceTest {
 		} catch (IOException e) {
 			encryptedPdf.delete();
 			throw new AssertionError("Failed to load encrypted PDF with password: " + e.getMessage(), e);
-		}
-
-		/*
-		 * Set this to true if you want to keep the encrypted file for verification.
-		 */
-		boolean keepEncryptedFile = true;
-
-		// Keep file only once
-		if (keepEncryptedFile) {
-			String keepPath = "target/test-output/encrypted-verification.pdf";
-			Files.copy(encryptedPdf.toPath(), Paths.get(keepPath), StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("Verification file kept at: " + new File(keepPath).getAbsolutePath());
 		}
 
 		// Cleanup
@@ -126,7 +127,6 @@ public class AttachmentServiceTest {
 	@Test
 	public void testDocxToPdfConversion(@TempDir Path tempDir) throws Exception {
 		// Setup
-		AttachmentService victim = new AttachmentService();
 		ConfigFacadeEjbLocal configFacade = mock(ConfigFacadeEjbLocal.class);
 
 		// Inject mock configFacade using reflection
@@ -166,18 +166,6 @@ public class AttachmentServiceTest {
 			throw new AssertionError("Failed to load converted PDF: " + e.getMessage(), e);
 		}
 
-		/*
-		 * Set this to true if you want to keep the encrypted file for verification.
-		 */
-		boolean keepEncryptedFile = true;
-
-		// Keep file only once
-		if (keepEncryptedFile) {
-			String keepPath = "target/test-output/docx-to-pdf-verification.pdf";
-			Files.copy(convertedPdf.toPath(), Paths.get(keepPath), StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("Verification file kept at: " + new File(keepPath).getAbsolutePath());
-		}
-
 		// Cleanup
 		if (convertedPdf.exists()) {
 			convertedPdf.delete();
@@ -188,14 +176,13 @@ public class AttachmentServiceTest {
 	@Test
 	public void testEditPdf(@TempDir Path tempDir) throws IOException {
 		// Setup
-		AttachmentService attachmentService = new AttachmentService();
 		ConfigFacadeEjbLocal configFacade = mock(ConfigFacadeEjbLocal.class);
 
 		// Inject mock configFacade using reflection
 		try {
 			Field configFacadeField = AttachmentService.class.getDeclaredField("configFacade");
 			configFacadeField.setAccessible(true);
-			configFacadeField.set(attachmentService, configFacade);
+			configFacadeField.set(victim, configFacade);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new RuntimeException("Failed to inject configFacade mock", e);
 		}
@@ -206,7 +193,7 @@ public class AttachmentServiceTest {
 
 		// Load test PDF from resources
 		ClassLoader classLoader = getClass().getClassLoader();
-		File originalPdfFile = new File(classLoader.getResource("pdfs/pdf-to-replace.pdf").getFile());
+		File originalPdfFile = new File(classLoader.getResource("pdfs/ordonnance-test.pdf").getFile());
 
 		// Load original PDF to get metadata for comparison
 		PDDocument originalDoc = Loader.loadPDF(originalPdfFile);
@@ -214,7 +201,9 @@ public class AttachmentServiceTest {
 		originalDoc.close();
 
 		// Execute
-		File edited = attachmentService.replaceText(originalPdfFile, Map.of(
+		File edited = victim.replaceText(
+			originalPdfFile,
+			Map.of(
 				"«$person.firstName»", "John",
 				"«$person.lastName»", "Doe",
 				"«$houseNumber»", "5",
@@ -238,18 +227,6 @@ public class AttachmentServiceTest {
 		} catch (IOException e) {
 			edited.delete();
 			throw new AssertionError("Failed to load encrypted PDF with password: " + e.getMessage(), e);
-		}
-
-		/*
-		 * Set this to true if you want to keep the encrypted file for verification.
-		 */
-		boolean keepEncryptedFile = true;
-
-		// Keep file only once
-		if (keepEncryptedFile) {
-			String keepPath = "target/test-output/encrypted-verification.pdf";
-			Files.copy(edited.toPath(), Paths.get(keepPath), StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("Verification file kept at: " + new File(keepPath).getAbsolutePath());
 		}
 
 		// Cleanup
