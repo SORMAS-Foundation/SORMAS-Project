@@ -1050,28 +1050,99 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.trimethoprimSulfamethoxazoleMethod = trimethoprimSulfamethoxazoleMethod;
 	}
 
-	public String getCefiximeMic() { return cefiximeMic; }
-	public void setCefiximeMic(String value) { this.cefiximeMic = value; }
-	public DrugSusceptibilityType getCefiximeSusceptibility() { return cefiximeSusceptibility; }
-	public void setCefiximeSusceptibility(DrugSusceptibilityType value) { this.cefiximeSusceptibility = value; }
-	public SusceptibilityMethod getCefiximeMethod() { return cefiximeMethod; }
-	public void setCefiximeMethod(SusceptibilityMethod value) { this.cefiximeMethod = value; }
-	public String getTetracyclineMic() { return tetracyclineMic; }
-	public void setTetracyclineMic(String value) { this.tetracyclineMic = value; }
-	public DrugSusceptibilityType getTetracyclineSusceptibility() { return tetracyclineSusceptibility; }
-	public void setTetracyclineSusceptibility(DrugSusceptibilityType value) { this.tetracyclineSusceptibility = value; }
-	public SusceptibilityMethod getTetracyclineMethod() { return tetracyclineMethod; }
-	public void setTetracyclineMethod(SusceptibilityMethod value) { this.tetracyclineMethod = value; }
-	public String getGentamicinMic() { return gentamicinMic; }
-	public void setGentamicinMic(String value) { this.gentamicinMic = value; }
-	public DrugSusceptibilityType getGentamicinSusceptibility() { return gentamicinSusceptibility; }
-	public void setGentamicinSusceptibility(DrugSusceptibilityType value) { this.gentamicinSusceptibility = value; }
-	public SusceptibilityMethod getGentamicinMethod() { return gentamicinMethod; }
-	public void setGentamicinMethod(SusceptibilityMethod value) { this.gentamicinMethod = value; }
-	public String getSpectinomycinMic() { return spectinomycinMic; }
-	public void setSpectinomycinMic(String value) { this.spectinomycinMic = value; }
-	public DrugSusceptibilityType getSpectinomycinSusceptibility() { return spectinomycinSusceptibility; }
-	public void setSpectinomycinSusceptibility(DrugSusceptibilityType value) { this.spectinomycinSusceptibility = value; }
-	public SusceptibilityMethod getSpectinomycinMethod() { return spectinomycinMethod; }
-	public void setSpectinomycinMethod(SusceptibilityMethod value) { this.spectinomycinMethod = value; }
+	public String getCefiximeMic() {
+		return cefiximeMic;
+	}
+
+	public void setCefiximeMic(String value) {
+		this.cefiximeMic = value;
+	}
+
+	public DrugSusceptibilityType getCefiximeSusceptibility() {
+		return cefiximeSusceptibility;
+	}
+
+	public void setCefiximeSusceptibility(DrugSusceptibilityType value) {
+		this.cefiximeSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getCefiximeMethod() {
+		return cefiximeMethod;
+	}
+
+	public void setCefiximeMethod(SusceptibilityMethod value) {
+		this.cefiximeMethod = value;
+	}
+
+	public String getTetracyclineMic() {
+		return tetracyclineMic;
+	}
+
+	public void setTetracyclineMic(String value) {
+		this.tetracyclineMic = value;
+	}
+
+	public DrugSusceptibilityType getTetracyclineSusceptibility() {
+		return tetracyclineSusceptibility;
+	}
+
+	public void setTetracyclineSusceptibility(DrugSusceptibilityType value) {
+		this.tetracyclineSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getTetracyclineMethod() {
+		return tetracyclineMethod;
+	}
+
+	public void setTetracyclineMethod(SusceptibilityMethod value) {
+		this.tetracyclineMethod = value;
+	}
+
+	public String getGentamicinMic() {
+		return gentamicinMic;
+	}
+
+	public void setGentamicinMic(String value) {
+		this.gentamicinMic = value;
+	}
+
+	public DrugSusceptibilityType getGentamicinSusceptibility() {
+		return gentamicinSusceptibility;
+	}
+
+	public void setGentamicinSusceptibility(DrugSusceptibilityType value) {
+		this.gentamicinSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getGentamicinMethod() {
+		return gentamicinMethod;
+	}
+
+	public void setGentamicinMethod(SusceptibilityMethod value) {
+		this.gentamicinMethod = value;
+	}
+
+	public String getSpectinomycinMic() {
+		return spectinomycinMic;
+	}
+
+	public void setSpectinomycinMic(String value) {
+		this.spectinomycinMic = value;
+	}
+
+	public DrugSusceptibilityType getSpectinomycinSusceptibility() {
+		return spectinomycinSusceptibility;
+	}
+
+	public void setSpectinomycinSusceptibility(DrugSusceptibilityType value) {
+		this.spectinomycinSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getSpectinomycinMethod() {
+		return spectinomycinMethod;
+	}
+
+	public void setSpectinomycinMethod(SusceptibilityMethod value) {
+		this.spectinomycinMethod = value;
+	}
 }
