@@ -250,7 +250,7 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 		}
 
 		field.setEnabled(false);
-		Label label = new Label(I18nProperties.getEnumCaption(Drug.valueOf(field.getId().replace("Susceptibility", "").toUpperCase())));
+		Label label = new Label(caption);
 		label.setWidth(100, Unit.PIXELS);
 		fieldLayout.addComponents(label, field);
 		fieldLayout.setWidth(100, Unit.PERCENTAGE);
