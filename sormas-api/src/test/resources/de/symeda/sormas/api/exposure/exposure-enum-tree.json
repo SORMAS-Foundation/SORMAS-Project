@@ -1,0 +1,4156 @@
+{
+  "schemaVersion" : 1,
+  "categories" : [ {
+    "name" : "AIR_BORNE",
+    "deprecated" : true,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "INDOOR",
+      "deprecated" : true,
+      "subSettings" : [ {
+        "name" : "CLOSED_POORLY_VENTILATED",
+        "deprecated" : true
+      }, {
+        "name" : "SHARED_HIGH_OCCUPANCY",
+        "deprecated" : true
+      }, {
+        "name" : "ENCLOSED_LIMITED_CIRCULATION",
+        "deprecated" : true
+      }, {
+        "name" : "VEHICLES",
+        "deprecated" : true
+      }, {
+        "name" : "HEALTHCARE_SETTINGS",
+        "deprecated" : true
+      }, {
+        "name" : "TEMPORARY_SHELTERS",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "DURATION_OF_EXPOSURE",
+        "deprecated" : true
+      }, {
+        "name" : "PROXIMITY_TO_SOURCE",
+        "deprecated" : true
+      }, {
+        "name" : "TYPE_OF_ACTIVITY",
+        "deprecated" : true
+      }, {
+        "name" : "POOR_VENTILATION",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_MASK",
+        "deprecated" : false
+      }, {
+        "name" : "DISTANCE_1_5M",
+        "deprecated" : true
+      }, {
+        "name" : "FACE_TO_FACE_15MIN",
+        "deprecated" : true
+      }, {
+        "name" : "VENTILATION_HEPA",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OUTDOOR",
+      "deprecated" : true,
+      "subSettings" : [ {
+        "name" : "CROWDED_OUTDOOR_LIMITED_AIRFLOW",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "PROXIMITY_AND_DURATION",
+        "deprecated" : true
+      }, {
+        "name" : "WIND_AND_AIRFLOW",
+        "deprecated" : true
+      }, {
+        "name" : "DENSITY_OF_PEOPLE",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_MASK",
+        "deprecated" : false
+      }, {
+        "name" : "DISTANCE_1_5M",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "DIRECT_CONTACT",
+    "deprecated" : true,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "PERSON_TO_PERSON",
+      "deprecated" : true,
+      "subSettings" : [ {
+        "name" : "CLOSE_PHYSICAL_CONTACT",
+        "deprecated" : true
+      }, {
+        "name" : "HIGH_TOUCH_ENVIRONMENTS",
+        "deprecated" : true
+      }, {
+        "name" : "SEXUAL_ACTIVITY",
+        "deprecated" : true
+      }, {
+        "name" : "HOUSEHOLD_CONTACT",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOID_TOUCHING_FACE",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER_DIRECT_CONTACT",
+      "deprecated" : true,
+      "subSettings" : [ {
+        "name" : "BLOOD_TRANSFUSION_RECIPIENT",
+        "deprecated" : true
+      }, {
+        "name" : "BONE_MARROW_TRANSPLANT_RECIPIENT",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOID_TOUCHING_FACE",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "MEDICAL_CARE",
+    "deprecated" : true,
+    "hasNoSetting" : true,
+    "hasNoSubSetting" : true,
+    "settings" : [ {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }
+  }, {
+    "name" : "LAB",
+    "deprecated" : true,
+    "hasNoSetting" : true,
+    "hasNoSubSetting" : true,
+    "settings" : [ {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }
+  }, {
+    "name" : "RESPIRATORY_DROPLET",
+    "deprecated" : true,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "ANIMAL_CONTACT",
+    "deprecated" : false,
+    "hasNoSetting" : true,
+    "hasNoSubSetting" : true,
+    "settings" : [ {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "BUTCHERING",
+        "deprecated" : false
+      }, {
+        "name" : "COOKING",
+        "deprecated" : false
+      }, {
+        "name" : "TOUCHING_CONTACT_WITH_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SCRATCHES_BITES_LICKING",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLING",
+        "deprecated" : false
+      }, {
+        "name" : "FEEDING",
+        "deprecated" : false
+      }, {
+        "name" : "CLEANING_PROVIDING_CARE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION_ANIMAL",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "WOUND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "HAND_OR_WOUND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDANCE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "BUTCHERING",
+        "deprecated" : false
+      }, {
+        "name" : "COOKING",
+        "deprecated" : false
+      }, {
+        "name" : "TOUCHING_CONTACT_WITH_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SCRATCHES_BITES_LICKING",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLING",
+        "deprecated" : false
+      }, {
+        "name" : "FEEDING",
+        "deprecated" : false
+      }, {
+        "name" : "CLEANING_PROVIDING_CARE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION_ANIMAL",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "WOUND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "HAND_OR_WOUND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDANCE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "BUTCHERING",
+        "deprecated" : false
+      }, {
+        "name" : "COOKING",
+        "deprecated" : false
+      }, {
+        "name" : "TOUCHING_CONTACT_WITH_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SCRATCHES_BITES_LICKING",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLING",
+        "deprecated" : false
+      }, {
+        "name" : "FEEDING",
+        "deprecated" : false
+      }, {
+        "name" : "CLEANING_PROVIDING_CARE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION_ANIMAL",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "WOUND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "HAND_OR_WOUND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDANCE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }
+  }, {
+    "name" : "FOMITE_TRANSMISSION",
+    "deprecated" : false,
+    "hasNoSetting" : true,
+    "hasNoSubSetting" : true,
+    "settings" : [ {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "SHARED_SURFACES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION",
+        "deprecated" : false
+      }, {
+        "name" : "CLEANING",
+        "deprecated" : false
+      }, {
+        "name" : "DISINFECTION",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "GLOVES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "SHARED_SURFACES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION",
+        "deprecated" : false
+      }, {
+        "name" : "CLEANING",
+        "deprecated" : false
+      }, {
+        "name" : "DISINFECTION",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "GLOVES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "SHARED_SURFACES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "VACCINATION",
+        "deprecated" : false
+      }, {
+        "name" : "CLEANING",
+        "deprecated" : false
+      }, {
+        "name" : "DISINFECTION",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_WASHING",
+        "deprecated" : true
+      }, {
+        "name" : "GLOVES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }
+  }, {
+    "name" : "FOOD_BORNE",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "HOUSEHOLD",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "EATING_AT_HOME",
+        "deprecated" : true
+      }, {
+        "name" : "EATING_OUTSIDE",
+        "deprecated" : true
+      }, {
+        "name" : "SHOPPING_FOR_FOOD",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "EGG",
+        "deprecated" : true
+      }, {
+        "name" : "MEAT",
+        "deprecated" : true
+      }, {
+        "name" : "FISH_SEAFOOD",
+        "deprecated" : true
+      }, {
+        "name" : "DAIRY",
+        "deprecated" : true
+      }, {
+        "name" : "FRUIT",
+        "deprecated" : true
+      }, {
+        "name" : "RAW_VEGETABLES",
+        "deprecated" : true
+      }, {
+        "name" : "CONSUMED",
+        "deprecated" : false
+      }, {
+        "name" : "TASTED",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLED",
+        "deprecated" : false
+      }, {
+        "name" : "PREPARED",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_MEAL",
+        "deprecated" : false
+      }, {
+        "name" : "RAW_UNDERCOOKED_CONSUMPTION",
+        "deprecated" : false
+      }, {
+        "name" : "INADEQUATE_STORAGE_TEMPERATURE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WELL_COOKED",
+        "deprecated" : false
+      }, {
+        "name" : "COLD_HOT_CHAIN",
+        "deprecated" : false
+      }, {
+        "name" : "WASHED",
+        "deprecated" : false
+      }, {
+        "name" : "EXCLUSION_DIET_YERSINIOSIS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "EATING_OUTSIDE",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "EATING_AT_HOME",
+        "deprecated" : true
+      }, {
+        "name" : "EATING_OUTSIDE",
+        "deprecated" : true
+      }, {
+        "name" : "SHOPPING_FOR_FOOD",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "EGG",
+        "deprecated" : true
+      }, {
+        "name" : "MEAT",
+        "deprecated" : true
+      }, {
+        "name" : "FISH_SEAFOOD",
+        "deprecated" : true
+      }, {
+        "name" : "DAIRY",
+        "deprecated" : true
+      }, {
+        "name" : "FRUIT",
+        "deprecated" : true
+      }, {
+        "name" : "RAW_VEGETABLES",
+        "deprecated" : true
+      }, {
+        "name" : "CONSUMED",
+        "deprecated" : false
+      }, {
+        "name" : "TASTED",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLED",
+        "deprecated" : false
+      }, {
+        "name" : "PREPARED",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_MEAL",
+        "deprecated" : false
+      }, {
+        "name" : "RAW_UNDERCOOKED_CONSUMPTION",
+        "deprecated" : false
+      }, {
+        "name" : "INADEQUATE_STORAGE_TEMPERATURE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WELL_COOKED",
+        "deprecated" : false
+      }, {
+        "name" : "COLD_HOT_CHAIN",
+        "deprecated" : false
+      }, {
+        "name" : "WASHED",
+        "deprecated" : false
+      }, {
+        "name" : "EXCLUSION_DIET_YERSINIOSIS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "HOTEL",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "EATING_AT_HOME",
+        "deprecated" : true
+      }, {
+        "name" : "EATING_OUTSIDE",
+        "deprecated" : true
+      }, {
+        "name" : "SHOPPING_FOR_FOOD",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "EGG",
+        "deprecated" : true
+      }, {
+        "name" : "MEAT",
+        "deprecated" : true
+      }, {
+        "name" : "FISH_SEAFOOD",
+        "deprecated" : true
+      }, {
+        "name" : "DAIRY",
+        "deprecated" : true
+      }, {
+        "name" : "FRUIT",
+        "deprecated" : true
+      }, {
+        "name" : "RAW_VEGETABLES",
+        "deprecated" : true
+      }, {
+        "name" : "CONSUMED",
+        "deprecated" : false
+      }, {
+        "name" : "TASTED",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLED",
+        "deprecated" : false
+      }, {
+        "name" : "PREPARED",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_MEAL",
+        "deprecated" : false
+      }, {
+        "name" : "RAW_UNDERCOOKED_CONSUMPTION",
+        "deprecated" : false
+      }, {
+        "name" : "INADEQUATE_STORAGE_TEMPERATURE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WELL_COOKED",
+        "deprecated" : false
+      }, {
+        "name" : "COLD_HOT_CHAIN",
+        "deprecated" : false
+      }, {
+        "name" : "WASHED",
+        "deprecated" : false
+      }, {
+        "name" : "EXCLUSION_DIET_YERSINIOSIS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "CAMPING_SITE",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "EATING_AT_HOME",
+        "deprecated" : true
+      }, {
+        "name" : "EATING_OUTSIDE",
+        "deprecated" : true
+      }, {
+        "name" : "SHOPPING_FOR_FOOD",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "EGG",
+        "deprecated" : true
+      }, {
+        "name" : "MEAT",
+        "deprecated" : true
+      }, {
+        "name" : "FISH_SEAFOOD",
+        "deprecated" : true
+      }, {
+        "name" : "DAIRY",
+        "deprecated" : true
+      }, {
+        "name" : "FRUIT",
+        "deprecated" : true
+      }, {
+        "name" : "RAW_VEGETABLES",
+        "deprecated" : true
+      }, {
+        "name" : "CONSUMED",
+        "deprecated" : false
+      }, {
+        "name" : "TASTED",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLED",
+        "deprecated" : false
+      }, {
+        "name" : "PREPARED",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_MEAL",
+        "deprecated" : false
+      }, {
+        "name" : "RAW_UNDERCOOKED_CONSUMPTION",
+        "deprecated" : false
+      }, {
+        "name" : "INADEQUATE_STORAGE_TEMPERATURE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WELL_COOKED",
+        "deprecated" : false
+      }, {
+        "name" : "COLD_HOT_CHAIN",
+        "deprecated" : false
+      }, {
+        "name" : "WASHED",
+        "deprecated" : false
+      }, {
+        "name" : "EXCLUSION_DIET_YERSINIOSIS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "RENTED_APARTMENT_HOUSE",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "EATING_AT_HOME",
+        "deprecated" : true
+      }, {
+        "name" : "EATING_OUTSIDE",
+        "deprecated" : true
+      }, {
+        "name" : "SHOPPING_FOR_FOOD",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "EGG",
+        "deprecated" : true
+      }, {
+        "name" : "MEAT",
+        "deprecated" : true
+      }, {
+        "name" : "FISH_SEAFOOD",
+        "deprecated" : true
+      }, {
+        "name" : "DAIRY",
+        "deprecated" : true
+      }, {
+        "name" : "FRUIT",
+        "deprecated" : true
+      }, {
+        "name" : "RAW_VEGETABLES",
+        "deprecated" : true
+      }, {
+        "name" : "CONSUMED",
+        "deprecated" : false
+      }, {
+        "name" : "TASTED",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLED",
+        "deprecated" : false
+      }, {
+        "name" : "PREPARED",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_MEAL",
+        "deprecated" : false
+      }, {
+        "name" : "RAW_UNDERCOOKED_CONSUMPTION",
+        "deprecated" : false
+      }, {
+        "name" : "INADEQUATE_STORAGE_TEMPERATURE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WELL_COOKED",
+        "deprecated" : false
+      }, {
+        "name" : "COLD_HOT_CHAIN",
+        "deprecated" : false
+      }, {
+        "name" : "WASHED",
+        "deprecated" : false
+      }, {
+        "name" : "EXCLUSION_DIET_YERSINIOSIS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "FRIENDS_FAMILY",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "EATING_AT_HOME",
+        "deprecated" : true
+      }, {
+        "name" : "EATING_OUTSIDE",
+        "deprecated" : true
+      }, {
+        "name" : "SHOPPING_FOR_FOOD",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "EGG",
+        "deprecated" : true
+      }, {
+        "name" : "MEAT",
+        "deprecated" : true
+      }, {
+        "name" : "FISH_SEAFOOD",
+        "deprecated" : true
+      }, {
+        "name" : "DAIRY",
+        "deprecated" : true
+      }, {
+        "name" : "FRUIT",
+        "deprecated" : true
+      }, {
+        "name" : "RAW_VEGETABLES",
+        "deprecated" : true
+      }, {
+        "name" : "CONSUMED",
+        "deprecated" : false
+      }, {
+        "name" : "TASTED",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLED",
+        "deprecated" : false
+      }, {
+        "name" : "PREPARED",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_MEAL",
+        "deprecated" : false
+      }, {
+        "name" : "RAW_UNDERCOOKED_CONSUMPTION",
+        "deprecated" : false
+      }, {
+        "name" : "INADEQUATE_STORAGE_TEMPERATURE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WELL_COOKED",
+        "deprecated" : false
+      }, {
+        "name" : "COLD_HOT_CHAIN",
+        "deprecated" : false
+      }, {
+        "name" : "WASHED",
+        "deprecated" : false
+      }, {
+        "name" : "EXCLUSION_DIET_YERSINIOSIS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ {
+        "name" : "EATING_AT_HOME",
+        "deprecated" : true
+      }, {
+        "name" : "EATING_OUTSIDE",
+        "deprecated" : true
+      }, {
+        "name" : "SHOPPING_FOR_FOOD",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "VECTOR_BORNE",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "INDOOR",
+      "deprecated" : true,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "STANDING_WATER_PROXIMITY",
+        "deprecated" : false
+      }, {
+        "name" : "UNPROTECTED_HOUSEHOLD",
+        "deprecated" : true
+      }, {
+        "name" : "REPEATED_BITES",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "NIGHT_TIME_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "VEGETATION",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_FREQUENT_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "AREA_HIGH_RISK_TRANSMISSION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "INSECT_REPELLENT",
+        "deprecated" : false
+      }, {
+        "name" : "COILS",
+        "deprecated" : false
+      }, {
+        "name" : "SLEEPING_UNDER_BEDNET",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_SPRAYING",
+        "deprecated" : false
+      }, {
+        "name" : "AIR_CONDITION",
+        "deprecated" : false
+      }, {
+        "name" : "PROTECTIVE_CLOTHING",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "REGULAR_CHECKS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OUTDOOR",
+      "deprecated" : true,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "OUTDOOR_ACTIVITIES",
+        "deprecated" : true
+      }, {
+        "name" : "STANDING_WATER_PROXIMITY",
+        "deprecated" : false
+      }, {
+        "name" : "HIGH_MOSQUITO_ACTIVITY_REGIONS",
+        "deprecated" : true
+      }, {
+        "name" : "REPEATED_BITES",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "NIGHT_TIME_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "VEGETATION",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_FREQUENT_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "AREA_HIGH_RISK_TRANSMISSION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "INSECT_REPELLENT",
+        "deprecated" : false
+      }, {
+        "name" : "HERBS",
+        "deprecated" : true
+      }, {
+        "name" : "COILS",
+        "deprecated" : false
+      }, {
+        "name" : "SLEEPING_UNDER_BEDNET",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_SPRAYING",
+        "deprecated" : false
+      }, {
+        "name" : "AIR_CONDITION",
+        "deprecated" : false
+      }, {
+        "name" : "PROTECTIVE_CLOTHING",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "REGULAR_CHECKS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "MOSQUITO_BORNE",
+      "deprecated" : true,
+      "subSettings" : [ {
+        "name" : "STANDING_WATER_AREAS",
+        "deprecated" : true
+      }, {
+        "name" : "HIGH_MOSQUITO_ACTIVITY_REGIONS",
+        "deprecated" : true
+      }, {
+        "name" : "TRAVELED_ABROAD",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "STANDING_WATER_PROXIMITY",
+        "deprecated" : false
+      }, {
+        "name" : "MOSQUITO_ACTIVITY_TIME_OF_DAY",
+        "deprecated" : true
+      }, {
+        "name" : "CLOTHING_COVERAGE",
+        "deprecated" : true
+      }, {
+        "name" : "REPEATED_BITES",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "NIGHT_TIME_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "VEGETATION",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_FREQUENT_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "AREA_HIGH_RISK_TRANSMISSION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "INSECT_REPELLENT",
+        "deprecated" : false
+      }, {
+        "name" : "COILS",
+        "deprecated" : false
+      }, {
+        "name" : "SLEEPING_UNDER_BEDNET",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_SPRAYING",
+        "deprecated" : false
+      }, {
+        "name" : "AIR_CONDITION",
+        "deprecated" : false
+      }, {
+        "name" : "PROTECTIVE_CLOTHING",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "REGULAR_CHECKS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "TICK_BORNE",
+      "deprecated" : true,
+      "subSettings" : [ {
+        "name" : "FORESTED_GRASSY_RURAL",
+        "deprecated" : true
+      }, {
+        "name" : "WILDLIFE_RESERVOIR_AREAS",
+        "deprecated" : true
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "STANDING_WATER_PROXIMITY",
+        "deprecated" : false
+      }, {
+        "name" : "DURATION_OUTDOORS",
+        "deprecated" : true
+      }, {
+        "name" : "EXPOSED_SKIN",
+        "deprecated" : true
+      }, {
+        "name" : "REPEATED_BITES",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "NIGHT_TIME_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "VEGETATION",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_FREQUENT_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "AREA_HIGH_RISK_TRANSMISSION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "INSECT_REPELLENT",
+        "deprecated" : false
+      }, {
+        "name" : "COILS",
+        "deprecated" : false
+      }, {
+        "name" : "SLEEPING_UNDER_BEDNET",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_SPRAYING",
+        "deprecated" : false
+      }, {
+        "name" : "AIR_CONDITION",
+        "deprecated" : false
+      }, {
+        "name" : "PROTECTIVE_CLOTHING",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "TICK_PREVENTION",
+        "deprecated" : true
+      }, {
+        "name" : "REGULAR_CHECKS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "URBAN_RESIDENTIAL",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "STANDING_WATER_PROXIMITY",
+        "deprecated" : false
+      }, {
+        "name" : "REPEATED_BITES",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "NIGHT_TIME_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "VEGETATION",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_FREQUENT_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "AREA_HIGH_RISK_TRANSMISSION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "INSECT_REPELLENT",
+        "deprecated" : false
+      }, {
+        "name" : "COILS",
+        "deprecated" : false
+      }, {
+        "name" : "SLEEPING_UNDER_BEDNET",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_SPRAYING",
+        "deprecated" : false
+      }, {
+        "name" : "AIR_CONDITION",
+        "deprecated" : false
+      }, {
+        "name" : "PROTECTIVE_CLOTHING",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "REGULAR_CHECKS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "RURAL_AGRICULTURAL",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "STANDING_WATER_PROXIMITY",
+        "deprecated" : false
+      }, {
+        "name" : "REPEATED_BITES",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "NIGHT_TIME_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "VEGETATION",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_FREQUENT_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "AREA_HIGH_RISK_TRANSMISSION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "INSECT_REPELLENT",
+        "deprecated" : false
+      }, {
+        "name" : "COILS",
+        "deprecated" : false
+      }, {
+        "name" : "SLEEPING_UNDER_BEDNET",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_SPRAYING",
+        "deprecated" : false
+      }, {
+        "name" : "AIR_CONDITION",
+        "deprecated" : false
+      }, {
+        "name" : "PROTECTIVE_CLOTHING",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "REGULAR_CHECKS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "FOREST_NATURAL",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "STANDING_WATER_PROXIMITY",
+        "deprecated" : false
+      }, {
+        "name" : "REPEATED_BITES",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "NIGHT_TIME_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "VEGETATION",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_FREQUENT_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "AREA_HIGH_RISK_TRANSMISSION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "INSECT_REPELLENT",
+        "deprecated" : false
+      }, {
+        "name" : "COILS",
+        "deprecated" : false
+      }, {
+        "name" : "SLEEPING_UNDER_BEDNET",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_SPRAYING",
+        "deprecated" : false
+      }, {
+        "name" : "AIR_CONDITION",
+        "deprecated" : false
+      }, {
+        "name" : "PROTECTIVE_CLOTHING",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "REGULAR_CHECKS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "WORKING_AT_AN_AIRPORT",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "STANDING_WATER_PROXIMITY",
+        "deprecated" : false
+      }, {
+        "name" : "REPEATED_BITES",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "NIGHT_TIME_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "VEGETATION",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_FREQUENT_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "AREA_HIGH_RISK_TRANSMISSION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "INSECT_REPELLENT",
+        "deprecated" : false
+      }, {
+        "name" : "COILS",
+        "deprecated" : false
+      }, {
+        "name" : "SLEEPING_UNDER_BEDNET",
+        "deprecated" : false
+      }, {
+        "name" : "INDOOR_SPRAYING",
+        "deprecated" : false
+      }, {
+        "name" : "AIR_CONDITION",
+        "deprecated" : false
+      }, {
+        "name" : "PROTECTIVE_CLOTHING",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "REGULAR_CHECKS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "VERTICAL_TRANSMISSION",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "PREGNANCY_OR_DELIVERY",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "VACCINATION",
+        "deprecated" : false
+      }, {
+        "name" : "MEDICATION",
+        "deprecated" : false
+      }, {
+        "name" : "C_SECTION",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_DELIVERY",
+        "deprecated" : false
+      }, {
+        "name" : "BREASTFEEDING_PRECAUTIONS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "BREASTFEEDING",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "VACCINATION",
+        "deprecated" : false
+      }, {
+        "name" : "MEDICATION",
+        "deprecated" : false
+      }, {
+        "name" : "BREASTFEEDING_PRECAUTIONS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "WATER_BORNE",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "DRINKING_WATER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "DRINKING_CONTAMINATED_WATER",
+        "deprecated" : false
+      }, {
+        "name" : "ICE_AND_FOOD_PREPARATION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WATER_PURIFICATION",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_WATER_SOURCES",
+        "deprecated" : false
+      }, {
+        "name" : "AVOID_RAW_FOODS",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDING_INGESTION",
+        "deprecated" : false
+      }, {
+        "name" : "HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "RECREATIONAL_WATER",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "PUBLIC_POOL",
+        "deprecated" : false
+      }, {
+        "name" : "PRIVATE_POOL",
+        "deprecated" : false
+      }, {
+        "name" : "LAKE",
+        "deprecated" : false
+      }, {
+        "name" : "RIVER",
+        "deprecated" : false
+      }, {
+        "name" : "OCEAN",
+        "deprecated" : false
+      }, {
+        "name" : "WATER_PARK",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "SWALLOWING_WATER",
+        "deprecated" : true
+      }, {
+        "name" : "CONTACT_WITH_OPEN_WOUNDS",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_WASTEWATER",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_FLOODWATER",
+        "deprecated" : false
+      }, {
+        "name" : "IMMERSION",
+        "deprecated" : false
+      }, {
+        "name" : "ACCIDENTAL_INGESTION",
+        "deprecated" : false
+      }, {
+        "name" : "SWIMMING_BATHING",
+        "deprecated" : false
+      }, {
+        "name" : "WATER_SPORTS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "NO_SWIMMING_CONTAMINATED",
+        "deprecated" : false
+      }, {
+        "name" : "SHOWER_AFTER_SWIMMING",
+        "deprecated" : false
+      }, {
+        "name" : "WOUND_COVERAGE",
+        "deprecated" : false
+      }, {
+        "name" : "BATHING_CONTAMINATED_WATER",
+        "deprecated" : true
+      }, {
+        "name" : "AVOIDING_INGESTION",
+        "deprecated" : false
+      }, {
+        "name" : "HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "HOUSEHOLD",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "CONTACT_WITH_OPEN_WOUNDS",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_WASTEWATER",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_FLOODWATER",
+        "deprecated" : false
+      }, {
+        "name" : "IMMERSION",
+        "deprecated" : false
+      }, {
+        "name" : "ACCIDENTAL_INGESTION",
+        "deprecated" : false
+      }, {
+        "name" : "SWIMMING_BATHING",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WOUND_COVERAGE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDING_INGESTION",
+        "deprecated" : false
+      }, {
+        "name" : "HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OCCUPATIONAL_ENVIRONMENTAL",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "CONTACT_WITH_OPEN_WOUNDS",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_WASTEWATER",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_FLOODWATER",
+        "deprecated" : false
+      }, {
+        "name" : "IMMERSION",
+        "deprecated" : false
+      }, {
+        "name" : "ACCIDENTAL_INGESTION",
+        "deprecated" : false
+      }, {
+        "name" : "SWIMMING_BATHING",
+        "deprecated" : false
+      }, {
+        "name" : "WATER_SPORTS",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "NO_SWIMMING_CONTAMINATED",
+        "deprecated" : false
+      }, {
+        "name" : "SHOWER_AFTER_SWIMMING",
+        "deprecated" : false
+      }, {
+        "name" : "WOUND_COVERAGE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDING_INGESTION",
+        "deprecated" : false
+      }, {
+        "name" : "HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "RESPIRATORY",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "HOUSEHOLD_SHARED_ACCOMMODATION",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_RESPIRATORY_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "RESPIRATORY_SECRETIONS_DROPLETS",
+        "deprecated" : false
+      }, {
+        "name" : "AEROSOLS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_INDOOR_ENVIRONMENT",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "CLOSE_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SECRETIONS_BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_MASK",
+        "deprecated" : false
+      }, {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "SCHOOL_CHILDCARE",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_RESPIRATORY_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "RESPIRATORY_SECRETIONS_DROPLETS",
+        "deprecated" : false
+      }, {
+        "name" : "AEROSOLS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_INDOOR_ENVIRONMENT",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "CLOSE_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SECRETIONS_BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_MASK",
+        "deprecated" : false
+      }, {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "WORKPLACE",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_RESPIRATORY_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "RESPIRATORY_SECRETIONS_DROPLETS",
+        "deprecated" : false
+      }, {
+        "name" : "AEROSOLS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_INDOOR_ENVIRONMENT",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "CLOSE_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SECRETIONS_BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_MASK",
+        "deprecated" : false
+      }, {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "GATHERING_EVENT",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_RESPIRATORY_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "RESPIRATORY_SECRETIONS_DROPLETS",
+        "deprecated" : false
+      }, {
+        "name" : "AEROSOLS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_INDOOR_ENVIRONMENT",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "CLOSE_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SECRETIONS_BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_MASK",
+        "deprecated" : false
+      }, {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "HEALTHCARE",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_RESPIRATORY_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "RESPIRATORY_SECRETIONS_DROPLETS",
+        "deprecated" : false
+      }, {
+        "name" : "AEROSOLS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_INDOOR_ENVIRONMENT",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "CLOSE_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SECRETIONS_BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_MASK",
+        "deprecated" : false
+      }, {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "TRANSPORT",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_RESPIRATORY_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "RESPIRATORY_SECRETIONS_DROPLETS",
+        "deprecated" : false
+      }, {
+        "name" : "AEROSOLS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_INDOOR_ENVIRONMENT",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "CLOSE_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SECRETIONS_BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_MASK",
+        "deprecated" : false
+      }, {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_RESPIRATORY_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "RESPIRATORY_SECRETIONS_DROPLETS",
+        "deprecated" : false
+      }, {
+        "name" : "AEROSOLS",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_INDOOR_ENVIRONMENT",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "PERSON_TO_PERSON",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "HOUSEHOLD_SHARED_ACCOMMODATION",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_CONFIRMED_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "ASYMPTOMATIC_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "HOUSEHOLD_MEMBER",
+        "deprecated" : false
+      }, {
+        "name" : "COLLEAGUE_CLASSMATE",
+        "deprecated" : false
+      }, {
+        "name" : "CAREGIVER",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "CLOSE_OR_PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOID_TOUCHING_FACE",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "SCHOOL_CHILDCARE",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_CONFIRMED_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "ASYMPTOMATIC_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "HOUSEHOLD_MEMBER",
+        "deprecated" : false
+      }, {
+        "name" : "COLLEAGUE_CLASSMATE",
+        "deprecated" : false
+      }, {
+        "name" : "CAREGIVER",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "CLOSE_OR_PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOID_TOUCHING_FACE",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "WORKPLACE",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_CONFIRMED_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "ASYMPTOMATIC_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "HOUSEHOLD_MEMBER",
+        "deprecated" : false
+      }, {
+        "name" : "COLLEAGUE_CLASSMATE",
+        "deprecated" : false
+      }, {
+        "name" : "CAREGIVER",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "CLOSE_OR_PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOID_TOUCHING_FACE",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "GATHERING_EVENT",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_CONFIRMED_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "ASYMPTOMATIC_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "HOUSEHOLD_MEMBER",
+        "deprecated" : false
+      }, {
+        "name" : "COLLEAGUE_CLASSMATE",
+        "deprecated" : false
+      }, {
+        "name" : "CAREGIVER",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "CLOSE_OR_PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOID_TOUCHING_FACE",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "HEALTHCARE_INSTITUTIONAL",
+      "deprecated" : false,
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_CONFIRMED_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "ASYMPTOMATIC_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "HOUSEHOLD_MEMBER",
+        "deprecated" : false
+      }, {
+        "name" : "COLLEAGUE_CLASSMATE",
+        "deprecated" : false
+      }, {
+        "name" : "CAREGIVER",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ {
+        "name" : "SKIN_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "BODY_FLUIDS",
+        "deprecated" : false
+      }, {
+        "name" : "CLOSE_OR_PROLONGED_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SHARED_ACCOMMODATION_ACTIVITIES_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "PHYSICAL_DISTANCING",
+        "deprecated" : false
+      }, {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "AVOID_TOUCHING_FACE",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ {
+        "name" : "SYMPTOMATIC_CONFIRMED_CASE",
+        "deprecated" : false
+      }, {
+        "name" : "ASYMPTOMATIC_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "HOUSEHOLD_MEMBER",
+        "deprecated" : false
+      }, {
+        "name" : "COLLEAGUE_CLASSMATE",
+        "deprecated" : false
+      }, {
+        "name" : "CAREGIVER",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER_PERSON",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "ENVIRONMENTAL",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "NATURAL_ENVIRONMENT",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "SKIN_CONTACT_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "INHALATION",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "WOUND_CONTAMINATION",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLING_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "OCCUPATIONAL_EXPOSURE_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDANCE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OCCUPATIONAL_ENVIRONMENT",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "SKIN_CONTACT_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "INHALATION",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "WOUND_CONTAMINATION",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLING_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "OCCUPATIONAL_EXPOSURE_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDANCE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "CONTAMINATED_PREMISES",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "SKIN_CONTACT_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "INHALATION",
+        "deprecated" : false
+      }, {
+        "name" : "OUTDOOR_EXPOSURE_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "WOUND_CONTAMINATION",
+        "deprecated" : false
+      }, {
+        "name" : "HANDLING_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "OCCUPATIONAL_EXPOSURE_ENV",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "HAND_HYGIENE",
+        "deprecated" : false
+      }, {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "ENVIRONMENTAL_CONTROL",
+        "deprecated" : false
+      }, {
+        "name" : "AVOIDANCE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "BLOOD_PARENTERAL",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "TRANSFUSION",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "NEEDLESTICK",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSFUSION_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "SHARING_NEEDLES_SYRINGES",
+        "deprecated" : false
+      }, {
+        "name" : "INVASIVE_PROCEDURE",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "GLOVES",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "SHARPS_SAFETY",
+        "deprecated" : false
+      }, {
+        "name" : "BLOOD_SCREENING",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "ORGAN_TISSUE_TRANSPLANTATION",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "NEEDLESTICK",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSFUSION_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSPLANTATION",
+        "deprecated" : false
+      }, {
+        "name" : "SHARING_NEEDLES_SYRINGES",
+        "deprecated" : false
+      }, {
+        "name" : "INVASIVE_PROCEDURE",
+        "deprecated" : false
+      }, {
+        "name" : "PERCUTANEOUS_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "MUCOSAL",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "GLOVES",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "SHARPS_SAFETY",
+        "deprecated" : false
+      }, {
+        "name" : "BLOOD_SCREENING",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "INJECTION_DRUG_USE",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "NEEDLESTICK",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSFUSION_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSPLANTATION",
+        "deprecated" : false
+      }, {
+        "name" : "SHARING_NEEDLES_SYRINGES",
+        "deprecated" : false
+      }, {
+        "name" : "INVASIVE_PROCEDURE",
+        "deprecated" : false
+      }, {
+        "name" : "PERCUTANEOUS_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "MUCOSAL",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "GLOVES",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "SHARPS_SAFETY",
+        "deprecated" : false
+      }, {
+        "name" : "BLOOD_SCREENING",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "HEALTHCARE_PROCEDURE",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "NEEDLESTICK",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSFUSION_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSPLANTATION",
+        "deprecated" : false
+      }, {
+        "name" : "SHARING_NEEDLES_SYRINGES",
+        "deprecated" : false
+      }, {
+        "name" : "INVASIVE_PROCEDURE",
+        "deprecated" : false
+      }, {
+        "name" : "PERCUTANEOUS_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "MUCOSAL",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "GLOVES",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "SHARPS_SAFETY",
+        "deprecated" : false
+      }, {
+        "name" : "BLOOD_SCREENING",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OCCUPATIONAL_EXPOSURE",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "NEEDLESTICK",
+        "deprecated" : false
+      }, {
+        "name" : "PERCUTANEOUS_EXPOSURE",
+        "deprecated" : false
+      }, {
+        "name" : "MUCOSAL",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "WEARING_PPE",
+        "deprecated" : false
+      }, {
+        "name" : "GLOVES",
+        "deprecated" : false
+      }, {
+        "name" : "SAFE_INJECTION",
+        "deprecated" : false
+      }, {
+        "name" : "SHARPS_SAFETY",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "SEXUAL",
+    "deprecated" : false,
+    "hasNoSetting" : false,
+    "hasNoSubSetting" : false,
+    "settings" : [ {
+      "name" : "WORKPLACE",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "VAGINAL",
+        "deprecated" : false
+      }, {
+        "name" : "ANAL",
+        "deprecated" : false
+      }, {
+        "name" : "ORAL",
+        "deprecated" : false
+      }, {
+        "name" : "GENITAL_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN",
+        "deprecated" : false
+      }, {
+        "name" : "MULTIPLE_PARTNERS",
+        "deprecated" : false
+      }, {
+        "name" : "ANONYMOUS_PARTNER",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSACTIONAL_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "BEING_A_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "CONDOM_BARRIER",
+        "deprecated" : false
+      }, {
+        "name" : "PARTNER_NOTIFICATION",
+        "deprecated" : false
+      }, {
+        "name" : "STI_PREVENTION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "HOUSEHOLD_PRIVATE_RESIDENCE",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "VAGINAL",
+        "deprecated" : false
+      }, {
+        "name" : "ANAL",
+        "deprecated" : false
+      }, {
+        "name" : "ORAL",
+        "deprecated" : false
+      }, {
+        "name" : "GENITAL_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN",
+        "deprecated" : false
+      }, {
+        "name" : "MULTIPLE_PARTNERS",
+        "deprecated" : false
+      }, {
+        "name" : "ANONYMOUS_PARTNER",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSACTIONAL_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "BEING_A_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "CONDOM_BARRIER",
+        "deprecated" : false
+      }, {
+        "name" : "PARTNER_NOTIFICATION",
+        "deprecated" : false
+      }, {
+        "name" : "STI_PREVENTION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "HOUSEHOLD_OTHER_COUNTRY",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "VAGINAL",
+        "deprecated" : false
+      }, {
+        "name" : "ANAL",
+        "deprecated" : false
+      }, {
+        "name" : "ORAL",
+        "deprecated" : false
+      }, {
+        "name" : "GENITAL_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN",
+        "deprecated" : false
+      }, {
+        "name" : "MULTIPLE_PARTNERS",
+        "deprecated" : false
+      }, {
+        "name" : "ANONYMOUS_PARTNER",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSACTIONAL_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "BEING_A_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "CONDOM_BARRIER",
+        "deprecated" : false
+      }, {
+        "name" : "PARTNER_NOTIFICATION",
+        "deprecated" : false
+      }, {
+        "name" : "STI_PREVENTION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "GATHERING_SOCIAL_SETTING",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "VAGINAL",
+        "deprecated" : false
+      }, {
+        "name" : "ANAL",
+        "deprecated" : false
+      }, {
+        "name" : "ORAL",
+        "deprecated" : false
+      }, {
+        "name" : "GENITAL_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN",
+        "deprecated" : false
+      }, {
+        "name" : "MULTIPLE_PARTNERS",
+        "deprecated" : false
+      }, {
+        "name" : "ANONYMOUS_PARTNER",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSACTIONAL_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "BEING_A_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "CONDOM_BARRIER",
+        "deprecated" : false
+      }, {
+        "name" : "PARTNER_NOTIFICATION",
+        "deprecated" : false
+      }, {
+        "name" : "STI_PREVENTION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "LARGE_EVENT_WITH_SEXUAL_CONTACT",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "VAGINAL",
+        "deprecated" : false
+      }, {
+        "name" : "ANAL",
+        "deprecated" : false
+      }, {
+        "name" : "ORAL",
+        "deprecated" : false
+      }, {
+        "name" : "GENITAL_CONTACT",
+        "deprecated" : false
+      }, {
+        "name" : "SKIN_TO_SKIN",
+        "deprecated" : false
+      }, {
+        "name" : "MULTIPLE_PARTNERS",
+        "deprecated" : false
+      }, {
+        "name" : "ANONYMOUS_PARTNER",
+        "deprecated" : false
+      }, {
+        "name" : "TRANSACTIONAL_SEX",
+        "deprecated" : false
+      }, {
+        "name" : "BEING_A_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "CONTACT_WITH_SEX_WORKER",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "CONDOM_BARRIER",
+        "deprecated" : false
+      }, {
+        "name" : "PARTNER_NOTIFICATION",
+        "deprecated" : false
+      }, {
+        "name" : "STI_PREVENTION",
+        "deprecated" : false
+      }, {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ ],
+      "protectiveMeasures" : [ ]
+    }
+  }, {
+    "name" : "UNKNOWN",
+    "deprecated" : false,
+    "hasNoSetting" : true,
+    "hasNoSubSetting" : true,
+    "settings" : [ {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }
+  }, {
+    "name" : "OTHER",
+    "deprecated" : false,
+    "hasNoSetting" : true,
+    "hasNoSubSetting" : true,
+    "settings" : [ {
+      "name" : "OTHER",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }, {
+      "name" : "UNKNOWN",
+      "deprecated" : false,
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    } ],
+    "categoryOnly" : {
+      "subSettings" : [ ],
+      "contactFactors" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ],
+      "protectiveMeasures" : [ {
+        "name" : "UNKNOWN",
+        "deprecated" : false
+      }, {
+        "name" : "OTHER",
+        "deprecated" : false
+      } ]
+    }
+  } ]
+}
