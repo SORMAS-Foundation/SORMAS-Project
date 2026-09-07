@@ -93,7 +93,8 @@ public enum ExposureSetting {
 
 	ExposureSetting(boolean deprecated, ExposureCategory... categories) {
 		this.deprecated = deprecated;
-		this.categories = categories.length > 0 ? EnumSet.copyOf(Arrays.asList(categories)) : EnumSet.noneOf(ExposureCategory.class);
+		this.categories =
+			Collections.unmodifiableSet(categories.length > 0 ? EnumSet.copyOf(Arrays.asList(categories)) : EnumSet.noneOf(ExposureCategory.class));
 	}
 
 	ExposureSetting(ExposureCategory... categories) {

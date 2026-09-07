@@ -170,8 +170,8 @@ public enum ExposureProtectiveMeasure {
 	private final boolean deprecated;
 
 	ExposureProtectiveMeasure(Set<ExposureCategory> categories, Set<ExposureSetting> settings, boolean deprecated) {
-		this.categories = categories;
-		this.settings = settings;
+		this.categories = Collections.unmodifiableSet(categories);
+		this.settings = Collections.unmodifiableSet(settings);
 		this.deprecated = deprecated;
 	}
 

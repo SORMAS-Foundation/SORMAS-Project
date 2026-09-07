@@ -217,7 +217,8 @@ public enum ExposureContactFactor {
 
 	ExposureContactFactor(ExposureCategory category, boolean deprecated, ExposureSetting... settings) {
 		this.category = category;
-		this.settings = settings.length > 0 ? EnumSet.copyOf(Arrays.asList(settings)) : EnumSet.noneOf(ExposureSetting.class);
+		this.settings =
+			Collections.unmodifiableSet(settings.length > 0 ? EnumSet.copyOf(Arrays.asList(settings)) : EnumSet.noneOf(ExposureSetting.class));
 		this.deprecated = deprecated;
 	}
 
