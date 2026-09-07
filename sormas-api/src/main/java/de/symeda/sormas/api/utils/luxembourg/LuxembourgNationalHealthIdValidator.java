@@ -31,6 +31,11 @@ public class LuxembourgNationalHealthIdValidator {
      */
     private static final Pattern NATIONAL_HEALTH_ID_PATTERN = Pattern.compile("(\\d{4})(\\d{2})(\\d{2})(\\d{3})(\\d)(\\d)");
 
+    /**
+     * Non-standard LU - NationalHealths ids start with _3_990 -> 1990 or 4006 -> 2006
+     */
+    private static final int YEAR_ADDITION_FOR_NON_STANDARD_HEALTH_IDS = 2000;
+
     public static Optional<FailureCause> isValidWithCause(String nationalHealthId) {
         return isValidWithCause(nationalHealthId, null, null, null);
     }
@@ -53,8 +58,8 @@ public class LuxembourgNationalHealthIdValidator {
         String c2 = patternMatcher.group(6);
 
         int birthDateWithinNationalHealthId = Integer.parseInt(yyyy);
-        if (nationalHealthId.startsWith("3")) {
-            birthDateWithinNationalHealthId = birthDateWithinNationalHealthId + 2000;
+        if (nationalHealthId.startsWith("3") || nationalHealthId.startsWith("4")) {
+            birthDateWithinNationalHealthId = birthDateWithinNationalHealthId - YEAR_ADDITION_FOR_NON_STANDARD_HEALTH_IDS;
         }
 
         if (!(birthdateYYYY == null && birthdateMM == null && birthdateDD == null)) {
