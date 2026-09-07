@@ -212,6 +212,7 @@ public interface Strings {
 	String DefaultPassword_ownUserIntroduction = "DefaultPassword.ownUserIntroduction";
 	String DefaultPassword_ownUserNewPasswordSetHints = "DefaultPassword.ownUserNewPasswordSetHints";
 	String DefaultPassword_unchanged = "DefaultPassword.unchanged";
+	String deprecatedValueRemovalOnly = "deprecatedValueRemovalOnly";
 	String disabled = "disabled";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
