@@ -292,8 +292,7 @@ public enum ExposureContactFactor {
 	}
 
 	private static boolean isVisibleForDisease(ExposureContactFactor contactFactor, Disease disease) {
-		return Diseases.DiseasesConfiguration.isMissing(ExposureContactFactor.class, contactFactor.name())
-			|| Diseases.DiseasesConfiguration.isDefined(ExposureContactFactor.class, contactFactor.name(), disease);
+		return Diseases.DiseasesConfiguration.isDefinedOrMissing(ExposureContactFactor.class, contactFactor.name(), disease);
 	}
 
 	@Override

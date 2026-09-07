@@ -133,7 +133,7 @@ public enum ExposureSetting {
 	}
 
 	private static boolean isVisibleForDisease(ExposureSetting setting, Disease disease) {
-		return Diseases.DiseasesConfiguration.isDefinedOrMissing(ExposureProtectiveMeasure.class, setting.name(), disease);
+		return Diseases.DiseasesConfiguration.isDefinedOrMissing(ExposureSetting.class, setting.name(), disease);
 	}
 
 	@Override

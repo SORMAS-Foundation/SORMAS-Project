@@ -210,7 +210,7 @@ public enum ExposureSubSetting {
 	}
 
 	private static boolean isVisibleForDisease(ExposureSubSetting subSetting, Disease disease) {
-		return Diseases.DiseasesConfiguration.isDefinedOrMissing(ExposureProtectiveMeasure.class, subSetting.name(), disease);
+		return Diseases.DiseasesConfiguration.isDefinedOrMissing(ExposureSubSetting.class, subSetting.name(), disease);
 	}
 
 	@Override
