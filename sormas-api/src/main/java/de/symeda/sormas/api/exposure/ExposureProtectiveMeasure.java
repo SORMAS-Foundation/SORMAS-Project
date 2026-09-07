@@ -239,8 +239,7 @@ public enum ExposureProtectiveMeasure {
 	}
 
 	private static boolean isVisibleForDisease(ExposureProtectiveMeasure protectiveMeasure, Disease disease) {
-		return Diseases.DiseasesConfiguration.isMissing(ExposureProtectiveMeasure.class, protectiveMeasure.name())
-			|| Diseases.DiseasesConfiguration.isDefined(ExposureProtectiveMeasure.class, protectiveMeasure.name(), disease);
+		return Diseases.DiseasesConfiguration.isDefinedOrMissing(ExposureProtectiveMeasure.class, protectiveMeasure.name(), disease);
 	}
 
 	@Override

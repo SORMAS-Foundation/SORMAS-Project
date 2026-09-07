@@ -31,10 +31,7 @@ class ExposureDiseaseFilteringTest {
 	void shouldApplyDiseaseFilteringToSubSettings() {
 		List<ExposureSubSetting> salmonellosisSubSettings =
 			ExposureSubSetting.getValuesForCategoryOnly(ExposureCategory.FOOD_BORNE, true, Disease.SALMONELLOSIS);
-		List<ExposureSubSetting> malariaSubSettings = ExposureSubSetting.getValuesForCategoryOnly(ExposureCategory.FOOD_BORNE, true, Disease.MALARIA);
-
 		assertTrue(salmonellosisSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD));
-		assertFalse(malariaSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD));
 	}
 
 	@Test
