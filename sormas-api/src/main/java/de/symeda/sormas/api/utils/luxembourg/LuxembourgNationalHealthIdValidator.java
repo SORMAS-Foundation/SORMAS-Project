@@ -58,13 +58,11 @@ public class LuxembourgNationalHealthIdValidator {
             birthDateWithinNationalHealthId = birthDateWithinNationalHealthId - YEAR_ADDITION_FOR_NON_STANDARD_HEALTH_IDS;
         }
 
-        if (!(birthdateYYYY == null && birthdateMM == null && birthdateDD == null)) {
-            if (!(isNullOrEquals(birthdateYYYY, birthDateWithinNationalHealthId)
-                    && isNullOrEquals(birthdateMM, Integer.parseInt(mm))
-                    && isNullOrEquals(birthdateDD, Integer.parseInt(dd)))) {
+        if (!(isNullOrEquals(birthdateYYYY, birthDateWithinNationalHealthId)
+                && isNullOrEquals(birthdateMM, Integer.parseInt(mm))
+                && isNullOrEquals(birthdateDD, Integer.parseInt(dd)))) {
 
-                return Optional.of(FailureCause.BIRTHDATE);
-            }
+            return Optional.of(FailureCause.BIRTHDATE);
         }
 
         String iNumber = yyyy + mm + dd + xxx;
