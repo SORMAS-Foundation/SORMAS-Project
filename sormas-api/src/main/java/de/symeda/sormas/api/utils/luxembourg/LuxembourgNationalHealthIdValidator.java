@@ -36,10 +36,6 @@ public class LuxembourgNationalHealthIdValidator {
      */
     private static final int YEAR_ADDITION_FOR_NON_STANDARD_HEALTH_IDS = 2000;
 
-    public static Optional<FailureCause> isValidWithCause(String nationalHealthId) {
-        return isValidWithCause(nationalHealthId, null, null, null);
-    }
-
     public static Optional<FailureCause> isValidWithCause(String nationalHealthId, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
         if (nationalHealthId == null) {
             return Optional.of(FailureCause.EMPTY);
@@ -73,10 +69,14 @@ public class LuxembourgNationalHealthIdValidator {
 
         String iNumber = yyyy + mm + dd + xxx;
         if (!(CheckDigitLuhn.checkDigit(iNumber + c1) && CheckDigitVerhoeff.checkDigit(iNumber + c2))) {
-            return Optional.of(FailureCause.CHECK_DIGIT);
+            return Optional.of(FailureCause.CHECK_DIGITS);
         }
 
         return Optional.empty();
+    }
+
+    public static Optional<FailureCause> isValidWithCause(String nationalHealthId) {
+        return isValidWithCause(nationalHealthId, null, null, null);
     }
 
     public static boolean isValid(String nationalHealthId, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
@@ -89,7 +89,7 @@ public class LuxembourgNationalHealthIdValidator {
 
     public enum FailureCause {
         EMPTY,
-        CHECK_DIGIT,
+        CHECK_DIGITS,
         PATTERN,
         BIRTHDATE
     }
