@@ -155,6 +155,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setCaseImportedStatus(source.getCaseImportedStatus());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.isClusterRelated());
+		target.setClusterIdentifier(source.getClusterIdentifier());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		target.setInfectionSource(source.getInfectionSource());
@@ -166,6 +167,12 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setPlaceOfInfection(source.getPlaceOfInfection());
 		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setTypeOfClinicalService(source.getTypeOfClinicalService());
+		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setMotherCountryOfBirth(countryService.getByReferenceDto(source.getMotherCountryOfBirth()));
+		target.setMotherCitizenship(countryService.getByReferenceDto(source.getMotherCitizenship()));
+		target.setSexWorker(source.getSexWorker());
+		target.setContactWithSexWorker(source.getContactWithSexWorker());
 
 		return target;
 	}
@@ -348,6 +355,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setCaseImportedStatus(source.getCaseImportedStatus());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.isClusterRelated());
+		target.setClusterIdentifier(source.getClusterIdentifier());
 		target.setModeOfTransmission(source.getModeOfTransmission());
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		target.setInfectionSource(source.getInfectionSource());
@@ -359,6 +367,12 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setPlaceOfInfection(source.getPlaceOfInfection());
 		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setTypeOfClinicalService(source.getTypeOfClinicalService());
+		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setMotherCountryOfBirth(CountryFacadeEjb.toReferenceDto(source.getMotherCountryOfBirth()));
+		target.setMotherCitizenship(CountryFacadeEjb.toReferenceDto(source.getMotherCitizenship()));
+		target.setSexWorker(source.getSexWorker());
+		target.setContactWithSexWorker(source.getContactWithSexWorker());
 		return target;
 	}
 

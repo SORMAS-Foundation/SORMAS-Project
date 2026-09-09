@@ -19,6 +19,11 @@ public class BirthdateRangeFilterPredicate {
 		CriteriaBuilder cb,
 		From<?, Person> personFrom,
 		Predicate filter) {
+
+		Predicate completeBirthdatePredicate = cb.and(
+			personFrom.get(Person.BIRTHDATE_YYYY).isNotNull(),
+			personFrom.get(Person.BIRTHDATE_MM).isNotNull(),
+			personFrom.get(Person.BIRTHDATE_DD).isNotNull());
 		if (birthdateFrom != null) {
 			Calendar calendarBirthdateFrom = Calendar.getInstance();
 			calendarBirthdateFrom.setTime(birthdateFrom);
@@ -47,7 +52,8 @@ public class BirthdateRangeFilterPredicate {
 					filter,
 					cb.or(yearPredicate, monthPredicate, dayPredicate, sameYearPartialMatchPredicate, sameYearMonthPartialMatchPredicate));
 			} else {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(yearPredicate, monthPredicate, dayPredicate));
+				filter =
+					CriteriaBuilderHelper.and(cb, filter, cb.and(completeBirthdatePredicate, cb.or(yearPredicate, monthPredicate, dayPredicate)));
 			}
 		}
 
@@ -79,7 +85,8 @@ public class BirthdateRangeFilterPredicate {
 					filter,
 					cb.or(yearPredicate, monthPredicate, dayPredicate, sameYearPartialMatchPredicate, sameYearMonthPartialMatchPredicate));
 			} else {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(yearPredicate, monthPredicate, dayPredicate));
+				filter =
+					CriteriaBuilderHelper.and(cb, filter, cb.and(completeBirthdatePredicate, cb.or(yearPredicate, monthPredicate, dayPredicate)));
 			}
 		}
 		return filter;

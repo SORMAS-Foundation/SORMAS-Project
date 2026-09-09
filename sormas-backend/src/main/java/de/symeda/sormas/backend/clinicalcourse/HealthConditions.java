@@ -16,8 +16,6 @@ import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-import java.util.Date;
-
 @Entity
 public class HealthConditions extends AbstractDomainObject {
 
@@ -38,6 +36,7 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown chronicKidneyDisease;
 	private YesNoUnknown chronicNeurologicCondition;
 	private YesNoUnknown downSyndrome;
+	private YesNoUnknown highIronLevel;
 	private YesNoUnknown congenitalSyphilis;
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
 	private String immunodeficiencyOtherThanHivText;
@@ -77,6 +76,7 @@ public class HealthConditions extends AbstractDomainObject {
 	private Integer syphilisNumberOfDoses;
 	private Date syphilisDateOfFirstDose;
 	private YesNoUnknown syphilisOrOtherStis;
+	private YesNoUnknown previousGonorrhoea;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
@@ -193,6 +193,15 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setDownSyndrome(YesNoUnknown downSyndrome) {
 		this.downSyndrome = downSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHighIronLevel() {
+		return highIronLevel;
+	}
+
+	public void setHighIronLevel(YesNoUnknown highIronLevel) {
+		this.highIronLevel = highIronLevel;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -499,6 +508,15 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
 		this.syphilisOrOtherStis = syphilisOrOtherStis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPreviousGonorrhoea() {
+		return previousGonorrhoea;
+	}
+
+	public void setPreviousGonorrhoea(YesNoUnknown previousGonorrhoea) {
+		this.previousGonorrhoea = previousGonorrhoea;
 	}
 
 }

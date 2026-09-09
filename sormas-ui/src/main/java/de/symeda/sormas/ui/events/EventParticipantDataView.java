@@ -85,7 +85,8 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 		Disease.GIARDIASIS, 
 		Disease.CRYPTOSPORIDIOSIS, 
 		Disease.SALMONELLOSIS, 
-		Disease.SHIGELLOSIS));
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS));
 	//@formatter:on
 
 	public EventParticipantDataView() {

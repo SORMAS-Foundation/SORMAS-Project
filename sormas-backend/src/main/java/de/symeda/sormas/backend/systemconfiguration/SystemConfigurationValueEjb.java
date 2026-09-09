@@ -30,6 +30,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -58,6 +59,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.systemconfiguration.event.SystemConfigurationValueChangedEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -87,6 +89,9 @@ public class SystemConfigurationValueEjb
 
     @EJB
     private SystemConfigurationCategoryEjb.SystemConfigurationCategoryEjbLocal categoryFacade;
+
+    @Inject
+    private Event<SystemConfigurationValueChangedEvent> valueChangedEvent;
 
     /**
      * Constructor for SystemConfigurationValueEjb.
@@ -159,8 +164,8 @@ public class SystemConfigurationValueEjb
         final SystemConfigurationValue newValue = fillOrBuildEntity(dto, existing, true);
         service.ensurePersisted(newValue);
 
-        // Reset cache since values have been changed
         loadData();
+        valueChangedEvent.fire(new SystemConfigurationValueChangedEvent(newValue.getKey()));
 
         return toDto(newValue);
     }

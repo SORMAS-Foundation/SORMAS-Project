@@ -307,6 +307,24 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		if (dto.getExtendedClassificationMulti() == null) {
 			dto.setExtendedClassificationMulti(dto.getDisease().isDefaultExtendedClassificationMulti());
 		}
+		if (dto.getIncubationPeriodEnabled() == null) {
+			dto.setIncubationPeriodEnabled(dto.getDisease().isDefaultIncubationPeriodEnabled());
+		}
+		if (dto.getMaxIncubationPeriod() == null) {
+			dto.setMaxIncubationPeriod(dto.getDisease().getDefaultMaxIncubationPeriod());
+		}
+		if (dto.getMinIncubationPeriod() == null) {
+			dto.setMinIncubationPeriod(dto.getDisease().getDefaultMinIncubationPeriod());
+		}
+		if (dto.getIsContagious() == null) {
+			dto.setIsContagious(dto.getDisease().isContagious());
+		}
+		if (dto.getMaxContagiousPeriod() == null) {
+			dto.setMaxContagiousPeriod(dto.getDisease().getDefaultMaxContagiousPeriod());
+		}
+		if (dto.getMinContagiousPeriod() == null) {
+			dto.setMinContagiousPeriod(dto.getDisease().getDefaultMinContagiousPeriod());
+		}
 	}
 
 	@Override

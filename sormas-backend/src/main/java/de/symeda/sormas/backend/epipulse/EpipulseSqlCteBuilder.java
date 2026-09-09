@@ -17,8 +17,12 @@ package de.symeda.sormas.backend.epipulse;
 
 import java.util.StringJoiner;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 /**
  * Service for building SQL Common Table Expressions (CTEs) for Epipulse disease exports.
@@ -31,6 +35,9 @@ import javax.ejb.Stateless;
 @Stateless
 @LocalBean
 public class EpipulseSqlCteBuilder {
+
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	/**
 	 * Joins multiple CTE fragments into a complete WITH clause.
@@ -121,10 +128,29 @@ public class EpipulseSqlCteBuilder {
 		   .append("                                 CROSS JOIN variables v")
 		   .append("                        WHERE c.disease = v.disease")
 		   .append("                          AND c.reportdate >= v.start_date")
-		   .append("                          AND c.reportdate < (v.end_date + interval '1 day'))");
+		   .append("                          AND c.reportdate < (v.end_date + interval '1 day')");
+
+
+		appendReportingExclusionClauseIfAdequate(cte);
 		//@formatter:on
 
 		return cte.toString();
+	}
+
+	/**
+	 * This field would never haven been present in non-LU instances but for performance reason this is removed.
+	 *
+	 * @param cte
+	 *            builder containg the CTE Query.
+	 */
+	private void appendReportingExclusionClauseIfAdequate(StringBuilder cte) {
+
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			cte.append("                          AND c.excludefromreporting IS NOT TRUE)");
+		} else {
+			// closing CTE parenthesis
+			cte.append(")");
+		}
 	}
 
 	/**

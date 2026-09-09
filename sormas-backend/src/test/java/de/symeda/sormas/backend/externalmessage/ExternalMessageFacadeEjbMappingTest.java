@@ -146,9 +146,14 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setTreatmentNotApplicable(true);
 		source.setTreatmentStartedDate(new Date());
 		source.setDiagnosticDate(new Date());
+		source.setPersonCitizenship(new CountryReferenceDto(country.getUuid(), country.getIsoCode()));
+		source.setPersonBirthCountry(new CountryReferenceDto(country.getUuid(), country.getIsoCode()));
 
 		when(countryService.getByReferenceDto(source.getPersonCountry())).thenReturn(country);
 		when(facilityService.getByReferenceDto(source.getPersonFacility())).thenReturn(facility);
+
+		when(countryService.getByReferenceDto(source.getPersonBirthCountry())).thenReturn(country);
+		when(countryService.getByReferenceDto(source.getPersonCitizenship())).thenReturn(country);
 
 		final SymptomsDto symptomsDto = new SymptomsDto();
 		source.setCaseSymptoms(symptomsDto);

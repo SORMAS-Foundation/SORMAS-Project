@@ -28,10 +28,14 @@ import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.RadiographyCompatibility;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.epidata.ClusterType;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
@@ -79,6 +83,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_BIRTH_DATE_DD = "personBirthDateDD";
 	public static final String PERSON_BIRTH_DATE_MM = "personBirthDateMM";
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
+	public static final String PERSON_BIRTH_COUNTRY = "personBirthCountry";
+	public static final String PERSON_CITIZENSHIP = "personCitizenship";
+	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
+	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_PHONE = "personPhone";
@@ -128,6 +136,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String MALARIA_INFECTED_YEAR = "malariaInfectedYear";
 	public static final String AIRPORT_WORKER = "airportWorker";
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
+	public static final String HIV_STATUS = "hivStatus";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
+	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -165,6 +178,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private CountryReferenceDto personBirthCountry;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private CountryReferenceDto personCitizenship;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private SyphilisPresentation syphilisPresentation;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private YesNoUnknown stiProphylaxis;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -291,6 +312,20 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private YesNoUnknown healthcareProfessional;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
+
+	// MUMPS changes - Cluster changes
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String clusterIdentifier;
+	private ClusterType clusterType;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String clusterTypeText;
+	private Boolean clusterRelated;
+
+	private HivStatus hivStatus;
+	private ProbableRouteOfTransmission probableRouteOfTransmission;
+	private YesNoUnknown contactWithSexWorker;
+	private CountryReferenceDto motherCountryOfBirth;
+	private CountryReferenceDto motherCitizenship;
 
 	/**
 	 * Will only be present for: {@link ExternalMessageType#SURVEY_RESPONSE} to represent the pair.
@@ -504,6 +539,38 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setPersonCountry(CountryReferenceDto personCountry) {
 		this.personCountry = personCountry;
+	}
+
+	public CountryReferenceDto getPersonBirthCountry() {
+		return personBirthCountry;
+	}
+
+	public void setPersonBirthCountry(CountryReferenceDto personBirthCountry) {
+		this.personBirthCountry = personBirthCountry;
+	}
+
+	public CountryReferenceDto getPersonCitizenship() {
+		return personCitizenship;
+	}
+
+	public void setPersonCitizenship(CountryReferenceDto personCitizenship) {
+		this.personCitizenship = personCitizenship;
+	}
+
+	public SyphilisPresentation getSyphilisPresentation() {
+		return syphilisPresentation;
+	}
+
+	public void setSyphilisPresentation(SyphilisPresentation syphilisPresentation) {
+		this.syphilisPresentation = syphilisPresentation;
+	}
+
+	public YesNoUnknown getStiProphylaxis() {
+		return stiProphylaxis;
+	}
+
+	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
+		this.stiProphylaxis = stiProphylaxis;
 	}
 
 	public FacilityReferenceDto getPersonFacility() {
@@ -1064,6 +1131,46 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.modeOfTransmissionType = modeOfTransmissionType;
 	}
 
+	public HivStatus getHivStatus() {
+		return hivStatus;
+	}
+
+	public void setHivStatus(HivStatus hivStatus) {
+		this.hivStatus = hivStatus;
+	}
+
+	public ProbableRouteOfTransmission getProbableRouteOfTransmission() {
+		return probableRouteOfTransmission;
+	}
+
+	public void setProbableRouteOfTransmission(ProbableRouteOfTransmission probableRouteOfTransmission) {
+		this.probableRouteOfTransmission = probableRouteOfTransmission;
+	}
+
+	public YesNoUnknown getContactWithSexWorker() {
+		return contactWithSexWorker;
+	}
+
+	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+		this.contactWithSexWorker = contactWithSexWorker;
+	}
+
+	public CountryReferenceDto getMotherCountryOfBirth() {
+		return motherCountryOfBirth;
+	}
+
+	public void setMotherCountryOfBirth(CountryReferenceDto motherCountryOfBirth) {
+		this.motherCountryOfBirth = motherCountryOfBirth;
+	}
+
+	public CountryReferenceDto getMotherCitizenship() {
+		return motherCitizenship;
+	}
+
+	public void setMotherCitizenship(CountryReferenceDto motherCitizenship) {
+		this.motherCitizenship = motherCitizenship;
+	}
+
 	@Nullable
 	public ExternalSurveyResponseData getSurveyResponseData() {
 		return surveyResponseData;
@@ -1073,4 +1180,37 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.surveyResponseData = surveyResponseData;
 		return this;
 	}
+
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
+	}
+
+	public Boolean getClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(Boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
 }

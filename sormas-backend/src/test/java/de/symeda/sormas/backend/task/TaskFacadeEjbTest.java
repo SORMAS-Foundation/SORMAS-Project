@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,6 +64,9 @@ import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.systemevents.SystemEventDto;
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -79,6 +83,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
+import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 
 public class TaskFacadeEjbTest extends AbstractBeanTest {
 
@@ -1128,6 +1134,52 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, enabled, null);
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
 
+	}
+
+	@Test
+	public void sendNewAndDueTaskMessagesRecordsASuccessfulSystemEvent() {
+
+		getTaskFacade().sendNewAndDueTaskMessages();
+
+		SystemEventDto latestSuccess =
+			getBean(SystemEventFacadeEjbLocal.class).getLatestSuccessByType(SystemEventType.SEND_TASK_NOTIFICATIONS);
+
+		assertNotNull(latestSuccess);
+		assertEquals(SystemEventStatus.SUCCESS, latestSuccess.getStatus());
+	}
+
+	@Test
+	public void asecondRunStartsFromTheFirstRunsWatermark() {
+
+		getTaskFacade().sendNewAndDueTaskMessages();
+
+		SystemEventDto latestSuccess =
+			getBean(SystemEventFacadeEjbLocal.class).getLatestSuccessByType(SystemEventType.SEND_TASK_NOTIFICATIONS);
+		long recordedSuccessMillis = Long.parseLong(latestSuccess.getAdditionalInfo().replace("Last synchronization date: ", ""));
+
+		Date lastSyncDate = getBean(SyncFacadeEjb.SyncFacadeEjbLocal.class).findLastSyncDateFor(SystemEventType.SEND_TASK_NOTIFICATIONS);
+
+		assertEquals(recordedSuccessMillis, lastSyncDate.getTime());
+	}
+
+	@Test
+	public void theWindowStartIsClampedToTwentyFourHours() {
+
+		Date now = new Date();
+		Date epoch = new Date(0);
+		Date twoHoursAgo = new Date(now.getTime() - TimeUnit.HOURS.toMillis(2));
+		Date exactlyTwentyFourHoursAgo = new Date(now.getTime() - TimeUnit.HOURS.toMillis(24));
+
+		assertEquals(
+			now.getTime() - TimeUnit.HOURS.toMillis(24),
+			TaskFacadeEjb.getNotificationWindowStart(epoch, now).getTime());
+		assertEquals(twoHoursAgo, TaskFacadeEjb.getNotificationWindowStart(twoHoursAgo, now));
+		assertEquals(
+			now.getTime() - TimeUnit.HOURS.toMillis(24),
+			TaskFacadeEjb.getNotificationWindowStart(null, now).getTime());
+		assertEquals(
+			now.getTime() - TimeUnit.HOURS.toMillis(24),
+			TaskFacadeEjb.getNotificationWindowStart(exactlyTwentyFourHoursAgo, now).getTime());
 	}
 
 }

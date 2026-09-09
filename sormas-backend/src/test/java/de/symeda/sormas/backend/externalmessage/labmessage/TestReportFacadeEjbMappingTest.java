@@ -24,6 +24,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
@@ -125,6 +126,8 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroGroupSpecificationText("SeroGroup A");
 		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
 		source.setSeroTypingMethodText("Multiplex PCR Method");
+		source.setSyphilisSerologyMethod(SyphilisSerologyMethod.TPPA_TPHA);
+		source.setSyphilisSerologyMethodText("Screening assay");
 		source.setPerformedByReferenceLaboratory(true);
 
 		TestReport result = sut.fromDto(source, true);
@@ -195,6 +198,8 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getSeroGroupSpecificationText(), result.getSeroGroupSpecificationText());
 		assertEquals(source.getSeroTypingMethod(), result.getSeroTypingMethod());
 		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
+		assertEquals(SyphilisSerologyMethod.TPPA_TPHA, result.getSyphilisSerologyMethod());
+		assertEquals("Screening assay", result.getSyphilisSerologyMethodText());
 		assertEquals(source.getPerformedByReferenceLaboratory(), result.getPerformedByReferenceLaboratory());
 
 	}
@@ -275,6 +280,8 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroGroupSpecificationText("SeroGroup A");
 		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
 		source.setSeroTypingMethodText("Multiplex PCR Method");
+		source.setSyphilisSerologyMethod(SyphilisSerologyMethod.TPPA_TPHA);
+		source.setSyphilisSerologyMethodText("Screening assay");
 		source.setSerotype(Serotype.OTHER);
 		source.setSerotypeText("Other Serotype");
 		source.setPerformedByReferenceLaboratory(true);
@@ -348,6 +355,8 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getSeroGroupSpecificationText(), result.getSeroGroupSpecificationText());
 		assertEquals(source.getSeroTypingMethod(), result.getSeroTypingMethod());
 		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
+		assertEquals(SyphilisSerologyMethod.TPPA_TPHA, result.getSyphilisSerologyMethod());
+		assertEquals("Screening assay", result.getSyphilisSerologyMethodText());
 		assertEquals(source.getSerotype(), result.getSerotype());
 		assertEquals(source.getSerotypeText(), result.getSerotypeText());
 		assertEquals(source.getPerformedByReferenceLaboratory(), result.getPerformedByReferenceLaboratory());

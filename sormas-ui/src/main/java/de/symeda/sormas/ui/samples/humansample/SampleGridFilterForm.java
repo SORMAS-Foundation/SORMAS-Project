@@ -28,7 +28,9 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -88,11 +90,19 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 				SampleCriteria.SPECIMEN_CONDITION,
 				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SPECIMEN_CONDITION),
 				140));
-		addField(
+		// removing the CONFIRMED_NO_SYMPTOMS & CONFIRMED_UNKNOWN_SYMPTOMS case classifications
+		// from samples filter grid of other countries.
+		// It's valid only for Germany.
+		ComboBox caseClassification = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
 				SampleCriteria.CASE_CLASSIFICATION,
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION),
 				140));
+		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			caseClassification.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+			caseClassification.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		}
+
 		addField(
 			FieldConfiguration.withCaptionAndPixelSized(
 				SampleCriteria.DISEASE,

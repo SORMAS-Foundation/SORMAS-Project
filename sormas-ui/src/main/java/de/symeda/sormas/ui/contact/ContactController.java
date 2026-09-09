@@ -706,7 +706,12 @@ public class ContactController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getContactFacade().getManuallyDeletionInfo(contactUuid);
 
-		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized, contact.isInJurisdiction());
+		ContactDataForm editForm = new ContactDataForm(
+			contact.getDisease(),
+			FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid()),
+			viewMode,
+			isPsuedonymized,
+			contact.isInJurisdiction());
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent =
 			new CommitDiscardWrapperComponent<>(editForm, true, editForm.getFieldGroup());

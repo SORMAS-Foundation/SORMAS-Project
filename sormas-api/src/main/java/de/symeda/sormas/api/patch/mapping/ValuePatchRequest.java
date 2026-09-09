@@ -20,6 +20,13 @@ public class ValuePatchRequest<T> {
 	private Class<T> targetType;
 
 	/**
+	 * Only present when {@link #targetType} is of type: {@link java.util.Collection}.
+	 * Gives the actual type within the collection.
+	 */
+	@Nullable
+	private Class<T> collectionSubType;
+
+	/**
 	 * To be able to support I18n inputs the input languages can be passed, system locale by default.
 	 */
 	@Nullable
@@ -49,6 +56,16 @@ public class ValuePatchRequest<T> {
 		return this;
 	}
 
+	@Nullable
+	public Class<T> getCollectionSubType() {
+		return collectionSubType;
+	}
+
+	public ValuePatchRequest<T> setCollectionSubType(@Nullable Class<T> collectionSubType) {
+		this.collectionSubType = collectionSubType;
+		return this;
+	}
+
 	public List<Language> getInputLanguages() {
 		return inputLanguages;
 	}
@@ -75,17 +92,18 @@ public class ValuePatchRequest<T> {
 		return allowFallbackValues == that.allowFallbackValues
 			&& Objects.equals(value, that.value)
 			&& Objects.equals(targetType, that.targetType)
+			&& Objects.equals(collectionSubType, that.collectionSubType)
 			&& Objects.equals(inputLanguages, that.inputLanguages);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(value, targetType, inputLanguages, allowFallbackValues);
+		return Objects.hash(value, targetType, collectionSubType, inputLanguages, allowFallbackValues);
 	}
 
 	@Override
 	public String toString() {
-		return "ValuePatchRequest{" + "value=" + value + ", targetType=" + targetType + ", inputLanguages=" + inputLanguages + ", allowDefaultValues="
-			+ allowFallbackValues + '}';
+		return "ValuePatchRequest{" + "value=" + value + ", targetType=" + targetType + ", collectionSubType=" + collectionSubType
+			+ ", inputLanguages=" + inputLanguages + ", allowFallbackValues=" + allowFallbackValues + '}';
 	}
 }

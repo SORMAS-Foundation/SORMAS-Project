@@ -84,6 +84,8 @@ public final class ExternalMessageMapper {
 				Mapping.of(person::setBirthdateDD, person.getBirthdateDD(), externalMessage.getPersonBirthDateDD(), PersonDto.BIRTH_DATE_DD),
 				Mapping.of(person::setBirthdateMM, person.getBirthdateMM(), externalMessage.getPersonBirthDateMM(), PersonDto.BIRTH_DATE_MM),
 				Mapping.of(person::setBirthdateYYYY, person.getBirthdateYYYY(), externalMessage.getPersonBirthDateYYYY(), PersonDto.BIRTH_DATE_YYYY),
+				Mapping.of(person::setBirthCountry, person.getBirthCountry(), externalMessage.getPersonBirthCountry(), PersonDto.BIRTH_COUNTRY),
+				Mapping.of(person::setCitizenship, person.getCitizenship(), externalMessage.getPersonCitizenship(), PersonDto.CITIZENSHIP),
 				Mapping.of(person::setSex, person.getSex(), externalMessage.getPersonSex(), PersonDto.SEX),
 				Mapping.of(
 					person::setPresentCondition,
@@ -669,6 +671,11 @@ public final class ExternalMessageMapper {
 							PathogenTestDto.TEST_DATE_TIME),
 						Mapping.of(pathogenTest::setTestType, pathogenTest.getTestType(), sourceTestReport.getTestType(), PathogenTestDto.TEST_TYPE),
 						Mapping.of(
+							pathogenTest::setTestTypeText,
+							pathogenTest.getTestTypeText(),
+							sourceTestReport.getTestTypeDetails(),
+							PathogenTestDto.TEST_TYPE_TEXT),
+						Mapping.of(
 							pathogenTest::setTestResultVerified,
 							pathogenTest.getTestResultVerified(),
 							sourceTestReport.isTestResultVerified(),
@@ -692,7 +699,7 @@ public final class ExternalMessageMapper {
 						Mapping.of(
 							pathogenTest::setLab,
 							pathogenTest.getLab(),
-							processingFacade.getFacilityReference(sourceTestReport.getTestLabExternalIds()),
+							processingFacade.getFacilityReference(externalMessage.getReporterExternalIds()),
 							PathogenTestDto.LAB),
 						Mapping.of(
 							pathogenTest::setLabDetails,
@@ -800,6 +807,16 @@ public final class ExternalMessageMapper {
 							pathogenTest.getRsvSubtype(),
 							sourceTestReport.getRsvSubtype(),
 							PathogenTestDto.RSV_SUBTYPE),
+						Mapping.of(
+							pathogenTest::setSyphilisSerologyMethod,
+							pathogenTest.getSyphilisSerologyMethod(),
+							sourceTestReport.getSyphilisSerologyMethod(),
+							PathogenTestDto.SYPHILIS_SEROLOGY_METHOD),
+						Mapping.of(
+							pathogenTest::setSyphilisSerologyMethodText,
+							pathogenTest.getSyphilisSerologyMethodText(),
+							sourceTestReport.getSyphilisSerologyMethodText(),
+							PathogenTestDto.SYPHILIS_SEROLOGY_METHOD_TEXT),
 						Mapping.of(
 							pathogenTest::setTubeNil, // Tube nil flag
 							pathogenTest.getTubeNil(),

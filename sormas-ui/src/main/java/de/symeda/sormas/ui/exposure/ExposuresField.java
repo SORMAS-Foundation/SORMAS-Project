@@ -41,6 +41,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -74,12 +75,16 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private static final String COLUMN_DESCRIPTION = ExposureDto.DESCRIPTION;
 	private static final String COLUMN_PROPHYLAXIS_ADHERENCE = ExposureDto.PROPHYLAXIS_ADHERENCE;
 
+	private static final Map<Disease, ExposureCategory> DEFAULT_DISEASE_EXPOSURE_CATEGORY_DICTIONARY =
+		Map.of(Disease.SYPHILIS, ExposureCategory.DIRECT_CONTACT, Disease.GONOCOCCAL_INFECTION, ExposureCategory.DIRECT_CONTACT);
+
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private Supplier<List<ContactReferenceDto>> getSourceContactsCallback;
 	private Class<? extends EntityDto> epiDataParentClass;
 	private boolean isPseudonymized;
 	private boolean isEditAllowed;
 	private Disease disease;
+
 	private final Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> pendingCustomizableFieldValues = new HashMap<>();
 
 	public ExposuresField(
@@ -267,6 +272,8 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		exposure.getLocation().setDistrict(user.getDistrict());
 		exposure.getLocation().setCommunity(user.getCommunity());
 		exposure.setReportingUser(user.toReference());
+		// if defined for disease sets default category, otherwise null.
+		exposure.setExposureCategory(DEFAULT_DISEASE_EXPOSURE_CATEGORY_DICTIONARY.get(disease));
 		return exposure;
 	}
 

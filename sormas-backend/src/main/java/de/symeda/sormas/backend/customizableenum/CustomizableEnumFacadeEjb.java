@@ -63,6 +63,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
@@ -170,11 +171,11 @@ public class CustomizableEnumFacadeEjb
 
 		CustomizableEnumValue existingEntity = service.getByUuid(dto.getUuid());
 		// if existingEntity disease removed and it is mapped to the cases, shouldn't allow to save the entity
-		
+
 		if (existingEntity != null && CollectionUtils.isNotEmpty(existingEntity.getDiseases())) {
 			Set<Disease> incomingDiseases = dto.getDiseases() != null ? dto.getDiseases() : Collections.emptySet();
 			for (Disease removedDisease : existingEntity.getDiseases()) {
-				if (!incomingDiseases.contains(removedDisease)) {
+				if (!incomingDiseases.contains(removedDisease) && DiseaseVariant.class.isAssignableFrom(dto.getDataType().getEnumClass())) {
 					List<String> uuids = service.areCasesUsingCustomizableEnumValue(
 						removedDisease,
 						getEnumValue(dto.getDataType(), removedDisease, existingEntity.getValue()));
@@ -352,11 +353,12 @@ public class CustomizableEnumFacadeEjb
 		Stream<String> diseaseValuesStream;
 		if (innerDisease.isPresent()) {
 			// combine specific and unspecific values, removing duplicates that appear in both sets
-			diseaseValuesStream = Stream
-				.concat(
-					enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
-					enumValuesByDisease.get(enumClass).get(Optional.empty()).stream())
-				.distinct();
+			diseaseValuesStream =
+				Stream
+					.concat(
+						enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
+						enumValuesByDisease.get(enumClass).get(Optional.empty()).stream())
+					.distinct();
 		} else {
 			diseaseValuesStream = enumValuesByDisease.get(enumClass).get(Optional.empty()).stream();
 		}

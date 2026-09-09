@@ -9,6 +9,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.exposure.ExposureContactFactor;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
+import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.AbstractUnitTest;
@@ -36,6 +40,7 @@ public class PropertyAccessorTest extends AbstractUnitTest {
 
 		private AddressBean address;
 		private String street;
+		private java.util.List<String> tags;
 
 		public AddressBean getAddress() {
 			return address;
@@ -51,6 +56,14 @@ public class PropertyAccessorTest extends AbstractUnitTest {
 
 		public void setStreet(String street) {
 			this.street = street;
+		}
+
+		public java.util.List<String> getTags() {
+			return tags;
+		}
+
+		public void setTags(java.util.List<String> tags) {
+			this.tags = tags;
 		}
 	}
 
@@ -320,5 +333,104 @@ public class PropertyAccessorTest extends AbstractUnitTest {
 		Optional<Exception> result = PropertyAccessor.setNestedProperty(new AddressBean(), "nonExistent", "value");
 
 		assertTrue(result.isPresent());
+	}
+
+	// ---- getCollectionGenericType ----
+
+	@Test
+	void getCollectionGenericType_subSettings_returnsExposureSubSetting() {
+		Class<?> result = PropertyAccessor.getCollectionGenericType(new ExposureDto(), "subSettings");
+
+		assertEquals(ExposureSubSetting.class, result);
+	}
+
+	@Test
+	void getCollectionGenericType_contactFactors_returnsExposureContactFactor() {
+		Class<?> result = PropertyAccessor.getCollectionGenericType(new ExposureDto(), "contactFactors");
+
+		assertEquals(ExposureContactFactor.class, result);
+	}
+
+	@Test
+	void getCollectionGenericType_protectiveMeasures_returnsExposureProtectiveMeasure() {
+		Class<?> result = PropertyAccessor.getCollectionGenericType(new ExposureDto(), "protectiveMeasures");
+
+		assertEquals(ExposureProtectiveMeasure.class, result);
+	}
+
+	@Test
+	void getCollectionGenericType_nonExistentField_returnsNull() {
+		Class<?> result = PropertyAccessor.getCollectionGenericType(new ExposureDto(), "nonExistent");
+
+		assertNull(result);
+	}
+
+	@Test
+	void getCollectionGenericType_nonGenericField_returnsNull() {
+		// "description" is a plain String field, not a parameterized Set/List
+		Class<?> result = PropertyAccessor.getCollectionGenericType(new ExposureDto(), "description");
+
+		assertNull(result);
+	}
+
+	@Test
+	void getCollectionGenericType_nullBean_returnsNull() {
+		Class<?> result = PropertyAccessor.getCollectionGenericType(null, "subSettings");
+
+		assertNull(result);
+	}
+
+	@Test
+	void getCollectionGenericType_nullFieldName_returnsNull() {
+		Class<?> result = PropertyAccessor.getCollectionGenericType(new ExposureDto(), null);
+
+		assertNull(result);
+	}
+
+	@Test
+	void getCollectionGenericType_inheritedField_returnsGenericType() {
+		// Field declared on a superclass must still be found by walking up the class hierarchy.
+		Class<?> result = PropertyAccessor.getCollectionGenericType(new ChildBean(), "items");
+
+		assertEquals(String.class, result);
+	}
+
+	@Test
+	void getCollectionGenericType_nestedPath_returnsGenericType() {
+		// PREPARE — "address.tags" has 1 dot -> triggers the nested-path branch, navigating
+		// to the AddressBean instance via getNestedProperty before resolving the leaf field's type.
+		AddressBean address = new AddressBean();
+		PersonBean person = new PersonBean();
+		person.setAddress(address);
+
+		// EXECUTE
+		Class<?> result = PropertyAccessor.getCollectionGenericType(person, "address.tags");
+
+		// CHECK
+		assertEquals(String.class, result);
+	}
+
+	@Test
+	void getCollectionGenericType_nestedPath_nonExistentParent_returnsNull() {
+		// person.address is null, so navigating "address.tags" fails to reach a leaf parent
+		Class<?> result = PropertyAccessor.getCollectionGenericType(new PersonBean(), "address.tags");
+
+		assertNull(result);
+	}
+
+	public static class ParentBean {
+
+		private java.util.List<String> items;
+
+		public java.util.List<String> getItems() {
+			return items;
+		}
+
+		public void setItems(java.util.List<String> items) {
+			this.items = items;
+		}
+	}
+
+	public static class ChildBean extends ParentBean {
 	}
 }

@@ -47,6 +47,7 @@ public class HealthConditionsMapper {
 		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
 		target.setTuberculosis(source.getTuberculosis());
 		target.setDownSyndrome(source.getDownSyndrome());
+		target.setHighIronLevel(source.getHighIronLevel());
 		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
 		target.setOtherConditions(source.getOtherConditions());
 		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
@@ -83,6 +84,7 @@ public class HealthConditionsMapper {
 		target.setSyphilisNumberOfDoses(source.getSyphilisNumberOfDoses());
 		target.setSyphilisDateOfFirstDose(source.getSyphilisDateOfFirstDose());
 		target.setSyphilisOrOtherStis(source.getSyphilisOrOtherStis());
+		target.setPreviousGonorrhoea(source.getPreviousGonorrhoea());
 		return target;
 	}
 
@@ -106,6 +108,7 @@ public class HealthConditionsMapper {
 		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
 		target.setTuberculosis(source.getTuberculosis());
 		target.setDownSyndrome(source.getDownSyndrome());
+		target.setHighIronLevel(source.getHighIronLevel());
 		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
 		target.setOtherConditions(source.getOtherConditions());
 		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
@@ -141,6 +144,7 @@ public class HealthConditionsMapper {
 		target.setSyphilisNumberOfDoses(source.getSyphilisNumberOfDoses());
 		target.setSyphilisDateOfFirstDose(source.getSyphilisDateOfFirstDose());
 		target.setSyphilisOrOtherStis(source.getSyphilisOrOtherStis());
+		target.setPreviousGonorrhoea(source.getPreviousGonorrhoea());
 		return target;
 	}
 }

@@ -239,6 +239,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRow(
 							fluidColumnLoc(3, 0, CaseDataDto.CLASSIFICATION_DATE),
 							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 5, 0, CaseDataDto.CLASSIFICATION_USER),
+							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CaseDataDto.EXCLUDE_FROM_REPORTING),
 							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CLASSIFIED_BY_SYSTEM_LOC)) +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_CLASSIFICATION) +
 					fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE) +
@@ -254,6 +255,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 							fluidColumn(6, 0, locs(
 									CaseDataDto.DISEASE_DETAILS,
+									CaseDataDto.DISEASE_SPECIES,
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
@@ -349,7 +351,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 
-	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS);
+	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS, Disease.GONOCOCCAL_INFECTION);
 	//@formatter:on
 
 	private CustomizableFieldsGroup caseDataGeneralPanel;
@@ -500,6 +502,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL);
 
+		addField(CaseDataDto.EXCLUDE_FROM_REPORTING, CheckBox.class);
+
 		UserField reportingUser = addField(CaseDataDto.REPORTING_USER, UserField.class);
 		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
@@ -573,6 +577,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.DISEASE_SPECIES, ComboBox.class);
 
 		ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
 		presentationField.setNullSelectionAllowed(false);
@@ -730,7 +735,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, NullableOptionGroup.class);
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
-
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
@@ -992,9 +996,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
+		NullableOptionGroup pregnantField = addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
-		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		NullableOptionGroup postpartumField = addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		if (Disease.GONOCOCCAL_INFECTION == disease) {
+			setupMutuallyExclusiveFields(pregnantField, postpartumField);
+		}
 		Field<?> trimesterField = addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		boolean isMale = Sex.MALE.equals(person.getSex());
 		if (!isMale) {
@@ -1258,6 +1265,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.DISEASE,
 				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
 				Arrays.asList(Disease.SYPHILIS));
+		}
+		if (isVisibleAllowed(CaseDataDto.DISEASE_SPECIES)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.DISEASE_SPECIES),
+				CaseDataDto.DISEASE,
+				Arrays.asList(Disease.YERSINIOSIS),
+				true);
 		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(

@@ -219,12 +219,19 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			postBuildTuberculosisHealthConditions(healthConditionsDto, externalMessageDto);
 		} else if (Disease.MALARIA.equals(externalMessageDto.getDisease())) {
 			postBuildMalariaHealthConditions(healthConditionsDto, externalMessageDto);
+		} else if (Disease.SYPHILIS.equals(externalMessageDto.getDisease())) {
+			postBuildSyphilisHealthConditions(healthConditionsDto, externalMessageDto);
 		} else {
 			logger.debug("[POST BUILD HEALTH CONDITIONS] Health conditions not set for case. Disease: {}", externalMessageDto.getDisease());
 		}
 
 		// we need to set it in case it is newly created
 		caseDto.setHealthConditions(healthConditionsDto);
+	}
+
+	private void postBuildSyphilisHealthConditions(HealthConditionsDto healthConditionsDto, ExternalMessageDto externalMessageDto) {
+		healthConditionsDto.setHivStatus(externalMessageDto.getHivStatus());
+		healthConditionsDto.setStiProphylaxis(externalMessageDto.getStiProphylaxis());
 	}
 
 	/**
@@ -324,17 +331,18 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		boolean admittedMismatch =
 			!Objects.equals(existingHospitalization.getAdmittedToHealthFacility(), externalMessage.getAdmittedToHealthFacility());
 
-		boolean hospitalizationFacilityNameMismatch =
-			!Objects.equals(
-				caze.getHealthFacility() != null ? caze.getHealthFacility().getCaption() : null,
-				externalMessage.getHospitalizationFacilityName());
-		boolean hospitalizationFacilityExternalIdMismatch =
-			!Objects.equals(
-				caze.getHealthFacility() != null ? caze.getHealthFacility().getExternalId() : null,
-				externalMessage.getHospitalizationFacilityExternalId());
+		boolean hospitalizationFacilityNameMismatch = !Objects.equals(
+			caze.getHealthFacility() != null ? caze.getHealthFacility().getCaption() : null,
+			externalMessage.getHospitalizationFacilityName());
+		boolean hospitalizationFacilityExternalIdMismatch = !Objects.equals(
+			caze.getHealthFacility() != null ? caze.getHealthFacility().getExternalId() : null,
+			externalMessage.getHospitalizationFacilityExternalId());
 
-		boolean mismatch = admissionDateMismatch || dischargeDateMismatch || admittedMismatch
-			|| hospitalizationFacilityNameMismatch || hospitalizationFacilityExternalIdMismatch;
+		boolean mismatch = admissionDateMismatch
+			|| dischargeDateMismatch
+			|| admittedMismatch
+			|| hospitalizationFacilityNameMismatch
+			|| hospitalizationFacilityExternalIdMismatch;
 
 		if (mismatch) {
 			logger.debug("[MESSAGE PROCESSING] Hospitalization mismatch detected for existing case with UUID: {}", caze.getUuid());
@@ -494,6 +502,10 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 				epiData.setHealthcareProfessional(externalMessageDto.getHealthcareProfessional());
 				epiData.setModeOfTransmission(externalMessageDto.getModeOfTransmission());
 				epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
+				epiData.setProbableRouteOfTransmission(externalMessageDto.getProbableRouteOfTransmission());
+				epiData.setContactWithSexWorker(externalMessageDto.getContactWithSexWorker());
+				epiData.setMotherCitizenship(externalMessageDto.getMotherCitizenship());
+				epiData.setMotherCountryOfBirth(externalMessageDto.getMotherCountryOfBirth());
 			}
 
 		} else {

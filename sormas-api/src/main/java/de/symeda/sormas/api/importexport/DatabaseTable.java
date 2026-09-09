@@ -162,7 +162,10 @@ public enum DatabaseTable {
 
 	NOTIFIER(DatabaseTableType.SORMAS, "notifier", null),
 
-	DRUG_SUSCEPTIBILITY(DatabaseTableType.SORMAS, "drug_susceptibility", null);
+	DRUG_SUSCEPTIBILITY(DatabaseTableType.SORMAS, "drug_susceptibility", null),
+
+	SURVEY(DatabaseTableType.SORMAS, "surveys", dependingOnFeature(FeatureType.SURVEYS)),
+	SURVEY_TOKEN(DatabaseTableType.SORMAS, "survey_tokens", dependingOnFeature(FeatureType.SURVEYS));
 
 	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType... featureTypes) {
 		return (featureConfigurations, configFacade) -> featureConfigurations.stream()

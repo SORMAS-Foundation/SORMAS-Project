@@ -65,6 +65,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.InfectionSource;
@@ -120,7 +121,17 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
 	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections.unmodifiableList(
-		Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE, Disease.SALMONELLOSIS, Disease.SHIGELLOSIS));
+		Arrays.asList(
+			Disease.CRYPTOSPORIDIOSIS,
+			Disease.GIARDIASIS,
+			Disease.MALARIA,
+			Disease.DENGUE,
+			Disease.SALMONELLOSIS,
+			Disease.SHIGELLOSIS,
+			Disease.SYPHILIS,
+			Disease.GONOCOCCAL_INFECTION,
+			Disease.MUMPS));
+	private static final List<Disease> CLUSTER_ALLOWED_DISEASES = Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -138,6 +149,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			loc(LOC_CLUSTER_TYPE_HEADING)+
+			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
+			fluidRowLocs(8, EpiDataDto.CLUSTER_IDENTIFIER,4,null) +
+			fluidRowLocs(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, "") +
+			fluidRowLocs(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, "") +
+			fluidRowLocs(EpiDataDto.SEX_WORKER, EpiDataDto.CONTACT_WITH_SEX_WORKER) +
+			fluidRowLocs(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP) +
 			loc(LOC_PROPHYLAXIS_STATUS)+
 			fluidRowLocs("PROPHYLAXIS_LAYOUT")+
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
@@ -146,8 +164,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
 			loc(EpiDataDto.ACTIVITIES_AS_CASE) +
 			loc(LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE) +
-			loc(LOC_CLUSTER_TYPE_HEADING)+
-			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
+
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
 			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) +
@@ -254,8 +271,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		}
 
 		addField(EpiDataDto.CASE_IMPORTED_STATUS);
-		addField(EpiDataDto.CLUSTER_TYPE);
-		addField(EpiDataDto.CLUSTER_RELATED);
+		Field<?> clusterTypeField = addField(EpiDataDto.CLUSTER_TYPE);
+		clusterTypeField.setVisible(false);
+		Field<?> clusterRelatedField = addField(EpiDataDto.CLUSTER_RELATED);
+		Field<?> clusterIdentifierField = addField(EpiDataDto.CLUSTER_IDENTIFIER);
+		clusterIdentifierField.setVisible(false);
 
 		addField(EpiDataDto.MODE_OF_TRANSMISSION);
 		addField(EpiDataDto.MODE_OF_TRANSMISSION_TYPE);
@@ -274,11 +294,30 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
+		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class);
+		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, ComboBox.class);
+		ComboBox motherCountryOfBirth = addInfrastructureField(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH);
+		motherCountryOfBirth.addItems(countries);
+		ComboBox motherCitizenship = addInfrastructureField(EpiDataDto.MOTHER_CITIZENSHIP);
+		motherCitizenship.addItems(countries);
+		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class);
+		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class);
 		includeContagiousDates(symptomOnsetDate, disease);
 
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP),
+			EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION,
+			ProbableRouteOfTransmission.MOTHER_TO_CHILD_TRANSMISSION,
+			true);
+
 		TextField clusterTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), EpiDataDto.CLUSTER_TYPE, EpiDataDto.CLUSTER_RELATED, Collections.singletonList(Boolean.TRUE), true);
+		clusterRelatedField.addValueChangeListener(e -> {
+			boolean clusterValue = (boolean) e.getProperty().getValue();
+			setVisibleClear(isVisibleAllowed(EpiDataDto.CLUSTER_IDENTIFIER) && clusterValue, EpiDataDto.CLUSTER_IDENTIFIER);
+			setVisibleClear(isVisibleAllowed(EpiDataDto.CLUSTER_TYPE) && clusterValue, EpiDataDto.CLUSTER_TYPE);
+		});
+
 		FieldHelper.setVisibleWhen(getField(EpiDataDto.CLUSTER_TYPE), Arrays.asList(clusterTypeTF), Arrays.asList(ClusterType.OTHER), true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -304,6 +343,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		contactWithSourceCasePanel.setFieldsValues(getCustomizableFieldsValues());
 		contactWithSourceCasePanel.updateFieldsDisplay();
 		getContent().addComponent(contactWithSourceCasePanel, LOC_CUSTOMIZABLE_FIELDS_CONTACT_WITH_SOURCE_CASE);
+
+		TextArea additionalDetails = addField(EpiDataDto.OTHER_DETAILS, TextArea.class);
+		additionalDetails.setRows(6);
+		additionalDetails.setDescription(
+			I18nProperties.getPrefixDescription(EpiDataDto.I18N_PREFIX, EpiDataDto.OTHER_DETAILS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
+		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
@@ -331,12 +377,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			});
 		}
 
-		TextArea additionalDetails = addField(EpiDataDto.OTHER_DETAILS, TextArea.class);
-		additionalDetails.setRows(6);
-		additionalDetails.setDescription(
-			I18nProperties.getPrefixDescription(EpiDataDto.I18N_PREFIX, EpiDataDto.OTHER_DETAILS, "") + "\n"
-				+ I18nProperties.getDescription(Descriptions.descGdpr));
-		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
 	}
 
 	/**
@@ -517,7 +557,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			new MultilineLabel(divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataFieldsHint)), ContentMode.HTML),
 			LOC_EPI_DATA_FIELDS_HINT);
 
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.MEASLES == disease) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && CLUSTER_ALLOWED_DISEASES.contains(disease)) {
 			getContent().addComponent(
 				new MultilineLabel(h3(I18nProperties.getString(Strings.headingClusterType)) + divsCss(VSPACE_3), ContentMode.HTML),
 				LOC_CLUSTER_TYPE_HEADING);

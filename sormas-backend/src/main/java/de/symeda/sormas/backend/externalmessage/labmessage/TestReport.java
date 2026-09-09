@@ -47,6 +47,7 @@ import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -180,6 +181,8 @@ public class TestReport extends AbstractDomainObject {
 	private String seroGroupSpecificationText;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
+	private SyphilisSerologyMethod syphilisSerologyMethod;
+	private String syphilisSerologyMethodText;
 	private Serotype serotype;
 	private String serotypeText;
 	private PathogenTestCategory pathogenTestCategory;
@@ -920,6 +923,23 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setSeroTypingMethodText(String seroTypingMethodText) {
 		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisSerologyMethod getSyphilisSerologyMethod() {
+		return syphilisSerologyMethod;
+	}
+
+	public void setSyphilisSerologyMethod(SyphilisSerologyMethod syphilisSerologyMethod) {
+		this.syphilisSerologyMethod = syphilisSerologyMethod;
+	}
+
+	public String getSyphilisSerologyMethodText() {
+		return syphilisSerologyMethodText;
+	}
+
+	public void setSyphilisSerologyMethodText(String syphilisSerologyMethodText) {
+		this.syphilisSerologyMethodText = syphilisSerologyMethodText;
 	}
 
 	@Enumerated(EnumType.STRING)

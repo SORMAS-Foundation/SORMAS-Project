@@ -48,6 +48,7 @@ import de.symeda.sormas.ui.configuration.infrastructure.SubcontinentsView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
+import de.symeda.sormas.ui.configuration.system.ScheduledJobsView;
 import de.symeda.sormas.ui.configuration.system.SystemConfigurationView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -142,6 +143,9 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 			navigator.addView(FeatureConfigurationView.VIEW_NAME, FeatureConfigurationView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : FeatureConfigurationView.class;
+
+			navigator.addView(ScheduledJobsView.VIEW_NAME, ScheduledJobsView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : ScheduledJobsView.class;
 		}
 
 		if (FacadeProvider.getConfigFacade().isDevMode() && UiUtil.permitted(UserRight.DEV_MODE)) {
@@ -292,6 +296,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(
 				FeatureConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", FeatureConfigurationView.VIEW_NAME.replace("/", ".") + ".short", ""),
+				null,
+				false);
+			menu.addView(
+				ScheduledJobsView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", ScheduledJobsView.VIEW_NAME.replace("/", ".") + ".short", ""),
 				null,
 				false);
 		}

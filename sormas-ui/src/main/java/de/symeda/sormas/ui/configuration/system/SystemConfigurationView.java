@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
+import java.util.stream.Collectors;
+
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -24,6 +26,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.systemconfiguration.CronJobFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
@@ -91,7 +94,11 @@ public class SystemConfigurationView extends AbstractConfigurationView {
 
         categoryFilter = new ComboBox<>(
             I18nProperties.getPrefixCaption(SystemConfigurationValueDto.I18N_PREFIX, SystemConfigurationValueDto.CATEGORY_PROPERTY_NAME),
-            FacadeProvider.getSystemConfigurationCategoryFacade().getAllAfter(null));
+            FacadeProvider.getSystemConfigurationCategoryFacade()
+                .getAllAfter(null)
+                .stream()
+                .filter(category -> !CronJobFacade.CRON_CONFIGURATION_CATEGORY.equals(category.getName()))
+                .collect(Collectors.toList()));
 
         categoryFilter.setItemCaptionGenerator(v -> {
             final StringBuilder caption = new StringBuilder();

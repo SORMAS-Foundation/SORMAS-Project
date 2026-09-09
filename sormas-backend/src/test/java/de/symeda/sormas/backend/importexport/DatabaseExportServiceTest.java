@@ -35,8 +35,6 @@ import de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.selfreport.SelfReport;
-import de.symeda.sormas.backend.survey.Survey;
-import de.symeda.sormas.backend.survey.SurveyToken;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
@@ -75,8 +73,6 @@ public class DatabaseExportServiceTest {
 		EnvironmentSample.class,
 		SelfReport.class,
 		DocumentTemplate.class,
-		Survey.class,
-		SurveyToken.class,
 		EpipulseExport.class,
 		EpipulseSubjectcodeConfiguration.class,
 		EpipulseDatasourceConfiguration.class,

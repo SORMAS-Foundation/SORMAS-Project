@@ -210,7 +210,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		activeSection.setVisibilityCallback(visible -> diseaseSectionSlot.setVisible(visible));
 		diseaseSectionSlot.addComponent(activeSection);
 
-		AdditionalTestInfoComponent additionalTestInfoComponent = new AdditionalTestInfoComponent();
+		AdditionalTestInfoComponent additionalTestInfoComponent = new AdditionalTestInfoComponent(eventBus, disease);
 		formComponents.add(additionalTestInfoComponent);
 		container.addComponent(additionalTestInfoComponent);
 

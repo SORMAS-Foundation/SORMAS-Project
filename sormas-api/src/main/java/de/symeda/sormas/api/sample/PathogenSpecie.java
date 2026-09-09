@@ -245,6 +245,15 @@ public enum PathogenSpecie {
 		PathogenTestType.BACTERIAL_CULTURE,
 		PathogenTestType.CULTURE })
 	SHIGELLA_SPP,
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	YERSINIA_ENTEROCOLITICA,
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	YERSINIA_PSEUDOTUBERCULOSIS,
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	YERSINIA_SPP,
 	@Diseases({
 		Disease.MALARIA,
 		Disease.SHIGELLOSIS })

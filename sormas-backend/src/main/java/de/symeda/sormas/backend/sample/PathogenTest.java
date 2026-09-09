@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.util.Date;
 
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.sample.SmearGrade;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.sample.WesternBlotInterpretation;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.DeletableAdo;
@@ -114,6 +116,8 @@ public class PathogenTest extends DeletableAdo {
 	public static final String TEST_SCALE = "testScale";
 	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
 	public static final String RSV_SUBTYPE = "rsvSubtype";
+	public static final String SYPHILIS_SEROLOGY_METHOD = "syphilisSerologyMethod";
+	public static final String SYPHILIS_SEROLOGY_METHOD_TEXT = "syphilisSerologyMethodText";
 
 	private Sample sample;
 	private EnvironmentSample environmentSample;
@@ -177,6 +181,8 @@ public class PathogenTest extends DeletableAdo {
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
 	private RsvSubtype rsvSubtype;
+	private SyphilisSerologyMethod syphilisSerologyMethod;
+	private String syphilisSerologyMethodText;
 	private Float tubeNil;
 	private Boolean tubeNilGT10;
 	private Float tubeAgTb1;
@@ -194,6 +200,8 @@ public class PathogenTest extends DeletableAdo {
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
+	private String sequenceId;
+	private Boolean seroConversion;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -675,6 +683,23 @@ public class PathogenTest extends DeletableAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
+	public SyphilisSerologyMethod getSyphilisSerologyMethod() {
+		return syphilisSerologyMethod;
+	}
+
+	public void setSyphilisSerologyMethod(SyphilisSerologyMethod syphilisSerologyMethod) {
+		this.syphilisSerologyMethod = syphilisSerologyMethod;
+	}
+
+	public String getSyphilisSerologyMethodText() {
+		return syphilisSerologyMethodText;
+	}
+
+	public void setSyphilisSerologyMethodText(String syphilisSerologyMethodText) {
+		this.syphilisSerologyMethodText = syphilisSerologyMethodText;
+	}
+
+	@Enumerated(EnumType.STRING)
 	public GenoType getGenoType() {
 		return genoType;
 	}
@@ -837,7 +862,6 @@ public class PathogenTest extends DeletableAdo {
 		this.quantitativeUnit = quantitativeUnit;
 	}
 
-
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getQuantitativeBoolean() {
 		return quantitativeBoolean;
@@ -863,6 +887,24 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
 		this.westernBlotInterpretation = westernBlotInterpretation;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(String sequenceId) {
+		this.sequenceId = sequenceId;
+	}
+
+	@Column(name = "seroconversion", nullable = true)
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
 	}
 
 }

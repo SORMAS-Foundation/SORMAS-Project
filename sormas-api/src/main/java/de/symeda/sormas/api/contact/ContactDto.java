@@ -33,6 +33,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.MappingException;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -166,6 +167,9 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 
 	public static final String VACCINATION_DOSE_ONE_DATE = "vaccinationDoseOneDate";
 	public static final String VACCINATION_DOSE_TWO_DATE = "vaccinationDoseTwoDate";
+	public static final String PREGNANT = "pregnant";
+	public static final String POSTPARTUM = "postpartum";
+	public static final String TRIMESTER = "trimester";
 
 	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
@@ -437,6 +441,12 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_LUXEMBOURG })
 	private boolean immuneGlobulinProposed;
+	@SensitiveData
+	private YesNoUnknown pregnant;
+	@SensitiveData
+	private YesNoUnknown postpartum;
+	@SensitiveData
+	private Trimester trimester;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -1226,5 +1236,29 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 
 	public void setImmuneGlobulinProposed(boolean immuneGlobulinProposed) {
 		this.immuneGlobulinProposed = immuneGlobulinProposed;
+	}
+
+	public YesNoUnknown getPregnant() {
+		return pregnant;
+	}
+
+	public void setPregnant(YesNoUnknown pregnant) {
+		this.pregnant = pregnant;
+	}
+
+	public YesNoUnknown getPostpartum() {
+		return postpartum;
+	}
+
+	public void setPostpartum(YesNoUnknown postpartum) {
+		this.postpartum = postpartum;
+	}
+
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
 	}
 }

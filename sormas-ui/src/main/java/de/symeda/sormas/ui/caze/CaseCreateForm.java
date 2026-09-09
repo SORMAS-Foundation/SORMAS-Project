@@ -315,7 +315,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		cbPointOfEntry.setImmediate(true);
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
-
 		TextField tfDepartment = addField(CaseDataDto.DEPARTMENT, TextField.class);
 		tfDepartment.setVisible(false);
 		if (convertedTravelEntry != null) {
@@ -556,6 +555,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			handleDiseaseChanged(disease);
 			personCreateForm.updatePresentConditionEnum(disease);
 		}
+
 	}
 
 	private void hideAndFillJurisdictionFields() {
@@ -587,12 +587,18 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityOrHome.select(TypeOfPlace.HOME);
 			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
 			classificationField.select(CaseClassification.CONFIRMED);
+		} else if (newDisease == Disease.GONOCOCCAL_INFECTION) {
+			facilityOrHome.setValue(null);
+			facilityOrHome.unselect(TypeOfPlace.HOME);
+			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
+			classificationField.select(CaseClassification.CONFIRMED);
 		} else {
 			facilityOrHome.setValue(null);
 			facilityOrHome.unselect(TypeOfPlace.HOME);
 			classificationField.setValue(Sets.newHashSet(getValue().getCaseClassification()));
 			classificationField.select(getValue().getCaseClassification());
 		}
+
 	}
 
 	private void setNoneFacility() {

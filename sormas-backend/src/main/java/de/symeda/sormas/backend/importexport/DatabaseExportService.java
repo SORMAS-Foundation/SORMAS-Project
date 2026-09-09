@@ -107,6 +107,8 @@ import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShar
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
+import de.symeda.sormas.backend.survey.Survey;
+import de.symeda.sormas.backend.survey.SurveyToken;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue;
@@ -225,6 +227,8 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_CATEGORIES, SystemConfigurationCategory.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.NOTIFIER, Notifier.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DRUG_SUSCEPTIBILITY, DrugSusceptibility.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SURVEY, Survey.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SURVEY_TOKEN, SurveyToken.TABLE_NAME);
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

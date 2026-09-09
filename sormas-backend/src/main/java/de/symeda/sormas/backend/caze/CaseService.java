@@ -79,6 +79,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.SurveyResponseStatus;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -867,6 +868,12 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.or(cb.exists(prescriptionSubquery), cb.exists(treatmentSubquery), cb.exists(clinicalVisitSubquery)));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getHasDoctorDeclaration())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, hasDoctorDeclarationPredicate(cq, cb, from));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getWithoutDoctorDeclaration())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(hasDoctorDeclarationPredicate(cq, cb, from)));
+		}
 		if (Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
 		}
@@ -987,6 +994,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithDontShareWithExternalSurvTool())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesNotExcludedFromReporting())) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.isNull(from.get(Case.EXCLUDE_FROM_REPORTING)), cb.isFalse(from.get(Case.EXCLUDE_FROM_REPORTING))));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesExcludedFromReporting())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.EXCLUDE_FROM_REPORTING)));
+		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyShowCasesWithFulfilledReferenceDefinition())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_DEFINITION), CaseReferenceDefinition.FULFILLED));
 		}
@@ -1042,6 +1058,18 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		return filter;
+	}
+
+	private static Predicate hasDoctorDeclarationPredicate(CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Case> from) {
+		Subquery<Integer> doctorDeclarationSubquery = cq.subquery(Integer.class);
+		Root<SurveillanceReport> surveillanceReportRoot = doctorDeclarationSubquery.from(SurveillanceReport.class);
+
+		doctorDeclarationSubquery.select(cb.literal(1))
+			.where(
+				cb.equal(surveillanceReportRoot.get(SurveillanceReport.CAZE), from),
+				cb.equal(surveillanceReportRoot.get(SurveillanceReport.REPORTING_TYPE), ReportingType.DOCTOR));
+
+		return cb.exists(doctorDeclarationSubquery);
 	}
 
 	private Predicate createRelevanceStatusFilter(CaseCriteria caseCriteria, CaseQueryContext caseQueryContext) {

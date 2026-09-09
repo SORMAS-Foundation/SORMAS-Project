@@ -381,6 +381,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
 	implements CaseFacade {
 
+	public static final List<Disease> CONFIRMED_CASE_CLASSIFICATION_DISEASES =
+		Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GONOCOCCAL_INFECTION);
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -2274,7 +2276,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		updateTasksOnCaseChanged(newCase, existingCase);
 		if ((existingCase == null || existingCase.getDisease() != newCase.getDisease())
-			&& newCase.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+			&& CONFIRMED_CASE_CLASSIFICATION_DISEASES.contains(newCase.getDisease())) {
 			newCase.setCaseClassification(CaseClassification.CONFIRMED);
 			newCase.setClassificationDate(newCase.getReportDate());
 			newCase.setClassificationUser(newCase.getReportingUser());
@@ -3123,6 +3125,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
 		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setDiseaseSpecies(source.getDiseaseSpecies());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setScreeningType(source.getScreeningType());
@@ -3296,6 +3299,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setTreatmentStarted(source.getTreatmentStarted());
 		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
 		target.setTreatmentStartDate(source.getTreatmentStartDate());
+		target.setExcludeFromReporting(source.isExcludeFromReporting());
 
 		return target;
 	}
@@ -3326,6 +3330,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
 		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setDiseaseSpecies(source.getDiseaseSpecies());
 		if (source.getReportDate() != null) {
 			target.setReportDate(source.getReportDate());
 		} else {
@@ -3531,6 +3536,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setTreatmentStarted(source.getTreatmentStarted());
 		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
 		target.setTreatmentStartDate(source.getTreatmentStartDate());
+		target.setExcludeFromReporting(source.getExcludeFromReporting());
 
 		return target;
 	}

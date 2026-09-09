@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.caze;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.AnnotationFieldHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
@@ -79,8 +81,7 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 		// if the source field value is NO, UNKNOWN or deselect Yes and the value will be empty (in case of other complications symptoms data),
 		// and a map has it, remove it from the layout and map
 		if ((sourceFieldObj == null
-			|| sourceFieldObj == SymptomState.NO
-			|| sourceFieldObj == SymptomState.UNKNOWN
+			|| Arrays.asList(SymptomState.NO, SymptomState.UNKNOWN, YesNoUnknown.NO, YesNoUnknown.UNKNOWN).contains(sourceFieldObj)
 			|| StringUtils.isBlank(sourceFieldObj.toString())) && componentMap.containsKey(sourceField.getId())) {
 			layout.removeComponent(componentMap.get(sourceField.getId()));
 			componentMap.entrySet().removeIf(entry -> entry.getKey().equals(sourceField.getId()));
@@ -90,7 +91,7 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 
 		// if the sourceField value YES and map does not have it, and it's a complicated symptom,
 		// add it to the layout and map
-		if ((sourceFieldObj == SymptomState.YES)
+		if (Arrays.asList(SymptomState.YES, YesNoUnknown.YES).contains(sourceFieldObj)
 			&& !componentMap.containsKey(sourceField.getId())
 			&& complicatedSymptoms.contains(sourceField.getId())) {
 			Label label = new Label(I18nProperties.getCaption(Captions.Symptoms + "." + sourceField.getId()));

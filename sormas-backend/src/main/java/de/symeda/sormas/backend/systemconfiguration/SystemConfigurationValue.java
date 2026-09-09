@@ -96,7 +96,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         this.optional = optional;
     }
 
-    @Column(name = "value_pattern")
+    @Column(name = "value_pattern", columnDefinition = "text")
     public String getPattern() {
         return pattern;
     }
