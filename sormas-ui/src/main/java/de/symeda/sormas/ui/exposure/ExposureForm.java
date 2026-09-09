@@ -111,6 +111,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String GENERAL_DETAILS_LAYOUT =
 			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE, "", "") +
 					fluidRowLocs(ExposureDto.EXPOSURE_TYPE, ExposureDto.EXPOSURE_TYPE_DETAILS) +
+					fluidRowLocs(ExposureDto.TRAVEL_PURPOSE, ExposureDto.TRAVEL_PURPOSE_DETAILS) +					
+					fluidRowLocs(ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS) +
 					loc(ExposureDto.DESCRIPTION);
 
 	private static final String EXPOSURE_DETAILS_LAYOUT =
@@ -135,10 +137,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 									ExposureDto.PROTECTIVE_MEASURES
 							))
 					) +
-					fluidRow(fluidColumn(4, 0, locs(ExposureDto.PROPHYLAXIS_ADHERENCE))) +
-					fluidRow(fluidColumn(4, 0, locs(ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS))) +
-					fluidRow(fluidColumn(4, 0, locs(ExposureDto.TRAVEL_PURPOSE))) +
-					fluidRow(fluidColumn(4, 0, locs(ExposureDto.TRAVEL_PURPOSE_DETAILS))) +
 					fluidRow(
 							fluidColumn(4, 0, locs(
 									ExposureDto.EXPOSURE_SUB_SETTING_DETAILS,
@@ -294,8 +292,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		});
 
 		accordion.addFormSectionPanel(Captions.titleExposuresGeneralSection, true, generalDetailsLayout);
-		accordion.addFormSectionPanel(Captions.titleExposuresSection, false, exposureDetailsLayout);
 		accordion.addFormSectionPanel(Captions.titleExposureLocationSection, false, locationDetailsLayout);
+		accordion.addFormSectionPanel(Captions.titleExposuresSection, false, exposureDetailsLayout);
 
 		getContent().addComponent(accordion, MAIN_ACCORDION_LOC);
 
@@ -331,8 +329,19 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		exposureTypeField = addField(generalDetailsLayout, ExposureDto.EXPOSURE_TYPE, ComboBox.class);
 		exposureTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		exposureTypeField.addValueChangeListener(e -> updateTravelRelatedFieldVisibility());
 
 		addField(generalDetailsLayout, ExposureDto.EXPOSURE_TYPE_DETAILS, TextField.class);
+
+		prophylaxisAdherenceField = addField(generalDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE, ComboBox.class);
+		prophylaxisAdherenceField.setVisible(false);
+		prophylaxisAdherenceDetailsField = addField(generalDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS, TextField.class);
+		prophylaxisAdherenceDetailsField.setVisible(false);
+		travelPurposeField = addField(generalDetailsLayout, ExposureDto.TRAVEL_PURPOSE, ComboBox.class);
+		travelPurposeField.setVisible(false);
+		travelPurposeDetailsField = addField(generalDetailsLayout, ExposureDto.TRAVEL_PURPOSE_DETAILS, TextField.class);
+		travelPurposeDetailsField.setVisible(false);
+
 		addField(generalDetailsLayout, ExposureDto.DESCRIPTION, TextArea.class).setRows(5);
 
 		categoryField = addField(exposureDetailsLayout, ExposureDto.EXPOSURE_CATEGORY, ComboBox.class);
@@ -404,12 +413,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		protectiveMeasureDetailsField = addField(exposureDetailsLayout, ExposureDto.PROTECTIVE_MEASURE_DETAILS, TextField.class);
 		protectiveMeasureDetailsField.setVisible(false);
 
-		prophylaxisAdherenceField = addField(exposureDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE, ComboBox.class);
-		prophylaxisAdherenceField.setVisible(false);
-		prophylaxisAdherenceDetailsField = addField(exposureDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS, TextField.class);
-		travelPurposeField = addField(exposureDetailsLayout, ExposureDto.TRAVEL_PURPOSE, ComboBox.class);
-		travelPurposeField.setVisible(false);
-		travelPurposeDetailsField = addField(exposureDetailsLayout, ExposureDto.TRAVEL_PURPOSE_DETAILS, TextField.class);
 		sexualContactField = addField(exposureDetailsLayout, ExposureDto.SEXUAL_CONTACT, NullableOptionGroup.class);
 		sexualContactField.setVisible(false);
 
@@ -467,14 +470,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Set<ExposureSubSetting> selectedSubSettings = (Set<ExposureSubSetting>) e.getProperty().getValue();
 			boolean containsOther = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.OTHER);
 			subSettingsDetailsField.setVisible(containsOther);
-			// FIXME: Replace legacy TRAVELED_ABROAD dependency with a non-deprecated travel signal once taxonomy migration is complete.
-			// prophylaxis is allowed only for Malaria abroad travelers, not all diseases
-			boolean hasTravelledAbroad = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
-			// FIXME: Prophylaxis/travel-purpose visibility still depends on TRAVELED_ABROAD to preserve backwards compatibility.
-			setVisibleClear(hasTravelledAbroad && disease == Disease.MALARIA, ExposureDto.PROPHYLAXIS_ADHERENCE);
-
-			// Travel purpose is visible to aboard travelers of Malaria and Dengue
-			setVisibleClear(hasTravelledAbroad && (disease == Disease.MALARIA || disease == Disease.DENGUE), ExposureDto.TRAVEL_PURPOSE);
 			updateSexualContactVisibility((ExposureCategory) categoryField.getValue(), selectedSubSettings);
 
 			// Salmonellosis: shopping-for-food details follows sub-setting selection.
@@ -555,6 +550,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		addField(locationDetailsLayout, ExposureDto.SEAT_NUMBER, TextField.class);
 
 		addField(locationDetailsLayout, ExposureDto.WORK_ENVIRONMENT, ComboBox.class);
+
+		updateTravelRelatedFieldVisibility();
 	}
 
 	private void setUpVisibilityDependencies() {
@@ -749,6 +746,34 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	@SuppressWarnings("unchecked")
 	private Set<ExposureSubSetting> getSelectedSubSettings() {
 		return (Set<ExposureSubSetting>) subSettingsField.getValue();
+	}
+
+	private boolean isTravelExposureTypeSelected() {
+		return exposureTypeField.getValue() == ExposureType.TRAVEL;
+	}
+
+	private boolean isProphylaxisAdherenceVisible() {
+		return isTravelExposureTypeSelected() && disease == Disease.MALARIA;
+	}
+
+	private boolean isTravelPurposeVisibleForCurrentSelection() {
+		return isTravelExposureTypeSelected() && (disease == Disease.MALARIA || disease == Disease.DENGUE);
+	}
+
+	private void updateTravelRelatedFieldVisibility() {
+		boolean showProphylaxisAdherence = isProphylaxisAdherenceVisible();
+		setVisibleClear(showProphylaxisAdherence, ExposureDto.PROPHYLAXIS_ADHERENCE);
+		if (!showProphylaxisAdherence) {
+			prophylaxisAdherenceDetailsField.setValue(null);
+			prophylaxisAdherenceDetailsField.setVisible(false);
+		}
+
+		boolean showTravelPurpose = isTravelPurposeVisibleForCurrentSelection();
+		setVisibleClear(showTravelPurpose, ExposureDto.TRAVEL_PURPOSE);
+		if (!showTravelPurpose) {
+			travelPurposeDetailsField.setValue(null);
+			travelPurposeDetailsField.setVisible(false);
+		}
 	}
 
 	private void updateSexualContactVisibility(ExposureCategory category, Set<ExposureSubSetting> selectedSubSettings) {
@@ -957,13 +982,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				subSettingsDetailsField.setValue(subSettingDetails);
 			}
 
-			// FIXME: Keep legacy TRAVELED_ABROAD gate for loaded records until travel/prophylaxis trigger is moved to new taxonomy.
-			boolean hasTravelledAbroad = subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			updateTravelRelatedFieldVisibility();
 
-			boolean isMalariaCaseTraveled = subSettings != null && disease == Disease.MALARIA && hasTravelledAbroad;
-			prophylaxisAdherenceField.setVisible(isMalariaCaseTraveled);
-			// If the Malaria-effected person traveled abroad, show the prophylaxis adherence and travel purpose fields
-			if (isMalariaCaseTraveled) {
+			if (isProphylaxisAdherenceVisible()) {
 				if (prophylaxisAdherence != null) {
 					prophylaxisAdherenceField.setValue(prophylaxisAdherence);
 				}
@@ -976,10 +997,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				prophylaxisAdherenceDetailsField.setValue(null);
 				prophylaxisAdherenceDetailsField.setVisible(false);
 			}
-			// Travel purpose is visible to abroad travelers of Malaria and Dengue
-			boolean isTravelPurposeVisible = hasTravelledAbroad && (disease == Disease.MALARIA || disease == Disease.DENGUE);
-			travelPurposeField.setVisible(isTravelPurposeVisible);
-			if (isTravelPurposeVisible) {
+
+			if (isTravelPurposeVisibleForCurrentSelection()) {
 				travelPurposeField.setValue(travelPurpose);
 				travelPurposeDetailsField.setVisible(travelPurpose == TravelPurpose.OTHER);
 				if (travelPurposeDetails != null) {

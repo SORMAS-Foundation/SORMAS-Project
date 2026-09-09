@@ -45,6 +45,60 @@ import de.symeda.sormas.ui.AbstractUiBeanTest;
 class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 	@Test
+	void shouldControlTravelFieldsByExposureTypeForMalaria() {
+		ExposureForm form = new ExposureForm(
+			true,
+			CaseDataDto.class,
+			Collections.emptyList(),
+			FieldVisibilityCheckers.withDisease(Disease.MALARIA),
+			UiFieldAccessCheckers.getNoop(),
+			Disease.MALARIA,
+			Collections.emptyList(),
+			Collections.emptyMap());
+
+		ExposureDto travelExposure = ExposureDto.build(ExposureType.TRAVEL);
+		travelExposure.setExposureCategory(ExposureCategory.VECTOR_BORNE);
+		travelExposure.setExposureSetting(ExposureSetting.MOSQUITO_BORNE);
+
+		assertDoesNotThrow(() -> form.setValue(travelExposure));
+
+		Field<?> prophylaxisField = form.getField(ExposureDto.PROPHYLAXIS_ADHERENCE);
+		Field<?> travelPurposeField = form.getField(ExposureDto.TRAVEL_PURPOSE);
+
+		assertTrue(prophylaxisField.isVisible());
+		assertTrue(travelPurposeField.isVisible());
+
+		ComboBox exposureTypeField = (ComboBox) form.getField(ExposureDto.EXPOSURE_TYPE);
+		exposureTypeField.setValue(ExposureType.WORK);
+
+		assertFalse(prophylaxisField.isVisible());
+		assertFalse(travelPurposeField.isVisible());
+	}
+
+	@Test
+	void shouldApplyDiseaseSpecificVisibilityForTravelFields() {
+		ExposureForm form = new ExposureForm(
+			true,
+			CaseDataDto.class,
+			Collections.emptyList(),
+			FieldVisibilityCheckers.withDisease(Disease.DENGUE),
+			UiFieldAccessCheckers.getNoop(),
+			Disease.DENGUE,
+			Collections.emptyList(),
+			Collections.emptyMap());
+
+		ExposureDto travelExposure = ExposureDto.build(ExposureType.TRAVEL);
+
+		assertDoesNotThrow(() -> form.setValue(travelExposure));
+
+		Field<?> prophylaxisField = form.getField(ExposureDto.PROPHYLAXIS_ADHERENCE);
+		Field<?> travelPurposeField = form.getField(ExposureDto.TRAVEL_PURPOSE);
+
+		assertFalse(prophylaxisField.isVisible());
+		assertTrue(travelPurposeField.isVisible());
+	}
+
+	@Test
 	void shouldShowTravelAndProphylaxisFieldsForMalariaLegacyTravelPath() {
 		ExposureForm form = new ExposureForm(
 			true,
