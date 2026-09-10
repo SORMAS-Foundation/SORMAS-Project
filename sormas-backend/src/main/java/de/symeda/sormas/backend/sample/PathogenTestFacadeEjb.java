@@ -28,6 +28,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -749,14 +750,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		if (!isCreate
 			|| savedPathogenTest.getSample() == null
 			|| savedPathogenTest.getTestedDisease() != Disease.YERSINIOSIS
-			|| savedPathogenTest.getTestType() != PathogenTestType.ISOLATION
-			|| hasPositiveCultureForSample(savedPathogenTest.getSample())) {
+			|| savedPathogenTest.getTestType() != PathogenTestType.ISOLATION) {
+			return;
+		}
+
+		Sample lockedSample = lockSampleForPathogenTestCreation(savedPathogenTest.getSample());
+		if (lockedSample == null || hasPositiveCultureForSample(lockedSample)) {
 			return;
 		}
 
 		PathogenTestDto cultureTest = new PathogenTestDto();
 		cultureTest.setUuid(DataHelper.createUuid());
-		cultureTest.setSample(savedPathogenTest.getSample().toReference());
+		cultureTest.setSample(lockedSample.toReference());
 		cultureTest.setTestedDisease(savedPathogenTest.getTestedDisease());
 		cultureTest.setTestType(PathogenTestType.CULTURE);
 		cultureTest.setTestDateTime(savedPathogenTest.getTestDateTime());
@@ -766,6 +771,15 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		cultureTest.setTestResult(PathogenTestResultType.POSITIVE);
 
 		savePathogenTest(cultureTest, checkChangeDate, syncShares);
+	}
+
+	private Sample lockSampleForPathogenTestCreation(Sample sample) {
+		if (sample == null || sample.getId() == null) {
+			return sample;
+		}
+
+		Sample lockedSample = em.find(Sample.class, sample.getId(), LockModeType.PESSIMISTIC_WRITE);
+		return lockedSample != null ? lockedSample : sample;
 	}
 
 	private boolean hasPositiveCultureForSample(Sample sample) {
