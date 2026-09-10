@@ -292,12 +292,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
-		if (source.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
-			|| (source.getTestedDisease() == Disease.GONOCOCCAL_INFECTION && source.getTestType() == PathogenTestType.GENOTYPING)) {
-			target.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
-		} else {
-			target.setTestResult(source.getTestResult());
-		}
+		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
@@ -636,12 +631,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setLab(facilityService.getByReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setLabUser(userService.getByReferenceDto(source.getLabUser()));
-		if (source.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
-			|| (source.getTestedDisease() == Disease.GONOCOCCAL_INFECTION && source.getTestType() == PathogenTestType.GENOTYPING)) {
-			target.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
-		} else {
-			target.setTestResult(source.getTestResult());
-		}
+		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
