@@ -153,6 +153,22 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
 		target.setErythromycinMic(source.getErythromycinMic());
 		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
+		target.setCefiximeMic(source.getCefiximeMic());
+		target.setCefiximeSusceptibility(source.getCefiximeSusceptibility());
+		target.setCefiximeMethod(source.getCefiximeMethod());
+		target.setTetracyclineMic(source.getTetracyclineMic());
+		target.setTetracyclineSusceptibility(source.getTetracyclineSusceptibility());
+		target.setTetracyclineMethod(source.getTetracyclineMethod());
+		target.setGentamicinMic(source.getGentamicinMic());
+		target.setGentamicinSusceptibility(source.getGentamicinSusceptibility());
+		target.setGentamicinMethod(source.getGentamicinMethod());
+		target.setSpectinomycinMic(source.getSpectinomycinMic());
+		target.setSpectinomycinSusceptibility(source.getSpectinomycinSusceptibility());
+		target.setSpectinomycinMethod(source.getSpectinomycinMethod());
+		target.setPorBAllele(source.getPorBAllele());
+		target.setTbpBAllele(source.getTbpBAllele());
+		target.setSequenceType(source.getSequenceType());
+		target.setGenogroup(source.getGenogroup());
 
 		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
@@ -259,6 +275,22 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
 		target.setErythromycinMic(source.getErythromycinMic());
 		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
+		target.setCefiximeMic(source.getCefiximeMic());
+		target.setCefiximeSusceptibility(source.getCefiximeSusceptibility());
+		target.setCefiximeMethod(source.getCefiximeMethod());
+		target.setTetracyclineMic(source.getTetracyclineMic());
+		target.setTetracyclineSusceptibility(source.getTetracyclineSusceptibility());
+		target.setTetracyclineMethod(source.getTetracyclineMethod());
+		target.setGentamicinMic(source.getGentamicinMic());
+		target.setGentamicinSusceptibility(source.getGentamicinSusceptibility());
+		target.setGentamicinMethod(source.getGentamicinMethod());
+		target.setSpectinomycinMic(source.getSpectinomycinMic());
+		target.setSpectinomycinSusceptibility(source.getSpectinomycinSusceptibility());
+		target.setSpectinomycinMethod(source.getSpectinomycinMethod());
+		target.setPorBAllele(source.getPorBAllele());
+		target.setTbpBAllele(source.getTbpBAllele());
+		target.setSequenceType(source.getSequenceType());
+		target.setGenogroup(source.getGenogroup());
 
 		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());

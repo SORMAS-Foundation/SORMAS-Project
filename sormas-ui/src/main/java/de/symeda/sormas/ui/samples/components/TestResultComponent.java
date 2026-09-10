@@ -348,7 +348,9 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 		// QUALITATIVE in their @ResultValueTypeRel (WESTERN_BLOT, BACTERIAL_CULTURE, typing methods, ...)
 		// keep their stored qualitative result so its historical Positive/Negative information is preserved
 		// and the related disease sections continue to render their typing fields.
-		if (dto != null && dto.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+		if (dto != null
+			&& (dto.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
+				|| (dto.getTestedDisease() == Disease.GONOCOCCAL_INFECTION && dto.getTestType() == PathogenTestType.GENOTYPING))) {
 			PathogenTestResultType current = testResultField.getValue();
 			if (current != null && current != PathogenTestResultType.NOT_APPLICABLE) {
 				ensureNotApplicableSelectable();

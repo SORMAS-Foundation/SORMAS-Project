@@ -55,7 +55,8 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.INFLUENZA }, hide = true)
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	DRY_BLOOD,
 
 	@Diseases(value = {
@@ -68,7 +69,8 @@ public enum SampleMaterial {
 		Disease.NEW_INFLUENZA,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
-		Disease.INFLUENZA }, hide = true)
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	SERA,
 
 	@Diseases(value = {
@@ -84,7 +86,8 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.INFLUENZA }, hide = true)
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	STOOL,
 
 	@Diseases(value = {
@@ -147,7 +150,8 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
 		Disease.LATENT_TUBERCULOSIS,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	NP_SWAB,
 
 	@Diseases(value = {
@@ -200,7 +204,8 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.INFLUENZA }, hide = true)
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	CRUST,
 
 	@Diseases(value = {
@@ -219,7 +224,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	TISSUE,
 
 	@Diseases(value = {
@@ -271,7 +277,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	SALIVA,
 
 	@Diseases(value = {
@@ -312,7 +319,8 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.INFLUENZA }, hide = true)
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	NUCHAL_SKIN_BIOPSY,
@@ -335,7 +343,8 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
-		Disease.LATENT_TUBERCULOSIS }, hide = true)
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	SPUTUM,
 
 	@Diseases(value = {
@@ -372,7 +381,8 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
-		Disease.LATENT_TUBERCULOSIS }, hide = true)
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	BRONCHOALVEOLAR_LAVAGE,
 
 	@Diseases(value = {
@@ -433,7 +443,8 @@ public enum SampleMaterial {
 		Disease.SYPHILIS,
 		Disease.CORONAVIRUS,
 		Disease.LATENT_TUBERCULOSIS,
-		Disease.PERTUSSIS }, hide = true)
+		Disease.PERTUSSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	OP_ASPIRATE,
 
 	@Diseases(value = {
@@ -447,7 +458,8 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
-		Disease.LATENT_TUBERCULOSIS }, hide = true)
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	NP_ASPIRATE,
 
 	@Diseases(value = {
@@ -466,7 +478,8 @@ public enum SampleMaterial {
 		Disease.CORONAVIRUS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.INFLUENZA }, hide = true)
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	PLEURAL_FLUID,
 
 	// Re-activated for RSV new samples (#14023): the RSV specimen requirements list Nasopharyngeal lavage.
@@ -505,7 +518,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	AMNIOTIC_FLUID,
 
 	// Clinical Sample (Other) is offered for every disease (#14018) — no @Diseases means "visible for all".
@@ -529,7 +543,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	PERITONEAL_FLUID,
 
 	@Diseases(value = {
@@ -564,7 +579,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	EDTA_WHOLE_BLOOD,
 
 	@Diseases(value = {
@@ -595,7 +611,8 @@ public enum SampleMaterial {
 	GASTRIC_FLUID,
 
 	@Diseases({
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	GENITAL_SWAB,
 
 	@Diseases({
@@ -660,7 +677,8 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	BONE,
 
 	@Diseases(value = {
@@ -679,7 +697,8 @@ public enum SampleMaterial {
 		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	BONE_MARROW,
 
 	@Diseases(value = {
@@ -701,8 +720,6 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {
@@ -828,7 +845,8 @@ public enum SampleMaterial {
 		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	LUNG_TISSUE,
 
 	@Diseases(value = {

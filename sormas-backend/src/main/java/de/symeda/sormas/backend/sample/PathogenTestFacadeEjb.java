@@ -344,6 +344,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setGenoType(source.getGenoType());
 		target.setGenoTypeText(source.getGenoTypeText());
+		target.setPorBAllele(source.getPorBAllele());
+		target.setTbpBAllele(source.getTbpBAllele());
+		target.setSequenceType(source.getSequenceType());
+		target.setGenogroup(source.getGenogroup());
 		target.setRsvSubtype(source.getRsvSubtype());
 		target.setSyphilisSerologyMethod(source.getSyphilisSerologyMethod());
 		target.setSyphilisSerologyMethodText(source.getSyphilisSerologyMethodText());
@@ -677,6 +681,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setGenoType(source.getGenoType());
 		target.setGenoTypeText(source.getGenoTypeText());
+		target.setPorBAllele(source.getPorBAllele());
+		target.setTbpBAllele(source.getTbpBAllele());
+		target.setSequenceType(source.getSequenceType());
+		target.setGenogroup(source.getGenogroup());
 		target.setRsvSubtype(source.getRsvSubtype());
 		target.setSyphilisSerologyMethod(source.getSyphilisSerologyMethod());
 		target.setSyphilisSerologyMethodText(source.getSyphilisSerologyMethodText());
