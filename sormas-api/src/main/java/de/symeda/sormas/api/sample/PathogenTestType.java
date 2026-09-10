@@ -40,7 +40,15 @@ public enum PathogenTestType {
 	// historic records and case-classification rules keep working.
 	@Diseases(value = {
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -52,7 +60,13 @@ public enum PathogenTestType {
 	// Result is qualitative (Pos/Neg/Indet/Pending). Legacy VIRAL_ISOLATION stays @NotSelectableForNewTests
 	// so historic records still render and case-classification rules (EVD/Lassa/Cholera/…) keep firing.
 	@Diseases(value = {
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MALARIA,
+		Disease.PERTUSSIS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ISOLATION,
@@ -64,6 +78,12 @@ public enum PathogenTestType {
 	// @NotSelectableForNewTests so historic records still render and case-classification rules
 	// referencing IGM_/IGG_SERUM_ANTIBODY continue to fire (they bind to the same enum constants).
 	@Diseases(value = {
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
@@ -72,8 +92,14 @@ public enum PathogenTestType {
 	IGM_SERUM_ANTIBODY,
 
 	@Diseases(value = {
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -83,8 +109,22 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -103,7 +143,12 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
 
@@ -124,7 +169,12 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	@NotSelectableForNewTests
 	CQ_VALUE_DETECTION,
 
@@ -140,20 +190,17 @@ public enum PathogenTestType {
 	// Legacy "Other <category>" placeholders introduced for Malaria/Dengue (#13801/#13814). Superseded
 	// by the specific methods below, but kept (hidden from new tests) because they shipped and may be
 	// stored on existing records (@Enumerated(STRING)). Records using them must still load and render.
-	@Diseases({
-		Disease.MALARIA })
+	@Diseases({})
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@NotSelectableForNewTests
 	OTHER_ANTIGEN_DETECTION_TEST,
 
-	@Diseases({
-		Disease.MALARIA })
+	@Diseases({})
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@NotSelectableForNewTests
 	OTHER_MOLECULAR_ASSAY,
 
-	@Diseases({
-		Disease.MALARIA })
+	@Diseases({})
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@NotSelectableForNewTests
 	OTHER_SEROLOGICAL_TEST,
@@ -184,8 +231,10 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.MALARIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MULTIPLEX_PCR,
@@ -194,8 +243,21 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -212,8 +274,22 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	NASBA,
@@ -230,8 +306,14 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TMA,
@@ -240,8 +322,22 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	CRISPR_DIAGNOSTICS,
@@ -250,8 +346,20 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	LINE_PROBE_ASSAY,
@@ -260,8 +368,9 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MALARIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	SANGER_SEQUENCING,
@@ -270,7 +379,11 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.INFLUENZA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	WHOLE_GENOME_SEQUENCING,
@@ -287,8 +400,14 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DNA_MICROARRAY,
@@ -297,6 +416,7 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
+		Disease.MALARIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
@@ -319,8 +439,6 @@ public enum PathogenTestType {
 	MULTILOCUS_SEQUENCE_TYPING,
 
 	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
@@ -328,8 +446,6 @@ public enum PathogenTestType {
 	CGMLST,
 
 	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
@@ -337,7 +453,6 @@ public enum PathogenTestType {
 	SNP_TYPING,
 
 	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
@@ -359,6 +474,7 @@ public enum PathogenTestType {
 		Disease.MEASLES,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MUMPS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
@@ -410,8 +526,12 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ANTIBODY_DETECTION,
@@ -419,7 +539,6 @@ public enum PathogenTestType {
 	// Superseded by IGM_/IGG_/IGA_SERUM_ANTIBODY for new tests (#13951). Kept here so historic records
 	// still render and so case-classification logic (which binds to this constant) keeps working.
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MALARIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
@@ -431,8 +550,22 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.DENGUE,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -447,8 +580,16 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	NEUTRALIZING_ANTIBODIES,
@@ -456,8 +597,6 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.CORONAVIRUS,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.MALARIA,
 		Disease.MUMPS })
@@ -470,8 +609,10 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
@@ -504,8 +645,11 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATERAL_FLOW_ASSAY,
@@ -514,8 +658,18 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOFLUORESCENCE_ASSAY,
@@ -531,8 +685,20 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
@@ -541,8 +707,20 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	// Positive/Negative interpretation plus the reciprocal titre (#14105): TEXT alone rendered no result
 	// field. The titre ('1:160') is kept as text, not a Float numeric value, like NEUTRALIZING_ANTIBODIES.
@@ -556,6 +734,22 @@ public enum PathogenTestType {
 	// ----------------------------------------------------------------------------------------------
 
 	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
+	@Diseases(value = {
+		Disease.DENGUE,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -565,7 +759,21 @@ public enum PathogenTestType {
 
 	// Superseded by the merged ISOLATION entry for new tests (#13951). Kept for historic records.
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	@NotSelectableForNewTests
@@ -573,7 +781,22 @@ public enum PathogenTestType {
 
 	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	@NotSelectableForNewTests
@@ -583,8 +806,23 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
@@ -604,7 +842,10 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.NEW_INFLUENZA,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MICROSCOPY,
@@ -620,8 +861,13 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GRAM_STAIN,
@@ -632,6 +878,17 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
@@ -641,8 +898,21 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
@@ -652,8 +922,20 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -672,8 +954,14 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -685,8 +973,21 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -698,8 +999,21 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
@@ -709,8 +1023,21 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
@@ -720,8 +1047,20 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -755,6 +1094,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	// AST has no result value type of its own — its result is the drug-susceptibility grid, not a
@@ -768,8 +1108,19 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
@@ -799,8 +1150,21 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
 		Disease.MUMPS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------

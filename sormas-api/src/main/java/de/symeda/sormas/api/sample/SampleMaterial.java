@@ -35,10 +35,11 @@ import de.symeda.sormas.api.utils.HideForCountries;
 public enum SampleMaterial {
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.TUBERCULOSIS,
+		Disease.PERTUSSIS }, hide = true)
 	BLOOD,
 
 	@Diseases(value = {
@@ -50,6 +51,11 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	DRY_BLOOD,
 
@@ -60,11 +66,14 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	SERA,
 
 	@Diseases(value = {
-		Disease.CORONAVIRUS,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
@@ -73,6 +82,11 @@ public enum SampleMaterial {
 		Disease.DENGUE,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	STOOL,
 
@@ -84,7 +98,13 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.SALMONELLOSIS }, hide = true)
 	@Deprecated
 	THROAT_ASPIRATE,
 
@@ -97,7 +117,11 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.SALMONELLOSIS }, hide = true)
 	@Deprecated
 	NASAL_SWAB,
 
@@ -109,7 +133,10 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.SALMONELLOSIS }, hide = true)
 	@Deprecated
 	THROAT_SWAB,
 
@@ -122,6 +149,8 @@ public enum SampleMaterial {
 		Disease.DENGUE,
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	NP_SWAB,
 
@@ -136,7 +165,12 @@ public enum SampleMaterial {
 		Disease.MALARIA,
 		Disease.DENGUE,
 		Disease.SHIGELLOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	RECTAL_SWAB,
 
 	@Diseases(value = {
@@ -144,7 +178,12 @@ public enum SampleMaterial {
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	CEREBROSPINAL_FLUID,
 
 	@Diseases(value = {
@@ -161,6 +200,11 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	CRUST,
 
@@ -175,6 +219,12 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	TISSUE,
 
@@ -185,7 +235,12 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	URINE,
 
 	@Diseases(value = {
@@ -198,7 +253,13 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.SALMONELLOSIS }, hide = true)
 	@Deprecated
 	CORNEA_PM,
 
@@ -211,6 +272,12 @@ public enum SampleMaterial {
 		Disease.MALARIA,
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	SALIVA,
 
@@ -224,7 +291,13 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.SALMONELLOSIS }, hide = true)
 	@Deprecated
 	URINE_PM,
 
@@ -242,6 +315,11 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -250,8 +328,7 @@ public enum SampleMaterial {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+		Disease.TUBERCULOSIS })
 	BIOPSY,
 
 	@Diseases(value = {
@@ -266,6 +343,7 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.LATENT_TUBERCULOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	SPUTUM,
 
@@ -281,7 +359,12 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ENDOTRACHEAL_ASPIRATE,
@@ -298,6 +381,7 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.LATENT_TUBERCULOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	BRONCHOALVEOLAR_LAVAGE,
 
@@ -314,7 +398,12 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	BRAIN_TISSUE,
@@ -331,7 +420,11 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ANTERIOR_NARES_SWAB,
@@ -348,6 +441,9 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.CORONAVIRUS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	OP_ASPIRATE,
 
@@ -362,6 +458,7 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.LATENT_TUBERCULOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	NP_ASPIRATE,
 
@@ -377,13 +474,19 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	PLEURAL_FLUID,
 
 	// Re-activated for RSV new samples (#14023): the RSV specimen requirements list Nasopharyngeal lavage.
 	// No canonical SNOMED-CT code on the specimen sheet, so its SNOMED export stays null.
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.CORONAVIRUS })
 	NASOPHARYNGEAL_LAVAGE,
 
 	@Diseases(value = {
@@ -393,7 +496,10 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.SALMONELLOSIS }, hide = true)
 	OROPHARYNGEAL_SWAB,
 
 	@Diseases(value = {
@@ -406,6 +512,13 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	AMNIOTIC_FLUID,
 
@@ -424,6 +537,13 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.SHIGELLOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	PERITONEAL_FLUID,
 
@@ -437,7 +557,12 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA }, hide = true)
 	SYNOVIAL_FLUID,
 
 	@Diseases(value = {
@@ -448,92 +573,89 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.NEW_INFLUENZA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	EDTA_WHOLE_BLOOD,
 
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+		Disease.TUBERCULOSIS })
 	INTESTINAL_FLUID,
 
 	@Diseases(value = {
-		Disease.GIARDIASIS,
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+		Disease.GIARDIASIS })
 	DUODENUM_FLUID,
 
 	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+		Disease.TUBERCULOSIS })
 	ASPIRATE,
 
-	@Diseases({
-		Disease.SALMONELLOSIS })
+	@Diseases({})
 	@Deprecated
 	BONE_AND_JOINT,
 
-	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+	@Diseases({})
 	CATHETER_EXIT_SITE,
 
-	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+	@Diseases({})
 	EYE,
 
 	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+		Disease.TUBERCULOSIS })
 	GASTRIC_FLUID,
 
 	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS,
 		Disease.SYPHILIS,
 		Disease.GONOCOCCAL_INFECTION })
 	GENITAL_SWAB,
 
 	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+		Disease.TUBERCULOSIS })
 	LOWER_RESPIRATORY_TRACT,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+		Disease.TUBERCULOSIS })
 	PUS,
 
 	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS,
 		Disease.MUMPS })
 	SEMEN,
 
-	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+	@Diseases({})
 	SKIN,
 
-	@Diseases({
-		Disease.SALMONELLOSIS })
+	@Diseases({})
 	@Deprecated
 	SOFT_TISSUE,
 
-	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
+	@Diseases({})
 	WOUND,
 
 	@Diseases(value = {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ABSCESS_SWAB,
@@ -545,6 +667,17 @@ public enum SampleMaterial {
 		Disease.DENGUE,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	BONE,
 
@@ -555,6 +688,16 @@ public enum SampleMaterial {
 		Disease.DENGUE,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	BONE_MARROW,
 
@@ -563,7 +706,20 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {
@@ -571,7 +727,19 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	MIDDLE_EAR_FLUID,
@@ -581,7 +749,18 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLASMA,
@@ -591,7 +770,18 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	SWAB_UNSPECIFIED,
@@ -601,7 +791,18 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	TEARS,
@@ -610,7 +811,20 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.DENGUE,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CORD_BLOOD,
@@ -623,6 +837,15 @@ public enum SampleMaterial {
 		Disease.DENGUE,
 		Disease.MUMPS,
 		Disease.SYPHILIS,
+		Disease.MEASLES,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	LUNG_TISSUE,
 
@@ -630,7 +853,18 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
-		Disease.MUMPS }, hide = true)
+		Disease.MUMPS,
+		Disease.DENGUE,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLACENTA,
@@ -640,13 +874,50 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.MUMPS,
-		Disease.SYPHILIS }, hide = true)
+		Disease.SYPHILIS,
+		Disease.DENGUE,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ULCER_SWAB,
 
+	@Diseases(value = {
+		Disease.DENGUE,
+		Disease.MEASLES,
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.MALARIA,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS,
+		Disease.SALMONELLOSIS }, hide = true)
 	UNKNOWN,
 
+	@Diseases(value = {
+		Disease.NEW_INFLUENZA,
+		Disease.CORONAVIRUS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.PERTUSSIS,
+		Disease.INFLUENZA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	@Deprecated
 	OTHER;
 
