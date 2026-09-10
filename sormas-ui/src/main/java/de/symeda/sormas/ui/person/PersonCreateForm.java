@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.person.PersonEditForm.NATIONAL_HEALTH_ID_WARNING_LABEL;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
@@ -28,6 +30,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.shared.ui.ErrorLevel;
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
+import de.symeda.sormas.ui.utils.ValidationUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -94,6 +100,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private static final String HTML_LAYOUT =
 		"%s" + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
 			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
+            + fluidRowLocs(NATIONAL_HEALTH_ID_WARNING_LABEL, "")
 			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE) + fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
 			+ fluidRowLocs(ENTER_HOME_ADDRESS_NOW) + loc(HOME_ADDRESS_HEADER) + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
 
@@ -193,6 +200,26 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
+		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
+		nationalHealthIdWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
+		nationalHealthIdWarningLabel.setVisible(false);
+		getContent().addComponent(nationalHealthIdWarningLabel, NATIONAL_HEALTH_ID_WARNING_LABEL);
+
+		addValueChangeListener(e -> {
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				ValidationUtils.initComponentErrorValidator(
+						nationalHealthIdField,
+						nationalHealthIdField.getValue(),
+						Validations.invalidNationalHealthId,
+						nationalHealthIdWarningLabel,
+						nationalHealthId -> !LuxembourgNationalHealthIdValidator.isValid(
+								nationalHealthId,
+								(Integer) birthDateYear.getValue(),
+								(Integer) birthDateMonth.getValue(),
+								(Integer) birthDateDay.getValue()),
+						ErrorLevel.WARNING);
+			}
+		});
 
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		presentCondition.setVisible(showPresentCondition);
