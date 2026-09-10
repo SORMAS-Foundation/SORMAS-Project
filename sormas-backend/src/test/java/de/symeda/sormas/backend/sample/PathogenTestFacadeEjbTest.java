@@ -27,16 +27,19 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
@@ -147,6 +150,78 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(SyphilisSerologyMethod.RPR, reloadedNonTreponemal.getSyphilisSerologyMethod());
 		assertEquals(8.0f, reloadedNonTreponemal.getQuantitativeValue());
 		assertNull(reloadedNonTreponemal.getSyphilisSerologyMethodText());
+	}
+
+	@Test
+	public void testYersiniosisStructuredFieldsRoundTrip() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.YERSINIOSIS,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
+		test.setTestType(PathogenTestType.ISOLATION);
+		test.setSpecie(de.symeda.sormas.api.sample.PathogenSpecie.YERSINIA_ENTEROCOLITICA);
+		test.setSerotype(Serotype.YERSINIOSIS_5_27);
+		test.setBiotype(Biotype.YERSINIOSIS_1A);
+		test.setWgsPerformed(YesNoUnknown.YES);
+		test.setWgsClusterId("cluster-42");
+		test.setVirulenceGenesDetected(Boolean.TRUE);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
+
+		assertEquals(de.symeda.sormas.api.sample.PathogenSpecie.YERSINIA_ENTEROCOLITICA, reloaded.getSpecie());
+		assertEquals(Serotype.YERSINIOSIS_5_27, reloaded.getSerotype());
+		assertEquals(Biotype.YERSINIOSIS_1A, reloaded.getBiotype());
+		assertEquals(YesNoUnknown.YES, reloaded.getWgsPerformed());
+		assertEquals("cluster-42", reloaded.getWgsClusterId());
+		assertEquals(Boolean.TRUE, reloaded.getVirulenceGenesDetected());
+	}
+
+	@Test
+	public void testYersiniosisIsolationAutoCreatesSinglePositiveCulture() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.YERSINIOSIS,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		PathogenTestDto firstIsolation = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
+		firstIsolation.setTestType(PathogenTestType.ISOLATION);
+		getPathogenTestFacade().savePathogenTest(firstIsolation);
+
+		List<PathogenTestDto> testsAfterFirstIsolation = getPathogenTestFacade().getAllBySample(sample.toReference());
+		long cultureCountAfterFirstIsolation = testsAfterFirstIsolation.stream()
+			.filter(t -> t.getTestType() == PathogenTestType.CULTURE && t.getTestResult() == PathogenTestResultType.POSITIVE)
+			.count();
+		assertEquals(1L, cultureCountAfterFirstIsolation);
+
+		PathogenTestDto secondIsolation = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
+		secondIsolation.setTestType(PathogenTestType.ISOLATION);
+		getPathogenTestFacade().savePathogenTest(secondIsolation);
+
+		List<PathogenTestDto> testsAfterSecondIsolation = getPathogenTestFacade().getAllBySample(sample.toReference());
+		long cultureCountAfterSecondIsolation = testsAfterSecondIsolation.stream()
+			.filter(t -> t.getTestType() == PathogenTestType.CULTURE && t.getTestResult() == PathogenTestResultType.POSITIVE)
+			.count();
+		assertEquals(1L, cultureCountAfterSecondIsolation);
 	}
 
 	@Test
@@ -367,9 +442,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		// Result is required by default (#13948 issue #13958): an empty result must be rejected.
 		final PathogenTestDto requiredTest = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
 		requiredTest.setTestResult(null);
-		assertThrows(
-			de.symeda.sormas.api.utils.ValidationRuntimeException.class,
-			() -> getPathogenTestFacade().savePathogenTest(requiredTest));
+		assertThrows(de.symeda.sormas.api.utils.ValidationRuntimeException.class, () -> getPathogenTestFacade().savePathogenTest(requiredTest));
 
 		// Once the administrator turns the requirement off, an empty result is allowed and defaults to PENDING.
 		getFeatureConfigurationFacade().setServerFeatureEnabled(FeatureType.PATHOGEN_TEST_RESULT_REQUIRED, false);

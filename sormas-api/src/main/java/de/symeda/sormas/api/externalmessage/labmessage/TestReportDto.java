@@ -11,6 +11,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
@@ -47,6 +48,8 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_RESULT = "testResult";
 	public static final String DATE_OF_RESULT = "dateOfResult";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
+	public static final String BIOTYPE = "biotype";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -228,6 +231,9 @@ public class TestReportDto extends EntityDto {
 	private PathogenTestCategory pathogenTestCategory;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private Boolean performedByReferenceLaboratory;
+
+	private Biotype biotype;
+	private Boolean virulenceGenesDetected;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -962,6 +968,22 @@ public class TestReportDto extends EntityDto {
 
 	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
 		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	public Biotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(Biotype biotype) {
+		this.biotype = biotype;
+	}
+
+	public Boolean getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(Boolean virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
 	}
 
 }

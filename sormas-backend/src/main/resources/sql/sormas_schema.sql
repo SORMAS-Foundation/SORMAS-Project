@@ -17261,4 +17261,24 @@ WHERE disease = 'GONOCOCCAL_INFECTION';
 
 INSERT INTO schema_version (version_number, comment) VALUES (665, 'Configure Gonococcal infection epidemiological data');
 
+-- #13973 - Yersiniosis - samples and pathogen tests
+
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS biotype varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS wgsperformed varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS wgsclusterid varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS virulencegenesdetected boolean;
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS biotype varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS wgsperformed varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS wgsclusterid varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS virulencegenesdetected boolean;
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS biotype varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS virulencegenesdetected boolean;
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS biotype varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS virulencegenesdetected boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (666, 'Yersiniosis - samples and pathogen tests');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

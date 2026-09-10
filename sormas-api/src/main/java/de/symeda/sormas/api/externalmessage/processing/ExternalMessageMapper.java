@@ -1068,7 +1068,6 @@ public final class ExternalMessageMapper {
 							sourceTestReport.getErythromycinSusceptibility(),
 							PathogenTestDto.DRUG_SUSCEPTIBILITY,
 							DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY),
-
 						Mapping.of(
 							pathogenTest::setFourFoldIncreaseAntibodyTiter,
 							pathogenTest.isFourFoldIncreaseAntibodyTiter(),
@@ -1078,9 +1077,13 @@ public final class ExternalMessageMapper {
 							pathogenTest::setPerformedByReferenceLaboratory,
 							pathogenTest.getPerformedByReferenceLaboratory(),
 							sourceTestReport.getPerformedByReferenceLaboratory(),
-							PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY))
-
-				));
+							PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY),
+						Mapping.of(pathogenTest::setBiotype, pathogenTest.getBiotype(), sourceTestReport.getBiotype(), PathogenTestDto.BIOTYPE),
+						Mapping.of(
+							pathogenTest::setVirulenceGenesDetected,
+							pathogenTest.getVirulenceGenesDetected(),
+							sourceTestReport.getVirulenceGenesDetected(),
+							PathogenTestDto.VIRULENCE_GENES_DETECTED))));
 		}
 
 		changedFields.addAll(
