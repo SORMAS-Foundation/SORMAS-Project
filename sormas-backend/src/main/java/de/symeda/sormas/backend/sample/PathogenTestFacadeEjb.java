@@ -303,6 +303,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			target.setSerotype(source.getSerotype());
 		}
 		target.setSerotypeText(source.getSerotypeText());
+		target.setBiotype(source.getBiotype());
+		target.setWgsPerformed(source.getWgsPerformed());
+		target.setWgsClusterId(source.getWgsClusterId());
+		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
 		target.setCqValue(source.getCqValue());
 		target.setCtValueE(source.getCtValueE());
 		target.setCtValueN(source.getCtValueN());
@@ -431,6 +435,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	public PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto, boolean checkChangeDate, boolean syncShares) {
 		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
+		boolean isCreate = existingSampleTest == null;
 		FacadeHelper.checkCreateAndEditRights(
 			existingSampleTest,
 			userService,
@@ -452,6 +457,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		PathogenTest pathogenTest = fillOrBuildEntity(dto, existingSampleTest, checkChangeDate);
 		pathogenTestService.ensurePersisted(pathogenTest);
+		ensureAutoPositiveCultureForYersiniosisIsolation(pathogenTest, isCreate, checkChangeDate, syncShares);
 
 		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
 		handleAssociatedEntityChanges(pathogenTest, syncShares);
@@ -631,8 +637,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-		target.setSerotype(Serotype.fromString(source.getSerotype() == null ? null : source.getSerotype().toString()));
+		target.setSerotype(source.getSerotype());
 		target.setSerotypeText(source.getSerotypeText());
+		target.setBiotype(source.getBiotype());
+		target.setWgsPerformed(source.getWgsPerformed());
+		target.setWgsClusterId(source.getWgsClusterId());
+		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
 		target.setCqValue(source.getCqValue());
 		target.setCtValueE(source.getCtValueE());
 		target.setCtValueN(source.getCtValueN());
@@ -728,6 +738,42 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
 		}
 		return target;
+	}
+
+	private void ensureAutoPositiveCultureForYersiniosisIsolation(
+		PathogenTest savedPathogenTest,
+		boolean isCreate,
+		boolean checkChangeDate,
+		boolean syncShares) {
+
+		if (!isCreate
+			|| savedPathogenTest.getSample() == null
+			|| savedPathogenTest.getTestedDisease() != Disease.YERSINIOSIS
+			|| savedPathogenTest.getTestType() != PathogenTestType.ISOLATION
+			|| hasPositiveCultureForSample(savedPathogenTest.getSample())) {
+			return;
+		}
+
+		PathogenTestDto cultureTest = new PathogenTestDto();
+		cultureTest.setUuid(DataHelper.createUuid());
+		cultureTest.setSample(savedPathogenTest.getSample().toReference());
+		cultureTest.setTestedDisease(savedPathogenTest.getTestedDisease());
+		cultureTest.setTestType(PathogenTestType.CULTURE);
+		cultureTest.setTestDateTime(savedPathogenTest.getTestDateTime());
+		cultureTest.setLab(FacilityFacadeEjb.toReferenceDto(savedPathogenTest.getLab()));
+		cultureTest.setLabDetails(savedPathogenTest.getLabDetails());
+		cultureTest.setLabUser(UserFacadeEjb.toReferenceDto(savedPathogenTest.getLabUser()));
+		cultureTest.setTestResult(PathogenTestResultType.POSITIVE);
+
+		savePathogenTest(cultureTest, checkChangeDate, syncShares);
+	}
+
+	private boolean hasPositiveCultureForSample(Sample sample) {
+		return pathogenTestService.getAllBySample(sample)
+			.stream()
+			.anyMatch(
+				test -> (test.getTestType() == PathogenTestType.CULTURE || test.getTestType() == PathogenTestType.BACTERIAL_CULTURE)
+					&& test.getTestResult() == PathogenTestResultType.POSITIVE);
 	}
 
 	private void onPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest) {

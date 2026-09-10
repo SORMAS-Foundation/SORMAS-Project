@@ -41,6 +41,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.disease.PathogenConverter;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
@@ -92,6 +93,10 @@ public class PathogenTest extends DeletableAdo {
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
 	public static final String SEROTYPE_TEXT = "serotypeText";
+	public static final String BIOTYPE = "biotype";
+	public static final String WGS_PERFORMED = "wgsPerformed";
+	public static final String WGS_CLUSTER_ID = "wgsClusterId";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -174,6 +179,10 @@ public class PathogenTest extends DeletableAdo {
 	private Serotype serotype;
 	// serotypeText to capture the custom values and to display the existing string values.
 	private String serotypeText;
+	private Biotype biotype;
+	private YesNoUnknown wgsPerformed;
+	private String wgsClusterId;
+	private Boolean virulenceGenesDetected;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
 	private GenoType genoType;
@@ -425,6 +434,42 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setSerotypeText(String serotypeText) {
 		this.serotypeText = serotypeText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Biotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(Biotype biotype) {
+		this.biotype = biotype;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getWgsPerformed() {
+		return wgsPerformed;
+	}
+
+	public void setWgsPerformed(YesNoUnknown wgsPerformed) {
+		this.wgsPerformed = wgsPerformed;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getWgsClusterId() {
+		return wgsClusterId;
+	}
+
+	public void setWgsClusterId(String wgsClusterId) {
+		this.wgsClusterId = wgsClusterId;
+	}
+
+	@Column
+	public Boolean getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(Boolean virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
 	}
 
 	@Column
