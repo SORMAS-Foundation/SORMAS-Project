@@ -36,6 +36,7 @@ import org.hibernate.annotations.TypeDef;
 
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
+import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
@@ -74,6 +75,8 @@ public class TestReport extends AbstractDomainObject {
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
+	public static final String BIOTYPE = "biotype";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -109,6 +112,8 @@ public class TestReport extends AbstractDomainObject {
 	private String testedDiseaseVariantDetails;
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
+	private Biotype biotype;
+	private Boolean virulenceGenesDetected;
 	private Float cqValue;
 	private Float ctValueE;
 	private Float ctValueN;
@@ -983,6 +988,25 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
 		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	public Biotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(Biotype biotype) {
+		this.biotype = biotype;
+	}
+
+	@Column
+	public Boolean getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(Boolean virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
 	}
 
 }

@@ -79,6 +79,10 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
 	public static final String SEROTYPE_TEXT = "serotypeText";
+	public static final String BIOTYPE = "biotype";
+	public static final String WGS_PERFORMED = "wgsPerformed";
+	public static final String WGS_CLUSTER_ID = "wgsClusterId";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -176,6 +180,19 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Serotype serotype;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String serotypeText;
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	private Biotype biotype;
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	private YesNoUnknown wgsPerformed;
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String wgsClusterId;
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	private Boolean virulenceGenesDetected;
 	private Float cqValue;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Float ctValueE;
@@ -189,7 +206,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Float ctValueOrf1;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Float ctValueRdrpS;
-	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private Date reportDate;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private boolean viaLims;
@@ -1005,6 +1024,38 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSerotypeText(String serotypeText) {
 		this.serotypeText = serotypeText;
+	}
+
+	public Biotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(Biotype biotype) {
+		this.biotype = biotype;
+	}
+
+	public YesNoUnknown getWgsPerformed() {
+		return wgsPerformed;
+	}
+
+	public void setWgsPerformed(YesNoUnknown wgsPerformed) {
+		this.wgsPerformed = wgsPerformed;
+	}
+
+	public String getWgsClusterId() {
+		return wgsClusterId;
+	}
+
+	public void setWgsClusterId(String wgsClusterId) {
+		this.wgsClusterId = wgsClusterId;
+	}
+
+	public Boolean getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(Boolean virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
 	}
 
 	public String getSpecieText() {
