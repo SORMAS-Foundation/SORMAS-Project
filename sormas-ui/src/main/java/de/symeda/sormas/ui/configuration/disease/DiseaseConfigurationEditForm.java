@@ -18,8 +18,16 @@ package de.symeda.sormas.ui.configuration.disease;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.ui.CheckBox;
@@ -31,6 +39,7 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.FormSectionAccordion;
@@ -79,6 +88,8 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	private TextField tfMaxContagiousPeriod;
 
 	private CheckboxSet<ExposureCategory> exposureCategoriesField;
+	private boolean updatingExposureCategoryItems;
+	private boolean settingFormValue;
 
 	public DiseaseConfigurationEditForm() {
 
@@ -130,7 +141,16 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 
 		exposureCategoriesField = addField(generalLayout, DiseaseConfigurationDto.EXPOSURE_CATEGORIES, CheckboxSet.class);
 		exposureCategoriesField.setColumnCount(3);
-		exposureCategoriesField.setItems(Arrays.asList(ExposureCategory.values()), null, null);
+		updateExposureCategoryItems(Collections.emptySet());
+		exposureCategoriesField.addValueChangeListener(e -> {
+			if (updatingExposureCategoryItems || settingFormValue) {
+				return;
+			}
+
+			@SuppressWarnings("unchecked")
+			Set<ExposureCategory> selectedCategories = (Set<ExposureCategory>) e.getProperty().getValue();
+			updateExposureCategoryItems(selectedCategories);
+		});
 
 		ageGroupsComponent = addField(ageGroupLayout, DiseaseConfigurationDto.AGE_GROUPS, DiseaseConfigurationAgeGroupComponent.class);
 		ageGroupsComponent.setCaption(I18nProperties.getPrefixCaption(DiseaseConfigurationDto.I18N_PREFIX, DiseaseConfigurationDto.AGE_GROUPS));
@@ -180,9 +200,59 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 
 	@Override
 	public void setValue(DiseaseConfigurationDto newFieldValue) {
+		settingFormValue = true;
+		try {
+			Set<ExposureCategory> selectedExposureCategories = newFieldValue != null && newFieldValue.getExposureCategories() != null
+				? new LinkedHashSet<>(newFieldValue.getExposureCategories())
+				: Collections.emptySet();
+			List<String> ageGroups =
+				newFieldValue != null && newFieldValue.getAgeGroups() != null ? new ArrayList<>(newFieldValue.getAgeGroups()) : null;
 
-		super.setValue(newFieldValue);
-		ageGroupsComponent.setValue(newFieldValue.getAgeGroups());
+			super.setValue(newFieldValue);
+			updateExposureCategoryItems(selectedExposureCategories);
+			ageGroupsComponent.setValue(ageGroups);
+		} finally {
+			settingFormValue = false;
+		}
+	}
+
+	private void updateExposureCategoryItems(Set<ExposureCategory> selectedCategories) {
+		updatingExposureCategoryItems = true;
+		try {
+			Set<ExposureCategory> selected = selectedCategories != null ? new LinkedHashSet<>(selectedCategories) : Collections.emptySet();
+
+			List<ExposureCategory> items = Arrays.stream(ExposureCategory.values())
+				.filter(category -> !category.isDeprecated() || selected.contains(category))
+				.collect(Collectors.toCollection(ArrayList::new));
+
+			exposureCategoriesField.setItems(
+				items,
+				null,
+				category -> category.isDeprecated() ? I18nProperties.getString(Strings.deprecatedValueRemovalOnly) : null,
+				category -> formatExposureCategoryCaption(category),
+				category -> !category.isDeprecated() || selected.contains(category),
+				true);
+			exposureCategoriesField.setValue(selected.stream().filter(items::contains).collect(Collectors.toCollection(LinkedHashSet::new)));
+		} finally {
+			updatingExposureCategoryItems = false;
+		}
+	}
+
+	private static String formatExposureCategoryCaption(ExposureCategory category) {
+		String caption = escapeHtml(String.valueOf(category));
+		if (!category.isDeprecated()) {
+			return caption;
+		}
+
+		return "<span style=\"text-decoration: line-through;\">" + caption + "</span>";
+	}
+
+	private static String escapeHtml(String value) {
+		if (StringUtils.isEmpty(value)) {
+			return "";
+		}
+
+		return StringEscapeUtils.escapeHtml4(value);
 	}
 
 	@Override
