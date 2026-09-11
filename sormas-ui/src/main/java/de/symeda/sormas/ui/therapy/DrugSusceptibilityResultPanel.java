@@ -144,8 +144,7 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 							}
 							String drugName = method.getName().substring(3, method.getName().length() - "Susceptibility".length());
 							// verify the field is visible or not.
-							if (!applicableFieldIds.isEmpty()
-								&& !applicableFieldIds.stream().anyMatch(e -> e != null && e.equalsIgnoreCase(drugName + "Susceptibility"))) {
+							if (!applicableFieldIds.stream().anyMatch(e -> e != null && e.equalsIgnoreCase(drugName + "Susceptibility"))) {
 								return;
 							}
 							String fieldId = drugName.toUpperCase() + "_SUSCEPTIBILITY";
