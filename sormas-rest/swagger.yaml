@@ -21599,6 +21599,7 @@ components:
           - VACCINATION_REGISTRY
           - VACCINATION_CARD
           - ORAL_COMMUNICATION
+          - HEALTH_SERVICES
           - NO_EVIDENCE
           - UNKNOWN
         vaccinations:
@@ -23344,6 +23345,21 @@ components:
           - MUMPV_K
           - MUMPV_L
           - MUMPV_N
+          - GENOTYPE_1A
+          - GENOTYPE_1B
+          - GENOTYPE_1C
+          - GENOTYPE_1D
+          - GENOTYPE_1E
+          - GENOTYPE_1F
+          - GENOTYPE_1G
+          - GENOTYPE_1H
+          - GENOTYPE_1I
+          - GENOTYPE_1J
+          - GENOTYPE_2A
+          - GENOTYPE_2B
+          - GENOTYPE_2C
+          - GENOTYPE_NA
+          - GENOTYPE_UNK
           - OTHER
           - UNKNOWN
         genoTypeText:
@@ -27311,6 +27327,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        bronchitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         buboesGroinArmpitNeck:
           type: string
           enum:
@@ -27851,6 +27873,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        greggsTriad:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         guillainBarreSyndrome:
           type: string
           enum:
@@ -27894,6 +27922,12 @@ components:
           - "NO"
           - UNKNOWN
         hemorrhagicSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        hepatitis:
           type: string
           enum:
           - "YES"
@@ -28094,6 +28128,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        lowBirthWeight:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         lowGradeFever:
           type: string
           enum:
@@ -28119,6 +28159,18 @@ components:
           - "NO"
           - UNKNOWN
         lymphadenopathyInguinal:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        lymphadenopathyRetroauricular:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        lymphadenopathySuboccipital:
           type: string
           enum:
           - "YES"
@@ -28231,6 +28283,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        myocarditis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         nausea:
           type: string
           enum:
@@ -28250,6 +28308,12 @@ components:
           - "NO"
           - UNKNOWN
         nephroticSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        neurologicalComplications:
           type: string
           enum:
           - "YES"
@@ -28491,6 +28555,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        pericarditis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         persistentVomiting:
           type: string
           enum:
@@ -28622,6 +28692,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        rubellaArthritis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         runnyNose:
           type: string
           enum:
@@ -28721,6 +28797,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        stillbornInfant:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         stomachBleeding:
           type: string
           enum:
@@ -28806,6 +28888,18 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        thrombocytopenia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        thrombocytopenicPurpura:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         timeOffWorkDays:
           type: number
           format: float
@@ -28822,6 +28916,12 @@ components:
           - "NO"
           - UNKNOWN
         unilateralCataracts:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        unknownClinicalPresentation:
           type: string
           enum:
           - "YES"
@@ -29534,6 +29634,21 @@ components:
           - MUMPV_K
           - MUMPV_L
           - MUMPV_N
+          - GENOTYPE_1A
+          - GENOTYPE_1B
+          - GENOTYPE_1C
+          - GENOTYPE_1D
+          - GENOTYPE_1E
+          - GENOTYPE_1F
+          - GENOTYPE_1G
+          - GENOTYPE_1H
+          - GENOTYPE_1I
+          - GENOTYPE_1J
+          - GENOTYPE_2A
+          - GENOTYPE_2B
+          - GENOTYPE_2C
+          - GENOTYPE_NA
+          - GENOTYPE_UNK
           - OTHER
           - UNKNOWN
         isoniazidMic:
@@ -31090,6 +31205,7 @@ components:
           - VACCINATION_REGISTRY
           - VACCINATION_CARD
           - ORAL_COMMUNICATION
+          - HEALTH_SERVICES
           - NO_EVIDENCE
           - UNKNOWN
         vaccineAtcCode:
