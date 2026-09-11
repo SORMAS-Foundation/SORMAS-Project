@@ -35,7 +35,10 @@ import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.STREPTOMYCIN_SU
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
@@ -63,6 +66,7 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 	private static final long serialVersionUID = 8458057586239793721L;
 
 	private static final String FORM_HEADING_LOC = "formHeadingLoc";
+	private static final String CONTENT_LOC = "content";
 
 	private PathogenTestDto pathogenTestDto;
 	private VerticalLayout verticalLayout;
@@ -89,11 +93,11 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 	public DrugSusceptibilityResultPanel(PathogenTestDto pathogenTestDto) {
 		setWidth(100, Sizeable.Unit.PERCENTAGE);
 		this.addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
-		String templateHtml = "<div location=\"content\"></div>";
+		String templateHtml = "<div location=\"" + FORM_HEADING_LOC + "\"></div>" + "<div location=\"" + CONTENT_LOC + "\"></div>";
 		setTemplateContents(templateHtml);
 		verticalLayout = new VerticalLayout();
 		verticalLayout.setWidth(100, Unit.PERCENTAGE);
-		verticalLayout.setSpacing(true);
+		verticalLayout.setSpacing(false);
 		verticalLayout.setMargin(false);
 		this.pathogenTestDto = pathogenTestDto;
 		addFields();
@@ -111,10 +115,26 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 
 			if (pathogenTestDto.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 				DrugSusceptibilityDto drugSusceptibilityDto = pathogenTestDto.getDrugSusceptibility();
+				Disease testedDisease = pathogenTestDto.getTestedDisease();
+				// Get fields applicable to current disease and test type beforehand
+				List<String> applicableFieldIds = (testedDisease != null)
+					? AnnotationFieldHelper
+						.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, testedDisease, pathogenTestDto.getTestType())
+					: Collections.emptyList();
 
 				Arrays.stream(drugSusceptibilityDto.getClass().getMethods())
 					.filter(method -> method.getName().endsWith("Susceptibility"))
 					.filter(method -> method.getParameterCount() == 0)
+					.sorted(Comparator.comparingInt(method -> {
+						// sort the drugs based on componentLocationsList
+						String drugName = method.getName().substring(3, method.getName().length() - "Susceptibility".length());
+						String fieldId = drugName.toUpperCase() + "SUSCEPTIBILITY";
+						int index = IntStream.range(0, componentLocationsList.size())
+							.filter(i -> componentLocationsList.get(i).equalsIgnoreCase(fieldId))
+							.findFirst()
+							.orElse(-1);
+						return index != -1 ? index : Integer.MAX_VALUE;
+					}))
 					.forEach(method -> {
 						try {
 							DrugSusceptibilityType type = (DrugSusceptibilityType) method.invoke(drugSusceptibilityDto);
@@ -123,6 +143,11 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 								return;
 							}
 							String drugName = method.getName().substring(3, method.getName().length() - "Susceptibility".length());
+							// verify the field is visible or not.
+							if (!applicableFieldIds.isEmpty()
+								&& !applicableFieldIds.stream().anyMatch(e -> e != null && e.equalsIgnoreCase(drugName + "Susceptibility"))) {
+								return;
+							}
 							String fieldId = drugName.toUpperCase() + "_SUSCEPTIBILITY";
 							Drug drug = Drug.valueOf(drugName.toUpperCase());
 							addResistanceResultField(fieldId, type, I18nProperties.getEnumCaption(drug));
@@ -130,7 +155,6 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 							throw new RuntimeException(e);
 						}
 					});
-				updateFieldsVisibility(pathogenTestDto);
 			}
 		}
 	}
