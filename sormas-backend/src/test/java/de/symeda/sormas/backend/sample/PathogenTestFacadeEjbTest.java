@@ -188,7 +188,34 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testYersiniosisIsolationAutoCreatesSinglePositiveCulture() {
+	public void testSavePathogenTestDoesNotAutoCreateYersiniosisCulture() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.YERSINIOSIS,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		PathogenTestDto isolation = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
+		isolation.setTestType(PathogenTestType.ISOLATION);
+		getPathogenTestFacade().savePathogenTest(isolation);
+
+		List<PathogenTestDto> testsAfterIsolation = getPathogenTestFacade().getAllBySample(sample.toReference());
+		long cultureCount = testsAfterIsolation.stream()
+			.filter(t -> t.getTestType() == PathogenTestType.CULTURE && t.getTestResult() == PathogenTestResultType.POSITIVE)
+			.count();
+		assertEquals(0L, cultureCount);
+	}
+
+	@Test
+	public void testSavePathogenTestRepeatedIsolationDoesNotCreateYersiniosisCulture() {
 
 		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
@@ -211,7 +238,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		long cultureCountAfterFirstIsolation = testsAfterFirstIsolation.stream()
 			.filter(t -> t.getTestType() == PathogenTestType.CULTURE && t.getTestResult() == PathogenTestResultType.POSITIVE)
 			.count();
-		assertEquals(1L, cultureCountAfterFirstIsolation);
+		assertEquals(0L, cultureCountAfterFirstIsolation);
 
 		PathogenTestDto secondIsolation = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
 		secondIsolation.setTestType(PathogenTestType.ISOLATION);
@@ -221,7 +248,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		long cultureCountAfterSecondIsolation = testsAfterSecondIsolation.stream()
 			.filter(t -> t.getTestType() == PathogenTestType.CULTURE && t.getTestResult() == PathogenTestResultType.POSITIVE)
 			.count();
-		assertEquals(1L, cultureCountAfterSecondIsolation);
+		assertEquals(0L, cultureCountAfterSecondIsolation);
 	}
 
 	@Test

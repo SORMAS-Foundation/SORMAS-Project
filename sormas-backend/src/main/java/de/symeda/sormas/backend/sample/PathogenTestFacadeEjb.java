@@ -28,7 +28,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -436,7 +435,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	public PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto, boolean checkChangeDate, boolean syncShares) {
 		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
-		boolean isCreate = existingSampleTest == null;
 		FacadeHelper.checkCreateAndEditRights(
 			existingSampleTest,
 			userService,
@@ -458,7 +456,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		PathogenTest pathogenTest = fillOrBuildEntity(dto, existingSampleTest, checkChangeDate);
 		pathogenTestService.ensurePersisted(pathogenTest);
-		ensureAutoPositiveCultureForYersiniosisIsolation(pathogenTest, isCreate, checkChangeDate, syncShares);
 
 		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
 		handleAssociatedEntityChanges(pathogenTest, syncShares);
@@ -739,55 +736,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
 		}
 		return target;
-	}
-
-	private void ensureAutoPositiveCultureForYersiniosisIsolation(
-		PathogenTest savedPathogenTest,
-		boolean isCreate,
-		boolean checkChangeDate,
-		boolean syncShares) {
-
-		if (!isCreate
-			|| savedPathogenTest.getSample() == null
-			|| savedPathogenTest.getTestedDisease() != Disease.YERSINIOSIS
-			|| savedPathogenTest.getTestType() != PathogenTestType.ISOLATION) {
-			return;
-		}
-
-		Sample lockedSample = lockSampleForPathogenTestCreation(savedPathogenTest.getSample());
-		if (lockedSample == null || hasPositiveCultureForSample(lockedSample)) {
-			return;
-		}
-
-		PathogenTestDto cultureTest = new PathogenTestDto();
-		cultureTest.setUuid(DataHelper.createUuid());
-		cultureTest.setSample(lockedSample.toReference());
-		cultureTest.setTestedDisease(savedPathogenTest.getTestedDisease());
-		cultureTest.setTestType(PathogenTestType.CULTURE);
-		cultureTest.setTestDateTime(savedPathogenTest.getTestDateTime());
-		cultureTest.setLab(FacilityFacadeEjb.toReferenceDto(savedPathogenTest.getLab()));
-		cultureTest.setLabDetails(savedPathogenTest.getLabDetails());
-		cultureTest.setLabUser(UserFacadeEjb.toReferenceDto(savedPathogenTest.getLabUser()));
-		cultureTest.setTestResult(PathogenTestResultType.POSITIVE);
-
-		savePathogenTest(cultureTest, checkChangeDate, syncShares);
-	}
-
-	private Sample lockSampleForPathogenTestCreation(Sample sample) {
-		if (sample == null || sample.getId() == null) {
-			return sample;
-		}
-
-		Sample lockedSample = em.find(Sample.class, sample.getId(), LockModeType.PESSIMISTIC_WRITE);
-		return lockedSample != null ? lockedSample : sample;
-	}
-
-	private boolean hasPositiveCultureForSample(Sample sample) {
-		return pathogenTestService.getAllBySample(sample)
-			.stream()
-			.anyMatch(
-				test -> (test.getTestType() == PathogenTestType.CULTURE || test.getTestType() == PathogenTestType.BACTERIAL_CULTURE)
-					&& test.getTestResult() == PathogenTestResultType.POSITIVE);
 	}
 
 	private void onPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest) {
