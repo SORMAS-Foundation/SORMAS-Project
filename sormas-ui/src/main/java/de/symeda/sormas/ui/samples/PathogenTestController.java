@@ -336,13 +336,12 @@ public class PathogenTestController {
 	public void savePathogenTests(List<PathogenTestDto> pathogenTests, SampleReferenceDto sampleRef, boolean suppressNavigateToCase) {
 
 		final SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
-		final List<PathogenTestDto> pathogenTestsToSave = addAutomaticallyCreatedPathogenTests(pathogenTests, sampleRef);
 
 		final CaseReferenceDto associatedCase = sample.getAssociatedCase();
 		final ContactReferenceDto associatedContact = sample.getAssociatedContact();
 		final EventParticipantReferenceDto associatedEventParticipant = sample.getAssociatedEventParticipant();
 
-		pathogenTestsToSave.forEach(p -> {
+		pathogenTests.forEach(p -> {
 			p.setSample(sampleRef);
 			boolean luxTB = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 				&& Disease.TUBERCULOSIS == p.getTestedDisease();
@@ -364,50 +363,6 @@ public class PathogenTestController {
 		Notification.show(
 			I18nProperties.getString(pathogenTests.size() == 1 ? Strings.messagePathogenTestSavedShort : Strings.messagePathogenTestsSavedShort),
 			TRAY_NOTIFICATION);
-	}
-
-	private List<PathogenTestDto> addAutomaticallyCreatedPathogenTests(List<PathogenTestDto> pathogenTests, SampleReferenceDto sampleRef) {
-		// For Yersiniosis positive ISOLATION test we need to ensure the sample has a positive CULTURE test
-		PathogenTestDto yersiniosisIsolation = pathogenTests.stream().filter(this::isYersiniosisIsolationTest).findFirst().orElse(null);
-		if (yersiniosisIsolation != null) {
-			// we only check for yersiniosis positive CULTURE test
-			PathogenTestDto yersiniosisCultureTest = pathogenTests.stream().filter(this::isPositiveYersiniosisCultureTest).findFirst().orElse(null);
-			if (yersiniosisCultureTest == null) {
-				pathogenTests.add(buildAutomaticPositiveYersiniosisCultureTest(yersiniosisIsolation, sampleRef));
-			}
-		}
-		return pathogenTests;
-	}
-
-	private PathogenTestDto buildAutomaticPositiveYersiniosisCultureTest(PathogenTestDto isolationTest, SampleReferenceDto sampleRef) {
-		PathogenTestDto cultureTest = new PathogenTestDto();
-		cultureTest.setUuid(DataHelper.createUuid());
-		cultureTest.setSample(sampleRef);
-		cultureTest.setTestedDisease(Disease.YERSINIOSIS);
-		cultureTest.setTestType(PathogenTestType.CULTURE);
-		cultureTest.setTestDateTime(isolationTest.getTestDateTime());
-		cultureTest.setLab(isolationTest.getLab());
-		cultureTest.setLabDetails(isolationTest.getLabDetails());
-		cultureTest.setLabUser(isolationTest.getLabUser());
-		cultureTest.setTestResult(PathogenTestResultType.POSITIVE);
-		return cultureTest;
-	}
-
-	private boolean isYersiniosisIsolationTest(PathogenTestDto pathogenTest) {
-		return pathogenTest.getTestedDisease() == Disease.YERSINIOSIS && pathogenTest.getTestType() == PathogenTestType.ISOLATION;
-	}
-
-	private boolean isYersiniosisCultureTest(PathogenTestDto pathogenTest) {
-		if (pathogenTest.getTestedDisease() != Disease.YERSINIOSIS) {
-			return false;
-		}
-
-		PathogenTestType testType = pathogenTest.getTestType();
-		return testType == PathogenTestType.CULTURE || testType == PathogenTestType.BACTERIAL_CULTURE;
-	}
-
-	private boolean isPositiveYersiniosisCultureTest(PathogenTestDto pathogenTest) {
-		return isYersiniosisCultureTest(pathogenTest) && pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE;
 	}
 
 	/**
