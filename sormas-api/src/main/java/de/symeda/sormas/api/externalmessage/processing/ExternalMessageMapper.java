@@ -1068,7 +1068,6 @@ public final class ExternalMessageMapper {
 							sourceTestReport.getErythromycinSusceptibility(),
 							PathogenTestDto.DRUG_SUSCEPTIBILITY,
 							DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY),
-
 						Mapping.of(
 							pathogenTest::setFourFoldIncreaseAntibodyTiter,
 							pathogenTest.isFourFoldIncreaseAntibodyTiter(),
@@ -1078,9 +1077,13 @@ public final class ExternalMessageMapper {
 							pathogenTest::setPerformedByReferenceLaboratory,
 							pathogenTest.getPerformedByReferenceLaboratory(),
 							sourceTestReport.getPerformedByReferenceLaboratory(),
-							PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY))
-
-				));
+							PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY),
+						Mapping.of(pathogenTest::setBiotype, pathogenTest.getBiotype(), sourceTestReport.getBiotype(), PathogenTestDto.BIOTYPE),
+						Mapping.of(
+							pathogenTest::setVirulenceGenesDetected,
+							pathogenTest.getVirulenceGenesDetected(),
+							sourceTestReport.getVirulenceGenesDetected(),
+							PathogenTestDto.VIRULENCE_GENES_DETECTED))));
 
 			// RUBE-9: "NOTEST" means not performed -> NOT_DONE, not NOT_APPLICABLE.
 			String rawResultCode = sourceTestReport.getTestResultText();
@@ -1093,11 +1096,8 @@ public final class ExternalMessageMapper {
 								pathogenTest.getTestResult(),
 								PathogenTestResultType.NOT_DONE,
 								PathogenTestDto.TEST_RESULT),
-							Mapping.of(
-								pathogenTest::setTestResultText,
-								pathogenTest.getTestResultText(),
-								"NOTEST",
-								PathogenTestDto.TEST_RESULT_TEXT))));
+							Mapping
+								.of(pathogenTest::setTestResultText, pathogenTest.getTestResultText(), "NOTEST", PathogenTestDto.TEST_RESULT_TEXT))));
 			}
 		}
 

@@ -256,7 +256,8 @@ public enum PathogenSpecie {
 	YERSINIA_SPP,
 	@Diseases({
 		Disease.MALARIA,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.LATERAL_FLOW_ASSAY,
@@ -280,7 +281,8 @@ public enum PathogenSpecie {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.MALARIA,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING,
 		PathogenTestType.THIN_BLOOD_SMEAR,
