@@ -9,35 +9,42 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 
-public class PathogenTestTypeGonococcalInfectionTest {
+public class PathogenTestTypeGonococcalInfectionTest extends AbstractPathogenTest {
 
-	private final DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.GONOCOCCAL_INFECTION);
-
-	@Test
-	public void requiredTestTypesAreSelectable() {
-		for (PathogenTestType type : new PathogenTestType[] {
-			PathogenTestType.NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST,
-			PathogenTestType.NAAT,
-			PathogenTestType.GENOTYPING,
-			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
-			PathogenTestType.PENICILLINASE_ACTIVITY }) {
-			assertTrue(checker.isVisible(PathogenTestType.class, type.name()), type + " must be visible for Gonococcal infection");
-			assertTrue(PathogenTestType.isSelectableForNewTests(type), type + " must be selectable for new tests");
-		}
-	}
+	public static final PathogenTestType[] ALLOWED_PATHOGEN_TYPES = new PathogenTestType[] {
+		PathogenTestType.CULTURE,
+		PathogenTestType.ISOLATION,
+		PathogenTestType.MICROSCOPY,
+		PathogenTestType.NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST,
+		PathogenTestType.NAAT,
+		PathogenTestType.GENOTYPING,
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
+		PathogenTestType.PENICILLINASE_ACTIVITY,
+		PathogenTestType.OTHER };
 
 	@Test
 	public void resultMetadataMatchesTheGonococcalForms() {
 		assertThat(
 			PathogenTestType.getResultValueTypes(PathogenTestType.NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST),
 			containsInAnyOrder(ResultValueType.QUALITATIVE));
-		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.NAAT), containsInAnyOrder(ResultValueType.QUALITATIVE, ResultValueType.NUMERIC));
+		assertThat(
+			PathogenTestType.getResultValueTypes(PathogenTestType.NAAT),
+			containsInAnyOrder(ResultValueType.QUALITATIVE, ResultValueType.NUMERIC));
 		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY), is(empty()));
 		assertThat(
 			PathogenTestType.getCategory(PathogenTestType.PENICILLINASE_ACTIVITY),
 			is(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING));
 		assertTrue(PathogenTestType.cqInputApplies(Disease.GONOCOCCAL_INFECTION, PathogenTestType.NAAT));
+	}
+
+	@Override
+	protected PathogenTestType[] getAllowedPathogenTests() {
+		return ALLOWED_PATHOGEN_TYPES;
+	}
+
+	@Override
+	protected Disease getDisease() {
+		return Disease.GONOCOCCAL_INFECTION;
 	}
 }
