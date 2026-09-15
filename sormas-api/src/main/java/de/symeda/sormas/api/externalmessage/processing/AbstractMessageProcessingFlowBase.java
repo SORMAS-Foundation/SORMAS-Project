@@ -298,10 +298,28 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
 		FlowThen<ExternalMessageProcessingResult> caseFlow = flow.then(previousResult -> {
 			CompletionStage<Boolean> mismatchInformationStage = CompletableFuture.completedFuture(true);
 
-			// Check and inform about symptoms mismatch
-			if (hasCaseSymptomsMismatch(caze, getExternalMessage())) {
-				mismatchInformationStage = confirmCaseSymptomsMismatch(caze, getExternalMessage());
+			// Check and inform about case data mismatch
+			if (hasCaseDataMismatch(caze, getExternalMessage())) {
+				mismatchInformationStage = confirmCaseDataMismatch(caze, getExternalMessage());
 			}
+
+			// Chain health conditions mismatch check
+			mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
+				if (Boolean.TRUE.equals(confirmed) && hasCaseHealthConditionsMismatch(caze, getExternalMessage())) {
+					return confirmCaseHealthConditionsMismatch(caze, getExternalMessage());
+				} else {
+					return CompletableFuture.completedFuture(confirmed);
+				}
+			});
+
+			// Chain symptoms mismatch check
+			mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
+				if (Boolean.TRUE.equals(confirmed) && hasCaseSymptomsMismatch(caze, getExternalMessage())) {
+					return confirmCaseSymptomsMismatch(caze, getExternalMessage());
+				} else {
+					return CompletableFuture.completedFuture(confirmed);
+				}
+			});
 
 			// Chain hospitalization mismatch check 
 			mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
@@ -957,6 +975,22 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
 		HandlerCallback<SampleAndPathogenTests> callback);
 
 	public abstract CompletionStage<Boolean> handleMultipleSampleConfirmation();
+
+	protected boolean hasCaseDataMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return false;
+	}
+
+	protected CompletionStage<Boolean> confirmCaseDataMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return CompletableFuture.completedFuture(true);
+	}
+
+	protected boolean hasCaseHealthConditionsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return false;
+	}
+
+	protected CompletionStage<Boolean> confirmCaseHealthConditionsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return CompletableFuture.completedFuture(true);
+	}
 
 	protected boolean hasCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		return false;

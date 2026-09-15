@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -23,6 +24,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -54,11 +56,83 @@ import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
+	void prepareSelectedCaseSyncsAndSavesUntouchedCaseData() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getCaseClassification()).thenReturn(CaseClassification.CONFIRMED);
+
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		when(processingFacade.saveCase(any(CaseDataDto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertEquals(CaseClassification.CONFIRMED, result.getCaseClassification());
+		verify(processingFacade).saveCase(caze);
+	}
+
+	@Test
+	void prepareSelectedCaseDoesNotSyncTouchedCaseData() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getCaseClassification()).thenReturn(CaseClassification.CONFIRMED);
+
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+		caze.setCaseClassification(CaseClassification.SUSPECT);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertEquals(CaseClassification.SUSPECT, result.getCaseClassification());
+		verify(processingFacade, never()).saveCase(any(CaseDataDto.class));
+	}
+
+	@Test
+	void prepareSelectedCaseSyncsAndSavesUntouchedTuberculosisHealthConditions() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getDisease()).thenReturn(Disease.TUBERCULOSIS);
+		when(externalMessage.getTuberculosis()).thenReturn(YesNoUnknown.YES);
+
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		when(processingFacade.saveCase(any(CaseDataDto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.TUBERCULOSIS);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertEquals(YesNoUnknown.YES, result.getHealthConditions().getTuberculosis());
+		verify(processingFacade).saveCase(caze);
+	}
+
+	@Test
+	void prepareSelectedCaseDoesNotSyncTouchedTuberculosisHealthConditions() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getDisease()).thenReturn(Disease.TUBERCULOSIS);
+		when(externalMessage.getTuberculosis()).thenReturn(YesNoUnknown.YES);
+
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.TUBERCULOSIS);
+		caze.getHealthConditions().setTuberculosis(YesNoUnknown.NO);
+
+		CaseDataDto result = flow.exposePrepareSelectedCase(caze, externalMessage);
+
+		assertSame(caze, result);
+		assertEquals(YesNoUnknown.NO, result.getHealthConditions().getTuberculosis());
+		verify(processingFacade, never()).saveCase(any(CaseDataDto.class));
+	}
+
+	@Test
 	void prepareSelectedCaseSyncsAndSavesUntouchedSymptoms() {
 		SymptomsDto externalSymptoms = SymptomsDto.build();
 		externalSymptoms.setFever(SymptomState.YES);
 
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getCaseSymptoms()).thenReturn(externalSymptoms);
 
 		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
@@ -79,7 +153,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		SymptomsDto externalSymptoms = SymptomsDto.build();
 		externalSymptoms.setFever(SymptomState.YES);
 
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getCaseSymptoms()).thenReturn(externalSymptoms);
 
 		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
@@ -96,7 +170,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void prepareSelectedCaseSyncsAndSavesUntouchedHospitalizationActivitiesAndExposures() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getHospitalizationFacilityName()).thenReturn("General Hospital");
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
 		when(externalMessage.getExposures()).thenReturn("[{}]");
@@ -118,7 +192,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void prepareSelectedCaseDoesNotSaveWhenHospitalizationActivitiesAndExposuresAreTouched() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getHospitalizationFacilityName()).thenReturn("General Hospital");
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
 		when(externalMessage.getExposures()).thenReturn("[{}]");
@@ -141,7 +215,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void prepareSelectedCaseSyncsExposuresWhenOnlyActivitiesFieldsAreTouched() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getExposures()).thenReturn("[{}]");
 
 		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
@@ -161,7 +235,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void prepareSelectedCaseSyncsActivitiesWhenOnlyExposureFieldsAreTouched() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
 
 		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
@@ -181,7 +255,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void prepareSelectedCaseEvaluatesExposureAndActivitySyncBeforeEpiDataMutation() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
 		when(externalMessage.getExposures()).thenReturn("[{}]");
 
@@ -205,7 +279,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		SymptomsDto externalSymptoms = SymptomsDto.build();
 		externalSymptoms.setFever(SymptomState.YES);
 
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getCaseSymptoms()).thenReturn(externalSymptoms);
 
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
@@ -218,8 +292,37 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 	}
 
 	@Test
+	void hasCaseDataMismatchDependsOnUserDefinedCaseValues() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getCaseClassification()).thenReturn(CaseClassification.CONFIRMED);
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+
+		assertFalse(flow.exposeHasCaseDataMismatch(caze, externalMessage));
+
+		caze.setCaseClassification(CaseClassification.SUSPECT);
+		assertTrue(flow.exposeHasCaseDataMismatch(caze, externalMessage));
+	}
+
+	@Test
+	void hasCaseHealthConditionsMismatchDependsOnUserDefinedCaseValues() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getDisease()).thenReturn(Disease.TUBERCULOSIS);
+		when(externalMessage.getTuberculosis()).thenReturn(YesNoUnknown.YES);
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.TUBERCULOSIS);
+
+		assertFalse(flow.exposeHasCaseHealthConditionsMismatch(caze, externalMessage));
+
+		caze.getHealthConditions().setTuberculosis(YesNoUnknown.NO);
+		assertTrue(flow.exposeHasCaseHealthConditionsMismatch(caze, externalMessage));
+	}
+
+	@Test
 	void hasCaseHospitalizationMismatchDependsOnUserDefinedCaseValues() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getHospitalizationAdmissionDate()).thenReturn(new Date());
 		when(externalMessage.getHospitalizationFacilityName()).thenReturn("General Hospital");
 
@@ -233,8 +336,32 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 	}
 
 	@Test
+	void hasCaseHospitalizationMismatchIsTrueWhenOnlyAdmittedFlagProvidedAndCaseTouched() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getAdmittedToHealthFacility()).thenReturn(YesNoUnknown.YES);
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+		caze.getHospitalization().setAdmittedToHealthFacility(YesNoUnknown.NO);
+
+		assertTrue(flow.exposeHasCaseHospitalizationMismatch(caze, externalMessage));
+	}
+
+	@Test
+	void hasCaseHospitalizationMismatchIsTrueWhenOnlyAdmissionDateProvidedAndCaseTouched() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getHospitalizationAdmissionDate()).thenReturn(new Date());
+
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+		caze.getHospitalization().setAdmittedToHealthFacility(YesNoUnknown.NO);
+
+		assertTrue(flow.exposeHasCaseHospitalizationMismatch(caze, externalMessage));
+	}
+
+	@Test
 	void hasCaseActivitiesAsCaseMismatchDependsOnUserDefinedCaseValues() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
 
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
@@ -253,7 +380,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		"{}",
 		"null" })
 	void hasExternalExposureDataIsFalseForBlankOrEmptyJson(String exposuresJson) {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getExposures()).thenReturn(exposuresJson);
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
 		assertFalse(flow.exposeHasExternalExposureData(externalMessage));
@@ -261,7 +388,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void hasExternalExposureDataIsTrueForNonEmptyJsonArray() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getExposures()).thenReturn("[{}]");
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
 		assertTrue(flow.exposeHasExternalExposureData(externalMessage));
@@ -269,7 +396,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void hasExternalExposureDataIsTrueWhenModeOfTransmissionSetEvenIfExposuresEmpty() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getExposures()).thenReturn("[]");
 		when(externalMessage.getModeOfTransmission()).thenReturn(ModeOfTransmission.OTHER);
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
@@ -277,8 +404,17 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 	}
 
 	@Test
+	void hasExternalExposureDataIsTrueWhenModeOfTransmissionTypeSetEvenIfExposuresEmpty() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getExposures()).thenReturn("[]");
+		when(externalMessage.getModeOfTransmissionType()).thenReturn("airborne");
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
+		assertTrue(flow.exposeHasExternalExposureData(externalMessage));
+	}
+
+	@Test
 	void hasExternalActivitiesAsCaseDataIsFalseForEmptyJsonArray() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[]");
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
 		assertFalse(flow.exposeHasExternalActivitiesAsCaseData(externalMessage));
@@ -286,7 +422,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void hasExternalActivitiesAsCaseDataIsTrueForNonEmptyJsonArray() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, mock(ExternalMessageProcessingFacade.class));
 		assertTrue(flow.exposeHasExternalActivitiesAsCaseData(externalMessage));
@@ -294,7 +430,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void prepareSelectedCaseDoesNotSyncExposuresForEmptyJsonArray() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getExposures()).thenReturn("[]");
 		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
@@ -309,7 +445,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void prepareSelectedCaseDoesNotSyncActivitiesForEmptyJsonArray() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[]");
 		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
 		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
@@ -324,7 +460,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	@Test
 	void postBuildActivitiesAsCaseDeserializesActivitiesIntoCase() {
-		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		ExternalMessageDto externalMessage = mockExternalMessage();
 		when(externalMessage.getActivitiesAsCase()).thenReturn("[{}]");
 		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
 		when(processingFacade.saveCase(any(CaseDataDto.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -337,6 +473,25 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		assertNotNull(activities);
 		assertEquals(1, activities.size());
 		assertEquals(ActivityAsCaseType.UNKNOWN, activities.get(0).getActivityAsCaseType());
+	}
+
+	@Test
+	void prepareSelectedCaseThrowsWhenExposureJsonIsInvalid() {
+		ExternalMessageDto externalMessage = mockExternalMessage();
+		when(externalMessage.getExposures()).thenReturn("[");
+
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		TestDoctorDeclarationFlow flow = new TestDoctorDeclarationFlow(externalMessage, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.CORONAVIRUS);
+
+		assertThrows(IllegalStateException.class, () -> flow.exposePrepareSelectedCase(caze, externalMessage));
+	}
+
+	private ExternalMessageDto mockExternalMessage() {
+		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
+		when(externalMessage.getTreatmentStarted()).thenReturn(null);
+		when(externalMessage.getTreatmentNotApplicable()).thenReturn(null);
+		return externalMessage;
 	}
 
 	private static class TestDoctorDeclarationFlow extends AbstractDoctorDeclarationMessageProcessingFlow {
@@ -356,6 +511,14 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 		private boolean exposeHasCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
 			return hasCaseSymptomsMismatch(caze, externalMessage);
+		}
+
+		private boolean exposeHasCaseDataMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+			return hasCaseDataMismatch(caze, externalMessage);
+		}
+
+		private boolean exposeHasCaseHealthConditionsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+			return hasCaseHealthConditionsMismatch(caze, externalMessage);
 		}
 
 		private boolean exposeHasCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
@@ -408,6 +571,7 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 		@Override
 		protected void postBuildExposure(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
 			postBuildExposureCalled = true;
+			super.postBuildExposure(caseDto, externalMessageDto);
 		}
 
 		@Override
