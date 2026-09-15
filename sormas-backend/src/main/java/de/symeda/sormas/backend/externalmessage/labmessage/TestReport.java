@@ -908,7 +908,7 @@ public class TestReport extends AbstractDomainObject {
 		this.erythromycinSusceptibility = erythromycinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCefiximeMic() {
 		return cefiximeMic;
 	}
@@ -935,7 +935,7 @@ public class TestReport extends AbstractDomainObject {
 		cefiximeMethod = value;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTetracyclineMic() {
 		return tetracyclineMic;
 	}
@@ -962,7 +962,7 @@ public class TestReport extends AbstractDomainObject {
 		tetracyclineMethod = value;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getGentamicinMic() {
 		return gentamicinMic;
 	}
@@ -989,7 +989,7 @@ public class TestReport extends AbstractDomainObject {
 		gentamicinMethod = value;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSpectinomycinMic() {
 		return spectinomycinMic;
 	}
@@ -1061,6 +1061,7 @@ public class TestReport extends AbstractDomainObject {
 		this.seroGroupSpecification = seroGroupSpecification;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSeroGroupSpecificationText() {
 		return seroGroupSpecificationText;
 	}

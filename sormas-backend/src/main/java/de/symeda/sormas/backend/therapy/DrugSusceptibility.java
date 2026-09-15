@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.therapy;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -171,7 +173,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private DrugSusceptibilityType spectinomycinSusceptibility;
 	private SusceptibilityMethod spectinomycinMethod;
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAmikacinMic() {
 		return amikacinMic;
 	}
@@ -189,7 +191,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.amikacinSusceptibility = amikacinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getBedaquilineMic() {
 		return bedaquilineMic;
 	}
@@ -207,7 +209,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.bedaquilineSusceptibility = bedaquilineSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCapreomycinMic() {
 		return capreomycinMic;
 	}
@@ -225,7 +227,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.capreomycinSusceptibility = capreomycinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCiprofloxacinMic() {
 		return ciprofloxacinMic;
 	}
@@ -243,7 +245,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ciprofloxacinSusceptibility = ciprofloxacinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDelamanidMic() {
 		return delamanidMic;
 	}
@@ -261,7 +263,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.delamanidSusceptibility = delamanidSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getEthambutolMic() {
 		return ethambutolMic;
 	}
@@ -279,7 +281,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ethambutolSusceptibility = ethambutolSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getGatifloxacinMic() {
 		return gatifloxacinMic;
 	}
@@ -297,7 +299,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.gatifloxacinSusceptibility = gatifloxacinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getIsoniazidMic() {
 		return isoniazidMic;
 	}
@@ -315,7 +317,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.isoniazidSusceptibility = isoniazidSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getKanamycinMic() {
 		return kanamycinMic;
 	}
@@ -333,7 +335,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.kanamycinSusceptibility = kanamycinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLevofloxacinMic() {
 		return levofloxacinMic;
 	}
@@ -351,7 +353,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.levofloxacinSusceptibility = levofloxacinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getMoxifloxacinMic() {
 		return moxifloxacinMic;
 	}
@@ -369,7 +371,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.moxifloxacinSusceptibility = moxifloxacinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOfloxacinMic() {
 		return ofloxacinMic;
 	}
@@ -387,7 +389,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ofloxacinSusceptibility = ofloxacinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getRifampicinMic() {
 		return rifampicinMic;
 	}
@@ -405,7 +407,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.rifampicinSusceptibility = rifampicinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getStreptomycinMic() {
 		return streptomycinMic;
 	}
@@ -423,7 +425,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.streptomycinSusceptibility = streptomycinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCeftriaxoneMic() {
 		return ceftriaxoneMic;
 	}
@@ -441,7 +443,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ceftriaxoneSusceptibility = ceftriaxoneSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPenicillinMic() {
 		return penicillinMic;
 	}
@@ -459,7 +461,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.penicillinSusceptibility = penicillinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getErythromycinMic() {
 		return erythromycinMic;
 	}
@@ -630,7 +632,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.erythromycinMethod = erythromycinMethod;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAzithromycinMic() {
 		return azithromycinMic;
 	}
@@ -648,7 +650,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.azithromycinSusceptibility = azithromycinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCeftazidimeMic() {
 		return ceftazidimeMic;
 	}
@@ -666,7 +668,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ceftazidimeSusceptibility = ceftazidimeSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCefotaximeMic() {
 		return cefotaximeMic;
 	}
@@ -684,7 +686,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.cefotaximeSusceptibility = cefotaximeSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAmpicillinMic() {
 		return ampicillinMic;
 	}
@@ -702,7 +704,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ampicillinSusceptibility = ampicillinSusceptibility;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTrimethoprimSulfamethoxazoleMic() {
 		return trimethoprimSulfamethoxazoleMic;
 	}
@@ -765,7 +767,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.trimethoprimSulfamethoxazoleMethod = trimethoprimSulfamethoxazoleMethod;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCefiximeMic() {
 		return cefiximeMic;
 	}
@@ -792,7 +794,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.cefiximeMethod = value;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTetracyclineMic() {
 		return tetracyclineMic;
 	}
@@ -819,7 +821,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.tetracyclineMethod = value;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getGentamicinMic() {
 		return gentamicinMic;
 	}
@@ -846,7 +848,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.gentamicinMethod = value;
 	}
 
-	@Column(length = 512)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSpectinomycinMic() {
 		return spectinomycinMic;
 	}
