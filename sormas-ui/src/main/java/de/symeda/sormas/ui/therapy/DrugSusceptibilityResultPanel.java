@@ -33,21 +33,22 @@ import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.PENICILLIN_SUSC
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.AbstractField;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -65,31 +66,10 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 	private static final long serialVersionUID = 8458057586239793721L;
 
 	private static final String FORM_HEADING_LOC = "formHeadingLoc";
-
-	public static final String DRUG_CEFTRIAXONE_LAYOUT = fluidRowLocs(6, "LBL_CEFTRIAXONE", 6, CEFTRIAXONE_SUSCEPTIBILITY);
-	public static final String DRUG_ERYTHROMYCIN_LAYOUT = fluidRowLocs(6, "LBL_ERYTHROMYCIN", 6, ERYTHROMYCIN_SUSCEPTIBILITY);
-	public static final String DRUG_PENICILLIN_LAYOUT = fluidRowLocs(6, "LBL_PENICILLIN", 6, PENICILLIN_SUSCEPTIBILITY);
-	public static final String DRUG_CIPROFLOXACIN_LAYOUT = fluidRowLocs(6, "LBL_CIPROFLOXACIN", 6, CIPROFLOXACIN_SUSCEPTIBILITY);
-	public static final String DRUG_RIFAMPICIN_LAYOUT = fluidRowLocs(6, "LBL_RIFAMPICIN", 6, RIFAMPICIN_SUSCEPTIBILITY);
+	private static final String CONTENT_LOC = "content";
 
 	private PathogenTestDto pathogenTestDto;
-
-	//@formatter:off
-    private static final String HTML_LAYOUT =
-            loc(FORM_HEADING_LOC)
-                    + fluidRowLocs(ISONIAZID_SUSCEPTIBILITY, RIFAMPICIN_SUSCEPTIBILITY, "", "")
-                    + fluidRowLocs(ETHAMBUTOL_SUSCEPTIBILITY, STREPTOMYCIN_SUSCEPTIBILITY, "", "")
-                    + fluidRowLocs(LEVOFLOXACIN_SUSCEPTIBILITY, MOXIFLOXACIN_SUSCEPTIBILITY, "", "")
-                    + fluidRowLocs(BEDAQUILINE_SUSCEPTIBILITY, "", "", "")
-                    + fluidRowLocs(DELAMANID_SUSCEPTIBILITY, CAPREOMYCIN_SUSCEPTIBILITY, "", "")
-                    + fluidRowLocs(KANAMYCIN_SUSCEPTIBILITY, "", "", "")
-                    + fluidRowLocs(CIPROFLOXACIN_SUSCEPTIBILITY, OFLOXACIN_SUSCEPTIBILITY, "", "")
-                    + fluidRowLocs(GATIFLOXACIN_SUSCEPTIBILITY, "", "", "")
-                    + fluidRowLocs(AMIKACIN_SUSCEPTIBILITY, "", "", "")
-                    + fluidRowLocs("LAYOUT_CEFTRIAXONE", "LAYOUT_PENICILLIN", "", "")
-                    + fluidRowLocs("LAYOUT_CIPROFLOXACIN", "LAYOUT_RIFAMPICIN", "", "")
-                    + fluidRowLocs("LAYOUT_ERYTHROMYCIN", "", "", "");
-    //@formatter:on
+	private VerticalLayout verticalLayout;
 
 	private static final List<String> componentLocationsList = List.of(
 		AMIKACIN_SUSCEPTIBILITY,
@@ -113,11 +93,19 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 	public DrugSusceptibilityResultPanel(PathogenTestDto pathogenTestDto) {
 		setWidth(100, Sizeable.Unit.PERCENTAGE);
 		this.addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
-		setTemplateContents(HTML_LAYOUT);
-
+		String templateHtml = "<div location=\"" + FORM_HEADING_LOC + "\"></div>" + "<div location=\"" + CONTENT_LOC + "\"></div>";
+		setTemplateContents(templateHtml);
+		verticalLayout = new VerticalLayout();
+		verticalLayout.setWidth(100, Unit.PERCENTAGE);
+		verticalLayout.setSpacing(false);
+		verticalLayout.setMargin(false);
 		this.pathogenTestDto = pathogenTestDto;
 		addFields();
+		addComponent(verticalLayout, "content");
 	}
+
+	// to add the rows
+	private HorizontalLayout currentRowLayout;
 
 	private void addFields() {
 		if (pathogenTestDto != null) {
@@ -127,164 +115,88 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 
 			if (pathogenTestDto.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 				DrugSusceptibilityDto drugSusceptibilityDto = pathogenTestDto.getDrugSusceptibility();
+				Disease testedDisease = pathogenTestDto.getTestedDisease();
+				// Get fields applicable to current disease and test type beforehand
+				List<String> applicableFieldIds = (testedDisease != null)
+					? AnnotationFieldHelper
+						.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, testedDisease, pathogenTestDto.getTestType())
+					: Collections.emptyList();
 
-				addResistanceResultField(
-					ISONIAZID_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getIsoniazidSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.ISONIAZID),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					RIFAMPICIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getRifampicinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.RIFAMPICIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					ETHAMBUTOL_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getEthambutolSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.ETHAMBUTOL),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					STREPTOMYCIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getStreptomycinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.STREPTOMYCIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					LEVOFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getLevofloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.LEVOFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					MOXIFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getMoxifloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.MOXIFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					BEDAQUILINE_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getBedaquilineSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.BEDAQUILINE),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					DELAMANID_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getDelamanidSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.DELAMANID),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					CAPREOMYCIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getCapreomycinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.CAPREOMYCIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					KANAMYCIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getKanamycinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.KANAMYCIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					CIPROFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getCiprofloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.CIPROFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					OFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getOfloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.OFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					GATIFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getGatifloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.GATIFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-
-				addResistanceResultField(
-					AMIKACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getAmikacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.AMIKACIN),
-					pathogenTestDto.getTestedDisease());
-
-				// CEFTRIAXONE
-				addResistanceResultField(
-					CEFTRIAXONE_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getCeftriaxoneSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.CEFTRIAXONE),
-					pathogenTestDto.getTestedDisease());
-
-				// PENICILLIN
-				addResistanceResultField(
-					PENICILLIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getPenicillinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.PENICILLIN),
-					pathogenTestDto.getTestedDisease());
-
-				// ERYTHROMYCIN
-				addResistanceResultField(
-					ERYTHROMYCIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getErythromycinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.ERYTHROMYCIN),
-					pathogenTestDto.getTestedDisease());
-
-				updateFieldsVisibility(pathogenTestDto);
+				Arrays.stream(drugSusceptibilityDto.getClass().getMethods())
+					.filter(method -> method.getName().endsWith("Susceptibility"))
+					.filter(method -> method.getParameterCount() == 0)
+					.sorted(Comparator.comparingInt(method -> {
+						// sort the drugs based on componentLocationsList
+						String drugName = method.getName().substring(3, method.getName().length() - "Susceptibility".length());
+						String fieldId = drugName.toUpperCase() + "SUSCEPTIBILITY";
+						int index = IntStream.range(0, componentLocationsList.size())
+							.filter(i -> componentLocationsList.get(i).equalsIgnoreCase(fieldId))
+							.findFirst()
+							.orElse(-1);
+						return index != -1 ? index : Integer.MAX_VALUE;
+					}))
+					.forEach(method -> {
+						try {
+							DrugSusceptibilityType type = (DrugSusceptibilityType) method.invoke(drugSusceptibilityDto);
+							// If DrugSusceptibilityType is null, don't need to display those drugs
+							if (type == null) {
+								return;
+							}
+							String drugName = method.getName().substring(3, method.getName().length() - "Susceptibility".length());
+							// verify the field is visible or not.
+							if (!applicableFieldIds.stream().anyMatch(e -> e != null && e.equalsIgnoreCase(drugName + "Susceptibility"))) {
+								return;
+							}
+							String fieldId = drugName.toUpperCase() + "_SUSCEPTIBILITY";
+							Drug drug = Drug.valueOf(drugName.toUpperCase());
+							addResistanceResultField(fieldId, type, I18nProperties.getEnumCaption(drug));
+						} catch (Exception e) {
+							throw new RuntimeException(e);
+						}
+					});
 			}
 		}
 	}
 
-	private AbstractField addResistanceResultField(String fieldId, DrugSusceptibilityType drugSusceptibilityType, String caption, Disease disease) {
-		if (Disease.TUBERCULOSIS == disease) {
-			ComboBox field = new ComboBox();
-			field.setId(fieldId);
-			field.setCaption(caption);
-			field.setWidth(150, Unit.PIXELS);
-			CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE, CssStyles.FLOAT_RIGHT);
-			field.addItems((Object[]) DrugSusceptibilityType.values());
+	private void addResistanceResultField(String fieldId, DrugSusceptibilityType drugSusceptibilityType, String caption) {
+		if (drugSusceptibilityType == null) {
+			return;
+		}
+		// 1. Build the individual Label + TextField container
+		HorizontalLayout fieldLayout = new HorizontalLayout();
+		fieldLayout.setWidth(80, Unit.PERCENTAGE);
+		fieldLayout.setSpacing(true);
+		fieldLayout.setMargin(false);
 
-			if (drugSusceptibilityType != null) {
-				field.setValue(drugSusceptibilityType);
-			}
+		Label label = new Label(caption);
+		label.setWidth(120, Unit.PIXELS);
 
-			field.setEnabled(false);
-			addComponent(field, fieldId);
-			return field;
+		TextField field = new TextField();
+		field.setId(fieldId);
+		field.setValue(I18nProperties.getEnumCaption(drugSusceptibilityType));
+		field.setEnabled(false);
+		field.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
+
+		fieldLayout.addComponents(label, field);
+		fieldLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+		fieldLayout.setComponentAlignment(field, Alignment.MIDDLE_LEFT);
+		fieldLayout.setExpandRatio(field, 1.0f);
+
+		if (currentRowLayout == null || currentRowLayout.getComponentCount() == 2) {
+			// first or odd field
+			currentRowLayout = new HorizontalLayout();
+			currentRowLayout.setWidth(50, Unit.PERCENTAGE); // Row spans ONLY 50% of parent width
+			currentRowLayout.setSpacing(true);
+			currentRowLayout.addComponent(fieldLayout);
+			currentRowLayout.setExpandRatio(fieldLayout, 1.0f);
+			verticalLayout.addComponent(currentRowLayout);
 		} else {
-			String fieldIdUpperCase = fieldId.replace("Susceptibility", "").toUpperCase();
-			CustomLayout customLayout = new CustomLayout();
-			if (fieldIdUpperCase.equals(Drug.CEFTRIAXONE.name())) {
-				customLayout.setTemplateContents(DRUG_CEFTRIAXONE_LAYOUT);
-			} else if (fieldIdUpperCase.equals(Drug.CIPROFLOXACIN.name())) {
-				customLayout.setTemplateContents(DRUG_CIPROFLOXACIN_LAYOUT);
-			} else if (fieldIdUpperCase.equals(Drug.ERYTHROMYCIN.name())) {
-				customLayout.setTemplateContents(DRUG_ERYTHROMYCIN_LAYOUT);
-			} else if (fieldIdUpperCase.equals(Drug.PENICILLIN.name())) {
-				customLayout.setTemplateContents(DRUG_PENICILLIN_LAYOUT);
-			} else if (fieldIdUpperCase.equals(Drug.RIFAMPICIN.name())) {
-				customLayout.setTemplateContents(DRUG_RIFAMPICIN_LAYOUT);
-			}
-
-			Label lblDrug = new Label(I18nProperties.getEnumCaption(Drug.valueOf(fieldIdUpperCase)));
-			customLayout.addComponent(lblDrug, "LBL_" + fieldIdUpperCase);
-			addComponent(customLayout, "LAYOUT_" + fieldIdUpperCase);
-
-			// Text field for the drug susceptibility
-			TextField customTF = new TextField(fieldId);
-			customTF.setCaption(null);
-			if (drugSusceptibilityType != null) {
-				customTF.setValue(I18nProperties.getEnumCaption(drugSusceptibilityType));
-			} else {
-				customTF.setValue(I18nProperties.getEnumCaption(DrugSusceptibilityType.UNKNOWN));
-			}
-			customTF.setEnabled(false);
-			customLayout.addComponent(customTF, fieldId);
-			addComponent(customLayout, "LAYOUT_" + fieldIdUpperCase);
-			return customTF;
+			// adding the second field.
+			currentRowLayout.setWidth(100, Unit.PERCENTAGE); // Expand row to 100% full width
+			currentRowLayout.addComponent(fieldLayout);
+			// Balance both fields so each occupies an equal 50% of the 100% width
+			currentRowLayout.setExpandRatio(fieldLayout, 1.0f);
 		}
 	}
 
@@ -307,19 +219,6 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 						Component component = getComponent(applicableFieldId);
 						if (component != null) {
 							component.setVisible(true);
-						}
-					}
-					// updating the visibility of custom layout components
-					List<String> susceptibilities = applicableFieldIds.stream()
-						.filter(e -> e.endsWith("Susceptibility"))
-						.map(applicableFieldId -> "LAYOUT_" + applicableFieldId.replace("Susceptibility", "").toUpperCase())
-						.collect(Collectors.toList());
-
-					// Hide the custom layout components that are not in the valid susceptibilities list
-					for (String layout : Arrays
-						.asList("LAYOUT_CEFTRIAXONE", "LAYOUT_CIPROFLOXACIN", "LAYOUT_ERYTHROMYCIN", "LAYOUT_PENICILLIN", "LAYOUT_RIFAMPICIN")) {
-						if (!susceptibilities.contains(layout) && getComponent(layout) != null) {
-							getComponent(layout).setVisible(false);
 						}
 					}
 				}
