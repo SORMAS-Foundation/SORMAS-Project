@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.samples.components;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.vaadin.ui.RadioButtonGroup;
 
@@ -36,6 +37,9 @@ import de.symeda.sormas.ui.utils.FormEventBus;
 public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final List<Disease> REFERENCE_LAB_DEFAULT_DISEASES =
+		Arrays.asList(Disease.MUMPS, Disease.RUBELLA, Disease.CONGENITAL_RUBELLA);
 
 	private RadioButtonGroup<Boolean> performedByReferenceLaboratory;
 	private RadioButtonGroup<Boolean> retestRequested;
@@ -81,18 +85,11 @@ public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> 
 		}));
 	}
 
-	/**
-	 * Updating the reference laboratory value
-	 * 
-	 * @param testType
-	 * @param currentDisease
-	 */
 	private void updateReferenceLaboratory(PathogenTestType testType, Disease currentDisease) {
-		// Select the performedByReferenceLaboratory field, if the test is Isolation || Genotyping of Mumps
-		boolean isMumpsTargetTest =
-			currentDisease == Disease.MUMPS && Arrays.asList(PathogenTestType.ISOLATION, PathogenTestType.GENOTYPING).contains(testType);
-		performedByReferenceLaboratory.setValue(isMumpsTargetTest ? true : null);
-		if (!isMumpsTargetTest) {
+		boolean isReferenceLabTargetTest = REFERENCE_LAB_DEFAULT_DISEASES.contains(currentDisease)
+			&& Arrays.asList(PathogenTestType.ISOLATION, PathogenTestType.GENOTYPING).contains(testType);
+		performedByReferenceLaboratory.setValue(isReferenceLabTargetTest ? true : null);
+		if (!isReferenceLabTargetTest) {
 			performedByReferenceLaboratory.clear();
 		}
 	}

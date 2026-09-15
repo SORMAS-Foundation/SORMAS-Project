@@ -52,6 +52,7 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 	private VerticalLayout layout = new VerticalLayout();
 	private Map<String, Component> componentMap = new LinkedHashMap<>();
 	private final List<String> complicatedSymptoms;
+	private final Disease disease;
 
 	public CaseSymptomSideViewComponent(Disease disease) {
 		super(I18nProperties.getCaption(String.format(Disease.DENGUE == disease ? Captions.titleComplications_DENG : Captions.titleComplications)));
@@ -63,6 +64,7 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 			new Label(I18nProperties.getCaption(Disease.DENGUE == disease ? Captions.titleNoComplications_DENG : Captions.titleNoComplications));
 		topLayout.addComponents(noComplicationsLabel, layout);
 		complicatedSymptoms = AnnotationFieldHelper.getComplicatedSymptomsWithDiseases(SymptomsDto.class, disease);
+		this.disease = disease;
 	}
 
 	/**
@@ -94,7 +96,9 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 		if (Arrays.asList(SymptomState.YES, YesNoUnknown.YES).contains(sourceFieldObj)
 			&& !componentMap.containsKey(sourceField.getId())
 			&& complicatedSymptoms.contains(sourceField.getId())) {
-			Label label = new Label(I18nProperties.getCaption(Captions.Symptoms + "." + sourceField.getId()));
+			String captionKey = Captions.Symptoms + "." + sourceField.getId();
+			Label label = new Label(
+				I18nProperties.getCaption(captionKey, I18nProperties.getCaption(captionKey), disease != null ? disease.name() : null));
 			componentMap.put(sourceField.getId(), label);
 			return;
 		}

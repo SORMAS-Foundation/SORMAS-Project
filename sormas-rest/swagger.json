@@ -20925,7 +20925,7 @@
           },
           "vaccinationInfoSource" : {
             "type" : "string",
-            "enum" : [ "VACCINATION_REGISTRY", "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
+            "enum" : [ "VACCINATION_REGISTRY", "VACCINATION_CARD", "ORAL_COMMUNICATION", "HEALTH_SERVICES", "NO_EVIDENCE", "UNKNOWN" ]
           },
           "vaccinations" : {
             "type" : "array",
@@ -22709,7 +22709,7 @@
           },
           "genoType" : {
             "type" : "string",
-            "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "MUMPV_A", "MUMPV_B", "MUMPV_C", "MUMPV_D", "MUMPV_F", "MUMPV_G", "MUMPV_H", "MUMPV_I", "MUMPV_J", "MUMPV_K", "MUMPV_L", "MUMPV_N", "OTHER", "UNKNOWN" ]
+            "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "MUMPV_A", "MUMPV_B", "MUMPV_C", "MUMPV_D", "MUMPV_F", "MUMPV_G", "MUMPV_H", "MUMPV_I", "MUMPV_J", "MUMPV_K", "MUMPV_L", "MUMPV_N", "GENOTYPE_1A", "GENOTYPE_1B", "GENOTYPE_1C", "GENOTYPE_1D", "GENOTYPE_1E", "GENOTYPE_1F", "GENOTYPE_1G", "GENOTYPE_1H", "GENOTYPE_1I", "GENOTYPE_1J", "GENOTYPE_2A", "GENOTYPE_2B", "GENOTYPE_2C", "GENOTYPE_NA", "GENOTYPE_UNK", "OTHER", "UNKNOWN" ]
           },
           "genoTypeText" : {
             "type" : "string"
@@ -25763,6 +25763,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "bronchitis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "buboesGroinArmpitNeck" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26137,6 +26141,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "greggsTriad" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "guillainBarreSyndrome" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26170,6 +26178,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "hemorrhagicSyndrome" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "hepatitis" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26320,6 +26332,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "lowBirthWeight" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "lowGradeFever" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26337,6 +26353,14 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "lymphadenopathyInguinal" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "lymphadenopathyRetroauricular" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "lymphadenopathySuboccipital" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26396,6 +26420,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "myocarditis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "nausea" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26409,6 +26437,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "nephroticSyndrome" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "neurologicalComplications" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26594,6 +26626,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "pericarditis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "persistentVomiting" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26685,6 +26721,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "rubellaArthritis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "runnyNose" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26753,6 +26793,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "stillbornInfant" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "stomachBleeding" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26813,6 +26857,14 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "thrombocytopenia" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "thrombocytopenicPurpura" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "timeOffWorkDays" : {
             "type" : "number",
             "format" : "float"
@@ -26826,6 +26878,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "unilateralCataracts" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "unknownClinicalPresentation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -27353,7 +27409,7 @@
           },
           "genoType" : {
             "type" : "string",
-            "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "MUMPV_A", "MUMPV_B", "MUMPV_C", "MUMPV_D", "MUMPV_F", "MUMPV_G", "MUMPV_H", "MUMPV_I", "MUMPV_J", "MUMPV_K", "MUMPV_L", "MUMPV_N", "OTHER", "UNKNOWN" ]
+            "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "MUMPV_A", "MUMPV_B", "MUMPV_C", "MUMPV_D", "MUMPV_F", "MUMPV_G", "MUMPV_H", "MUMPV_I", "MUMPV_J", "MUMPV_K", "MUMPV_L", "MUMPV_N", "GENOTYPE_1A", "GENOTYPE_1B", "GENOTYPE_1C", "GENOTYPE_1D", "GENOTYPE_1E", "GENOTYPE_1F", "GENOTYPE_1G", "GENOTYPE_1H", "GENOTYPE_1I", "GENOTYPE_1J", "GENOTYPE_2A", "GENOTYPE_2B", "GENOTYPE_2C", "GENOTYPE_NA", "GENOTYPE_UNK", "OTHER", "UNKNOWN" ]
           },
           "isoniazidMic" : {
             "type" : "string"
@@ -28426,7 +28482,7 @@
           },
           "vaccinationInfoSource" : {
             "type" : "string",
-            "enum" : [ "VACCINATION_REGISTRY", "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
+            "enum" : [ "VACCINATION_REGISTRY", "VACCINATION_CARD", "ORAL_COMMUNICATION", "HEALTH_SERVICES", "NO_EVIDENCE", "UNKNOWN" ]
           },
           "vaccineAtcCode" : {
             "type" : "string",
