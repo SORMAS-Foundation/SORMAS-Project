@@ -55,7 +55,8 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.INFLUENZA }, hide = true)
+		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	DRY_BLOOD,
 
 	@Diseases(value = {
@@ -69,6 +70,7 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	SERA,
@@ -87,6 +89,7 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	STOOL,
@@ -151,7 +154,8 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
 		Disease.LATENT_TUBERCULOSIS,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	NP_SWAB,
 
 	@Diseases(value = {
@@ -209,6 +213,7 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	CRUST,
@@ -230,6 +235,7 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	TISSUE,
@@ -283,7 +289,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	SALIVA,
 
 	@Diseases(value = {
@@ -325,6 +332,7 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	@HideForCountries(countries = {
@@ -350,6 +358,7 @@ public enum SampleMaterial {
 		Disease.MUMPS,
 		Disease.SYPHILIS,
 		Disease.LATENT_TUBERCULOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	SPUTUM,
@@ -391,6 +400,7 @@ public enum SampleMaterial {
 		Disease.MUMPS,
 		Disease.SYPHILIS,
 		Disease.LATENT_TUBERCULOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	BRONCHOALVEOLAR_LAVAGE,
@@ -458,6 +468,7 @@ public enum SampleMaterial {
 		Disease.CORONAVIRUS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	OP_ASPIRATE,
@@ -474,6 +485,7 @@ public enum SampleMaterial {
 		Disease.MUMPS,
 		Disease.SYPHILIS,
 		Disease.LATENT_TUBERCULOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	NP_ASPIRATE,
@@ -495,6 +507,7 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	PLEURAL_FLUID,
@@ -538,6 +551,7 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	AMNIOTIC_FLUID,
@@ -564,6 +578,7 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	PERITONEAL_FLUID,
@@ -602,7 +617,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	EDTA_WHOLE_BLOOD,
 
 	@Diseases(value = {
@@ -633,7 +649,8 @@ public enum SampleMaterial {
 	GASTRIC_FLUID,
 
 	@Diseases({
-		Disease.SYPHILIS })
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
 	GENITAL_SWAB,
 
 	@Diseases({
@@ -701,6 +718,7 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	BONE,
@@ -722,6 +740,7 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	BONE_MARROW,
@@ -747,8 +766,6 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {
@@ -885,6 +902,7 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA }, hide = true)
 	LUNG_TISSUE,

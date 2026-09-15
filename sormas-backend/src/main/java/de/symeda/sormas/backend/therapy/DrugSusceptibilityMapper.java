@@ -100,6 +100,18 @@ public class DrugSusceptibilityMapper {
 		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
 		target.setCefotaximeMethod(source.getCefotaximeMethod());
 		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
+		target.setCefiximeMic(source.getCefiximeMic());
+		target.setCefiximeSusceptibility(source.getCefiximeSusceptibility());
+		target.setCefiximeMethod(source.getCefiximeMethod());
+		target.setTetracyclineMic(source.getTetracyclineMic());
+		target.setTetracyclineSusceptibility(source.getTetracyclineSusceptibility());
+		target.setTetracyclineMethod(source.getTetracyclineMethod());
+		target.setGentamicinMic(source.getGentamicinMic());
+		target.setGentamicinSusceptibility(source.getGentamicinSusceptibility());
+		target.setGentamicinMethod(source.getGentamicinMethod());
+		target.setSpectinomycinMic(source.getSpectinomycinMic());
+		target.setSpectinomycinSusceptibility(source.getSpectinomycinSusceptibility());
+		target.setSpectinomycinMethod(source.getSpectinomycinMethod());
 
 		return target;
 	}
@@ -177,6 +189,18 @@ public class DrugSusceptibilityMapper {
 		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
 		target.setCefotaximeMethod(source.getCefotaximeMethod());
 		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
+		target.setCefiximeMic(source.getCefiximeMic());
+		target.setCefiximeSusceptibility(source.getCefiximeSusceptibility());
+		target.setCefiximeMethod(source.getCefiximeMethod());
+		target.setTetracyclineMic(source.getTetracyclineMic());
+		target.setTetracyclineSusceptibility(source.getTetracyclineSusceptibility());
+		target.setTetracyclineMethod(source.getTetracyclineMethod());
+		target.setGentamicinMic(source.getGentamicinMic());
+		target.setGentamicinSusceptibility(source.getGentamicinSusceptibility());
+		target.setGentamicinMethod(source.getGentamicinMethod());
+		target.setSpectinomycinMic(source.getSpectinomycinMic());
+		target.setSpectinomycinSusceptibility(source.getSpectinomycinSusceptibility());
+		target.setSpectinomycinMethod(source.getSpectinomycinMethod());
 
 		return target;
 	}
@@ -252,6 +276,19 @@ public class DrugSusceptibilityMapper {
 			|| dto.getAmpicillinMethod() != null
 			|| dto.getTrimethoprimSulfamethoxazoleMic() != null
 			|| dto.getTrimethoprimSulfamethoxazoleSusceptibility() != null
-			|| dto.getTrimethoprimSulfamethoxazoleMethod() != null;
+			|| dto.getTrimethoprimSulfamethoxazoleMethod() != null
+			|| dto.getCefiximeMic() != null
+			|| dto.getCefiximeSusceptibility() != null
+			|| dto.getCefiximeMethod() != null
+			|| dto.getTetracyclineMic() != null
+			|| dto.getTetracyclineSusceptibility() != null
+			|| dto.getTetracyclineMethod() != null
+			|| dto.getGentamicinMic() != null
+			|| dto.getGentamicinSusceptibility() != null
+			|| dto.getGentamicinMethod() != null
+			|| dto.getSpectinomycinMic() != null
+			|| dto.getSpectinomycinSusceptibility() != null
+			|| dto.getSpectinomycinMethod() != null;
 	}
+
 }
