@@ -53,6 +53,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.doctordeclaration.AbstractDoctorDeclarationMessageProcessingFlow;
@@ -72,6 +73,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
@@ -172,7 +174,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
 				commitDiscardWrapperComponent.getDiscardButton().setVisible(false); // No discard button
 
-				commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+				commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
 
 				VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 			}
@@ -204,6 +206,32 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
 		LOGGER.debug("Handling related forwarded messages for externalMessage: {}", getExternalMessage());
 		return ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation();
+	}
+
+	@Override
+	protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> handleProcessingDone(
+		ProcessingResult<ExternalMessageProcessingResult> result) {
+		if (result.getStatus().isDone()) {
+			applyDeferredEntityUpdates(result.getData());
+		}
+
+		return super.handleProcessingDone(result);
+	}
+
+	private void applyDeferredEntityUpdates(ExternalMessageProcessingResult resultData) {
+		if (resultData == null) {
+			return;
+		}
+
+		PersonDto person = resultData.getPerson();
+		if (person != null) {
+			applyPersonUpdates(person.getUuid());
+		}
+
+		CaseDataDto caze = resultData.getCase();
+		if (caze != null) {
+			applyNotifierUpdate(caze, getExternalMessage());
+		}
 	}
 
 	@Override
@@ -317,40 +345,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		// If multiple options are available, show a selection window
 		if (optionsBuilder.size() > 1) {
-			HandlerCallback<PickOrCreateEntryResult> postUpdateCallback = new HandlerCallback<>() {
-
-				@Override
-				public void done(PickOrCreateEntryResult result) {
-					if (result.getCaze() != null) {
-						CaseDataDto caze = FacadeProvider.getCaseFacade().getByUuid(result.getCaze().getUuid());
-						if (caze != null && caze.getPerson() != null) {
-							applyPersonUpdates(caze.getPerson().getUuid());
-							applyNotifierUpdate(caze, externalMessage);
-						}
-					} else if (result.getContact() != null) {
-						ContactDto contact = FacadeProvider.getContactFacade().getByUuid(result.getContact().getUuid());
-						if (contact != null && contact.getPerson() != null) {
-							applyPersonUpdates(contact.getPerson().getUuid());
-						}
-					} else if (result.getEventParticipant() != null) {
-						EventParticipantDto ep = FacadeProvider.getEventParticipantFacade().getByUuid(result.getEventParticipant().getUuid());
-						if (ep != null && ep.getPerson() != null) {
-							applyPersonUpdates(ep.getPerson().getUuid());
-						}
-					}
-
-					callback.done(result);
-				}
-
-				@Override
-				public void cancel() {
-					callback.cancel();
-				}
-			};
-
-			ProcessingUiHelper.showPickOrCreateEntryWindow(
-				new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()),
-				postUpdateCallback);
+			ProcessingUiHelper
+				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()), callback);
 		} else {
 			// If only one option is available, directly proceed with it
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
@@ -377,10 +373,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 			@Override
 			public void done(CaseDataDto result) {
-				if (result.getPerson() != null) {
-					applyPersonUpdates(result.getPerson().getUuid());
-				}
-				callback.done(applyNotifierUpdate(result, externalMessage));
+				callback.done(result);
 			}
 
 			@Override
@@ -480,9 +473,6 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		contactCreateComponent.addCommitListener(() -> {
 			ContactDto createdContact = contactCreateComponent.getWrappedComponent().getValue();
-			if (createdContact.getPerson() != null) {
-				applyPersonUpdates(createdContact.getPerson().getUuid());
-			}
 			callback.done(createdContact);
 		});
 		contactCreateComponent.addDiscardListener(callback::cancel);
@@ -623,10 +613,6 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				FacadeProvider.getPersonFacade().save(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
-
-				if (savedDto.getPerson() != null) {
-					applyPersonUpdates(savedDto.getPerson().getUuid());
-				}
 
 				callback.done(savedDto);
 			}
@@ -801,19 +787,16 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		return ret;
 	}
 
-	@Override
-	protected CompletionStage<Boolean> confirmCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		LOGGER.debug("Informing about hospitalization mismatch for case: {}, externalMessage: {}", caze, externalMessage);
-
+	protected CompletionStage<Boolean> showConfirmationDialog(String message) {
 		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
 		VerticalLayout content = new VerticalLayout();
 		content.setSpacing(true);
 
-		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseHospitalizationMismatch));
-		message.setContentMode(ContentMode.HTML);
+		Label messageLabel = new Label(message);
+		messageLabel.setContentMode(ContentMode.HTML);
 
-		content.addComponents(message);
+		content.addComponents(messageLabel);
 
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
@@ -823,54 +806,35 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
 		return ret;
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmCaseDataMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about case data mismatch for : {}, externalMessage: {}", caze, externalMessage);
+		return showConfirmationDialog(I18nProperties.getString(Strings.infoExternalMessageCaseDataMismatch));
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmCaseHealthConditionsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return showConfirmationDialog(I18nProperties.getString(Strings.infoExternalMessageCaseHealthConditionsMismatch));
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about hospitalization mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+		return showConfirmationDialog(I18nProperties.getString(Strings.infoExternalMessageCaseHospitalizationMismatch));
 	}
 
 	@Override
 	protected CompletionStage<Boolean> confirmCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		LOGGER.debug("Informing about exposures mismatch for case: {}, externalMessage: {}", caze, externalMessage);
-
-		CompletableFuture<Boolean> ret = new CompletableFuture<>();
-
-		VerticalLayout content = new VerticalLayout();
-		content.setSpacing(true);
-
-		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseExposuresMismatch));
-		message.setContentMode(ContentMode.HTML);
-
-		content.addComponents(message);
-
-		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
-		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
-		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
-		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
-
-		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
-
-		return ret;
+		return showConfirmationDialog(I18nProperties.getString(Strings.infoExternalMessageCaseExposuresMismatch));
 	}
 
 	@Override
 	protected CompletionStage<Boolean> confirmCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		LOGGER.debug("Informing about activities as case mismatch for case: {}, externalMessage: {}", caze, externalMessage);
-
-		CompletableFuture<Boolean> ret = new CompletableFuture<>();
-
-		VerticalLayout content = new VerticalLayout();
-		content.setSpacing(true);
-
-		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseActivitiesAsCaseMismatch));
-		message.setContentMode(ContentMode.HTML);
-
-		content.addComponents(message);
-
-		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
-		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
-		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
-		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
-
-		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
-
-		return ret;
+		return showConfirmationDialog(I18nProperties.getString(Strings.infoExternalMessageCaseActivitiesAsCaseMismatch));
 	}
 
 	/**
@@ -881,6 +845,6 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	@Override
 	protected CompletionStage<Void> notifyCorrectionsSaved() {
 		LOGGER.debug("Notifying corrections saved for externalMessage: {}", getExternalMessage());
-		return null;
+		return CompletableFuture.completedFuture(null);
 	}
 }

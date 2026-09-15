@@ -1084,7 +1084,9 @@ public interface Strings {
 	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoExternalMessageCaseActivitiesAsCaseMismatch = "infoExternalMessageCaseActivitiesAsCaseMismatch";
+	String infoExternalMessageCaseDataMismatch = "infoExternalMessageCaseDataMismatch";
 	String infoExternalMessageCaseExposuresMismatch = "infoExternalMessageCaseExposuresMismatch";
+	String infoExternalMessageCaseHealthConditionsMismatch = "infoExternalMessageCaseHealthConditionsMismatch";
 	String infoExternalMessageCaseHospitalizationMismatch = "infoExternalMessageCaseHospitalizationMismatch";
 	String infoExternalMessageCaseSymptomsMismatch = "infoExternalMessageCaseSymptomsMismatch";
 	String infoExternalMessageCaseSymptomsMismatchExistingCaseSymptoms = "infoExternalMessageCaseSymptomsMismatchExistingCaseSymptoms";
