@@ -291,13 +291,7 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String animalContactTypeDetails;
-	@Diseases({
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
 	private AnimalLocation animalLocation;
-	@Diseases({
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String animalLocationText;
 	@Diseases({
@@ -467,8 +461,6 @@ public class ExposureDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String shoppingForFoodDetails;
 
-	@Diseases({
-		Disease.SHIGELLOSIS })
 	@SensitiveData
 	private SexualContact sexualContact;
 

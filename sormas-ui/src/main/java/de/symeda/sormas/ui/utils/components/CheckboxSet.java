@@ -57,6 +57,9 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 	private List<T> items;
 	private Function<T, String> groupingFunction;
 	private Function<T, String> itemDescriptionProvider;
+	private Function<T, String> itemCaptionProvider;
+	private Function<T, Boolean> itemEnabledProvider;
+	private boolean itemCaptionAsHtml;
 
 	private int columnCount = 2;
 
@@ -74,9 +77,31 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 	}
 
 	public void setItems(List<T> items, Function<T, String> groupingFunction, Function<T, String> itemDescriptionProvider) {
+		setItems(items, groupingFunction, itemDescriptionProvider, null, null, false);
+	}
+
+	public void setItems(
+		List<T> items,
+		Function<T, String> groupingFunction,
+		Function<T, String> itemDescriptionProvider,
+		Function<T, String> itemCaptionProvider,
+		Function<T, Boolean> itemEnabledProvider) {
+		setItems(items, groupingFunction, itemDescriptionProvider, itemCaptionProvider, itemEnabledProvider, false);
+	}
+
+	public void setItems(
+		List<T> items,
+		Function<T, String> groupingFunction,
+		Function<T, String> itemDescriptionProvider,
+		Function<T, String> itemCaptionProvider,
+		Function<T, Boolean> itemEnabledProvider,
+		boolean itemCaptionAsHtml) {
 		this.items = items;
 		this.groupingFunction = groupingFunction;
 		this.itemDescriptionProvider = itemDescriptionProvider;
+		this.itemCaptionProvider = itemCaptionProvider;
+		this.itemEnabledProvider = itemEnabledProvider;
+		this.itemCaptionAsHtml = itemCaptionAsHtml;
 
 		resetLayout();
 	}
@@ -167,10 +192,15 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 	}
 
 	private CheckBox createCheckbox(T item) {
-		CheckBox checkBox = new CheckBox(item.toString(), createDataSource(item));
+		String caption = itemCaptionProvider != null ? itemCaptionProvider.apply(item) : item.toString();
+		CheckBox checkBox = new CheckBox(caption, createDataSource(item));
+		checkBox.setCaptionAsHtml(itemCaptionAsHtml);
 		checkBox.setData(item);
 		if (itemDescriptionProvider != null) {
 			checkBox.setDescription(itemDescriptionProvider.apply(item));
+		}
+		if (itemEnabledProvider != null) {
+			checkBox.setEnabled(Boolean.TRUE.equals(itemEnabledProvider.apply(item)));
 		}
 		checkBox.addValueChangeListener(e -> fireValueChange(false));
 
@@ -217,6 +247,18 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 	public Optional<CheckBox> getCheckboxByData(T data) {
 		return rows.stream().map(r -> r.checkBoxes).flatMap(Collection::stream).filter(checkBox -> data.equals(checkBox.getData())).findFirst();
+	}
+
+	public List<T> getItems() {
+		return items != null ? Collections.unmodifiableList(items) : Collections.emptyList();
+	}
+
+	public String getItemCaption(T item) {
+		if (item == null) {
+			return null;
+		}
+
+		return itemCaptionProvider != null ? itemCaptionProvider.apply(item) : item.toString();
 	}
 
 	public interface CheckboxValueChangeListener extends SerializableEventListener {

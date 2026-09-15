@@ -16,30 +16,63 @@
 package de.symeda.sormas.api.exposure;
 
 import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ExposureCategory {
 
-	AIR_BORNE,
+	@Deprecated
+	AIR_BORNE(true),
+	@Deprecated
+	DIRECT_CONTACT(true),
+	@Deprecated
+	MEDICAL_CARE(true),
+	@Deprecated
+	LAB(true),
+	@Deprecated
+	RESPIRATORY_DROPLET(true),
+
 	ANIMAL_CONTACT,
-	DIRECT_CONTACT,
 	FOMITE_TRANSMISSION,
 	FOOD_BORNE,
 	VECTOR_BORNE,
 	VERTICAL_TRANSMISSION,
 	WATER_BORNE,
-	MEDICAL_CARE,
-	LAB,
-	RESPIRATORY_DROPLET,
+
+	RESPIRATORY,
+	PERSON_TO_PERSON,
+	ENVIRONMENTAL,
+	BLOOD_PARENTERAL,
+	SEXUAL,
+	UNKNOWN,
 	OTHER;
 
+	private final boolean deprecated;
+
+	ExposureCategory(boolean deprecated) {
+		this.deprecated = deprecated;
+	}
+
+	ExposureCategory() {
+		this(false);
+	}
+
 	public boolean hasNoSetting() {
-		return EnumSet.of(ANIMAL_CONTACT, FOMITE_TRANSMISSION, FOOD_BORNE, MEDICAL_CARE, LAB, OTHER).contains(this);
+		return EnumSet.of(ANIMAL_CONTACT, FOMITE_TRANSMISSION, MEDICAL_CARE, LAB, OTHER, UNKNOWN).contains(this);
 	}
 
 	public boolean hasNoSubSetting() {
-		return EnumSet.of(ANIMAL_CONTACT, FOMITE_TRANSMISSION).contains(this);
+		return EnumSet.of(ANIMAL_CONTACT, FOMITE_TRANSMISSION, MEDICAL_CARE, LAB, OTHER, UNKNOWN).contains(this);
+	}
+
+	public boolean isDeprecated() {
+		return deprecated;
+	}
+
+	public static List<ExposureCategory> getNonDeprecatedValues() {
+		return EnumSet.allOf(ExposureCategory.class).stream().filter(c -> !c.isDeprecated()).collect(Collectors.toList());
 	}
 
 	@Override
