@@ -226,9 +226,13 @@ public class TestReportDto extends EntityDto {
 	private String spectinomycinMic;
 	private DrugSusceptibilityType spectinomycinSusceptibility;
 	private SusceptibilityMethod spectinomycinMethod;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String porBAllele;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String tbpBAllele;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String sequenceType;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String genogroup;
 
 	private SeroGroupSpecification seroGroupSpecification;

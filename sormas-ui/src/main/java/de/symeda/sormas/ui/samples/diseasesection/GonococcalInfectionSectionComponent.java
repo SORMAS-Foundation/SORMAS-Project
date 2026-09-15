@@ -75,12 +75,6 @@ public class GonococcalInfectionSectionComponent extends AbstractDiseaseSectionC
 		tbpBAllele.setVisible(visible);
 		sequenceType.setVisible(visible);
 		genogroup.setVisible(visible);
-		if (!visible) {
-			porBAllele.clear();
-			tbpBAllele.clear();
-			sequenceType.clear();
-			genogroup.clear();
-		}
 		updateRowAndSelfVisibility();
 	}
 
@@ -92,13 +86,14 @@ public class GonococcalInfectionSectionComponent extends AbstractDiseaseSectionC
 	@Override
 	protected void clearOwnedFields() {
 		PathogenTestDto dto = binder.getBean();
-		if (dto != null) {
-			dto.setPorBAllele(null);
-			dto.setTbpBAllele(null);
-			dto.setSequenceType(null);
-			dto.setGenogroup(null);
-			dto.setDrugSusceptibility(null);
+		if (dto == null) {
+			return;
 		}
+		dto.setPorBAllele(null);
+		dto.setTbpBAllele(null);
+		dto.setSequenceType(null);
+		dto.setGenogroup(null);
+		dto.setDrugSusceptibility(null);
 	}
 
 	@Override
