@@ -303,6 +303,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			target.setSerotype(source.getSerotype());
 		}
 		target.setSerotypeText(source.getSerotypeText());
+		target.setBiotype(source.getBiotype());
+		target.setWgsPerformed(source.getWgsPerformed());
+		target.setWgsClusterId(source.getWgsClusterId());
+		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
 		target.setCqValue(source.getCqValue());
 		target.setCtValueE(source.getCtValueE());
 		target.setCtValueN(source.getCtValueN());
@@ -631,8 +635,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-		target.setSerotype(Serotype.fromString(source.getSerotype() == null ? null : source.getSerotype().toString()));
+		target.setSerotype(source.getSerotype());
 		target.setSerotypeText(source.getSerotypeText());
+		target.setBiotype(source.getBiotype());
+		target.setWgsPerformed(source.getWgsPerformed());
+		target.setWgsClusterId(source.getWgsClusterId());
+		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
 		target.setCqValue(source.getCqValue());
 		target.setCtValueE(source.getCtValueE());
 		target.setCtValueN(source.getCtValueN());

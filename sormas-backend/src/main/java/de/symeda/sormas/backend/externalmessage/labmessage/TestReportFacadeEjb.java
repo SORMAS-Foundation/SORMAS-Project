@@ -170,6 +170,9 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setFourFoldIncreaseAntibodyTiter(source.getFourFoldIncreaseAntibodyTiter());
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 
+		target.setBiotype(source.getBiotype());
+		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
+
 		return target;
 	}
 
@@ -222,7 +225,6 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTubeMitogene(source.getTubeMitogene());
 		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
 		target.setStrainCallStatus(source.getStrainCallStatus());
-		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 
 		// Drug susceptibility mappings
 		target.setAmikacinMic(source.getAmikacinMic());
@@ -275,6 +277,9 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPathogenTestCategory(source.getPathogenTestCategory());
 		target.setFourFoldIncreaseAntibodyTiter(source.getFourFoldIncreaseAntibodyTiter());
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+
+		target.setBiotype(source.getBiotype());
+		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
 
 		return target;
 	}
