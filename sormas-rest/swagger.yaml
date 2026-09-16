@@ -23384,6 +23384,17 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        biotype:
+          type: string
+          enum:
+          - YERSINIOSIS_1
+          - YERSINIOSIS_1A
+          - YERSINIOSIS_1B
+          - YERSINIOSIS_2
+          - YERSINIOSIS_3
+          - YERSINIOSIS_4
+          - YERSINIOSIS_5
+          - UNKNOWN
         changeDate:
           type: string
           format: date-time
@@ -23638,6 +23649,14 @@ components:
           - DENV_2
           - DENV_3
           - DENV_4
+          - YERSINIOSIS_1
+          - YERSINIOSIS_2
+          - YERSINIOSIS_3
+          - YERSINIOSIS_4
+          - YERSINIOSIS_5
+          - YERSINIOSIS_5_27
+          - YERSINIOSIS_8
+          - YERSINIOSIS_9
           - UNKNOWN
           - OTHER
         serotypeText:
@@ -23930,12 +23949,24 @@ components:
           pattern: "^[0-9a-zA-Z-]*$"
         viaLims:
           type: boolean
+        virulenceGenesDetected:
+          type: boolean
         westernBlotInterpretation:
           type: string
           enum:
           - POSITIVE
           - NEGATIVE
           - INDETERMINATE
+        wgsClusterId:
+          type: string
+          maxLength: 512
+          minLength: 0
+        wgsPerformed:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
       required:
       - lab
       - testResult
@@ -29615,6 +29646,17 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        biotype:
+          type: string
+          enum:
+          - YERSINIOSIS_1
+          - YERSINIOSIS_1A
+          - YERSINIOSIS_1B
+          - YERSINIOSIS_2
+          - YERSINIOSIS_3
+          - YERSINIOSIS_4
+          - YERSINIOSIS_5
+          - UNKNOWN
         capreomycinMic:
           type: string
         capreomycinSusceptibility:
@@ -29946,6 +29988,14 @@ components:
           - DENV_2
           - DENV_3
           - DENV_4
+          - YERSINIOSIS_1
+          - YERSINIOSIS_2
+          - YERSINIOSIS_3
+          - YERSINIOSIS_4
+          - YERSINIOSIS_5
+          - YERSINIOSIS_5_27
+          - YERSINIOSIS_8
+          - YERSINIOSIS_9
           - UNKNOWN
           - OTHER
         serotypeText:
@@ -30165,6 +30215,8 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        virulenceGenesDetected:
+          type: boolean
       required:
       - sampleReport
     TherapyDto:

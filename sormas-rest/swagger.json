@@ -22645,6 +22645,10 @@
             "maxLength" : 512,
             "minLength" : 0
           },
+          "biotype" : {
+            "type" : "string",
+            "enum" : [ "YERSINIOSIS_1", "YERSINIOSIS_1A", "YERSINIOSIS_1B", "YERSINIOSIS_2", "YERSINIOSIS_3", "YERSINIOSIS_4", "YERSINIOSIS_5", "UNKNOWN" ]
+          },
           "changeDate" : {
             "type" : "string",
             "format" : "date-time"
@@ -22846,7 +22850,7 @@
           },
           "serotype" : {
             "type" : "string",
-            "enum" : [ "DENV_1", "DENV_2", "DENV_3", "DENV_4", "UNKNOWN", "OTHER" ]
+            "enum" : [ "DENV_1", "DENV_2", "DENV_3", "DENV_4", "YERSINIOSIS_1", "YERSINIOSIS_2", "YERSINIOSIS_3", "YERSINIOSIS_4", "YERSINIOSIS_5", "YERSINIOSIS_5_27", "YERSINIOSIS_8", "YERSINIOSIS_9", "UNKNOWN", "OTHER" ]
           },
           "serotypeText" : {
             "type" : "string",
@@ -22975,9 +22979,21 @@
           "viaLims" : {
             "type" : "boolean"
           },
+          "virulenceGenesDetected" : {
+            "type" : "boolean"
+          },
           "westernBlotInterpretation" : {
             "type" : "string",
             "enum" : [ "POSITIVE", "NEGATIVE", "INDETERMINATE" ]
+          },
+          "wgsClusterId" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "wgsPerformed" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
           }
         },
         "required" : [ "lab", "testResult", "testType" ]
@@ -27305,6 +27321,10 @@
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "biotype" : {
+            "type" : "string",
+            "enum" : [ "YERSINIOSIS_1", "YERSINIOSIS_1A", "YERSINIOSIS_1B", "YERSINIOSIS_2", "YERSINIOSIS_3", "YERSINIOSIS_4", "YERSINIOSIS_5", "UNKNOWN" ]
+          },
           "capreomycinMic" : {
             "type" : "string"
           },
@@ -27531,7 +27551,7 @@
           },
           "serotype" : {
             "type" : "string",
-            "enum" : [ "DENV_1", "DENV_2", "DENV_3", "DENV_4", "UNKNOWN", "OTHER" ]
+            "enum" : [ "DENV_1", "DENV_2", "DENV_3", "DENV_4", "YERSINIOSIS_1", "YERSINIOSIS_2", "YERSINIOSIS_3", "YERSINIOSIS_4", "YERSINIOSIS_5", "YERSINIOSIS_5_27", "YERSINIOSIS_8", "YERSINIOSIS_9", "UNKNOWN", "OTHER" ]
           },
           "serotypeText" : {
             "type" : "string",
@@ -27660,6 +27680,9 @@
             "maxLength" : 36,
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
+          },
+          "virulenceGenesDetected" : {
+            "type" : "boolean"
           }
         },
         "required" : [ "sampleReport" ]
