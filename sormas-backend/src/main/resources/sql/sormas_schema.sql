@@ -17318,4 +17318,34 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS virulencegenesdetected b
 
 INSERT INTO schema_version (version_number, comment) VALUES (668, 'Yersiniosis - samples and pathogen tests');
 
+-- #14325 - Diphtheria: enhance case/contact data form - drug susceptibility fields
+
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinessusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
+
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinessusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (669, '#14325 - Diphtheria: add clindamycin, tetracyclines, meropenem and linezolid drug susceptibility fields');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
