@@ -109,8 +109,25 @@ public enum Drug {
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	AZITHROMYCIN,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	CEFIXIME,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	TETRACYCLINE,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	GENTAMICIN,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	SPECTINOMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	@Diseases(value = {

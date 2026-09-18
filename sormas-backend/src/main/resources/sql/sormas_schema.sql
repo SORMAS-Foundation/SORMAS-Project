@@ -17318,4 +17318,78 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS virulencegenesdetected b
 
 INSERT INTO schema_version (version_number, comment) VALUES (668, 'Yersiniosis - samples and pathogen tests');
 
+
+-- #14312 - Gonococcal infection antimicrobial susceptibility and molecular typing
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
+
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
+
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS porballele varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS genogroup varchar(512);
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS porballele varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS genogroup varchar(512);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS porballele varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS genogroup varchar(512);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS porballele varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS genogroup varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (669, '#14312 - Add Gonococcal infection antimicrobial susceptibility and molecular typing fields');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
