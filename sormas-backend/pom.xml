@@ -159,6 +159,10 @@
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers-standard-package</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>fop</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -168,6 +172,10 @@
 		<dependency>
 			<groupId>org.docx4j</groupId>
 			<artifactId>docx4j-docx-anon</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j-export-fo</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.docx4j</groupId>
