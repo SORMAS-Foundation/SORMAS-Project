@@ -128,7 +128,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -155,6 +156,7 @@ public enum PathogenTestType {
 		Disease.INFLUENZA,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
@@ -184,6 +186,7 @@ public enum PathogenTestType {
 		Disease.INFLUENZA,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@NotSelectableForNewTests
 	CQ_VALUE_DETECTION,
@@ -246,7 +249,8 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MULTIPLEX_PCR,
@@ -271,7 +275,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -305,7 +310,8 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	NASBA,
@@ -331,7 +337,8 @@ public enum PathogenTestType {
 		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TMA,
@@ -357,7 +364,8 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	CRISPR_DIAGNOSTICS,
@@ -381,7 +389,8 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	LINE_PROBE_ASSAY,
@@ -394,7 +403,8 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	SANGER_SEQUENCING,
@@ -433,7 +443,8 @@ public enum PathogenTestType {
 		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DNA_MICROARRAY,
@@ -443,6 +454,7 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
 		Disease.MALARIA,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
@@ -561,7 +573,8 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ANTIBODY_DETECTION,
@@ -597,7 +610,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -621,6 +635,7 @@ public enum PathogenTestType {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
@@ -685,7 +700,8 @@ public enum PathogenTestType {
 		Disease.PERTUSSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATERAL_FLOW_ASSAY,
@@ -707,7 +723,8 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOFLUORESCENCE_ASSAY,
@@ -738,7 +755,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
@@ -762,7 +780,8 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	// Positive/Negative interpretation plus the reciprocal titre (#14105): TEXT alone rendered no result
 	// field. The titre ('1:160') is kept as text, not a Float numeric value, like NEUTRALIZING_ANTIBODIES.
@@ -794,6 +813,7 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
@@ -821,6 +841,7 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
@@ -847,6 +868,7 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
@@ -874,7 +896,8 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
@@ -899,7 +922,8 @@ public enum PathogenTestType {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MICROSCOPY,
@@ -923,7 +947,8 @@ public enum PathogenTestType {
 		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GRAM_STAIN,
@@ -947,7 +972,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
@@ -972,7 +998,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
@@ -997,7 +1024,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -1025,7 +1053,8 @@ public enum PathogenTestType {
 		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -1053,7 +1082,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -1081,7 +1111,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
@@ -1107,7 +1138,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
@@ -1132,7 +1164,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -1194,7 +1227,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
@@ -1240,7 +1274,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------
@@ -1253,6 +1288,8 @@ public enum PathogenTestType {
 		"DIRECT_MICROSCOPY",
 		"RAPID_ANTIBODY_TEST" })
 	@RevealsTestTypeText
+	@Diseases(value = {
+		Disease.YERSINIOSIS }, hide = true)
 	OTHER;
 
 	/**

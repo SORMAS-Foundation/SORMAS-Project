@@ -22,31 +22,83 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum ExposureSetting {
 
-	INDOOR(ExposureCategory.AIR_BORNE, ExposureCategory.VECTOR_BORNE),
-	OUTDOOR(ExposureCategory.AIR_BORNE, ExposureCategory.VECTOR_BORNE),
+	@Deprecated
+	INDOOR(true, ExposureCategory.AIR_BORNE, ExposureCategory.VECTOR_BORNE),
+	@Deprecated
+	OUTDOOR(true, ExposureCategory.AIR_BORNE, ExposureCategory.VECTOR_BORNE),
 
-	PERSON_TO_PERSON(ExposureCategory.DIRECT_CONTACT),
-	OTHER_DIRECT_CONTACT(ExposureCategory.DIRECT_CONTACT),
+	@Deprecated
+	PERSON_TO_PERSON(true, ExposureCategory.DIRECT_CONTACT),
+	@Deprecated
+	OTHER_DIRECT_CONTACT(true, ExposureCategory.DIRECT_CONTACT),
 
-	MOSQUITO_BORNE(ExposureCategory.VECTOR_BORNE),
-	TICK_BORNE(ExposureCategory.VECTOR_BORNE),
+	@Deprecated
+	MOSQUITO_BORNE(true, ExposureCategory.VECTOR_BORNE),
+	@Deprecated
+	TICK_BORNE(true, ExposureCategory.VECTOR_BORNE),
+
+	HOUSEHOLD_SHARED_ACCOMMODATION(ExposureCategory.RESPIRATORY, ExposureCategory.PERSON_TO_PERSON),
+	SCHOOL_CHILDCARE(ExposureCategory.RESPIRATORY, ExposureCategory.PERSON_TO_PERSON),
+	WORKPLACE(ExposureCategory.RESPIRATORY, ExposureCategory.PERSON_TO_PERSON, ExposureCategory.SEXUAL),
+	GATHERING_EVENT(ExposureCategory.RESPIRATORY, ExposureCategory.PERSON_TO_PERSON),
+	HEALTHCARE(ExposureCategory.RESPIRATORY),
+	TRANSPORT(ExposureCategory.RESPIRATORY),
+	HEALTHCARE_INSTITUTIONAL(ExposureCategory.PERSON_TO_PERSON),
+
+	URBAN_RESIDENTIAL(ExposureCategory.VECTOR_BORNE),
+	RURAL_AGRICULTURAL(ExposureCategory.VECTOR_BORNE),
+	FOREST_NATURAL(ExposureCategory.VECTOR_BORNE),
+	WORKING_AT_AN_AIRPORT(ExposureCategory.VECTOR_BORNE),
 
 	DRINKING_WATER(ExposureCategory.WATER_BORNE),
 	RECREATIONAL_WATER(ExposureCategory.WATER_BORNE),
+	HOUSEHOLD(ExposureCategory.WATER_BORNE, ExposureCategory.FOOD_BORNE),
+	OCCUPATIONAL_ENVIRONMENTAL(ExposureCategory.WATER_BORNE),
+	EATING_OUTSIDE(ExposureCategory.FOOD_BORNE),
+	HOTEL(ExposureCategory.FOOD_BORNE),
+	CAMPING_SITE(ExposureCategory.FOOD_BORNE),
+	RENTED_APARTMENT_HOUSE(ExposureCategory.FOOD_BORNE),
+	FRIENDS_FAMILY(ExposureCategory.FOOD_BORNE),
 
 	PREGNANCY_OR_DELIVERY(ExposureCategory.VERTICAL_TRANSMISSION),
+	BREASTFEEDING(ExposureCategory.VERTICAL_TRANSMISSION),
 
-	OTHER(ExposureCategory.AIR_BORNE, ExposureCategory.RESPIRATORY_DROPLET),
-	UNKNOWN(ExposureCategory.AIR_BORNE, ExposureCategory.RESPIRATORY_DROPLET);
+	NATURAL_ENVIRONMENT(ExposureCategory.ENVIRONMENTAL),
+	OCCUPATIONAL_ENVIRONMENT(ExposureCategory.ENVIRONMENTAL),
+	CONTAMINATED_PREMISES(ExposureCategory.ENVIRONMENTAL),
+
+	TRANSFUSION(ExposureCategory.BLOOD_PARENTERAL),
+	ORGAN_TISSUE_TRANSPLANTATION(ExposureCategory.BLOOD_PARENTERAL),
+	INJECTION_DRUG_USE(ExposureCategory.BLOOD_PARENTERAL),
+	HEALTHCARE_PROCEDURE(ExposureCategory.BLOOD_PARENTERAL),
+	OCCUPATIONAL_EXPOSURE(ExposureCategory.BLOOD_PARENTERAL),
+
+	HOUSEHOLD_PRIVATE_RESIDENCE(ExposureCategory.SEXUAL),
+	HOUSEHOLD_OTHER_COUNTRY(ExposureCategory.SEXUAL),
+	GATHERING_SOCIAL_SETTING(ExposureCategory.SEXUAL),
+	LARGE_EVENT_WITH_SEXUAL_CONTACT(ExposureCategory.SEXUAL),
+
+	OTHER,
+	UNKNOWN;
 
 	private final Set<ExposureCategory> categories;
 
+	private final boolean deprecated;
+
+	ExposureSetting(boolean deprecated, ExposureCategory... categories) {
+		this.deprecated = deprecated;
+		this.categories =
+			Collections.unmodifiableSet(categories.length > 0 ? EnumSet.copyOf(Arrays.asList(categories)) : EnumSet.noneOf(ExposureCategory.class));
+	}
+
 	ExposureSetting(ExposureCategory... categories) {
-		this.categories = categories.length > 0 ? EnumSet.copyOf(Arrays.asList(categories)) : EnumSet.noneOf(ExposureCategory.class);
+		this(false, categories);
 	}
 
 	public Set<ExposureCategory> getCategories() {
@@ -54,10 +106,34 @@ public enum ExposureSetting {
 	}
 
 	public static List<ExposureSetting> getValues(ExposureCategory category) {
+		return getValues(category, false);
+	}
+
+	public static List<ExposureSetting> getValues(ExposureCategory category, boolean includeDeprecated) {
 		if (category == null) {
 			return Collections.emptyList();
 		}
-		return Arrays.stream(values()).filter(s -> s.categories.contains(category)).collect(Collectors.toList());
+
+		return Arrays.stream(values())
+			.filter(s -> s == OTHER || s == UNKNOWN || s.categories.contains(category))
+			.filter(s -> includeDeprecated || !s.isDeprecated())
+			.collect(Collectors.toList());
+	}
+
+	public static List<ExposureSetting> getValues(ExposureCategory category, Disease disease) {
+		return getValues(category, false, disease);
+	}
+
+	public static List<ExposureSetting> getValues(ExposureCategory category, boolean includeDeprecated, Disease disease) {
+		return getValues(category, includeDeprecated).stream().filter(s -> isVisibleForDisease(s, disease)).collect(Collectors.toList());
+	}
+
+	public boolean isDeprecated() {
+		return deprecated;
+	}
+
+	private static boolean isVisibleForDisease(ExposureSetting setting, Disease disease) {
+		return Diseases.DiseasesConfiguration.isDefinedOrMissing(ExposureSetting.class, setting.name(), disease);
 	}
 
 	@Override

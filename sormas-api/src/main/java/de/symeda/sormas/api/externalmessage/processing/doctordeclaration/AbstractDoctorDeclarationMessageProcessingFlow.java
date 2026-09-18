@@ -16,9 +16,9 @@
 package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -28,12 +28,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -61,6 +64,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
+import de.symeda.sormas.api.utils.DtoUserDefinedValuesHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
@@ -76,6 +80,25 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+	private enum CaseSyncSection {
+		CASE_DATA,
+		HEALTH_CONDITIONS,
+		SYMPTOMS,
+		ACTIVITIES_AS_CASE,
+		EXPOSURES,
+		HOSPITALIZATION
+	}
+
+	private static final List<CaseSyncSection> CASE_SYNC_SECTIONS = List.of(
+		CaseSyncSection.CASE_DATA,
+		CaseSyncSection.HEALTH_CONDITIONS,
+		CaseSyncSection.SYMPTOMS,
+		CaseSyncSection.ACTIVITIES_AS_CASE,
+		CaseSyncSection.EXPOSURES,
+		CaseSyncSection.HOSPITALIZATION);
+
 	protected AbstractDoctorDeclarationMessageProcessingFlow(
 		ExternalMessageDto externalMessage,
 		UserDto user,
@@ -84,6 +107,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		super(user, externalMessage, mapper, processingFacade);
 	}
 
+	@Override
 	protected FlowThen<ExternalMessageProcessingResult> doPickOrCreateSamplesFlow(
 		Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
 		BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
@@ -171,12 +195,9 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		logger.debug("[POST BUILD CASE] Processing case with UUID: {}", caseDto.getUuid());
 
-		postBuildCaseData(caseDto, externalMessageDto);
-		postBuildHealthConditions(caseDto, externalMessageDto);
-		postBuildCaseSymptoms(caseDto, externalMessageDto);
-		postBuildActivitiesAsCase(caseDto, externalMessageDto);
-		postBuildExposure(caseDto, externalMessageDto);
-		postBuildHospitalization(caseDto, externalMessageDto);
+		for (CaseSyncSection section : CASE_SYNC_SECTIONS) {
+			applyCaseSection(caseDto, externalMessageDto, section, false);
+		}
 
 		caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
 		caseDto.setOutcome(CaseOutcome.NO_OUTCOME);
@@ -285,115 +306,253 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	 *            The external message containing symptom data.
 	 */
 	protected void postBuildCaseSymptoms(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
-		if (externalMessageDto.getCaseSymptoms() != null) {
-			final SymptomsDto symptomsDto = SymptomsDto.build();
-			DtoCopyHelper.copyDtoValues(symptomsDto, externalMessageDto.getCaseSymptoms(), true, "uuid");
-			caseDto.setSymptoms(symptomsDto);
+		applyCaseSymptoms(caseDto, externalMessageDto);
+		logger.debug("[POST BUILD CASE] Symptoms set for case with UUID: {}", caseDto.getUuid());
+	}
 
-			logger.debug("[POST BUILD CASE] Symptoms set for case with UUID: {}", caseDto.getUuid());
+	@Override
+	protected CaseDataDto prepareSelectedCase(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		List<CaseSyncSection> sectionsToSync = new ArrayList<>();
+
+		for (CaseSyncSection section : CASE_SYNC_SECTIONS) {
+			if (hasExternalCaseSectionData(section, externalMessage) && !hasAnyUserDefinedCaseSectionValues(section, caze, externalMessage)) {
+				sectionsToSync.add(section);
+			}
+
 		}
+
+		for (CaseSyncSection section : sectionsToSync) {
+			applyCaseSection(caze, externalMessage, section, true);
+		}
+
+		return !sectionsToSync.isEmpty() ? getExternalMessageProcessingFacade().saveCase(caze) : caze;
+	}
+
+	private void applyCaseSection(CaseDataDto caseDto, ExternalMessageDto externalMessageDto, CaseSyncSection section, boolean selectedCase) {
+		switch (section) {
+		case CASE_DATA:
+			postBuildCaseData(caseDto, externalMessageDto);
+			break;
+		case HEALTH_CONDITIONS:
+			postBuildHealthConditions(caseDto, externalMessageDto);
+			break;
+		case SYMPTOMS:
+			postBuildCaseSymptoms(caseDto, externalMessageDto);
+			break;
+		case ACTIVITIES_AS_CASE:
+			postBuildActivitiesAsCase(caseDto, externalMessageDto);
+			break;
+		case EXPOSURES:
+			postBuildExposure(caseDto, externalMessageDto);
+			break;
+		case HOSPITALIZATION:
+			postBuildHospitalization(caseDto, externalMessageDto);
+			break;
+		default:
+			throw new IllegalStateException("Unhandled case sync section: " + section);
+		}
+	}
+
+	private void applyCaseSymptoms(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		SymptomsDto caseSymptoms = caze.getSymptoms();
+		if (caseSymptoms == null) {
+			caseSymptoms = SymptomsDto.build();
+			caze.setSymptoms(caseSymptoms);
+		}
+
+		if (externalMessage.getCaseSymptoms() == null) {
+			return;
+		}
+
+		DtoCopyHelper.copyDtoValues(caseSymptoms, externalMessage.getCaseSymptoms(), true, "uuid");
+	}
+
+	private boolean hasExternalCaseSectionData(CaseSyncSection section, ExternalMessageDto externalMessage) {
+		switch (section) {
+		case CASE_DATA:
+			return hasExternalCaseData(externalMessage);
+		case HEALTH_CONDITIONS:
+			return hasExternalHealthConditionsData(externalMessage);
+		case SYMPTOMS:
+			return hasExternalSymptomsData(externalMessage);
+		case ACTIVITIES_AS_CASE:
+			return hasExternalActivitiesAsCaseData(externalMessage);
+		case EXPOSURES:
+			return hasExternalExposureData(externalMessage);
+		case HOSPITALIZATION:
+			return hasExternalHospitalizationData(externalMessage);
+		default:
+			throw new IllegalStateException("Unhandled case sync section: " + section);
+		}
+	}
+
+	private boolean hasAnyUserDefinedCaseSectionValues(CaseSyncSection section, CaseDataDto caze, ExternalMessageDto externalMessage) {
+		switch (section) {
+		case CASE_DATA:
+			return hasAnyUserDefinedCaseDataValues(caze);
+		case HEALTH_CONDITIONS:
+			return hasAnyUserDefinedCaseHealthConditionsValues(caze, externalMessage);
+		case SYMPTOMS:
+			return hasAnyUserDefinedCaseSymptomsValues(caze);
+		case ACTIVITIES_AS_CASE:
+			return hasAnyUserDefinedCaseActivitiesAsCaseValues(caze);
+		case EXPOSURES:
+			return hasAnyUserDefinedCaseExposureValues(caze);
+		case HOSPITALIZATION:
+			return hasAnyUserDefinedCaseHospitalizationValues(caze);
+		default:
+			throw new IllegalStateException("Unhandled case sync section: " + section);
+		}
+	}
+
+	private boolean hasExternalSymptomsData(ExternalMessageDto externalMessage) {
+		return externalMessage.getCaseSymptoms() != null && SymptomsComparisonHelper.hasAnyUserDefinedSymptoms(externalMessage.getCaseSymptoms());
+	}
+
+	private boolean hasExternalCaseData(ExternalMessageDto externalMessage) {
+		return externalMessage.getCaseClassification() != null
+			|| externalMessage.getRadiographyCompatibility() != null
+			|| StringUtils.isNotBlank(externalMessage.getOtherDiagnosticCriteria())
+			|| externalMessage.getTreatmentStarted() != null
+			|| externalMessage.getTreatmentStartedDate() != null
+			|| externalMessage.getTreatmentNotApplicable() != null;
+	}
+
+	private boolean hasExternalHealthConditionsData(ExternalMessageDto externalMessage) {
+		if (Disease.TUBERCULOSIS.equals(externalMessage.getDisease())) {
+			return externalMessage.getTuberculosis() != null
+				|| externalMessage.getHiv() != null
+				|| externalMessage.getHivArt() != null
+				|| externalMessage.getTuberculosisInfectionYear() != null
+				|| externalMessage.getPreviousTuberculosisTreatment() != null
+				|| externalMessage.getComplianceWithTreatment() != null;
+		}
+
+		if (Disease.MALARIA.equals(externalMessage.getDisease())) {
+			return externalMessage.getMalaria() != null || externalMessage.getMalariaInfectedYear() != null;
+		}
+
+		return false;
+	}
+
+	private boolean hasExternalHospitalizationData(ExternalMessageDto externalMessage) {
+		return StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityName())
+			|| StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityExternalId())
+			|| StringUtils.isNotBlank(externalMessage.getHospitalizationFacilityDepartment())
+			|| externalMessage.getAdmittedToHealthFacility() != null
+			|| externalMessage.getHospitalizationAdmissionDate() != null
+			|| externalMessage.getHospitalizationDischargeDate() != null;
+	}
+
+	protected boolean hasExternalExposureData(ExternalMessageDto externalMessage) {
+		boolean hasAirportWorker = externalMessage.getAirportWorker() != null;
+		boolean hasHealthCareProfessional = externalMessage.getHealthcareProfessional() != null;
+		boolean hasModeOfTransmission = externalMessage.getModeOfTransmission() != null;
+		boolean hasModeOfTransmissionType = StringUtils.isNotBlank(externalMessage.getModeOfTransmissionType());
+		return !isEmptyJson(externalMessage.getExposures())
+			|| hasAirportWorker
+			|| hasHealthCareProfessional
+			|| hasModeOfTransmission
+			|| hasModeOfTransmissionType;
+	}
+
+	protected boolean hasExternalActivitiesAsCaseData(ExternalMessageDto externalMessage) {
+		return !isEmptyJson(externalMessage.getActivitiesAsCase());
+	}
+
+	private boolean hasAnyUserDefinedCaseSymptomsValues(CaseDataDto caze) {
+		return SymptomsComparisonHelper.hasAnyUserDefinedSymptoms(caze.getSymptoms());
+	}
+
+	private boolean hasAnyUserDefinedCaseDataValues(CaseDataDto caze) {
+		return (caze.getCaseClassification() != null && !CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification()))
+			|| caze.getRadiographyCompatibility() != null
+			|| StringUtils.isNotBlank(caze.getOtherDiagnosticCriteria())
+			|| (caze.getTreatmentStarted() != null && caze.getTreatmentStarted() != YesNoUnknown.UNKNOWN)
+			|| caze.getTreatmentStartDate() != null
+			|| caze.isTreatmentNotApplicable();
+	}
+
+	private boolean hasAnyUserDefinedCaseHealthConditionsValues(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		HealthConditionsDto healthConditions = caze.getHealthConditions();
+		if (healthConditions == null) {
+			return false;
+		}
+
+		if (Disease.TUBERCULOSIS.equals(externalMessage.getDisease())) {
+			return healthConditions.getTuberculosis() != null
+				|| healthConditions.getHiv() != null
+				|| healthConditions.getHivArt() != null
+				|| healthConditions.getTuberculosisInfectionYear() != null
+				|| healthConditions.getPreviousTuberculosisTreatment() != null
+				|| healthConditions.getComplianceWithTreatment() != null;
+		}
+
+		if (Disease.MALARIA.equals(externalMessage.getDisease())) {
+			return healthConditions.getMalaria() != null || healthConditions.getMalariaInfectedYear() != null;
+		}
+
+		return false;
+	}
+
+	private boolean hasAnyUserDefinedCaseHospitalizationValues(CaseDataDto caze) {
+		return DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(caze.getHospitalization(), HospitalizationDto.class)
+			|| (caze.getHealthFacility() != null && !FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid()))
+			|| StringUtils.isNotBlank(caze.getDepartment());
+	}
+
+	private boolean hasAnyUserDefinedCaseExposureValues(CaseDataDto caze) {
+		return DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(
+			caze.getEpiData(),
+			EpiDataDto.class,
+			List.of(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN, EpiDataDto.ACTIVITIES_AS_CASE));
+	}
+
+	private boolean hasAnyUserDefinedCaseActivitiesAsCaseValues(CaseDataDto caze) {
+		EpiDataDto epiData = caze.getEpiData();
+		if (epiData == null) {
+			return false;
+		}
+
+		// we only test for activityAsCaseDetailsKnown because activities as case list is only reachable if it is set to yes/no
+		return epiData.getActivityAsCaseDetailsKnown() != null && !YesNoUnknown.UNKNOWN.equals(epiData.getActivityAsCaseDetailsKnown());
+	}
+
+	@Override
+	protected boolean hasCaseDataMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return hasCaseSectionMismatch(CaseSyncSection.CASE_DATA, caze, externalMessage);
+	}
+
+	@Override
+	protected boolean hasCaseHealthConditionsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		return hasCaseSectionMismatch(CaseSyncSection.HEALTH_CONDITIONS, caze, externalMessage);
 	}
 
 	@Override
 	protected boolean hasCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		boolean symptomsMismatch = SymptomsComparisonHelper.hasCaseSymptomsMismatch(caze.getSymptoms(), externalMessage.getCaseSymptoms());
-
-		if (symptomsMismatch) {
-			logger.debug("[MESSAGE PROCESSING] Symptoms mismatch detected for existing case with UUID: {}", caze.getUuid());
-		}
-
-		return symptomsMismatch;
+		return hasCaseSectionMismatch(CaseSyncSection.SYMPTOMS, caze, externalMessage);
 	}
 
 	@Override
 	protected boolean hasCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		// Check if there is hospitalization data in the external message
-		if (externalMessage.getHospitalizationAdmissionDate() == null
-			&& externalMessage.getHospitalizationDischargeDate() == null
-			&& externalMessage.getAdmittedToHealthFacility() == null
-			&& externalMessage.getHospitalizationFacilityName() == null
-			&& externalMessage.getHospitalizationFacilityExternalId() == null) {
-			return false;
-		}
-
-		// Compare with existing hospitalization data
-		HospitalizationDto existingHospitalization = caze.getHospitalization();
-		if (existingHospitalization == null) {
-			// If there's external hospitalization data but no existing hospitalization, it's a mismatch
-			return true;
-		}
-
-		// Check for differences in key hospitalization fields
-		boolean admissionDateMismatch =
-			!Objects.equals(existingHospitalization.getAdmissionDate(), externalMessage.getHospitalizationAdmissionDate());
-		boolean dischargeDateMismatch =
-			!Objects.equals(existingHospitalization.getDischargeDate(), externalMessage.getHospitalizationDischargeDate());
-		boolean admittedMismatch =
-			!Objects.equals(existingHospitalization.getAdmittedToHealthFacility(), externalMessage.getAdmittedToHealthFacility());
-
-		boolean hospitalizationFacilityNameMismatch = !Objects.equals(
-			caze.getHealthFacility() != null ? caze.getHealthFacility().getCaption() : null,
-			externalMessage.getHospitalizationFacilityName());
-		boolean hospitalizationFacilityExternalIdMismatch = !Objects.equals(
-			caze.getHealthFacility() != null ? caze.getHealthFacility().getExternalId() : null,
-			externalMessage.getHospitalizationFacilityExternalId());
-
-		boolean mismatch = admissionDateMismatch
-			|| dischargeDateMismatch
-			|| admittedMismatch
-			|| hospitalizationFacilityNameMismatch
-			|| hospitalizationFacilityExternalIdMismatch;
-
-		if (mismatch) {
-			logger.debug("[MESSAGE PROCESSING] Hospitalization mismatch detected for existing case with UUID: {}", caze.getUuid());
-		}
-
-		return mismatch;
+		return hasCaseSectionMismatch(CaseSyncSection.HOSPITALIZATION, caze, externalMessage);
 	}
 
 	@Override
 	protected boolean hasCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		// Check if there are exposures in the external message
-		if (externalMessage.getExposures() == null || externalMessage.getExposures().isEmpty()) {
-			return false;
-		}
-
-		// Check if the case already has exposures
-		EpiDataDto epiData = caze.getEpiData();
-		if (epiData == null || epiData.getExposures() == null || epiData.getExposures().isEmpty()) {
-			// If there are external exposures but no existing exposures, it's a mismatch
-			return true;
-		}
-
-		// If both have exposures, consider it a mismatch (user should be informed to review)
-		boolean mismatch = true;
-
-		if (mismatch) {
-			logger.debug("[MESSAGE PROCESSING] Exposures mismatch detected for existing case with UUID: {}", caze.getUuid());
-		}
-
-		return mismatch;
+		return hasCaseSectionMismatch(CaseSyncSection.EXPOSURES, caze, externalMessage);
 	}
 
 	@Override
 	protected boolean hasCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-		// Check if there are activities as case in the external message
-		if (externalMessage.getActivitiesAsCase() == null || externalMessage.getActivitiesAsCase().isEmpty()) {
-			return false;
-		}
+		return hasCaseSectionMismatch(CaseSyncSection.ACTIVITIES_AS_CASE, caze, externalMessage);
+	}
 
-		// Check if the case already has activities as case
-		EpiDataDto epiData = caze.getEpiData();
-		if (epiData == null || epiData.getActivitiesAsCase() == null || epiData.getActivitiesAsCase().isEmpty()) {
-			// If there are external activities but no existing activities, it's a mismatch
-			return true;
-		}
-
-		// If both have activities, consider it a mismatch (user should be informed to review)
-		boolean mismatch = true;
+	private boolean hasCaseSectionMismatch(CaseSyncSection section, CaseDataDto caze, ExternalMessageDto externalMessage) {
+		boolean mismatch = hasExternalCaseSectionData(section, externalMessage) && hasAnyUserDefinedCaseSectionValues(section, caze, externalMessage);
 
 		if (mismatch) {
-			logger.debug("[MESSAGE PROCESSING] Activities as case mismatch detected for existing case with UUID: {}", caze.getUuid());
+			logger.debug("[MESSAGE PROCESSING] {} mismatch detected for existing case with UUID: {}", section, caze.getUuid());
 		}
 
 		return mismatch;
@@ -417,23 +576,23 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		if (externalMessageDto.getActivitiesAsCase() != null && !externalMessageDto.getActivitiesAsCase().isEmpty()) {
 			final ArrayList<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
+			final List<ActivityAsCaseDto> deserialActivityAsCaseDtos;
 
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
-				List<ActivityAsCaseDto> deserialActivityAsCaseDtos =
-					objectMapper.readValue(externalMessageDto.getActivitiesAsCase(), new TypeReference<List<ActivityAsCaseDto>>() {
+				deserialActivityAsCaseDtos =
+					deserializeEmbeddedList(externalMessageDto.getActivitiesAsCase(), new TypeReference<List<ActivityAsCaseDto>>() {
 					});
-				for (ActivityAsCaseDto activityAsCaseDto : deserialActivityAsCaseDtos) {
-					ActivityAsCaseDto newActivityAsCase = ActivityAsCaseDto.build(activityAsCaseDto.getActivityAsCaseType());
-					if (newActivityAsCase.getActivityAsCaseType() == null) {
-						newActivityAsCase.setActivityAsCaseType(ActivityAsCaseType.UNKNOWN);
-					}
-					DtoCopyHelper.copyDtoValues(newActivityAsCase, activityAsCaseDto, true, "uuid");
-					activitiesAsCase.add(newActivityAsCase);
+			} catch (JsonProcessingException e) {
+				throw new IllegalStateException("Failed to process activities as case for case with UUID " + caseDto.getUuid(), e);
+			}
+
+			for (ActivityAsCaseDto activityAsCaseDto : deserialActivityAsCaseDtos) {
+				ActivityAsCaseDto newActivityAsCase = ActivityAsCaseDto.build(activityAsCaseDto.getActivityAsCaseType());
+				if (newActivityAsCase.getActivityAsCaseType() == null) {
+					newActivityAsCase.setActivityAsCaseType(ActivityAsCaseType.UNKNOWN);
 				}
-			} catch (Exception e) {
-				logger.error("[POST BUILD CASE] Error while processing activities as case for case with UUID: {}", caseDto.getUuid(), e);
-				return;
+				DtoCopyHelper.copyDtoValues(newActivityAsCase, activityAsCaseDto, true, "uuid");
+				activitiesAsCase.add(newActivityAsCase);
 			}
 
 			if (!activitiesAsCase.isEmpty()) {
@@ -467,47 +626,45 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	 *            The external message containing exposure data in JSON format.
 	 */
 	protected void postBuildExposure(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		EpiDataDto epiData = caseDto.getEpiData();
+		if (epiData == null) {
+			epiData = EpiDataDto.build();
+			caseDto.setEpiData(epiData);
+		}
+
+		epiData.setAirportWorker(externalMessageDto.getAirportWorker());
+		epiData.setHealthcareProfessional(externalMessageDto.getHealthcareProfessional());
+		epiData.setModeOfTransmission(externalMessageDto.getModeOfTransmission());
+		epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
+		epiData.setProbableRouteOfTransmission(externalMessageDto.getProbableRouteOfTransmission());
+		epiData.setContactWithSexWorker(externalMessageDto.getContactWithSexWorker());
+		epiData.setMotherCitizenship(externalMessageDto.getMotherCitizenship());
+		epiData.setMotherCountryOfBirth(externalMessageDto.getMotherCountryOfBirth());
 
 		if (externalMessageDto.getExposures() != null && !externalMessageDto.getExposures().isEmpty()) {
 			final ArrayList<ExposureDto> exposures = new ArrayList<>();
+			final List<ExposureDto> deserialExposureDtos;
 
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
-				List<ExposureDto> deserialExposureDtos =
-					objectMapper.readValue(externalMessageDto.getExposures(), new TypeReference<List<ExposureDto>>() {
-					});
-				for (ExposureDto exposureDto : deserialExposureDtos) {
-					ExposureDto newExposure = ExposureDto.build(exposureDto.getExposureType());
-					if (newExposure.getExposureType() == null) {
-						newExposure.setExposureType(ExposureType.UNKNOWN);
-					}
-					DtoCopyHelper.copyDtoValues(newExposure, exposureDto, true, "uuid");
-					exposures.add(newExposure);
+				deserialExposureDtos = deserializeEmbeddedList(externalMessageDto.getExposures(), new TypeReference<List<ExposureDto>>() {
+				});
+			} catch (JsonProcessingException e) {
+				throw new IllegalStateException("Failed to process exposures for case with UUID " + caseDto.getUuid(), e);
+			}
+
+			for (ExposureDto exposureDto : deserialExposureDtos) {
+				ExposureDto newExposure = ExposureDto.build(exposureDto.getExposureType());
+				if (newExposure.getExposureType() == null) {
+					newExposure.setExposureType(ExposureType.UNKNOWN);
 				}
-			} catch (Exception e) {
-				logger.error("[POST BUILD CASE] Error while processing exposures for case with UUID: {}", caseDto.getUuid(), e);
-				return;
+				DtoCopyHelper.copyDtoValues(newExposure, exposureDto, true, "uuid");
+				exposures.add(newExposure);
 			}
 
 			if (!exposures.isEmpty()) {
-				EpiDataDto epiData = caseDto.getEpiData();
-				if (epiData == null) {
-					epiData = EpiDataDto.build();
-					caseDto.setEpiData(epiData);
-				}
-
 				epiData.setExposureDetailsKnown(YesNoUnknown.YES);
 				epiData.setExposures(exposures);
-				epiData.setAirportWorker(externalMessageDto.getAirportWorker());
-				epiData.setHealthcareProfessional(externalMessageDto.getHealthcareProfessional());
-				epiData.setModeOfTransmission(externalMessageDto.getModeOfTransmission());
-				epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
-				epiData.setProbableRouteOfTransmission(externalMessageDto.getProbableRouteOfTransmission());
-				epiData.setContactWithSexWorker(externalMessageDto.getContactWithSexWorker());
-				epiData.setMotherCitizenship(externalMessageDto.getMotherCitizenship());
-				epiData.setMotherCountryOfBirth(externalMessageDto.getMotherCountryOfBirth());
 			}
-
 		} else {
 			logger.debug("[POST BUILD CASE] No exposures to set for case with UUID: {}", caseDto.getUuid());
 		}
@@ -525,9 +682,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(externalMessageDto);
 
-		if (externalMessageDto.getHospitalizationFacilityName() == null
-			&& externalMessageDto.getHospitalizationFacilityExternalId() == null
-			&& externalMessageDto.getHospitalizationFacilityDepartment() == null) {
+		if (!hasExternalHospitalizationData(externalMessageDto)) {
 			logger.info("[POST BUILD HOSPITALIZATION] No hospitalization information found for case with UUID: {}.", caseDto.getUuid());
 			return;
 		}
@@ -654,6 +809,30 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		}
 
 		return hospitalFacilityReference;
+	}
+
+	public boolean isEmptyJson(String json) {
+		if (StringUtils.isBlank(json)) {
+			return true;
+		}
+
+		try {
+			JsonNode node = OBJECT_MAPPER.readTree(json);
+			return node.isNull() || ((node.isArray() || node.isObject()) && node.isEmpty());
+		} catch (JsonProcessingException e) {
+			return false; // Not valid JSON
+		}
+	}
+
+	public <T> List<T> deserializeEmbeddedList(String jsonString, TypeReference<List<T>> typeReference) throws JsonProcessingException {
+		if (StringUtils.isBlank(jsonString)) {
+			return Collections.emptyList();
+		}
+		final List<T> list = OBJECT_MAPPER.readValue(jsonString, typeReference);
+		if (list == null) {
+			return Collections.emptyList();
+		}
+		return list;
 	}
 
 }

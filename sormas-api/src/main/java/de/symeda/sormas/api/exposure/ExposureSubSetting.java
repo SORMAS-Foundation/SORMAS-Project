@@ -26,37 +26,77 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public enum ExposureSubSetting {
 
-	CLOSED_POORLY_VENTILATED(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR),
-	SHARED_HIGH_OCCUPANCY(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR),
-	ENCLOSED_LIMITED_CIRCULATION(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR),
-	VEHICLES(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR),
-	HEALTHCARE_SETTINGS(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR),
-	TEMPORARY_SHELTERS(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR),
+	@Deprecated
+	CLOSED_POORLY_VENTILATED(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR, true),
+	@Deprecated
+	SHARED_HIGH_OCCUPANCY(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR, true),
+	@Deprecated
+	ENCLOSED_LIMITED_CIRCULATION(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR, true),
+	@Deprecated
+	VEHICLES(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR, true),
+	@Deprecated
+	HEALTHCARE_SETTINGS(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR, true),
+	@Deprecated
+	TEMPORARY_SHELTERS(ExposureCategory.AIR_BORNE, ExposureSetting.INDOOR, true),
 
-	CROWDED_OUTDOOR_LIMITED_AIRFLOW(ExposureCategory.AIR_BORNE, ExposureSetting.OUTDOOR),
+	@Deprecated
+	CROWDED_OUTDOOR_LIMITED_AIRFLOW(ExposureCategory.AIR_BORNE, ExposureSetting.OUTDOOR, true),
 
-	CLOSE_PHYSICAL_CONTACT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON),
-	HIGH_TOUCH_ENVIRONMENTS(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON),
-	SEXUAL_ACTIVITY(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON),
+	@Deprecated
+	CLOSE_PHYSICAL_CONTACT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON, true),
+	@Deprecated
+	HIGH_TOUCH_ENVIRONMENTS(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON, true),
+	@Deprecated
+	SEXUAL_ACTIVITY(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON, true),
 
-	BLOOD_TRANSFUSION_RECIPIENT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.OTHER_DIRECT_CONTACT),
-	BONE_MARROW_TRANSPLANT_RECIPIENT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.OTHER_DIRECT_CONTACT),
+	@Deprecated
+	BLOOD_TRANSFUSION_RECIPIENT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.OTHER_DIRECT_CONTACT, true),
+	@Deprecated
+	BONE_MARROW_TRANSPLANT_RECIPIENT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.OTHER_DIRECT_CONTACT, true),
 
-	STANDING_WATER_AREAS(ExposureCategory.VECTOR_BORNE, ExposureSetting.MOSQUITO_BORNE),
-	HIGH_MOSQUITO_ACTIVITY_REGIONS(ExposureCategory.VECTOR_BORNE, ExposureSetting.MOSQUITO_BORNE),
-	TRAVELED_ABROAD(ExposureCategory.VECTOR_BORNE, ExposureSetting.MOSQUITO_BORNE),
+	@Deprecated
+	STANDING_WATER_AREAS(ExposureCategory.VECTOR_BORNE, ExposureSetting.MOSQUITO_BORNE, true),
+	@Deprecated
+	HIGH_MOSQUITO_ACTIVITY_REGIONS(ExposureCategory.VECTOR_BORNE, ExposureSetting.MOSQUITO_BORNE, true),
+	@Deprecated
+	TRAVELED_ABROAD(ExposureCategory.VECTOR_BORNE, ExposureSetting.MOSQUITO_BORNE, true),
 
-	FORESTED_GRASSY_RURAL(ExposureCategory.VECTOR_BORNE, ExposureSetting.TICK_BORNE),
-	WILDLIFE_RESERVOIR_AREAS(ExposureCategory.VECTOR_BORNE, ExposureSetting.TICK_BORNE),
+	@Deprecated
+	FORESTED_GRASSY_RURAL(ExposureCategory.VECTOR_BORNE, ExposureSetting.TICK_BORNE, true),
+	@Deprecated
+	WILDLIFE_RESERVOIR_AREAS(ExposureCategory.VECTOR_BORNE, ExposureSetting.TICK_BORNE, true),
 
-	EATING_AT_HOME(ExposureCategory.FOOD_BORNE, null),
-	EATING_OUTSIDE(ExposureCategory.FOOD_BORNE, null),
+	SYMPTOMATIC_RESPIRATORY_CASE(ExposureCategory.RESPIRATORY, null),
+	RESPIRATORY_SECRETIONS_DROPLETS(ExposureCategory.RESPIRATORY, null),
+	AEROSOLS(ExposureCategory.RESPIRATORY, null),
+	SHARED_INDOOR_ENVIRONMENT(ExposureCategory.RESPIRATORY, null),
+
+	SYMPTOMATIC_CONFIRMED_CASE(ExposureCategory.PERSON_TO_PERSON, null),
+	ASYMPTOMATIC_PERSON(ExposureCategory.PERSON_TO_PERSON, null),
+	HOUSEHOLD_MEMBER(ExposureCategory.PERSON_TO_PERSON, null),
+	COLLEAGUE_CLASSMATE(ExposureCategory.PERSON_TO_PERSON, null),
+	CAREGIVER(ExposureCategory.PERSON_TO_PERSON, null),
+	OTHER_PERSON(ExposureCategory.PERSON_TO_PERSON, null),
+
+	PUBLIC_POOL(ExposureCategory.WATER_BORNE, ExposureSetting.RECREATIONAL_WATER),
+	PRIVATE_POOL(ExposureCategory.WATER_BORNE, ExposureSetting.RECREATIONAL_WATER),
+	LAKE(ExposureCategory.WATER_BORNE, ExposureSetting.RECREATIONAL_WATER),
+	RIVER(ExposureCategory.WATER_BORNE, ExposureSetting.RECREATIONAL_WATER),
+	OCEAN(ExposureCategory.WATER_BORNE, ExposureSetting.RECREATIONAL_WATER),
+	WATER_PARK(ExposureCategory.WATER_BORNE, ExposureSetting.RECREATIONAL_WATER),
+
+	@Deprecated
+	EATING_AT_HOME(ExposureCategory.FOOD_BORNE, null, true),
+	@Deprecated
+	EATING_OUTSIDE(ExposureCategory.FOOD_BORNE, null, true),
 	@Diseases({
 		Disease.SHIGELLOSIS })
-	HOUSEHOLD_CONTACT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON),
+	@Deprecated
+	HOUSEHOLD_CONTACT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON, true),
 	@Diseases({
 		Disease.SALMONELLOSIS })
-	SHOPPING_FOR_FOOD(ExposureCategory.FOOD_BORNE, null),
+	@Deprecated
+	SHOPPING_FOR_FOOD(ExposureCategory.FOOD_BORNE, null, true),
 
 	UNKNOWN(null, null),
 	OTHER(null, null);
@@ -64,9 +104,16 @@ public enum ExposureSubSetting {
 	private final ExposureCategory category;
 	private final ExposureSetting setting;
 
-	ExposureSubSetting(ExposureCategory category, ExposureSetting setting) {
+	private final boolean deprecated;
+
+	ExposureSubSetting(ExposureCategory category, ExposureSetting setting, boolean deprecated) {
 		this.category = category;
 		this.setting = setting;
+		this.deprecated = deprecated;
+	}
+
+	ExposureSubSetting(ExposureCategory category, ExposureSetting setting) {
+		this(category, setting, false);
 	}
 
 	public ExposureCategory getCategory() {
@@ -78,22 +125,29 @@ public enum ExposureSubSetting {
 	}
 
 	public static List<ExposureSubSetting> getValues(ExposureCategory category, ExposureSetting setting) {
+		return getValues(category, setting, false);
+	}
+
+	public static List<ExposureSubSetting> getValues(ExposureCategory category, ExposureSetting setting, boolean includeDeprecated) {
 		if (category == null) {
 			return Collections.emptyList();
 		}
 
-		if (category.hasNoSubSetting()) {
+		if (category.hasNoSubSetting() || ExposureCategory.OTHER == category || ExposureCategory.UNKNOWN == category) {
 			return Collections.emptyList();
 		}
-		if (setting == null) {
+		if (!category.hasNoSetting() && setting == null || ExposureSetting.OTHER == setting || ExposureSetting.UNKNOWN == setting) {
 			return Collections.emptyList();
 		}
-		boolean hasSpecific = Arrays.stream(values()).anyMatch(s -> s.category == category && s.setting == setting);
+
+		boolean hasSpecific = Arrays.stream(values())
+			.anyMatch(s -> s.category == category && (s.setting == null || s.setting == setting) && (includeDeprecated || !s.isDeprecated()));
 		if (!hasSpecific) {
 			return Collections.emptyList();
 		}
 		return Arrays.stream(values())
-			.filter(s -> (s.category == category && s.setting == setting) || s.category == null)
+			.filter(s -> (s.category == category && (s.setting == null || s.setting == setting)) || s.category == null)
+			.filter(s -> includeDeprecated || !s.isDeprecated())
 			.collect(Collectors.toList());
 	}
 
@@ -103,10 +157,18 @@ public enum ExposureSubSetting {
 	 * which apply to every disease).
 	 */
 	public static List<ExposureSubSetting> getValues(ExposureCategory category, ExposureSetting setting, Disease disease) {
-		return getValues(category, setting).stream().filter(s -> isVisibleForDisease(s, disease)).collect(Collectors.toList());
+		return getValues(category, setting, false, disease);
+	}
+
+	public static List<ExposureSubSetting> getValues(ExposureCategory category, ExposureSetting setting, boolean includeDeprecated, Disease disease) {
+		return getValues(category, setting, includeDeprecated).stream().filter(s -> isVisibleForDisease(s, disease)).collect(Collectors.toList());
 	}
 
 	public static List<ExposureSubSetting> getValuesForCategoryOnly(ExposureCategory category) {
+		return getValuesForCategoryOnly(category, false);
+	}
+
+	public static List<ExposureSubSetting> getValuesForCategoryOnly(ExposureCategory category, boolean includeDeprecated) {
 		if (category == null) {
 			return Collections.emptyList();
 		}
@@ -116,13 +178,17 @@ public enum ExposureSubSetting {
 		}
 
 		// Check if this category has subsettings with null setting
-		boolean hasCategoryOnlySubSettings = Arrays.stream(values()).anyMatch(s -> s.category == category && s.setting == null);
+		boolean hasCategoryOnlySubSettings =
+			Arrays.stream(values()).anyMatch(s -> s.category == category && s.setting == null && (includeDeprecated || !s.isDeprecated()));
 
 		if (!hasCategoryOnlySubSettings) {
 			return Collections.emptyList();
 		}
 
-		return Arrays.stream(values()).filter(s -> (s.category == category && s.setting == null) || s.category == null).collect(Collectors.toList());
+		return Arrays.stream(values())
+			.filter(s -> (s.category == category && s.setting == null) || s.category == null)
+			.filter(s -> includeDeprecated || !s.isDeprecated())
+			.collect(Collectors.toList());
 	}
 
 	/**
@@ -130,12 +196,21 @@ public enum ExposureSubSetting {
 	 * to those whose {@code @Diseases} annotation matches the given disease (or values with no annotation).
 	 */
 	public static List<ExposureSubSetting> getValuesForCategoryOnly(ExposureCategory category, Disease disease) {
-		return getValuesForCategoryOnly(category).stream().filter(s -> isVisibleForDisease(s, disease)).collect(Collectors.toList());
+		return getValuesForCategoryOnly(category, false, disease);
+	}
+
+	public static List<ExposureSubSetting> getValuesForCategoryOnly(ExposureCategory category, boolean includeDeprecated, Disease disease) {
+		return getValuesForCategoryOnly(category, includeDeprecated).stream()
+			.filter(s -> isVisibleForDisease(s, disease))
+			.collect(Collectors.toList());
+	}
+
+	public boolean isDeprecated() {
+		return deprecated;
 	}
 
 	private static boolean isVisibleForDisease(ExposureSubSetting subSetting, Disease disease) {
-		return Diseases.DiseasesConfiguration.isMissing(ExposureSubSetting.class, subSetting.name())
-			|| Diseases.DiseasesConfiguration.isDefined(ExposureSubSetting.class, subSetting.name(), disease);
+		return Diseases.DiseasesConfiguration.isDefinedOrMissing(ExposureSubSetting.class, subSetting.name(), disease);
 	}
 
 	@Override

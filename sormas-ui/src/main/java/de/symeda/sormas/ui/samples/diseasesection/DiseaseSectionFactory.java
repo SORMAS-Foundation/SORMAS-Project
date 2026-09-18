@@ -63,6 +63,8 @@ public final class DiseaseSectionFactory {
 		case RUBELLA:
 		case CONGENITAL_RUBELLA:
 			return new RubellaSectionComponent();
+		case YERSINIOSIS:
+			return new YersiniosisSectionComponent();
 		default:
 			return new DefaultSectionComponent();
 		}

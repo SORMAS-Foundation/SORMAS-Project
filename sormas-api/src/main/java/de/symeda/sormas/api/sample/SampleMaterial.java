@@ -56,6 +56,7 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	DRY_BLOOD,
 
@@ -72,7 +73,8 @@ public enum SampleMaterial {
 		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	SERA,
 
 	@Diseases(value = {
@@ -108,7 +110,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	THROAT_ASPIRATE,
 
@@ -125,7 +128,8 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	NASAL_SWAB,
 
@@ -140,7 +144,8 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	THROAT_SWAB,
 
@@ -155,6 +160,7 @@ public enum SampleMaterial {
 		Disease.SYPHILIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.SALMONELLOSIS,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	NP_SWAB,
 
@@ -176,7 +182,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	RECTAL_SWAB,
 
 	@Diseases(value = {
@@ -191,7 +198,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	CEREBROSPINAL_FLUID,
 
 	@Diseases(value = {
@@ -215,7 +223,8 @@ public enum SampleMaterial {
 		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	CRUST,
 
 	@Diseases(value = {
@@ -237,7 +246,8 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	TISSUE,
 
 	@Diseases(value = {
@@ -271,7 +281,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	CORNEA_PM,
 
@@ -290,6 +301,7 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.SALMONELLOSIS,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	SALIVA,
 
@@ -309,7 +321,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	URINE_PM,
 
@@ -334,7 +347,8 @@ public enum SampleMaterial {
 		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	NUCHAL_SKIN_BIOPSY,
@@ -360,7 +374,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	SPUTUM,
 
 	@Diseases(value = {
@@ -382,7 +397,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ENDOTRACHEAL_ASPIRATE,
@@ -402,7 +418,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	BRONCHOALVEOLAR_LAVAGE,
 
 	@Diseases(value = {
@@ -425,7 +442,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	BRAIN_TISSUE,
@@ -448,7 +466,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ANTERIOR_NARES_SWAB,
@@ -470,7 +489,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	OP_ASPIRATE,
 
 	@Diseases(value = {
@@ -487,7 +507,8 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	NP_ASPIRATE,
 
 	@Diseases(value = {
@@ -509,7 +530,8 @@ public enum SampleMaterial {
 		Disease.INFLUENZA,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	PLEURAL_FLUID,
 
 	// Re-activated for RSV new samples (#14023): the RSV specimen requirements list Nasopharyngeal lavage.
@@ -531,7 +553,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.SALMONELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	OROPHARYNGEAL_SWAB,
 
 	@Diseases(value = {
@@ -553,7 +576,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	AMNIOTIC_FLUID,
 
 	// Clinical Sample (Other) is offered for every disease (#14018) — no @Diseases means "visible for all".
@@ -580,7 +604,8 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	PERITONEAL_FLUID,
 
 	@Diseases(value = {
@@ -600,7 +625,8 @@ public enum SampleMaterial {
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	SYNOVIAL_FLUID,
 
 	@Diseases(value = {
@@ -618,6 +644,7 @@ public enum SampleMaterial {
 		Disease.INFLUENZA,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	EDTA_WHOLE_BLOOD,
 
@@ -659,7 +686,8 @@ public enum SampleMaterial {
 
 	@Diseases({
 		Disease.SHIGELLOSIS,
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.YERSINIOSIS, })
 	PUS,
 
 	@Diseases({
@@ -695,7 +723,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ABSCESS_SWAB,
@@ -720,7 +749,8 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	BONE,
 
 	@Diseases(value = {
@@ -742,7 +772,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	BONE_MARROW,
 
 	@Diseases(value = {
@@ -765,7 +796,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {
@@ -787,7 +819,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	MIDDLE_EAR_FLUID,
@@ -810,7 +843,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLASMA,
@@ -833,7 +867,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	SWAB_UNSPECIFIED,
@@ -856,7 +891,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	TEARS,
@@ -880,7 +916,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CORD_BLOOD,
@@ -904,7 +941,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	LUNG_TISSUE,
 
 	@Diseases(value = {
@@ -924,7 +962,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLACENTA,
@@ -947,7 +986,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.RUBELLA,
-		Disease.CONGENITAL_RUBELLA }, hide = true)
+		Disease.CONGENITAL_RUBELLA,
+		Disease.YERSINIOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ULCER_SWAB,
@@ -968,7 +1008,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	UNKNOWN,
 
 	@Diseases(value = {
@@ -979,7 +1020,8 @@ public enum SampleMaterial {
 		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	OTHER;
 

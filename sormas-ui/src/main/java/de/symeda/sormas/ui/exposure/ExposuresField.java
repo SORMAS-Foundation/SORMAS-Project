@@ -69,7 +69,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	private static final String COLUMN_EXPOSURE_TYPE = ExposureDto.EXPOSURE_TYPE;
-	private static final String COLUMN_EXPOSURE_CATEGORY = ExposureDto.EXPOSURE_CATEGORY;
+	private static final String COLUMN_TYPE_OF_PLACE = ExposureDto.TYPE_OF_PLACE;
 	private static final String COLUMN_LOCATION_COUNTRY = "locationCountry";
 	private static final String COLUMN_DATE = Captions.date;
 	private static final String COLUMN_DESCRIPTION = ExposureDto.DESCRIPTION;
@@ -111,7 +111,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				COLUMN_EXPOSURE_TYPE,
 				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
-				COLUMN_EXPOSURE_CATEGORY,
+				COLUMN_TYPE_OF_PLACE,
 				COLUMN_DESCRIPTION);
 		} else {
 			table.setVisibleColumns(
@@ -119,7 +119,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				COLUMN_EXPOSURE_TYPE,
 				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
-				COLUMN_EXPOSURE_CATEGORY,
+				COLUMN_TYPE_OF_PLACE,
 				COLUMN_DESCRIPTION);
 		}
 		table.setCellStyleGenerator(

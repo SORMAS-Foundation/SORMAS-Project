@@ -113,6 +113,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_INVESTIGATION = CustomizableFieldGroup.EPIDATA_EXPOSURE_INVESTIGATION.getKey();
 	private static final String LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE = CustomizableFieldGroup.EPIDATA_ACTIVITY_AS_CASE.getKey();
 	private static final String LOC_CUSTOMIZABLE_FIELDS_CONTACT_WITH_SOURCE_CASE = CustomizableFieldGroup.EPIDATA_CONTACT_WITH_SOURCE_CASE.getKey();
+	private static final String SOURCE_CONTACTS_INSERT_LAYOUT_TOKEN = "{{SOURCE_CONTACTS_LAYOUT}}";
 	private static final String EXPOSURE_DATES_LAYOUT =
 		fluidRowLocs(3, "EXPOSURE_START_DATE_LABEL", 3, "EXPOSURE_START_DATE_VALUE", 3, "EXPOSURE_END_DATE_LABEL", 3, "EXPOSURE_END_DATE_VALUE");
 	private static final String ACTIVITY_AS_CASE_DATES_LAYOUT =
@@ -142,6 +143,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(LOC_EXP_PERIOD_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
+			SOURCE_CONTACTS_INSERT_LAYOUT_TOKEN +
 			loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_INVESTIGATION) +
 			loc(LOC_CONCLUSION_HEADING) +
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
@@ -166,11 +168,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE) +
 
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
-			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
-			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) +
-			loc(EpiDataDto.AIRPORT_WORKER) +
-			loc(EpiDataDto.HEALTHCARE_PROFESSIONAL) +
-			loc(EpiDataDto.AREA_INFECTED_ANIMALS);
+			loc(EpiDataDto.HEALTHCARE_PROFESSIONAL);
 
 	private static final String SOURCE_CONTACTS_HTML_LAYOUT =
 			locCss(VSPACE_TOP_3, LOC_SOURCE_CASE_CONTACTS_HEADING) +
@@ -258,9 +256,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		activityAsCasePanel.updateFieldsDisplay();
 		getContent().addComponent(activityAsCasePanel, LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE);
 
-		addField(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA, NullableOptionGroup.class);
-		addField(EpiDataDto.LARGE_OUTBREAKS_AREA, NullableOptionGroup.class);
-		addField(EpiDataDto.AREA_INFECTED_ANIMALS, NullableOptionGroup.class);
 		NullableOptionGroup ogContactWithSourceCaseKnown = addField(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN, NullableOptionGroup.class);
 
 		if (sourceContactsToggleCallback != null) {
@@ -376,7 +371,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					.ifPresent(country::setValue);
 			});
 		}
-
 	}
 
 	/**
@@ -684,14 +678,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		// Source contacts YESNOUnknown field should be visible only the diseases which are follow-up enabled,
-		// else normal layout without source contacts fields should be visible.
-		String layout;
-		if (parentClass == CaseDataDto.class && caseFollowUpEnabled) {
-			layout = MAIN_HTML_LAYOUT + SOURCE_CONTACTS_HTML_LAYOUT;
-		} else {
-			layout = MAIN_HTML_LAYOUT;
-		}
+		String sourceContactsLayout = parentClass == CaseDataDto.class && caseFollowUpEnabled ? SOURCE_CONTACTS_HTML_LAYOUT : "";
+		String layout = MAIN_HTML_LAYOUT.replace(SOURCE_CONTACTS_INSERT_LAYOUT_TOKEN, sourceContactsLayout);
 		return layout + OTHER_INFORMATION_HTML_LAYOUT;
 	}
 }

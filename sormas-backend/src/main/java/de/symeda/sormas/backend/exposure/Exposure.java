@@ -88,6 +88,8 @@ public class Exposure extends AbstractDomainObject {
 	public static final String CONDITION_OF_ANIMAL = "conditionOfAnimal";
 	public static final String ANIMAL_CATEGORY = "animalCategory";
 	public static final String ANIMAL_CATEGORY_DETAILS = "animalCategoryDetails";
+	public static final String ANIMAL_LOCATION = "animalLocation";
+	public static final String ANIMAL_LOCATION_DETAILS = "animalLocationText";
 	public static final String FOMITE_TRANSMISSION_LOCATION = "fomiteTransmissionLocation";
 	public static final String SUB_SETTINGS = "subSettings";
 	public static final String CONTACT_FACTORS = "contactFactors";

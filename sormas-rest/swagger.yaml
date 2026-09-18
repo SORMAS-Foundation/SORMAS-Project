@@ -15442,16 +15442,22 @@ components:
             type: string
             enum:
             - AIR_BORNE
-            - ANIMAL_CONTACT
             - DIRECT_CONTACT
+            - MEDICAL_CARE
+            - LAB
+            - RESPIRATORY_DROPLET
+            - ANIMAL_CONTACT
             - FOMITE_TRANSMISSION
             - FOOD_BORNE
             - VECTOR_BORNE
             - VERTICAL_TRANSMISSION
             - WATER_BORNE
-            - MEDICAL_CARE
-            - LAB
-            - RESPIRATORY_DROPLET
+            - RESPIRATORY
+            - PERSON_TO_PERSON
+            - ENVIRONMENTAL
+            - BLOOD_PARENTERAL
+            - SEXUAL
+            - UNKNOWN
             - OTHER
           uniqueItems: true
         extendedClassification:
@@ -18265,12 +18271,22 @@ components:
             - PROXIMITY_AND_DURATION
             - WIND_AND_AIRFLOW
             - DENSITY_OF_PEOPLE
+            - CLOSE_CONTACT
+            - PROLONGED_CONTACT
+            - SKIN_TO_SKIN_CONTACT
+            - CONTACT_WITH_SECRETIONS_BODY_FLUIDS
+            - SHARED_ACCOMMODATION_ACTIVITIES
             - SKIN_CONTACT
             - BODY_FLUIDS
+            - CLOSE_OR_PROLONGED_CONTACT
+            - SHARED_ACCOMMODATION_ACTIVITIES_PERSON
             - BUTCHERING
             - COOKING
             - TOUCHING_CONTACT_WITH_FLUIDS
             - SCRATCHES_BITES_LICKING
+            - HANDLING
+            - FEEDING
+            - CLEANING_PROVIDING_CARE
             - SHARED_SURFACES
             - OUTDOOR_ACTIVITIES
             - STANDING_WATER_PROXIMITY
@@ -18280,16 +18296,60 @@ components:
             - CLOTHING_COVERAGE
             - DURATION_OUTDOORS
             - EXPOSED_SKIN
+            - REPEATED_BITES
+            - INDOOR_EXPOSURE
+            - OUTDOOR_EXPOSURE
+            - NIGHT_TIME_EXPOSURE
+            - VEGETATION
+            - PROLONGED_FREQUENT_EXPOSURE
+            - AREA_HIGH_RISK_TRANSMISSION
             - DRINKING_CONTAMINATED_WATER
             - ICE_AND_FOOD_PREPARATION
             - SWALLOWING_WATER
             - CONTACT_WITH_OPEN_WOUNDS
+            - CONTACT_WITH_WASTEWATER
+            - CONTACT_WITH_FLOODWATER
+            - IMMERSION
+            - ACCIDENTAL_INGESTION
+            - SWIMMING_BATHING
+            - WATER_SPORTS
             - EGG
             - MEAT
             - FISH_SEAFOOD
             - DAIRY
             - FRUIT
             - RAW_VEGETABLES
+            - CONSUMED
+            - TASTED
+            - HANDLED
+            - PREPARED
+            - SHARED_MEAL
+            - RAW_UNDERCOOKED_CONSUMPTION
+            - INADEQUATE_STORAGE_TEMPERATURE
+            - SKIN_CONTACT_ENV
+            - INHALATION
+            - OUTDOOR_EXPOSURE_ENV
+            - WOUND_CONTAMINATION
+            - HANDLING_ENV
+            - OCCUPATIONAL_EXPOSURE_ENV
+            - INJECTION
+            - NEEDLESTICK
+            - TRANSFUSION_EXPOSURE
+            - TRANSPLANTATION
+            - SHARING_NEEDLES_SYRINGES
+            - INVASIVE_PROCEDURE
+            - PERCUTANEOUS_EXPOSURE
+            - MUCOSAL
+            - VAGINAL
+            - ANAL
+            - ORAL
+            - GENITAL_CONTACT
+            - SKIN_TO_SKIN
+            - MULTIPLE_PARTNERS
+            - ANONYMOUS_PARTNER
+            - TRANSACTIONAL_SEX
+            - BEING_A_SEX_WORKER
+            - CONTACT_WITH_SEX_WORKER
             - UNKNOWN
             - OTHER
           uniqueItems: true
@@ -18341,16 +18401,22 @@ components:
           type: string
           enum:
           - AIR_BORNE
-          - ANIMAL_CONTACT
           - DIRECT_CONTACT
+          - MEDICAL_CARE
+          - LAB
+          - RESPIRATORY_DROPLET
+          - ANIMAL_CONTACT
           - FOMITE_TRANSMISSION
           - FOOD_BORNE
           - VECTOR_BORNE
           - VERTICAL_TRANSMISSION
           - WATER_BORNE
-          - MEDICAL_CARE
-          - LAB
-          - RESPIRATORY_DROPLET
+          - RESPIRATORY
+          - PERSON_TO_PERSON
+          - ENVIRONMENTAL
+          - BLOOD_PARENTERAL
+          - SEXUAL
+          - UNKNOWN
           - OTHER
         exposureComment:
           type: string
@@ -18383,9 +18449,40 @@ components:
           - OTHER_DIRECT_CONTACT
           - MOSQUITO_BORNE
           - TICK_BORNE
+          - HOUSEHOLD_SHARED_ACCOMMODATION
+          - SCHOOL_CHILDCARE
+          - WORKPLACE
+          - GATHERING_EVENT
+          - HEALTHCARE
+          - TRANSPORT
+          - HEALTHCARE_INSTITUTIONAL
+          - URBAN_RESIDENTIAL
+          - RURAL_AGRICULTURAL
+          - FOREST_NATURAL
+          - WORKING_AT_AN_AIRPORT
           - DRINKING_WATER
           - RECREATIONAL_WATER
+          - HOUSEHOLD
+          - OCCUPATIONAL_ENVIRONMENTAL
+          - EATING_OUTSIDE
+          - HOTEL
+          - CAMPING_SITE
+          - RENTED_APARTMENT_HOUSE
+          - FRIENDS_FAMILY
           - PREGNANCY_OR_DELIVERY
+          - BREASTFEEDING
+          - NATURAL_ENVIRONMENT
+          - OCCUPATIONAL_ENVIRONMENT
+          - CONTAMINATED_PREMISES
+          - TRANSFUSION
+          - ORGAN_TISSUE_TRANSPLANTATION
+          - INJECTION_DRUG_USE
+          - HEALTHCARE_PROCEDURE
+          - OCCUPATIONAL_EXPOSURE
+          - HOUSEHOLD_PRIVATE_RESIDENCE
+          - HOUSEHOLD_OTHER_COUNTRY
+          - GATHERING_SOCIAL_SETTING
+          - LARGE_EVENT_WITH_SEXUAL_CONTACT
           - OTHER
           - UNKNOWN
         exposureSettingDetails:
@@ -18562,6 +18659,7 @@ components:
             enum:
             - WEARING_MASK
             - DISTANCE_1_5M
+            - PHYSICAL_DISTANCING
             - FACE_TO_FACE_15MIN
             - VENTILATION_HEPA
             - HAND_HYGIENE
@@ -18569,8 +18667,13 @@ components:
             - SAFE_SEX
             - WEARING_PPE
             - VACCINATION
+            - CLEANING
+            - DISINFECTION
+            - VACCINATION_ANIMAL
+            - VACCINATION_CASE
             - HAND_WASHING
             - WOUND_WASHING
+            - HAND_OR_WOUND_HYGIENE
             - INSECT_REPELLENT
             - HERBS
             - COILS
@@ -18588,11 +18691,25 @@ components:
             - SHOWER_AFTER_SWIMMING
             - WOUND_COVERAGE
             - BATHING_CONTAMINATED_WATER
+            - AVOIDING_INGESTION
+            - HYGIENE
             - WELL_COOKED
             - COLD_HOT_CHAIN
             - WASHED
+            - EXCLUSION_DIET_YERSINIOSIS
             - MEDICATION
             - C_SECTION
+            - SAFE_DELIVERY
+            - BREASTFEEDING_PRECAUTIONS
+            - AVOIDANCE
+            - GLOVES
+            - SAFE_INJECTION
+            - SHARPS_SAFETY
+            - BLOOD_SCREENING
+            - CONDOM_BARRIER
+            - PARTNER_NOTIFICATION
+            - STI_PREVENTION
+            - UNKNOWN
             - OTHER
           uniqueItems: true
         protectiveMeasuresDetails:
@@ -18671,6 +18788,22 @@ components:
             - TRAVELED_ABROAD
             - FORESTED_GRASSY_RURAL
             - WILDLIFE_RESERVOIR_AREAS
+            - SYMPTOMATIC_RESPIRATORY_CASE
+            - RESPIRATORY_SECRETIONS_DROPLETS
+            - AEROSOLS
+            - SHARED_INDOOR_ENVIRONMENT
+            - SYMPTOMATIC_CONFIRMED_CASE
+            - ASYMPTOMATIC_PERSON
+            - HOUSEHOLD_MEMBER
+            - COLLEAGUE_CLASSMATE
+            - CAREGIVER
+            - OTHER_PERSON
+            - PUBLIC_POOL
+            - PRIVATE_POOL
+            - LAKE
+            - RIVER
+            - OCEAN
+            - WATER_PARK
             - EATING_AT_HOME
             - EATING_OUTSIDE
             - HOUSEHOLD_CONTACT
@@ -23251,6 +23384,17 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        biotype:
+          type: string
+          enum:
+          - YERSINIOSIS_1
+          - YERSINIOSIS_1A
+          - YERSINIOSIS_1B
+          - YERSINIOSIS_2
+          - YERSINIOSIS_3
+          - YERSINIOSIS_4
+          - YERSINIOSIS_5
+          - UNKNOWN
         changeDate:
           type: string
           format: date-time
@@ -23505,6 +23649,14 @@ components:
           - DENV_2
           - DENV_3
           - DENV_4
+          - YERSINIOSIS_1
+          - YERSINIOSIS_2
+          - YERSINIOSIS_3
+          - YERSINIOSIS_4
+          - YERSINIOSIS_5
+          - YERSINIOSIS_5_27
+          - YERSINIOSIS_8
+          - YERSINIOSIS_9
           - UNKNOWN
           - OTHER
         serotypeText:
@@ -23797,12 +23949,24 @@ components:
           pattern: "^[0-9a-zA-Z-]*$"
         viaLims:
           type: boolean
+        virulenceGenesDetected:
+          type: boolean
         westernBlotInterpretation:
           type: string
           enum:
           - POSITIVE
           - NEGATIVE
           - INDETERMINATE
+        wgsClusterId:
+          type: string
+          maxLength: 512
+          minLength: 0
+        wgsPerformed:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
       required:
       - lab
       - testResult
@@ -29482,6 +29646,17 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        biotype:
+          type: string
+          enum:
+          - YERSINIOSIS_1
+          - YERSINIOSIS_1A
+          - YERSINIOSIS_1B
+          - YERSINIOSIS_2
+          - YERSINIOSIS_3
+          - YERSINIOSIS_4
+          - YERSINIOSIS_5
+          - UNKNOWN
         capreomycinMic:
           type: string
         capreomycinSusceptibility:
@@ -29813,6 +29988,14 @@ components:
           - DENV_2
           - DENV_3
           - DENV_4
+          - YERSINIOSIS_1
+          - YERSINIOSIS_2
+          - YERSINIOSIS_3
+          - YERSINIOSIS_4
+          - YERSINIOSIS_5
+          - YERSINIOSIS_5_27
+          - YERSINIOSIS_8
+          - YERSINIOSIS_9
           - UNKNOWN
           - OTHER
         serotypeText:
@@ -30032,6 +30215,8 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        virulenceGenesDetected:
+          type: boolean
       required:
       - sampleReport
     TherapyDto:

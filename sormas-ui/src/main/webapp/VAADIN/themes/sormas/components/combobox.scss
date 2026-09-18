@@ -2,6 +2,12 @@
 @mixin sormas-combobox {
 
   .v-filterselect {
+
+  &.deprecated-select-value {
+    .v-filterselect-input {
+    text-decoration: line-through;
+    }
+  }
   
     [class$="input"] {
       background-color: $v-background-color;
@@ -55,6 +61,10 @@
   }
   
   .v-filterselect-suggestpopup {
+	.deprecated-select-item {
+    text-decoration: line-through;
+	}
+
     div[class*="page"] {
       @include opacity(.9);
       @include transform( scale(1.2) );

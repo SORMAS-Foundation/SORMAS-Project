@@ -45,6 +45,30 @@ public enum Serotype {
 	@Diseases({
 		Disease.DENGUE })
 	DENV_4,
+	@Diseases({
+		Disease.YERSINIOSIS })
+	YERSINIOSIS_1,
+	@Diseases({
+		Disease.YERSINIOSIS })
+	YERSINIOSIS_2,
+	@Diseases({
+		Disease.YERSINIOSIS })
+	YERSINIOSIS_3,
+	@Diseases({
+		Disease.YERSINIOSIS })
+	YERSINIOSIS_4,
+	@Diseases({
+		Disease.YERSINIOSIS })
+	YERSINIOSIS_5,
+	@Diseases({
+		Disease.YERSINIOSIS })
+	YERSINIOSIS_5_27,
+	@Diseases({
+		Disease.YERSINIOSIS })
+	YERSINIOSIS_8,
+	@Diseases({
+		Disease.YERSINIOSIS })
+	YERSINIOSIS_9,
 	UNKNOWN,
 	OTHER;
 

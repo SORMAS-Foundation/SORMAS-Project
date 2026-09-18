@@ -17298,6 +17298,27 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS greggstriad varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (667, '#14291 - Add Congenital Rubella Syndrome specific symptoms and complications');
 
+-- #13973 - Yersiniosis - samples and pathogen tests
+
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS biotype varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS wgsperformed varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS wgsclusterid varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS virulencegenesdetected boolean;
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS biotype varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS wgsperformed varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS wgsclusterid varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS virulencegenesdetected boolean;
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS biotype varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS virulencegenesdetected boolean;
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS biotype varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS virulencegenesdetected boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (668, 'Yersiniosis - samples and pathogen tests');
+
+
 -- #14312 - Gonococcal infection antimicrobial susceptibility and molecular typing
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
@@ -17373,6 +17394,6 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS genogroup varchar(512);
 ALTER TABLE testreport ALTER COLUMN serogroupspecificationtext TYPE varchar(512);
 ALTER TABLE testreport_history ALTER COLUMN serogroupspecificationtext TYPE varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (668, '#14312 - Add Gonococcal infection antimicrobial susceptibility and molecular typing fields');
+INSERT INTO schema_version (version_number, comment) VALUES (669, '#14312 - Add Gonococcal infection antimicrobial susceptibility and molecular typing fields');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
