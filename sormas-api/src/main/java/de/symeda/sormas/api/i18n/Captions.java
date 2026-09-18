@@ -3565,6 +3565,7 @@ public interface Captions {
 	String TestReport_tubeMitogeneGT10 = "TestReport.tubeMitogeneGT10";
 	String TestReport_tubeNil = "TestReport.tubeNil";
 	String TestReport_tubeNilGT10 = "TestReport.tubeNilGT10";
+	String theDisease = "theDisease";
 	String Therapy_beijingLineage = "Therapy.beijingLineage";
 	String Therapy_directlyObservedTreatment = "Therapy.directlyObservedTreatment";
 	String Therapy_mdrXdrTuberculosis = "Therapy.mdrXdrTuberculosis";
