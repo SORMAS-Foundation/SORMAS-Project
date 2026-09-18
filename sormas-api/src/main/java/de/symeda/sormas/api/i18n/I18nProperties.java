@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -38,6 +39,8 @@ import org.apache.commons.text.StringSubstitutor;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ResourceBundle;
 import de.symeda.sormas.api.caze.InfectionSetting;
+
+import javax.annotation.Nullable;
 
 public final class I18nProperties {
 
@@ -125,6 +128,14 @@ public final class I18nProperties {
 
 		final Language language = userLanguage.get();
 		return getEnumCaption(language, value);
+	}
+
+	public static String getEnumCaptionOrDefault(@Nullable Enum<?> value, Supplier<String> defaultCaptionSupplier) {
+		if (value == null) {
+			return defaultCaptionSupplier.get();
+		}
+
+		return getEnumCaption(value);
 	}
 
 	@SuppressWarnings("rawtypes")
