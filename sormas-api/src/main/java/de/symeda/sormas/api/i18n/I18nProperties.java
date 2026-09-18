@@ -40,6 +40,8 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ResourceBundle;
 import de.symeda.sormas.api.caze.InfectionSetting;
 
+import javax.annotation.Nullable;
+
 public final class I18nProperties {
 
 	public static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
@@ -128,7 +130,7 @@ public final class I18nProperties {
 		return getEnumCaption(language, value);
 	}
 
-	public static String getEnumCaptionOrDefault(Enum<?> value, Supplier<String> defaultCaptionSupplier) {
+	public static String getEnumCaptionOrDefault(@Nullable Enum<?> value, Supplier<String> defaultCaptionSupplier) {
 		if (value == null) {
 			return defaultCaptionSupplier.get();
 		}

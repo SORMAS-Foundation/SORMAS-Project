@@ -211,7 +211,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		addFields(fieldsList);
 
 		Field<?> stiProphylaxis = getField(STI_PROPHYLAXIS);
-		Supplier<String> defaultCaptionSupplier = Suppliers.memoize(() -> I18nProperties.getCaption(Captions.disease));
+		Supplier<String> defaultCaptionSupplier = Suppliers.memoize(() -> I18nProperties.getCaption(Captions.theDisease));
 		stiProphylaxis.setCaption(
 			String.format(
 				I18nProperties.getCaption(Captions.HealthConditions_stiProphylaxis),
