@@ -520,11 +520,6 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GENOTYPING,
 
-	@Diseases(Disease.GONOCOCCAL_INFECTION)
-	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
-	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
-	PENICILLINASE_ACTIVITY,
-
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
@@ -1192,6 +1187,11 @@ public enum PathogenTestType {
 	// ----------------------------------------------------------------------------------------------
 	// Antimicrobial Susceptibility Testing
 	// ----------------------------------------------------------------------------------------------
+
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	PENICILLINASE_ACTIVITY,
 
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,

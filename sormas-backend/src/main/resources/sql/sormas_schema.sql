@@ -17390,10 +17390,6 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS genogroup varchar(512);
 
--- Match the updated TestReport text length.
-ALTER TABLE testreport ALTER COLUMN serogroupspecificationtext TYPE varchar(512);
-ALTER TABLE testreport_history ALTER COLUMN serogroupspecificationtext TYPE varchar(512);
-
 INSERT INTO schema_version (version_number, comment) VALUES (669, '#14312 - Add Gonococcal infection antimicrobial susceptibility and molecular typing fields');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

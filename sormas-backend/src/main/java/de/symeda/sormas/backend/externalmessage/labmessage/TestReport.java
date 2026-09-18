@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.externalmessage.labmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.util.Date;
 import java.util.List;
@@ -1066,7 +1067,7 @@ public class TestReport extends AbstractDomainObject {
 		this.seroGroupSpecification = seroGroupSpecification;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_SMALL)
 	public String getSeroGroupSpecificationText() {
 		return seroGroupSpecificationText;
 	}

@@ -1009,7 +1009,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.SALMONELLOSIS,
-		Disease.YERSINIOSIS }, hide = true)
+		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	UNKNOWN,
 
 	@Diseases(value = {

@@ -1,17 +1,25 @@
 package de.symeda.sormas.api.sample;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 
-public class SampleMaterialGonococcalInfectionTest {
+public class SampleMaterialGonococcalInfectionTest extends AbstractSampleMaterialTest {
 
-	@Test
-	public void genitalSwabIsSelectable() {
-		DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.GONOCOCCAL_INFECTION);
-		assertTrue(checker.isVisible(SampleMaterial.class, SampleMaterial.GENITAL_SWAB.name()));
+	@Override
+	protected SampleMaterial[] getAllowedSampleMaterial() {
+		return new SampleMaterial[] {
+			SampleMaterial.GENITAL_SWAB,
+			SampleMaterial.CLINICAL_SAMPLE,
+			SampleMaterial.URINE,
+			SampleMaterial.RECTAL_SWAB,
+			SampleMaterial.OROPHARYNGEAL_SWAB,
+			SampleMaterial.CONJUNCTIVAL_SWAB,
+			SampleMaterial.BLOOD,
+			SampleMaterial.CEREBROSPINAL_FLUID,
+			SampleMaterial.SYNOVIAL_FLUID };
+	}
+
+	@Override
+	protected Disease getDisease() {
+		return Disease.GONOCOCCAL_INFECTION;
 	}
 }

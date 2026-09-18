@@ -1,8 +1,20 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2026 SORMAS Foundation gGmbH
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License.
- */
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
 import com.vaadin.ui.TextField;
@@ -24,6 +36,7 @@ public class GonococcalInfectionSectionComponent extends AbstractDiseaseSectionC
 	private TextField sequenceType;
 	private TextField genogroup;
 	private DrugSusceptibilityForm drugSusceptibilityField;
+	private PathogenTestType currentTestType;
 
 	@Override
 	protected void buildLayout() {
@@ -50,24 +63,16 @@ public class GonococcalInfectionSectionComponent extends AbstractDiseaseSectionC
 	@Override
 	protected void wireVisibility() {
 		track(eventBus.on(TestTypeChangedEvent.class, event -> {
-			PathogenTestType type = event.getTestType();
-			setGenotypingVisible(type == PathogenTestType.GENOTYPING);
-			boolean astVisible = drugSusceptibilityField.updateFieldsVisibility(disease, type);
+			currentTestType = event.getTestType();
+			setGenotypingVisible(currentTestType == PathogenTestType.GENOTYPING);
+			boolean astVisible = drugSusceptibilityField.updateFieldsVisibility(disease, currentTestType);
 			setDrugSusceptibilityRowVisible(astVisible);
-			if (type == PathogenTestType.GENOTYPING || type == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+			if (currentTestType == PathogenTestType.GENOTYPING || currentTestType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 				eventBus.fire(new SetTestResultEvent(PathogenTestResultType.NOT_APPLICABLE));
-			} else if (type != null) {
+			} else if (currentTestType != null) {
 				eventBus.fire(new SetTestResultEvent(null));
 			}
 		}));
-	}
-
-	@Override
-	public void setDto(PathogenTestDto dto) {
-		super.setDto(dto);
-		PathogenTestType type = dto == null ? null : dto.getTestType();
-		setGenotypingVisible(type == PathogenTestType.GENOTYPING);
-		setDrugSusceptibilityRowVisible(drugSusceptibilityField.updateFieldsVisibility(disease, type));
 	}
 
 	private void setGenotypingVisible(boolean visible) {

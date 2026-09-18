@@ -15,32 +15,31 @@ import de.symeda.sormas.api.AbstractUnitTest;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 
-public abstract class AbstractPathogenTest extends AbstractUnitTest {
+public abstract class AbstractSampleMaterialTest extends AbstractUnitTest {
 
 	protected final DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(getDisease());
 
-	abstract protected PathogenTestType[] getAllowedPathogenTests();
+	abstract protected SampleMaterial[] getAllowedSampleMaterial();
 
 	abstract protected Disease getDisease();
 
 	@Test
-	void requiredTestTypesAreVisible() {
-		Assertions.assertAll(Arrays.stream(getAllowedPathogenTests()).map((type) -> (Executable) () -> {
-			assertTrue(checker.isVisible(PathogenTestType.class, type.name()), toReadableString(type) + " must be visible for " + getDisease());
-			assertTrue(PathogenTestType.isSelectableForNewTests(type), toReadableString(type) + " must be selectable for new tests");
+	void requiredSampleMaterialsAreVisible() {
+		Assertions.assertAll(Arrays.stream(getAllowedSampleMaterial()).map((type) -> (Executable) () -> {
+			assertTrue(checker.isVisible(SampleMaterial.class, type.name()), toReadableString(type) + " must be visible for " + getDisease());
 		}).collect(Collectors.toList()));
 	}
 
 	@Test
-	void onlyRequiredTestTypesAreVisible() {
-		PathogenTestType[] forbiddenPathogenTestTypes = ArrayUtils.removeElements(PathogenTestType.values(), getAllowedPathogenTests());
+	void onlyRequiredSampleMaterialsAreVisible() {
+		SampleMaterial[] forbiddenSampleMaterials = ArrayUtils.removeElements(SampleMaterial.values(), getAllowedSampleMaterial());
 
-		Assertions.assertAll(Arrays.stream(forbiddenPathogenTestTypes).map((type) -> (Executable) () -> {
+		Assertions.assertAll(Arrays.stream(forbiddenSampleMaterials).map((type) -> (Executable) () -> {
 			assertFalse(checker.isVisible(PathogenTestType.class, type.name()), toReadableString(type) + " must not be visible for " + getDisease());
 		}).collect(Collectors.toList()));
 	}
 
-	private String toReadableString(PathogenTestType type) {
+	private String toReadableString(SampleMaterial type) {
 		return String.format("[%s] '%s'", type.name(), type);
 	}
 }
