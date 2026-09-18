@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -125,6 +126,14 @@ public final class I18nProperties {
 
 		final Language language = userLanguage.get();
 		return getEnumCaption(language, value);
+	}
+
+	public static String getEnumCaptionOrDefault(Enum<?> value, Supplier<String> defaultCaptionSupplier) {
+		if (value == null) {
+			return defaultCaptionSupplier.get();
+		}
+
+		return getEnumCaption(value);
 	}
 
 	@SuppressWarnings("rawtypes")

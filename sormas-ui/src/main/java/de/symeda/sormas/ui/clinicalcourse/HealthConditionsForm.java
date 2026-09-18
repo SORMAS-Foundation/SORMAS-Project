@@ -62,8 +62,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Suppliers;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
@@ -209,12 +211,17 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		addFields(fieldsList);
 
 		Field<?> stiProphylaxis = getField(STI_PROPHYLAXIS);
-		stiProphylaxis
-			.setCaption(String.format(I18nProperties.getCaption(Captions.HealthConditions_stiProphylaxis), I18nProperties.getEnumCaption(disease)));
+		Supplier<String> defaultCaptionSupplier = Suppliers.memoize(() -> I18nProperties.getCaption(Captions.disease));
+		stiProphylaxis.setCaption(
+			String.format(
+				I18nProperties.getCaption(Captions.HealthConditions_stiProphylaxis),
+				I18nProperties.getEnumCaptionOrDefault(disease, defaultCaptionSupplier)));
 
 		Field<?> hivPreExposure = getField(HIV_PREP);
-		hivPreExposure
-			.setCaption(String.format(I18nProperties.getCaption(Captions.HealthConditions_hivPrep), I18nProperties.getEnumCaption(disease)));
+		hivPreExposure.setCaption(
+			String.format(
+				I18nProperties.getCaption(Captions.HealthConditions_hivPrep),
+				I18nProperties.getEnumCaptionOrDefault(disease, defaultCaptionSupplier)));
 
 		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
 		otherConditions.setRows(6);
