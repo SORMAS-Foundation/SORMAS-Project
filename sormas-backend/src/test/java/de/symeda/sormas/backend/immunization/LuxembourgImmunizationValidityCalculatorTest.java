@@ -43,7 +43,7 @@ class LuxembourgImmunizationValidityCalculatorTest {
 		assertEquals(UtilDate.from(LocalDate.of(2026, 1, 29)), cut.calculateValidFrom(Disease.DENGUE, MeansOfImmunization.VACCINATION, baseDate, 3));
 		assertEquals(
 			UtilDate.from(LocalDate.of(2026, 1, 29)),
-			cut.calculateValidFrom(Disease.DIPHTERIA, MeansOfImmunization.VACCINATION, baseDate, 3));
+			cut.calculateValidFrom(Disease.DIPHTHERIA, MeansOfImmunization.VACCINATION, baseDate, 3));
 		assertEquals(
 			UtilDate.from(LocalDate.of(2026, 1, 15)),
 			cut.calculateValidFrom(Disease.INFLUENZA, MeansOfImmunization.VACCINATION, baseDate, 1));
@@ -80,7 +80,7 @@ class LuxembourgImmunizationValidityCalculatorTest {
 			cut.calculateValidUntil(Disease.DENGUE, MeansOfImmunization.VACCINATION, validFrom, 3));
 		assertEquals(
 			UtilDate.from(LocalDate.of(2036, 1, 30)),
-			cut.calculateValidUntil(Disease.DIPHTERIA, MeansOfImmunization.VACCINATION, validFrom, 3));
+			cut.calculateValidUntil(Disease.DIPHTHERIA, MeansOfImmunization.VACCINATION, validFrom, 3));
 		assertEquals(
 			UtilDate.from(LocalDate.of(2026, 11, 28)),
 			cut.calculateValidUntil(Disease.INFLUENZA, MeansOfImmunization.VACCINATION, validFrom, 1));

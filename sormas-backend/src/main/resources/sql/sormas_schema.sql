@@ -17318,4 +17318,78 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS virulencegenesdetected b
 
 INSERT INTO schema_version (version_number, comment) VALUES (668, 'Yersiniosis - samples and pathogen tests');
 
+-- 15-09-2026 : 14325 - Diphtheria changes.
+-- Currecting the disease name before loading the application.
+DO $$
+DECLARE
+    config_count INT := 0;
+    cases_count INT := 0;
+BEGIN
+    -- Update diseaseconfiguration if matches exist
+    IF EXISTS (SELECT 1 FROM diseaseconfiguration WHERE disease ILIKE 'DIPHTERIA%') THEN
+        UPDATE diseaseconfiguration
+        SET disease = regexp_replace(disease, '^DIPHTERIA', 'DIPHTHERIA', 'i')
+        WHERE disease ILIKE 'DIPHTERIA%';
+        GET DIAGNOSTICS config_count = ROW_COUNT;
+    END IF;
+
+    -- Update cases if matches exist
+    IF EXISTS (SELECT 1 FROM cases WHERE disease ILIKE 'DIPHTERIA%') THEN
+        UPDATE cases
+        SET disease = regexp_replace(disease, '^DIPHTERIA', 'DIPHTHERIA', 'i')
+        WHERE disease ILIKE 'DIPHTERIA%';
+        GET DIAGNOSTICS cases_count = ROW_COUNT;
+    END IF;
+
+    -- Summary log
+    RAISE NOTICE 'Updated % row(s) in diseaseconfiguration and % row(s) in cases.', config_count, cases_count;
+END $$;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS biotypetext varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS targettest varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS targettesttext varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS testrunstatus varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS sequencedatauploadedtopublicrepository varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS srarunid varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS accessionnumber varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinessusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
+ALTER TABLE epidata ALTER COLUMN infectionsource TYPE varchar(512);
+UPDATE diseaseconfiguration SET exposurecategories = 'RESPIRATORY,ANIMAL_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'DIPHTHERIA';
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS mlstsequencetype varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS cgmlstcluster varchar(512);
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS biotypetext varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS targettest varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS targettesttext varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS testrunstatus varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS sequencedatauploadedtopublicrepository varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS srarunid varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS accessionnumber varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS mlstsequencetype varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS cgmlstcluster varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinessusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
+ALTER TABLE epidata_history ALTER COLUMN infectionsource TYPE varchar(512);
+INSERT INTO schema_version (version_number, comment) VALUES (669, '#14325 - Diphtheria changes.');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

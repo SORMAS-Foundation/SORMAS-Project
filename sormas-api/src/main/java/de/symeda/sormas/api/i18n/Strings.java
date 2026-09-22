@@ -554,6 +554,7 @@ public interface Strings {
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
 	String headingContactsRestored = "headingContactsRestored";
 	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
+	String headingControlMeasuresLoc = "headingControlMeasuresLoc";
 	String headingCorrectPathogenTest = "headingCorrectPathogenTest";
 	String headingCorrectPerson = "headingCorrectPerson";
 	String headingCorrectSample = "headingCorrectSample";

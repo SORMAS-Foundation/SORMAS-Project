@@ -56,6 +56,7 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 
 	private Component drugSusceptibilityField;
 	private Consumer<Boolean> visibilityCallback;
+	private Component preResultComponent;
 
 	protected AbstractDiseaseSectionComponent() {
 		super(PathogenTestDto.class);
@@ -63,6 +64,19 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 
 	public void setVisibilityCallback(Consumer<Boolean> callback) {
 		this.visibilityCallback = callback;
+	}
+
+	/**
+	 * Registers a component that PathogenTestForm should render above testResultComponent instead of
+	 * inside this section's own body - e.g. a field that needs to be visible/filled before the result.
+	 */
+	protected void setPreResultComponent(Component component) {
+		this.preResultComponent = component;
+	}
+
+	/** Component to render above testResultComponent for this disease, or null if this section has none. */
+	public Component getPreResultComponent() {
+		return preResultComponent;
 	}
 
 	@Override

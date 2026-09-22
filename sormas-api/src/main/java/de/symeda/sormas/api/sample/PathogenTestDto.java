@@ -41,6 +41,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -80,6 +81,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String SEROTYPE = "serotype";
 	public static final String SEROTYPE_TEXT = "serotypeText";
 	public static final String BIOTYPE = "biotype";
+	public static final String BIOTYPE_TEXT = "biotypeText";
 	public static final String WGS_PERFORMED = "wgsPerformed";
 	public static final String WGS_CLUSTER_ID = "wgsClusterId";
 	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
@@ -141,6 +143,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String WESTERN_BLOT_INTERPRETATION = "westernBlotInterpretation";
 	public static final String SEQUENCE_ID = "sequenceId";
 	public static final String SERO_CONVERSION = "seroConversion";
+	public static final String TARGET_TEST = "targetTest";
+	public static final String TARGET_TEST_TEXT = "targetTestText";
+	public static final String TEST_RUN_STATUS = "testRunStatus";
+	public static final String SEQUENCE_DATA_UPLOADED_TO_PUBLIC_REPOSITORY = "sequenceDataUploadedToPublicRepository";
+	public static final String SRA_RUN_ID = "sraRunId";
+	public static final String ACCESSION_NUMBER = "accessionNumber";
+	public static final String MLST_SEQUENCE_TYPE = "mlstSequenceType";
+	public static final String CG_MLST_CLUSTER = "cgMlstCluster";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -181,8 +191,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String serotypeText;
 	@Diseases(value = {
-		Disease.YERSINIOSIS })
+		Disease.YERSINIOSIS,
+		Disease.DIPHTHERIA })
 	private Biotype biotype;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private String biotypeText;
+
 	@Diseases(value = {
 		Disease.YERSINIOSIS })
 	private YesNoUnknown wgsPerformed;
@@ -384,6 +400,52 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String sequenceId;
 	private Boolean seroConversion;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private TargetTest targetTest;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@DependantOn(TARGET_TEST)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String targetTestText;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private TestRunStatus testRunStatus;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private YesNoUnknown sequenceDataUploadedToPublicRepository;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private String sraRunId;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private String accessionNumber;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private String mlstSequenceType;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private String cgMlstCluster;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -1038,6 +1100,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.biotype = biotype;
 	}
 
+	public String getBiotypeText() {
+		return biotypeText;
+	}
+
+	public void setBiotypeText(String biotypeText) {
+		this.biotypeText = biotypeText;
+	}
+
 	public YesNoUnknown getWgsPerformed() {
 		return wgsPerformed;
 	}
@@ -1124,6 +1194,70 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSeroConversion(Boolean seroConversion) {
 		this.seroConversion = seroConversion;
+	}
+
+	public TargetTest getTargetTest() {
+		return targetTest;
+	}
+
+	public void setTargetTest(TargetTest targetTest) {
+		this.targetTest = targetTest;
+	}
+
+	public String getTargetTestText() {
+		return targetTestText;
+	}
+
+	public void setTargetTestText(String targetTestText) {
+		this.targetTestText = targetTestText;
+	}
+
+	public TestRunStatus getTestRunStatus() {
+		return testRunStatus;
+	}
+
+	public void setTestRunStatus(TestRunStatus testRunStatus) {
+		this.testRunStatus = testRunStatus;
+	}
+
+	public YesNoUnknown getSequenceDataUploadedToPublicRepository() {
+		return sequenceDataUploadedToPublicRepository;
+	}
+
+	public void setSequenceDataUploadedToPublicRepository(YesNoUnknown sequenceDataUploadedToPublicRepository) {
+		this.sequenceDataUploadedToPublicRepository = sequenceDataUploadedToPublicRepository;
+	}
+
+	public String getSraRunId() {
+		return sraRunId;
+	}
+
+	public void setSraRunId(String sraRunId) {
+		this.sraRunId = sraRunId;
+	}
+
+	public String getAccessionNumber() {
+		return accessionNumber;
+	}
+
+	public void setAccessionNumber(String accessionNumber) {
+		this.accessionNumber = accessionNumber;
+	}
+
+	public String getMlstSequenceType() {
+		return mlstSequenceType;
+	}
+
+	public void setMlstSequenceType(String mlstSequenceType) {
+		this.mlstSequenceType = mlstSequenceType;
+	}
+
+	public String getCgMlstCluster() {
+		return cgMlstCluster;
+	}
+
+	public void setCgMlstCluster(String cgMlstCluster) {
+		this.cgMlstCluster = cgMlstCluster;
 	}
 
 	@Override

@@ -101,6 +101,22 @@ public class DrugSusceptibilityMapper {
 		target.setCefotaximeMethod(source.getCefotaximeMethod());
 		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
 
+		target.setClindamycinMethod(source.getClindamycinMethod());
+		target.setClindamycinMic(source.getClindamycinMic());
+		target.setClindamycinSusceptibility(source.getClindamycinSusceptibility());
+
+		target.setLinezolidMethod(source.getLinezolidMethod());
+		target.setLinezolidMic(source.getLinezolidMic());
+		target.setLinezolidSusceptibility(source.getLinezolidSusceptibility());
+
+		target.setMeropenemMethod(source.getMeropenemMethod());
+		target.setMeropenemMic(source.getMeropenemMic());
+		target.setMeropenemSusceptibility(source.getMeropenemSusceptibility());
+
+		target.setTetracyclinesMethod(source.getTetracyclinesMethod());
+		target.setTetracyclinesMic(source.getTetracyclinesMic());
+		target.setTetracyclinesSusceptibility(source.getTetracyclinesSusceptibility());
+
 		return target;
 	}
 
@@ -177,6 +193,22 @@ public class DrugSusceptibilityMapper {
 		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
 		target.setCefotaximeMethod(source.getCefotaximeMethod());
 		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
+
+		target.setClindamycinMethod(source.getClindamycinMethod());
+		target.setClindamycinMic(source.getClindamycinMic());
+		target.setClindamycinSusceptibility(source.getClindamycinSusceptibility());
+
+		target.setLinezolidMethod(source.getLinezolidMethod());
+		target.setLinezolidMic(source.getLinezolidMic());
+		target.setLinezolidSusceptibility(source.getLinezolidSusceptibility());
+
+		target.setMeropenemMethod(source.getMeropenemMethod());
+		target.setMeropenemMic(source.getMeropenemMic());
+		target.setMeropenemSusceptibility(source.getMeropenemSusceptibility());
+
+		target.setTetracyclinesMethod(source.getTetracyclinesMethod());
+		target.setTetracyclinesMic(source.getTetracyclinesMic());
+		target.setTetracyclinesSusceptibility(source.getTetracyclinesSusceptibility());
 
 		return target;
 	}
