@@ -60,6 +60,23 @@ public abstract class AbstractEvent717EntriesField<E extends EntityDto> extends 
 	 */
 	protected abstract Object getSortPropertyId();
 
+	/**
+	 * Opens the edit dialog of an entry of this field, e.g. from another component that displays the entries.
+	 */
+	@SuppressWarnings("unchecked")
+	public void editExistingEntry(EntityDto entry) {
+		editEntry((E) entry, false, this::onEntryChanged);
+	}
+
+	protected void addNewEntry(E entry) {
+
+		editEntry(entry, true, result -> {
+			getTable().addItem(result);
+			sortEntries();
+			fireValueChange(false);
+		});
+	}
+
 	@Override
 	protected void editEntry(E entry, boolean create, Consumer<E> commitCallback) {
 
@@ -97,13 +114,7 @@ public abstract class AbstractEvent717EntriesField<E extends EntityDto> extends 
 
 	@Override
 	protected void addEntry() {
-
-		final E entry = createEntry();
-		editEntry(entry, true, result -> {
-			getTable().addItem(result);
-			sortEntries();
-			fireValueChange(false);
-		});
+		addNewEntry(createEntry());
 	}
 
 	@Override

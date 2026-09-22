@@ -16,7 +16,6 @@ package de.symeda.sormas.ui.events.sevenoneseven;
 
 import com.vaadin.v7.ui.Table;
 
-import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckCategory;
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
@@ -42,12 +41,7 @@ public class Event717BottlenecksField extends AbstractEvent717EntriesField<Event
 
 	@Override
 	protected AbstractEditForm<Event717BottleneckDto> createEditForm(Event717BottleneckDto entry, boolean create) {
-		return new Event717BottleneckEditForm(interval -> isIntervalAvailable(interval, entry.getUuid()), create, isEditAllowed);
-	}
-
-	private boolean isIntervalAvailable(Event717Interval interval, String entryUuid) {
-		return getValue().stream().filter(e -> !e.getUuid().equals(entryUuid) && e.getTimelinessInterval() == interval).count()
-			< Event717AssessmentDto.MAX_ENTRIES_PER_INTERVAL;
+		return new Event717BottleneckEditForm(create, isEditAllowed);
 	}
 
 	@Override
@@ -58,6 +52,13 @@ public class Event717BottlenecksField extends AbstractEvent717EntriesField<Event
 	@Override
 	protected Object getSortPropertyId() {
 		return Event717BottleneckDto.TIMELINESS_INTERVAL;
+	}
+
+	/**
+	 * Creates an entry for the given interval and opens its edit dialog.
+	 */
+	public void createEntryForInterval(Event717Interval interval) {
+		addNewEntry(Event717BottleneckDto.build(interval));
 	}
 
 	@Override

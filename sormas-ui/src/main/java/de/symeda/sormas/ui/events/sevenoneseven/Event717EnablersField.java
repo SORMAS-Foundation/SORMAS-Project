@@ -16,7 +16,6 @@ package de.symeda.sormas.ui.events.sevenoneseven;
 
 import com.vaadin.v7.ui.Table;
 
-import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EnablerDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,12 +40,7 @@ public class Event717EnablersField extends AbstractEvent717EntriesField<Event717
 
 	@Override
 	protected AbstractEditForm<Event717EnablerDto> createEditForm(Event717EnablerDto entry, boolean create) {
-		return new Event717EnablerEditForm(interval -> isIntervalAvailable(interval, entry.getUuid()), create, isEditAllowed);
-	}
-
-	private boolean isIntervalAvailable(Event717Interval interval, String entryUuid) {
-		return getValue().stream().filter(e -> !e.getUuid().equals(entryUuid) && e.getTimelinessInterval() == interval).count()
-			< Event717AssessmentDto.MAX_ENTRIES_PER_INTERVAL;
+		return new Event717EnablerEditForm(create, isEditAllowed);
 	}
 
 	@Override
@@ -57,6 +51,13 @@ public class Event717EnablersField extends AbstractEvent717EntriesField<Event717
 	@Override
 	protected Object getSortPropertyId() {
 		return Event717EnablerDto.TIMELINESS_INTERVAL;
+	}
+
+	/**
+	 * Creates an entry for the given interval and opens its edit dialog.
+	 */
+	public void createEntryForInterval(Event717Interval interval) {
+		addNewEntry(Event717EnablerDto.build(interval));
 	}
 
 	@Override

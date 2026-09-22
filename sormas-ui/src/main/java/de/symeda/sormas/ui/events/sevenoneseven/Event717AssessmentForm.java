@@ -35,7 +35,10 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckCategory;
+import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
+import de.symeda.sormas.api.event.sevenoneseven.Event717EnablerDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessCalculator;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
@@ -172,10 +175,33 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 			I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_NARRATIVE));
 
 		addHeading(Strings.headingEvent717BottlenecksEnablers, LOC_BOTTLENECKS_ENABLERS_HEADING);
-		bottlenecksField = addField(Event717AssessmentDto.BOTTLENECKS, new Event717BottlenecksField(isEditAllowed));
-		bottlenecksField.setWidthFull();
-		Event717EnablersField enablersField = addField(Event717AssessmentDto.ENABLERS, new Event717EnablersField(isEditAllowed));
-		enablersField.setWidthFull();
+
+		// the entries are bound to the form but displayed grouped by interval instead of in the table of the field
+		bottlenecksField = new Event717BottlenecksField(isEditAllowed);
+		getFieldGroup().bind(bottlenecksField, Event717AssessmentDto.BOTTLENECKS);
+		getContent().addComponent(
+			new Event717IntervalEntriesLayout<>(
+				I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.BOTTLENECKS),
+				bottlenecksField,
+				Event717BottleneckDto::getTimelinessInterval,
+				Event717BottleneckDto::getDescription,
+				Event717AssessmentForm::getCategoryCaption,
+				bottlenecksField::createEntryForInterval,
+				isEditAllowed),
+			Event717AssessmentDto.BOTTLENECKS);
+
+		Event717EnablersField enablersField = new Event717EnablersField(isEditAllowed);
+		getFieldGroup().bind(enablersField, Event717AssessmentDto.ENABLERS);
+		getContent().addComponent(
+			new Event717IntervalEntriesLayout<>(
+				I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.ENABLERS),
+				enablersField,
+				Event717EnablerDto::getTimelinessInterval,
+				Event717EnablerDto::getDescription,
+				null,
+				enablersField::createEntryForInterval,
+				isEditAllowed),
+			Event717AssessmentDto.ENABLERS);
 
 		addHeading(Strings.headingEvent717CorrectiveActions, LOC_CORRECTIVE_ACTIONS_HEADING);
 		Event717CorrectiveActionsField correctiveActionsField = addField(
@@ -221,6 +247,16 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 		TextArea narrative = addField(propertyId, TextArea.class);
 		narrative.setRows(2);
 		narrative.setCaption(caption != null ? caption : I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, "narrative"));
+	}
+
+	private static String getCategoryCaption(Event717BottleneckDto bottleneck) {
+
+		if (bottleneck.getCategory() == null) {
+			return null;
+		}
+		return bottleneck.getCategory() == Event717BottleneckCategory.OTHER && bottleneck.getOtherCategoryDetails() != null
+			? bottleneck.getCategory() + ": " + bottleneck.getOtherCategoryDetails()
+			: bottleneck.getCategory().toString();
 	}
 
 	private void addHeading(String headingKey, String location) {

@@ -16,7 +16,6 @@ package de.symeda.sormas.ui.events.sevenoneseven;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import java.util.function.Predicate;
 
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
@@ -25,6 +24,7 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EnablerDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class Event717EnablerEditForm extends AbstractEditForm<Event717EnablerDto> {
 
@@ -32,15 +32,8 @@ public class Event717EnablerEditForm extends AbstractEditForm<Event717EnablerDto
 
 	private static final String HTML_LAYOUT = fluidRowLocs(Event717EnablerDto.TIMELINESS_INTERVAL) + fluidRowLocs(Event717EnablerDto.DESCRIPTION);
 
-	private final transient Predicate<Event717Interval> intervalAvailable;
-
-	/**
-	 * @param intervalAvailable
-	 *            Whether another enabler may be assigned to the given interval without exceeding the maximum
-	 */
-	public Event717EnablerEditForm(Predicate<Event717Interval> intervalAvailable, boolean create, boolean isEditAllowed) {
+	public Event717EnablerEditForm(boolean create, boolean isEditAllowed) {
 		super(Event717EnablerDto.class, Event717EnablerDto.I18N_PREFIX, false, null, null, isEditAllowed);
-		this.intervalAvailable = intervalAvailable;
 
 		setWidth(540, Unit.PIXELS);
 		addFields();
@@ -58,8 +51,9 @@ public class Event717EnablerEditForm extends AbstractEditForm<Event717EnablerDto
 	@Override
 	protected void addFields() {
 
-		ComboBox interval = addField(Event717EnablerDto.TIMELINESS_INTERVAL, ComboBox.class);
-		interval.addValidator(Event717BottleneckEditForm.maxEntriesValidator(intervalAvailable, Event717AssessmentDto.ENABLERS));
+		// the interval is determined by the section the entry belongs to
+		NullableOptionGroup interval = addField(Event717EnablerDto.TIMELINESS_INTERVAL, NullableOptionGroup.class);
+		interval.setEnabled(false);
 
 		TextArea description = addField(Event717EnablerDto.DESCRIPTION, TextArea.class);
 		description.setRows(4);
