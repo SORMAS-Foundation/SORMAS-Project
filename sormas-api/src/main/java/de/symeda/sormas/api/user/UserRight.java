@@ -135,6 +135,8 @@ public enum UserRight {
     EVENT_IMPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EXPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_RESPONSIBLE(UserRightGroup.EVENT, UserRight._EVENT_EDIT),
+	EVENT_717_ASSESSMENT_VIEW(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
+	EVENT_717_ASSESSMENT_EDIT(UserRightGroup.EVENT, UserRight._EVENT_717_ASSESSMENT_VIEW, UserRight._EVENT_EDIT),
 
 	EVENTPARTICIPANT_VIEW(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._PERSON_VIEW),
 	EVENTPARTICIPANT_CREATE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
@@ -427,6 +429,8 @@ public enum UserRight {
 	public static final String _EVENT_VIEW = "EVENT_VIEW";
 	public static final String _EVENT_VIEW_ARCHIVED = "EVENT_VIEW_ARCHIVED";
 	public static final String _EVENT_EDIT = "EVENT_EDIT";
+	public static final String _EVENT_717_ASSESSMENT_VIEW = "EVENT_717_ASSESSMENT_VIEW";
+	public static final String _EVENT_717_ASSESSMENT_EDIT = "EVENT_717_ASSESSMENT_EDIT";
 	public static final String _EVENT_IMPORT = "EVENT_IMPORT";
 	public static final String _EVENT_EXPORT = "EVENT_EXPORT";
 	public static final String _EVENT_ARCHIVE = "EVENT_ARCHIVE";

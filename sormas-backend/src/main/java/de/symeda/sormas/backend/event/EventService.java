@@ -80,6 +80,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.document.DocumentService;
+import de.symeda.sormas.backend.event.sevenoneseven.Event717AssessmentService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -119,6 +120,8 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	private TaskService taskService;
 	@EJB
 	private ActionService actionService;
+	@EJB
+	private Event717AssessmentService event717AssessmentService;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -651,6 +654,9 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		for (Action action : actions) {
 			actionService.deletePermanent(action);
 		}
+
+		// Delete the 7-1-7 assessment of this event (not mapped on the event, so it is not removed by cascade)
+		event717AssessmentService.deletePermanentByEvent(event);
 
 		event.getEventParticipants().forEach(eventParticipant -> eventParticipantService.deletePermanent(eventParticipant));
 

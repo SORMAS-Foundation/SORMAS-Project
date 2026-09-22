@@ -52,6 +52,7 @@ import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
+import de.symeda.sormas.backend.event.sevenoneseven.Event717AssessmentFacadeEjb;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
@@ -241,6 +242,11 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testActionFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(ActionFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testEvent717AssessmentFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(Event717AssessmentFacadeEjb.class, classes);
 	}
 
 	@ArchTest

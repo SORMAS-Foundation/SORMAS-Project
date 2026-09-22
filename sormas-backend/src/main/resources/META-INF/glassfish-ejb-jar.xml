@@ -493,6 +493,16 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>EVENT_717_ASSESSMENT_VIEW</role-name>
+        <group-name>EVENT_717_ASSESSMENT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_717_ASSESSMENT_EDIT</role-name>
+        <group-name>EVENT_717_ASSESSMENT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EVENTGROUP_ARCHIVE</role-name>
         <group-name>EVENTGROUP_ARCHIVE</group-name>
     </security-role-mapping>

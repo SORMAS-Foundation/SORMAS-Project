@@ -341,6 +341,10 @@ public interface Strings {
 	String errorEnvironmentSampleNoDispatchRight = "errorEnvironmentSampleNoDispatchRight";
 	String errorEnvironmentSampleNoReceivalRight = "errorEnvironmentSampleNoReceivalRight";
 	String errorEnvironmentSampleNotEditable = "errorEnvironmentSampleNotEditable";
+	String errorEvent717AssessmentAlreadyExists = "errorEvent717AssessmentAlreadyExists";
+	String errorEvent717AssessmentEventNotFound = "errorEvent717AssessmentEventNotFound";
+	String errorEvent717AssessmentFeatureDisabled = "errorEvent717AssessmentFeatureDisabled";
+	String errorEvent717AssessmentNotEditable = "errorEvent717AssessmentNotEditable";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
