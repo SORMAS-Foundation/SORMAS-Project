@@ -1825,6 +1825,7 @@ public interface Captions {
 	String Event717Assessment_labConfirmationDate = "Event717Assessment.labConfirmationDate";
 	String Event717Assessment_labConfirmationNarrative = "Event717Assessment.labConfirmationNarrative";
 	String Event717Assessment_labConfirmationNotApplicable = "Event717Assessment.labConfirmationNotApplicable";
+	String Event717Assessment_narrative = "Event717Assessment.narrative";
 	String Event717Assessment_notificationNarrative = "Event717Assessment.notificationNarrative";
 	String Event717Assessment_outbreakEndDate = "Event717Assessment.outbreakEndDate";
 	String Event717Assessment_reportCompletedByName = "Event717Assessment.reportCompletedByName";
@@ -1883,6 +1884,7 @@ public interface Captions {
 	String eventDeletedEvents = "eventDeletedEvents";
 	String eventEditEvent = "eventEditEvent";
 	String eventEditEventGroup = "eventEditEventGroup";
+	String eventEvent717Assessment = "eventEvent717Assessment";
 	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
@@ -1911,6 +1913,7 @@ public interface Captions {
 	String eventNoEventLinkedToEnvironment = "eventNoEventLinkedToEnvironment";
 	String eventNoEventLinkedToEventGroup = "eventNoEventLinkedToEventGroup";
 	String eventOnlyWithContactSourceCaseInvolved = "eventOnlyWithContactSourceCaseInvolved";
+	String eventOpenEvent717Assessment = "eventOpenEvent717Assessment";
 	String eventOpenSuperordinateEvent = "eventOpenSuperordinateEvent";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";

@@ -680,6 +680,12 @@ public interface Strings {
 	String headingEpipulseExportCreated = "headingEpipulseExportCreated";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingErrorSendingExternalEmail = "headingErrorSendingExternalEmail";
+	String headingEvent717BottlenecksEnablers = "headingEvent717BottlenecksEnablers";
+	String headingEvent717CorrectiveActions = "headingEvent717CorrectiveActions";
+	String headingEvent717EarlyResponseActions = "headingEvent717EarlyResponseActions";
+	String headingEvent717Milestones = "headingEvent717Milestones";
+	String headingEvent717ReportDetails = "headingEvent717ReportDetails";
+	String headingEvent717Timeliness = "headingEvent717Timeliness";
 	String headingEventData = "headingEventData";
 	String headingEventGroupData = "headingEventGroupData";
 	String headingEventGroupLinkEventIssue = "headingEventGroupLinkEventIssue";
@@ -1076,6 +1082,13 @@ public interface Strings {
 	String infoEditExportConfiguration = "infoEditExportConfiguration";
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
+	String infoEvent717AllTargetsMet = "infoEvent717AllTargetsMet";
+	String infoEvent717Assessment = "infoEvent717Assessment";
+	String infoEvent717EarlyResponseActions = "infoEvent717EarlyResponseActions";
+	String infoEvent717EarlyResponseCompletion = "infoEvent717EarlyResponseCompletion";
+	String infoEvent717NotAllTargetsMet = "infoEvent717NotAllTargetsMet";
+	String infoEvent717NotAssessed = "infoEvent717NotAssessed";
+	String infoEvent717TimelinessDays = "infoEvent717TimelinessDays";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
 	String infoEventResponsibleUserFilter = "infoEventResponsibleUserFilter";
 	String infoExistingImmunizationPeriod = "infoExistingImmunizationPeriod";
@@ -1510,6 +1523,8 @@ public interface Strings {
 	String messageEpipulseExportNoDelete = "messageEpipulseExportNoDelete";
 	String messageEpipulseInvalidConfigError = "messageEpipulseInvalidConfigError";
 	String messageErrorReportNotAvailable = "messageErrorReportNotAvailable";
+	String messageEvent717AssessmentDeleted = "messageEvent717AssessmentDeleted";
+	String messageEvent717AssessmentSaved = "messageEvent717AssessmentSaved";
 	String messageEventArchived = "messageEventArchived";
 	String messageEventCreated = "messageEventCreated";
 	String messageEventDearchived = "messageEventDearchived";

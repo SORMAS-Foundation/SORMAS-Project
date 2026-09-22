@@ -29,6 +29,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717AssessmentView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
@@ -67,6 +68,9 @@ public abstract class AbstractEventView extends AbstractEditAllowedDetailView<Ev
 			menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventParticipants), params);
 		}
 		menu.addView(EventActionsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventActions), params);
+		if (Event717AssessmentView.isAvailable()) {
+			menu.addView(Event717AssessmentView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEvent717Assessment), params);
+		}
 
 		setMainHeaderComponent(ControllerProvider.getEventController().getEventViewTitleLayout(getReference().getUuid()));
 	}
