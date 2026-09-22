@@ -16,6 +16,7 @@ package de.symeda.sormas.ui.events.sevenoneseven;
 
 import java.util.function.Consumer;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
@@ -28,6 +29,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
@@ -108,6 +110,15 @@ public abstract class AbstractEvent717EntriesField<E extends EntityDto> extends 
 	protected void onEntryChanged(E entry) {
 		sortEntries();
 		super.onEntryChanged(entry);
+	}
+
+	@Override
+	protected Component initContent() {
+
+		Component content = super.initContent();
+		// style the caption above the table like the sub headings of other forms
+		getCaptionLabel().addStyleName(CssStyles.H4);
+		return content;
 	}
 
 	@Override

@@ -15,6 +15,7 @@
 package de.symeda.sormas.ui.events.sevenoneseven;
 
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.divCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
@@ -63,26 +64,41 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 	private static final String LOC_REPORT_HEADING = "reportHeading";
 	private static final String LOC_EARLY_RESPONSE_ACTIONS = "earlyResponseActions";
 
-	private static final String HTML_LAYOUT = loc(LOC_INFO)
-		+ loc(LOC_MILESTONES_HEADING)
-		+ fluidRowLocs(4, Event717AssessmentDto.DATE_OF_EMERGENCE, 8, Event717AssessmentDto.EMERGENCE_NARRATIVE)
-		+ fluidRowLocs(4, Event717AssessmentDto.DATE_OF_DETECTION, 8, Event717AssessmentDto.DETECTION_NARRATIVE)
-		+ fluidRowLocs(4, Event717AssessmentDto.DATE_OF_NOTIFICATION, 8, Event717AssessmentDto.NOTIFICATION_NARRATIVE)
-		+ loc(LOC_EARLY_RESPONSE_HEADING)
-		+ loc(LOC_EARLY_RESPONSE_ACTIONS)
-		+ fluidRowLocs(4, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_DATE, 8, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_NARRATIVE)
-		+ loc(LOC_BOTTLENECKS_ENABLERS_HEADING)
-		+ fluidRowLocs(Event717AssessmentDto.BOTTLENECKS)
-		+ fluidRowLocs(Event717AssessmentDto.ENABLERS)
-		+ loc(LOC_CORRECTIVE_ACTIONS_HEADING)
-		+ fluidRowLocs(Event717AssessmentDto.CORRECTIVE_ACTIONS)
-		+ loc(LOC_REPORT_HEADING)
-		+ fluidRowLocs(
-			Event717AssessmentDto.REPORT_COMPLETED_DATE,
-			Event717AssessmentDto.REPORT_COMPLETED_BY_USER,
-			Event717AssessmentDto.REPORT_COMPLETED_BY_NAME)
-		+ fluidRowLocs(4, Event717AssessmentDto.OUTBREAK_END_DATE, 8, "")
-		+ fluidRowLocs(Event717AssessmentDto.GENERAL_NOTES);
+	private static final String CARD = CssStyles.VIEW_SECTION_MARGIN_X_4 + " " + CssStyles.VSPACE_TOP_3;
+
+	//@formatter:off
+	private static final String HTML_LAYOUT =
+		divCss(CssStyles.VIEW_SECTION_MARGIN_TOP_4_MARGIN_X_4,
+			loc(LOC_MILESTONES_HEADING)
+				+ loc(LOC_INFO)
+				+ fluidRowLocs(4, Event717AssessmentDto.DATE_OF_EMERGENCE, 8, Event717AssessmentDto.EMERGENCE_NARRATIVE)
+				+ fluidRowLocs(4, Event717AssessmentDto.DATE_OF_DETECTION, 8, Event717AssessmentDto.DETECTION_NARRATIVE)
+				+ fluidRowLocs(4, Event717AssessmentDto.DATE_OF_NOTIFICATION, 8, Event717AssessmentDto.NOTIFICATION_NARRATIVE)
+		)
+		+ divCss(CARD,
+			loc(LOC_EARLY_RESPONSE_HEADING)
+				+ loc(LOC_EARLY_RESPONSE_ACTIONS)
+				+ fluidRowLocs(4, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_DATE, 8, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_NARRATIVE)
+		)
+		+ divCss(CARD,
+			loc(LOC_BOTTLENECKS_ENABLERS_HEADING)
+				+ fluidRowLocs(Event717AssessmentDto.BOTTLENECKS)
+				+ fluidRowLocs(Event717AssessmentDto.ENABLERS)
+		)
+		+ divCss(CARD,
+			loc(LOC_CORRECTIVE_ACTIONS_HEADING)
+				+ fluidRowLocs(Event717AssessmentDto.CORRECTIVE_ACTIONS)
+		)
+		+ divCss(CARD + " " + CssStyles.VSPACE_2,
+			loc(LOC_REPORT_HEADING)
+				+ fluidRowLocs(
+					Event717AssessmentDto.REPORT_COMPLETED_DATE,
+					Event717AssessmentDto.REPORT_COMPLETED_BY_USER,
+					Event717AssessmentDto.REPORT_COMPLETED_BY_NAME)
+				+ fluidRowLocs(4, Event717AssessmentDto.OUTBREAK_END_DATE, 8, "")
+				+ fluidRowLocs(Event717AssessmentDto.GENERAL_NOTES)
+		);
+	//@formatter:on
 
 	private final EventReferenceDto eventRef;
 	private final boolean isEditAllowed;

@@ -21,12 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
@@ -38,10 +35,11 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.FutureDateValidator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
@@ -57,8 +55,6 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 	private static final String DATE_COLUMN = "date";
 	private static final String NOT_APPLICABLE_COLUMN = "notApplicable";
 	private static final String NARRATIVE_COLUMN = "narrative";
-
-	private static final int NARRATIVE_PREVIEW_LENGTH = 60;
 
 	/**
 	 * The bound fields of one early response action.
@@ -100,6 +96,7 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 		table.setSortEnabled(false);
 
 		table.addGeneratedColumn(EDIT_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> createEditButton((Event717EarlyResponseAction) itemId));
+		// plain text cells wrap within the column width
 		table.addGeneratedColumn(ACTION_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> itemId.toString());
 		table.addGeneratedColumn(DATE_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			Date date = actionFields.get(itemId).date.getValue();
@@ -113,12 +110,7 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 		});
 		table.addGeneratedColumn(NARRATIVE_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			String narrative = actionFields.get(itemId).narrative.getValue();
-			if (StringUtils.isBlank(narrative)) {
-				return null;
-			}
-			Label label = new Label(StringUtils.abbreviate(narrative.split("\\R", 2)[0], NARRATIVE_PREVIEW_LENGTH));
-			label.setDescription(narrative);
-			return label;
+			return StringUtils.isBlank(narrative) ? null : narrative;
 		});
 
 		for (Event717EarlyResponseAction action : Event717EarlyResponseAction.values()) {
@@ -134,7 +126,10 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 			I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.INVESTIGATION_NOT_APPLICABLE));
 		table.setColumnHeader(NARRATIVE_COLUMN, I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, "narrative"));
 		table.setColumnWidth(EDIT_COLUMN, 20);
-		table.setColumnExpandRatio(ACTION_COLUMN, 2);
+		table.setColumnWidth(ACTION_COLUMN, 255);
+		table.setColumnWidth(DATE_COLUMN, 70);
+		table.setColumnWidth(NOT_APPLICABLE_COLUMN, 105);
+		// the narrative takes the remaining width
 		table.setColumnExpandRatio(NARRATIVE_COLUMN, 1);
 		table.setColumnAlignment(NOT_APPLICABLE_COLUMN, Table.Align.CENTER);
 		table.setPageLength(0);
@@ -170,62 +165,28 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 
 		ActionFields fields = actionFields.get(action);
 
-		DateField date = new DateField(I18nProperties.getCaption(Captions.date));
-		date.setDateFormat(DateFormatHelper.getDateFormatPattern());
-		date.setLenient(true);
-		date.setValue(fields.date.getValue());
-		date.addValidator(new FutureDateValidator(date, 0, date.getCaption()));
+		Event717EarlyResponseActionEditForm editForm = new Event717EarlyResponseActionEditForm(action, isEditAllowed);
+		editForm.setValue(new Event717EarlyResponseActionEntry(fields.date.getValue(), fields.isNotApplicable(), fields.narrative.getValue()));
 
-		CheckBox notApplicable = new CheckBox(
-			I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.INVESTIGATION_NOT_APPLICABLE));
-		notApplicable.setValue(fields.isNotApplicable());
-		CssStyles.style(notApplicable, CssStyles.FORCE_CAPTION_CHECKBOX);
+		final CommitDiscardWrapperComponent<Event717EarlyResponseActionEditForm> editView =
+			new CommitDiscardWrapperComponent<>(editForm, isEditAllowed, editForm.getFieldGroup());
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
-		TextArea narrative = new TextArea(I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, "narrative"));
-		narrative.setWidth(100, Unit.PERCENTAGE);
-		narrative.setRows(5);
-		narrative.setNullRepresentation("");
-		narrative.setValue(fields.narrative.getValue());
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(Captions.Event717EarlyResponseAction));
 
-		date.setEnabled(isEditAllowed && !notApplicable.getValue());
-		notApplicable.setEnabled(isEditAllowed);
-		narrative.setEnabled(isEditAllowed);
-		notApplicable.addValueChangeListener(e -> {
-			boolean isNotApplicable = Boolean.TRUE.equals(notApplicable.getValue());
-			if (isNotApplicable) {
-				date.setValue(null);
-			}
-			date.setEnabled(isEditAllowed && !isNotApplicable);
-		});
-
-		HorizontalLayout dateRow = new HorizontalLayout(date, notApplicable);
-		dateRow.setComponentAlignment(notApplicable, Alignment.BOTTOM_LEFT);
-
-		VerticalLayout content = new VerticalLayout(dateRow, narrative);
-		content.setWidth(540, Unit.PIXELS);
-
-		Window window = VaadinUiUtil.showPopupWindow(content, action.toString());
-
-		HorizontalLayout buttons = new HorizontalLayout();
-		Button cancel = ButtonHelper.createButton(Captions.actionCancel, e -> window.close());
-		buttons.addComponent(cancel);
 		if (isEditAllowed) {
-			Button done = ButtonHelper.createButton(Captions.actionDone, e -> {
-				if (!date.isValid()) {
-					date.setValidationVisible(true);
-					return;
+			editView.addCommitListener(() -> {
+				if (!editForm.getFieldGroup().isModified()) {
+					Event717EarlyResponseActionEntry entry = editForm.getValue();
+					boolean isNotApplicable = Boolean.TRUE.equals(entry.getNotApplicable());
+					fields.notApplicable.setValue(isNotApplicable);
+					fields.date.setValue(isNotApplicable ? null : entry.getDate());
+					fields.narrative.setValue(StringUtils.isBlank(entry.getNarrative()) ? null : entry.getNarrative());
 				}
-				boolean isNotApplicable = Boolean.TRUE.equals(notApplicable.getValue());
-				fields.notApplicable.setValue(isNotApplicable);
-				fields.date.setValue(isNotApplicable ? null : date.getValue());
-				fields.narrative.setValue(StringUtils.isBlank(narrative.getValue()) ? null : narrative.getValue());
-				window.close();
-			}, ValoTheme.BUTTON_PRIMARY);
-			buttons.addComponent(done);
+			});
 		} else {
-			cancel.setCaption(I18nProperties.getCaption(Captions.actionClose));
+			editView.getCommitButton().setVisible(false);
+			editView.getDiscardButton().setVisible(false);
 		}
-		content.addComponent(buttons);
-		content.setComponentAlignment(buttons, Alignment.BOTTOM_RIGHT);
 	}
 }

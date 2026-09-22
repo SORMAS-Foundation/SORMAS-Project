@@ -1849,6 +1849,7 @@ public interface Captions {
 	String Event717CorrectiveAction_responsibleAuthority = "Event717CorrectiveAction.responsibleAuthority";
 	String Event717CorrectiveAction_targetEndDate = "Event717CorrectiveAction.targetEndDate";
 	String Event717CorrectiveAction_targetStartDate = "Event717CorrectiveAction.targetStartDate";
+	String Event717EarlyResponseAction = "Event717EarlyResponseAction";
 	String Event717Enabler = "Event717Enabler";
 	String Event717Enabler_description = "Event717Enabler.description";
 	String Event717Enabler_timelinessInterval = "Event717Enabler.timelinessInterval";

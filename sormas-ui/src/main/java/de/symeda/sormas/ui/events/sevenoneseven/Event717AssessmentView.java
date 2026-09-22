@@ -98,11 +98,11 @@ public class Event717AssessmentView extends AbstractEventView {
 			}, I18nProperties.getCaption(Event717AssessmentDto.I18N_PREFIX));
 		}
 
-		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, TIMELINESS_LOC);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, true, TIMELINESS_LOC);
 		container.addComponent(layout);
 
 		Event717TimelinessPanel timelinessPanel = form.getTimelinessPanel();
-		timelinessPanel.addStyleName(CssStyles.SIDE_COMPONENT);
+		CssStyles.style(timelinessPanel, CssStyles.VIEW_SECTION);
 		layout.addSidePanelComponent(timelinessPanel, TIMELINESS_LOC);
 
 		if (!editAllowed) {
