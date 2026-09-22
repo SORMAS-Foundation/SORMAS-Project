@@ -2449,9 +2449,11 @@ public interface Captions {
 	String outbreakOutbreak = "outbreakOutbreak";
 	String passportNumber = "passportNumber";
 	String PathogenTest = "PathogenTest";
+	String PathogenTest_accessionNumber = "PathogenTest.accessionNumber";
 	String PathogenTest_antibodyTitre = "PathogenTest.antibodyTitre";
 	String PathogenTest_biotype = "PathogenTest.biotype";
 	String PathogenTest_biotypeText = "PathogenTest.biotypeText";
+	String PathogenTest_cgMlstCluster = "PathogenTest.cgMlstCluster";
 	String PathogenTest_cqValue = "PathogenTest.cqValue";
 	String PathogenTest_ctValueE = "PathogenTest.ctValueE";
 	String PathogenTest_ctValueN = "PathogenTest.ctValueN";
@@ -2470,6 +2472,7 @@ public interface Captions {
 	String PathogenTest_isoniazidResistant = "PathogenTest.isoniazidResistant";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
+	String PathogenTest_mlstSequenceType = "PathogenTest.mlstSequenceType";
 	String PathogenTest_otherDeletionReason = "PathogenTest.otherDeletionReason";
 	String PathogenTest_patternProfile = "PathogenTest.patternProfile";
 	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
@@ -2493,6 +2496,7 @@ public interface Captions {
 	String PathogenTest_rsv_testedDiseaseVariant = "PathogenTest.rsv.testedDiseaseVariant";
 	String PathogenTest_rsv_testedDiseaseVariantDetails = "PathogenTest.rsv.testedDiseaseVariantDetails";
 	String PathogenTest_rsvSubtype = "PathogenTest.rsvSubtype";
+	String PathogenTest_sequenceDataUploadedToPublicRepository = "PathogenTest.sequenceDataUploadedToPublicRepository";
 	String PathogenTest_sequenceId = "PathogenTest.sequenceId";
 	String PathogenTest_seroConversion = "PathogenTest.seroConversion";
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
@@ -2506,9 +2510,12 @@ public interface Captions {
 	String PathogenTest_smearGrade = "PathogenTest.smearGrade";
 	String PathogenTest_specie = "PathogenTest.specie";
 	String PathogenTest_specieText = "PathogenTest.specieText";
+	String PathogenTest_sraRunId = "PathogenTest.sraRunId";
 	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
 	String PathogenTest_syphilisSerologyMethod = "PathogenTest.syphilisSerologyMethod";
 	String PathogenTest_syphilisSerologyMethodText = "PathogenTest.syphilisSerologyMethodText";
+	String PathogenTest_targetTest = "PathogenTest.targetTest";
+	String PathogenTest_targetTestText = "PathogenTest.targetTestText";
 	String PathogenTest_testCategory = "PathogenTest.testCategory";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
@@ -2520,6 +2527,7 @@ public interface Captions {
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
+	String PathogenTest_testRunStatus = "PathogenTest.testRunStatus";
 	String PathogenTest_testScale = "PathogenTest.testScale";
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";

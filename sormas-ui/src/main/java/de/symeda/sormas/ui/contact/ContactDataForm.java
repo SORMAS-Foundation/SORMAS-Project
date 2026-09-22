@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.ErrorLevel;
@@ -118,7 +119,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
-	private static final String PROPHYLAXIS_LOC = "prophylaxisLoc";
+	private static final String CONTROL_MEASURES_LOC = "controlMeasuresLoc";
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 
 	//@formatter:off
@@ -148,9 +149,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
                     fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 					fluidRowLocs(ContactDto.DESCRIPTION) +
-					loc(PROPHYLAXIS_LOC)+
-					fluidRowLocs(4,ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT) +
 					fluidRowLocs(6, ContactDto.PROHIBITION_TO_WORK, 3, ContactDto.PROHIBITION_TO_WORK_FROM, 3, ContactDto.PROHIBITION_TO_WORK_UNTIL) +
+					loc(CONTROL_MEASURES_LOC)+
+					fluidRowLocs(4,ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT) +
+					fluidRowLocs(ContactDto.VACCINATION_PROPOSED, ContactDto.IMMUNE_GLOBULIN_PROPOSED) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
                     fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
@@ -168,7 +170,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(ContactDto.PREGNANT, ContactDto.POSTPARTUM) + fluidRowLocs(ContactDto.TRIMESTER, "") +
 					fluidRow(fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 6, 0,ContactDto.VACCINATION_STATUS), oneOfTwoCol(ContactDto.VACCINATION_DOSE_ONE_DATE), oneOfTwoCol(ContactDto.VACCINATION_DOSE_TWO_DATE)) +
-					fluidRowLocs(ContactDto.VACCINATION_PROPOSED, ContactDto.IMMUNE_GLOBULIN_PROPOSED) +
+					
 					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
 					loc(FOLLOW_UP_STATUS_HEADING_LOC) +
@@ -253,15 +255,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactDataHeadingLabel.addStyleName(H3);
 		getContent().addComponent(contactDataHeadingLabel, CONTACT_DATA_HEADING_LOC);
 
-		Label followUpStausHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
-		followUpStausHeadingLabel.addStyleName(H3);
-		getContent().addComponent(followUpStausHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
-		followUpStausHeadingLabel.setVisible(diseaseHasFollowUp && !isLuxMeasles(this.disease));
+		Label followUpStatusHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
+		followUpStatusHeadingLabel.addStyleName(H3);
+		getContent().addComponent(followUpStatusHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
+		followUpStatusHeadingLabel.setVisible(diseaseHasFollowUp && !isLuxMeasles(this.disease));
 
-		Label prophylaxisLabel = new Label(I18nProperties.getString(Strings.headingProphylaxisLoc));
-		prophylaxisLabel.addStyleName(H3);
-		getContent().addComponent(prophylaxisLabel, PROPHYLAXIS_LOC);
-		prophylaxisLabel.setVisible(Disease.INVASIVE_MENINGOCOCCAL_INFECTION == disease);
+		Label controlMeasuresLabel = new Label(I18nProperties.getString(Strings.headingControlMeasuresLoc));
+		controlMeasuresLabel.addStyleName(H3);
+		getContent().addComponent(controlMeasuresLabel, CONTROL_MEASURES_LOC);
 
 		Label medicalInfoLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
 		medicalInfoLabel.addStyleName(H3);
@@ -366,6 +367,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		quarantine = addField(ContactDto.QUARANTINE);
+		CssStyles.style(CssStyles.VSPACE_TOP_3, quarantine);
 		quarantine.addValueChangeListener(e -> onQuarantineValueChange());
 		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
 		dfQuarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
@@ -484,7 +486,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		ComboBox vaccinationStatusCB = addField(ContactDto.VACCINATION_STATUS);
 
 		CheckBox vaccinationProposedField = addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
+		CssStyles.style(vaccinationProposedField, CssStyles.VSPACE_TOP_3);
 		CheckBox immuneGlobulinProposedField = addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
+		CssStyles.style(immuneGlobulinProposedField, CssStyles.VSPACE_TOP_3);
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
@@ -599,6 +603,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		if (!showVaccinationStatusFields) {
 			vaccinationStatusCB.setVisible(false);
 		}
+
+		// if any of the below fields are allowed to visible, then label should be visible.
+		boolean isControlMeasuresVisible = Stream
+			.of(ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG, ContactDto.VACCINATION_PROPOSED, ContactDto.IMMUNE_GLOBULIN_PROPOSED)
+			.filter(filedName -> isVisibleAllowed(filedName))
+			.anyMatch(filedName -> true);
+
+		controlMeasuresLabel.setVisible(isControlMeasuresVisible);
 
 		setReadOnly(
 			true,
@@ -764,23 +776,30 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		// Prophylaxis details for IMI
 		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
 		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
-
+		CssStyles.style(prophylaxisPrescribed, CssStyles.VSPACE_TOP_3);
 		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			ContactDto.PRESCRIBED_DRUG,
-			ContactDto.PROPHYLAXIS_PRESCRIBED,
-			Collections.singletonList(Boolean.TRUE),
-			true);
-		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			ContactDto.PRESCRIBED_DRUG_TEXT,
-			ContactDto.PRESCRIBED_DRUG,
-			Collections.singletonList(Drug.OTHER),
-			true);
-		FieldHelper
-			.setRequiredWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG, Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT), Arrays.asList(Drug.OTHER));
+
+		// Drugs and its details should be visible only if the user has the right to see it and if prophylaxis is prescribed
+		if (isVisibleAllowed(ContactDto.PRESCRIBED_DRUG)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				ContactDto.PRESCRIBED_DRUG,
+				ContactDto.PROPHYLAXIS_PRESCRIBED,
+				Collections.singletonList(Boolean.TRUE),
+				true);
+			FieldHelper.setRequiredWhenNotNull(getFieldGroup(), ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				ContactDto.PRESCRIBED_DRUG_TEXT,
+				ContactDto.PRESCRIBED_DRUG,
+				Collections.singletonList(Drug.OTHER),
+				true);
+			FieldHelper.setRequiredWhen(
+				getFieldGroup(),
+				ContactDto.PRESCRIBED_DRUG,
+				Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT),
+				Arrays.asList(Drug.OTHER));
+		}
 	}
 
 	private void updateContactOfficers() {

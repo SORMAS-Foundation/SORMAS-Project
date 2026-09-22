@@ -56,6 +56,8 @@ import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.sample.SmearGrade;
 import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
+import de.symeda.sormas.api.sample.TargetTest;
+import de.symeda.sormas.api.sample.TestRunStatus;
 import de.symeda.sormas.api.sample.WesternBlotInterpretation;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.DeletableAdo;
@@ -123,6 +125,8 @@ public class PathogenTest extends DeletableAdo {
 	public static final String RSV_SUBTYPE = "rsvSubtype";
 	public static final String SYPHILIS_SEROLOGY_METHOD = "syphilisSerologyMethod";
 	public static final String SYPHILIS_SEROLOGY_METHOD_TEXT = "syphilisSerologyMethodText";
+	public static final String SRA_RUN_ID = "sraRunId";
+	public static final String ACCESSION_NUMBER = "accessionNumber";
 
 	private Sample sample;
 	private EnvironmentSample environmentSample;
@@ -180,6 +184,7 @@ public class PathogenTest extends DeletableAdo {
 	// serotypeText to capture the custom values and to display the existing string values.
 	private String serotypeText;
 	private Biotype biotype;
+	private String biotypeText;
 	private YesNoUnknown wgsPerformed;
 	private String wgsClusterId;
 	private Boolean virulenceGenesDetected;
@@ -211,6 +216,14 @@ public class PathogenTest extends DeletableAdo {
 	private WesternBlotInterpretation westernBlotInterpretation;
 	private String sequenceId;
 	private Boolean seroConversion;
+	private TargetTest targetTest;
+	private String targetTestText;
+	private TestRunStatus testRunStatus;
+	private YesNoUnknown sequenceDataUploadedToPublicRepository;
+	private String sraRunId;
+	private String accessionNumber;
+	private String mlstSequenceType;
+	private String cgMlstCluster;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -443,6 +456,15 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setBiotype(Biotype biotype) {
 		this.biotype = biotype;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getBiotypeText() {
+		return biotypeText;
+	}
+
+	public void setBiotypeText(String biotypeText) {
+		this.biotypeText = biotypeText;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -952,4 +974,75 @@ public class PathogenTest extends DeletableAdo {
 		this.seroConversion = seroConversion;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTargetTestText() {
+		return targetTestText;
+	}
+
+	public void setTargetTestText(String targetTestText) {
+		this.targetTestText = targetTestText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TargetTest getTargetTest() {
+		return targetTest;
+	}
+
+	public void setTargetTest(TargetTest targetTest) {
+		this.targetTest = targetTest;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TestRunStatus getTestRunStatus() {
+		return testRunStatus;
+	}
+
+	public void setTestRunStatus(TestRunStatus testRunStatus) {
+		this.testRunStatus = testRunStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSequenceDataUploadedToPublicRepository() {
+		return sequenceDataUploadedToPublicRepository;
+	}
+
+	public void setSequenceDataUploadedToPublicRepository(YesNoUnknown sequenceDataUploadedToPublicRepository) {
+		this.sequenceDataUploadedToPublicRepository = sequenceDataUploadedToPublicRepository;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSraRunId() {
+		return sraRunId;
+	}
+
+	public void setSraRunId(String sraRunId) {
+		this.sraRunId = sraRunId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getAccessionNumber() {
+		return accessionNumber;
+	}
+
+	public void setAccessionNumber(String accessionNumber) {
+		this.accessionNumber = accessionNumber;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getMlstSequenceType() {
+		return mlstSequenceType;
+	}
+
+	public void setMlstSequenceType(String mlstSequenceType) {
+		this.mlstSequenceType = mlstSequenceType;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCgMlstCluster() {
+		return cgMlstCluster;
+	}
+
+	public void setCgMlstCluster(String cgMlstCluster) {
+		this.cgMlstCluster = cgMlstCluster;
+	}
 }

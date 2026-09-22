@@ -20,6 +20,7 @@ package de.symeda.sormas.api.epidata;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -90,41 +91,47 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Diseases(value = Disease.GONOCOCCAL_INFECTION, hide = true)
 	private YesNoUnknown largeOutbreaksArea;
 	@Diseases({
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.DIPHTHERIA })
 	private CaseImportedStatus caseImportedStatus;
 
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.DIPHTHERIA })
 	private YesNoUnknown importedCase;
 
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
 		Disease.MEASLES,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.DIPHTHERIA })
 	private ClusterType clusterType;
 
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
 		Disease.MEASLES,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.DIPHTHERIA })
 	private boolean clusterRelated;
 
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
 		Disease.MEASLES,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.DIPHTHERIA })
 	private String clusterTypeText;
 
 	// lab message(MEAS-1 & MUMP-1) has been mapped to this identifier
 	@Diseases({
 		Disease.MUMPS,
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.DIPHTHERIA })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clusterIdentifier;
 
@@ -156,19 +163,22 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SHIGELLOSIS })
-	private InfectionSource infectionSource;
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
+	private Set<InfectionSource> infectionSource;
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
 	private String infectionSourceText;
 
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.MUMPS })
+		Disease.MUMPS,
+		Disease.DIPHTHERIA })
 	private CountryReferenceDto country;
 
 	@Valid
@@ -334,11 +344,11 @@ public class EpiDataDto extends PseudonymizableDto {
 		this.clusterRelated = clusterRelated;
 	}
 
-	public InfectionSource getInfectionSource() {
+	public Set<InfectionSource> getInfectionSource() {
 		return infectionSource;
 	}
 
-	public void setInfectionSource(InfectionSource infectionSource) {
+	public void setInfectionSource(Set<InfectionSource> infectionSource) {
 		this.infectionSource = infectionSource;
 	}
 

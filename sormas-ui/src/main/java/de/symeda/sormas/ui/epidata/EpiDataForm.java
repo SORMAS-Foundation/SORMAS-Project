@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -63,6 +64,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
@@ -77,6 +79,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -88,6 +91,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.CustomizableFieldsGroup;
 import de.symeda.sormas.ui.utils.components.MultilineLabel;
 
@@ -131,8 +135,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			Disease.SHIGELLOSIS,
 			Disease.SYPHILIS,
 			Disease.GONOCOCCAL_INFECTION,
-			Disease.MUMPS));
-	private static final List<Disease> CLUSTER_ALLOWED_DISEASES = Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS));
+			Disease.MUMPS,
+			Disease.DIPHTHERIA));
+	private static final List<Disease> CLUSTER_ALLOWED_DISEASES =
+		Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS, Disease.DIPHTHERIA));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -149,7 +155,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
 			fluidRowLocs(6, EpiDataDto.IMPORTED_CASE, 6, EpiDataDto.COUNTRY)+
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
-			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
+			fluidRowLocs(EpiDataDto.INFECTION_SOURCE) +
+			fluidRowLocs(EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
 			loc(LOC_CLUSTER_TYPE_HEADING)+
 			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
@@ -265,7 +272,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			});
 		}
 
-		addField(EpiDataDto.CASE_IMPORTED_STATUS);
+		ComboBox caseImportedStatusField = addField(EpiDataDto.CASE_IMPORTED_STATUS, ComboBox.class);
 		Field<?> clusterTypeField = addField(EpiDataDto.CLUSTER_TYPE);
 		clusterTypeField.setVisible(false);
 		Field<?> clusterRelatedField = addField(EpiDataDto.CLUSTER_RELATED);
@@ -274,11 +281,15 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		addField(EpiDataDto.MODE_OF_TRANSMISSION);
 		addField(EpiDataDto.MODE_OF_TRANSMISSION_TYPE);
-		addField(EpiDataDto.INFECTION_SOURCE);
+		CheckboxSet<InfectionSource> infectionSourceField = addField(EpiDataDto.INFECTION_SOURCE, CheckboxSet.class);
+		infectionSourceField.setColumnCount(2);
+		infectionSourceField.setItems(Diseases.DiseasesConfiguration.getVisibleValues(InfectionSource.class, disease), null, null);
 		addField(EpiDataDto.INFECTION_SOURCE_TEXT);
+
 		addField(EpiDataDto.IMPORTED_CASE, NullableOptionGroup.class);
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
+		country.setVisible(false);
 		country.addItems(countries);
 		if (Disease.SHIGELLOSIS == disease) {
 			country.setCaption(I18nProperties.getCaption(Captions.EpiData_country_SHIG));
@@ -322,16 +333,25 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), EpiDataDto.MODE_OF_TRANSMISSION_TYPE, EpiDataDto.MODE_OF_TRANSMISSION, ModeOfTransmission.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.INFECTION_SOURCE_TEXT, EpiDataDto.INFECTION_SOURCE, InfectionSource.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
-		// For Cryptosporidiosis and Giardiasis, and Shigellosis, the infection source field should be displayed based on transmission mode selection.
 		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			EpiDataDto.INFECTION_SOURCE,
-			EpiDataDto.MODE_OF_TRANSMISSION,
-			Arrays.asList(ModeOfTransmission.FOOD_OR_WATER, ModeOfTransmission.ANIMAL_TO_HUMAN),
+			getFieldGroup().getField(EpiDataDto.INFECTION_SOURCE),
+			Arrays.asList(getField(EpiDataDto.INFECTION_SOURCE_TEXT)),
+			field -> {
+				Object value = FieldHelper.getNullableSourceFieldValue(field);
+				return value instanceof Set && ((Set<?>) value).contains(InfectionSource.OTHER);
+			},
 			true);
-
+		// For Cryptosporidiosis and Giardiasis, and Shigellosis, the infection source field should be displayed based on transmission mode selection.
+		// For Diphtheria, use case is different, so introduced a new listener, moreover its not dependent on the mode of transmission value.
+		if (List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS).stream().anyMatch(e -> e == disease)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				EpiDataDto.INFECTION_SOURCE,
+				EpiDataDto.MODE_OF_TRANSMISSION,
+				Arrays.asList(ModeOfTransmission.FOOD_OR_WATER, ModeOfTransmission.ANIMAL_TO_HUMAN),
+				true);
+		}
 		contactWithSourceCasePanel = new CustomizableFieldsGroup(CustomizableFieldGroup.EPIDATA_CONTACT_WITH_SOURCE_CASE);
 		contactWithSourceCasePanel.setVisibilityContext(new CustomizableFieldVisibilityContext().withDisease(disease));
 		contactWithSourceCasePanel.setFieldsMetadata(getCustomizableFieldsMetadata());
@@ -371,6 +391,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					.ifPresent(country::setValue);
 			});
 		}
+
+		// For Diphtheria, the country field should be visible only if the case imported status is "Imported case".
+		// Its independent from the MODE_OF_TRANSMISSION selection
+		caseImportedStatusField.addValueChangeListener(e -> {
+			boolean showCountry = disease == Disease.DIPHTHERIA && caseImportedStatusField.getValue() == CaseImportedStatus.IMPORTED_CASE;
+			setVisibleClear(showCountry, EpiDataDto.COUNTRY);
+		});
 	}
 
 	/**
