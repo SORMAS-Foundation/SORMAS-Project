@@ -479,4 +479,139 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		final PathogenTestDto saved = getPathogenTestFacade().savePathogenTest(optionalTest);
 		assertEquals(PathogenTestResultType.PENDING, saved.getTestResult());
 	}
+
+	@Test
+	public void testDiphtheriaStructuredFieldsRoundTrip() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.DIPHTHERIA,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, Disease.DIPHTHERIA, testDateTime);
+		test.setTestType(PathogenTestType.CULTURE);
+		test.setTestResult(PathogenTestResultType.POSITIVE);
+		test.setSpecie(de.symeda.sormas.api.sample.PathogenSpecie.DIPH_CORY_DIPH);
+		test.setBiotype(Biotype.VAR_GRAV);
+		test.setBiotypeText("Colony morphology consistent with var gravis");
+		test.setTargetTest(de.symeda.sormas.api.sample.TargetTest.TOXIN_PRODUCTION);
+		test.setTargetTestText("Elek toxin gene PCR");
+		test.setTestRunStatus(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED);
+		test.setSequenceDataUploadedToPublicRepository(YesNoUnknown.YES);
+		test.setSraRunId("SRR12345678");
+		test.setAccessionNumber("ACC-987654");
+		test.setMlstSequenceType("ST-8");
+		test.setCgMlstCluster("cluster-diph-1");
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
+
+		assertEquals(de.symeda.sormas.api.sample.PathogenSpecie.DIPH_CORY_DIPH, reloaded.getSpecie());
+		assertEquals(Biotype.VAR_GRAV, reloaded.getBiotype());
+		assertEquals("Colony morphology consistent with var gravis", reloaded.getBiotypeText());
+		assertEquals(de.symeda.sormas.api.sample.TargetTest.TOXIN_PRODUCTION, reloaded.getTargetTest());
+		assertEquals("Elek toxin gene PCR", reloaded.getTargetTestText());
+		assertEquals(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED, reloaded.getTestRunStatus());
+		assertEquals(YesNoUnknown.YES, reloaded.getSequenceDataUploadedToPublicRepository());
+		assertEquals("SRR12345678", reloaded.getSraRunId());
+		assertEquals("ACC-987654", reloaded.getAccessionNumber());
+		assertEquals("ST-8", reloaded.getMlstSequenceType());
+		assertEquals("cluster-diph-1", reloaded.getCgMlstCluster());
+
+		// Update round-trip: change the structured fields and re-save.
+		reloaded.setBiotype(Biotype.VAR_MITI);
+		reloaded.setBiotypeText("Colony morphology consistent with var mitis");
+		reloaded.setTargetTest(de.symeda.sormas.api.sample.TargetTest.SPECIES_IDENTIFICATION);
+		reloaded.setTestRunStatus(de.symeda.sormas.api.sample.TestRunStatus.FAILED);
+
+		final PathogenTestDto updated = getPathogenTestFacade().savePathogenTest(reloaded);
+
+		assertEquals(Biotype.VAR_MITI, updated.getBiotype());
+		assertEquals("Colony morphology consistent with var mitis", updated.getBiotypeText());
+		assertEquals(de.symeda.sormas.api.sample.TargetTest.SPECIES_IDENTIFICATION, updated.getTargetTest());
+		assertEquals(de.symeda.sormas.api.sample.TestRunStatus.FAILED, updated.getTestRunStatus());
+	}
+
+	@Test
+	public void testDiphtheriaElekTestClearsQuantitativeResultFields() {
+		// ELEK_TEST (toxin production, phenotypic characterization) declares only QUALITATIVE
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.DIPHTHERIA,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto elekTest = creator.buildPathogenTestDto(rdcf, user, sample, Disease.DIPHTHERIA, testDateTime);
+		elekTest.setTestType(PathogenTestType.ELEK_TEST);
+		elekTest.setTestResult(PathogenTestResultType.POSITIVE);
+		// Carry stale values to verify the QUALITATIVE-only ResultValueType set clears every other field on save.
+		elekTest.setQuantitativeValue(5.0f);
+		elekTest.setQuantitativeUnit("mm");
+		elekTest.setQuantitativeBoolean(YesNoUnknown.YES);
+		elekTest.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS);
+		elekTest.setWesternBlotInterpretation(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(elekTest);
+
+		assertEquals(PathogenTestResultType.POSITIVE, reloaded.getTestResult());
+		assertNull(reloaded.getQuantitativeValue());
+		assertNull(reloaded.getQuantitativeUnit());
+		assertNull(reloaded.getQuantitativeBoolean());
+		assertNull(reloaded.getSmearGrade());
+		assertNull(reloaded.getWesternBlotInterpretation());
+	}
+
+	@Test
+	public void testDiphtheriaWholeGenomeSequencingFieldsRoundTrip() {
+		// WHOLE_GENOME_SEQUENCING is a visible (non-hidden) new-test method for Diphtheria. Its sequencing
+		// metadata fields (sraRunId/accessionNumber/MLST/cgMLST) are gated only by @Diseases for UI display,
+		// not by ResultValueType, so they must round-trip independently of the test's TEXT result.
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.DIPHTHERIA,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto wgs = creator.buildPathogenTestDto(rdcf, user, sample, Disease.DIPHTHERIA, testDateTime);
+		wgs.setTestType(PathogenTestType.WHOLE_GENOME_SEQUENCING);
+		wgs.setTestResult(PathogenTestResultType.POSITIVE);
+		wgs.setSraRunId("SRR00112233");
+		wgs.setAccessionNumber("PRJEB99999");
+		wgs.setMlstSequenceType("ST-40");
+		wgs.setCgMlstCluster("cgMLST-diph-cluster-7");
+		wgs.setSequenceDataUploadedToPublicRepository(YesNoUnknown.YES);
+		wgs.setTestRunStatus(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(wgs);
+
+		assertEquals("SRR00112233", reloaded.getSraRunId());
+		assertEquals("PRJEB99999", reloaded.getAccessionNumber());
+		assertEquals("ST-40", reloaded.getMlstSequenceType());
+		assertEquals("cgMLST-diph-cluster-7", reloaded.getCgMlstCluster());
+		assertEquals(YesNoUnknown.YES, reloaded.getSequenceDataUploadedToPublicRepository());
+		assertEquals(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED, reloaded.getTestRunStatus());
+	}
 }
