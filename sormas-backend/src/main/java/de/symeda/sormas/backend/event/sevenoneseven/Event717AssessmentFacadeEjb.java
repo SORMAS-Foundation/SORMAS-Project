@@ -378,7 +378,6 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 		target.setReportCompletedByName(source.getReportCompletedByName());
 		target.setGeneralNotes(source.getGeneralNotes());
 		target.setEarlyResponseCompletionDate(source.getEarlyResponseCompletionDate());
-		target.setReportCompletedByUser(userService.getByReferenceDto(source.getReportCompletedByUser()));
 
 		// Children are only looked up in the collections of this assessment, so they can't be moved between assessments
 		Map<String, Event717Bottleneck> existingBottlenecks = mapByUuid(target.getBottlenecks());
@@ -513,7 +512,6 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 		target.setReportCompletedByName(source.getReportCompletedByName());
 		target.setGeneralNotes(source.getGeneralNotes());
 		target.setEarlyResponseCompletionDate(source.getEarlyResponseCompletionDate());
-		target.setReportCompletedByUser(UserFacadeEjb.toReferenceDto(source.getReportCompletedByUser()));
 
 		target.setBottlenecks(
 			source.getBottlenecks().stream().map(Event717AssessmentFacadeEjb::toDto).collect(Collectors.toCollection(ArrayList::new)));

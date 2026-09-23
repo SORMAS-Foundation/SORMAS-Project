@@ -34,7 +34,6 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.user.User;
 
 /**
  * 7-1-7 assessment of an {@link Event}. Not mapped on the event itself, so it has to be removed explicitly when the event is
@@ -79,7 +78,6 @@ public class Event717Assessment extends AbstractDomainObject {
 	public static final String EARLY_RESPONSE_COMPLETION_NARRATIVE = "earlyResponseCompletionNarrative";
 	public static final String OUTBREAK_END_DATE = "outbreakEndDate";
 	public static final String REPORT_COMPLETED_DATE = "reportCompletedDate";
-	public static final String REPORT_COMPLETED_BY_USER = "reportCompletedByUser";
 	public static final String REPORT_COMPLETED_BY_NAME = "reportCompletedByName";
 	public static final String GENERAL_NOTES = "generalNotes";
 	public static final String CHANGE_DATE_OF_EMBEDDED_LISTS = "changeDateOfEmbeddedLists";
@@ -119,7 +117,6 @@ public class Event717Assessment extends AbstractDomainObject {
 	private String earlyResponseCompletionNarrative;
 	private Date outbreakEndDate;
 	private Date reportCompletedDate;
-	private User reportCompletedByUser;
 	private String reportCompletedByName;
 	private String generalNotes;
 	private Date changeDateOfEmbeddedLists;
@@ -414,15 +411,6 @@ public class Event717Assessment extends AbstractDomainObject {
 
 	public void setReportCompletedDate(Date reportCompletedDate) {
 		this.reportCompletedDate = reportCompletedDate;
-	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	public User getReportCompletedByUser() {
-		return reportCompletedByUser;
-	}
-
-	public void setReportCompletedByUser(User reportCompletedByUser) {
-		this.reportCompletedByUser = reportCompletedByUser;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

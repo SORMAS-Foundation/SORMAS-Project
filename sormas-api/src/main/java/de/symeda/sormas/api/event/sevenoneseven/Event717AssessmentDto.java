@@ -26,7 +26,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -79,7 +78,6 @@ public class Event717AssessmentDto extends EntityDto {
 	public static final String EARLY_RESPONSE_COMPLETION_NARRATIVE = "earlyResponseCompletionNarrative";
 	public static final String OUTBREAK_END_DATE = "outbreakEndDate";
 	public static final String REPORT_COMPLETED_DATE = "reportCompletedDate";
-	public static final String REPORT_COMPLETED_BY_USER = "reportCompletedByUser";
 	public static final String REPORT_COMPLETED_BY_NAME = "reportCompletedByName";
 	public static final String GENERAL_NOTES = "generalNotes";
 	public static final String BOTTLENECKS = "bottlenecks";
@@ -130,7 +128,6 @@ public class Event717AssessmentDto extends EntityDto {
 	private String earlyResponseCompletionNarrative;
 	private Date outbreakEndDate;
 	private Date reportCompletedDate;
-	private UserReferenceDto reportCompletedByUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportCompletedByName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -531,14 +528,6 @@ public class Event717AssessmentDto extends EntityDto {
 
 	public void setReportCompletedDate(Date reportCompletedDate) {
 		this.reportCompletedDate = reportCompletedDate;
-	}
-
-	public UserReferenceDto getReportCompletedByUser() {
-		return reportCompletedByUser;
-	}
-
-	public void setReportCompletedByUser(UserReferenceDto reportCompletedByUser) {
-		this.reportCompletedByUser = reportCompletedByUser;
 	}
 
 	public String getReportCompletedByName() {

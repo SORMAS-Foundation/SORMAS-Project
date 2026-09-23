@@ -1829,11 +1829,14 @@ public interface Captions {
 	String Event717Assessment_notificationNarrative = "Event717Assessment.notificationNarrative";
 	String Event717Assessment_outbreakEndDate = "Event717Assessment.outbreakEndDate";
 	String Event717Assessment_reportCompletedByName = "Event717Assessment.reportCompletedByName";
-	String Event717Assessment_reportCompletedByUser = "Event717Assessment.reportCompletedByUser";
 	String Event717Assessment_reportCompletedDate = "Event717Assessment.reportCompletedDate";
 	String Event717Assessment_riskCommunicationDate = "Event717Assessment.riskCommunicationDate";
 	String Event717Assessment_riskCommunicationNarrative = "Event717Assessment.riskCommunicationNarrative";
 	String Event717Assessment_riskCommunicationNotApplicable = "Event717Assessment.riskCommunicationNotApplicable";
+	String Event717Assessment_target = "Event717Assessment.target";
+	String Event717Assessment_targetMet = "Event717Assessment.targetMet";
+	String Event717Assessment_timeliness = "Event717Assessment.timeliness";
+	String Event717Assessment_timelinessInterval = "Event717Assessment.timelinessInterval";
 	String Event717Bottleneck = "Event717Bottleneck";
 	String Event717Bottleneck_category = "Event717Bottleneck.category";
 	String Event717Bottleneck_description = "Event717Bottleneck.description";

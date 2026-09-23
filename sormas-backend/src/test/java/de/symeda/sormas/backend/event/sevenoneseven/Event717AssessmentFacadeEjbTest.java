@@ -124,7 +124,6 @@ public class Event717AssessmentFacadeEjbTest extends AbstractBeanTest {
 
 		Event717AssessmentDto assessment = buildAssessment(event);
 		assessment.setLabConfirmationNarrative("PCR confirmed");
-		assessment.setReportCompletedByUser(nationalAdmin.toReference());
 		Event717AssessmentDto saved = getEvent717AssessmentFacade().save(assessment);
 
 		assertTrue(getEvent717AssessmentFacade().existsForEvent(event.getUuid()));
@@ -135,7 +134,6 @@ public class Event717AssessmentFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("Index case symptom onset", loaded.getEmergenceNarrative());
 		assertEquals("PCR confirmed", loaded.getLabConfirmationNarrative());
 		assertEquals("Jane Doe", loaded.getReportCompletedByName());
-		assertEquals(nationalAdmin.getUuid(), loaded.getReportCompletedByUser().getUuid());
 		assertEquals(loaded.getUuid(), getEvent717AssessmentFacade().getByUuid(saved.getUuid()).getUuid());
 
 		EventDto otherEvent = creator.createEvent(nationalAdmin.toReference());

@@ -17468,10 +17468,17 @@ CREATE TRIGGER delete_history_trigger AFTER DELETE ON event717correctiveaction
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('event717correctiveaction_history', 'id');
 ALTER TABLE event717correctiveaction_history OWNER TO sormas_user;
 
--- user rights (ADMIN + NATIONAL_USER only)
+-- 7-1-7 user rights (ADMIN + NATIONAL_USER only)
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EVENT_717_ASSESSMENT_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER') ON CONFLICT (userrole_id, userright) DO NOTHING;
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EVENT_717_ASSESSMENT_EDIT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER') ON CONFLICT (userrole_id, userright) DO NOTHING;
 
-INSERT INTO schema_version (version_number, comment) VALUES (669, '7-1-7 event assessment: tables, history and user rights');
+INSERT INTO schema_version (version_number, comment) VALUES (669, '#13165 - 7-1-7 event assessment: tables, history and user rights');
+
+-- Remove the report completed by user of the 7-1-7 assessment, the change user is recorded automatically
+ALTER TABLE event717assessment DROP CONSTRAINT IF EXISTS fk_event717assessment_reportcompletedbyuser_id;
+ALTER TABLE event717assessment DROP COLUMN IF EXISTS reportcompletedbyuser_id;
+ALTER TABLE event717assessment_history DROP COLUMN IF EXISTS reportcompletedbyuser_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (670, '#13165 - Remove the report completed by user of the 7-1-7 assessment');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -66,6 +66,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 	private static final String LOC_CORRECTIVE_ACTIONS_HEADING = "correctiveActionsHeading";
 	private static final String LOC_REPORT_HEADING = "reportHeading";
 	private static final String LOC_EARLY_RESPONSE_ACTIONS = "earlyResponseActions";
+	private static final String LOC_TIMELINESS_TABLE = "timelinessTable";
 
 	private static final String CARD = CssStyles.VIEW_SECTION_MARGIN_X_4 + " " + CssStyles.VSPACE_TOP_3;
 
@@ -82,6 +83,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 			loc(LOC_EARLY_RESPONSE_HEADING)
 				+ loc(LOC_EARLY_RESPONSE_ACTIONS)
 				+ fluidRowLocs(4, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_DATE, 8, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_NARRATIVE)
+				+ loc(LOC_TIMELINESS_TABLE)
 		)
 		+ divCss(CARD,
 			loc(LOC_BOTTLENECKS_ENABLERS_HEADING)
@@ -94,10 +96,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 		)
 		+ divCss(CARD + " " + CssStyles.VSPACE_2,
 			loc(LOC_REPORT_HEADING)
-				+ fluidRowLocs(
-					Event717AssessmentDto.REPORT_COMPLETED_DATE,
-					Event717AssessmentDto.REPORT_COMPLETED_BY_USER,
-					Event717AssessmentDto.REPORT_COMPLETED_BY_NAME)
+				+ fluidRowLocs(4, Event717AssessmentDto.REPORT_COMPLETED_DATE, 8, Event717AssessmentDto.REPORT_COMPLETED_BY_NAME)
 				+ fluidRowLocs(4, Event717AssessmentDto.OUTBREAK_END_DATE, 8, "")
 				+ fluidRowLocs(Event717AssessmentDto.GENERAL_NOTES)
 		);
@@ -110,6 +109,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 	private final Map<Event717EarlyResponseAction, Event717EarlyResponseActionsTable.ActionFields> earlyResponseActionFields =
 		new EnumMap<>(Event717EarlyResponseAction.class);
 	private TextField earlyResponseCompletionDate;
+	private Event717TimelinessTable timelinessTable;
 	private Event717BottlenecksField bottlenecksField;
 
 	public Event717AssessmentForm(EventReferenceDto eventRef, boolean isEditAllowed) {
@@ -174,6 +174,10 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 			Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_NARRATIVE,
 			I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_NARRATIVE));
 
+		// the same timeliness as in the side panel, which is shown at the bottom of the page on small screens
+		timelinessTable = new Event717TimelinessTable();
+		getContent().addComponent(timelinessTable, LOC_TIMELINESS_TABLE);
+
 		addHeading(Strings.headingEvent717BottlenecksEnablers, LOC_BOTTLENECKS_ENABLERS_HEADING);
 
 		// the entries are bound to the form but displayed grouped by interval instead of in the table of the field
@@ -212,7 +216,6 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 
 		addHeading(Strings.headingEvent717ReportDetails, LOC_REPORT_HEADING);
 		addField(Event717AssessmentDto.REPORT_COMPLETED_DATE, DateField.class);
-		addField(Event717AssessmentDto.REPORT_COMPLETED_BY_USER, ComboBox.class);
 		addField(Event717AssessmentDto.REPORT_COMPLETED_BY_NAME);
 		addField(Event717AssessmentDto.OUTBREAK_END_DATE, DateField.class);
 		addNarrativeField(Event717AssessmentDto.GENERAL_NOTES, I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.GENERAL_NOTES));
@@ -269,17 +272,6 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 	@Override
 	public void setValue(Event717AssessmentDto newFieldValue) {
 
-		ComboBox reportCompletedByUser = getField(Event717AssessmentDto.REPORT_COMPLETED_BY_USER);
-		reportCompletedByUser.removeAllItems();
-		// the current user can be selected; a previously selected user remains available
-		UserReferenceDto currentUser = UiUtil.getUserReference();
-		if (currentUser != null) {
-			reportCompletedByUser.addItem(currentUser);
-		}
-		if (newFieldValue.getReportCompletedByUser() != null) {
-			reportCompletedByUser.addItem(newFieldValue.getReportCompletedByUser());
-		}
-
 		super.setValue(newFieldValue);
 		updateTimeliness();
 	}
@@ -304,6 +296,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 
 		Event717TimelinessDto timeliness = Event717TimelinessCalculator.calculate(current);
 		timelinessPanel.setValue(timeliness);
+		timelinessTable.setValue(timeliness);
 
 		earlyResponseCompletionDate.setReadOnly(false);
 		earlyResponseCompletionDate.setValue(

@@ -37,7 +37,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -52,10 +51,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class Event717IntervalEntriesLayout<E extends EntityDto> extends VerticalLayout {
 
 	private static final int INTERVAL_CELL_WIDTH = 90;
-
-	private static final String COLOR_DETECTION = "#E7503C";
-	private static final String COLOR_NOTIFICATION = "#F49234";
-	private static final String COLOR_RESPONSE = "#43A047";
 
 	private final transient AbstractEvent717EntriesField<E> entriesField;
 	private final transient Function<E, Event717Interval> intervalProvider;
@@ -131,10 +126,7 @@ public class Event717IntervalEntriesLayout<E extends EntityDto> extends Vertical
 
 	private Label createIntervalCell(Event717Interval interval) {
 
-		Label label = new Label(
-			"<div style=\"background-color:" + getColor(interval)
-				+ ";color:#ffffff;font-weight:bold;height:100%;padding:8px;display:flex;align-items:center;\">" + interval + "</div>",
-			ContentMode.HTML);
+		Label label = Event717IntervalColors.createIntervalLabel(interval);
 		label.setWidth(INTERVAL_CELL_WIDTH, Unit.PIXELS);
 		label.setHeight(100, Unit.PERCENTAGE);
 		return label;
@@ -193,8 +185,7 @@ public class Event717IntervalEntriesLayout<E extends EntityDto> extends Vertical
 		String details = detailsProvider != null ? detailsProvider.apply(entry) : null;
 		if (StringUtils.isNotBlank(details)) {
 			// slightly smaller than the description, but larger than the small label style of the theme
-			Label detailsLabel =
-				new Label("<span style=\"font-size:0.85em;\">" + HtmlHelper.cleanHtml(details) + "</span>", ContentMode.HTML);
+			Label detailsLabel = new Label(details);
 			detailsLabel.setWidth(100, Unit.PERCENTAGE);
 			CssStyles.style(detailsLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			texts.addComponent(detailsLabel);
@@ -218,17 +209,4 @@ public class Event717IntervalEntriesLayout<E extends EntityDto> extends Vertical
 		return entries.stream().filter(entry -> intervalProvider.apply(entry) == interval).collect(Collectors.toList());
 	}
 
-	private static String getColor(Event717Interval interval) {
-
-		switch (interval) {
-		case DETECTION:
-			return COLOR_DETECTION;
-		case NOTIFICATION:
-			return COLOR_NOTIFICATION;
-		case RESPONSE:
-			return COLOR_RESPONSE;
-		default:
-			throw new IllegalArgumentException(interval.name());
-		}
-	}
 }
