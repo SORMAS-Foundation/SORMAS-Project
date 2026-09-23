@@ -330,14 +330,17 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private void fetchSurveyMessages(Date since) {
-		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses(since);
 
+		// TODO: this is meant for comparison purposes
+		// // TODO: do not merge this in actual code
 		try {
 			OpenIdContext openIdContext = CDI.current().select(OpenIdContext.class).get();
 			FacadeProvider.getExternalMessageFacade().exists(openIdContext.getAccessToken().getToken());
 		} catch (RuntimeException e) {
 			System.out.println("Failure when trying to use the access token");
 		}
+
+		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses(since);
 
 		grid.reload();
 	}

@@ -2,6 +2,8 @@ package de.symeda.sormas.backend.user;
 
 import static de.symeda.sormas.backend.user.UserHelper.isRestrictedToAssignEntities;
 
+import java.security.Principal;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -26,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.audit.AuditIgnore;
+import de.symeda.sormas.api.user.OidcCallerPrincipal;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -57,7 +60,6 @@ public class CurrentUserService {
 	//@RequestScoped
 	@Transactional(Transactional.TxType.REQUIRED)
 	public User getCurrentUser() {
-		// TODO: IDEA: check instance of principal, if AccessTokenCallerPrincipal then token can be extracted
 		final String currentUsername = context.getCallerPrincipal().getName();
 
 		if (currentUsername == null) {
@@ -85,6 +87,18 @@ public class CurrentUserService {
 			userCache.put(currentUsername, currentUser);
 			return currentUser;
 		}
+	}
+
+	/**
+	 * Returns the current caller's access token, if authenticated through OIDC.
+	 * The token belongs to this invocation, not to the cached User entity.
+	 */
+	public Optional<String> getCurrentAccessToken() {
+		Principal principal = context.getCallerPrincipal();
+		if (principal instanceof OidcCallerPrincipal) {
+			return Optional.ofNullable(((OidcCallerPrincipal) principal).getAccessToken());
+		}
+		return Optional.empty();
 	}
 
 	public boolean hasUserRight(UserRight userRight) {
