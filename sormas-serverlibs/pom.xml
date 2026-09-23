@@ -4,7 +4,7 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>1.104.3</version>
+        <version>1.104.4</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
