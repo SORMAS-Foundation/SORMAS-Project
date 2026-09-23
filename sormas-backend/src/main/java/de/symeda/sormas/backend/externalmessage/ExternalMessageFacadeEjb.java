@@ -142,6 +142,7 @@ import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
+import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.KeycloakService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -203,6 +204,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
 	@EJB
 	private KeycloakService keycloakService;
+	@EJB
+	private CurrentUserService currentUserService;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -446,9 +449,18 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		return savedDtos;
 	}
 
+	// TODO: do not commit this
 	private void keyCloakStuff(String token) {
 		try {
 			logKeycloakStuff(token);
+
+			logger.error("XXXXXXXX---- NEW KEY_CLOAK TESTS START ----XXXXXXXX");
+			String oicdcToken = currentUserService.getCurrentAccessToken().orElse("MISSING_TOKEN");
+
+			logger.error("oicdcToken: {}", oicdcToken);
+
+			logger.error("XXXXXXXX---- NEW KEY_CLOAK TESTS END ----XXXXXXXX");
+
 		} catch (RuntimeException e) {
 			logger.error("Failure during keycloak logging", e);
 		}
