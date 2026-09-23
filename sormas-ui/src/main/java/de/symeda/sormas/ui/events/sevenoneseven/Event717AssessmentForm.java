@@ -66,6 +66,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 	private static final String LOC_CORRECTIVE_ACTIONS_HEADING = "correctiveActionsHeading";
 	private static final String LOC_REPORT_HEADING = "reportHeading";
 	private static final String LOC_EARLY_RESPONSE_ACTIONS = "earlyResponseActions";
+	private static final String LOC_TIMELINESS_HEADING = "timelinessHeading";
 	private static final String LOC_TIMELINESS_TABLE = "timelinessTable";
 
 	private static final String CARD = CssStyles.VIEW_SECTION_MARGIN_X_4 + " " + CssStyles.VSPACE_TOP_3;
@@ -83,6 +84,9 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 			loc(LOC_EARLY_RESPONSE_HEADING)
 				+ loc(LOC_EARLY_RESPONSE_ACTIONS)
 				+ fluidRowLocs(4, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_DATE, 8, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_NARRATIVE)
+		)
+		+ divCss(CARD,
+			loc(LOC_TIMELINESS_HEADING)
 				+ loc(LOC_TIMELINESS_TABLE)
 		)
 		+ divCss(CARD,
@@ -175,6 +179,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 			I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.EARLY_RESPONSE_COMPLETION_NARRATIVE));
 
 		// the same timeliness as in the side panel, which is shown at the bottom of the page on small screens
+		addHeading(Strings.headingEvent717Timeliness, LOC_TIMELINESS_HEADING);
 		timelinessTable = new Event717TimelinessTable();
 		getContent().addComponent(timelinessTable, LOC_TIMELINESS_TABLE);
 

@@ -685,6 +685,7 @@ public interface Strings {
 	String headingEvent717EarlyResponseActions = "headingEvent717EarlyResponseActions";
 	String headingEvent717Milestones = "headingEvent717Milestones";
 	String headingEvent717ReportDetails = "headingEvent717ReportDetails";
+	String headingEvent717Summary = "headingEvent717Summary";
 	String headingEvent717Timeliness = "headingEvent717Timeliness";
 	String headingEventData = "headingEventData";
 	String headingEventGroupData = "headingEventGroupData";
@@ -1086,8 +1087,10 @@ public interface Strings {
 	String infoEvent717Assessment = "infoEvent717Assessment";
 	String infoEvent717EarlyResponseActions = "infoEvent717EarlyResponseActions";
 	String infoEvent717EarlyResponseCompletion = "infoEvent717EarlyResponseCompletion";
+	String infoEvent717EarlyResponseIncomplete = "infoEvent717EarlyResponseIncomplete";
 	String infoEvent717NotAllTargetsMet = "infoEvent717NotAllTargetsMet";
 	String infoEvent717NotAssessed = "infoEvent717NotAssessed";
+	String infoEvent717TargetsMet = "infoEvent717TargetsMet";
 	String infoEvent717TimelinessDays = "infoEvent717TimelinessDays";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
 	String infoEventResponsibleUserFilter = "infoEventResponsibleUserFilter";

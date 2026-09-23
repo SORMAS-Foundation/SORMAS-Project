@@ -53,7 +53,10 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 	private static final String EDIT_COLUMN = "edit";
 	private static final String ACTION_COLUMN = "action";
 	private static final String DATE_COLUMN = "date";
-	private static final String NOT_APPLICABLE_COLUMN = "notApplicable";
+	private static final String APPLICABLE_COLUMN = "applicable";
+
+	private static final String COLOR_APPLICABLE = "#43A047";
+	private static final String COLOR_NOT_APPLICABLE = "#E7503C";
 	private static final String NARRATIVE_COLUMN = "narrative";
 
 	/**
@@ -102,11 +105,12 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 			Date date = actionFields.get(itemId).date.getValue();
 			return date != null ? DateFormatHelper.formatDate(date) : null;
 		});
-		table.addGeneratedColumn(NOT_APPLICABLE_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-			if (actionFields.get(itemId).isNotApplicable()) {
-				return new Label(VaadinIcons.CHECK.getHtml(), ContentMode.HTML);
-			}
-			return null;
+		table.addGeneratedColumn(APPLICABLE_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			boolean isApplicable = !actionFields.get(itemId).isNotApplicable();
+			return new Label(
+				"<span style=\"color:" + (isApplicable ? COLOR_APPLICABLE : COLOR_NOT_APPLICABLE) + ";\">"
+					+ (isApplicable ? VaadinIcons.CHECK.getHtml() : VaadinIcons.CLOSE.getHtml()) + "</span>",
+				ContentMode.HTML);
 		});
 		table.addGeneratedColumn(NARRATIVE_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			String narrative = actionFields.get(itemId).narrative.getValue();
@@ -117,21 +121,19 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 			table.addItem(action);
 		}
 
-		table.setVisibleColumns(EDIT_COLUMN, ACTION_COLUMN, DATE_COLUMN, NOT_APPLICABLE_COLUMN, NARRATIVE_COLUMN);
+		table.setVisibleColumns(EDIT_COLUMN, ACTION_COLUMN, DATE_COLUMN, APPLICABLE_COLUMN, NARRATIVE_COLUMN);
 		table.setColumnHeader(EDIT_COLUMN, "&nbsp");
 		table.setColumnHeader(ACTION_COLUMN, I18nProperties.getCaption(Captions.Action));
 		table.setColumnHeader(DATE_COLUMN, I18nProperties.getCaption(Captions.date));
-		table.setColumnHeader(
-			NOT_APPLICABLE_COLUMN,
-			I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.INVESTIGATION_NOT_APPLICABLE));
+		table.setColumnHeader(APPLICABLE_COLUMN, I18nProperties.getCaption(Captions.Event717Assessment_applicable));
 		table.setColumnHeader(NARRATIVE_COLUMN, I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, "narrative"));
 		table.setColumnWidth(EDIT_COLUMN, 20);
 		table.setColumnWidth(ACTION_COLUMN, 255);
 		table.setColumnWidth(DATE_COLUMN, 70);
-		table.setColumnWidth(NOT_APPLICABLE_COLUMN, 105);
+		table.setColumnWidth(APPLICABLE_COLUMN, 105);
 		// the narrative takes the remaining width
 		table.setColumnExpandRatio(NARRATIVE_COLUMN, 1);
-		table.setColumnAlignment(NOT_APPLICABLE_COLUMN, Table.Align.CENTER);
+		table.setColumnAlignment(APPLICABLE_COLUMN, Table.Align.CENTER);
 		table.setPageLength(0);
 
 		table.addItemClickListener(event -> {

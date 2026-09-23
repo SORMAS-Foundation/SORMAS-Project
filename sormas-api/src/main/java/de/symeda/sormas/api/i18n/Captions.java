@@ -1795,6 +1795,7 @@ public interface Captions {
 	String Event_uuid = "Event.uuid";
 	String Event_workEnvironment = "Event.workEnvironment";
 	String Event717Assessment = "Event717Assessment";
+	String Event717Assessment_applicable = "Event717Assessment.applicable";
 	String Event717Assessment_bottlenecks = "Event717Assessment.bottlenecks";
 	String Event717Assessment_caseManagementDate = "Event717Assessment.caseManagementDate";
 	String Event717Assessment_caseManagementNarrative = "Event717Assessment.caseManagementNarrative";

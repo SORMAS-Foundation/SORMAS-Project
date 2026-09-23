@@ -61,7 +61,7 @@ public class Event717EarlyResponseActionEditForm extends AbstractEditForm<Event7
 
 		// the full title of the action, it is too long for the caption of the dialog
 		MultilineLabel actionTitle = new MultilineLabel(action.toString());
-		CssStyles.style(actionTitle, CssStyles.LABEL_BOLD, CssStyles.VSPACE_3);
+		CssStyles.style(actionTitle, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE_ALT, CssStyles.VSPACE_3);
 		getContent().addComponent(actionTitle, LOC_ACTION_TITLE);
 
 		DateField date = addField(Event717EarlyResponseActionEntry.DATE, DateField.class);

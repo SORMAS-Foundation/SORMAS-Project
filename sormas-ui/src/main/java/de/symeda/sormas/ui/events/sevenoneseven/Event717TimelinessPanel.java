@@ -17,7 +17,9 @@ package de.symeda.sormas.ui.events.sevenoneseven;
 import java.util.EnumMap;
 import java.util.Map;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -33,17 +35,21 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 /**
- * Shows the timeliness of the three 7-1-7 intervals and whether their targets have been met.
+ * Compact summary of the 7-1-7 timeliness of an event: the overall result, the three intervals with their timeliness against
+ * the target and the completion of the early response.
  */
 @SuppressWarnings({
 	"serial",
 	"java:S2160" })
 public class Event717TimelinessPanel extends VerticalLayout {
 
+	private static final int DOT_SIZE = 10;
+	private static final int INTERVAL_LABEL_WIDTH = 120;
+
+	private final Label verdictLabel;
 	private final Map<Event717Interval, Label> daysLabels = new EnumMap<>(Event717Interval.class);
 	private final Map<Event717Interval, Label> statusLabels = new EnumMap<>(Event717Interval.class);
 	private final Label completionLabel;
-	private final Label overallLabel;
 
 	public Event717TimelinessPanel(boolean showHeading) {
 
@@ -52,27 +58,38 @@ public class Event717TimelinessPanel extends VerticalLayout {
 		setSpacing(false);
 
 		if (showHeading) {
-			Label heading = new Label(I18nProperties.getString(Strings.headingEvent717Timeliness));
+			Label heading = new Label(I18nProperties.getString(Strings.headingEvent717Summary));
 			heading.addStyleName(CssStyles.H3);
 			addComponent(heading);
 		}
+
+		verdictLabel = new Label("", ContentMode.HTML);
+		CssStyles.style(verdictLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_3);
+		addComponent(verdictLabel);
 
 		for (Event717Interval interval : Event717Interval.values()) {
 			HorizontalLayout row = new HorizontalLayout();
 			row.setWidth(100, Sizeable.Unit.PERCENTAGE);
 			row.setMargin(false);
+			row.setSpacing(false);
 			row.addStyleName(CssStyles.VSPACE_4);
 
-			Label intervalLabel = new Label(interval.toString());
-			CssStyles.style(intervalLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			Label intervalLabel = new Label(createDot(interval) + " " + interval, ContentMode.HTML);
+			intervalLabel.setWidth(INTERVAL_LABEL_WIDTH, Sizeable.Unit.PIXELS);
 			Label daysLabel = new Label();
-			Label statusLabel = new Label();
-			CssStyles.style(statusLabel, CssStyles.LABEL_BOLD, CssStyles.ALIGN_RIGHT);
+			daysLabel.setWidthUndefined();
+			daysLabel.addStyleName(CssStyles.LABEL_BOLD);
+			Label statusLabel = new Label("", ContentMode.HTML);
+			statusLabel.setWidthUndefined();
+			statusLabel.addStyleName(CssStyles.HSPACE_LEFT_3);
+			// pushes the values next to the interval names instead of to the right edge
+			Label spacer = new Label();
 
-			row.addComponents(intervalLabel, daysLabel, statusLabel);
-			row.setExpandRatio(intervalLabel, 1);
-			row.setExpandRatio(daysLabel, 1);
-			row.setExpandRatio(statusLabel, 1);
+			row.addComponents(intervalLabel, daysLabel, statusLabel, spacer);
+			row.setExpandRatio(intervalLabel, 0);
+			row.setExpandRatio(daysLabel, 0);
+			row.setExpandRatio(statusLabel, 0);
+			row.setExpandRatio(spacer, 1);
 			addComponent(row);
 
 			daysLabels.put(interval, daysLabel);
@@ -80,68 +97,87 @@ public class Event717TimelinessPanel extends VerticalLayout {
 		}
 
 		completionLabel = new Label();
-		completionLabel.addStyleName(CssStyles.VSPACE_TOP_4);
+		CssStyles.style(completionLabel, CssStyles.LABEL_SECONDARY, CssStyles.VSPACE_TOP_4);
 		addComponent(completionLabel);
-
-		overallLabel = new Label();
-		CssStyles.style(overallLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_4);
-		addComponent(overallLabel);
 	}
 
 	public void setValue(Event717TimelinessDto timeliness) {
 
+		int metTargets = 0;
 		for (Event717Interval interval : Event717Interval.values()) {
 			Event717IntervalResultDto result = timeliness.getResult(interval);
+
+			// e.g. 3 / 7, where 7 is the target of the interval
 			daysLabels.get(interval)
 				.setValue(
-					String.format(
-						I18nProperties.getString(Strings.infoEvent717TimelinessDays),
-						result.getDays() != null ? Event717TimelinessCalculator.formatDays(result.getDays()) : "-",
-						interval.getTargetDays()));
-			styleStatusLabel(statusLabels.get(interval), result.getStatus());
+					(result.getDays() != null ? Event717TimelinessCalculator.formatDays(result.getDays()) : "-") + " / " + interval.getTargetDays());
+
+			Label statusLabel = statusLabels.get(interval);
+			statusLabel.setValue(createStatusIcon(result.getStatus()));
+			statusLabel.setDescription(result.getStatus() != null ? result.getStatus().toString() : null);
+
+			if (Boolean.TRUE.equals(result.getTargetMet())) {
+				metTargets++;
+			}
 		}
 
-		completionLabel.setValue(
-			I18nProperties.getString(Strings.infoEvent717EarlyResponseCompletion) + ": "
-				+ (timeliness.isEarlyResponseIncomplete()
-					? Event717TimelinessStatus.INCOMPLETE.toString()
-					: DateFormatHelper.formatDate(timeliness.getEarlyResponseCompletionDate())));
+		updateVerdict(timeliness, metTargets);
 
-		CssStyles.removeStyles(overallLabel, CssStyles.LABEL_POSITIVE, CssStyles.LABEL_CRITICAL);
-		if (timeliness.getAllTargetsMet() == null) {
-			overallLabel.setValue("");
-		} else if (timeliness.getAllTargetsMet()) {
-			overallLabel.setValue(I18nProperties.getString(Strings.infoEvent717AllTargetsMet));
-			overallLabel.addStyleName(CssStyles.LABEL_POSITIVE);
+		if (timeliness.isEarlyResponseIncomplete()) {
+			completionLabel.setValue(I18nProperties.getString(Strings.infoEvent717EarlyResponseIncomplete));
 		} else {
-			overallLabel.setValue(I18nProperties.getString(Strings.infoEvent717NotAllTargetsMet));
-			overallLabel.addStyleName(CssStyles.LABEL_CRITICAL);
+			completionLabel.setValue(
+				I18nProperties.getString(Strings.infoEvent717EarlyResponseCompletion) + ": "
+					+ DateFormatHelper.formatDate(timeliness.getEarlyResponseCompletionDate()));
 		}
 	}
 
-	/**
-	 * Sets the caption of the status and colors the label: green for met, red for not met, orange for data errors.
-	 */
-	public static void styleStatusLabel(Label label, Event717TimelinessStatus status) {
+	private void updateVerdict(Event717TimelinessDto timeliness, int metTargets) {
 
-		CssStyles.removeStyles(label, CssStyles.LABEL_POSITIVE, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_WARNING, CssStyles.LABEL_SECONDARY);
-		label.setValue(status != null ? status.toString() : "");
+		CssStyles.removeStyles(verdictLabel, CssStyles.LABEL_POSITIVE, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_SECONDARY);
+
+		if (Boolean.TRUE.equals(timeliness.getAllTargetsMet())) {
+			verdictLabel
+				.setValue(VaadinIcons.CHECK_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoEvent717AllTargetsMet));
+			verdictLabel.addStyleName(CssStyles.LABEL_POSITIVE);
+		} else if (Boolean.FALSE.equals(timeliness.getAllTargetsMet())) {
+			verdictLabel.setValue(
+				VaadinIcons.CLOSE_CIRCLE.getHtml() + " "
+					+ String.format(I18nProperties.getString(Strings.infoEvent717TargetsMet), metTargets, Event717Interval.values().length));
+			verdictLabel.addStyleName(CssStyles.LABEL_CRITICAL);
+		} else {
+			// at least one interval can not be evaluated yet
+			verdictLabel.setValue(
+				String.format(I18nProperties.getString(Strings.infoEvent717TargetsMet), metTargets, Event717Interval.values().length));
+			verdictLabel.addStyleName(CssStyles.LABEL_SECONDARY);
+		}
+	}
+
+	private static String createDot(Event717Interval interval) {
+
+		return "<span style=\"display:inline-block;width:" + DOT_SIZE + "px;height:" + DOT_SIZE + "px;border-radius:50%;background-color:"
+			+ Event717IntervalColors.getColor(interval) + ";\"></span>";
+	}
+
+	private static String createStatusIcon(Event717TimelinessStatus status) {
+
 		if (status == null) {
-			return;
+			return "";
 		}
 
 		switch (status) {
 		case MET:
-			label.addStyleName(CssStyles.LABEL_POSITIVE);
-			break;
+			return colored(VaadinIcons.CHECK.getHtml(), "#43A047");
 		case NOT_MET:
-			label.addStyleName(CssStyles.LABEL_CRITICAL);
-			break;
+			return colored(VaadinIcons.CLOSE.getHtml(), "#E7503C");
 		case DATA_ERROR:
-			label.addStyleName(CssStyles.LABEL_WARNING);
-			break;
+			return colored(VaadinIcons.WARNING.getHtml(), "#F49234");
 		default:
-			label.addStyleName(CssStyles.LABEL_SECONDARY);
+			return colored(VaadinIcons.MINUS.getHtml(), "#999999");
 		}
+	}
+
+	private static String colored(String icon, String color) {
+		return "<span style=\"color:" + color + ";\">" + icon + "</span>";
 	}
 }

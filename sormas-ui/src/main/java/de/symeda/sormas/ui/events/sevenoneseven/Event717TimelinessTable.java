@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.events.sevenoneseven;
 import java.util.EnumMap;
 import java.util.Map;
 
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -28,7 +29,6 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -54,10 +54,6 @@ public class Event717TimelinessTable extends VerticalLayout {
 		setMargin(false);
 		setSpacing(false);
 		addStyleName(CssStyles.VSPACE_3);
-
-		Label heading = new Label(I18nProperties.getString(Strings.headingEvent717Timeliness));
-		heading.addStyleName(CssStyles.H4);
-		addComponent(heading);
 
 		grid = new GridLayout(4, Event717Interval.values().length * 2 + 2);
 		grid.setWidth(100, Unit.PERCENTAGE);
@@ -107,8 +103,9 @@ public class Event717TimelinessTable extends VerticalLayout {
 
 	private void addHeaderCell(String captionKey, int column) {
 
-		Label label = new Label(I18nProperties.getCaption(captionKey));
-		CssStyles.style(label, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_SMALL, CssStyles.HSPACE_LEFT_4);
+		// slightly larger than the small label style of the theme
+		Label label = new Label("<span style=\"font-size:0.85em;\">" + I18nProperties.getCaption(captionKey) + "</span>", ContentMode.HTML);
+		CssStyles.style(label, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.HSPACE_LEFT_4);
 		grid.addComponent(label, column, 0);
 	}
 
