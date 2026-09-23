@@ -44,6 +44,7 @@ public class KeycloakIdentityStore implements IdentityStore {
 			Set<UserRight> userRights = UserRoleDto.getUserRights(FacadeProvider.getUserFacade().getUserRoles(user));
 
 			if (CollectionUtils.isNotEmpty(userRights) && userRights.contains(UserRight.SORMAS_REST)) {
+				// TODO: idea: using: AccessTokenCallerPrincipal to be able to retrieve token again ?
 				return new CredentialValidationResult(credential.getCaller(), userRights.stream().map(Enum::name).collect(Collectors.toSet()));
 			}
 		}

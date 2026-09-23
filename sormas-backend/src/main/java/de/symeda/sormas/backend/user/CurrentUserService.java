@@ -57,6 +57,7 @@ public class CurrentUserService {
 	//@RequestScoped
 	@Transactional(Transactional.TxType.REQUIRED)
 	public User getCurrentUser() {
+		// TODO: IDEA: check instance of principal, if AccessTokenCallerPrincipal then token can be extracted
 		final String currentUsername = context.getCallerPrincipal().getName();
 
 		if (currentUsername == null) {
