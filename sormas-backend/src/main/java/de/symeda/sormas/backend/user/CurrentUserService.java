@@ -95,6 +95,9 @@ public class CurrentUserService {
 	 */
 	public Optional<String> getCurrentAccessToken() {
 		Principal principal = context.getCallerPrincipal();
+
+		logger.error("Principal class: [{}]", principal.getClass());
+
 		if (principal instanceof OidcCallerPrincipal) {
 			return Optional.ofNullable(((OidcCallerPrincipal) principal).getAccessToken());
 		}

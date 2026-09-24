@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import javax.enterprise.inject.spi.CDI;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
@@ -43,6 +45,7 @@ import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ConsoleLogUtils;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FutureDateValidator;
@@ -337,7 +340,7 @@ public class ExternalMessagesView extends AbstractView {
 			OpenIdContext openIdContext = CDI.current().select(OpenIdContext.class).get();
 			FacadeProvider.getExternalMessageFacade().exists(openIdContext.getAccessToken().getToken());
 		} catch (RuntimeException e) {
-			System.out.println("Failure when trying to use the access token");
+			ConsoleLogUtils.error("Failure when trying to use the access token" + ExceptionUtils.getMessage(e));
 		}
 
 		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses(since);

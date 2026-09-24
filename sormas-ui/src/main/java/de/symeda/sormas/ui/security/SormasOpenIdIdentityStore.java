@@ -33,6 +33,7 @@ import de.symeda.sormas.api.user.OidcCallerPrincipal;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.ui.utils.ConsoleLogUtils;
 import fish.payara.security.openid.OpenIdCredential;
 import fish.payara.security.openid.OpenIdIdentityStore;
 import fish.payara.security.openid.api.AccessToken;
@@ -63,6 +64,8 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 			Set<String> groups = getCallerGroups(user);
 			context.setCallerGroups(groups);
 			updateLocale(context.getAccessToken(), user);
+			ConsoleLogUtils.info("Access token: " + context.getAccessToken());
+			ConsoleLogUtils.info("Access token value: " + context.getAccessToken().getToken());
 			return new CredentialValidationResult(new OidcCallerPrincipal(context.getCallerName(), context.getAccessToken().getToken()), groups);
 		}
 		return result;

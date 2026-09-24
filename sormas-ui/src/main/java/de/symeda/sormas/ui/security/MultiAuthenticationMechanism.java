@@ -35,7 +35,9 @@ import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.OidcCallerPrincipal;
 import de.symeda.sormas.ui.security.config.DefaultOpenIdAuthenticationDefinition;
+import de.symeda.sormas.ui.utils.ConsoleLogUtils;
 import fish.payara.security.openid.OpenIdAuthenticationMechanism;
+import fish.payara.security.openid.api.AccessToken;
 import fish.payara.security.openid.domain.OpenIdContextImpl;
 
 /**
@@ -106,18 +108,29 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 		throws AuthenticationException {
 		AuthenticationStatus authenticationStatus = authenticationMechanism.validateRequest(request, response, httpMessageContext);
 
-		if (authenticationMechanism instanceof OpenIdAuthenticationMechanism
-			&& authenticationStatus == AuthenticationStatus.SUCCESS
-			&& openIdContext.getAccessToken() != null) {
-			// Session restoration may supply an older principal after token refresh. Use the current OIDC context
-			// on each successful request without registering (and potentially invalidating) the session again.
-			authenticationStatus = httpMessageContext.notifyContainerAboutLogin(
-				new OidcCallerPrincipal(openIdContext.getCallerName(), openIdContext.getAccessToken().getToken()),
-				openIdContext.getCallerGroups());
-		}
-
 		if (authenticationStatus.equals(AuthenticationStatus.SEND_FAILURE)) {
 			FacadeProvider.getAuditLoggerFacade().logFailedUiLogin(extractor.extract(request), request.getMethod(), request.getRequestURI());
+		} else if (authenticationStatus.equals(AuthenticationStatus.SUCCESS)) {
+			try {
+
+				AccessToken accessToken = openIdContext.getAccessToken();
+
+				if (accessToken != null) {
+
+					ConsoleLogUtils.info(String.format("AccessToken: [%s]", accessToken));
+
+					authenticationStatus = httpMessageContext.notifyContainerAboutLogin(
+						new OidcCallerPrincipal(openIdContext.getCallerName(), accessToken.getToken()),
+						openIdContext.getCallerGroups());
+
+				} else {
+					ConsoleLogUtils.error("No access token present in current openIdContext");
+				}
+
+			} catch (RuntimeException e) {
+				ConsoleLogUtils.error("Failure during processing");
+			}
+
 		}
 
 		return authenticationStatus;
