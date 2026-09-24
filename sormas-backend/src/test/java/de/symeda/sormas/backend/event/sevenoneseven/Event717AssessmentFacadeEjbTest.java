@@ -40,6 +40,7 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckCategory;
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717CorrectiveActionDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717CorrectiveActionPriority;
+import de.symeda.sormas.api.event.sevenoneseven.Event717DateType;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EnablerDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717ExportDto;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -605,6 +607,31 @@ public class Event717AssessmentFacadeEjbTest extends AbstractBeanTest {
 
 		createFeatureConfiguration(FeatureType.EVENT_717_ASSESSMENT, false);
 		assertThrows(AccessDeniedException.class, () -> getEvent717AssessmentFacade().getSummary(new EventCriteria()));
+	}
+
+	@Test
+	public void testEvent717DateFilter() {
+
+		// notified 14 days ago
+		getEvent717AssessmentFacade().save(buildAssessment(creator.createEvent(nationalAdmin.toReference(), Disease.EVD, rdcf)));
+		// notified 44 days ago
+		Event717AssessmentDto older = buildAssessment(creator.createEvent(nationalAdmin.toReference(), Disease.EVD, rdcf));
+		older.setDateOfEmergence(daysAgo(50));
+		older.setDateOfDetection(daysAgo(45));
+		older.setDateOfNotification(daysAgo(44));
+		getEvent717AssessmentFacade().save(older);
+
+		EventCriteria lastMonth =
+			new EventCriteria().eventDateBetween(daysAgo(30), new Date(), Event717DateType.DATE_OF_NOTIFICATION, DateFilterOption.DATE);
+		assertEquals(1, getEvent717AssessmentFacade().count(lastMonth));
+		assertEquals(1, getEvent717AssessmentFacade().getSummary(lastMonth).getAssessedEvents());
+		assertEquals(1, getEvent717AssessmentFacade().getExportList(lastMonth, null, null).size());
+
+		EventCriteria emergedBefore = new EventCriteria().eventDateBetween(null, daysAgo(40), Event717DateType.DATE_OF_EMERGENCE, DateFilterOption.DATE);
+		assertEquals(1, getEvent717AssessmentFacade().count(emergedBefore));
+
+		// the event list ignores the 7-1-7 dates
+		assertEquals(getEventFacade().count(new EventCriteria()), getEventFacade().count(lastMonth));
 	}
 
 	@Test

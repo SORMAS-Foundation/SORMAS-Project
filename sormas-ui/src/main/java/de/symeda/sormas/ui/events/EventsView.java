@@ -42,7 +42,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -86,7 +85,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.importer.EventImportLayout;
 import de.symeda.sormas.ui.events.sevenoneseven.Event717AssessmentView;
 import de.symeda.sormas.ui.events.sevenoneseven.Event717Grid;
-import de.symeda.sormas.ui.events.sevenoneseven.Event717SummaryLayout;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717SummaryView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -127,8 +126,6 @@ public class EventsView extends AbstractView {
 	private ComboBox contactCountMethod;
 
 	private VerticalLayout gridLayout;
-	private Event717SummaryLayout event717SummaryLayout;
-	private int event717SummaryCount;
 
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
@@ -179,18 +176,8 @@ public class EventsView extends AbstractView {
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
-		if (isEvent717SummaryMode()) {
-			// the grid is kept for the exports, but the summary is shown instead
-			event717SummaryLayout = new Event717SummaryLayout();
-			Panel summaryPanel = new Panel(event717SummaryLayout);
-			summaryPanel.setSizeFull();
-			summaryPanel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-			gridLayout.addComponent(summaryPanel);
-			gridLayout.setExpandRatio(summaryPanel, 1);
-		} else {
-			gridLayout.addComponent(grid);
-			gridLayout.setExpandRatio(grid, 1);
-		}
+		gridLayout.addComponent(grid);
+		gridLayout.setExpandRatio(grid, 1);
 
 		addComponent(gridLayout);
 
@@ -229,7 +216,12 @@ public class EventsView extends AbstractView {
 		addHeaderComponent(eventsViewSwitcher);
 
 		if (isEvent717ViewType()) {
-			addHeaderComponent(createEvent717ModeSwitcher());
+			Button summaryButton = ButtonHelper.createIconButton(
+				Captions.event717Summary,
+				VaadinIcons.BAR_CHART,
+				e -> SormasUI.get().getNavigator().navigateTo(Event717SummaryView.VIEW_NAME),
+				ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(summaryButton);
 		}
 
 		if (isDefaultViewType() && UiUtil.permitted(UserRight.EVENT_IMPORT)) {
@@ -254,16 +246,7 @@ public class EventsView extends AbstractView {
 			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 
-			if (isEvent717SummaryMode()) {
-				// the table is not shown, so the figures of the summary are exported instead
-				addExportButton(
-					Event717SummaryLayout.createExportResource(() -> eventCriteria),
-					exportPopupButton,
-					exportLayout,
-					VaadinIcons.TABLE,
-					Captions.event717ExportSummary,
-					Strings.infoEvent717SummaryExport);
-			} else {
+			{
 				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 					grid,
 					() -> isDefaultViewType() && this.viewConfiguration.isInEagerMode()
@@ -337,7 +320,7 @@ public class EventsView extends AbstractView {
 						exportLayout,
 						VaadinIcons.FILE_TEXT,
 						Captions.exportDetailed,
-						isEvent717SummaryMode() ? Strings.infoEvent717DetailedExport : Strings.infoDetailedExport);
+						Strings.infoDetailedExport);
 				} else {
 					// NOOP: No detailed export for the groups view
 				}
@@ -787,44 +770,11 @@ public class EventsView extends AbstractView {
 			((EventGrid) grid).reload();
 		} else if (isActionViewType()) {
 			((EventActionsGrid) grid).reload();
-		} else if (isEvent717SummaryMode()) {
-			event717SummaryCount = event717SummaryLayout.refresh(eventCriteria);
-			updateStatusButtons();
 		} else if (isEvent717ViewType()) {
 			((Event717Grid) grid).reload();
 		} else {
 			((EventGroupsGrid) grid).reload();
 		}
-	}
-
-	private boolean isEvent717SummaryMode() {
-		return isEvent717ViewType() && viewConfiguration.isEvent717SummaryMode();
-	}
-
-	/**
-	 * Switches the 7-1-7 view between the table of the assessed events and the summary of their 7-1-7 performance.
-	 */
-	private OptionGroup createEvent717ModeSwitcher() {
-
-		OptionGroup modeSwitcher = new OptionGroup();
-		modeSwitcher.setId("event717ModeSwitcher");
-		// styled like the events view switcher next to it in the header
-		CssStyles.style(
-			modeSwitcher,
-			CssStyles.FORCE_CAPTION,
-			ValoTheme.OPTIONGROUP_HORIZONTAL,
-			CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY,
-			CssStyles.VSPACE_TOP_3);
-		modeSwitcher.addItem(Boolean.FALSE);
-		modeSwitcher.setItemCaption(Boolean.FALSE, I18nProperties.getCaption(Captions.event717TableMode));
-		modeSwitcher.addItem(Boolean.TRUE);
-		modeSwitcher.setItemCaption(Boolean.TRUE, I18nProperties.getCaption(Captions.event717SummaryMode));
-		modeSwitcher.setValue(viewConfiguration.isEvent717SummaryMode());
-		modeSwitcher.addValueChangeListener(e -> {
-			viewConfiguration.setEvent717SummaryMode(Boolean.TRUE.equals(e.getProperty().getValue()));
-			navigateTo(eventCriteria);
-		});
-		return modeSwitcher;
 	}
 
 	private void addEvent717StatusButton(HorizontalLayout statusFilterLayout, Event717TimelinessStatus status, String captionKey) {
@@ -890,7 +840,7 @@ public class EventsView extends AbstractView {
 				activeStatusButton
 					.setCaption(
 						statusButtons.get(activeStatusButton) + LayoutUtil
-							.spanCss(CssStyles.BADGE, String.valueOf(isEvent717SummaryMode() ? event717SummaryCount : grid.getDataSize())));
+							.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 			}
 		}
 	}

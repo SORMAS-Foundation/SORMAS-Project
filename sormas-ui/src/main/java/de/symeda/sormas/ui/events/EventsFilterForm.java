@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.collect.Sets;
 import com.vaadin.icons.VaadinIcons;
@@ -55,6 +56,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.event.sevenoneseven.Event717DateType;
 import de.symeda.sormas.api.event.sevenoneseven.Event717ExportDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -152,6 +154,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			getField(EventCriteria.EVENT_717_DETECTION_STATUS).setVisible(false);
 			getField(EventCriteria.EVENT_717_NOTIFICATION_STATUS).setVisible(false);
 			getField(EventCriteria.EVENT_717_RESPONSE_STATUS).setVisible(false);
+			for (Event717DateType dateType : Event717DateType.values()) {
+				getEpiWeekAndDateComponent(EVENT_WEEK_AND_DATE_FILTER).getDateTypeSelector().removeItem(dateType);
+			}
 		}
 	}
 
@@ -372,7 +377,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				false,
 				false,
 				null,
-				CriteriaDateTypeHelper.getTypes(EventCriteriaDateType.class, isExternalShareEnabled),
+				// the 7-1-7 dates are removed again outside of the 7-1-7 view, see updateFields
+				ArrayUtils.addAll(
+					CriteriaDateTypeHelper.getTypes(EventCriteriaDateType.class, isExternalShareEnabled),
+					(CriteriaDateType[]) Event717DateType.values()),
 				I18nProperties.getString(Strings.promptEventDateType),
 				null,
 				this);
@@ -541,6 +549,12 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			criteria.getActionDateFilterOption(),
 			criteria.getActionDateFrom(),
 			criteria.getActionDateTo());
+
+		// like the other filter forms, show the date type of the criteria, so that applying again keeps it
+		ComboBox eventDateTypeSelector = getEpiWeekAndDateComponent(EVENT_WEEK_AND_DATE_FILTER).getDateTypeSelector();
+		if (criteria.getEventDateType() != null && eventDateTypeSelector.containsId(criteria.getEventDateType())) {
+			eventDateTypeSelector.setValue(criteria.getEventDateType());
+		}
 
 		RegionReferenceDto region = criteria.getRegion();
 		DistrictReferenceDto district = criteria.getDistrict();

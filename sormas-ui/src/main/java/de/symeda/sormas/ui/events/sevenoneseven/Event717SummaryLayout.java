@@ -20,22 +20,26 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.text.StringEscapeUtils;
 
 import com.opencsv.CSVWriter;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
@@ -45,23 +49,26 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 
 /**
- * Summary of the 7-1-7 view of the event directory: the 7-1-7 performance of the assessed events matching the event filters, like
- * the summary reports of the "Assess 7-1-7 results" sheet of the 7-1-7 data consolidation spreadsheet.
+ * 7-1-7 performance of the assessed events matching the filters of the 7-1-7 summary, like the summary reports of the "Assess 7-1-7
+ * results" sheet of the 7-1-7 data consolidation spreadsheet. Styles are defined in the dashboard view theme.
  * <p>
- * Percentages only count evaluable events (meeting or not meeting the target); the other results are always listed next to them.
+ * Percentages only count evaluable events (meeting or not meeting the target); the other results are always shown next to them.
  */
 @SuppressWarnings("serial")
 public class Event717SummaryLayout extends VerticalLayout {
 
 	private static final String NO_VALUE = "–";
 
+	private final Label scopeLabel;
 	private final Label cardsLabel;
 	private final HighChart chart;
 	private final Grid<Event717EarlyResponseAction> actionsGrid;
@@ -73,94 +80,199 @@ public class Event717SummaryLayout extends VerticalLayout {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(true);
+		addStyleName("event717-summary");
 
-		addComponent(createHeading(I18nProperties.getString(Strings.headingEvent717OverallPerformance)));
+		scopeLabel = new Label("", ContentMode.HTML);
+		scopeLabel.setWidth(100, Unit.PERCENTAGE);
+		addComponent(scopeLabel);
+
 		cardsLabel = new Label("", ContentMode.HTML);
 		cardsLabel.setWidth(100, Unit.PERCENTAGE);
 		addComponent(cardsLabel);
 
-		addComponent(createHeading(I18nProperties.getString(Strings.headingEvent717PercentMeetingTargets)));
 		chart = new HighChart();
 		chart.setWidth(100, Unit.PERCENTAGE);
 		chart.setHeight(300, Unit.PIXELS);
-		addComponent(chart);
+		VerticalLayout chartPanel = createPanel(
+			I18nProperties.getString(Strings.headingEvent717PercentMeetingTargets),
+			I18nProperties.getString(Strings.infoEvent717EvaluableOnly),
+			chart);
+		chartPanel.addStyleName("event717-panel-chart");
 
-		addComponent(createHeading(I18nProperties.getString(Strings.headingEvent717EarlyResponseActionsPerformance)));
 		actionsGrid = createActionsGrid();
-		addComponent(actionsGrid);
+		VerticalLayout tablePanel = createPanel(
+			I18nProperties.getString(Strings.headingEvent717EarlyResponseActionsPerformance),
+			String.format(I18nProperties.getString(Strings.infoEvent717ActionsMeasured), Event717Interval.RESPONSE.getTargetDays()),
+			actionsGrid);
+		tablePanel.addStyleName("event717-panel-table");
 
-		Label denominatorInfo =
-			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoEvent717SummaryDenominator), ContentMode.HTML);
-		denominatorInfo.setWidth(100, Unit.PERCENTAGE);
-		CssStyles.style(denominatorInfo, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		addComponent(denominatorInfo);
+		// a css layout, so that the panels wrap below each other on small screens
+		CssLayout panels = new CssLayout(chartPanel, tablePanel);
+		panels.setWidth(100, Unit.PERCENTAGE);
+		panels.addStyleNames("event717-panels", CssStyles.VSPACE_TOP_3);
+		addComponent(panels);
 	}
 
-	private static Label createHeading(String caption) {
+	private static VerticalLayout createPanel(String title, String subtitle, com.vaadin.ui.Component content) {
 
-		Label heading = new Label(caption);
-		CssStyles.style(heading, CssStyles.H3, CssStyles.VSPACE_TOP_3);
-		return heading;
+		Label titleLabel = new Label(title);
+		titleLabel.addStyleName("event717-panel-title");
+		Label subtitleLabel = new Label(subtitle);
+		subtitleLabel.setWidth(100, Unit.PERCENTAGE);
+		subtitleLabel.addStyleNames("event717-panel-subtitle", CssStyles.VSPACE_3);
+
+		VerticalLayout panel = new VerticalLayout(titleLabel, subtitleLabel, content);
+		panel.setMargin(false);
+		panel.setSpacing(false);
+		panel.addStyleName("event717-panel");
+		return panel;
 	}
 
 	/**
 	 * Loads the summary of the assessed events matching the criteria.
-	 *
-	 * @return The number of assessed events.
 	 */
-	public int refresh(EventCriteria criteria) {
+	public void refresh(EventCriteria criteria) {
 
 		summary = FacadeProvider.getEvent717AssessmentFacade().getSummary(criteria);
 
+		scopeLabel.setValue(buildScopeHtml(criteria));
 		cardsLabel.setValue(buildCardsHtml());
 		chart.setHcjs(buildChartJs());
 		actionsGrid.getDataProvider().refreshAll();
+	}
 
-		return summary.getAssessedEvents();
+	private String buildScopeHtml(EventCriteria criteria) {
+
+		StringBuilder html = new StringBuilder("<div class=\"event717-scope\">");
+		html.append(escape(I18nProperties.getCaption(Captions.event717AssessedEvents)))
+			.append(": <b>")
+			.append(summary.getAssessedEvents())
+			.append("</b>");
+		List<String> filters = describeFilters(criteria);
+		if (!filters.isEmpty()) {
+			html.append("<span class=\"event717-scope-filters\">")
+				.append(escape(I18nProperties.getCaption(Captions.event717FilteredBy)))
+				.append(": ")
+				.append(escape(String.join(", ", filters)))
+				.append("</span>");
+		}
+		return html.append("</div>").toString();
+	}
+
+	private static List<String> describeFilters(EventCriteria criteria) {
+
+		List<String> filters = new ArrayList<>();
+		if (criteria.getDisease() != null) {
+			filters.add(I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.DISEASE) + " = " + criteria.getDisease());
+		}
+		if (criteria.getRegion() != null) {
+			filters.add(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION) + " = " + criteria.getRegion().getCaption());
+		}
+		if (criteria.getDistrict() != null) {
+			filters
+				.add(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT) + " = " + criteria.getDistrict().getCaption());
+		}
+		if (criteria.getEventDateType() != null && (criteria.getEventDateFrom() != null || criteria.getEventDateTo() != null)) {
+			filters.add(
+				criteria.getEventDateType() + " = " + DateFormatHelper.formatDate(criteria.getEventDateFrom()) + " – "
+					+ DateFormatHelper.formatDate(criteria.getEventDateTo()));
+		}
+		if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+			filters.add(I18nProperties.getCaption(Captions.eventArchivedEvents));
+		} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE_AND_ARCHIVED) {
+			filters.add(I18nProperties.getCaption(Captions.eventAllActiveAndArchivedEvents));
+		}
+		return filters;
 	}
 
 	private String buildCardsHtml() {
 
-		StringBuilder html = new StringBuilder("<div style=\"display:flex;flex-wrap:wrap;gap:12px;\">");
-		html.append(
-			card(
-				I18nProperties.getString(Strings.headingEvent717AssessedEvents),
-				"#6E7A87",
-				String.valueOf(summary.getAssessedEvents()),
-				"",
-				""));
+		StringBuilder html = new StringBuilder("<div class=\"event717-cards\">");
 		for (Event717Interval interval : Event717Interval.values()) {
-			html.append(outcomeCard(interval.toString(), Event717IntervalColors.getColor(interval), summary.getInterval(interval)));
+			String target = String.format(
+				I18nProperties.getString(interval.getTargetDays() == 1 ? Strings.infoEvent717TargetDay : Strings.infoEvent717TargetDays),
+				interval.getTargetDays());
+			// only the response can be incomplete; the other intervals lack a date
+			Event717TimelinessStatus missingStatus =
+				interval == Event717Interval.RESPONSE ? Event717TimelinessStatus.INCOMPLETE : Event717TimelinessStatus.MISSING;
+			html.append(
+				card(
+					interval.toString(),
+					target,
+					Event717IntervalColors.getColor(interval),
+					summary.getInterval(interval),
+					Event717TimelinessStatus.WITHIN_TARGET.toString(),
+					missingStatus.toString()));
 		}
 		html.append(
-			outcomeCard(I18nProperties.getCaption(Captions.event717AllTargets), Event717IntervalColors.COLOR_ALL_TARGETS, summary.getAllTargets()));
+			card(
+				I18nProperties.getCaption(Captions.event717AllTargets),
+				I18nProperties.getString(Strings.infoEvent717AllTargets),
+				Event717IntervalColors.COLOR_ALL_TARGETS,
+				summary.getAllTargets(),
+				I18nProperties.getCaption(Captions.event717MeetsAll),
+				Event717TimelinessStatus.INCOMPLETE.toString()));
 		return html.append("</div>").toString();
 	}
 
-	private static String outcomeCard(String caption, String color, Event717OutcomeCountsDto counts) {
+	private static String card(
+		String title,
+		String target,
+		String color,
+		Event717OutcomeCountsDto counts,
+		String withinTargetCaption,
+		String missingCaption) {
 
 		Integer percentage = counts.getPercentageWithinTarget();
-		String evaluable = percentage != null
-			? String.format(I18nProperties.getString(Strings.infoEvent717Evaluable), counts.getWithinTarget(), counts.getEvaluable())
-			: I18nProperties.getString(Strings.infoEvent717NoEvaluable);
-		String details = String.format(
-			I18nProperties.getString(Strings.infoEvent717OutcomeCounts),
-			counts.getOverTarget(),
-			counts.getMissing() + counts.getIncomplete(),
-			counts.getDataError());
+		int missing = counts.getMissing() + counts.getIncomplete();
 
-		return card(caption, color, percentage != null ? percentage + "%" : NO_VALUE, evaluable, details);
+		StringBuilder html = new StringBuilder();
+		html.append("<div class=\"event717-card\" style=\"border-top-color:").append(color).append(";\">");
+		html.append("<div class=\"event717-card-header\"><span class=\"event717-card-title\">")
+			.append(escape(title))
+			.append("</span><span class=\"event717-card-target\">")
+			.append(escape(target))
+			.append("</span></div>");
+		html.append("<div class=\"event717-card-value\">")
+			.append(percentage != null ? percentage + "<span class=\"event717-unit\">%</span>" : NO_VALUE)
+			.append("</div>");
+		html.append("<div class=\"event717-card-evaluable\">")
+			.append(
+				escape(
+					percentage != null
+						? String.format(I18nProperties.getString(Strings.infoEvent717Evaluable), counts.getWithinTarget(), counts.getEvaluable())
+						: I18nProperties.getString(Strings.infoEvent717NoEvaluable)))
+			.append("</div>");
+
+		// share of each result among all assessed events
+		html.append("<div class=\"event717-bar\">")
+			.append(barSegment(counts.getWithinTarget(), "event717-within-target"))
+			.append(barSegment(counts.getOverTarget(), "event717-over-target"))
+			.append(barSegment(missing, "event717-missing"))
+			.append(barSegment(counts.getDataError(), "event717-data-error"))
+			.append("</div>");
+
+		html.append("<div class=\"event717-legend\">")
+			.append(legendEntry("<span class=\"event717-swatch event717-within-target\"></span>", withinTargetCaption, counts.getWithinTarget()))
+			.append(
+				legendEntry(
+					"<span class=\"event717-swatch event717-over-target\"></span>",
+					I18nProperties.getCaption(Captions.event717DoesNotMeet),
+					counts.getOverTarget()))
+			.append(legendEntry("<span class=\"event717-swatch event717-missing\"></span>", missingCaption, missing))
+			.append(
+				legendEntry("<span class=\"event717-error-icon\">!</span>", Event717TimelinessStatus.DATA_ERROR.toString(), counts.getDataError()))
+			.append("</div>");
+
+		return html.append("</div>").toString();
 	}
 
-	private static String card(String caption, String color, String value, String subtitle, String details) {
+	private static String barSegment(int count, String styleName) {
+		return count > 0 ? "<div class=\"" + styleName + "\" style=\"flex:" + count + " 1 0;\"></div>" : "";
+	}
 
-		return "<div style=\"flex:1 1 180px;min-width:180px;border:1px solid #DDDDDD;border-radius:4px;overflow:hidden;\">"
-			+ "<div style=\"background-color:" + color + ";color:#FFFFFF;font-weight:bold;padding:6px 10px;\">" + escape(caption) + "</div>"
-			+ "<div style=\"padding:8px 10px;\">"
-			+ "<div style=\"font-size:32px;font-weight:bold;line-height:1.2;color:" + color + ";\">" + escape(value) + "</div>"
-			+ "<div style=\"color:#555555;\">" + escape(subtitle) + "</div>"
-			+ "<div style=\"color:#888888;font-size:12px;white-space:normal;\">" + escape(details) + "</div>"
-			+ "</div></div>";
+	private static String legendEntry(String marker, String caption, int count) {
+		return "<span>" + marker + escape(caption) + "</span><span class=\"event717-count\">" + count + "</span>";
 	}
 
 	private String buildChartJs() {
@@ -179,15 +291,15 @@ public class Event717SummaryLayout extends VerticalLayout {
 
 		//@formatter:off
 		return "var options = {"
-			+ "chart: { type: 'column', backgroundColor: 'transparent' },"
+			+ "chart: { type: 'column', backgroundColor: 'transparent', style: { fontFamily: 'Open Sans, sans-serif' } },"
 			+ "title: { text: '' },"
 			+ "credits: { enabled: false },"
 			+ "legend: { enabled: false },"
 			+ "exporting: { enabled: false },"
-			+ "xAxis: { categories: [" + categories + "] },"
-			+ "yAxis: { min: 0, max: 100, title: { text: '' }, labels: { format: '{value}%' } },"
+			+ "xAxis: { categories: [" + categories + "], labels: { useHTML: true, style: { textAlign: 'center' } } },"
+			+ "yAxis: { min: 0, max: 100, tickInterval: 25, title: { text: '' }, labels: { format: '{value}%' } },"
 			+ "tooltip: { pointFormat: '<b>{point.y}%</b>' },"
-			+ "plotOptions: { column: { dataLabels: { enabled: true, format: '{y}%' } } },"
+			+ "plotOptions: { column: { maxPointWidth: 70, dataLabels: { enabled: true, format: '{y}%', style: { fontSize: '11px' } } } },"
 			+ "series: [{ name: '" + escapeJs(I18nProperties.getCaption(Captions.event717PercentWithinTarget)) + "', data: [" + data + "] }]"
 			+ "};";
 		//@formatter:on
@@ -199,7 +311,9 @@ public class Event717SummaryLayout extends VerticalLayout {
 			categories.append(",");
 			data.append(",");
 		}
-		categories.append("'").append(escapeJs(caption)).append("'");
+		String label = escape(caption) + "<br/><span style=\"font-size:11px;color:#666666;\">"
+			+ escape(String.format(I18nProperties.getString(Strings.infoEvent717SampleSize), counts.getEvaluable())) + "</span>";
+		categories.append("'").append(escapeJs(label)).append("'");
 		Integer percentage = counts.getPercentageWithinTarget();
 		data.append("{ y: ").append(percentage != null ? percentage : "null").append(", color: '").append(color).append("' }");
 	}
@@ -213,7 +327,7 @@ public class Event717SummaryLayout extends VerticalLayout {
 		grid.setHeightByRows(Event717EarlyResponseAction.values().length);
 
 		grid.addColumn(action -> I18nProperties.getPrefixCaption(Event717IndexDto.I18N_PREFIX, Event717IndexDto.getEarlyResponseActionDaysProperty(action)))
-			.setCaption(I18nProperties.getCaption(Captions.Event717EarlyResponseAction))
+			.setCaption(I18nProperties.getCaption(Captions.Action))
 			.setDescriptionGenerator(Event717EarlyResponseAction::toString)
 			.setExpandRatio(1);
 		grid.addColumn(action -> {
@@ -221,7 +335,7 @@ public class Event717SummaryLayout extends VerticalLayout {
 			return percentage != null ? percentage + "%" : NO_VALUE;
 		}).setCaption(I18nProperties.getCaption(Captions.event717PercentWithinTarget));
 		addCountColumn(grid, Event717TimelinessStatus.WITHIN_TARGET.toString(), Event717OutcomeCountsDto::getWithinTarget);
-		addCountColumn(grid, Event717TimelinessStatus.OVER_TARGET.toString(), Event717OutcomeCountsDto::getOverTarget);
+		addCountColumn(grid, I18nProperties.getCaption(Captions.event717DoesNotMeet), Event717OutcomeCountsDto::getOverTarget);
 		addCountColumn(grid, Event717TimelinessStatus.MISSING.toString(), c -> c.getMissing() + c.getIncomplete());
 		addCountColumn(grid, I18nProperties.getCaption(Captions.event717NotApplicableShort), Event717OutcomeCountsDto::getNotApplicable);
 		addCountColumn(grid, Event717TimelinessStatus.DATA_ERROR.toString(), Event717OutcomeCountsDto::getDataError);

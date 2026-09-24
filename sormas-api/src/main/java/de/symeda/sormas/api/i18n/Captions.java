@@ -1840,6 +1840,7 @@ public interface Captions {
 	String Event717Assessment_targetMet = "Event717Assessment.targetMet";
 	String Event717Assessment_timeliness = "Event717Assessment.timeliness";
 	String Event717Assessment_timelinessInterval = "Event717Assessment.timelinessInterval";
+	String event717BackToDirectory = "event717BackToDirectory";
 	String Event717Bottleneck = "Event717Bottleneck";
 	String Event717Bottleneck_category = "Event717Bottleneck.category";
 	String Event717Bottleneck_description = "Event717Bottleneck.description";
@@ -1855,6 +1856,7 @@ public interface Captions {
 	String Event717CorrectiveAction_responsibleAuthority = "Event717CorrectiveAction.responsibleAuthority";
 	String Event717CorrectiveAction_targetEndDate = "Event717CorrectiveAction.targetEndDate";
 	String Event717CorrectiveAction_targetStartDate = "Event717CorrectiveAction.targetStartDate";
+	String event717DoesNotMeet = "event717DoesNotMeet";
 	String Event717EarlyResponseAction = "Event717EarlyResponseAction";
 	String Event717Enabler = "Event717Enabler";
 	String Event717Enabler_description = "Event717Enabler.description";
@@ -1874,6 +1876,7 @@ public interface Captions {
 	String Event717Export_responseStatus = "Event717Export.responseStatus";
 	String Event717Export_riskCommunicationDays = "Event717Export.riskCommunicationDays";
 	String event717ExportSummary = "event717ExportSummary";
+	String event717FilteredBy = "event717FilteredBy";
 	String Event717Index_caseManagementDays = "Event717Index.caseManagementDays";
 	String Event717Index_community = "Event717Index.community";
 	String Event717Index_coordinationDays = "Event717Index.coordinationDays";
@@ -1896,14 +1899,14 @@ public interface Captions {
 	String Event717Index_riskCommunicationDays = "Event717Index.riskCommunicationDays";
 	String Event717Index_timelinessStatus = "Event717Index.timelinessStatus";
 	String event717Indicator = "event717Indicator";
+	String event717MeetsAll = "event717MeetsAll";
 	String event717NotApplicableShort = "event717NotApplicableShort";
 	String event717PercentWithinTarget = "event717PercentWithinTarget";
 	String event717StatusDataError = "event717StatusDataError";
 	String event717StatusIncomplete = "event717StatusIncomplete";
 	String event717StatusMet = "event717StatusMet";
 	String event717StatusNotMet = "event717StatusNotMet";
-	String event717SummaryMode = "event717SummaryMode";
-	String event717TableMode = "event717TableMode";
+	String event717Summary = "event717Summary";
 	String event717View = "event717View";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
@@ -3961,6 +3964,7 @@ public interface Captions {
 	String View_environments = "View.environments";
 	String View_event717 = "View.event717";
 	String View_events = "View.events";
+	String View_events_717summary = "View.events.717summary";
 	String View_events_archive = "View.events.archive";
 	String View_events_data = "View.events.data";
 	String View_events_eventactions = "View.events.eventactions";

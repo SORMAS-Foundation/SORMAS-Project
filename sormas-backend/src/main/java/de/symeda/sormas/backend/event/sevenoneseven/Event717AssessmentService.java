@@ -16,6 +16,7 @@ package de.symeda.sormas.backend.event.sevenoneseven;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.IntSupplier;
@@ -36,6 +37,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.sevenoneseven.Event717DateType;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.event.sevenoneseven.Event717ExportDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
@@ -148,8 +150,45 @@ public class Event717AssessmentService extends BaseAdoService<Event717Assessment
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(assessment.get(Event717Assessment.RESPONSE_STATUS), criteria.getEvent717ResponseStatus()));
 		}
+		// the event service ignores date types it does not know, so the 7-1-7 dates are filtered here
+		if (criteria.getEventDateType() instanceof Event717DateType) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				createDateFilter(
+					cb,
+					assessment.get(getDateProperty((Event717DateType) criteria.getEventDateType())),
+					criteria.getEventDateFrom(),
+					criteria.getEventDateTo()));
+		}
 
 		return filter;
+	}
+
+	private static Predicate createDateFilter(CriteriaBuilder cb, Expression<Date> date, Date from, Date to) {
+
+		if (from != null && to != null) {
+			return cb.between(date, from, to);
+		} else if (from != null) {
+			return cb.greaterThanOrEqualTo(date, from);
+		} else if (to != null) {
+			return cb.lessThanOrEqualTo(date, to);
+		}
+		return null;
+	}
+
+	private static String getDateProperty(Event717DateType dateType) {
+
+		switch (dateType) {
+		case DATE_OF_EMERGENCE:
+			return Event717Assessment.DATE_OF_EMERGENCE;
+		case DATE_OF_DETECTION:
+			return Event717Assessment.DATE_OF_DETECTION;
+		case DATE_OF_NOTIFICATION:
+			return Event717Assessment.DATE_OF_NOTIFICATION;
+		default:
+			throw new IllegalArgumentException(dateType.name());
+		}
 	}
 
 	/**

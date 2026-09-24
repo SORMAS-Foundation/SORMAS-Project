@@ -19,6 +19,7 @@ package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717DateType;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -125,6 +127,20 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public EventCriteria() {
 		super(EventCriteriaDateType.class);
+	}
+
+	@Override
+	protected Object parseUrlParam(Class<?> type, List<String> fieldParams) throws InstantiationException, IllegalAccessException {
+
+		// the 7-1-7 dates are not event date types; without this they would silently become the event date
+		if (CriteriaDateType.class.isAssignableFrom(type) && fieldParams.get(0) != null) {
+			for (Event717DateType event717DateType : Event717DateType.values()) {
+				if (event717DateType.name().equals(fieldParams.get(0))) {
+					return event717DateType;
+				}
+			}
+		}
+		return super.parseUrlParam(type, fieldParams);
 	}
 
 	public EventStatus getEventStatus() {
