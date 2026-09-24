@@ -24,6 +24,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 /**
  * Immediate or longer-term action proposed to address a bottleneck identified in a 7-1-7 assessment.
@@ -45,17 +46,21 @@ public class Event717CorrectiveActionDto extends EntityDto {
 	public static final String PROGRESS_STATUS = "progressStatus";
 	public static final String NEXT_STEPS = "nextSteps";
 
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String proposedAction;
 	private Event717BottleneckReferenceDto bottleneck;
 	private Event717CorrectiveActionPriority prioritization;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String responsibleAuthority;
 	private Date targetStartDate;
 	private Date targetEndDate;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String planningFundingOpportunities;
 	private Event717CorrectiveActionStatus progressStatus;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String nextSteps;
 

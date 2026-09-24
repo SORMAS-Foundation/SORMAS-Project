@@ -24,8 +24,8 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 @SuppressWarnings("serial")
 public class Event717EnablersField extends AbstractEvent717EntriesField<Event717EnablerDto> {
 
-	public Event717EnablersField(boolean isEditAllowed) {
-		super(isEditAllowed);
+	public Event717EnablersField(boolean isEditAllowed, boolean isPseudonymized) {
+		super(isEditAllowed, isPseudonymized);
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class Event717EnablersField extends AbstractEvent717EntriesField<Event717
 
 	@Override
 	protected AbstractEditForm<Event717EnablerDto> createEditForm(Event717EnablerDto entry, boolean create) {
-		return new Event717EnablerEditForm(create, isEditAllowed);
+		return new Event717EnablerEditForm(create, fieldAccessCheckers, isEditAllowed);
 	}
 
 	@Override

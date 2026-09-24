@@ -166,9 +166,9 @@ public class Event717TimelinessPanel extends VerticalLayout {
 		}
 
 		switch (status) {
-		case MET:
+		case WITHIN_TARGET:
 			return colored(VaadinIcons.CHECK.getHtml(), "#43A047");
-		case NOT_MET:
+		case OVER_TARGET:
 			return colored(VaadinIcons.CLOSE.getHtml(), "#E7503C");
 		case DATA_ERROR:
 			return colored(VaadinIcons.WARNING.getHtml(), "#F49234");

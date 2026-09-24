@@ -12,20 +12,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package de.symeda.sormas.api.event.sevenoneseven;
+package de.symeda.sormas.backend.event.sevenoneseven;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 
-public enum Event717TimelinessStatus {
+import de.symeda.sormas.backend.common.QueryContext;
 
-	WITHIN_TARGET,
-	OVER_TARGET,
-	MISSING,
-	INCOMPLETE,
-	DATA_ERROR;
+public class Event717AssessmentQueryContext extends QueryContext<Event717Assessment, Event717AssessmentJoins> {
+
+	public Event717AssessmentQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Event717Assessment> root) {
+		super(cb, query, root, new Event717AssessmentJoins(root));
+	}
 
 	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+	protected Expression<?> createExpression(String name) {
+		return null;
 	}
 }

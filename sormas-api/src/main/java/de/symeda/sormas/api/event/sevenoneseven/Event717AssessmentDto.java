@@ -22,20 +22,21 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 /**
  * 7-1-7 assessment of an event: milestone dates, early response actions, bottlenecks/enablers and corrective actions,
  * following the 7-1-7 Alliance assessment tool.
  */
 @DependingOnFeatureType(featureType = FeatureType.EVENT_717_ASSESSMENT)
-public class Event717AssessmentDto extends EntityDto {
+public class Event717AssessmentDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -3620587437413062516L;
 
@@ -87,49 +88,62 @@ public class Event717AssessmentDto extends EntityDto {
 	@NotNull(message = Validations.requiredField)
 	private EventReferenceDto event;
 	private Date dateOfEmergence;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String emergenceNarrative;
 	private Date dateOfDetection;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String detectionNarrative;
 	private Date dateOfNotification;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String notificationNarrative;
 	private Date investigationDate;
 	private boolean investigationNotApplicable;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String investigationNarrative;
 	private Date epiAnalysisDate;
 	private boolean epiAnalysisNotApplicable;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String epiAnalysisNarrative;
 	private Date labConfirmationDate;
 	private boolean labConfirmationNotApplicable;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String labConfirmationNarrative;
 	private Date caseManagementDate;
 	private boolean caseManagementNotApplicable;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String caseManagementNarrative;
 	private Date countermeasuresDate;
 	private boolean countermeasuresNotApplicable;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String countermeasuresNarrative;
 	private Date riskCommunicationDate;
 	private boolean riskCommunicationNotApplicable;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String riskCommunicationNarrative;
 	private Date coordinationDate;
 	private boolean coordinationNotApplicable;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String coordinationNarrative;
 	private Date earlyResponseCompletionDate;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String earlyResponseCompletionNarrative;
 	private Date outbreakEndDate;
 	private Date reportCompletedDate;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportCompletedByName;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String generalNotes;
 	@Valid

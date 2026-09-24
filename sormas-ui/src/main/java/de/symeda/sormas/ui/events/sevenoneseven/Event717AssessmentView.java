@@ -78,7 +78,7 @@ public class Event717AssessmentView extends AbstractEventView {
 			assessment = Event717AssessmentDto.build(getEventRef());
 		}
 
-		Event717AssessmentForm form = new Event717AssessmentForm(getEventRef(), editAllowed);
+		Event717AssessmentForm form = new Event717AssessmentForm(getEventRef(), editAllowed, assessment.isPseudonymized());
 		form.setValue(assessment);
 
 		editComponent = new CommitDiscardWrapperComponent<>(form, editAllowed, form.getFieldGroup());

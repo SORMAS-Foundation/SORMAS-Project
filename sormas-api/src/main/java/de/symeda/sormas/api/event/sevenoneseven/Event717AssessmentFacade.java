@@ -14,11 +14,15 @@
  */
 package de.symeda.sormas.api.event.sevenoneseven;
 
+import java.util.List;
+
 import javax.ejb.Remote;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
@@ -50,4 +54,19 @@ public interface Event717AssessmentFacade {
 	void validate(Event717AssessmentDto dto) throws ValidationRuntimeException;
 
 	EditPermissionType getEditPermissionType(String eventUuid);
+
+	/**
+	 * @return The stored timeliness of the 7-1-7 assessments of the events matching the criteria; events without an assessment are
+	 *         not included.
+	 */
+	List<Event717IndexDto> getIndexList(EventCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	long count(EventCriteria criteria);
+
+	List<Event717ExportDto> getExportList(EventCriteria criteria, Integer first, Integer max);
+
+	/**
+	 * @return The 7-1-7 performance of the assessed events matching the criteria.
+	 */
+	Event717SummaryDto getSummary(EventCriteria criteria);
 }

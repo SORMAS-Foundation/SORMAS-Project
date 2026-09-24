@@ -17481,4 +17481,28 @@ ALTER TABLE event717assessment_history DROP COLUMN IF EXISTS reportcompletedbyus
 
 INSERT INTO schema_version (version_number, comment) VALUES (670, '#13165 - Remove the report completed by user of the 7-1-7 assessment');
 
+-- 7-1-7 directory: store the timeliness of 7-1-7 assessments
+ALTER TABLE event717assessment
+    ADD COLUMN detectiondays integer, ADD COLUMN detectionstatus varchar(255),
+    ADD COLUMN notificationdays integer, ADD COLUMN notificationstatus varchar(255),
+    ADD COLUMN investigationdays integer, ADD COLUMN epianalysisdays integer,
+    ADD COLUMN labconfirmationdays integer, ADD COLUMN casemanagementdays integer,
+    ADD COLUMN countermeasuresdays integer, ADD COLUMN riskcommunicationdays integer,
+    ADD COLUMN coordinationdays integer,
+    ADD COLUMN responsedays integer, ADD COLUMN responsestatus varchar(255),
+    ADD COLUMN timelinessstatus varchar(255);
+ALTER TABLE event717assessment_history
+    ADD COLUMN detectiondays integer, ADD COLUMN detectionstatus varchar(255),
+    ADD COLUMN notificationdays integer, ADD COLUMN notificationstatus varchar(255),
+    ADD COLUMN investigationdays integer, ADD COLUMN epianalysisdays integer,
+    ADD COLUMN labconfirmationdays integer, ADD COLUMN casemanagementdays integer,
+    ADD COLUMN countermeasuresdays integer, ADD COLUMN riskcommunicationdays integer,
+    ADD COLUMN coordinationdays integer,
+    ADD COLUMN responsedays integer, ADD COLUMN responsestatus varchar(255),
+    ADD COLUMN timelinessstatus varchar(255);
+
+CREATE INDEX IF NOT EXISTS idx_event717assessment_timelinessstatus ON event717assessment (timelinessstatus);
+
+INSERT INTO schema_version (version_number, comment) VALUES (671, '#13165 - 7-1-7 directory: stored timeliness of 7-1-7 assessments');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

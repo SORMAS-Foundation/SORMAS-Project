@@ -25,8 +25,8 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 @SuppressWarnings("serial")
 public class Event717BottlenecksField extends AbstractEvent717EntriesField<Event717BottleneckDto> {
 
-	public Event717BottlenecksField(boolean isEditAllowed) {
-		super(isEditAllowed);
+	public Event717BottlenecksField(boolean isEditAllowed, boolean isPseudonymized) {
+		super(isEditAllowed, isPseudonymized);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class Event717BottlenecksField extends AbstractEvent717EntriesField<Event
 
 	@Override
 	protected AbstractEditForm<Event717BottleneckDto> createEditForm(Event717BottleneckDto entry, boolean create) {
-		return new Event717BottleneckEditForm(create, isEditAllowed);
+		return new Event717BottleneckEditForm(create, fieldAccessCheckers, isEditAllowed);
 	}
 
 	@Override

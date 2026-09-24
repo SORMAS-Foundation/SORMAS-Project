@@ -23,6 +23,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 /**
  * A bottleneck (factor that prevented timely action) for one 7-1-7 interval, categorized by one of the common 7-1-7
@@ -42,9 +43,11 @@ public class Event717BottleneckDto extends EntityDto {
 
 	@NotNull(message = Validations.requiredField)
 	private Event717Interval timelinessInterval;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	private Event717BottleneckCategory category;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String otherCategoryDetails;
 

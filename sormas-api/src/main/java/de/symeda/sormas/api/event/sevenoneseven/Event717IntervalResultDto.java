@@ -33,7 +33,7 @@ public class Event717IntervalResultDto implements Serializable {
 	private Integer days;
 	private Event717TimelinessStatus status;
 	/**
-	 * Whether the target was met; null if the status is neither MET nor NOT_MET.
+	 * Whether the target was met; null if the status is neither WITHIN_TARGET nor OVER_TARGET.
 	 */
 	private Boolean targetMet;
 
@@ -44,7 +44,7 @@ public class Event717IntervalResultDto implements Serializable {
 		this.interval = interval;
 		this.days = days;
 		this.status = status;
-		this.targetMet = status == Event717TimelinessStatus.MET ? Boolean.TRUE : status == Event717TimelinessStatus.NOT_MET ? Boolean.FALSE : null;
+		this.targetMet = status == Event717TimelinessStatus.WITHIN_TARGET ? Boolean.TRUE : status == Event717TimelinessStatus.OVER_TARGET ? Boolean.FALSE : null;
 	}
 
 	public Event717Interval getInterval() {

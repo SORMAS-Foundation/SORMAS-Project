@@ -57,6 +57,7 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 
 	private static final String COLOR_APPLICABLE = "#43A047";
 	private static final String COLOR_NOT_APPLICABLE = "#E7503C";
+	private static final String COLOR_PENDING = "#999999";
 	private static final String NARRATIVE_COLUMN = "narrative";
 
 	/**
@@ -81,12 +82,17 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 
 	private final Map<Event717EarlyResponseAction, ActionFields> actionFields;
 	private final boolean isEditAllowed;
+	private final boolean isPseudonymized;
 	private final Table table;
 
-	public Event717EarlyResponseActionsTable(Map<Event717EarlyResponseAction, ActionFields> actionFields, boolean isEditAllowed) {
+	public Event717EarlyResponseActionsTable(
+		Map<Event717EarlyResponseAction, ActionFields> actionFields,
+		boolean isEditAllowed,
+		boolean isPseudonymized) {
 
 		this.actionFields = actionFields;
 		this.isEditAllowed = isEditAllowed;
+		this.isPseudonymized = isPseudonymized;
 
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
@@ -105,15 +111,11 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 			Date date = actionFields.get(itemId).date.getValue();
 			return date != null ? DateFormatHelper.formatDate(date) : null;
 		});
-		table.addGeneratedColumn(APPLICABLE_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-			boolean isApplicable = !actionFields.get(itemId).isNotApplicable();
-			return new Label(
-				"<span style=\"color:" + (isApplicable ? COLOR_APPLICABLE : COLOR_NOT_APPLICABLE) + ";\">"
-					+ (isApplicable ? VaadinIcons.CHECK.getHtml() : VaadinIcons.CLOSE.getHtml()) + "</span>",
-				ContentMode.HTML);
-		});
+		table.addGeneratedColumn(
+			APPLICABLE_COLUMN,
+			(Table.ColumnGenerator) (source, itemId, columnId) -> createApplicableLabel(actionFields.get(itemId)));
 		table.addGeneratedColumn(NARRATIVE_COLUMN, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-			String narrative = actionFields.get(itemId).narrative.getValue();
+			String narrative = Event717FieldAccess.displayValue(actionFields.get(itemId).narrative.getValue(), isPseudonymized);
 			return StringUtils.isBlank(narrative) ? null : narrative;
 		});
 
@@ -153,6 +155,32 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 		addComponent(table);
 	}
 
+	/**
+	 * An action counts as applicable unless it is marked as not applicable, like in the 7-1-7 assessment tool. As long as it has no
+	 * date, it is shown as pending instead of applicable, because nobody has confirmed it yet.
+	 */
+	private static Label createApplicableLabel(ActionFields fields) {
+
+		String color;
+		String icon;
+		if (fields.isNotApplicable()) {
+			color = COLOR_NOT_APPLICABLE;
+			icon = VaadinIcons.CLOSE.getHtml();
+		} else if (fields.date.getValue() != null) {
+			color = COLOR_APPLICABLE;
+			icon = VaadinIcons.CHECK.getHtml();
+		} else {
+			color = COLOR_PENDING;
+			icon = VaadinIcons.MINUS.getHtml();
+		}
+
+		Label label = new Label("<span style=\"color:" + color + ";\">" + icon + "</span>", ContentMode.HTML);
+		if (!fields.isNotApplicable() && fields.date.getValue() == null) {
+			label.setDescription(I18nProperties.getString(Strings.infoEvent717EarlyResponseActionPending));
+		}
+		return label;
+	}
+
 	private Button createEditButton(Event717EarlyResponseAction action) {
 
 		return ButtonHelper.createIconButtonWithCaption(
@@ -167,7 +195,7 @@ public class Event717EarlyResponseActionsTable extends VerticalLayout {
 
 		ActionFields fields = actionFields.get(action);
 
-		Event717EarlyResponseActionEditForm editForm = new Event717EarlyResponseActionEditForm(action, isEditAllowed);
+		Event717EarlyResponseActionEditForm editForm = new Event717EarlyResponseActionEditForm(action, Event717FieldAccess.createFieldAccessCheckers(isPseudonymized), isEditAllowed);
 		editForm.setValue(new Event717EarlyResponseActionEntry(fields.date.getValue(), fields.isNotApplicable(), fields.narrative.getValue()));
 
 		final CommitDiscardWrapperComponent<Event717EarlyResponseActionEditForm> editView =

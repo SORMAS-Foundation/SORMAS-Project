@@ -42,6 +42,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -64,6 +65,10 @@ import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717ExportDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -79,6 +84,9 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.importer.EventImportLayout;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717AssessmentView;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717Grid;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717SummaryLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -119,6 +127,8 @@ public class EventsView extends AbstractView {
 	private ComboBox contactCountMethod;
 
 	private VerticalLayout gridLayout;
+	private Event717SummaryLayout event717SummaryLayout;
+	private int event717SummaryCount;
 
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
@@ -134,7 +144,7 @@ public class EventsView extends AbstractView {
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(EventsViewConfiguration.class);
-		if (viewConfiguration.getViewType() == null) {
+		if (viewConfiguration.getViewType() == null || (isEvent717ViewType() && !Event717AssessmentView.isAvailable())) {
 			viewConfiguration.setViewType(EventsViewType.DEFAULT);
 		}
 
@@ -153,6 +163,9 @@ public class EventsView extends AbstractView {
 		} else if (isActionViewType()) {
 			grid = new EventActionsGrid(eventCriteria, getClass());
 			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_actions));
+		} else if (isEvent717ViewType()) {
+			grid = new Event717Grid(eventCriteria);
+			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_event717));
 		} else {
 			grid = new EventGroupsGrid(eventGroupCriteria, getClass());
 			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_groups));
@@ -162,12 +175,22 @@ public class EventsView extends AbstractView {
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
-		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
+		if (isEvent717SummaryMode()) {
+			// the grid is kept for the exports, but the summary is shown instead
+			event717SummaryLayout = new Event717SummaryLayout();
+			Panel summaryPanel = new Panel(event717SummaryLayout);
+			summaryPanel.setSizeFull();
+			summaryPanel.addStyleName(ValoTheme.PANEL_BORDERLESS);
+			gridLayout.addComponent(summaryPanel);
+			gridLayout.setExpandRatio(summaryPanel, 1);
+		} else {
+			gridLayout.addComponent(grid);
+			gridLayout.setExpandRatio(grid, 1);
+		}
 
 		addComponent(gridLayout);
 
@@ -191,6 +214,11 @@ public class EventsView extends AbstractView {
 			eventsViewSwitcher.setItemCaption(EventsViewType.GROUPS, I18nProperties.getCaption(Captions.eventGroupsView));
 		}
 
+		if (Event717AssessmentView.isAvailable()) {
+			eventsViewSwitcher.addItem(EventsViewType.EVENT_717);
+			eventsViewSwitcher.setItemCaption(EventsViewType.EVENT_717, I18nProperties.getCaption(Captions.event717View));
+		}
+
 		eventsViewSwitcher.setValue(viewConfiguration.getViewType());
 		eventsViewSwitcher.addValueChangeListener(e -> {
 			EventsViewType viewType = (EventsViewType) e.getProperty().getValue();
@@ -199,6 +227,10 @@ public class EventsView extends AbstractView {
 			SormasUI.get().getNavigator().navigateTo(EventsView.VIEW_NAME);
 		});
 		addHeaderComponent(eventsViewSwitcher);
+
+		if (isEvent717ViewType()) {
+			addHeaderComponent(createEvent717ModeSwitcher());
+		}
 
 		if (isDefaultViewType() && UiUtil.permitted(UserRight.EVENT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -222,7 +254,16 @@ public class EventsView extends AbstractView {
 			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 
-			{
+			if (isEvent717SummaryMode()) {
+				// the table is not shown, so the figures of the summary are exported instead
+				addExportButton(
+					Event717SummaryLayout.createExportResource(() -> eventCriteria),
+					exportPopupButton,
+					exportLayout,
+					VaadinIcons.TABLE,
+					Captions.event717ExportSummary,
+					Strings.infoEvent717SummaryExport);
+			} else {
 				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 					grid,
 					() -> isDefaultViewType() && this.viewConfiguration.isInEagerMode()
@@ -271,6 +312,32 @@ public class EventsView extends AbstractView {
 						VaadinIcons.FILE_TEXT,
 						Captions.exportDetailed,
 						Strings.infoDetailedExport);
+				} else if (isEvent717ViewType()) {
+					StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
+						Event717ExportDto.class,
+						null,
+						(Integer start, Integer max) -> FacadeProvider.getEvent717AssessmentFacade()
+							.getExportList((EventCriteria) grid.getCriteria(), start, max),
+						(propertyId, type) -> {
+							String caption = I18nProperties.findPrefixCaption(
+								propertyId,
+								Event717ExportDto.I18N_PREFIX,
+								Event717IndexDto.I18N_PREFIX,
+								Event717AssessmentDto.I18N_PREFIX);
+							if (Date.class.isAssignableFrom(type)) {
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+							}
+							return caption;
+						},
+						ExportEntityName.EVENT_717_ASSESSMENTS,
+						null);
+					addExportButton(
+						exportStreamResource,
+						exportPopupButton,
+						exportLayout,
+						VaadinIcons.FILE_TEXT,
+						Captions.exportDetailed,
+						isEvent717SummaryMode() ? Strings.infoEvent717DetailedExport : Strings.infoDetailedExport);
 				} else {
 					// NOOP: No detailed export for the groups view
 				}
@@ -348,6 +415,10 @@ public class EventsView extends AbstractView {
 		return viewConfiguration.getViewType() == EventsViewType.GROUPS;
 	}
 
+	private boolean isEvent717ViewType() {
+		return viewConfiguration.getViewType() == EventsViewType.EVENT_717;
+	}
+
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
@@ -369,7 +440,7 @@ public class EventsView extends AbstractView {
 			((EventGroupsGrid) grid).reload();
 		});
 
-		eventsFilterForm = new EventsFilterForm(isDefaultViewType(), isDefaultViewType());
+		eventsFilterForm = new EventsFilterForm(isDefaultViewType(), !isActionViewType(), !isEvent717ViewType());
 		eventsFilterForm.addValueChangeListener(e -> {
 			if (!eventsFilterForm.hasFilter()) {
 				navigateTo(null);
@@ -380,13 +451,7 @@ public class EventsView extends AbstractView {
 			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			navigateTo(null);
 		});
-		eventsFilterForm.addApplyHandler(e -> {
-			if (isDefaultViewType()) {
-				((EventGrid) grid).reload();
-			} else {
-				((EventActionsGrid) grid).reload();
-			}
-		});
+		eventsFilterForm.addApplyHandler(e -> reloadGrid());
 
 		if (isGroupViewType()) {
 			filterLayout.addComponent(eventGroupsFilterForm);
@@ -487,6 +552,22 @@ public class EventsView extends AbstractView {
 
 				statusButtons.put(statusButton, status.toString());
 			}
+		} else if (isEvent717ViewType()) {
+			Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
+				eventCriteria.setEvent717Status(null);
+				navigateTo(eventCriteria);
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+			statusAll.setCaptionAsHtml(true);
+
+			statusFilterLayout.addComponent(statusAll);
+
+			statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
+			activeStatusButton = statusAll;
+
+			addEvent717StatusButton(statusFilterLayout, Event717TimelinessStatus.WITHIN_TARGET, Captions.event717StatusMet);
+			addEvent717StatusButton(statusFilterLayout, Event717TimelinessStatus.OVER_TARGET, Captions.event717StatusNotMet);
+			addEvent717StatusButton(statusFilterLayout, Event717TimelinessStatus.INCOMPLETE, Captions.event717StatusIncomplete);
+			addEvent717StatusButton(statusFilterLayout, Event717TimelinessStatus.DATA_ERROR, Captions.event717StatusDataError);
 		}
 
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
@@ -697,12 +778,80 @@ public class EventsView extends AbstractView {
 		}
 
 		updateFilterComponents();
+		reloadGrid();
+	}
+
+	private void reloadGrid() {
+
 		if (isDefaultViewType()) {
 			((EventGrid) grid).reload();
 		} else if (isActionViewType()) {
 			((EventActionsGrid) grid).reload();
+		} else if (isEvent717SummaryMode()) {
+			event717SummaryCount = event717SummaryLayout.refresh(eventCriteria);
+			updateStatusButtons();
+		} else if (isEvent717ViewType()) {
+			((Event717Grid) grid).reload();
 		} else {
 			((EventGroupsGrid) grid).reload();
+		}
+	}
+
+	private boolean isEvent717SummaryMode() {
+		return isEvent717ViewType() && viewConfiguration.isEvent717SummaryMode();
+	}
+
+	/**
+	 * Switches the 7-1-7 view between the table of the assessed events and the summary of their 7-1-7 performance.
+	 */
+	private OptionGroup createEvent717ModeSwitcher() {
+
+		OptionGroup modeSwitcher = new OptionGroup();
+		modeSwitcher.setId("event717ModeSwitcher");
+		// styled like the events view switcher next to it in the header
+		CssStyles.style(
+			modeSwitcher,
+			CssStyles.FORCE_CAPTION,
+			ValoTheme.OPTIONGROUP_HORIZONTAL,
+			CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY,
+			CssStyles.VSPACE_TOP_3);
+		modeSwitcher.addItem(Boolean.FALSE);
+		modeSwitcher.setItemCaption(Boolean.FALSE, I18nProperties.getCaption(Captions.event717TableMode));
+		modeSwitcher.addItem(Boolean.TRUE);
+		modeSwitcher.setItemCaption(Boolean.TRUE, I18nProperties.getCaption(Captions.event717SummaryMode));
+		modeSwitcher.setValue(viewConfiguration.isEvent717SummaryMode());
+		modeSwitcher.addValueChangeListener(e -> {
+			viewConfiguration.setEvent717SummaryMode(Boolean.TRUE.equals(e.getProperty().getValue()));
+			navigateTo(eventCriteria);
+		});
+		return modeSwitcher;
+	}
+
+	private void addEvent717StatusButton(HorizontalLayout statusFilterLayout, Event717TimelinessStatus status, String captionKey) {
+
+		String caption = I18nProperties.getCaption(captionKey);
+		Button statusButton = ButtonHelper.createButton("status-" + status, caption, e -> {
+			eventCriteria.event717Status(status);
+			navigateTo(eventCriteria);
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+		statusButton.setCaptionAsHtml(true);
+		statusButton.setData(status);
+
+		statusFilterLayout.addComponent(statusButton);
+
+		statusButtons.put(statusButton, caption);
+	}
+
+	private Object getActiveStatusFilterValue() {
+
+		if (isDefaultViewType()) {
+			return eventCriteria.getEventStatus();
+		} else if (isActionViewType()) {
+			return eventCriteria.getActionStatus();
+		} else if (isEvent717ViewType()) {
+			return eventCriteria.getEvent717Status();
+		} else {
+			return null;
 		}
 	}
 
@@ -730,7 +879,7 @@ public class EventsView extends AbstractView {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
-			if (b.getData() == (isDefaultViewType() ? eventCriteria.getEventStatus() : eventCriteria.getActionStatus())) {
+			if (b.getData() == getActiveStatusFilterValue()) {
 				activeStatusButton = b;
 			}
 		});
@@ -739,7 +888,9 @@ public class EventsView extends AbstractView {
 			CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 			if (activeStatusButton != null) {
 				activeStatusButton
-					.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
+					.setCaption(
+						statusButtons.get(activeStatusButton) + LayoutUtil
+							.spanCss(CssStyles.BADGE, String.valueOf(isEvent717SummaryMode() ? event717SummaryCount : grid.getDataSize())));
 			}
 		}
 	}

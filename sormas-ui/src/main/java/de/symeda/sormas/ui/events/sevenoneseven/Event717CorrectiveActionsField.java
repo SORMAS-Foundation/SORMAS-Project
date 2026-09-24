@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckDto;
@@ -39,8 +41,11 @@ public class Event717CorrectiveActionsField extends AbstractEvent717EntriesField
 	 * @param bottlenecksSupplier
 	 *            Provides the bottlenecks currently entered in the assessment, including unsaved ones
 	 */
-	public Event717CorrectiveActionsField(Supplier<Collection<Event717BottleneckDto>> bottlenecksSupplier, boolean isEditAllowed) {
-		super(isEditAllowed);
+	public Event717CorrectiveActionsField(
+		Supplier<Collection<Event717BottleneckDto>> bottlenecksSupplier,
+		boolean isEditAllowed,
+		boolean isPseudonymized) {
+		super(isEditAllowed, isPseudonymized);
 		this.bottlenecksSupplier = bottlenecksSupplier;
 	}
 
@@ -56,7 +61,7 @@ public class Event717CorrectiveActionsField extends AbstractEvent717EntriesField
 
 	@Override
 	protected AbstractEditForm<Event717CorrectiveActionDto> createEditForm(Event717CorrectiveActionDto entry, boolean create) {
-		return new Event717CorrectiveActionEditForm(getBottleneckReferences(), create, isEditAllowed);
+		return new Event717CorrectiveActionEditForm(getBottleneckReferences(), create, fieldAccessCheckers, isEditAllowed);
 	}
 
 	@Override
@@ -75,11 +80,16 @@ public class Event717CorrectiveActionsField extends AbstractEvent717EntriesField
 		if (bottlenecks == null) {
 			return Collections.emptyList();
 		}
-		return bottlenecks.stream().map(Event717CorrectiveActionsField::toReference).collect(Collectors.toList());
+		return bottlenecks.stream().map(this::toReference).collect(Collectors.toList());
 	}
 
-	private static Event717BottleneckReferenceDto toReference(Event717BottleneckDto bottleneck) {
-		return new Event717BottleneckReferenceDto(bottleneck.getUuid(), bottleneck.getTimelinessInterval() + ": " + bottleneck.getDescription());
+	private Event717BottleneckReferenceDto toReference(Event717BottleneckDto bottleneck) {
+
+		// hidden descriptions are replaced by the category, like the server does for the stored references
+		String details = StringUtils.isEmpty(bottleneck.getDescription()) && isPseudonymized
+			? (bottleneck.getCategory() != null ? bottleneck.getCategory().toString() : "")
+			: bottleneck.getDescription();
+		return new Event717BottleneckReferenceDto(bottleneck.getUuid(), bottleneck.getTimelinessInterval() + ": " + details);
 	}
 
 	/**
@@ -124,6 +134,16 @@ public class Event717CorrectiveActionsField extends AbstractEvent717EntriesField
 				.findFirst()
 				.orElse(bottleneck.getCaption());
 		});
+		if (isPseudonymized) {
+			table.addGeneratedColumn(
+				Event717CorrectiveActionDto.PROPOSED_ACTION,
+				(Table.ColumnGenerator) (source, itemId, columnId) -> Event717FieldAccess
+					.displayValue(((Event717CorrectiveActionDto) itemId).getProposedAction(), true));
+			table.addGeneratedColumn(
+				Event717CorrectiveActionDto.RESPONSIBLE_AUTHORITY,
+				(Table.ColumnGenerator) (source, itemId, columnId) -> Event717FieldAccess
+					.displayValue(((Event717CorrectiveActionDto) itemId).getResponsibleAuthority(), true));
+		}
 		table.addGeneratedColumn(Event717CorrectiveActionDto.TARGET_END_DATE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			Event717CorrectiveActionDto action = (Event717CorrectiveActionDto) itemId;
 			return action.getTargetEndDate() != null ? DateFormatHelper.formatDate(action.getTargetEndDate()) : null;

@@ -23,6 +23,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -32,6 +34,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
+import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.event.Event;
 
@@ -84,6 +88,20 @@ public class Event717Assessment extends AbstractDomainObject {
 	public static final String BOTTLENECKS = "bottlenecks";
 	public static final String ENABLERS = "enablers";
 	public static final String CORRECTIVE_ACTIONS = "correctiveActions";
+	public static final String DETECTION_DAYS = "detectionDays";
+	public static final String NOTIFICATION_DAYS = "notificationDays";
+	public static final String INVESTIGATION_DAYS = "investigationDays";
+	public static final String EPI_ANALYSIS_DAYS = "epiAnalysisDays";
+	public static final String LAB_CONFIRMATION_DAYS = "labConfirmationDays";
+	public static final String CASE_MANAGEMENT_DAYS = "caseManagementDays";
+	public static final String COUNTERMEASURES_DAYS = "countermeasuresDays";
+	public static final String RISK_COMMUNICATION_DAYS = "riskCommunicationDays";
+	public static final String COORDINATION_DAYS = "coordinationDays";
+	public static final String RESPONSE_DAYS = "responseDays";
+	public static final String DETECTION_STATUS = "detectionStatus";
+	public static final String NOTIFICATION_STATUS = "notificationStatus";
+	public static final String RESPONSE_STATUS = "responseStatus";
+	public static final String TIMELINESS_STATUS = "timelinessStatus";
 
 	private Event event;
 	private Date dateOfEmergence;
@@ -123,6 +141,21 @@ public class Event717Assessment extends AbstractDomainObject {
 	private List<Event717Bottleneck> bottlenecks = new ArrayList<>();
 	private List<Event717Enabler> enablers = new ArrayList<>();
 	private List<Event717CorrectiveAction> correctiveActions = new ArrayList<>();
+	// timeliness derived from the dates above; stored to filter, sort and count assessments in the database
+	private Integer detectionDays;
+	private Integer notificationDays;
+	private Integer investigationDays;
+	private Integer epiAnalysisDays;
+	private Integer labConfirmationDays;
+	private Integer caseManagementDays;
+	private Integer countermeasuresDays;
+	private Integer riskCommunicationDays;
+	private Integer coordinationDays;
+	private Integer responseDays;
+	private Event717TimelinessStatus detectionStatus;
+	private Event717TimelinessStatus notificationStatus;
+	private Event717TimelinessStatus responseStatus;
+	private Event717TimelinessStatus timelinessStatus;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(nullable = false, unique = true)
@@ -438,6 +471,151 @@ public class Event717Assessment extends AbstractDomainObject {
 
 	public void setChangeDateOfEmbeddedLists(Date changeDateOfEmbeddedLists) {
 		this.changeDateOfEmbeddedLists = changeDateOfEmbeddedLists;
+	}
+
+	public Integer getDetectionDays() {
+		return detectionDays;
+	}
+
+	public void setDetectionDays(Integer detectionDays) {
+		this.detectionDays = detectionDays;
+	}
+
+	public Integer getNotificationDays() {
+		return notificationDays;
+	}
+
+	public void setNotificationDays(Integer notificationDays) {
+		this.notificationDays = notificationDays;
+	}
+
+	public Integer getInvestigationDays() {
+		return investigationDays;
+	}
+
+	public void setInvestigationDays(Integer investigationDays) {
+		this.investigationDays = investigationDays;
+	}
+
+	public Integer getEpiAnalysisDays() {
+		return epiAnalysisDays;
+	}
+
+	public void setEpiAnalysisDays(Integer epiAnalysisDays) {
+		this.epiAnalysisDays = epiAnalysisDays;
+	}
+
+	public Integer getLabConfirmationDays() {
+		return labConfirmationDays;
+	}
+
+	public void setLabConfirmationDays(Integer labConfirmationDays) {
+		this.labConfirmationDays = labConfirmationDays;
+	}
+
+	public Integer getCaseManagementDays() {
+		return caseManagementDays;
+	}
+
+	public void setCaseManagementDays(Integer caseManagementDays) {
+		this.caseManagementDays = caseManagementDays;
+	}
+
+	public Integer getCountermeasuresDays() {
+		return countermeasuresDays;
+	}
+
+	public void setCountermeasuresDays(Integer countermeasuresDays) {
+		this.countermeasuresDays = countermeasuresDays;
+	}
+
+	public Integer getRiskCommunicationDays() {
+		return riskCommunicationDays;
+	}
+
+	public void setRiskCommunicationDays(Integer riskCommunicationDays) {
+		this.riskCommunicationDays = riskCommunicationDays;
+	}
+
+	public Integer getCoordinationDays() {
+		return coordinationDays;
+	}
+
+	public void setCoordinationDays(Integer coordinationDays) {
+		this.coordinationDays = coordinationDays;
+	}
+
+	public Integer getResponseDays() {
+		return responseDays;
+	}
+
+	public void setResponseDays(Integer responseDays) {
+		this.responseDays = responseDays;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Event717TimelinessStatus getDetectionStatus() {
+		return detectionStatus;
+	}
+
+	public void setDetectionStatus(Event717TimelinessStatus detectionStatus) {
+		this.detectionStatus = detectionStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Event717TimelinessStatus getNotificationStatus() {
+		return notificationStatus;
+	}
+
+	public void setNotificationStatus(Event717TimelinessStatus notificationStatus) {
+		this.notificationStatus = notificationStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Event717TimelinessStatus getResponseStatus() {
+		return responseStatus;
+	}
+
+	public void setResponseStatus(Event717TimelinessStatus responseStatus) {
+		this.responseStatus = responseStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Event717TimelinessStatus getTimelinessStatus() {
+		return timelinessStatus;
+	}
+
+	public void setTimelinessStatus(Event717TimelinessStatus timelinessStatus) {
+		this.timelinessStatus = timelinessStatus;
+	}
+
+	public void setEarlyResponseActionDays(Event717EarlyResponseAction action, Integer days) {
+
+		switch (action) {
+		case INVESTIGATION:
+			investigationDays = days;
+			break;
+		case EPI_ANALYSIS:
+			epiAnalysisDays = days;
+			break;
+		case LAB_CONFIRMATION:
+			labConfirmationDays = days;
+			break;
+		case CASE_MANAGEMENT:
+			caseManagementDays = days;
+			break;
+		case COUNTERMEASURES:
+			countermeasuresDays = days;
+			break;
+		case RISK_COMMUNICATION:
+			riskCommunicationDays = days;
+			break;
+		case COORDINATION:
+			coordinationDays = days;
+			break;
+		default:
+			throw new IllegalArgumentException(action.name());
+		}
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = Event717Bottleneck.ASSESSMENT)

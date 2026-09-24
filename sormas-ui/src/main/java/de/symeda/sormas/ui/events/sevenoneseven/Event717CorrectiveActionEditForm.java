@@ -25,6 +25,7 @@ import com.vaadin.v7.ui.TextArea;
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckReferenceDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717CorrectiveActionDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717CorrectiveActionPriority;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -47,8 +48,12 @@ public class Event717CorrectiveActionEditForm extends AbstractEditForm<Event717C
 	 * @param availableBottlenecks
 	 *            The bottlenecks of the assessment that can be addressed by the action
 	 */
-	public Event717CorrectiveActionEditForm(List<Event717BottleneckReferenceDto> availableBottlenecks, boolean create, boolean isEditAllowed) {
-		super(Event717CorrectiveActionDto.class, Event717CorrectiveActionDto.I18N_PREFIX, false, null, null, isEditAllowed);
+	public Event717CorrectiveActionEditForm(
+		List<Event717BottleneckReferenceDto> availableBottlenecks,
+		boolean create,
+		UiFieldAccessCheckers<Event717CorrectiveActionDto> fieldAccessCheckers,
+		boolean isEditAllowed) {
+		super(Event717CorrectiveActionDto.class, Event717CorrectiveActionDto.I18N_PREFIX, false, null, fieldAccessCheckers, isEditAllowed);
 		this.availableBottlenecks = availableBottlenecks;
 
 		setWidth(640, Unit.PIXELS);
@@ -96,5 +101,7 @@ public class Event717CorrectiveActionEditForm extends AbstractEditForm<Event717C
 			true);
 
 		setRequired(true, Event717CorrectiveActionDto.PROPOSED_ACTION);
+		// after the required fields, because hidden fields are not required
+		initializeAccessAndAllowedAccesses();
 	}
 }

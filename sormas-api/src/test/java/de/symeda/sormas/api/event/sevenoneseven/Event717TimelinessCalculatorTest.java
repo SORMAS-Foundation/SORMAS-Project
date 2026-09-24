@@ -50,19 +50,19 @@ public class Event717TimelinessCalculatorTest {
 
 		Event717IntervalResultDto result = Event717TimelinessCalculator.calculateInterval(Event717Interval.DETECTION, date(0), date(7));
 		assertEquals(Integer.valueOf(7), result.getDays());
-		assertEquals(Event717TimelinessStatus.MET, result.getStatus());
+		assertEquals(Event717TimelinessStatus.WITHIN_TARGET, result.getStatus());
 		assertTrue(result.getTargetMet());
 
 		result = Event717TimelinessCalculator.calculateInterval(Event717Interval.DETECTION, date(0), date(8));
-		assertEquals(Event717TimelinessStatus.NOT_MET, result.getStatus());
+		assertEquals(Event717TimelinessStatus.OVER_TARGET, result.getStatus());
 		assertFalse(result.getTargetMet());
 
 		result = Event717TimelinessCalculator.calculateInterval(Event717Interval.NOTIFICATION, date(3), date(3));
 		assertEquals(Integer.valueOf(0), result.getDays());
-		assertEquals(Event717TimelinessStatus.MET, result.getStatus());
+		assertEquals(Event717TimelinessStatus.WITHIN_TARGET, result.getStatus());
 
 		result = Event717TimelinessCalculator.calculateInterval(Event717Interval.NOTIFICATION, date(3), date(5));
-		assertEquals(Event717TimelinessStatus.NOT_MET, result.getStatus());
+		assertEquals(Event717TimelinessStatus.OVER_TARGET, result.getStatus());
 
 		result = Event717TimelinessCalculator.calculateInterval(Event717Interval.NOTIFICATION, date(3), date(2));
 		assertEquals(Integer.valueOf(-1), result.getDays());
@@ -129,7 +129,7 @@ public class Event717TimelinessCalculatorTest {
 
 		assessment.setDateOfNotification(date(8));
 		timeliness = Event717TimelinessCalculator.calculate(assessment);
-		assertEquals(Event717TimelinessStatus.NOT_MET, timeliness.getNotification().getStatus());
+		assertEquals(Event717TimelinessStatus.OVER_TARGET, timeliness.getNotification().getStatus());
 		assertFalse(timeliness.getAllTargetsMet());
 
 		assessment.setInvestigationDate(null);
@@ -138,6 +138,84 @@ public class Event717TimelinessCalculatorTest {
 		assertEquals(Event717TimelinessStatus.INCOMPLETE, timeliness.getResponse().getStatus());
 		assertNull(timeliness.getResponse().getDays());
 		assertNull(timeliness.getAllTargetsMet());
+		// the notification target was still not met
+		assertEquals(Event717TimelinessStatus.OVER_TARGET, timeliness.getOverallStatus());
+		assertNull(timeliness.getEarlyResponseActionDays(Event717EarlyResponseAction.INVESTIGATION));
+		assertEquals(Integer.valueOf(2), timeliness.getEarlyResponseActionDays(Event717EarlyResponseAction.COORDINATION));
+	}
+
+	@Test
+	public void testEarlyResponseActionDays() {
+
+		Event717AssessmentDto assessment = assessmentWithAllEarlyResponseDates(10);
+		assessment.setDateOfNotification(date(6));
+		assertEquals(
+			Integer.valueOf(4),
+			Event717TimelinessCalculator.calculateEarlyResponseActionDays(assessment, Event717EarlyResponseAction.INVESTIGATION));
+
+		// negative durations are kept
+		assessment.setInvestigationDate(date(4));
+		assertEquals(
+			Integer.valueOf(-2),
+			Event717TimelinessCalculator.calculateEarlyResponseActionDays(assessment, Event717EarlyResponseAction.INVESTIGATION));
+
+		// not applicable actions have no days, even if they have a date
+		assessment.setInvestigationNotApplicable(true);
+		assertNull(Event717TimelinessCalculator.calculateEarlyResponseActionDays(assessment, Event717EarlyResponseAction.INVESTIGATION));
+
+		assessment.setLabConfirmationDate(null);
+		assertNull(Event717TimelinessCalculator.calculateEarlyResponseActionDays(assessment, Event717EarlyResponseAction.LAB_CONFIRMATION));
+
+		assessment.setDateOfNotification(null);
+		assertNull(Event717TimelinessCalculator.calculateEarlyResponseActionDays(assessment, Event717EarlyResponseAction.COORDINATION));
+	}
+
+	@Test
+	public void testOverallStatus() {
+
+		Event717AssessmentDto assessment = assessmentWithAllEarlyResponseDates(10);
+		assessment.setDateOfEmergence(date(0));
+		assessment.setDateOfDetection(date(5));
+		assessment.setDateOfNotification(date(6));
+		assertEquals(Event717TimelinessStatus.WITHIN_TARGET, Event717TimelinessCalculator.calculate(assessment).getOverallStatus());
+
+		// a not met target outweighs missing data
+		assessment.setDateOfEmergence(date(-10));
+		assessment.setCoordinationDate(null);
+		assertEquals(Event717TimelinessStatus.OVER_TARGET, Event717TimelinessCalculator.calculate(assessment).getOverallStatus());
+
+		// a data error outweighs a not met target
+		assessment.setDateOfNotification(date(4));
+		assertEquals(Event717TimelinessStatus.DATA_ERROR, Event717TimelinessCalculator.calculate(assessment).getOverallStatus());
+
+		// a negative early response action is a data error even if all targets are met
+		assessment = assessmentWithAllEarlyResponseDates(10);
+		assessment.setDateOfEmergence(date(0));
+		assessment.setDateOfDetection(date(5));
+		assessment.setDateOfNotification(date(6));
+		assessment.setInvestigationDate(date(5));
+		Event717TimelinessDto timeliness = Event717TimelinessCalculator.calculate(assessment);
+		assertTrue(timeliness.getAllTargetsMet());
+		assertEquals(Event717TimelinessStatus.DATA_ERROR, timeliness.getOverallStatus());
+
+		// missing data only -> incomplete
+		assessment.setInvestigationDate(date(10));
+		assessment.setDateOfEmergence(null);
+		assertEquals(Event717TimelinessStatus.INCOMPLETE, Event717TimelinessCalculator.calculate(assessment).getOverallStatus());
+
+		// incomplete early response only -> incomplete
+		assessment.setDateOfEmergence(date(0));
+		assessment.setLabConfirmationDate(null);
+		assertEquals(Event717TimelinessStatus.INCOMPLETE, Event717TimelinessCalculator.calculate(assessment).getOverallStatus());
+	}
+
+	@Test
+	public void testFormatActionDays() {
+
+		assertEquals(Event717TimelinessCalculator.NOT_APPLICABLE, Event717TimelinessCalculator.formatActionDays(3, true));
+		assertEquals(Event717TimelinessCalculator.NOT_APPLICABLE, Event717TimelinessCalculator.formatActionDays(null, true));
+		assertEquals("3", Event717TimelinessCalculator.formatActionDays(3, false));
+		assertEquals("", Event717TimelinessCalculator.formatActionDays(null, false));
 	}
 
 	@Test

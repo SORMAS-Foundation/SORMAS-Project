@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.events.sevenoneseven;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.utils.SensitiveData;
+
 /**
  * Values of one 7-1-7 early response action while it is edited in a dialog. The assessment itself stores the actions as
  * separate properties.
@@ -31,6 +33,7 @@ public class Event717EarlyResponseActionEntry implements Serializable {
 
 	private Date date;
 	private Boolean notApplicable;
+	@SensitiveData
 	private String narrative;
 
 	public Event717EarlyResponseActionEntry() {

@@ -31,6 +31,11 @@ public final class Event717TimelinessCalculator {
 	 */
 	public static final String LESS_THAN_ONE_DAY = "<1";
 
+	/**
+	 * Display value for a not applicable early response action, as used by the 7-1-7 assessment tool.
+	 */
+	public static final String NOT_APPLICABLE = "NA";
+
 	private Event717TimelinessCalculator() {
 		// Hide Utility Class Constructor
 	}
@@ -80,9 +85,9 @@ public final class Event717TimelinessCalculator {
 		if (days < 0) {
 			status = Event717TimelinessStatus.DATA_ERROR;
 		} else if (days <= interval.getTargetDays()) {
-			status = Event717TimelinessStatus.MET;
+			status = Event717TimelinessStatus.WITHIN_TARGET;
 		} else {
-			status = Event717TimelinessStatus.NOT_MET;
+			status = Event717TimelinessStatus.OVER_TARGET;
 		}
 		return new Event717IntervalResultDto(interval, days, status);
 	}
@@ -118,7 +123,65 @@ public final class Event717TimelinessCalculator {
 		}
 		timeliness.setAllTargetsMet(allTargetsMet);
 
+		for (Event717EarlyResponseAction action : Event717EarlyResponseAction.values()) {
+			timeliness.setEarlyResponseActionDays(action, calculateEarlyResponseActionDays(assessment, action));
+		}
+		timeliness.setOverallStatus(calculateOverallStatus(timeliness));
+
 		return timeliness;
+	}
+
+	/**
+	 * @return The number of days from the notification to the early response action, or null if the action is not applicable
+	 *         or one of the dates is missing. Negative values are kept to reveal data errors.
+	 */
+	public static Integer calculateEarlyResponseActionDays(Event717AssessmentDto assessment, Event717EarlyResponseAction action) {
+
+		Date actionDate = assessment.getEarlyResponseActionDate(action);
+		if (assessment.isEarlyResponseActionNotApplicable(action) || actionDate == null || assessment.getDateOfNotification() == null) {
+			return null;
+		}
+		return DateHelper.getFullDaysBetween(assessment.getDateOfNotification(), actionDate);
+	}
+
+	/**
+	 * Compares the days from the notification to an applicable early response action with the target of the response interval, like
+	 * the 7-1-7 data consolidation spreadsheet does. The response itself is only evaluated on the last action.
+	 */
+	public static Event717TimelinessStatus calculateEarlyResponseActionStatus(Integer days) {
+
+		if (days == null) {
+			return Event717TimelinessStatus.MISSING;
+		} else if (days < 0) {
+			return Event717TimelinessStatus.DATA_ERROR;
+		} else if (days <= Event717Interval.RESPONSE.getTargetDays()) {
+			return Event717TimelinessStatus.WITHIN_TARGET;
+		} else {
+			return Event717TimelinessStatus.OVER_TARGET;
+		}
+	}
+
+	/**
+	 * Summarizes the timeliness in a single status: {@link Event717TimelinessStatus#DATA_ERROR} if any interval or early response
+	 * action has a negative duration, otherwise {@link Event717TimelinessStatus#OVER_TARGET} if any target was not met, otherwise
+	 * {@link Event717TimelinessStatus#WITHIN_TARGET} if all targets were met, otherwise {@link Event717TimelinessStatus#INCOMPLETE}.
+	 */
+	public static Event717TimelinessStatus calculateOverallStatus(Event717TimelinessDto timeliness) {
+
+		boolean dataError = Stream.of(Event717Interval.values())
+			.anyMatch(interval -> timeliness.getResult(interval).getStatus() == Event717TimelinessStatus.DATA_ERROR)
+			|| Stream.of(Event717EarlyResponseAction.values()).map(timeliness::getEarlyResponseActionDays).anyMatch(days -> days != null && days < 0);
+		if (dataError) {
+			return Event717TimelinessStatus.DATA_ERROR;
+		}
+		if (Stream.of(Event717Interval.values())
+			.anyMatch(interval -> timeliness.getResult(interval).getStatus() == Event717TimelinessStatus.OVER_TARGET)) {
+			return Event717TimelinessStatus.OVER_TARGET;
+		}
+		if (Stream.of(Event717Interval.values()).allMatch(interval -> timeliness.getResult(interval).getStatus() == Event717TimelinessStatus.WITHIN_TARGET)) {
+			return Event717TimelinessStatus.WITHIN_TARGET;
+		}
+		return Event717TimelinessStatus.INCOMPLETE;
 	}
 
 	/**
@@ -130,5 +193,13 @@ public final class Event717TimelinessCalculator {
 			return "";
 		}
 		return days == 0 ? LESS_THAN_ONE_DAY : String.valueOf(days);
+	}
+
+	/**
+	 * @return {@link #NOT_APPLICABLE} for a not applicable early response action, otherwise the {@link #formatDays(Integer) formatted}
+	 *         days.
+	 */
+	public static String formatActionDays(Integer days, boolean notApplicable) {
+		return notApplicable ? NOT_APPLICABLE : formatDays(days);
 	}
 }

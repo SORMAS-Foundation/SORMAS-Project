@@ -25,7 +25,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -39,10 +38,15 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public abstract class AbstractEvent717EntriesField<E extends EntityDto> extends AbstractTableField<E> {
 
 	protected final boolean isEditAllowed;
+	/**
+	 * Whether the server has hidden the free texts of the assessment, e.g. because the event is outside the user's jurisdiction.
+	 */
+	protected final boolean isPseudonymized;
 
-	protected AbstractEvent717EntriesField(boolean isEditAllowed) {
-		super(UiFieldAccessCheckers.getNoop(), isEditAllowed);
+	protected AbstractEvent717EntriesField(boolean isEditAllowed, boolean isPseudonymized) {
+		super(Event717FieldAccess.createFieldAccessCheckers(isPseudonymized), isEditAllowed);
 		this.isEditAllowed = isEditAllowed;
+		this.isPseudonymized = isPseudonymized;
 	}
 
 	/**

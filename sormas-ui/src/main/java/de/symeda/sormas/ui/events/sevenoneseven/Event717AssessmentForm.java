@@ -108,6 +108,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 
 	private final EventReferenceDto eventRef;
 	private final boolean isEditAllowed;
+	private final boolean isPseudonymized;
 	private final Event717TimelinessPanel timelinessPanel;
 
 	private final Map<Event717EarlyResponseAction, Event717EarlyResponseActionsTable.ActionFields> earlyResponseActionFields =
@@ -116,10 +117,22 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 	private Event717TimelinessTable timelinessTable;
 	private Event717BottlenecksField bottlenecksField;
 
-	public Event717AssessmentForm(EventReferenceDto eventRef, boolean isEditAllowed) {
-		super(Event717AssessmentDto.class, Event717AssessmentDto.I18N_PREFIX, false, null, null, isEditAllowed);
+	/**
+	 * @param isPseudonymized
+	 *            Whether the server has hidden the free texts of the assessment, e.g. because the event is outside the user's
+	 *            jurisdiction
+	 */
+	public Event717AssessmentForm(EventReferenceDto eventRef, boolean isEditAllowed, boolean isPseudonymized) {
+		super(
+			Event717AssessmentDto.class,
+			Event717AssessmentDto.I18N_PREFIX,
+			false,
+			null,
+			Event717FieldAccess.createFieldAccessCheckers(isPseudonymized),
+			isEditAllowed);
 		this.eventRef = eventRef;
 		this.isEditAllowed = isEditAllowed;
+		this.isPseudonymized = isPseudonymized;
 		this.timelinessPanel = new Event717TimelinessPanel(true);
 
 		setWidth(100, Unit.PERCENTAGE);
@@ -164,7 +177,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 			bindEarlyResponseActionFields(action);
 		}
 		getContent().addComponent(
-			new Event717EarlyResponseActionsTable(earlyResponseActionFields, isEditAllowed),
+			new Event717EarlyResponseActionsTable(earlyResponseActionFields, isEditAllowed, isPseudonymized),
 			LOC_EARLY_RESPONSE_ACTIONS);
 
 		// derived from the action dates and calculated again by the server on save, therefore not bound
@@ -186,27 +199,27 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 		addHeading(Strings.headingEvent717BottlenecksEnablers, LOC_BOTTLENECKS_ENABLERS_HEADING);
 
 		// the entries are bound to the form but displayed grouped by interval instead of in the table of the field
-		bottlenecksField = new Event717BottlenecksField(isEditAllowed);
+		bottlenecksField = new Event717BottlenecksField(isEditAllowed, isPseudonymized);
 		getFieldGroup().bind(bottlenecksField, Event717AssessmentDto.BOTTLENECKS);
 		getContent().addComponent(
 			new Event717IntervalEntriesLayout<>(
 				I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.BOTTLENECKS),
 				bottlenecksField,
 				Event717BottleneckDto::getTimelinessInterval,
-				Event717BottleneckDto::getDescription,
-				Event717AssessmentForm::getCategoryCaption,
+				bottleneck -> Event717FieldAccess.displayValue(bottleneck.getDescription(), isPseudonymized),
+				this::getCategoryCaption,
 				bottlenecksField::createEntryForInterval,
 				isEditAllowed),
 			Event717AssessmentDto.BOTTLENECKS);
 
-		Event717EnablersField enablersField = new Event717EnablersField(isEditAllowed);
+		Event717EnablersField enablersField = new Event717EnablersField(isEditAllowed, isPseudonymized);
 		getFieldGroup().bind(enablersField, Event717AssessmentDto.ENABLERS);
 		getContent().addComponent(
 			new Event717IntervalEntriesLayout<>(
 				I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, Event717AssessmentDto.ENABLERS),
 				enablersField,
 				Event717EnablerDto::getTimelinessInterval,
-				Event717EnablerDto::getDescription,
+				enabler -> Event717FieldAccess.displayValue(enabler.getDescription(), isPseudonymized),
 				null,
 				enablersField::createEntryForInterval,
 				isEditAllowed),
@@ -215,7 +228,7 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 		addHeading(Strings.headingEvent717CorrectiveActions, LOC_CORRECTIVE_ACTIONS_HEADING);
 		Event717CorrectiveActionsField correctiveActionsField = addField(
 			Event717AssessmentDto.CORRECTIVE_ACTIONS,
-			new Event717CorrectiveActionsField(() -> bottlenecksField.getValue(), isEditAllowed));
+			new Event717CorrectiveActionsField(() -> bottlenecksField.getValue(), isEditAllowed, isPseudonymized));
 		correctiveActionsField.setWidthFull();
 		bottlenecksField.addValueChangeListener(e -> correctiveActionsField.removeInvalidBottleneckReferences());
 
@@ -231,6 +244,9 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 			Event717AssessmentDto.DATE_OF_NOTIFICATION }) {
 			getField(dateProperty).addValueChangeListener(e -> updateTimeliness());
 		}
+
+		// disables the free texts that the server has hidden
+		initializeAccessAndAllowedAccesses();
 	}
 
 	/**
@@ -257,13 +273,13 @@ public class Event717AssessmentForm extends AbstractEditForm<Event717AssessmentD
 		narrative.setCaption(caption != null ? caption : I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, "narrative"));
 	}
 
-	private static String getCategoryCaption(Event717BottleneckDto bottleneck) {
+	private String getCategoryCaption(Event717BottleneckDto bottleneck) {
 
 		if (bottleneck.getCategory() == null) {
 			return null;
 		}
-		return bottleneck.getCategory() == Event717BottleneckCategory.OTHER && bottleneck.getOtherCategoryDetails() != null
-			? bottleneck.getCategory() + ": " + bottleneck.getOtherCategoryDetails()
+		return bottleneck.getCategory() == Event717BottleneckCategory.OTHER && (bottleneck.getOtherCategoryDetails() != null || isPseudonymized)
+			? bottleneck.getCategory() + ": " + Event717FieldAccess.displayValue(bottleneck.getOtherCategoryDetails(), isPseudonymized)
 			: bottleneck.getCategory().toString();
 	}
 

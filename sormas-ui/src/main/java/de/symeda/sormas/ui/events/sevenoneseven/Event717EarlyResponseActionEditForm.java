@@ -25,6 +25,7 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.MultilineLabel;
@@ -42,8 +43,11 @@ public class Event717EarlyResponseActionEditForm extends AbstractEditForm<Event7
 	private final Event717EarlyResponseAction action;
 	private final boolean isEditAllowed;
 
-	public Event717EarlyResponseActionEditForm(Event717EarlyResponseAction action, boolean isEditAllowed) {
-		super(Event717EarlyResponseActionEntry.class, Event717AssessmentDto.I18N_PREFIX, false, null, null, isEditAllowed);
+	public Event717EarlyResponseActionEditForm(
+		Event717EarlyResponseAction action,
+		UiFieldAccessCheckers<Event717EarlyResponseActionEntry> fieldAccessCheckers,
+		boolean isEditAllowed) {
+		super(Event717EarlyResponseActionEntry.class, Event717AssessmentDto.I18N_PREFIX, false, null, fieldAccessCheckers, isEditAllowed);
 		this.action = action;
 		this.isEditAllowed = isEditAllowed;
 
@@ -84,6 +88,8 @@ public class Event717EarlyResponseActionEditForm extends AbstractEditForm<Event7
 			}
 			date.setEnabled(isEditAllowed && !isNotApplicable);
 		});
+
+		initializeAccessAndAllowedAccesses();
 	}
 
 	@Override

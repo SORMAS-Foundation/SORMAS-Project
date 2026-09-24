@@ -23,6 +23,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 /**
  * An enabler (factor that enabled timely action) for one 7-1-7 interval. Documented for advocacy and to demonstrate impact.
@@ -39,6 +40,7 @@ public class Event717EnablerDto extends EntityDto {
 
 	@NotNull(message = Validations.requiredField)
 	private Event717Interval timelinessInterval;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 

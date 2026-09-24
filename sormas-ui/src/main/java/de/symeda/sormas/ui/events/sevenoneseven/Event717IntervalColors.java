@@ -27,6 +27,10 @@ public final class Event717IntervalColors {
 	private static final String COLOR_DETECTION = "#E7503C";
 	private static final String COLOR_NOTIFICATION = "#F49234";
 	private static final String COLOR_RESPONSE = "#43A047";
+	/**
+	 * Color of the whole 7-1-7 target, i.e. all three intervals.
+	 */
+	public static final String COLOR_ALL_TARGETS = "#4A4A4A";
 
 	private Event717IntervalColors() {
 		// Hide Utility Class Constructor

@@ -23,6 +23,7 @@ import com.vaadin.v7.ui.TextArea;
 import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EnablerDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
@@ -32,8 +33,8 @@ public class Event717EnablerEditForm extends AbstractEditForm<Event717EnablerDto
 
 	private static final String HTML_LAYOUT = fluidRowLocs(Event717EnablerDto.TIMELINESS_INTERVAL) + fluidRowLocs(Event717EnablerDto.DESCRIPTION);
 
-	public Event717EnablerEditForm(boolean create, boolean isEditAllowed) {
-		super(Event717EnablerDto.class, Event717EnablerDto.I18N_PREFIX, false, null, null, isEditAllowed);
+	public Event717EnablerEditForm(boolean create, UiFieldAccessCheckers<Event717EnablerDto> fieldAccessCheckers, boolean isEditAllowed) {
+		super(Event717EnablerDto.class, Event717EnablerDto.I18N_PREFIX, false, null, fieldAccessCheckers, isEditAllowed);
 
 		setWidth(540, Unit.PIXELS);
 		addFields();
@@ -59,5 +60,7 @@ public class Event717EnablerEditForm extends AbstractEditForm<Event717EnablerDto
 		description.setRows(4);
 
 		setRequired(true, Event717EnablerDto.TIMELINESS_INTERVAL, Event717EnablerDto.DESCRIPTION);
+		// after the required fields, because hidden fields are not required
+		initializeAccessAndAllowedAccesses();
 	}
 }

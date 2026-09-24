@@ -16,6 +16,7 @@ package de.symeda.sormas.api.event.sevenoneseven;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.EnumMap;
 
 import de.symeda.sormas.api.audit.AuditedClass;
 
@@ -37,6 +38,11 @@ public class Event717TimelinessDto implements Serializable {
 	 * Whether all three targets were met; null if any interval could not be evaluated.
 	 */
 	private Boolean allTargetsMet;
+	/**
+	 * Days from the notification to each early response action; no entry if the action is not applicable or a date is missing.
+	 */
+	private final EnumMap<Event717EarlyResponseAction, Integer> earlyResponseActionDays = new EnumMap<>(Event717EarlyResponseAction.class);
+	private Event717TimelinessStatus overallStatus;
 
 	public Event717IntervalResultDto getResult(Event717Interval interval) {
 
@@ -106,5 +112,25 @@ public class Event717TimelinessDto implements Serializable {
 
 	public void setAllTargetsMet(Boolean allTargetsMet) {
 		this.allTargetsMet = allTargetsMet;
+	}
+
+	public Integer getEarlyResponseActionDays(Event717EarlyResponseAction action) {
+		return earlyResponseActionDays.get(action);
+	}
+
+	public void setEarlyResponseActionDays(Event717EarlyResponseAction action, Integer days) {
+		if (days == null) {
+			earlyResponseActionDays.remove(action);
+		} else {
+			earlyResponseActionDays.put(action, days);
+		}
+	}
+
+	public Event717TimelinessStatus getOverallStatus() {
+		return overallStatus;
+	}
+
+	public void setOverallStatus(Event717TimelinessStatus overallStatus) {
+		this.overallStatus = overallStatus;
 	}
 }

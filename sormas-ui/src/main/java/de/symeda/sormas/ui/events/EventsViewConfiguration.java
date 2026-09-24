@@ -22,6 +22,10 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class EventsViewConfiguration extends ViewConfiguration {
 
 	private EventsViewType viewType;
+	/**
+	 * Whether the 7-1-7 view shows the summary instead of the table.
+	 */
+	private boolean event717SummaryMode;
 
 	public EventsViewType getViewType() {
 		return viewType;
@@ -29,5 +33,13 @@ public class EventsViewConfiguration extends ViewConfiguration {
 
 	public void setViewType(EventsViewType viewType) {
 		this.viewType = viewType;
+	}
+
+	public boolean isEvent717SummaryMode() {
+		return event717SummaryMode;
+	}
+
+	public void setEvent717SummaryMode(boolean event717SummaryMode) {
+		this.event717SummaryMode = event717SummaryMode;
 	}
 }

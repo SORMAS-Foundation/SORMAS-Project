@@ -55,6 +55,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.event.sevenoneseven.Event717ExportDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -107,7 +109,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		RESPONSIBLE_USER_INFO,
 		EventDto.EVENT_INVESTIGATION_STATUS,
 		EventDto.EVENT_MANAGEMENT_STATUS,
-		EventDto.EVENT_IDENTIFICATION_SOURCE)
+		EventDto.EVENT_IDENTIFICATION_SOURCE,
+		EventCriteria.EVENT_717_DETECTION_STATUS,
+		EventCriteria.EVENT_717_NOTIFICATION_STATUS,
+		EventCriteria.EVENT_717_RESPONSE_STATUS)
 		+ filterLocsCss(
 			VSPACE_3,
 			EventCriteria.ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
@@ -120,8 +125,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private final boolean hideEventStatusFilter;
 	private final boolean hideActionFilters;
+	private final boolean hideEvent717Filters;
 
-	protected EventsFilterForm(boolean hideEventStatusFilter, boolean hideActionFilters) {
+	protected EventsFilterForm(boolean hideEventStatusFilter, boolean hideActionFilters, boolean hideEvent717Filters) {
 		super(
 			EventCriteria.class,
 			EventIndexDto.I18N_PREFIX,
@@ -129,6 +135,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			JurisdictionFieldConfig.of(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY));
 		this.hideEventStatusFilter = hideEventStatusFilter;
 		this.hideActionFilters = hideActionFilters;
+		this.hideEvent717Filters = hideEvent717Filters;
 
 		updateFields();
 	}
@@ -140,6 +147,11 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		}
 		if (hideEventStatusFilter) {
 			getField(EventCriteria.EVENT_STATUS).setVisible(false);
+		}
+		if (hideEvent717Filters) {
+			getField(EventCriteria.EVENT_717_DETECTION_STATUS).setVisible(false);
+			getField(EventCriteria.EVENT_717_NOTIFICATION_STATUS).setVisible(false);
+			getField(EventCriteria.EVENT_717_RESPONSE_STATUS).setVisible(false);
 		}
 	}
 
@@ -207,6 +219,22 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			FieldConfiguration.pixelSized(EventDto.EVENT_INVESTIGATION_STATUS, 140),
 			FieldConfiguration.pixelSized(EventDto.EVENT_MANAGEMENT_STATUS, 140),
 			FieldConfiguration.pixelSized(EventDto.EVENT_IDENTIFICATION_SOURCE, 140));
+
+		// only shown in the 7-1-7 view
+		addFields(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventCriteria.EVENT_717_DETECTION_STATUS,
+				I18nProperties.getPrefixCaption(Event717ExportDto.I18N_PREFIX, Event717IndexDto.DETECTION_STATUS),
+				140),
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventCriteria.EVENT_717_NOTIFICATION_STATUS,
+				I18nProperties.getPrefixCaption(Event717ExportDto.I18N_PREFIX, Event717IndexDto.NOTIFICATION_STATUS),
+				140),
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventCriteria.EVENT_717_RESPONSE_STATUS,
+				I18nProperties.getPrefixCaption(Event717ExportDto.I18N_PREFIX, Event717IndexDto.RESPONSE_STATUS),
+				140));
 
 		ComboBox regionField = addField(
 			moreFiltersContainer,

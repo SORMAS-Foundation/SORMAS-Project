@@ -34,6 +34,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentFacade;
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckCategory;
@@ -42,7 +44,10 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckReferenceDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717CorrectiveActionDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EnablerDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717ExportDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
+import de.symeda.sormas.api.event.sevenoneseven.Event717SummaryDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessCalculator;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -53,8 +58,10 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
@@ -62,6 +69,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "Event717AssessmentFacade")
@@ -76,13 +84,15 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 	private UserService userService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public Event717AssessmentDto getByEventUuid(String eventUuid) {
 
 		checkFeatureEnabled();
 		getAccessibleEvent(eventUuid);
-		return toDto(service.getByEventUuid(eventUuid));
+		return toPseudonymizedDto(service.getByEventUuid(eventUuid));
 	}
 
 	@Override
@@ -93,7 +103,7 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 		if (assessment != null) {
 			getAccessibleEvent(assessment.getEvent().getUuid());
 		}
-		return toDto(assessment);
+		return toPseudonymizedDto(assessment);
 	}
 
 	@Override
@@ -128,16 +138,99 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 			throw new ValidationRuntimeException(I18nProperties.getString(Strings.errorEvent717AssessmentAlreadyExists));
 		}
 
+		restorePseudonymizedDto(dto, existingAssessment, event);
 		validate(dto);
 
-		// the completion date is always derived from the early response action dates
-		dto.setEarlyResponseCompletionDate(Event717TimelinessCalculator.calculateEarlyResponseCompletionDate(dto));
+		// the completion date and the timeliness are always derived from the milestone and early response action dates
+		Event717TimelinessDto timeliness = Event717TimelinessCalculator.calculate(dto);
+		dto.setEarlyResponseCompletionDate(timeliness.getEarlyResponseCompletionDate());
 
 		Event717Assessment assessment = fillOrBuildEntity(dto, existingAssessment, true);
+		applyTimeliness(assessment, timeliness);
 		assessment.setEvent(event);
 		service.ensurePersisted(assessment);
 
-		return toDto(assessment);
+		return toPseudonymizedDto(assessment);
+	}
+
+	private Pseudonymizer<Event717AssessmentDto> createPseudonymizer() {
+		return Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
+	}
+
+	/**
+	 * Hides the free texts (narratives, notes, descriptions) of the assessment if the user may not see sensitive data of the event,
+	 * e.g. because the event is outside the user's jurisdiction. Dates, flags, categories and the timeliness stay visible.
+	 */
+	private Event717AssessmentDto toPseudonymizedDto(Event717Assessment assessment) {
+
+		Event717AssessmentDto dto = toDto(assessment);
+		if (dto == null) {
+			return null;
+		}
+
+		boolean inJurisdiction = eventService.inJurisdictionOrOwned(assessment.getEvent());
+		Pseudonymizer<Event717AssessmentDto> pseudonymizer = createPseudonymizer();
+		pseudonymizer.pseudonymizeDto(Event717AssessmentDto.class, dto, inJurisdiction, d -> {
+			pseudonymizer.pseudonymizeEmbeddedDtoCollection(Event717BottleneckDto.class, d.getBottlenecks(), inJurisdiction, d);
+			pseudonymizer.pseudonymizeEmbeddedDtoCollection(Event717EnablerDto.class, d.getEnablers(), inJurisdiction, d);
+			pseudonymizer.pseudonymizeEmbeddedDtoCollection(Event717CorrectiveActionDto.class, d.getCorrectiveActions(), inJurisdiction, d);
+		});
+
+		if (dto.isPseudonymized()) {
+			// the caption of a bottleneck reference is its description, so it is replaced by the interval and category
+			Map<String, Event717BottleneckDto> bottlenecks =
+				dto.getBottlenecks().stream().collect(Collectors.toMap(Event717BottleneckDto::getUuid, Function.identity()));
+			for (Event717CorrectiveActionDto action : dto.getCorrectiveActions()) {
+				Event717BottleneckDto bottleneck = action.getBottleneck() != null ? bottlenecks.get(action.getBottleneck().getUuid()) : null;
+				if (bottleneck != null) {
+					action.setBottleneck(
+						new Event717BottleneckReferenceDto(
+							bottleneck.getUuid(),
+							bottleneck.getTimelinessInterval() + (bottleneck.getCategory() != null ? ": " + bottleneck.getCategory() : "")));
+				}
+			}
+		}
+
+		return dto;
+	}
+
+	/**
+	 * Keeps the stored free texts the user may not see, so that saving an assessment with hidden values does not overwrite them.
+	 */
+	private void restorePseudonymizedDto(Event717AssessmentDto dto, Event717Assessment existingAssessment, Event event) {
+
+		if (existingAssessment == null) {
+			return;
+		}
+
+		Event717AssessmentDto existingDto = toDto(existingAssessment);
+		boolean inJurisdiction = eventService.inJurisdictionOrOwned(event);
+		Pseudonymizer<Event717AssessmentDto> pseudonymizer = createPseudonymizer();
+		pseudonymizer.restorePseudonymizedValues(Event717AssessmentDto.class, dto, existingDto, inJurisdiction);
+		restoreEntries(pseudonymizer, Event717BottleneckDto.class, dto.getBottlenecks(), existingDto.getBottlenecks(), dto, inJurisdiction);
+		restoreEntries(pseudonymizer, Event717EnablerDto.class, dto.getEnablers(), existingDto.getEnablers(), dto, inJurisdiction);
+		restoreEntries(
+			pseudonymizer,
+			Event717CorrectiveActionDto.class,
+			dto.getCorrectiveActions(),
+			existingDto.getCorrectiveActions(),
+			dto,
+			inJurisdiction);
+	}
+
+	private static <T extends EntityDto> void restoreEntries(
+		Pseudonymizer<Event717AssessmentDto> pseudonymizer,
+		Class<T> type,
+		List<T> entries,
+		List<T> existingEntries,
+		Event717AssessmentDto rootDto,
+		boolean inJurisdiction) {
+
+		Map<String, T> existingByUuid = existingEntries.stream().collect(Collectors.toMap(EntityDto::getUuid, Function.identity()));
+		for (T entry : entries) {
+			// new entries have no stored values to restore
+			pseudonymizer.restoreEmbeddedPseudonymizedValues(type, entry, existingByUuid.get(entry.getUuid()), rootDto, inJurisdiction);
+		}
 	}
 
 	@Override
@@ -307,6 +400,57 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 
 	private static String assessmentCaption(String property) {
 		return I18nProperties.getPrefixCaption(Event717AssessmentDto.I18N_PREFIX, property);
+	}
+
+	@Override
+	public List<Event717IndexDto> getIndexList(EventCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		checkFeatureEnabled();
+		return service.getIndexList(criteria, first, max, sortProperties);
+	}
+
+	@Override
+	public long count(EventCriteria criteria) {
+
+		checkFeatureEnabled();
+		return service.count(criteria);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENT_EXPORT)
+	public List<Event717ExportDto> getExportList(EventCriteria criteria, Integer first, Integer max) {
+
+		checkFeatureEnabled();
+		// the method annotation replaces the class annotation, so the view right has to be checked here
+		if (!userService.hasRight(UserRight.EVENT_717_ASSESSMENT_VIEW)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		List<Event717ExportDto> exportList = service.getExportList(criteria, first, max);
+		Pseudonymizer<Event717ExportDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
+		pseudonymizer.pseudonymizeDtoCollection(Event717ExportDto.class, exportList, Event717ExportDto::isInJurisdiction, null);
+		return exportList;
+	}
+
+	@Override
+	public Event717SummaryDto getSummary(EventCriteria criteria) {
+
+		checkFeatureEnabled();
+		return service.getSummary(criteria);
+	}
+
+	private static void applyTimeliness(Event717Assessment assessment, Event717TimelinessDto timeliness) {
+
+		assessment.setDetectionDays(timeliness.getDetection().getDays());
+		assessment.setDetectionStatus(timeliness.getDetection().getStatus());
+		assessment.setNotificationDays(timeliness.getNotification().getDays());
+		assessment.setNotificationStatus(timeliness.getNotification().getStatus());
+		for (Event717EarlyResponseAction action : Event717EarlyResponseAction.values()) {
+			assessment.setEarlyResponseActionDays(action, timeliness.getEarlyResponseActionDays(action));
+		}
+		assessment.setResponseDays(timeliness.getResponse().getDays());
+		assessment.setResponseStatus(timeliness.getResponse().getStatus());
+		assessment.setTimelinessStatus(timeliness.getOverallStatus());
 	}
 
 	private void checkFeatureEnabled() {
