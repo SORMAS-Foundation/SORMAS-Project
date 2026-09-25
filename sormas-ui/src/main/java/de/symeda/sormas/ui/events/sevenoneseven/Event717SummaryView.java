@@ -92,7 +92,7 @@ public class Event717SummaryView extends AbstractView {
 		VerticalLayout content = new VerticalLayout(filterForm, summaryLayout);
 		content.setWidth(100, Unit.PERCENTAGE);
 		content.setMargin(true);
-		content.setSpacing(true);
+		content.setSpacing(false);
 		addComponent(content);
 	}
 

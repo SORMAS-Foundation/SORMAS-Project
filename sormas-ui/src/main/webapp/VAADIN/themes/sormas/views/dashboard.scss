@@ -170,21 +170,38 @@
 		font-size: 16px;
 	}
 
+	// period filter of the 7-1-7 summary, aligned with the first filter above it
+	.event717-date-filter {
+		padding-left: 8px;
+	}
+
 	// 7-1-7 summary, compact
 	.event717-summary {
 		font-size: 13px;
 
 		.event717-scope {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 4px 16px;
 			font-size: 14px;
 
-			b {
-				font-weight: 600;
+			.event717-scope-value {
+				font-size: 22px;
+				font-weight: 700;
 			}
 
-			.event717-scope-filters {
-				margin-left: 16px;
-				font-size: 13px;
-				color: #666666;
+			.event717-scope-legend {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px 14px;
+				font-size: 12px;
+				color: #555555;
+			}
+
+			.event717-legend-entry {
+				white-space: nowrap;
 			}
 		}
 
@@ -235,57 +252,98 @@
 		}
 
 		.event717-card-evaluable {
+			margin-top: 5px;
 			font-size: 12px;
 			color: #555555;
+
+			b {
+				font-weight: 600;
+				color: #333333;
+			}
 		}
 
 		.event717-bar {
 			display: flex;
 			gap: 2px;
-			height: 6px;
+			height: 5px;
 			margin-top: 8px;
 			background-color: #EEEEEE;
 		}
 
-		.event717-legend {
-			display: grid;
-			grid-template-columns: auto auto auto auto;
-			justify-content: space-between;
-			column-gap: 8px;
-			row-gap: 2px;
+		// the counts of all results, named by the legend above the cards
+		.event717-statuses {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 2px 14px;
 			margin-top: 8px;
-			font-size: 11px;
-			color: #555555;
-			white-space: nowrap;
+			font-size: 12px;
+			line-height: 16px;
 
 			.event717-count {
-				text-align: right;
+				font-weight: 600;
 				color: #333333;
 			}
 		}
 
+		// tooltips of the bar segments and results, pure css as the cards are html
+		[data-tooltip] {
+			position: relative;
+		}
+
+		[data-tooltip]:hover::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			bottom: calc(100% + 6px);
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 1;
+			padding: 3px 8px;
+			border-radius: 3px;
+			background-color: #333333;
+			color: #FFFFFF;
+			font-size: 12px;
+			font-weight: 600;
+			line-height: 18px;
+			white-space: nowrap;
+			pointer-events: none;
+		}
+
+		// aligned to the edges of the card, so that they are not cut off
+		.event717-bar > [data-tooltip]:first-child:hover::after,
+		.event717-status[data-tooltip]:hover::after {
+			left: 0;
+			transform: none;
+		}
+
+		.event717-bar > [data-tooltip]:last-child:not(:first-child):hover::after {
+			left: auto;
+			right: 0;
+			transform: none;
+		}
+
 		.event717-swatch {
 			display: inline-block;
-			width: 8px;
+			width: 12px;
 			height: 8px;
 			margin-right: 5px;
 			border-radius: 2px;
 		}
 
+		// result colors of the cards, distinct from the interval colors of the card borders and the chart
 		.event717-within-target {
-			background-color: #2E7D32;
+			background-color: $s-primary-color;
 		}
 
 		.event717-over-target {
-			background-color: #C62828;
+			background-color: #A8326E;
 		}
 
 		.event717-missing {
-			background-color: #F4B400;
+			background-color: #A7B3C0;
 		}
 
 		.event717-data-error {
-			background: repeating-linear-gradient(45deg, #F4B400, #F4B400 3px, #B78600 3px, #B78600 5px);
+			background: repeating-linear-gradient(45deg, #7B5EA7, #7B5EA7 3px, #5A4380 3px, #5A4380 5px);
 		}
 
 		.event717-error-icon {
@@ -294,8 +352,8 @@
 			height: 12px;
 			margin-right: 4px;
 			border-radius: 50%;
-			background-color: #F4B400;
-			color: #333333;
+			background-color: #7B5EA7;
+			color: #FFFFFF;
 			font-size: 9px;
 			font-weight: 700;
 			line-height: 12px;

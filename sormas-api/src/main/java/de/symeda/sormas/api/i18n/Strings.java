@@ -690,6 +690,7 @@ public interface Strings {
 	String headingEvent717Milestones = "headingEvent717Milestones";
 	String headingEvent717OverallPerformance = "headingEvent717OverallPerformance";
 	String headingEvent717PercentMeetingTargets = "headingEvent717PercentMeetingTargets";
+	String headingEvent717Performance = "headingEvent717Performance";
 	String headingEvent717ReportDetails = "headingEvent717ReportDetails";
 	String headingEvent717Summary = "headingEvent717Summary";
 	String headingEvent717Timeliness = "headingEvent717Timeliness";
@@ -1092,6 +1093,7 @@ public interface Strings {
 	String infoEvent717ActionsMeasured = "infoEvent717ActionsMeasured";
 	String infoEvent717AllTargets = "infoEvent717AllTargets";
 	String infoEvent717AllTargetsMet = "infoEvent717AllTargetsMet";
+	String infoEvent717AssessedEvents = "infoEvent717AssessedEvents";
 	String infoEvent717Assessment = "infoEvent717Assessment";
 	String infoEvent717DateFilter = "infoEvent717DateFilter";
 	String infoEvent717EarlyResponseActionPending = "infoEvent717EarlyResponseActionPending";
@@ -1099,6 +1101,7 @@ public interface Strings {
 	String infoEvent717EarlyResponseCompletion = "infoEvent717EarlyResponseCompletion";
 	String infoEvent717EarlyResponseIncomplete = "infoEvent717EarlyResponseIncomplete";
 	String infoEvent717Evaluable = "infoEvent717Evaluable";
+	String infoEvent717EvaluableCount = "infoEvent717EvaluableCount";
 	String infoEvent717EvaluableOnly = "infoEvent717EvaluableOnly";
 	String infoEvent717NoEvaluable = "infoEvent717NoEvaluable";
 	String infoEvent717NotAllTargetsMet = "infoEvent717NotAllTargetsMet";
@@ -1936,6 +1939,7 @@ public interface Strings {
 	String promptCustomizableEnumTranslationLanguage = "promptCustomizableEnumTranslationLanguage";
 	String promptCustomizableFieldOption = "promptCustomizableFieldOption";
 	String promptCustomizableFieldSearchField = "promptCustomizableFieldSearchField";
+	String promptDateFrom = "promptDateFrom";
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDiseaseConfigurationAgeFrom = "promptDiseaseConfigurationAgeFrom";

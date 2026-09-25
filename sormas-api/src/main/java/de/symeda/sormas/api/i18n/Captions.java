@@ -1876,7 +1876,6 @@ public interface Captions {
 	String Event717Export_responseStatus = "Event717Export.responseStatus";
 	String Event717Export_riskCommunicationDays = "Event717Export.riskCommunicationDays";
 	String event717ExportSummary = "event717ExportSummary";
-	String event717FilteredBy = "event717FilteredBy";
 	String Event717Index_caseManagementDays = "Event717Index.caseManagementDays";
 	String Event717Index_community = "Event717Index.community";
 	String Event717Index_coordinationDays = "Event717Index.coordinationDays";
@@ -1900,6 +1899,7 @@ public interface Captions {
 	String Event717Index_timelinessStatus = "Event717Index.timelinessStatus";
 	String event717Indicator = "event717Indicator";
 	String event717MeetsAll = "event717MeetsAll";
+	String event717MissingOrIncomplete = "event717MissingOrIncomplete";
 	String event717NotApplicableShort = "event717NotApplicableShort";
 	String event717PercentWithinTarget = "event717PercentWithinTarget";
 	String event717StatusDataError = "event717StatusDataError";

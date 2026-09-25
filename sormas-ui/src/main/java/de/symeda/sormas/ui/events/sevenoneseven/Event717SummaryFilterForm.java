@@ -18,6 +18,9 @@ import java.util.Date;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -42,6 +45,7 @@ import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 
@@ -53,6 +57,7 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 
 	private static final String RELEVANCE_STATUS_FILTER = "relevanceStatusFilter";
 	private static final String DATE_FILTER = "dateFilter";
+	private static final String DATE_FILTER_INFO = "dateFilterInfo";
 
 	/**
 	 * Created while the super constructor adds the fields, so it must not have an initializer.
@@ -71,7 +76,8 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 			LocationDto.REGION,
 			LocationDto.DISTRICT,
 			RELEVANCE_STATUS_FILTER,
-			DATE_FILTER };
+			DATE_FILTER,
+			DATE_FILTER_INFO };
 	}
 
 	@Override
@@ -95,12 +101,29 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 		dateFilter = new EpiWeekAndDateFilterComponent<>(
 			false,
 			false,
-			I18nProperties.getString(Strings.infoEvent717DateFilter),
+			null,
 			ArrayUtils.addAll(CriteriaDateTypeHelper.getTypes(EventCriteriaDateType.class, false), (CriteriaDateType[]) Event717DateType.values()),
 			I18nProperties.getString(Strings.promptEventDateType),
 			Event717DateType.DATE_OF_NOTIFICATION,
 			this);
+		dateFilter.addStyleName("event717-date-filter");
+		dateFilter.getDateFilterOptionFilter().setWidth(140, Unit.PIXELS);
+		dateFilter.getDateFromFilter().setWidth(140, Unit.PIXELS);
+		dateFilter.getDateToFilter().setWidth(140, Unit.PIXELS);
+		dateFilter.getWeekFromFilter().setWidth(140, Unit.PIXELS);
+		dateFilter.getWeekToFilter().setWidth(140, Unit.PIXELS);
+		dateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptDateFrom));
+		dateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptDateTo));
+		dateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptDateFrom));
+		dateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptDateTo));
 		getContent().addComponent(dateFilter, DATE_FILTER);
+
+		// after the period instead of after the date type, so that it is next to the filter buttons
+		Label dateFilterInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		dateFilterInfo.setSizeUndefined();
+		dateFilterInfo.setDescription(I18nProperties.getString(Strings.infoEvent717DateFilter), ContentMode.HTML);
+		CssStyles.style(dateFilterInfo, FILTER_ITEM_STYLE, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+		getContent().addComponent(dateFilterInfo, DATE_FILTER_INFO);
 	}
 
 	private static ComboBox createRelevanceStatusFilter() {

@@ -20,9 +20,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -36,10 +34,8 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
@@ -49,11 +45,9 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 
@@ -61,12 +55,13 @@ import de.symeda.sormas.ui.utils.ExportEntityName;
  * 7-1-7 performance of the assessed events matching the filters of the 7-1-7 summary, like the summary reports of the "Assess 7-1-7
  * results" sheet of the 7-1-7 data consolidation spreadsheet. Styles are defined in the dashboard view theme.
  * <p>
- * Percentages only count evaluable events (meeting or not meeting the target); the other results are always shown next to them.
+ * Percentages only count evaluable events (meeting or not meeting the target); the other results are shown next to them.
  */
 @SuppressWarnings("serial")
 public class Event717SummaryLayout extends VerticalLayout {
 
 	private static final String NO_VALUE = "–";
+	private static final String ERROR_ICON = "<span class=\"event717-error-icon\">!</span>";
 
 	private final Label scopeLabel;
 	private final Label cardsLabel;
@@ -82,9 +77,14 @@ public class Event717SummaryLayout extends VerticalLayout {
 		setSpacing(true);
 		addStyleName("event717-summary");
 
+		Label titleLabel = new Label(I18nProperties.getString(Strings.headingEvent717Performance));
+		titleLabel.addStyleName("event717-panel-title");
 		scopeLabel = new Label("", ContentMode.HTML);
 		scopeLabel.setWidth(100, Unit.PERCENTAGE);
-		addComponent(scopeLabel);
+		VerticalLayout header = new VerticalLayout(titleLabel, scopeLabel);
+		header.setMargin(false);
+		header.setSpacing(false);
+		addComponent(header);
 
 		cardsLabel = new Label("", ContentMode.HTML);
 		cardsLabel.setWidth(100, Unit.PERCENTAGE);
@@ -135,54 +135,34 @@ public class Event717SummaryLayout extends VerticalLayout {
 
 		summary = FacadeProvider.getEvent717AssessmentFacade().getSummary(criteria);
 
-		scopeLabel.setValue(buildScopeHtml(criteria));
+		scopeLabel.setValue(buildScopeHtml());
 		cardsLabel.setValue(buildCardsHtml());
 		chart.setHcjs(buildChartJs());
 		actionsGrid.getDataProvider().refreshAll();
 	}
 
-	private String buildScopeHtml(EventCriteria criteria) {
+	/**
+	 * The number of assessed events and the legend shared by all cards.
+	 */
+	private String buildScopeHtml() {
 
-		StringBuilder html = new StringBuilder("<div class=\"event717-scope\">");
-		html.append(escape(I18nProperties.getCaption(Captions.event717AssessedEvents)))
-			.append(": <b>")
-			.append(summary.getAssessedEvents())
-			.append("</b>");
-		List<String> filters = describeFilters(criteria);
-		if (!filters.isEmpty()) {
-			html.append("<span class=\"event717-scope-filters\">")
-				.append(escape(I18nProperties.getCaption(Captions.event717FilteredBy)))
-				.append(": ")
-				.append(escape(String.join(", ", filters)))
-				.append("</span>");
-		}
+		StringBuilder html = new StringBuilder("<div class=\"event717-scope\"><span class=\"event717-scope-count\">");
+		html.append(
+			String.format(
+				escape(I18nProperties.getString(Strings.infoEvent717AssessedEvents)),
+				"<span class=\"event717-scope-value\">" + summary.getAssessedEvents() + "</span>"))
+			.append("</span>");
+		html.append("<span class=\"event717-scope-legend\">")
+			.append(legendEntry(swatch("event717-within-target"), Event717TimelinessStatus.WITHIN_TARGET.toString()))
+			.append(legendEntry(swatch("event717-over-target"), I18nProperties.getCaption(Captions.event717DoesNotMeet)))
+			.append(legendEntry(swatch("event717-missing"), I18nProperties.getCaption(Captions.event717MissingOrIncomplete)))
+			.append(legendEntry(ERROR_ICON, Event717TimelinessStatus.DATA_ERROR.toString()))
+			.append("</span>");
 		return html.append("</div>").toString();
 	}
 
-	private static List<String> describeFilters(EventCriteria criteria) {
-
-		List<String> filters = new ArrayList<>();
-		if (criteria.getDisease() != null) {
-			filters.add(I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.DISEASE) + " = " + criteria.getDisease());
-		}
-		if (criteria.getRegion() != null) {
-			filters.add(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION) + " = " + criteria.getRegion().getCaption());
-		}
-		if (criteria.getDistrict() != null) {
-			filters
-				.add(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT) + " = " + criteria.getDistrict().getCaption());
-		}
-		if (criteria.getEventDateType() != null && (criteria.getEventDateFrom() != null || criteria.getEventDateTo() != null)) {
-			filters.add(
-				criteria.getEventDateType() + " = " + DateFormatHelper.formatDate(criteria.getEventDateFrom()) + " – "
-					+ DateFormatHelper.formatDate(criteria.getEventDateTo()));
-		}
-		if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-			filters.add(I18nProperties.getCaption(Captions.eventArchivedEvents));
-		} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE_AND_ARCHIVED) {
-			filters.add(I18nProperties.getCaption(Captions.eventAllActiveAndArchivedEvents));
-		}
-		return filters;
+	private static String legendEntry(String marker, String caption) {
+		return "<span class=\"event717-legend-entry\">" + marker + escape(caption) + "</span>";
 	}
 
 	private String buildCardsHtml() {
@@ -238,41 +218,54 @@ public class Event717SummaryLayout extends VerticalLayout {
 			.append("</div>");
 		html.append("<div class=\"event717-card-evaluable\">")
 			.append(
-				escape(
-					percentage != null
-						? String.format(I18nProperties.getString(Strings.infoEvent717Evaluable), counts.getWithinTarget(), counts.getEvaluable())
-						: I18nProperties.getString(Strings.infoEvent717NoEvaluable)))
+				percentage != null
+					? String.format(
+						escape(I18nProperties.getString(Strings.infoEvent717Evaluable)),
+						"<b>"
+							+ escape(
+								String.format(
+									I18nProperties.getString(Strings.infoEvent717EvaluableCount),
+									counts.getWithinTarget(),
+									counts.getEvaluable()))
+							+ "</b>")
+					: escape(I18nProperties.getString(Strings.infoEvent717NoEvaluable)))
 			.append("</div>");
+
+		String overTargetCaption = I18nProperties.getCaption(Captions.event717DoesNotMeet);
+		String dataErrorCaption = Event717TimelinessStatus.DATA_ERROR.toString();
 
 		// share of each result among all assessed events
 		html.append("<div class=\"event717-bar\">")
-			.append(barSegment(counts.getWithinTarget(), "event717-within-target"))
-			.append(barSegment(counts.getOverTarget(), "event717-over-target"))
-			.append(barSegment(missing, "event717-missing"))
-			.append(barSegment(counts.getDataError(), "event717-data-error"))
+			.append(barSegment(counts.getWithinTarget(), "event717-within-target", withinTargetCaption))
+			.append(barSegment(counts.getOverTarget(), "event717-over-target", overTargetCaption))
+			.append(barSegment(missing, "event717-missing", missingCaption))
+			.append(barSegment(counts.getDataError(), "event717-data-error", dataErrorCaption))
 			.append("</div>");
 
-		html.append("<div class=\"event717-legend\">")
-			.append(legendEntry("<span class=\"event717-swatch event717-within-target\"></span>", withinTargetCaption, counts.getWithinTarget()))
-			.append(
-				legendEntry(
-					"<span class=\"event717-swatch event717-over-target\"></span>",
-					I18nProperties.getCaption(Captions.event717DoesNotMeet),
-					counts.getOverTarget()))
-			.append(legendEntry("<span class=\"event717-swatch event717-missing\"></span>", missingCaption, missing))
-			.append(
-				legendEntry("<span class=\"event717-error-icon\">!</span>", Event717TimelinessStatus.DATA_ERROR.toString(), counts.getDataError()))
+		// the results are named in the legend above the cards
+		html.append("<div class=\"event717-statuses\">")
+			.append(status(swatch("event717-within-target"), withinTargetCaption, counts.getWithinTarget()))
+			.append(status(swatch("event717-over-target"), overTargetCaption, counts.getOverTarget()))
+			.append(status(swatch("event717-missing"), missingCaption, missing))
+			.append(status(ERROR_ICON, dataErrorCaption, counts.getDataError()))
 			.append("</div>");
 
 		return html.append("</div>").toString();
 	}
 
-	private static String barSegment(int count, String styleName) {
-		return count > 0 ? "<div class=\"" + styleName + "\" style=\"flex:" + count + " 1 0;\"></div>" : "";
+	private static String barSegment(int count, String styleName, String caption) {
+		return count > 0
+			? "<div class=\"" + styleName + "\" style=\"flex:" + count + " 1 0;\" data-tooltip=\"" + escape(caption + ": " + count) + "\"></div>"
+			: "";
 	}
 
-	private static String legendEntry(String marker, String caption, int count) {
-		return "<span>" + marker + escape(caption) + "</span><span class=\"event717-count\">" + count + "</span>";
+	private static String status(String marker, String caption, int count) {
+		return "<span class=\"event717-status\" data-tooltip=\"" + escape(caption) + "\">" + marker + "<span class=\"event717-count\">" + count
+			+ "</span></span>";
+	}
+
+	private static String swatch(String styleName) {
+		return "<span class=\"event717-swatch " + styleName + "\"></span>";
 	}
 
 	private String buildChartJs() {
