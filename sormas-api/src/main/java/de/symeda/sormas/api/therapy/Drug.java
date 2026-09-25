@@ -109,7 +109,8 @@ public enum Drug {
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
 	AZITHROMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
@@ -129,8 +130,33 @@ public enum Drug {
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
 	TRIMETHOPRIM_SULFAMETHOXAZOLE,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	CLINDAMYCIN,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	LINEZOLID,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	MEROPENEM,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	TETRACYCLINES,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	OTHER;

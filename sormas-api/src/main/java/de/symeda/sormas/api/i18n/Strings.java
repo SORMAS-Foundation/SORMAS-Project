@@ -554,6 +554,7 @@ public interface Strings {
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
 	String headingContactsRestored = "headingContactsRestored";
 	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
+	String headingControlMeasuresLoc = "headingControlMeasuresLoc";
 	String headingCorrectPathogenTest = "headingCorrectPathogenTest";
 	String headingCorrectPerson = "headingCorrectPerson";
 	String headingCorrectSample = "headingCorrectSample";
@@ -1237,6 +1238,7 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus = "infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus";
 	String infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation = "infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
+	String infoToxGeneDetected = "infoToxGeneDetected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";

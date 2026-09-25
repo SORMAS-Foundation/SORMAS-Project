@@ -17,10 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.components;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.ui.samples.events.SetResultTextEvent;
 import de.symeda.sormas.ui.utils.FormComponent;
+import de.symeda.sormas.ui.utils.FormEventBus;
 
 /**
  * Test result free-text field.
@@ -36,6 +40,21 @@ public class ResultTextComponent extends FormComponent<PathogenTestDto> {
 		super(PathogenTestDto.class);
 		buildLayout();
 		bindFields();
+	}
+
+	public ResultTextComponent(FormEventBus eventBus) {
+		super(PathogenTestDto.class);
+		buildLayout();
+		bindFields();
+		track(eventBus.on(SetResultTextEvent.class, this::applyResultText));
+	}
+
+	private void applyResultText(SetResultTextEvent event) {
+		String current = resultText.getValue();
+		if (event.getExpectedCurrentText() != null && StringUtils.isNotBlank(current) && !current.equals(event.getExpectedCurrentText())) {
+			return;
+		}
+		resultText.setValue(event.getResultText() != null ? event.getResultText() : "");
 	}
 
 	private void buildLayout() {

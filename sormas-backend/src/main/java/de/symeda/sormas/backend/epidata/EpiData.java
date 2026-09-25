@@ -22,9 +22,11 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -72,7 +74,7 @@ public class EpiData extends AbstractDomainObject {
 	private String clusterIdentifier;
 
 	// Giardiasis & Cryptosporidiosis specific
-	private InfectionSource infectionSource;
+	private Set<InfectionSource> infectionSource;
 	private String infectionSourceText;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
@@ -232,12 +234,13 @@ public class EpiData extends AbstractDomainObject {
 		this.modeOfTransmissionType = modeOfTransmissionType;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public InfectionSource getInfectionSource() {
+	@Column
+	@Convert(converter = InfectionSourceSetConverter.class)
+	public Set<InfectionSource> getInfectionSource() {
 		return infectionSource;
 	}
 
-	public void setInfectionSource(InfectionSource infectionSource) {
+	public void setInfectionSource(Set<InfectionSource> infectionSource) {
 		this.infectionSource = infectionSource;
 	}
 

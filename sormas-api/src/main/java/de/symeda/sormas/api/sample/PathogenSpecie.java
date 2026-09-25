@@ -33,24 +33,28 @@ public enum PathogenSpecie {
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_AFRICANUM,
+
 	@Diseases({
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_BOVIS,
+
 	@Diseases({
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_TUBERCULOSIS,
+
 	@Diseases({
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	OTHER_MTBC_MEMBER,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -68,6 +72,7 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	SPP,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -85,6 +90,7 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	FALCIPARUM,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -102,6 +108,7 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	VIVAX,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -119,6 +126,7 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	MALARIAE,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -136,6 +144,7 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	OVALE,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -153,6 +162,7 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	KNOWLESI,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -170,6 +180,7 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	CYNOMOLGI,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -187,6 +198,7 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	NOT_SPECIFIED,
+
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
@@ -213,6 +225,7 @@ public enum PathogenSpecie {
 		PathogenTestType.BACTERIAL_CULTURE,
 		PathogenTestType.CULTURE })
 	BOYDII,
+
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -221,6 +234,7 @@ public enum PathogenSpecie {
 		PathogenTestType.BACTERIAL_CULTURE,
 		PathogenTestType.CULTURE })
 	DYSENTERIAE,
+
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -229,6 +243,7 @@ public enum PathogenSpecie {
 		PathogenTestType.BACTERIAL_CULTURE,
 		PathogenTestType.CULTURE })
 	FLEXNERI,
+
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -237,6 +252,7 @@ public enum PathogenSpecie {
 		PathogenTestType.BACTERIAL_CULTURE,
 		PathogenTestType.CULTURE })
 	SONNEI,
+
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -245,19 +261,59 @@ public enum PathogenSpecie {
 		PathogenTestType.BACTERIAL_CULTURE,
 		PathogenTestType.CULTURE })
 	SHIGELLA_SPP,
+
 	@Diseases(value = {
 		Disease.YERSINIOSIS })
 	YERSINIA_ENTEROCOLITICA,
+
 	@Diseases(value = {
 		Disease.YERSINIOSIS })
 	YERSINIA_PSEUDOTUBERCULOSIS,
+
 	@Diseases(value = {
 		Disease.YERSINIOSIS })
 	YERSINIA_SPP,
+
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.CULTURE,
+		PathogenTestType.PCR_RT_PCR })
+	DIPH_CORY_DIPH, // Corynebacterium diphtheriae
+
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.CULTURE,
+		PathogenTestType.PCR_RT_PCR })
+	NOT_UNDER_SURVEILLANCE, // Not under surveillance
+
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.CULTURE,
+		PathogenTestType.PCR_RT_PCR })
+	DIPH_NOT_SPECIFIED,
+
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.CULTURE,
+		PathogenTestType.PCR_RT_PCR })
+	DIPH_CORY_PSEU, // Corynebacterium pseudotuberculosis
+
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.CULTURE,
+		PathogenTestType.PCR_RT_PCR })
+	DIPH_CORY_ULC, // Corynebacterium ulcerans
+
 	@Diseases({
 		Disease.MALARIA,
 		Disease.SHIGELLOSIS,
-		Disease.YERSINIOSIS })
+		Disease.YERSINIOSIS,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.LATERAL_FLOW_ASSAY,
@@ -277,12 +333,14 @@ public enum PathogenSpecie {
 		PathogenTestType.SEROGROUPING,
 		PathogenTestType.SEROTYPING })
 	OTHER,
+
 	@Diseases({
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.MALARIA,
 		Disease.SHIGELLOSIS,
-		Disease.YERSINIOSIS })
+		Disease.YERSINIOSIS,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING,
 		PathogenTestType.THIN_BLOOD_SMEAR,
@@ -303,6 +361,7 @@ public enum PathogenSpecie {
 		PathogenTestType.SEROGROUPING,
 		PathogenTestType.SEROTYPING })
 	UNKNOWN,
+
 	@Diseases({
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })

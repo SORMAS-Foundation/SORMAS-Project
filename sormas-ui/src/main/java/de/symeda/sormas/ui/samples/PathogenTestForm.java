@@ -105,6 +105,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private AbstractDiseaseSectionComponent activeSection;
 	private VerticalLayout diseaseSectionSlot;
+	private VerticalLayout preResultSlot;
 
 	public PathogenTestForm(
 		AbstractSampleForm sampleForm,
@@ -187,6 +188,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		formComponents.add(testMethodComponent);
 		container.addComponent(testMethodComponent);
 
+		preResultSlot = new VerticalLayout();
+		preResultSlot.setWidth(100, Unit.PERCENTAGE);
+		preResultSlot.setMargin(false);
+		preResultSlot.setSpacing(false);
+		preResultSlot.setVisible(false);
+		container.addComponent(preResultSlot);
+
 		testResultComponent = new TestResultComponent(eventBus, formConfig.isLuxembourg, disease, formConfig.resultRequired);
 		formComponents.add(testResultComponent);
 		container.addComponent(testResultComponent);
@@ -209,12 +217,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		activeSection.initialize(getFieldGroup(), eventBus, formConfig, disease);
 		activeSection.setVisibilityCallback(visible -> diseaseSectionSlot.setVisible(visible));
 		diseaseSectionSlot.addComponent(activeSection);
+		attachPreResultComponent(activeSection);
 
 		AdditionalTestInfoComponent additionalTestInfoComponent = new AdditionalTestInfoComponent(eventBus, disease);
 		formComponents.add(additionalTestInfoComponent);
 		container.addComponent(additionalTestInfoComponent);
 
-		ResultTextComponent resultTextComponent = new ResultTextComponent();
+		ResultTextComponent resultTextComponent = new ResultTextComponent(eventBus);
 		formComponents.add(resultTextComponent);
 		container.addComponent(resultTextComponent);
 
@@ -249,6 +258,22 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				eventBus.fire(new SetTestResultEvent(PathogenTestResultType.POSITIVE));
 			}
 		}));
+	}
+
+	/**
+	 * Attaches the preResultComponent to the preResultSlot.
+	 * 
+	 * @param section
+	 */
+	// Requirement is to add a row before the ResultTestComponent, for now its only for Diphtheria, if it's applicable for other diseases, then we need to change the approach to insert any row as pluggable.
+
+	private void attachPreResultComponent(AbstractDiseaseSectionComponent section) {
+		preResultSlot.removeAllComponents();
+		Component preResult = section.getPreResultComponent();
+		if (preResult != null) {
+			preResultSlot.addComponent(preResult);
+		}
+		preResultSlot.setVisible(preResult != null);
 	}
 
 	private void finalizeForm() {
@@ -289,7 +314,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		activeSection.initialize(getFieldGroup(), eventBus, formConfig, newDisease);
 		activeSection.setVisibilityCallback(visible -> diseaseSectionSlot.setVisible(visible));
 		diseaseSectionSlot.addComponent(activeSection);
-
+		attachPreResultComponent(activeSection);
 		PathogenTestDto dto = getValue();
 		if (dto != null) {
 			activeSection.setDto(dto);

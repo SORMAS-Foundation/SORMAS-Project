@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
@@ -63,6 +63,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
@@ -77,6 +78,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -88,6 +90,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.CustomizableFieldsGroup;
 import de.symeda.sormas.ui.utils.components.MultilineLabel;
 
@@ -131,8 +134,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			Disease.SHIGELLOSIS,
 			Disease.SYPHILIS,
 			Disease.GONOCOCCAL_INFECTION,
-			Disease.MUMPS));
-	private static final List<Disease> CLUSTER_ALLOWED_DISEASES = Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS));
+			Disease.MUMPS,
+			Disease.DIPHTHERIA));
+	private static final List<Disease> CLUSTER_ALLOWED_DISEASES =
+		Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS, Disease.DIPHTHERIA));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -149,7 +154,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
 			fluidRowLocs(6, EpiDataDto.IMPORTED_CASE, 6, EpiDataDto.COUNTRY)+
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
-			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
+			fluidRowLocs(EpiDataDto.INFECTION_SOURCE) +
+			fluidRowLocs(EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
 			loc(LOC_CLUSTER_TYPE_HEADING)+
 			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
@@ -274,11 +280,15 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		addField(EpiDataDto.MODE_OF_TRANSMISSION);
 		addField(EpiDataDto.MODE_OF_TRANSMISSION_TYPE);
-		addField(EpiDataDto.INFECTION_SOURCE);
+		CheckboxSet<InfectionSource> infectionSourceField = addField(EpiDataDto.INFECTION_SOURCE, CheckboxSet.class);
+		infectionSourceField.setColumnCount(2);
+		infectionSourceField.setItems(Diseases.DiseasesConfiguration.getVisibleValues(InfectionSource.class, disease), null, null);
 		addField(EpiDataDto.INFECTION_SOURCE_TEXT);
+
 		addField(EpiDataDto.IMPORTED_CASE, NullableOptionGroup.class);
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
+		country.setVisible(false);
 		country.addItems(countries);
 		if (Disease.SHIGELLOSIS == disease) {
 			country.setCaption(I18nProperties.getCaption(Captions.EpiData_country_SHIG));
@@ -322,16 +332,34 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), EpiDataDto.MODE_OF_TRANSMISSION_TYPE, EpiDataDto.MODE_OF_TRANSMISSION, ModeOfTransmission.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.INFECTION_SOURCE_TEXT, EpiDataDto.INFECTION_SOURCE, InfectionSource.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
-		// For Cryptosporidiosis and Giardiasis, and Shigellosis, the infection source field should be displayed based on transmission mode selection.
 		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			EpiDataDto.INFECTION_SOURCE,
-			EpiDataDto.MODE_OF_TRANSMISSION,
-			Arrays.asList(ModeOfTransmission.FOOD_OR_WATER, ModeOfTransmission.ANIMAL_TO_HUMAN),
+			getFieldGroup().getField(EpiDataDto.INFECTION_SOURCE),
+			Arrays.asList(getField(EpiDataDto.INFECTION_SOURCE_TEXT)),
+			field -> {
+				Object value = FieldHelper.getNullableSourceFieldValue(field);
+				return value instanceof Set && ((Set<?>) value).contains(InfectionSource.OTHER);
+			},
 			true);
-
+		// Giardiasis, Cryptosporidiosis, Shigellosis, Mumps, Salmonellosis: country follows "imported case = YES" and
+		// infection source follows the mode of transmission.
+		// Diphtheria: country follows "case imported status = imported case"; infection source is always shown.
+		if (disease == Disease.DIPHTHERIA) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				EpiDataDto.COUNTRY,
+				EpiDataDto.CASE_IMPORTED_STATUS,
+				CaseImportedStatus.IMPORTED_CASE,
+				true);
+		} else if (List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS)
+			.contains(disease)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				EpiDataDto.INFECTION_SOURCE,
+				EpiDataDto.MODE_OF_TRANSMISSION,
+				Arrays.asList(ModeOfTransmission.FOOD_OR_WATER, ModeOfTransmission.ANIMAL_TO_HUMAN),
+				true);
+		}
 		contactWithSourceCasePanel = new CustomizableFieldsGroup(CustomizableFieldGroup.EPIDATA_CONTACT_WITH_SOURCE_CASE);
 		contactWithSourceCasePanel.setVisibilityContext(new CustomizableFieldVisibilityContext().withDisease(disease));
 		contactWithSourceCasePanel.setFieldsMetadata(getCustomizableFieldsMetadata());
@@ -401,14 +429,31 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		CustomLayout exposureDatesLayout = new CustomLayout();
 		exposureDatesLayout.setTemplateContents(EXPOSURE_DATES_LAYOUT);
 		exposureDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.exposureStartDate)), "EXPOSURE_START_DATE_LABEL");
-
-		exposureDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMaxIncubationPeriod()), "EXPOSURE_START_DATE_VALUE");
+		// Exposure must precede onset: from (onset - max incubation) to (onset - min incubation)
+		exposureDatesLayout.addComponent(
+			createReadOnlyDateField(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMaxIncubationPeriod())),
+			"EXPOSURE_START_DATE_VALUE");
 
 		exposureDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.exposureEndDate)), "EXPOSURE_END_DATE_LABEL");
-		exposureDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMinIncubationPeriod()), "EXPOSURE_END_DATE_VALUE");
+		exposureDatesLayout.addComponent(
+			createReadOnlyDateField(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMinIncubationPeriod())),
+			"EXPOSURE_END_DATE_VALUE");
 
 		getContent().addComponent(exposureDatesLayout, "EXP_DATES_LAYOUT");
 		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(true);
+	}
+
+	/**
+	 * Create a read-only date field with the given value.
+	 * 
+	 * @param value
+	 * @return dateField
+	 */
+	private DateField createReadOnlyDateField(Date value) {
+		DateField dateField = new DateField();
+		dateField.setValue(value);
+		dateField.setReadOnly(true);
+		return dateField;
 	}
 
 	/**
@@ -418,23 +463,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 * @param hideProphylaxisComponent
 	 */
 	private void renderProphylaxisInfo(String value, boolean hideProphylaxisComponent) {
-		// validate the layout presence before adding or removing the prophylaxis information to avoid unnecessary component creation and manipulation.
-		Component prophylaxisComponent = getContent().getComponent("PROPHYLAXIS_LAYOUT");
-		// if the prophylaxis component is not visible, hide the heading along with its component and return without doing anything.
+		// if the prophylaxis component is not visible, hide the heading, remove its component (if present) and return.
 		if (hideProphylaxisComponent) {
-			if (prophylaxisComponent != null) {
-				getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(false);
-				prophylaxisComponent.setVisible(false);
-				getContent().removeComponent("PROPHYLAXIS_LAYOUT");
-				return;
-			} else {
-				getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(false);
-				return;
-			}
+			getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(false);
+			getContent().removeComponent("PROPHYLAXIS_LAYOUT");
+			return;
 		}
-
 		// if the prophylaxis is visible but the value is null, return without doing anything.
-		if (!hideProphylaxisComponent && value == null) {
+		if (value == null) {
 			return;
 		}
 		CustomLayout prophylaxisLayout = new CustomLayout();
@@ -447,9 +483,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	/**
-	 * calculates the Activity as Case from and to dates based on the symptom onset date and disease
-	 * configuration for contagious-period.
-	 * 
+	 * Calculates the transmissibility period ("activity as case" from/to dates) from the symptom onset date:
+	 * from (onset - minContagiousPeriod) to (onset + maxContagiousPeriod).
+	 *
 	 * @param symptomOnsetDate
 	 * @param disease
 	 */
@@ -475,27 +511,17 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		activityDatesLayout.setTemplateContents(ACTIVITY_AS_CASE_DATES_LAYOUT);
 		activityDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.transmissionStartDate)), "ACTIVITY_START_DATE_LABEL");
 
-		activityDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMaxContagiousPeriod()), "ACTIVITY_START_DATE_VALUE");
+		activityDatesLayout.addComponent(
+			createReadOnlyDateField(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMinContagiousPeriod())),
+			"ACTIVITY_START_DATE_VALUE");
 
 		activityDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.transmissionEndDate)), "ACTIVITY_END_DATE_LABEL");
-		activityDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMinContagiousPeriod()), "ACTIVITY_END_DATE_VALUE");
+		activityDatesLayout.addComponent(
+			createReadOnlyDateField(DateHelper.addDays(symptomOnsetDate, diseaseConfigurationDto.getMaxContagiousPeriod())),
+			"ACTIVITY_END_DATE_VALUE");
 
 		getContent().addComponent(activityDatesLayout, "TRANSMISSIBILITY_DATES_LAYOUT");
 		getContent().getComponent(LOC_TRANSMISSIBILITY_PERIOD_HEADING).setVisible(true);
-
-	}
-
-	/**
-	 * Calculate the custom dateField value based on the symptom onset date and the given period, and add it to the custom layout.
-	 * 
-	 * @param period
-	 * @return customPeriodDate
-	 */
-	private DateField addDateFieldToCustomLayout(Integer period) {
-		DateField customPeriodDate = new DateField();
-		customPeriodDate.setValue(DateHelper.subtractDays(symptomOnsetDate, period));
-		customPeriodDate.setReadOnly(true);
-		return customPeriodDate;
 	}
 
 	/**

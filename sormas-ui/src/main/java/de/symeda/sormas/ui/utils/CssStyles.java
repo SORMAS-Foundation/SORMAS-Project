@@ -492,8 +492,8 @@ public final class CssStyles {
 			return "background-disease-neonatal-tetanus";
 		case ONCHOCERCIASIS:
 			return "background-disease-onchocerciasis";
-		case DIPHTERIA:
-			return "background-disease-diphteria";
+		case DIPHTHERIA:
+			return "background-disease-diphtheria";
 		case TRACHOMA:
 			return "background-disease-trachoma";
 		case YAWS_ENDEMIC_SYPHILIS:

@@ -41,6 +41,35 @@ public enum Biotype {
 	@Diseases({
 		Disease.YERSINIOSIS })
 	YERSINIOSIS_5,
+
+	@Diseases({
+		Disease.DIPHTHERIA })
+	NOT_APP,
+
+	@Diseases({
+		Disease.DIPHTHERIA })
+	NOT_UND_SUR, // Not under surveillance
+
+	@Diseases({
+		Disease.DIPHTHERIA })
+	OTHER,
+
+	@Diseases({
+		Disease.DIPHTHERIA })
+	VAR_BELF,//var belfanti
+
+	@Diseases({
+		Disease.DIPHTHERIA })
+	VAR_GRAV,// var gravis
+
+	@Diseases({
+		Disease.DIPHTHERIA })
+	VAR_INTE,//var intermedius
+
+	@Diseases({
+		Disease.DIPHTHERIA })
+	VAR_MITI,//var mitis
+
 	UNKNOWN;
 
 	@Override
