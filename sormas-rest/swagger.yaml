@@ -2829,7 +2829,7 @@ paths:
                   - PERTUSSIS
                   - NEONATAL_TETANUS
                   - ONCHOCERCIASIS
-                  - DIPHTERIA
+                  - DIPHTHERIA
                   - TRACHOMA
                   - YAWS_ENDEMIC_SYPHILIS
                   - MATERNAL_DEATHS
@@ -4513,7 +4513,7 @@ paths:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -4850,7 +4850,7 @@ paths:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -8854,7 +8854,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -8988,7 +8988,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -9096,7 +9096,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -9514,7 +9514,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -9989,7 +9989,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -10695,7 +10695,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -11053,7 +11053,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -11201,7 +11201,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -11483,7 +11483,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -12101,7 +12101,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -12369,7 +12369,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -12732,7 +12732,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -13214,7 +13214,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -13507,7 +13507,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -14334,7 +14334,7 @@ components:
             - PERTUSSIS
             - NEONATAL_TETANUS
             - ONCHOCERCIASIS
-            - DIPHTERIA
+            - DIPHTHERIA
             - TRACHOMA
             - YAWS_ENDEMIC_SYPHILIS
             - MATERNAL_DEATHS
@@ -14597,7 +14597,7 @@ components:
             - PERTUSSIS
             - NEONATAL_TETANUS
             - ONCHOCERCIASIS
-            - DIPHTERIA
+            - DIPHTHERIA
             - TRACHOMA
             - YAWS_ENDEMIC_SYPHILIS
             - MATERNAL_DEATHS
@@ -14897,7 +14897,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -14998,7 +14998,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -15184,7 +15184,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -15286,7 +15286,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -15400,7 +15400,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -16732,7 +16732,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -16908,7 +16908,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -17201,7 +17201,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -17707,7 +17707,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -17929,7 +17929,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -19023,7 +19023,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -19183,7 +19183,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -19309,7 +19309,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -19751,7 +19751,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -19969,7 +19969,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -20441,7 +20441,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -20609,7 +20609,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -20779,7 +20779,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -21285,7 +21285,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -21524,7 +21524,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -21811,7 +21811,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -22312,7 +22312,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -22624,7 +22624,7 @@ components:
             - PERTUSSIS
             - NEONATAL_TETANUS
             - ONCHOCERCIASIS
-            - DIPHTERIA
+            - DIPHTHERIA
             - TRACHOMA
             - YAWS_ENDEMIC_SYPHILIS
             - MATERNAL_DEATHS
@@ -22720,7 +22720,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -23869,7 +23869,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -24205,7 +24205,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -25283,7 +25283,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -25768,7 +25768,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -26334,7 +26334,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -26558,7 +26558,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -26702,7 +26702,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -27066,7 +27066,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -29488,7 +29488,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -30367,7 +30367,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -30857,7 +30857,7 @@ components:
             - PERTUSSIS
             - NEONATAL_TETANUS
             - ONCHOCERCIASIS
-            - DIPHTERIA
+            - DIPHTHERIA
             - TRACHOMA
             - YAWS_ENDEMIC_SYPHILIS
             - MATERNAL_DEATHS
@@ -31530,7 +31530,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -31660,7 +31660,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
@@ -31843,7 +31843,7 @@ components:
           - PERTUSSIS
           - NEONATAL_TETANUS
           - ONCHOCERCIASIS
-          - DIPHTERIA
+          - DIPHTHERIA
           - TRACHOMA
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS

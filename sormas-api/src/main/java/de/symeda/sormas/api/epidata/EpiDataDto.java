@@ -25,6 +25,8 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
@@ -165,7 +167,9 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.DIPHTHERIA })
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 	private Set<InfectionSource> infectionSource;
+
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,

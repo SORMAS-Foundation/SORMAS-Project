@@ -22,6 +22,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.PathogenSpecie;
@@ -209,7 +212,6 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 			if (!showText) {
 				setVisibleClear(false, targetTestTextField);
 			}
-			eventBus.fire(new SetResultTextEvent(test == TargetTest.TOXIN_PRODUCTION ? "Tox gene detected" : null));
 
 		}));
 
@@ -241,7 +243,8 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 		// PCR test
 		boolean isPCRTest = testType == PathogenTestType.PCR_RT_PCR;
 		boolean isPositiveTargetSpecieIdentified = isPositive && isPCRTest && targetTestField.getValue() == TargetTest.SPECIES_IDENTIFICATION;
-		boolean isTargetOther = isPCRTest && targetTestField.getValue() == TargetTest.OTHER; // verify this constant name against your enum
+		boolean isPositiveToxisProduction = isPositive && isPCRTest && targetTestField.getValue() == TargetTest.TOXIN_PRODUCTION;
+		boolean isTargetOther = isPCRTest && targetTestField.getValue() == TargetTest.OTHER;
 
 		boolean isWGSTest = testType == PathogenTestType.WHOLE_GENOME_SEQUENCING;
 		boolean isSequenceDataUploaded = isWGSTest && sequenceDataUploadedToPublicRepField.getValue() == YesNoUnknown.YES;
@@ -271,6 +274,13 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 			if (!isTargetOther) {
 				setVisibleClear(false, targetTestTextField);
 			}
+		}
+		// If PCR positive with toxin production, pre-fill the test result details; otherwise clear the pre-filled text.
+		String toxGeneText = I18nProperties.getString(Strings.infoToxGeneDetected);
+		if (isPositiveToxisProduction) {
+			eventBus.fire(new SetResultTextEvent(toxGeneText, toxGeneText));
+		} else {
+			eventBus.fire(new SetResultTextEvent(null, toxGeneText));
 		}
 
 		// --- WGS branch — deliberately independent of isCulturePositive, which is always false
@@ -315,6 +325,8 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 		dto.setAccessionNumber(null);
 		dto.setMlstSequenceType(null);
 		dto.setCgMlstCluster(null);
+		dto.setBiotypeText(null);
+		dto.setSequenceDataUploadedToPublicRepository(null);
 	}
 
 	@Override

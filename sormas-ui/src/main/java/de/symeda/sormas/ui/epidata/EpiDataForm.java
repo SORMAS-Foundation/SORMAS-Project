@@ -43,7 +43,6 @@ import java.util.function.Supplier;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
@@ -343,7 +342,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			true);
 		// For Cryptosporidiosis and Giardiasis, and Shigellosis, the infection source field should be displayed based on transmission mode selection.
 		// For Diphtheria, use case is different, so introduced a new listener, moreover its not dependent on the mode of transmission value.
-		if (List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS).stream().anyMatch(e -> e == disease)) {
+		if (List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS)
+			.stream()
+			.anyMatch(e -> e == disease)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
@@ -428,14 +429,31 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		CustomLayout exposureDatesLayout = new CustomLayout();
 		exposureDatesLayout.setTemplateContents(EXPOSURE_DATES_LAYOUT);
 		exposureDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.exposureStartDate)), "EXPOSURE_START_DATE_LABEL");
-
-		exposureDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMaxIncubationPeriod()), "EXPOSURE_START_DATE_VALUE");
+		// Exposure must precede onset: from (onset - max incubation) to (onset - min incubation)
+		exposureDatesLayout.addComponent(
+			createReadOnlyDateField(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMaxIncubationPeriod())),
+			"EXPOSURE_START_DATE_VALUE");
 
 		exposureDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.exposureEndDate)), "EXPOSURE_END_DATE_LABEL");
-		exposureDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMinIncubationPeriod()), "EXPOSURE_END_DATE_VALUE");
+		exposureDatesLayout.addComponent(
+			createReadOnlyDateField(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMinIncubationPeriod())),
+			"EXPOSURE_END_DATE_VALUE");
 
 		getContent().addComponent(exposureDatesLayout, "EXP_DATES_LAYOUT");
 		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(true);
+	}
+
+	/**
+	 * Create a read-only date field with the given value.
+	 * 
+	 * @param value
+	 * @return dateField
+	 */
+	private DateField createReadOnlyDateField(Date value) {
+		DateField dateField = new DateField();
+		dateField.setValue(value);
+		dateField.setReadOnly(true);
+		return dateField;
 	}
 
 	/**
@@ -445,23 +463,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 * @param hideProphylaxisComponent
 	 */
 	private void renderProphylaxisInfo(String value, boolean hideProphylaxisComponent) {
-		// validate the layout presence before adding or removing the prophylaxis information to avoid unnecessary component creation and manipulation.
-		Component prophylaxisComponent = getContent().getComponent("PROPHYLAXIS_LAYOUT");
-		// if the prophylaxis component is not visible, hide the heading along with its component and return without doing anything.
+		// if the prophylaxis component is not visible, hide the heading, remove its component (if present) and return.
 		if (hideProphylaxisComponent) {
-			if (prophylaxisComponent != null) {
-				getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(false);
-				prophylaxisComponent.setVisible(false);
-				getContent().removeComponent("PROPHYLAXIS_LAYOUT");
-				return;
-			} else {
-				getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(false);
-				return;
-			}
+			getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(false);
+			getContent().removeComponent("PROPHYLAXIS_LAYOUT");
+			return;
 		}
-
 		// if the prophylaxis is visible but the value is null, return without doing anything.
-		if (!hideProphylaxisComponent && value == null) {
+		if (value == null) {
 			return;
 		}
 		CustomLayout prophylaxisLayout = new CustomLayout();
@@ -474,9 +483,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	/**
-	 * calculates the Activity as Case from and to dates based on the symptom onset date and disease
-	 * configuration for contagious-period.
-	 * 
+	 * Calculates the transmissibility period ("activity as case" from/to dates) from the symptom onset date:
+	 * from (onset - minContagiousPeriod) to (onset + maxContagiousPeriod).
+	 *
 	 * @param symptomOnsetDate
 	 * @param disease
 	 */
@@ -502,27 +511,17 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		activityDatesLayout.setTemplateContents(ACTIVITY_AS_CASE_DATES_LAYOUT);
 		activityDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.transmissionStartDate)), "ACTIVITY_START_DATE_LABEL");
 
-		activityDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMaxContagiousPeriod()), "ACTIVITY_START_DATE_VALUE");
+		activityDatesLayout.addComponent(
+			createReadOnlyDateField(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMinContagiousPeriod())),
+			"ACTIVITY_START_DATE_VALUE");
 
 		activityDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.transmissionEndDate)), "ACTIVITY_END_DATE_LABEL");
-		activityDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMinContagiousPeriod()), "ACTIVITY_END_DATE_VALUE");
+		activityDatesLayout.addComponent(
+			createReadOnlyDateField(DateHelper.addDays(symptomOnsetDate, diseaseConfigurationDto.getMaxContagiousPeriod())),
+			"ACTIVITY_END_DATE_VALUE");
 
 		getContent().addComponent(activityDatesLayout, "TRANSMISSIBILITY_DATES_LAYOUT");
 		getContent().getComponent(LOC_TRANSMISSIBILITY_PERIOD_HEADING).setVisible(true);
-
-	}
-
-	/**
-	 * Calculate the custom dateField value based on the symptom onset date and the given period, and add it to the custom layout.
-	 * 
-	 * @param period
-	 * @return customPeriodDate
-	 */
-	private DateField addDateFieldToCustomLayout(Integer period) {
-		DateField customPeriodDate = new DateField();
-		customPeriodDate.setValue(DateHelper.subtractDays(symptomOnsetDate, period));
-		customPeriodDate.setReadOnly(true);
-		return customPeriodDate;
 	}
 
 	/**

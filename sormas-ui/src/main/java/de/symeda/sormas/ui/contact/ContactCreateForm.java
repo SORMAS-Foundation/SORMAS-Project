@@ -283,8 +283,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
-
-		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG);
+		// PRESCRIBED_DRUG visibility and required state are driven by updatePrescribedDrugVisibility()
+		prophylaxisPrescribed.addValueChangeListener(e -> updatePrescribedDrugVisibility());
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ContactDto.PRESCRIBED_DRUG_TEXT,
@@ -303,16 +303,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			updateControlMeasuresVisibility();
 		});
 		updateControlMeasuresVisibility();
-
-		// prophylaxisPrescribed listener action to decide the prescribed drug visibility
-		// if prophylaxisPrescribed is selected and Drug has the visibility, then it should be displayed.
-		prophylaxisPrescribed.addValueChangeListener(e -> {
-			boolean showPrescribedDrug = Boolean.TRUE.equals(e.getProperty().getValue());
-			boolean prescribedDrugAllowedForDisease = FieldVisibilityCheckers.withDisease(disease)
-				.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale())
-				.isVisible(ContactDto.class, ContactDto.PRESCRIBED_DRUG);
-			setVisibleClear(showPrescribedDrug && prescribedDrugAllowedForDisease, ContactDto.PRESCRIBED_DRUG);
-		});
 
 		if (!hasCaseRelation) {
 			Label caseInfoLabel = new Label(I18nProperties.getString(Strings.infoNoSourceCaseSelected), ContentMode.HTML);
@@ -383,6 +373,16 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		});
 	}
 
+	private void updatePrescribedDrugVisibility() {
+		boolean prescribedDrugAllowed = FieldVisibilityCheckers.withDisease(disease)
+			.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale())
+			.isVisible(ContactDto.class, ContactDto.PRESCRIBED_DRUG);
+		boolean showPrescribedDrug = prescribedDrugAllowed && Boolean.TRUE.equals(getField(ContactDto.PROPHYLAXIS_PRESCRIBED).getValue());
+
+		setVisibleClear(showPrescribedDrug, ContactDto.PRESCRIBED_DRUG);
+		getField(ContactDto.PRESCRIBED_DRUG).setRequired(showPrescribedDrug);
+	}
+
 	/**
 	 * Update the controlMeasures label and its related fields
 	 */
@@ -427,10 +427,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		setVisibleClear(vaccinationProposedVisible, ContactDto.VACCINATION_PROPOSED);
 		setVisibleClear(immuneGlobulinProposedVisible, ContactDto.IMMUNE_GLOBULIN_PROPOSED);
 
-		// PRESCRIBED_DRUG/PRESCRIBED_DRUG_TEXT are dependent fields, shown via the setVisibleWhen rules once
-		// PROPHYLAXIS_PRESCRIBED is checked / OTHER is picked - only force them closed when the disease doesn't allow them at all.
+		// PRESCRIBED_DRUG only when the disease allows it AND prophylaxis is ticked; PRESCRIBED_DRUG_TEXT follows PRESCRIBED_DRUG == OTHER
+		updatePrescribedDrugVisibility();
 		if (!prescribedDrugVisible) {
-			setVisibleClear(false, ContactDto.PRESCRIBED_DRUG, ContactDto.PRESCRIBED_DRUG_TEXT);
+			setVisibleClear(false, ContactDto.PRESCRIBED_DRUG_TEXT);
 		}
 	}
 

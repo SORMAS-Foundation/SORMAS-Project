@@ -17319,30 +17319,32 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS virulencegenesdetected b
 INSERT INTO schema_version (version_number, comment) VALUES (668, 'Yersiniosis - samples and pathogen tests');
 
 -- 15-09-2026 : 14325 - Diphtheria changes.
--- Currecting the disease name before loading the application.
+-- Rename the DIPHTERIA enum value to DIPHTHERIA in every column that stores a Disease, before the application loads it.
+-- Covers single-value columns (e.g. cases.disease, pathogentest.testeddisease), DiseaseSetConverter lists
+-- (e.g. users.limiteddiseases, customizableenumvalue.diseases) and all _history tables.
 DO $$
 DECLARE
-    config_count INT := 0;
-    cases_count INT := 0;
+    col record;
+    updated_count INT;
 BEGIN
-    -- Update diseaseconfiguration if matches exist
-    IF EXISTS (SELECT 1 FROM diseaseconfiguration WHERE disease ILIKE 'DIPHTERIA%') THEN
-        UPDATE diseaseconfiguration
-        SET disease = regexp_replace(disease, '^DIPHTERIA', 'DIPHTHERIA', 'i')
-        WHERE disease ILIKE 'DIPHTERIA%';
-        GET DIAGNOSTICS config_count = ROW_COUNT;
-    END IF;
-
-    -- Update cases if matches exist
-    IF EXISTS (SELECT 1 FROM cases WHERE disease ILIKE 'DIPHTERIA%') THEN
-        UPDATE cases
-        SET disease = regexp_replace(disease, '^DIPHTERIA', 'DIPHTHERIA', 'i')
-        WHERE disease ILIKE 'DIPHTERIA%';
-        GET DIAGNOSTICS cases_count = ROW_COUNT;
-    END IF;
-
-    -- Summary log
-    RAISE NOTICE 'Updated % row(s) in diseaseconfiguration and % row(s) in cases.', config_count, cases_count;
+    FOR col IN
+        SELECT c.table_name, c.column_name
+        FROM information_schema.columns c
+        JOIN information_schema.tables t ON t.table_schema = c.table_schema AND t.table_name = c.table_name
+        WHERE c.table_schema = current_schema()
+          AND t.table_type = 'BASE TABLE'
+          AND c.column_name LIKE '%disease%'
+          AND c.column_name NOT LIKE '%details%'
+          AND c.data_type IN ('character varying', 'text')
+    LOOP
+        EXECUTE format(
+            'UPDATE %I SET %I = regexp_replace(%I, ''\mDIPHTERIA\M'', ''DIPHTHERIA'', ''g'') WHERE %I ~ ''\mDIPHTERIA\M''',
+            col.table_name, col.column_name, col.column_name, col.column_name);
+        GET DIAGNOSTICS updated_count = ROW_COUNT;
+        IF updated_count > 0 THEN
+            RAISE NOTICE 'Updated % row(s) in %.%', updated_count, col.table_name, col.column_name;
+        END IF;
+    END LOOP;
 END $$;
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS biotypetext varchar(512);
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS targettest varchar(512);

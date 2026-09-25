@@ -520,7 +520,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactOfficerField.setEnabled(true);
 		contactOfficerField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
+		// Prophylaxis details (IMI/Diphtheria) - must be added before initializeVisibilitiesAndAllowedVisibilities()
+		// so the @Diseases/@HideForCountriesExcept checks apply to them
+		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
+		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
+		CssStyles.style(prophylaxisPrescribed, CssStyles.VSPACE_TOP_3);
 		addField(ContactDto.PRESCRIBED_DRUG, ComboBox.class);
+		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
 		region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
 		district = addInfrastructureField(ContactDto.DISTRICT);
@@ -607,8 +613,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		// if any of the below fields are allowed to visible, then label should be visible.
 		boolean isControlMeasuresVisible = Stream
 			.of(ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG, ContactDto.VACCINATION_PROPOSED, ContactDto.IMMUNE_GLOBULIN_PROPOSED)
-			.filter(filedName -> isVisibleAllowed(filedName))
-			.anyMatch(filedName -> true);
+			.anyMatch(this::isVisibleAllowed);
 
 		controlMeasuresLabel.setVisible(isControlMeasuresVisible);
 
@@ -773,11 +778,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		});
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
-		// Prophylaxis details for IMI
-		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
-		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
-		CssStyles.style(prophylaxisPrescribed, CssStyles.VSPACE_TOP_3);
-		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
 
 		// Drugs and its details should be visible only if the user has the right to see it and if prophylaxis is prescribed
 		if (isVisibleAllowed(ContactDto.PRESCRIBED_DRUG)) {
