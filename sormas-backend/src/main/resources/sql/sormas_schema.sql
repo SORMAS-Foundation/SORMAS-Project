@@ -17319,14 +17319,14 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS virulencegenesdetected b
 INSERT INTO schema_version (version_number, comment) VALUES (668, 'Yersiniosis - samples and pathogen tests');
 
 -- 15-09-2026 : 14325 - Diphtheria changes.
--- Rename the DIPHTERIA enum value to DIPHTHERIA in every column that stores a Disease, before the application loads it.
--- Covers single-value columns (e.g. cases.disease, pathogentest.testeddisease), DiseaseSetConverter lists
--- (e.g. users.limiteddiseases, customizableenumvalue.diseases) and all _history tables.
+-- Rename the DIPHTERIA enum value to DIPHTHERIA in every place a Disease is stored, before the application loads it.
 DO $$
 DECLARE
     col record;
     updated_count INT;
 BEGIN
+    -- 1) Single-value Disease columns (cases.disease, contact.disease, pathogentest.testeddisease, ... and _history).
+    --    Exact match instead of regex, so indexed columns (e.g. idx_cases_disease) can use their index.
     FOR col IN
         SELECT c.table_name, c.column_name
         FROM information_schema.columns c
@@ -17336,14 +17336,39 @@ BEGIN
           AND c.column_name LIKE '%disease%'
           AND c.column_name NOT LIKE '%details%'
           AND c.data_type IN ('character varying', 'text')
+        -- Base tables first: their versioning triggers copy the old row (still DIPHTERIA) into _history,
+        -- so the _history tables must be processed afterwards to catch those copies too.
+        ORDER BY (c.table_name LIKE '%\_history'), c.table_name
     LOOP
-        EXECUTE format(
-            'UPDATE %I SET %I = regexp_replace(%I, ''\mDIPHTERIA\M'', ''DIPHTHERIA'', ''g'') WHERE %I ~ ''\mDIPHTERIA\M''',
-            col.table_name, col.column_name, col.column_name, col.column_name);
+        EXECUTE format('UPDATE %I SET %I = ''DIPHTHERIA'' WHERE %I = ''DIPHTERIA''',
+            col.table_name, col.column_name, col.column_name);
         GET DIAGNOSTICS updated_count = ROW_COUNT;
         IF updated_count > 0 THEN
             RAISE NOTICE 'Updated % row(s) in %.%', updated_count, col.table_name, col.column_name;
         END IF;
+    END LOOP;
+
+    -- 2) Comma-separated disease lists (DiseaseSetConverter): the only places that need the word-boundary regex.
+    FOR col IN
+        SELECT * FROM (VALUES
+            ('users', 'limiteddiseases'),
+            ('users_history', 'limiteddiseases'),
+            ('customizableenumvalue', 'diseases'),
+            ('customizableenumvalue_history', 'diseases')) AS v(table_name, column_name)
+    LOOP
+        EXECUTE format('UPDATE %I SET %I = regexp_replace(%I, ''\mDIPHTERIA\M'', ''DIPHTHERIA'', ''g'') WHERE %I LIKE ''%%DIPHTERIA%%''',
+            col.table_name, col.column_name, col.column_name, col.column_name);
+    END LOOP;
+
+    -- 3) JSON payloads of pending S2S share requests contain serialized DTOs with "disease":"DIPHTERIA".
+    --    Replacing the quoted token only touches exact enum values, never other text.
+    FOR col IN
+        SELECT t.table_name, c.column_name
+        FROM (VALUES ('sormastosormassharerequest'), ('sormastosormassharerequest_history')) AS t(table_name)
+        CROSS JOIN (VALUES ('cases'), ('contacts'), ('events'), ('eventparticipants')) AS c(column_name)
+    LOOP
+        EXECUTE format('UPDATE %I SET %I = replace(%I::text, ''"DIPHTERIA"'', ''"DIPHTHERIA"'')::json WHERE %I::text LIKE ''%%"DIPHTERIA"%%''',
+            col.table_name, col.column_name, col.column_name, col.column_name);
     END LOOP;
 END $$;
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS biotypetext varchar(512);
@@ -17367,6 +17392,22 @@ ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidsusceptibility 
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
 ALTER TABLE epidata ALTER COLUMN infectionsource TYPE varchar(512);
 UPDATE diseaseconfiguration SET exposurecategories = 'RESPIRATORY,ANIMAL_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'DIPHTHERIA';
+-- Apply the new Diphtheria contagious / incubation defaults on existing systems.
+-- The columns were added with DEFAULT false, so the Disease enum defaults never apply to rows that already existed.
+-- Only rows that were never configured (flag not true and both periods empty) are touched, so admin settings are kept.
+-- changedate is bumped so the mobile app syncs the updated configuration.
+UPDATE diseaseconfiguration
+   SET iscontagious = true, mincontagiousperiod = 0, maxcontagiousperiod = 28, changedate = now()
+ WHERE disease = 'DIPHTHERIA'
+   AND iscontagious IS NOT TRUE
+   AND mincontagiousperiod IS NULL
+   AND maxcontagiousperiod IS NULL;
+UPDATE diseaseconfiguration
+   SET incubationperiodenabled = true, minincubationperiod = 1, maxincubationperiod = 10, changedate = now()
+ WHERE disease = 'DIPHTHERIA'
+   AND incubationperiodenabled IS NOT TRUE
+   AND minincubationperiod IS NULL
+   AND maxincubationperiod IS NULL;
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS mlstsequencetype varchar(512);
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS cgmlstcluster varchar(512);
 

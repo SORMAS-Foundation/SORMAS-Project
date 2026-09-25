@@ -190,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 362;
+	public static final int DATABASE_VERSION = 363;
 
 	private static DatabaseHelper instance = null;
 
@@ -3224,7 +3224,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				migrateContactProximities();
 
 			case 362:
-				currentVersion = 362;
+			case 363:
+				currentVersion = 363;
+				// The switch matches newVersion, so only the newest case ever runs. Everything below must stay
+				// self-sufficient and idempotent: it also serves devices coming from 360/361/362.
 				// The switch matches newVersion, so case 361 can never be selected again. A device coming from 360
 				// still needs its migration, and re-running it on a device from 361 is a no-op.
 				migrateContactProximities();
@@ -3273,6 +3276,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,DIRECT_MICROSCOPY,%' "
 							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_ANTIBODY_TEST,%';");
 				}
+
+				// Mirrors server schema migration 669 (#14325): Disease.DIPHTERIA was renamed to DIPHTHERIA.
+				renameDiphtheriaDisease();
 
 				// ATTENTION: break should only be done after last version
 				break;
@@ -3327,6 +3333,78 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		getDao(Contact.class).executeRaw(
 			"UPDATE contacts SET contactProximities = '[\"' || contactProximity || '\"]' "
 				+ "WHERE (contactProximities IS NULL OR contactProximities = '') " + "AND contactProximity IS NOT NULL AND contactProximity != '';");
+	}
+
+	/**
+	 * Mirrors server schema migration 669 (#14325): the Disease constant DIPHTERIA was renamed to DIPHTHERIA.
+	 * Without this, any locally stored row that still holds the old name fails ORMLite's enum mapping
+	 * (e.g. diseaseConfiguration, which every device has synced). Idempotent; missing tables/columns are skipped.
+	 */
+	private void renameDiphtheriaDisease() throws SQLException {
+		String[][] singleValueColumns = {
+			{
+				"cases",
+				"disease" },
+			{
+				"contacts",
+				"disease" },
+			{
+				"events",
+				"disease" },
+			{
+				"immunization",
+				"disease" },
+			{
+				"outbreak",
+				"disease" },
+			{
+				"visits",
+				"disease" },
+			{
+				"clinicalVisit",
+				"disease" },
+			{
+				"weeklyreportentry",
+				"disease" },
+			{
+				"aggregateReport",
+				"disease" },
+			{
+				"diseaseConfiguration",
+				"disease" },
+			{
+				"diseaseClassificationCriteria",
+				"disease" },
+			{
+				"featureConfiguration",
+				"disease" },
+			{
+				"pathogenTest",
+				"testedDisease" },
+			{
+				"person",
+				"causeOfDeathDisease" } };
+
+		for (String[] tableColumn : singleValueColumns) {
+			if (!columnDoesNotExist(tableColumn[0], tableColumn[1])) {
+				getDao(Case.class).executeRaw(
+					"UPDATE " + tableColumn[0] + " SET " + tableColumn[1] + " = 'DIPHTHERIA' WHERE " + tableColumn[1] + " = 'DIPHTERIA';");
+			}
+		}
+
+		// users.limitedDiseases is a JSON array, e.g. ["DIPHTERIA","MEASLES"]
+		if (!columnDoesNotExist("users", "limitedDiseases")) {
+			getDao(User.class).executeRaw(
+				"UPDATE users SET limitedDiseases = replace(limitedDiseases, '\"DIPHTERIA\"', '\"DIPHTHERIA\"') "
+					+ "WHERE limitedDiseases LIKE '%\"DIPHTERIA\"%';");
+		}
+
+		// customizableEnumValue.diseases is a comma-separated list, e.g. DIPHTERIA,MEASLES
+		if (!columnDoesNotExist("customizableEnumValue", "diseases")) {
+			getDao(CustomizableEnumValue.class).executeRaw(
+				"UPDATE customizableEnumValue SET diseases = trim(replace(',' || diseases || ',', ',DIPHTERIA,', ',DIPHTHERIA,'), ',') "
+					+ "WHERE ',' || diseases || ',' LIKE '%,DIPHTERIA,%';");
+		}
 	}
 
 	private boolean columnDoesNotExist(String tableName, String columnName) throws SQLException {

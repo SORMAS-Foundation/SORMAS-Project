@@ -271,7 +271,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			});
 		}
 
-		ComboBox caseImportedStatusField = addField(EpiDataDto.CASE_IMPORTED_STATUS, ComboBox.class);
+		addField(EpiDataDto.CASE_IMPORTED_STATUS);
 		Field<?> clusterTypeField = addField(EpiDataDto.CLUSTER_TYPE);
 		clusterTypeField.setVisible(false);
 		Field<?> clusterRelatedField = addField(EpiDataDto.CLUSTER_RELATED);
@@ -340,11 +340,18 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				return value instanceof Set && ((Set<?>) value).contains(InfectionSource.OTHER);
 			},
 			true);
-		// For Cryptosporidiosis and Giardiasis, and Shigellosis, the infection source field should be displayed based on transmission mode selection.
-		// For Diphtheria, use case is different, so introduced a new listener, moreover its not dependent on the mode of transmission value.
-		if (List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS)
-			.stream()
-			.anyMatch(e -> e == disease)) {
+		// Giardiasis, Cryptosporidiosis, Shigellosis, Mumps, Salmonellosis: country follows "imported case = YES" and
+		// infection source follows the mode of transmission.
+		// Diphtheria: country follows "case imported status = imported case"; infection source is always shown.
+		if (disease == Disease.DIPHTHERIA) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				EpiDataDto.COUNTRY,
+				EpiDataDto.CASE_IMPORTED_STATUS,
+				CaseImportedStatus.IMPORTED_CASE,
+				true);
+		} else if (List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS)
+			.contains(disease)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
@@ -392,13 +399,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					.ifPresent(country::setValue);
 			});
 		}
-
-		// For Diphtheria, the country field should be visible only if the case imported status is "Imported case".
-		// Its independent from the MODE_OF_TRANSMISSION selection
-		caseImportedStatusField.addValueChangeListener(e -> {
-			boolean showCountry = disease == Disease.DIPHTHERIA && caseImportedStatusField.getValue() == CaseImportedStatus.IMPORTED_CASE;
-			setVisibleClear(showCountry, EpiDataDto.COUNTRY);
-		});
 	}
 
 	/**
