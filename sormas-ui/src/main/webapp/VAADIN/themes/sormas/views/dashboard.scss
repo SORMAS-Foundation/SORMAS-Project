@@ -185,6 +185,7 @@
 			justify-content: space-between;
 			align-items: baseline;
 			gap: 4px 16px;
+			margin-top: 8px;
 			font-size: 14px;
 
 			.event717-scope-value {
@@ -219,6 +220,8 @@
 			border: 1px solid #DDDDDD;
 			border-top-width: 3px;
 			border-radius: 4px;
+			// like the view sections
+			box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14);
 		}
 
 		.event717-card-header {
@@ -372,6 +375,8 @@
 			background-color: #FFFFFF;
 			border: 1px solid #DDDDDD;
 			border-radius: 4px;
+			// like the view sections
+			box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14);
 		}
 
 		.event717-panel-chart {

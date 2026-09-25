@@ -550,9 +550,12 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			criteria.getActionDateFrom(),
 			criteria.getActionDateTo());
 
-		// like the other filter forms, show the date type of the criteria, so that applying again keeps it
+		// like the other filter forms, show the date type of the criteria, so that applying again keeps it; the event date is the
+		// default of the criteria and applies when no date type is selected, so it is not set, leaving the date type prompt visible
 		ComboBox eventDateTypeSelector = getEpiWeekAndDateComponent(EVENT_WEEK_AND_DATE_FILTER).getDateTypeSelector();
-		if (criteria.getEventDateType() != null && eventDateTypeSelector.containsId(criteria.getEventDateType())) {
+		if (criteria.getEventDateType() != null
+			&& criteria.getEventDateType() != EventCriteriaDateType.EVENT_DATE
+			&& eventDateTypeSelector.containsId(criteria.getEventDateType())) {
 			eventDateTypeSelector.setValue(criteria.getEventDateType());
 		}
 

@@ -32,6 +32,10 @@ public final class Event717IntervalColors {
 	 */
 	public static final String COLOR_ALL_TARGETS = "#4A4A4A";
 
+	private static final String BACKGROUND_COLOR_DETECTION = "#F5E7E9";
+	private static final String BACKGROUND_COLOR_NOTIFICATION = "#FCF6EA";
+	private static final String BACKGROUND_COLOR_RESPONSE = "#F8FEF3";
+
 	private Event717IntervalColors() {
 		// Hide Utility Class Constructor
 	}
@@ -45,6 +49,23 @@ public final class Event717IntervalColors {
 			return COLOR_NOTIFICATION;
 		case RESPONSE:
 			return COLOR_RESPONSE;
+		default:
+			throw new IllegalArgumentException(interval.name());
+		}
+	}
+
+	/**
+	 * @return A light tint of the color of the interval, for backgrounds.
+	 */
+	public static String getBackgroundColor(Event717Interval interval) {
+
+		switch (interval) {
+		case DETECTION:
+			return BACKGROUND_COLOR_DETECTION;
+		case NOTIFICATION:
+			return BACKGROUND_COLOR_NOTIFICATION;
+		case RESPONSE:
+			return BACKGROUND_COLOR_RESPONSE;
 		default:
 			throw new IllegalArgumentException(interval.name());
 		}

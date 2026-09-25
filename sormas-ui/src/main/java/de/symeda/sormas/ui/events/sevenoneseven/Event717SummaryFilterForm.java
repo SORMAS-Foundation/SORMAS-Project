@@ -104,7 +104,7 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 			null,
 			ArrayUtils.addAll(CriteriaDateTypeHelper.getTypes(EventCriteriaDateType.class, false), (CriteriaDateType[]) Event717DateType.values()),
 			I18nProperties.getString(Strings.promptEventDateType),
-			Event717DateType.DATE_OF_NOTIFICATION,
+			null,
 			this);
 		dateFilter.addStyleName("event717-date-filter");
 		dateFilter.getDateFilterOptionFilter().setWidth(140, Unit.PIXELS);
@@ -164,9 +164,12 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 
 		relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 
-		if (criteria.getEventDateType() != null && dateFilter.getDateTypeSelector().containsId(criteria.getEventDateType())) {
-			dateFilter.getDateTypeSelector().setValue(criteria.getEventDateType());
-		}
+		// like the event directory, the event date applies when no date type is selected, so it is not set, leaving the prompt visible;
+		// cleared as well, e.g. on reset
+		CriteriaDateType dateType = criteria.getEventDateType();
+		boolean showDateType =
+			dateType != null && dateType != EventCriteriaDateType.EVENT_DATE && dateFilter.getDateTypeSelector().containsId(dateType);
+		dateFilter.getDateTypeSelector().setValue(showDateType ? dateType : null);
 		dateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
 		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
 			dateFilter.getWeekFromFilter().setValue(criteria.getEventDateFrom() == null ? null : DateHelper.getEpiWeek(criteria.getEventDateFrom()));

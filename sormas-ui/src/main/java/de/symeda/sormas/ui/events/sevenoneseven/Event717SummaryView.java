@@ -23,7 +23,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
-import de.symeda.sormas.api.event.sevenoneseven.Event717DateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -104,7 +103,8 @@ public class Event717SummaryView extends AbstractView {
 
 		EventCriteria defaultCriteria = new EventCriteria();
 		defaultCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-		defaultCriteria.eventDateBetween(null, null, Event717DateType.DATE_OF_NOTIFICATION, DateFilterOption.DATE);
+		// like the event directory, the period applies to the event date unless another date type is selected
+		defaultCriteria.eventDateBetween(null, null, null, DateFilterOption.DATE);
 		return defaultCriteria;
 	}
 

@@ -180,6 +180,8 @@ public class Event717SummaryLayout extends VerticalLayout {
 					interval.toString(),
 					target,
 					Event717IntervalColors.getColor(interval),
+					Event717IntervalColors.getBackgroundColor(interval),
+					Event717IntervalColors.getColor(interval),
 					summary.getInterval(interval),
 					Event717TimelinessStatus.WITHIN_TARGET.toString(),
 					missingStatus.toString()));
@@ -189,16 +191,26 @@ public class Event717SummaryLayout extends VerticalLayout {
 				I18nProperties.getCaption(Captions.event717AllTargets),
 				I18nProperties.getString(Strings.infoEvent717AllTargets),
 				Event717IntervalColors.COLOR_ALL_TARGETS,
+				null,
+				null,
 				summary.getAllTargets(),
 				I18nProperties.getCaption(Captions.event717MeetsAll),
 				Event717TimelinessStatus.INCOMPLETE.toString()));
 		return html.append("</div>").toString();
 	}
 
+	/**
+	 * @param backgroundColor
+	 *            The background of the card, white if null.
+	 * @param valueColor
+	 *            The color of the percentage, the default text color if null.
+	 */
 	private static String card(
 		String title,
 		String target,
 		String color,
+		String backgroundColor,
+		String valueColor,
 		Event717OutcomeCountsDto counts,
 		String withinTargetCaption,
 		String missingCaption) {
@@ -207,13 +219,17 @@ public class Event717SummaryLayout extends VerticalLayout {
 		int missing = counts.getMissing() + counts.getIncomplete();
 
 		StringBuilder html = new StringBuilder();
-		html.append("<div class=\"event717-card\" style=\"border-top-color:").append(color).append(";\">");
+		html.append("<div class=\"event717-card\" style=\"border-top-color:").append(color).append(";");
+		if (backgroundColor != null) {
+			html.append("background-color:").append(backgroundColor).append(";");
+		}
+		html.append("\">");
 		html.append("<div class=\"event717-card-header\"><span class=\"event717-card-title\">")
 			.append(escape(title))
 			.append("</span><span class=\"event717-card-target\">")
 			.append(escape(target))
 			.append("</span></div>");
-		html.append("<div class=\"event717-card-value\">")
+		html.append("<div class=\"event717-card-value\"").append(valueColor != null ? " style=\"color:" + valueColor + ";\"" : "").append(">")
 			.append(percentage != null ? percentage + "<span class=\"event717-unit\">%</span>" : NO_VALUE)
 			.append("</div>");
 		html.append("<div class=\"event717-card-evaluable\">")
