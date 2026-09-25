@@ -351,8 +351,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
-		keyCloakStuff(null);
-
 		if (since == null) {
 			int dateRange = Integer.parseInt(
 				Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_DAYS_CONFIG_KEY))

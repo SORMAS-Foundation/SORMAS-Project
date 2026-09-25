@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 import javax.security.enterprise.CallerPrincipal;
 
+import de.symeda.sormas.api.FacadeProvider;
+
 /**
  * Authenticated caller and the access token for this authentication session.
  * Must not be persisted with user data or stored in the user cache.
@@ -19,6 +21,7 @@ public final class OidcCallerPrincipal extends CallerPrincipal implements Serial
 	public OidcCallerPrincipal(String username, String accessToken) {
 		super(username);
 		this.accessToken = accessToken;
+		FacadeProvider.getFrontendLoggerFacade().error("Username [{}], token: [{}]", username, accessToken);
 	}
 
 	public String getAccessToken() {
@@ -49,5 +52,10 @@ public final class OidcCallerPrincipal extends CallerPrincipal implements Serial
 		private Object readResolve() {
 			return new OidcCallerPrincipal(username, accessToken);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "OidcCallerPrincipal{" + "username='" + getName() + '\'' + "accessToken='" + accessToken + '\'' + '}';
 	}
 }

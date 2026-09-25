@@ -117,7 +117,8 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 				if (accessToken != null) {
 
-					ConsoleLogUtils.info(String.format("AccessToken: [%s]", accessToken));
+					FacadeProvider.getFrontendLoggerFacade()
+						.error(String.format("AccessToken value MultiAuthentificationMechanism: [%s]", accessToken.getToken()));
 
 					authenticationStatus = httpMessageContext.notifyContainerAboutLogin(
 						new OidcCallerPrincipal(openIdContext.getCallerName(), accessToken.getToken()),
@@ -125,10 +126,12 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 				} else {
 					ConsoleLogUtils.error("No access token present in current openIdContext");
+					FacadeProvider.getFrontendLoggerFacade().error("No access token present in current openIdContext");
 				}
 
 			} catch (RuntimeException e) {
 				ConsoleLogUtils.error("Failure during processing");
+				FacadeProvider.getFrontendLoggerFacade().error("Failure during processing");
 			}
 
 		}

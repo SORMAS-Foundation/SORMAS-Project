@@ -97,10 +97,28 @@ public class CurrentUserService {
 		Principal principal = context.getCallerPrincipal();
 
 		logger.error("Principal class: [{}]", principal.getClass());
+		logger.error("principal: [{}]", principal);
+
+		logger.error("Principal matches expected type: {}", principal instanceof OidcCallerPrincipal);
+		logger.error("Actual class loader: {}", principal.getClass().getClassLoader());
+		logger.error("Expected class loader: {}", OidcCallerPrincipal.class.getClassLoader());
 
 		if (principal instanceof OidcCallerPrincipal) {
 			return Optional.ofNullable(((OidcCallerPrincipal) principal).getAccessToken());
 		}
+
+		// TODO: WARNING: not same class loader between UI war and main EAR.
+		if (OidcCallerPrincipal.class.getName().equals(principal.getClass().getName())) {
+			try {
+				logger.error("Trying to access OidcCallerPrincipal#getAccessToken through reflection");
+				Object token = principal.getClass().getMethod("getAccessToken").invoke(principal);
+
+				return token instanceof String ? Optional.of((String) token) : Optional.empty();
+			} catch (ReflectiveOperationException e) {
+				logger.error("Could not read the OIDC caller access token", e);
+			}
+		}
+
 		return Optional.empty();
 	}
 

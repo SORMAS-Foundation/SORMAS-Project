@@ -85,6 +85,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
+import de.symeda.sormas.api.logging.FrontendLoggerFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -537,6 +538,10 @@ public class FacadeProvider {
 
 	public static AuditLoggerFacade getAuditLoggerFacade() {
 		return get().lookupEjbRemote(AuditLoggerFacade.class);
+	}
+
+	public static FrontendLoggerFacade getFrontendLoggerFacade() {
+		return get().lookupEjbRemote(FrontendLoggerFacade.class);
 	}
 
 	public static DeletionConfigurationFacade getDeletionConfigurationFacade() {

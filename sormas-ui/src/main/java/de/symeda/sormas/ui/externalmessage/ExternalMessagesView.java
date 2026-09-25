@@ -341,6 +341,7 @@ public class ExternalMessagesView extends AbstractView {
 			FacadeProvider.getExternalMessageFacade().exists(openIdContext.getAccessToken().getToken());
 		} catch (RuntimeException e) {
 			ConsoleLogUtils.error("Failure when trying to use the access token" + ExceptionUtils.getMessage(e));
+			FacadeProvider.getFrontendLoggerFacade().error("Failure when trying to use the access token" + ExceptionUtils.getMessage(e));
 		}
 
 		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses(since);
@@ -408,6 +409,14 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private void enterBulkEditMode() {
+		try {
+			OpenIdContext openIdContext = CDI.current().select(OpenIdContext.class).get();
+			FacadeProvider.getExternalMessageFacade().exists(openIdContext.getAccessToken().getToken());
+		} catch (RuntimeException e) {
+			ConsoleLogUtils.error("Failure when trying to use the access token" + ExceptionUtils.getMessage(e));
+			FacadeProvider.getFrontendLoggerFacade().error("Failure when trying to use the access token" + ExceptionUtils.getMessage(e));
+		}
+
 		bulkOperationsDropdown.setVisible(true);
 		viewConfiguration.setInEagerMode(true);
 		btnEnterBulkEditMode.setVisible(false);
