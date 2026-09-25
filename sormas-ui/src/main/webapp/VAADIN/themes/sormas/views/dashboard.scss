@@ -206,6 +206,13 @@
 			}
 		}
 
+		// the scope and the cards share the width of four cards at their max width with their gaps (4 * 320px + 3 * 12px), so that
+		// the legend ends with the last card on wide screens
+		.event717-scope,
+		.event717-cards {
+			max-width: 1316px;
+		}
+
 		.event717-cards {
 			display: flex;
 			flex-wrap: wrap;
@@ -244,7 +251,7 @@
 
 		.event717-card-value {
 			margin-top: 6px;
-			font-size: 22px;
+			font-size: 18px;
 			font-weight: 700;
 			line-height: 1.2;
 

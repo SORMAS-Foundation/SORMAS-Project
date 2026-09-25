@@ -1103,6 +1103,8 @@ public interface Strings {
 	String infoEvent717Evaluable = "infoEvent717Evaluable";
 	String infoEvent717EvaluableCount = "infoEvent717EvaluableCount";
 	String infoEvent717EvaluableOnly = "infoEvent717EvaluableOnly";
+	String infoEvent717MeetAllTargets = "infoEvent717MeetAllTargets";
+	String infoEvent717MeetTarget = "infoEvent717MeetTarget";
 	String infoEvent717NoEvaluable = "infoEvent717NoEvaluable";
 	String infoEvent717NotAllTargetsMet = "infoEvent717NotAllTargetsMet";
 	String infoEvent717NotAssessed = "infoEvent717NotAssessed";

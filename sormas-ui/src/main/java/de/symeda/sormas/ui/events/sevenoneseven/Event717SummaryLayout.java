@@ -74,7 +74,8 @@ public class Event717SummaryLayout extends VerticalLayout {
 
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
-		setSpacing(true);
+		// the gaps are set on the components, the layout spacing would add to them
+		setSpacing(false);
 		addStyleName("event717-summary");
 
 		Label titleLabel = new Label(I18nProperties.getString(Strings.headingEvent717Performance));
@@ -88,6 +89,7 @@ public class Event717SummaryLayout extends VerticalLayout {
 
 		cardsLabel = new Label("", ContentMode.HTML);
 		cardsLabel.setWidth(100, Unit.PERCENTAGE);
+		cardsLabel.addStyleName(CssStyles.VSPACE_TOP_3);
 		addComponent(cardsLabel);
 
 		chart = new HighChart();
@@ -289,14 +291,21 @@ public class Event717SummaryLayout extends VerticalLayout {
 		StringBuilder categories = new StringBuilder();
 		StringBuilder data = new StringBuilder();
 		for (Event717Interval interval : Event717Interval.values()) {
-			appendPoint(categories, data, interval.toString(), Event717IntervalColors.getColor(interval), summary.getInterval(interval));
+			appendPoint(
+				categories,
+				data,
+				interval.toString(),
+				Event717IntervalColors.getColor(interval),
+				summary.getInterval(interval),
+				Strings.infoEvent717MeetTarget);
 		}
 		appendPoint(
 			categories,
 			data,
 			I18nProperties.getCaption(Captions.event717AllTargets),
 			Event717IntervalColors.COLOR_ALL_TARGETS,
-			summary.getAllTargets());
+			summary.getAllTargets(),
+			Strings.infoEvent717MeetAllTargets);
 
 		//@formatter:off
 		return "var options = {"
@@ -307,14 +316,24 @@ public class Event717SummaryLayout extends VerticalLayout {
 			+ "exporting: { enabled: false },"
 			+ "xAxis: { categories: [" + categories + "], labels: { useHTML: true, style: { textAlign: 'center' } } },"
 			+ "yAxis: { min: 0, max: 100, tickInterval: 25, title: { text: '' }, labels: { format: '{value}%' } },"
-			+ "tooltip: { pointFormat: '<b>{point.y}%</b>' },"
+			+ "tooltip: { formatter: function() { return '<b>' + this.point.caption + '</b><br/>' + this.point.detail; } },"
 			+ "plotOptions: { column: { maxPointWidth: 70, dataLabels: { enabled: true, format: '{y}%', style: { fontSize: '11px' } } } },"
 			+ "series: [{ name: '" + escapeJs(I18nProperties.getCaption(Captions.event717PercentWithinTarget)) + "', data: [" + data + "] }]"
 			+ "};";
 		//@formatter:on
 	}
 
-	private static void appendPoint(StringBuilder categories, StringBuilder data, String caption, String color, Event717OutcomeCountsDto counts) {
+	/**
+	 * @param detailString
+	 *            The tooltip text of the bar, with the events meeting the target and the evaluable events as parameters.
+	 */
+	private static void appendPoint(
+		StringBuilder categories,
+		StringBuilder data,
+		String caption,
+		String color,
+		Event717OutcomeCountsDto counts,
+		String detailString) {
 
 		if (categories.length() > 0) {
 			categories.append(",");
@@ -323,8 +342,17 @@ public class Event717SummaryLayout extends VerticalLayout {
 		String label = escape(caption) + "<br/><span style=\"font-size:11px;color:#666666;\">"
 			+ escape(String.format(I18nProperties.getString(Strings.infoEvent717SampleSize), counts.getEvaluable())) + "</span>";
 		categories.append("'").append(escapeJs(label)).append("'");
+		String detail = String.format(I18nProperties.getString(detailString), counts.getWithinTarget(), counts.getEvaluable());
 		Integer percentage = counts.getPercentageWithinTarget();
-		data.append("{ y: ").append(percentage != null ? percentage : "null").append(", color: '").append(color).append("' }");
+		data.append("{ y: ")
+			.append(percentage != null ? percentage : "null")
+			.append(", color: '")
+			.append(color)
+			.append("', caption: '")
+			.append(escapeJs(escape(caption)))
+			.append("', detail: '")
+			.append(escapeJs(escape(detail)))
+			.append("' }");
 	}
 
 	private Grid<Event717EarlyResponseAction> createActionsGrid() {
@@ -338,23 +366,31 @@ public class Event717SummaryLayout extends VerticalLayout {
 		grid.addColumn(action -> I18nProperties.getPrefixCaption(Event717IndexDto.I18N_PREFIX, Event717IndexDto.getEarlyResponseActionDaysProperty(action)))
 			.setCaption(I18nProperties.getCaption(Captions.Action))
 			.setDescriptionGenerator(Event717EarlyResponseAction::toString)
-			.setExpandRatio(1);
+			.setWidth(160);
 		grid.addColumn(action -> {
 			Integer percentage = counts(action).getPercentageWithinTarget();
 			return percentage != null ? percentage + "%" : NO_VALUE;
-		}).setCaption(I18nProperties.getCaption(Captions.event717PercentWithinTarget));
-		addCountColumn(grid, Event717TimelinessStatus.WITHIN_TARGET.toString(), Event717OutcomeCountsDto::getWithinTarget);
-		addCountColumn(grid, I18nProperties.getCaption(Captions.event717DoesNotMeet), Event717OutcomeCountsDto::getOverTarget);
-		addCountColumn(grid, Event717TimelinessStatus.MISSING.toString(), c -> c.getMissing() + c.getIncomplete());
-		addCountColumn(grid, I18nProperties.getCaption(Captions.event717NotApplicableShort), Event717OutcomeCountsDto::getNotApplicable);
-		addCountColumn(grid, Event717TimelinessStatus.DATA_ERROR.toString(), Event717OutcomeCountsDto::getDataError);
+		}).setCaption(I18nProperties.getCaption(Captions.event717PercentWithinTarget)).setWidth(100);
+		addCountColumn(grid, Event717TimelinessStatus.WITHIN_TARGET.toString(), Event717OutcomeCountsDto::getWithinTarget, 92);
+		addCountColumn(grid, I18nProperties.getCaption(Captions.event717DoesNotMeet), Event717OutcomeCountsDto::getOverTarget, 98);
+		addCountColumn(grid, Event717TimelinessStatus.MISSING.toString(), c -> c.getMissing() + c.getIncomplete(), 62);
+		addCountColumn(grid, I18nProperties.getCaption(Captions.event717NotApplicableShort), Event717OutcomeCountsDto::getNotApplicable, 46);
+		// the last column takes the remaining width, so that the other columns stay next to the actions on wide screens
+		grid.addColumn(action -> counts(action).getDataError())
+			.setCaption(Event717TimelinessStatus.DATA_ERROR.toString())
+			.setMinimumWidth(100)
+			.setExpandRatio(1);
 
 		grid.getColumns().forEach(column -> column.setSortable(false));
 		return grid;
 	}
 
-	private void addCountColumn(Grid<Event717EarlyResponseAction> grid, String caption, Function<Event717OutcomeCountsDto, Integer> count) {
-		grid.addColumn(action -> count.apply(counts(action))).setCaption(caption);
+	private void addCountColumn(
+		Grid<Event717EarlyResponseAction> grid,
+		String caption,
+		Function<Event717OutcomeCountsDto, Integer> count,
+		double width) {
+		grid.addColumn(action -> count.apply(counts(action))).setCaption(caption).setWidth(width);
 	}
 
 	private Event717OutcomeCountsDto counts(Event717EarlyResponseAction action) {
