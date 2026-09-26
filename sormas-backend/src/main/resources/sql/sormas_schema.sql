@@ -17318,4 +17318,191 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS virulencegenesdetected b
 
 INSERT INTO schema_version (version_number, comment) VALUES (668, 'Yersiniosis - samples and pathogen tests');
 
+-- 7-1-7 Event assessment (timeliness, bottlenecks, enablers, corrective actions)
+CREATE TABLE IF NOT EXISTS event717assessment (
+    id bigint NOT NULL,
+    uuid varchar(36) NOT NULL UNIQUE,
+    changedate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationdate timestamp(3) NOT NULL DEFAULT NOW(),
+    change_user_id bigint,
+    sys_period tstzrange NOT NULL,
+    event_id bigint NOT NULL UNIQUE,
+    dateofemergence timestamp,
+    emergencenarrative text,
+    dateofdetection timestamp,
+    detectionnarrative text,
+    dateofnotification timestamp,
+    notificationnarrative text,
+    investigationdate timestamp,
+    investigationnotapplicable boolean NOT NULL DEFAULT false,
+    investigationnarrative text,
+    epianalysisdate timestamp,
+    epianalysisnotapplicable boolean NOT NULL DEFAULT false,
+    epianalysisnarrative text,
+    labconfirmationdate timestamp,
+    labconfirmationnotapplicable boolean NOT NULL DEFAULT false,
+    labconfirmationnarrative text,
+    casemanagementdate timestamp,
+    casemanagementnotapplicable boolean NOT NULL DEFAULT false,
+    casemanagementnarrative text,
+    countermeasuresdate timestamp,
+    countermeasuresnotapplicable boolean NOT NULL DEFAULT false,
+    countermeasuresnarrative text,
+    riskcommunicationdate timestamp,
+    riskcommunicationnotapplicable boolean NOT NULL DEFAULT false,
+    riskcommunicationnarrative text,
+    coordinationdate timestamp,
+    coordinationnotapplicable boolean NOT NULL DEFAULT false,
+    coordinationnarrative text,
+    earlyresponsecompletiondate timestamp,
+    earlyresponsecompletionnarrative text,
+    outbreakenddate timestamp,
+    reportcompleteddate timestamp,
+    reportcompletedbyuser_id bigint,
+    reportcompletedbyname varchar(512),
+    generalnotes text,
+    changedateofembeddedlists timestamp,
+    PRIMARY KEY (id)
+);
+ALTER TABLE event717assessment ADD CONSTRAINT fk_event717assessment_event_id FOREIGN KEY (event_id) REFERENCES events (id);
+ALTER TABLE event717assessment ADD CONSTRAINT fk_event717assessment_reportcompletedbyuser_id FOREIGN KEY (reportcompletedbyuser_id) REFERENCES users (id);
+ALTER TABLE event717assessment ADD CONSTRAINT fk_event717assessment_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE event717assessment OWNER TO sormas_user;
+
+CREATE TABLE IF NOT EXISTS event717bottleneck (
+    id bigint NOT NULL,
+    uuid varchar(36) NOT NULL UNIQUE,
+    changedate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationdate timestamp(3) NOT NULL DEFAULT NOW(),
+    change_user_id bigint,
+    sys_period tstzrange NOT NULL,
+    assessment_id bigint NOT NULL,
+    timelinessinterval varchar(255) NOT NULL,
+    description text,
+    category varchar(255),
+    othercategorydetails varchar(512),
+    PRIMARY KEY (id)
+);
+ALTER TABLE event717bottleneck ADD CONSTRAINT fk_event717bottleneck_assessment_id FOREIGN KEY (assessment_id) REFERENCES event717assessment (id);
+ALTER TABLE event717bottleneck ADD CONSTRAINT fk_event717bottleneck_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+CREATE INDEX IF NOT EXISTS idx_event717bottleneck_assessment_id ON event717bottleneck (assessment_id);
+ALTER TABLE event717bottleneck OWNER TO sormas_user;
+
+CREATE TABLE IF NOT EXISTS event717enabler (
+    id bigint NOT NULL,
+    uuid varchar(36) NOT NULL UNIQUE,
+    changedate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationdate timestamp(3) NOT NULL DEFAULT NOW(),
+    change_user_id bigint,
+    sys_period tstzrange NOT NULL,
+    assessment_id bigint NOT NULL,
+    timelinessinterval varchar(255) NOT NULL,
+    description text,
+    PRIMARY KEY (id)
+);
+ALTER TABLE event717enabler ADD CONSTRAINT fk_event717enabler_assessment_id FOREIGN KEY (assessment_id) REFERENCES event717assessment (id);
+ALTER TABLE event717enabler ADD CONSTRAINT fk_event717enabler_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+CREATE INDEX IF NOT EXISTS idx_event717enabler_assessment_id ON event717enabler (assessment_id);
+ALTER TABLE event717enabler OWNER TO sormas_user;
+
+CREATE TABLE IF NOT EXISTS event717correctiveaction (
+    id bigint NOT NULL,
+    uuid varchar(36) NOT NULL UNIQUE,
+    changedate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationdate timestamp(3) NOT NULL DEFAULT NOW(),
+    change_user_id bigint,
+    sys_period tstzrange NOT NULL,
+    assessment_id bigint NOT NULL,
+    proposedaction text,
+    bottleneck_id bigint,
+    prioritization varchar(255),
+    responsibleauthority varchar(512),
+    targetstartdate timestamp,
+    targetenddate timestamp,
+    planningfundingopportunities text,
+    progressstatus varchar(255),
+    nextsteps text,
+    PRIMARY KEY (id)
+);
+ALTER TABLE event717correctiveaction ADD CONSTRAINT fk_event717correctiveaction_assessment_id FOREIGN KEY (assessment_id) REFERENCES event717assessment (id);
+ALTER TABLE event717correctiveaction ADD CONSTRAINT fk_event717correctiveaction_bottleneck_id FOREIGN KEY (bottleneck_id) REFERENCES event717bottleneck (id) ON DELETE SET NULL;
+ALTER TABLE event717correctiveaction ADD CONSTRAINT fk_event717correctiveaction_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+CREATE INDEX IF NOT EXISTS idx_event717correctiveaction_assessment_id ON event717correctiveaction (assessment_id);
+CREATE INDEX IF NOT EXISTS idx_event717correctiveaction_bottleneck_id ON event717correctiveaction (bottleneck_id);
+ALTER TABLE event717correctiveaction OWNER TO sormas_user;
+
+-- history tables + triggers
+CREATE TABLE event717assessment_history (LIKE event717assessment);
+DROP TRIGGER IF EXISTS versioning_trigger ON event717assessment;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON event717assessment
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'event717assessment_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON event717assessment;
+CREATE TRIGGER delete_history_trigger AFTER DELETE ON event717assessment
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('event717assessment_history', 'id');
+ALTER TABLE event717assessment_history OWNER TO sormas_user;
+
+CREATE TABLE event717bottleneck_history (LIKE event717bottleneck);
+DROP TRIGGER IF EXISTS versioning_trigger ON event717bottleneck;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON event717bottleneck
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'event717bottleneck_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON event717bottleneck;
+CREATE TRIGGER delete_history_trigger AFTER DELETE ON event717bottleneck
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('event717bottleneck_history', 'id');
+ALTER TABLE event717bottleneck_history OWNER TO sormas_user;
+
+CREATE TABLE event717enabler_history (LIKE event717enabler);
+DROP TRIGGER IF EXISTS versioning_trigger ON event717enabler;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON event717enabler
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'event717enabler_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON event717enabler;
+CREATE TRIGGER delete_history_trigger AFTER DELETE ON event717enabler
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('event717enabler_history', 'id');
+ALTER TABLE event717enabler_history OWNER TO sormas_user;
+
+CREATE TABLE event717correctiveaction_history (LIKE event717correctiveaction);
+DROP TRIGGER IF EXISTS versioning_trigger ON event717correctiveaction;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON event717correctiveaction
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'event717correctiveaction_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON event717correctiveaction;
+CREATE TRIGGER delete_history_trigger AFTER DELETE ON event717correctiveaction
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('event717correctiveaction_history', 'id');
+ALTER TABLE event717correctiveaction_history OWNER TO sormas_user;
+
+-- 7-1-7 user rights (ADMIN + NATIONAL_USER only)
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EVENT_717_ASSESSMENT_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER') ON CONFLICT (userrole_id, userright) DO NOTHING;
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EVENT_717_ASSESSMENT_EDIT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER') ON CONFLICT (userrole_id, userright) DO NOTHING;
+
+INSERT INTO schema_version (version_number, comment) VALUES (669, '#13165 - 7-1-7 event assessment: tables, history and user rights');
+
+-- Remove the report completed by user of the 7-1-7 assessment, the change user is recorded automatically
+ALTER TABLE event717assessment DROP CONSTRAINT IF EXISTS fk_event717assessment_reportcompletedbyuser_id;
+ALTER TABLE event717assessment DROP COLUMN IF EXISTS reportcompletedbyuser_id;
+ALTER TABLE event717assessment_history DROP COLUMN IF EXISTS reportcompletedbyuser_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (670, '#13165 - Remove the report completed by user of the 7-1-7 assessment');
+
+-- 7-1-7 directory: store the timeliness of 7-1-7 assessments
+ALTER TABLE event717assessment
+    ADD COLUMN detectiondays integer, ADD COLUMN detectionstatus varchar(255),
+    ADD COLUMN notificationdays integer, ADD COLUMN notificationstatus varchar(255),
+    ADD COLUMN investigationdays integer, ADD COLUMN epianalysisdays integer,
+    ADD COLUMN labconfirmationdays integer, ADD COLUMN casemanagementdays integer,
+    ADD COLUMN countermeasuresdays integer, ADD COLUMN riskcommunicationdays integer,
+    ADD COLUMN coordinationdays integer,
+    ADD COLUMN responsedays integer, ADD COLUMN responsestatus varchar(255),
+    ADD COLUMN timelinessstatus varchar(255);
+ALTER TABLE event717assessment_history
+    ADD COLUMN detectiondays integer, ADD COLUMN detectionstatus varchar(255),
+    ADD COLUMN notificationdays integer, ADD COLUMN notificationstatus varchar(255),
+    ADD COLUMN investigationdays integer, ADD COLUMN epianalysisdays integer,
+    ADD COLUMN labconfirmationdays integer, ADD COLUMN casemanagementdays integer,
+    ADD COLUMN countermeasuresdays integer, ADD COLUMN riskcommunicationdays integer,
+    ADD COLUMN coordinationdays integer,
+    ADD COLUMN responsedays integer, ADD COLUMN responsestatus varchar(255),
+    ADD COLUMN timelinessstatus varchar(255);
+
+CREATE INDEX IF NOT EXISTS idx_event717assessment_timelinessstatus ON event717assessment (timelinessstatus);
+
+INSERT INTO schema_version (version_number, comment) VALUES (671, '#13165 - 7-1-7 directory: stored timeliness of 7-1-7 assessments');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

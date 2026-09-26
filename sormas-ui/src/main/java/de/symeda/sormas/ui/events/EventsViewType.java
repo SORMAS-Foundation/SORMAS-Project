@@ -21,4 +21,5 @@ public enum EventsViewType {
 	DEFAULT,
 	ACTIONS,
 	GROUPS,
+	EVENT_717,
 }

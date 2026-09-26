@@ -178,6 +178,8 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.event.sevenoneseven.Event717AssessmentFacadeEjb.Event717AssessmentFacadeEjbLocal;
+import de.symeda.sormas.backend.event.sevenoneseven.Event717AssessmentService;
 import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
@@ -574,6 +576,14 @@ public abstract class AbstractBeanTest {
 
 	public ActionFacade getActionFacade() {
 		return getBean(ActionFacadeEjb.ActionFacadeEjbLocal.class);
+	}
+
+	public Event717AssessmentFacadeEjbLocal getEvent717AssessmentFacade() {
+		return getBean(Event717AssessmentFacadeEjbLocal.class);
+	}
+
+	public Event717AssessmentService getEvent717AssessmentService() {
+		return getBean(Event717AssessmentService.class);
 	}
 
 	public AggregateReportFacade getAggregateReportFacade() {

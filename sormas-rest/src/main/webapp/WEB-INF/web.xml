@@ -389,6 +389,14 @@
 	</security-role>
 
 	<security-role>
+		<role-name>EVENT_717_ASSESSMENT_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EVENT_717_ASSESSMENT_EDIT</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>EVENTGROUP_ARCHIVE</role-name>
 	</security-role>
 
