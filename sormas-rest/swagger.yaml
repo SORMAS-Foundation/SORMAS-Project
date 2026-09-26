@@ -7534,6 +7534,8 @@ paths:
                   - EVENT_IMPORT
                   - EVENT_EXPORT
                   - EVENT_RESPONSIBLE
+                  - EVENT_717_ASSESSMENT_VIEW
+                  - EVENT_717_ASSESSMENT_EDIT
                   - EVENTPARTICIPANT_VIEW
                   - EVENTPARTICIPANT_CREATE
                   - EVENTPARTICIPANT_EDIT
@@ -7802,6 +7804,8 @@ paths:
                   - EVENT_IMPORT
                   - EVENT_EXPORT
                   - EVENT_RESPONSIBLE
+                  - EVENT_717_ASSESSMENT_VIEW
+                  - EVENT_717_ASSESSMENT_EDIT
                   - EVENTPARTICIPANT_VIEW
                   - EVENTPARTICIPANT_CREATE
                   - EVENTPARTICIPANT_EDIT
@@ -16947,6 +16951,38 @@ components:
           $ref: '#/components/schemas/DistrictReferenceDto'
         environment:
           $ref: '#/components/schemas/EnvironmentReferenceDto'
+        event717DetectionStatus:
+          type: string
+          enum:
+          - WITHIN_TARGET
+          - OVER_TARGET
+          - MISSING
+          - INCOMPLETE
+          - DATA_ERROR
+        event717NotificationStatus:
+          type: string
+          enum:
+          - WITHIN_TARGET
+          - OVER_TARGET
+          - MISSING
+          - INCOMPLETE
+          - DATA_ERROR
+        event717ResponseStatus:
+          type: string
+          enum:
+          - WITHIN_TARGET
+          - OVER_TARGET
+          - MISSING
+          - INCOMPLETE
+          - DATA_ERROR
+        event717Status:
+          type: string
+          enum:
+          - WITHIN_TARGET
+          - OVER_TARGET
+          - MISSING
+          - INCOMPLETE
+          - DATA_ERROR
         eventDateFrom:
           type: string
           format: date-time
@@ -20512,6 +20548,7 @@ components:
             - DOCUMENTS_MULTI_UPLOAD
             - EVENT_GROUPS
             - EVENT_HIERARCHIES
+            - EVENT_717_ASSESSMENT
             - EXTERNAL_MESSAGES
             - MANUAL_EXTERNAL_MESSAGES
             - NATIONAL_CASE_SHARING
@@ -20681,6 +20718,7 @@ components:
           - DOCUMENTS_MULTI_UPLOAD
           - EVENT_GROUPS
           - EVENT_HIERARCHIES
+          - EVENT_717_ASSESSMENT
           - EXTERNAL_MESSAGES
           - MANUAL_EXTERNAL_MESSAGES
           - NATIONAL_CASE_SHARING
@@ -31156,6 +31194,8 @@ components:
             - EVENT_IMPORT
             - EVENT_EXPORT
             - EVENT_RESPONSIBLE
+            - EVENT_717_ASSESSMENT_VIEW
+            - EVENT_717_ASSESSMENT_EDIT
             - EVENTPARTICIPANT_VIEW
             - EVENTPARTICIPANT_CREATE
             - EVENTPARTICIPANT_EDIT
