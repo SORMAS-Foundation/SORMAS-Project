@@ -135,6 +135,12 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE },
 		null,
 		null),
+	EVENT_717_ASSESSMENT(true,
+		false,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE },
+		null,
+		null),
 	EXTERNAL_MESSAGES(true,
 		false,
 		new FeatureType[] {

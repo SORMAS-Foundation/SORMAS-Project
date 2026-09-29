@@ -62,6 +62,10 @@ public enum DatabaseTable {
 	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups", dependingOnFeature(FeatureType.EVENT_GROUPS)),
 	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_participants"),
 	ACTIONS(DatabaseTableType.SORMAS, EVENTS, "actions"),
+	EVENT_717_ASSESSMENTS(DatabaseTableType.SORMAS, EVENTS, "event_717_assessments", dependingOnFeature(FeatureType.EVENT_717_ASSESSMENT)),
+	EVENT_717_BOTTLENECKS(DatabaseTableType.SORMAS, EVENT_717_ASSESSMENTS, "event_717_bottlenecks"),
+	EVENT_717_ENABLERS(DatabaseTableType.SORMAS, EVENT_717_ASSESSMENTS, "event_717_enablers"),
+	EVENT_717_CORRECTIVE_ACTIONS(DatabaseTableType.SORMAS, EVENT_717_ASSESSMENTS, "event_717_corrective_actions"),
 
 	ENVIRONMENTS(DatabaseTableType.SORMAS, "environments", dependingOnFeature(FeatureType.ENVIRONMENT_MANAGEMENT)),
 	EVENT_ENVIRONMENTS(DatabaseTableType.SORMAS, ENVIRONMENTS, "events_environments"),

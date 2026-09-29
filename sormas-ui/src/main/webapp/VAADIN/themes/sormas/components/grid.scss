@@ -84,6 +84,37 @@ $v-grid-cell-focused-border: none !default;
         &.status-cancelled {
           color: $v-font-color;
         }
+
+        // 7-1-7 timeliness, colored like the 7-1-7 data consolidation spreadsheet
+        &.event717-met,
+        &.event717-not-met,
+        &.event717-missing,
+        &.event717-na,
+        &.event717-data-error {
+          text-align: center;
+          font-weight: 600;
+        }
+        &.event717-met {
+          background-color: #D6EED9;
+          color: #2E7D32;
+        }
+        &.event717-not-met {
+          background-color: #F4C7C3;
+          color: #B3261E;
+        }
+        &.event717-missing {
+          background-color: #FFDEAF;
+          color: #C66A00;
+        }
+        &.event717-na {
+          background-color: #EEEEEE;
+          color: #888888;
+          font-weight: normal;
+        }
+        &.event717-data-error {
+          background-color: #F49234;
+          color: #FFFFFF;
+        }
 		
         &.odd {
           background-color: #eee;
