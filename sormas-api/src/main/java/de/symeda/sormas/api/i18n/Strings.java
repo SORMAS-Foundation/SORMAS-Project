@@ -1506,6 +1506,7 @@ public interface Strings {
 	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
 	String messageDeleteWithPendingShareRequest = "messageDeleteWithPendingShareRequest";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
+	String messageDiseaseConfigurationContainsDeprecatedValues = "messageDiseaseConfigurationContainsDeprecatedValues";
 	String messageDiseaseConfigurationSaved = "messageDiseaseConfigurationSaved";
 	String messageDiseaseNotSpecifiedInLabMessage = "messageDiseaseNotSpecifiedInLabMessage";
 	String messageDistrictArchived = "messageDistrictArchived";
@@ -1589,6 +1590,7 @@ public interface Strings {
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
+	String messageExposureContainsDeprecatedValues = "messageExposureContainsDeprecatedValues";
 	String messageExternalEmailAttachmentNotAvailableInfo = "messageExternalEmailAttachmentNotAvailableInfo";
 	String messageExternalEmailAttachmentPassword = "messageExternalEmailAttachmentPassword";
 	String messageExternalEmailNoAttachments = "messageExternalEmailNoAttachments";

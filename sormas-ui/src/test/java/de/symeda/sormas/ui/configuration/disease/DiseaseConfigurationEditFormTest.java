@@ -15,17 +15,27 @@
 
 package de.symeda.sormas.ui.configuration.disease;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 
+import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 
@@ -64,5 +74,93 @@ class DiseaseConfigurationEditFormTest extends AbstractUiBeanTest {
 		exposureCategoriesField.setValue(new HashSet<>(EnumSet.of(ExposureCategory.RESPIRATORY)));
 
 		assertFalse(exposureCategoriesField.getItems().contains(ExposureCategory.AIR_BORNE));
+	}
+
+	@Test
+	void shouldShowWarningWhenDeprecatedCategoryIsLoaded() {
+		DiseaseConfigurationEditForm form = new DiseaseConfigurationEditForm();
+		DiseaseConfigurationDto config = new DiseaseConfigurationDto();
+		config.setAgeGroups(new ArrayList<>());
+		config.setExposureCategories(new HashSet<>(EnumSet.of(ExposureCategory.AIR_BORNE, ExposureCategory.RESPIRATORY)));
+
+		assertDoesNotThrow(() -> form.setValue(config));
+
+		@SuppressWarnings("unchecked")
+		CheckboxSet<ExposureCategory> exposureCategoriesField =
+			(CheckboxSet<ExposureCategory>) form.getField(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
+		assertTrue(exposureCategoriesField.getValue().contains(ExposureCategory.AIR_BORNE));
+		assertTrue(isDeprecatedValuesWarningVisible(form));
+	}
+
+	@Test
+	void shouldBlockSaveWhenDeprecatedCategoryIsSelected() {
+		DiseaseConfigurationEditForm form = new DiseaseConfigurationEditForm();
+		DiseaseConfigurationDto config = new DiseaseConfigurationDto();
+		config.setAgeGroups(new ArrayList<>());
+		config.setExposureCategories(new HashSet<>(EnumSet.of(ExposureCategory.AIR_BORNE, ExposureCategory.RESPIRATORY)));
+		form.setValue(config);
+
+		Validator.InvalidValueException exception = assertThrows(Validator.InvalidValueException.class, () -> form.preCommit(null));
+		assertEquals(I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues), exception.getMessage());
+
+		// The save button commits the field group, which must fail with the same message
+		FieldGroup.CommitException commitException = assertThrows(FieldGroup.CommitException.class, () -> form.getFieldGroup().commit());
+		assertTrue(commitException.getCause() instanceof Validator.InvalidValueException);
+		assertEquals(
+			I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues),
+			commitException.getCause().getMessage());
+	}
+
+	@Test
+	void shouldAllowSaveAndHideWarningAfterDeprecatedCategoryIsDeselected() {
+		DiseaseConfigurationEditForm form = new DiseaseConfigurationEditForm();
+		DiseaseConfigurationDto config = new DiseaseConfigurationDto();
+		config.setAgeGroups(new ArrayList<>());
+		config.setExposureCategories(new HashSet<>(EnumSet.of(ExposureCategory.AIR_BORNE, ExposureCategory.RESPIRATORY)));
+		form.setValue(config);
+
+		@SuppressWarnings("unchecked")
+		CheckboxSet<ExposureCategory> exposureCategoriesField =
+			(CheckboxSet<ExposureCategory>) form.getField(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
+		exposureCategoriesField.setValue(new HashSet<>(EnumSet.of(ExposureCategory.RESPIRATORY)));
+
+		assertFalse(isDeprecatedValuesWarningVisible(form));
+		assertDoesNotThrow(() -> form.preCommit(null));
+	}
+
+	@Test
+	void shouldNotShowWarningOrBlockSaveWithoutDeprecatedCategories() {
+		DiseaseConfigurationEditForm form = new DiseaseConfigurationEditForm();
+		DiseaseConfigurationDto config = new DiseaseConfigurationDto();
+		config.setAgeGroups(new ArrayList<>());
+		config.setExposureCategories(new HashSet<>(EnumSet.of(ExposureCategory.RESPIRATORY)));
+
+		assertDoesNotThrow(() -> form.setValue(config));
+
+		assertFalse(isDeprecatedValuesWarningVisible(form));
+		assertDoesNotThrow(() -> form.preCommit(null));
+	}
+
+	@Test
+	void shouldNotShowWarningOrBlockSaveForNewConfiguration() {
+		DiseaseConfigurationEditForm form = new DiseaseConfigurationEditForm();
+		DiseaseConfigurationDto config = new DiseaseConfigurationDto();
+		config.setAgeGroups(new ArrayList<>());
+
+		assertDoesNotThrow(() -> form.setValue(config));
+
+		assertFalse(isDeprecatedValuesWarningVisible(form));
+		assertDoesNotThrow(() -> form.preCommit(null));
+	}
+
+	private static boolean isDeprecatedValuesWarningVisible(DiseaseConfigurationEditForm form) {
+		String message = I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues);
+		AtomicBoolean visible = new AtomicBoolean(false);
+		form.forEachComponent(component -> {
+			if (component instanceof Label && ((Label) component).getValue().contains(message)) {
+				visible.set(component.isVisible());
+			}
+		});
+		return visible.get();
 	}
 }

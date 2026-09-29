@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +39,8 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -100,6 +103,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String LOC_EXPOSURES_HEADING = "locExposuresHeading";
 	private static final String LOC_LOCATION_HEADING = "locLocationHeading";
 	private static final String LOC_CONCLUSION_HEADING = "locConclusionHeading";
+	private static final String LOC_DEPRECATED_VALUES_WARNING = "locDeprecatedValuesWarning";
 
 	public static final String MAIN_ACCORDION_LAYOUT = fluidRowLocs(MAIN_ACCORDION_LOC);
 
@@ -178,6 +182,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private Label exposuresHeading;
 	private Label locationHeading;
 	private Label conclusionHeading;
+	private Label deprecatedValuesWarningLabel;
 
 	private LocationEditForm locationForm;
 	private Disease disease;
@@ -317,6 +322,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		conclusionHeading = new Label(h3(I18nProperties.getString(Strings.headingEpiConclusion)), ContentMode.HTML);
 		getContent().addComponent(conclusionHeading, LOC_CONCLUSION_HEADING);
+
+		deprecatedValuesWarningLabel = new Label(
+			VaadinIcons.WARNING.getHtml() + " " + I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues),
+			ContentMode.HTML);
+		CssStyles.style(deprecatedValuesWarningLabel, CssStyles.LABEL_WARNING, CssStyles.LABEL_WHITE_SPACE_NORMAL, CssStyles.VSPACE_3);
+		deprecatedValuesWarningLabel.setVisible(false);
+		getContent().addComponent(deprecatedValuesWarningLabel, LOC_DEPRECATED_VALUES_WARNING);
 	}
 
 	private void addBasicFields() {
@@ -552,6 +564,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		addField(locationDetailsLayout, ExposureDto.WORK_ENVIRONMENT, ComboBox.class);
 
 		updateTravelRelatedFieldVisibility();
+
+		Stream.of(categoryField, settingField, subSettingsField, contactFactorsField, protectiveMeasuresField)
+			.forEach(f -> f.addValueChangeListener(e -> updateDeprecatedValuesWarning()));
 	}
 
 	private void setUpVisibilityDependencies() {
@@ -850,6 +865,43 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private static <T> boolean containsDeprecatedValue(Object value, Predicate<T> deprecatedChecker) {
+		if (value == null) {
+			return false;
+		}
+
+		if (value instanceof Collection) {
+			return ((Collection<T>) value).stream().anyMatch(deprecatedChecker);
+		}
+
+		return deprecatedChecker.test((T) value);
+	}
+
+	private boolean hasDeprecatedValues() {
+		return containsDeprecatedValue(categoryField.getValue(), ExposureCategory::isDeprecated)
+			|| containsDeprecatedValue(settingField.getValue(), ExposureSetting::isDeprecated)
+			|| containsDeprecatedValue(subSettingsField.getValue(), ExposureSubSetting::isDeprecated)
+			|| containsDeprecatedValue(contactFactorsField.getValue(), ExposureContactFactor::isDeprecated)
+			|| containsDeprecatedValue(protectiveMeasuresField.getValue(), ExposureProtectiveMeasure::isDeprecated);
+	}
+
+	private void updateDeprecatedValuesWarning() {
+		if (deprecatedValuesWarningLabel != null) {
+			deprecatedValuesWarningLabel.setVisible(hasDeprecatedValues());
+		}
+	}
+
+	@Override
+	public void preCommit(FieldGroup.CommitEvent commitEvent) throws FieldGroup.CommitException {
+		super.preCommit(commitEvent);
+
+		// Deprecated values are kept for historical data but must be replaced or removed before the exposure can be saved
+		if (hasDeprecatedValues()) {
+			throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues));
+		}
+	}
+
 	private static String formatDeprecatedCaption(Object item, boolean deprecated) {
 		String escapedCaption = escapeHtml(String.valueOf(item));
 		if (!deprecated) {
@@ -1091,6 +1143,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		locationForm.discard();
+
+		updateDeprecatedValuesWarning();
 	}
 
 	private void populateExposureTypes(ExposureDto exposure) {
@@ -1166,7 +1220,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	@Override
 	protected String createHtmlLayout() {
 		//@formatter:off
-		String HTML_LAYOUT = UUID_REPORTING_USER + MAIN_ACCORDION_LAYOUT;
+		String HTML_LAYOUT = loc(LOC_DEPRECATED_VALUES_WARNING) + UUID_REPORTING_USER + MAIN_ACCORDION_LAYOUT;
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && epiDataParentClass == CaseDataDto.class) {
 			HTML_LAYOUT += fluidRowLocs(ExposureDto.PROBABLE_INFECTION_ENVIRONMENT) +
 			(FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()
