@@ -19,6 +19,7 @@ package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
@@ -27,6 +28,8 @@ import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717DateType;
+import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -62,6 +65,10 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	public static final String ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesSharedWithExternalSurvTool";
 	public static final String ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL =
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
+	public static final String EVENT_717_STATUS = "event717Status";
+	public static final String EVENT_717_DETECTION_STATUS = "event717DetectionStatus";
+	public static final String EVENT_717_NOTIFICATION_STATUS = "event717NotificationStatus";
+	public static final String EVENT_717_RESPONSE_STATUS = "event717ResponseStatus";
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -112,9 +119,28 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private Boolean onlyEntitiesSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	private EnvironmentReferenceDto environment;
+	// 7-1-7 criterias; only evaluated by the 7-1-7 assessment list, not by the event list
+	private Event717TimelinessStatus event717Status;
+	private Event717TimelinessStatus event717DetectionStatus;
+	private Event717TimelinessStatus event717NotificationStatus;
+	private Event717TimelinessStatus event717ResponseStatus;
 
 	public EventCriteria() {
 		super(EventCriteriaDateType.class);
+	}
+
+	@Override
+	protected Object parseUrlParam(Class<?> type, List<String> fieldParams) throws InstantiationException, IllegalAccessException {
+
+		// the 7-1-7 dates are not event date types; without this they would silently become the event date
+		if (CriteriaDateType.class.isAssignableFrom(type) && fieldParams.get(0) != null) {
+			for (Event717DateType event717DateType : Event717DateType.values()) {
+				if (event717DateType.name().equals(fieldParams.get(0))) {
+					return event717DateType;
+				}
+			}
+		}
+		return super.parseUrlParam(type, fieldParams);
 	}
 
 	public EventStatus getEventStatus() {
@@ -451,6 +477,58 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public EventCriteria actionStatus(ActionStatus actionStatus) {
 		setActionStatus(actionStatus);
+		return this;
+	}
+
+	public Event717TimelinessStatus getEvent717Status() {
+		return event717Status;
+	}
+
+	public void setEvent717Status(Event717TimelinessStatus event717Status) {
+		this.event717Status = event717Status;
+	}
+
+	public EventCriteria event717Status(Event717TimelinessStatus event717Status) {
+		setEvent717Status(event717Status);
+		return this;
+	}
+
+	public Event717TimelinessStatus getEvent717DetectionStatus() {
+		return event717DetectionStatus;
+	}
+
+	public void setEvent717DetectionStatus(Event717TimelinessStatus event717DetectionStatus) {
+		this.event717DetectionStatus = event717DetectionStatus;
+	}
+
+	public EventCriteria event717DetectionStatus(Event717TimelinessStatus event717DetectionStatus) {
+		setEvent717DetectionStatus(event717DetectionStatus);
+		return this;
+	}
+
+	public Event717TimelinessStatus getEvent717NotificationStatus() {
+		return event717NotificationStatus;
+	}
+
+	public void setEvent717NotificationStatus(Event717TimelinessStatus event717NotificationStatus) {
+		this.event717NotificationStatus = event717NotificationStatus;
+	}
+
+	public EventCriteria event717NotificationStatus(Event717TimelinessStatus event717NotificationStatus) {
+		setEvent717NotificationStatus(event717NotificationStatus);
+		return this;
+	}
+
+	public Event717TimelinessStatus getEvent717ResponseStatus() {
+		return event717ResponseStatus;
+	}
+
+	public void setEvent717ResponseStatus(Event717TimelinessStatus event717ResponseStatus) {
+		this.event717ResponseStatus = event717ResponseStatus;
+	}
+
+	public EventCriteria event717ResponseStatus(Event717TimelinessStatus event717ResponseStatus) {
+		setEvent717ResponseStatus(event717ResponseStatus);
 		return this;
 	}
 
