@@ -151,11 +151,11 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		deprecatedValuesWarningLabel = new Label(
 			VaadinIcons.WARNING.getHtml() + " " + I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues),
 			ContentMode.HTML);
-		CssStyles.style(deprecatedValuesWarningLabel, CssStyles.LABEL_WARNING, CssStyles.LABEL_WHITE_SPACE_NORMAL, CssStyles.VSPACE_3);
+		CssStyles.style(deprecatedValuesWarningLabel, CssStyles.LABEL_RELEVANT, CssStyles.LABEL_BOLD, CssStyles.VSPACE_3);
 		deprecatedValuesWarningLabel.setVisible(false);
 		getContent().addComponent(deprecatedValuesWarningLabel, LOC_DEPRECATED_VALUES_WARNING);
 
-		exposureCategoriesField =addField(generalLayout, DiseaseConfigurationDto.EXPOSURE_CATEGORIES, CheckboxSet.class);
+		exposureCategoriesField = addField(generalLayout, DiseaseConfigurationDto.EXPOSURE_CATEGORIES, CheckboxSet.class);
 		exposureCategoriesField.setColumnCount(3);
 		updateExposureCategoryItems(Collections.emptySet());
 		exposureCategoriesField.addValueChangeListener(e -> {
@@ -267,7 +267,7 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean hasDeprecatedExposureCategories() {
+	public boolean hasDeprecatedExposureCategories() {
 		Set<ExposureCategory> selectedCategories = (Set<ExposureCategory>) exposureCategoriesField.getValue();
 		return selectedCategories != null && selectedCategories.stream().anyMatch(ExposureCategory::isDeprecated);
 	}

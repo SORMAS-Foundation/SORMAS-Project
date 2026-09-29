@@ -17505,4 +17505,10 @@ CREATE INDEX IF NOT EXISTS idx_event717assessment_timelinessstatus ON event717as
 
 INSERT INTO schema_version (version_number, comment) VALUES (671, '#13165 - 7-1-7 directory: stored timeliness of 7-1-7 assessments');
 
+-- #14353 Replace deprecated exposure categories for syphilis and gonococcal infection
+UPDATE diseaseconfiguration SET exposurecategories = 'PERSON_TO_PERSON,VERTICAL_TRANSMISSION,MEDICAL_CARE', changedate = now() WHERE disease = 'SYPHILIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'PERSON_TO_PERSON,VERTICAL_TRANSMISSION', changedate = now() WHERE disease = 'GONOCOCCAL_INFECTION';
+
+INSERT INTO schema_version (version_number, comment) VALUES (672, '#14353 - Replace deprecated exposure categories for syphilis and gonococcal infection');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

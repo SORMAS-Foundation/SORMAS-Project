@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.exposure;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +55,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 	@Test
 	void shouldControlTravelFieldsByExposureTypeForMalaria() {
 		ExposureForm form = new ExposureForm(
-			true,
+			false,
 			CaseDataDto.class,
 			Collections.emptyList(),
 			FieldVisibilityCheckers.withDisease(Disease.MALARIA),
@@ -134,7 +135,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 	@Test
 	void shouldAllowLegacyCategoryOnlyUntilDeselected() {
 		ExposureForm form = new ExposureForm(
-			true,
+			false,
 			CaseDataDto.class,
 			Collections.emptyList(),
 			FieldVisibilityCheckers.withDisease(Disease.MALARIA),
@@ -225,7 +226,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldLoadDeprecatedCategoryAndShowWarning() {
-		ExposureForm form = createMalariaForm();
+		ExposureForm form = createMalariaForm(false);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
 		exposure.setExposureCategory(ExposureCategory.AIR_BORNE);
@@ -240,7 +241,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldBlockSaveWhenDeprecatedCategoryIsSelected() {
-		ExposureForm form = createMalariaForm();
+		ExposureForm form = createMalariaForm(false);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
 		exposure.setExposureCategory(ExposureCategory.AIR_BORNE);
@@ -258,7 +259,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldAllowSaveAfterDeprecatedCategoryIsReplaced() {
-		ExposureForm form = createMalariaForm();
+		ExposureForm form = createMalariaForm(false);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
 		exposure.setExposureCategory(ExposureCategory.AIR_BORNE);
@@ -274,7 +275,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldLoadDeprecatedSubSettingAndBlockSave() {
-		ExposureForm form = createMalariaForm();
+		ExposureForm form = createMalariaForm(false);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
 		exposure.setExposureCategory(ExposureCategory.VECTOR_BORNE);
@@ -292,7 +293,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldBlockSaveUntilAllDeprecatedValuesAreRemoved() {
-		ExposureForm form = createMalariaForm();
+		ExposureForm form = createMalariaForm(false);
 
 		// MOSQUITO_BORNE (setting) and TRAVELED_ABROAD (sub-setting) are both deprecated
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
@@ -318,7 +319,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldNotShowWarningOrBlockSaveWithoutDeprecatedValues() {
-		ExposureForm form = createMalariaForm();
+		ExposureForm form = createMalariaForm(false);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
 		exposure.setExposureCategory(ExposureCategory.RESPIRATORY);
@@ -329,14 +330,92 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 		assertDoesNotThrow(() -> form.preCommit(null));
 	}
 
-	private static ExposureForm createMalariaForm() {
+	@Test
+	void shouldNotOfferDeprecatedCategoriesForNewExposure() {
+		ExposureForm form = createMalariaForm(true);
+
+		assertDoesNotThrow(() -> form.setValue(ExposureDto.build(ExposureType.WORK)));
+
+		ComboBox categoryField = (ComboBox) form.getField(ExposureDto.EXPOSURE_CATEGORY);
+		assertTrue(categoryField.getItemIds().stream().noneMatch(item -> ((ExposureCategory) item).isDeprecated()));
+		assertFalse(isDeprecatedValuesWarningVisible(form));
+	}
+
+	@Test
+	void shouldDropDeprecatedPresetCategoryForNewExposure() {
+		// ExposuresField presets DIRECT_CONTACT (deprecated) for syphilis
+		ExposureForm form = createForm(Disease.SYPHILIS, true);
+
+		ExposureDto exposure = ExposureDto.build(null);
+		exposure.setExposureCategory(ExposureCategory.DIRECT_CONTACT);
+
+		assertDoesNotThrow(() -> form.setValue(exposure));
+
+		ComboBox categoryField = (ComboBox) form.getField(ExposureDto.EXPOSURE_CATEGORY);
+		assertNull(categoryField.getValue());
+		assertFalse(categoryField.getItemIds().contains(ExposureCategory.DIRECT_CONTACT));
+		assertFalse(isDeprecatedValuesWarningVisible(form));
+		assertDoesNotThrow(() -> form.preCommit(null));
+	}
+
+	@Test
+	void shouldNotAutoSelectDeprecatedDefaultSettingForNewExposure() {
+		ExposureForm form = createMalariaForm(true);
+		form.setValue(ExposureDto.build(ExposureType.WORK));
+
+		ComboBox categoryField = (ComboBox) form.getField(ExposureDto.EXPOSURE_CATEGORY);
+		categoryField.setValue(ExposureCategory.VECTOR_BORNE);
+
+		// MOSQUITO_BORNE used to be preselected for malaria, but it is deprecated
+		ComboBox settingField = (ComboBox) form.getField(ExposureDto.EXPOSURE_SETTING);
+		assertNull(settingField.getValue());
+		assertFalse(settingField.getItemIds().contains(ExposureSetting.MOSQUITO_BORNE));
+		assertFalse(isDeprecatedValuesWarningVisible(form));
+	}
+
+	@Test
+	void shouldKeepSavedDeprecatedValuesForExistingExposure() {
+		ExposureForm form = createMalariaForm(false);
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.setExposureCategory(ExposureCategory.VECTOR_BORNE);
+		exposure.setExposureSetting(ExposureSetting.MOSQUITO_BORNE);
+
+		assertDoesNotThrow(() -> form.setValue(exposure));
+
+		ComboBox settingField = (ComboBox) form.getField(ExposureDto.EXPOSURE_SETTING);
+		assertEquals(ExposureSetting.MOSQUITO_BORNE, settingField.getValue());
+		assertTrue(settingField.getItemIds().contains(ExposureSetting.MOSQUITO_BORNE));
+		assertTrue(isDeprecatedValuesWarningVisible(form));
+	}
+
+	@Test
+	void shouldNotFillDeprecatedDefaultSettingWhenLoadingExistingExposure() {
+		ExposureForm form = createMalariaForm(false);
+
+		// saved exposure without a setting must be loaded as saved
+		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
+		exposure.setExposureCategory(ExposureCategory.VECTOR_BORNE);
+
+		assertDoesNotThrow(() -> form.setValue(exposure));
+
+		assertNull(form.getField(ExposureDto.EXPOSURE_SETTING).getValue());
+		assertFalse(isDeprecatedValuesWarningVisible(form));
+		assertDoesNotThrow(() -> form.preCommit(null));
+	}
+
+	private static ExposureForm createMalariaForm(boolean create) {
+		return createForm(Disease.MALARIA, create);
+	}
+
+	private static ExposureForm createForm(Disease disease, boolean create) {
 		return new ExposureForm(
-			true,
+			create,
 			CaseDataDto.class,
 			Collections.emptyList(),
-			FieldVisibilityCheckers.withDisease(Disease.MALARIA),
+			FieldVisibilityCheckers.withDisease(disease),
 			UiFieldAccessCheckers.getNoop(),
-			Disease.MALARIA,
+			disease,
 			Collections.emptyList(),
 			Collections.emptyMap());
 	}

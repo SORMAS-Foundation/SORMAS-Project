@@ -216,6 +216,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private CustomizableFieldsGroup locationGeneralPanel;
 	private boolean updatingCategoryFieldItems;
 	private boolean updatingSettingFieldItems;
+	private final boolean create;
 
 	public ExposureForm(
 		boolean create,
@@ -233,6 +234,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		this.sourceContacts = sourceContacts;
 		this.epiDataParentClass = epiDataParentClass;
 		this.disease = disease;
+		this.create = create;
 
 		setCustomizableFieldsMetadata(customizableFieldsMetadata);
 		setCustomizableFieldsValues(customizableFieldsValues);
@@ -326,7 +328,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		deprecatedValuesWarningLabel = new Label(
 			VaadinIcons.WARNING.getHtml() + " " + I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues),
 			ContentMode.HTML);
-		CssStyles.style(deprecatedValuesWarningLabel, CssStyles.LABEL_WARNING, CssStyles.LABEL_WHITE_SPACE_NORMAL, CssStyles.VSPACE_3);
+		CssStyles.style(
+			deprecatedValuesWarningLabel,
+			CssStyles.LABEL_RELEVANT,
+			CssStyles.LABEL_BOLD,
+			CssStyles.LABEL_WHITE_SPACE_NORMAL,
+			CssStyles.VSPACE_3);
 		deprecatedValuesWarningLabel.setVisible(false);
 		getContent().addComponent(deprecatedValuesWarningLabel, LOC_DEPRECATED_VALUES_WARNING);
 	}
@@ -644,7 +651,14 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				defaultSetting = null;
 			}
 
-			ExposureSetting valueToSet = currentSetting != null && settings.contains(currentSetting) ? currentSetting : defaultSetting;
+			ExposureSetting valueToSet;
+			if (currentSetting != null && settings.contains(currentSetting)) {
+				valueToSet = currentSetting;
+			} else if (defaultSetting != null && settings.contains(defaultSetting)) {
+				valueToSet = defaultSetting;
+			} else {
+				valueToSet = null;
+			}
 			settingField.setValue(valueToSet);
 			settingField.setEnabled(true);
 
@@ -878,7 +892,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		return deprecatedChecker.test((T) value);
 	}
 
-	private boolean hasDeprecatedValues() {
+	public boolean hasDeprecatedValues() {
 		return containsDeprecatedValue(categoryField.getValue(), ExposureCategory::isDeprecated)
 			|| containsDeprecatedValue(settingField.getValue(), ExposureSetting::isDeprecated)
 			|| containsDeprecatedValue(subSettingsField.getValue(), ExposureSubSetting::isDeprecated)
@@ -980,6 +994,15 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	@Override
 	public void setValue(ExposureDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		if (create && newFieldValue != null) {
+			// New exposures may only be created with active values, so drop deprecated defaults
+			if (newFieldValue.getExposureCategory() != null && newFieldValue.getExposureCategory().isDeprecated()) {
+				newFieldValue.setExposureCategory(null);
+			}
+			if (newFieldValue.getExposureSetting() != null && newFieldValue.getExposureSetting().isDeprecated()) {
+				newFieldValue.setExposureSetting(null);
+			}
+		}
 		super.setValue(newFieldValue);
 
 		populateExposureTypes(newFieldValue);
