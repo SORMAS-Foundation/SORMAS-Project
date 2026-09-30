@@ -89,6 +89,18 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String AZITHROMYCIN_MIC = "azithromycinMic";
 	public static final String AZITHROMYCIN_SUSCEPTIBILITY = "azithromycinSusceptibility";
 	public static final String AZITHROMYCIN_METHOD = "azithromycinMethod";
+	public static final String CEFIXIME_MIC = "cefiximeMic";
+	public static final String CEFIXIME_SUSCEPTIBILITY = "cefiximeSusceptibility";
+	public static final String CEFIXIME_METHOD = "cefiximeMethod";
+	public static final String TETRACYCLINE_MIC = "tetracyclineMic";
+	public static final String TETRACYCLINE_SUSCEPTIBILITY = "tetracyclineSusceptibility";
+	public static final String TETRACYCLINE_METHOD = "tetracyclineMethod";
+	public static final String GENTAMICIN_MIC = "gentamicinMic";
+	public static final String GENTAMICIN_SUSCEPTIBILITY = "gentamicinSusceptibility";
+	public static final String GENTAMICIN_METHOD = "gentamicinMethod";
+	public static final String SPECTINOMYCIN_MIC = "spectinomycinMic";
+	public static final String SPECTINOMYCIN_SUSCEPTIBILITY = "spectinomycinSusceptibility";
+	public static final String SPECTINOMYCIN_METHOD = "spectinomycinMethod";
 	public static final String CEFTAZIDIME_MIC = "ceftazidimeMic";
 	public static final String CEFTAZIDIME_SUSCEPTIBILITY = "ceftazidimeSusceptibility";
 	public static final String CEFTAZIDIME_METHOD = "ceftazidimeMethod";
@@ -135,14 +147,16 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String ciprofloxacinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ciprofloxacinSusceptibility;
@@ -252,14 +266,16 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String ceftriaxoneMic;
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ceftriaxoneSusceptibility;
@@ -306,7 +322,8 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod ciprofloxacinMethod;
@@ -364,7 +381,8 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod ceftriaxoneMethod;
@@ -381,17 +399,20 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	private SusceptibilityMethod erythromycinMethod;
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String azithromycinMic;
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType azithromycinSusceptibility;
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod azithromycinMethod;
@@ -457,6 +478,43 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod trimethoprimSulfamethoxazoleMethod;
+
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private String cefiximeMic;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private DrugSusceptibilityType cefiximeSusceptibility;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private SusceptibilityMethod cefiximeMethod;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private String tetracyclineMic;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private DrugSusceptibilityType tetracyclineSusceptibility;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private SusceptibilityMethod tetracyclineMethod;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private String gentamicinMic;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private DrugSusceptibilityType gentamicinSusceptibility;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private SusceptibilityMethod gentamicinMethod;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private String spectinomycinMic;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private DrugSusceptibilityType spectinomycinSusceptibility;
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+	private SusceptibilityMethod spectinomycinMethod;
 
 	public static DrugSusceptibilityDto build() {
 		DrugSusceptibilityDto drugSusceptibility = new DrugSusceptibilityDto();
@@ -990,5 +1048,101 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	public void setTrimethoprimSulfamethoxazoleMethod(SusceptibilityMethod trimethoprimSulfamethoxazoleMethod) {
 		this.trimethoprimSulfamethoxazoleMethod = trimethoprimSulfamethoxazoleMethod;
+	}
+
+	public String getCefiximeMic() {
+		return cefiximeMic;
+	}
+
+	public void setCefiximeMic(String value) {
+		this.cefiximeMic = value;
+	}
+
+	public DrugSusceptibilityType getCefiximeSusceptibility() {
+		return cefiximeSusceptibility;
+	}
+
+	public void setCefiximeSusceptibility(DrugSusceptibilityType value) {
+		this.cefiximeSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getCefiximeMethod() {
+		return cefiximeMethod;
+	}
+
+	public void setCefiximeMethod(SusceptibilityMethod value) {
+		this.cefiximeMethod = value;
+	}
+
+	public String getTetracyclineMic() {
+		return tetracyclineMic;
+	}
+
+	public void setTetracyclineMic(String value) {
+		this.tetracyclineMic = value;
+	}
+
+	public DrugSusceptibilityType getTetracyclineSusceptibility() {
+		return tetracyclineSusceptibility;
+	}
+
+	public void setTetracyclineSusceptibility(DrugSusceptibilityType value) {
+		this.tetracyclineSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getTetracyclineMethod() {
+		return tetracyclineMethod;
+	}
+
+	public void setTetracyclineMethod(SusceptibilityMethod value) {
+		this.tetracyclineMethod = value;
+	}
+
+	public String getGentamicinMic() {
+		return gentamicinMic;
+	}
+
+	public void setGentamicinMic(String value) {
+		this.gentamicinMic = value;
+	}
+
+	public DrugSusceptibilityType getGentamicinSusceptibility() {
+		return gentamicinSusceptibility;
+	}
+
+	public void setGentamicinSusceptibility(DrugSusceptibilityType value) {
+		this.gentamicinSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getGentamicinMethod() {
+		return gentamicinMethod;
+	}
+
+	public void setGentamicinMethod(SusceptibilityMethod value) {
+		this.gentamicinMethod = value;
+	}
+
+	public String getSpectinomycinMic() {
+		return spectinomycinMic;
+	}
+
+	public void setSpectinomycinMic(String value) {
+		this.spectinomycinMic = value;
+	}
+
+	public DrugSusceptibilityType getSpectinomycinSusceptibility() {
+		return spectinomycinSusceptibility;
+	}
+
+	public void setSpectinomycinSusceptibility(DrugSusceptibilityType value) {
+		this.spectinomycinSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getSpectinomycinMethod() {
+		return spectinomycinMethod;
+	}
+
+	public void setSpectinomycinMethod(SusceptibilityMethod value) {
+		this.spectinomycinMethod = value;
 	}
 }
