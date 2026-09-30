@@ -169,4 +169,240 @@
 	.popupContent .marker.aefi:after {
 		font-size: 16px;
 	}
+
+	// period filter of the 7-1-7 summary, aligned with the first filter above it
+	.event717-date-filter {
+		padding-left: 8px;
+	}
+
+	// 7-1-7 summary, compact
+	.event717-summary {
+		font-size: 13px;
+
+		.event717-scope {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 4px 16px;
+			margin-top: 8px;
+			font-size: 14px;
+
+			.event717-scope-value {
+				font-size: 22px;
+				font-weight: 700;
+			}
+
+			.event717-scope-legend {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px 14px;
+				font-size: 12px;
+				color: #555555;
+			}
+
+			.event717-legend-entry {
+				white-space: nowrap;
+			}
+		}
+
+		// the scope and the cards share the width of four cards at their max width with their gaps (4 * 320px + 3 * 12px), so that
+		// the legend ends with the last card on wide screens
+		.event717-scope,
+		.event717-cards {
+			max-width: 1316px;
+		}
+
+		.event717-cards {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.event717-card {
+			flex: 1 1 230px;
+			max-width: 320px;
+			padding: 10px 12px;
+			background-color: #FFFFFF;
+			border: 1px solid #DDDDDD;
+			border-top-width: 3px;
+			border-radius: 4px;
+			// like the view sections
+			box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14);
+		}
+
+		.event717-card-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 8px;
+		}
+
+		.event717-card-title {
+			font-size: 14px;
+			font-weight: 600;
+		}
+
+		.event717-card-target {
+			font-size: 12px;
+			color: #666666;
+			white-space: nowrap;
+		}
+
+		.event717-card-value {
+			margin-top: 6px;
+			font-size: 18px;
+			font-weight: 700;
+			line-height: 1.2;
+
+			.event717-unit {
+				font-size: 14px;
+				font-weight: 600;
+			}
+		}
+
+		.event717-card-evaluable {
+			margin-top: 5px;
+			font-size: 12px;
+			color: #555555;
+
+			b {
+				font-weight: 600;
+				color: #333333;
+			}
+		}
+
+		.event717-bar {
+			display: flex;
+			gap: 2px;
+			height: 5px;
+			margin-top: 8px;
+			background-color: #EEEEEE;
+		}
+
+		// the counts of all results, named by the legend above the cards
+		.event717-statuses {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 2px 14px;
+			margin-top: 8px;
+			font-size: 12px;
+			line-height: 16px;
+
+			.event717-count {
+				font-weight: 600;
+				color: #333333;
+			}
+		}
+
+		// tooltips of the bar segments and results, pure css as the cards are html
+		[data-tooltip] {
+			position: relative;
+		}
+
+		[data-tooltip]:hover::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			bottom: calc(100% + 6px);
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 1;
+			padding: 3px 8px;
+			border-radius: 3px;
+			background-color: #333333;
+			color: #FFFFFF;
+			font-size: 12px;
+			font-weight: 600;
+			line-height: 18px;
+			white-space: nowrap;
+			pointer-events: none;
+		}
+
+		// aligned to the edges of the card, so that they are not cut off
+		.event717-bar > [data-tooltip]:first-child:hover::after,
+		.event717-status[data-tooltip]:hover::after {
+			left: 0;
+			transform: none;
+		}
+
+		.event717-bar > [data-tooltip]:last-child:not(:first-child):hover::after {
+			left: auto;
+			right: 0;
+			transform: none;
+		}
+
+		.event717-swatch {
+			display: inline-block;
+			width: 12px;
+			height: 8px;
+			margin-right: 5px;
+			border-radius: 2px;
+		}
+
+		// result colors of the cards, distinct from the interval colors of the card borders and the chart
+		.event717-within-target {
+			background-color: $s-primary-color;
+		}
+
+		.event717-over-target {
+			background-color: #A8326E;
+		}
+
+		.event717-missing {
+			background-color: #A7B3C0;
+		}
+
+		.event717-data-error {
+			background: repeating-linear-gradient(45deg, #7B5EA7, #7B5EA7 3px, #5A4380 3px, #5A4380 5px);
+		}
+
+		.event717-error-icon {
+			display: inline-block;
+			width: 12px;
+			height: 12px;
+			margin-right: 4px;
+			border-radius: 50%;
+			background-color: #7B5EA7;
+			color: #FFFFFF;
+			font-size: 9px;
+			font-weight: 700;
+			line-height: 12px;
+			text-align: center;
+		}
+
+		.event717-panels {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 16px;
+		}
+
+		.event717-panel {
+			min-width: 0;
+			padding: 12px 14px;
+			background-color: #FFFFFF;
+			border: 1px solid #DDDDDD;
+			border-radius: 4px;
+			// like the view sections
+			box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14);
+		}
+
+		.event717-panel-chart {
+			flex: 2 1 420px;
+		}
+
+		.event717-panel-table {
+			flex: 3 1 560px;
+		}
+
+		.event717-panel-title {
+			color: $s-primary-color;
+			font-size: 15px;
+			font-weight: 600;
+		}
+
+		.event717-panel-subtitle {
+			font-size: 12px;
+			color: #666666;
+		}
+	}
 }

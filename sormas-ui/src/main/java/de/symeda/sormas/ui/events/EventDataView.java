@@ -43,6 +43,8 @@ import de.symeda.sormas.ui.environment.EnvironmentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
 import de.symeda.sormas.ui.events.groups.EventGroupListComponent;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717AssessmentSideComponent;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717AssessmentView;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceShareComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -70,6 +72,7 @@ public class EventDataView extends AbstractEventView {
 	public static final String EVENT_GROUPS_LOC = "event-groups";
 	public static final String ENVIRONMENT_LOC = "environment";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
+	public static final String EVENT_717_ASSESSMENT_LOC = "event717Assessment";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
 	private ExternalSurveillanceShareComponent externalSurvToolLayout;
@@ -96,6 +99,7 @@ public class EventDataView extends AbstractEventView {
 
 		LayoutWithSidePanel layout = new LayoutWithSidePanel(
 			editComponent,
+			EVENT_717_ASSESSMENT_LOC,
 			TASKS_LOC,
 			ACTIONS_LOC,
 			DOCUMENTS_LOC,
@@ -129,6 +133,12 @@ public class EventDataView extends AbstractEventView {
 				new EnvironmentListComponent(event.toReference(), isEditAllowed, this::showUnsavedChangesPopup);
 			environmentList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(environmentList, ENVIRONMENT_LOC);
+		}
+
+		if (Event717AssessmentView.isAvailable()) {
+			Event717AssessmentSideComponent event717Assessment = new Event717AssessmentSideComponent(getEventRef(), this::showUnsavedChangesPopup);
+			event717Assessment.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addSidePanelComponent(event717Assessment, EVENT_717_ASSESSMENT_LOC);
 		}
 
 		ActionStatsComponent actionList = new ActionStatsComponent(ActionContext.EVENT, getEventRef());

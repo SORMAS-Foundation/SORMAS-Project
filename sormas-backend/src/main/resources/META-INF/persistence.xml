@@ -21,6 +21,10 @@
 		<class>de.symeda.sormas.backend.infrastructure.facility.Facility</class>
 		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
 		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Assessment</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Bottleneck</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Enabler</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717CorrectiveAction</class>
 		<class>de.symeda.sormas.backend.location.Location</class>
 		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
 		<class>de.symeda.sormas.backend.person.Person</class>

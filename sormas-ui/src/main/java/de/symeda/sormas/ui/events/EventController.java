@@ -88,6 +88,8 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717AssessmentView;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717SummaryView;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
@@ -111,6 +113,10 @@ public class EventController {
 			navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
 		}
 		navigator.addView(EventActionsView.VIEW_NAME, EventActionsView.class);
+		if (Event717AssessmentView.isAvailable()) {
+			navigator.addView(Event717AssessmentView.VIEW_NAME, Event717AssessmentView.class);
+			navigator.addView(Event717SummaryView.VIEW_NAME, Event717SummaryView.class);
+		}
 	}
 
 	public EventDto create(CaseReferenceDto caseRef) {

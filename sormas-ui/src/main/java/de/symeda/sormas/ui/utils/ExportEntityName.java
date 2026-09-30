@@ -28,6 +28,8 @@ public enum ExportEntityName {
 	EVENTS("entityEvents", "events"),
 	EVENT_PARTICIPANTS("entityEventParticipants", "event participants"),
 	EVENT_ACTIONS("entityEventActions", "events actions"),
+	EVENT_717_ASSESSMENTS("entityEvent717Assessments", "7-1-7 assessments"),
+	EVENT_717_SUMMARY("entityEvent717Summary", "7-1-7 summary"),
 	FACILITIES("entityFacilities", "facilities"),
 	PRESCRIPTIONS("entityPrescriptions", "prescriptions"),
 	POINTS_OF_ENTRY("entityPointsOfEntry", "points of entry"),

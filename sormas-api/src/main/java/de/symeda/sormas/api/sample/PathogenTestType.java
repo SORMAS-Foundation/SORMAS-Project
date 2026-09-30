@@ -1445,7 +1445,8 @@ public enum PathogenTestType {
 	 * the rule cannot drift.
 	 *
 	 * <p>
-	 * The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria.
+	 * The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, {@code Q_PCR} on Malaria, or
+	 * {@code NAAT} on Gonococcal infection.
 	 * Tuberculosis is included as well (#14030): a positive TB PCR shows the Cq value like every other disease.
 	 *
 	 * @param disease

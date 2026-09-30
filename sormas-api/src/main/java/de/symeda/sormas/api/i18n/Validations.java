@@ -73,6 +73,13 @@ public interface Validations {
 	String environmentSampleDateTimeAfterPathogenTestDateTime = "environmentSampleDateTimeAfterPathogenTestDateTime";
 	String environmentWaterFieldsSetWithNotWaterMedia = "environmentWaterFieldsSetWithNotWaterMedia";
 	String errorsInForm = "errorsInForm";
+	String event717BottleneckCategoryRequired = "event717BottleneckCategoryRequired";
+	String event717CorrectiveActionBottleneckInvalid = "event717CorrectiveActionBottleneckInvalid";
+	String event717DescriptionRequired = "event717DescriptionRequired";
+	String event717EarlyResponseActionDateWithNotApplicable = "event717EarlyResponseActionDateWithNotApplicable";
+	String event717MaxEntriesExceeded = "event717MaxEntriesExceeded";
+	String event717OtherCategoryDetailsRequired = "event717OtherCategoryDetailsRequired";
+	String event717ProposedActionRequired = "event717ProposedActionRequired";
 	String eventSubordinateEventFromDateFilterValidation = "eventSubordinateEventFromDateFilterValidation";
 	String eventSuperordinateEventToDateFilterValidation = "eventSuperordinateEventToDateFilterValidation";
 	String exportNoNameSpecified = "exportNoNameSpecified";

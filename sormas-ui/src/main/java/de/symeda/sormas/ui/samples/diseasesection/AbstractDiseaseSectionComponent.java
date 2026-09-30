@@ -23,13 +23,19 @@ import com.vaadin.data.HasValue;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
+import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.BeanItem;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.utils.FormComponent;
 import de.symeda.sormas.ui.utils.FormEventBus;
 
@@ -54,7 +60,7 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 	/** Kept only for DrugSusceptibilityForm legacy binding */
 	protected FieldGroup fieldGroup;
 
-	private Component drugSusceptibilityField;
+	private DrugSusceptibilityForm drugSusceptibilityField;
 	private Consumer<Boolean> visibilityCallback;
 
 	protected AbstractDiseaseSectionComponent() {
@@ -95,7 +101,7 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 		removeRegistrations();
 		clearOwnedFields();
 		binder.removeBean();
-		unbindLegacyFields();
+		unbindDrugSusceptibilityField();
 	}
 
 	/**
@@ -104,14 +110,34 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 	 */
 	protected abstract void clearOwnedFields();
 
-	/** Override to unbind any FieldGroup-bound legacy fields (e.g. DrugSusceptibilityForm) */
-	protected void unbindLegacyFields() {
+	protected DrugSusceptibilityForm addDrugSusceptibilityField() {
+		reseedDrugSusceptibilityIfCleared();
+		drugSusceptibilityField = new DrugSusceptibilityForm(
+			FieldVisibilityCheckers.getNoop(),
+			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
+		drugSusceptibilityField.setCaption(null);
+		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
+		drugSusceptibilityField.setVisible(false);
+		addComponent(drugSusceptibilityField);
+		return drugSusceptibilityField;
 	}
 
-	protected void addDrugSusceptibilityField(Component field) {
-		this.drugSusceptibilityField = field;
-		field.setVisible(false);
-		addComponent(field);
+	// The previous section's cleanup nulls it and the grid cannot commit null
+	private void reseedDrugSusceptibilityIfCleared() {
+		Item item = fieldGroup.getItemDataSource();
+		if (item instanceof BeanItem && ((BeanItem<?>) item).getBean() instanceof PathogenTestDto) {
+			PathogenTestDto dto = (PathogenTestDto) ((BeanItem<?>) item).getBean();
+			if (dto.getDrugSusceptibility() == null) {
+				dto.setDrugSusceptibility(DrugSusceptibilityDto.build());
+			}
+		}
+	}
+
+	private void unbindDrugSusceptibilityField() {
+		if (drugSusceptibilityField != null) {
+			fieldGroup.unbind(drugSusceptibilityField);
+			drugSusceptibilityField = null;
+		}
 	}
 
 	protected void setDrugSusceptibilityRowVisible(boolean visible) {

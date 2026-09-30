@@ -20,10 +20,8 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
@@ -37,7 +35,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
-import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.AnnotationFieldHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -416,141 +413,6 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 			return;
 		}
 		super.commit();
-	}
-
-	public void forceUpdateDrugSusceptibilityFields() {
-		final DrugSusceptibilityDto drugSusceptibilityDto = getValue();
-		if (drugSusceptibilityDto == null) {
-			return;
-		}
-
-		final Map<String, Optional<DrugSusceptibilityType>> applicableFieldIds = Collections.unmodifiableMap(
-			Map.ofEntries(
-				Map.entry(DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getAmikacinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getBedaquilineSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getCapreomycinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getCiprofloxacinSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getDelamanidSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getEthambutolSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getGatifloxacinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getCeftriaxoneSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getErythromycinSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getIsoniazidSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getKanamycinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getLevofloxacinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getMoxifloxacinSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getOfloxacinSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getRifampicinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getStreptomycinSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getPenicillinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.AZITHROMYCIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getAzithromycinSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.CEFIXIME_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getCefiximeSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.TETRACYCLINE_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getTetracyclineSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.GENTAMICIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getGentamicinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getSpectinomycinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.CEFTAZIDIME_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getCeftazidimeSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.CEFOTAXIME_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getCefotaximeSusceptibility())),
-				Map.entry(DrugSusceptibilityDto.AMPICILLIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getAmpicillinSusceptibility())),
-				Map.entry(
-					DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getTrimethoprimSulfamethoxazoleSusceptibility()))));
-
-		applicableFieldIds.forEach(this::forceUpdateDrugSusceptibilityField);
-
-		final Map<String, Optional<String>> drugSusceptibilityMic = Collections.unmodifiableMap(
-			Map.ofEntries(
-				Map.entry(DrugSusceptibilityDto.AMIKACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getAmikacinMic())),
-				Map.entry(DrugSusceptibilityDto.BEDAQUILINE_MIC, Optional.ofNullable(drugSusceptibilityDto.getBedaquilineMic())),
-				Map.entry(DrugSusceptibilityDto.CAPREOMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getCapreomycinMic())),
-				Map.entry(DrugSusceptibilityDto.CIPROFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getCiprofloxacinMic())),
-				Map.entry(DrugSusceptibilityDto.DELAMANID_MIC, Optional.ofNullable(drugSusceptibilityDto.getDelamanidMic())),
-				Map.entry(DrugSusceptibilityDto.ETHAMBUTOL_MIC, Optional.ofNullable(drugSusceptibilityDto.getEthambutolMic())),
-				Map.entry(DrugSusceptibilityDto.GATIFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getGatifloxacinMic())),
-				Map.entry(DrugSusceptibilityDto.CEFTRIAXONE_MIC, Optional.ofNullable(drugSusceptibilityDto.getCeftriaxoneMic())),
-				Map.entry(DrugSusceptibilityDto.ERYTHROMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getErythromycinMic())),
-				Map.entry(DrugSusceptibilityDto.ISONIAZID_MIC, Optional.ofNullable(drugSusceptibilityDto.getIsoniazidMic())),
-				Map.entry(DrugSusceptibilityDto.KANAMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getKanamycinMic())),
-				Map.entry(DrugSusceptibilityDto.LEVOFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getLevofloxacinMic())),
-				Map.entry(DrugSusceptibilityDto.MOXIFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getMoxifloxacinMic())),
-				Map.entry(DrugSusceptibilityDto.OFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getOfloxacinMic())),
-				Map.entry(DrugSusceptibilityDto.RIFAMPICIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getRifampicinMic())),
-				Map.entry(DrugSusceptibilityDto.STREPTOMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getStreptomycinMic())),
-				Map.entry(DrugSusceptibilityDto.PENICILLIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getPenicillinMic())),
-				Map.entry(DrugSusceptibilityDto.AZITHROMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getAzithromycinMic())),
-				Map.entry(DrugSusceptibilityDto.CEFIXIME_MIC, Optional.ofNullable(drugSusceptibilityDto.getCefiximeMic())),
-				Map.entry(DrugSusceptibilityDto.TETRACYCLINE_MIC, Optional.ofNullable(drugSusceptibilityDto.getTetracyclineMic())),
-				Map.entry(DrugSusceptibilityDto.GENTAMICIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getGentamicinMic())),
-				Map.entry(DrugSusceptibilityDto.SPECTINOMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getSpectinomycinMic())),
-				Map.entry(DrugSusceptibilityDto.CEFTAZIDIME_MIC, Optional.ofNullable(drugSusceptibilityDto.getCeftazidimeMic())),
-				Map.entry(DrugSusceptibilityDto.CEFOTAXIME_MIC, Optional.ofNullable(drugSusceptibilityDto.getCefotaximeMic())),
-				Map.entry(DrugSusceptibilityDto.AMPICILLIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getAmpicillinMic())),
-				Map.entry(
-					DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_MIC,
-					Optional.ofNullable(drugSusceptibilityDto.getTrimethoprimSulfamethoxazoleMic()))));
-
-		drugSusceptibilityMic.forEach(this::forceUpdateDrugSusceptibilityMicField);
-
-	}
-
-	private void forceUpdateDrugSusceptibilityField(String fieldId, Optional<DrugSusceptibilityType> drugSusceptibilityType) {
-		final ComboBox field = getField(fieldId);
-		if (field == null) {
-			return;
-		}
-		if (field.isReadOnly()) {
-			return;
-		}
-		if (drugSusceptibilityType.isEmpty()) {
-			field.clear();
-			return;
-		}
-		if (!field.containsId(drugSusceptibilityType.get())) {
-			field.addItem(drugSusceptibilityType.get());
-		}
-
-		field.setValue(drugSusceptibilityType.get());
-	}
-
-	private void forceUpdateDrugSusceptibilityMicField(String fieldId, Optional<String> drugSusceptibilityMic) {
-		final TextField field = getField(fieldId);
-		if (field == null) {
-			return;
-		}
-		if (field.isReadOnly()) {
-			return;
-		}
-		if (drugSusceptibilityMic.isEmpty()) {
-			field.clear();
-			return;
-		}
-
-		field.setValue(drugSusceptibilityMic.get());
 	}
 
 	/**

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 
-public class PathogenTestTypeGonococcalInfectionTest extends AbstractPathogenTest {
+public class PathogenTestTypeGonococcalInfectionTest extends AbstractEnumMembersVisibleForDiseaseTest<PathogenTestType> {
 
 	public static final PathogenTestType[] ALLOWED_PATHOGEN_TYPES = new PathogenTestType[] {
 		PathogenTestType.CULTURE,
@@ -39,12 +39,17 @@ public class PathogenTestTypeGonococcalInfectionTest extends AbstractPathogenTes
 	}
 
 	@Override
-	protected PathogenTestType[] getAllowedPathogenTests() {
+	protected PathogenTestType[] getAllowedMembers() {
 		return ALLOWED_PATHOGEN_TYPES;
 	}
 
 	@Override
 	protected Disease getDisease() {
 		return Disease.GONOCOCCAL_INFECTION;
+	}
+
+	@Override
+	protected Class<PathogenTestType> getEnumClass() {
+		return PathogenTestType.class;
 	}
 }
