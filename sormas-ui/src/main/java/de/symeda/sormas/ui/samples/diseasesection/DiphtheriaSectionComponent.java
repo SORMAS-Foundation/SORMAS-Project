@@ -23,10 +23,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -35,7 +34,6 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.TargetTest;
 import de.symeda.sormas.api.sample.TestRunStatus;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.events.SetResultTextEvent;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
@@ -112,7 +110,6 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 
 		targetTestTextField = createTextField(PathogenTestDto.TARGET_TEST_TEXT);
 		targetTestTextField.setVisible(false);
-		addRow(targetTestField, targetTestTextField);
 		// Rendered above testResultComponent (Diphtheria only) instead of in this section's own body.
 		targetTestRow = createRow(targetTestField, targetTestTextField);
 		targetTestRow.setVisible(false);
@@ -141,15 +138,7 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 		cgMlstClusterTextField.setVisible(false);
 		addRow(mlstSequenceTypeTextField, cgMlstClusterTextField);
 
-		// DrugSusceptibilityForm
-		drugSusceptibilityField = new DrugSusceptibilityForm(
-			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
-		drugSusceptibilityField.setCaption(null);
-
-		addDrugSusceptibilityField(drugSusceptibilityField);
-
-		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
+		drugSusceptibilityField = addDrugSusceptibilityField();
 
 		binder.forField(bioTypeField).bind(PathogenTestDto::getBiotype, PathogenTestDto::setBiotype);
 		binder.forField(bioTypeTextField).bind(PathogenTestDto::getBiotypeText, PathogenTestDto::setBiotypeText);
@@ -331,14 +320,6 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 		dto.setCgMlstCluster(null);
 		dto.setBiotypeText(null);
 		dto.setSequenceDataUploadedToPublicRepository(null);
+		dto.setDrugSusceptibility(null);
 	}
-
-	@Override
-	protected void unbindLegacyFields() {
-		if (drugSusceptibilityField != null) {
-			fieldGroup.unbind(drugSusceptibilityField);
-			drugSusceptibilityField = null;
-		}
-	}
-
 }

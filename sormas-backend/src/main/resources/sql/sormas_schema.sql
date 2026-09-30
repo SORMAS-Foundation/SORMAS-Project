@@ -17690,7 +17690,7 @@ BEGIN
         FROM (VALUES ('sormastosormassharerequest'), ('sormastosormassharerequest_history')) AS t(table_name)
         CROSS JOIN (VALUES ('cases'), ('contacts'), ('events'), ('eventparticipants')) AS c(column_name)
     LOOP
-        EXECUTE format('UPDATE %I SET %I = replace(%I::text, ''"DIPHTERIA"'', ''"DIPHTHERIA"'')::json WHERE %I::text LIKE ''%%"DIPHTERIA"%%''',
+               EXECUTE format('UPDATE %I SET %I = CAST(replace(CAST(%I AS text), ''"DIPHTERIA"'', ''"DIPHTHERIA"'') AS json) WHERE CAST(%I AS text) LIKE ''%%"DIPHTERIA"%%''',
             col.table_name, col.column_name, col.column_name, col.column_name);
     END LOOP;
 END $$;

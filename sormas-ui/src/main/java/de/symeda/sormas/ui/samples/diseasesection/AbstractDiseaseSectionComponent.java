@@ -23,6 +23,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.v7.data.Item;

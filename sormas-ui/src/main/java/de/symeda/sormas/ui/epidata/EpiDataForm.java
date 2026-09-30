@@ -344,12 +344,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		// infection source follows the mode of transmission.
 		// Diphtheria: country follows "case imported status = imported case"; infection source is always shown.
 		if (disease == Disease.DIPHTHERIA) {
-			FieldHelper.setVisibleWhen(
-				getFieldGroup(),
-				EpiDataDto.COUNTRY,
-				EpiDataDto.CASE_IMPORTED_STATUS,
-				CaseImportedStatus.IMPORTED_CASE,
-				true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.CASE_IMPORTED_STATUS, CaseImportedStatus.IMPORTED_CASE, true);
 		} else if (List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS)
 			.contains(disease)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
@@ -483,11 +478,20 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	/**
-	 * Calculates the transmissibility period ("activity as case" from/to dates) from the symptom onset date:
-	 * from (onset - minContagiousPeriod) to (onset + maxContagiousPeriod).
+	 * Displays the transmissibility period ("activity as case" start and end dates) derived from the symptom onset date
+	 * and the contagious period of the disease configuration:
+	 * <ul>
+	 * <li>Start date: see {@link #calculateTransmissionStartDate(Date, int)}</li>
+	 * <li>End date: onset + maxContagiousPeriod days</li>
+	 * </ul>
+	 * The dates and the transmissibility period heading are only shown when the symptom onset date is known and the
+	 * disease is configured as contagious with both a minimum and a maximum contagious period; otherwise the heading
+	 * stays hidden and no dates are added.
 	 *
 	 * @param symptomOnsetDate
+	 *            the symptom onset date of the case, may be null
 	 * @param disease
+	 *            the disease whose configuration provides the contagious period
 	 */
 	private void includeContagiousDates(Date symptomOnsetDate, Disease disease) {
 		// By default, hiding the transmissibility period to consider heading,
@@ -512,7 +516,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		activityDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.transmissionStartDate)), "ACTIVITY_START_DATE_LABEL");
 
 		activityDatesLayout.addComponent(
-			createReadOnlyDateField(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMinContagiousPeriod())),
+			createReadOnlyDateField(calculateTransmissionStartDate(symptomOnsetDate, diseaseConfigurationDto.getMinContagiousPeriod())),
 			"ACTIVITY_START_DATE_VALUE");
 
 		activityDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.transmissionEndDate)), "ACTIVITY_END_DATE_LABEL");
@@ -522,6 +526,27 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		getContent().addComponent(activityDatesLayout, "TRANSMISSIBILITY_DATES_LAYOUT");
 		getContent().getComponent(LOC_TRANSMISSIBILITY_PERIOD_HEADING).setVisible(true);
+	}
+
+	/**
+	 * Calculates the start of the transmissibility period relative to the symptom onset date.
+	 * <ul>
+	 * <li>Negative minContagiousPeriod: transmissibility starts before onset, so its absolute value is subtracted
+	 * (e.g. onset 10.09., -3 → 07.09.)</li>
+	 * <li>Zero or positive minContagiousPeriod: transmissibility starts on or after onset, so the value is added
+	 * (e.g. onset 10.09., 2 → 12.09.)</li>
+	 * </ul>
+	 *
+	 * @param symptomOnsetDate
+	 *            the symptom onset date, must not be null
+	 * @param minContagiousPeriod
+	 *            the minimum contagious period in days from the disease configuration
+	 * @return the start date of the transmissibility period
+	 */
+	static Date calculateTransmissionStartDate(Date symptomOnsetDate, int minContagiousPeriod) {
+		return minContagiousPeriod < 0
+			? DateHelper.subtractDays(symptomOnsetDate, Math.abs(minContagiousPeriod))
+			: DateHelper.addDays(symptomOnsetDate, minContagiousPeriod);
 	}
 
 	/**

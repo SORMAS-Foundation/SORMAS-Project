@@ -2633,9 +2633,9 @@ public interface Captions {
 	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
 	String PathogenTest_syphilisSerologyMethod = "PathogenTest.syphilisSerologyMethod";
 	String PathogenTest_syphilisSerologyMethodText = "PathogenTest.syphilisSerologyMethodText";
-	String PathogenTest_tbpBAllele = "PathogenTest.tbpBAllele";
 	String PathogenTest_targetTest = "PathogenTest.targetTest";
 	String PathogenTest_targetTestText = "PathogenTest.targetTestText";
+	String PathogenTest_tbpBAllele = "PathogenTest.tbpBAllele";
 	String PathogenTest_testCategory = "PathogenTest.testCategory";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
