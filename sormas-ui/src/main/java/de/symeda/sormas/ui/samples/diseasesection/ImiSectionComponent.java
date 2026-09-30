@@ -24,13 +24,10 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
 import de.symeda.sormas.ui.samples.events.TestResultChangedEvent;
 import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
@@ -76,13 +73,7 @@ public class ImiSectionComponent extends AbstractDiseaseSectionComponent {
 		binder.forField(seroGroupSpecField).bind(PathogenTestDto::getSeroGroupSpecification, PathogenTestDto::setSeroGroupSpecification);
 		binder.forField(seroGroupSpecTextField).bind(PathogenTestDto::getSeroGroupSpecificationText, PathogenTestDto::setSeroGroupSpecificationText);
 
-		// DrugSusceptibilityForm — legacy v7, bound via parent FieldGroup
-		drugSusceptibilityField = new DrugSusceptibilityForm(
-			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
-		drugSusceptibilityField.setCaption(null);
-		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
-		addDrugSusceptibilityField(drugSusceptibilityField);
+		drugSusceptibilityField = addDrugSusceptibilityField();
 	}
 
 	@Override
@@ -143,13 +134,5 @@ public class ImiSectionComponent extends AbstractDiseaseSectionComponent {
 		dto.setSeroGroupSpecification(null);
 		dto.setSeroGroupSpecificationText(null);
 		dto.setDrugSusceptibility(null);
-	}
-
-	@Override
-	protected void unbindLegacyFields() {
-		if (drugSusceptibilityField != null) {
-			fieldGroup.unbind(drugSusceptibilityField);
-			drugSusceptibilityField = null;
-		}
 	}
 }

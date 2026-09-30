@@ -28,7 +28,6 @@ import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -36,8 +35,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestScale;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.events.DiseaseChangedEvent;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
 import de.symeda.sormas.ui.samples.events.TestResultChangedEvent;
@@ -114,13 +111,7 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 		binder.forField(specie).bind(PathogenTestDto::getSpecie, PathogenTestDto::setSpecie);
 		binder.forField(patternProfile).bind(PathogenTestDto::getPatternProfile, PathogenTestDto::setPatternProfile);
 
-		// DrugSusceptibilityForm — legacy v7
-		drugSusceptibilityField = new DrugSusceptibilityForm(
-			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
-		drugSusceptibilityField.setCaption(null);
-		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
-		addDrugSusceptibilityField(drugSusceptibilityField);
+		drugSusceptibilityField = addDrugSusceptibilityField();
 
 		// Tube fields
 		buildTubeFields();
@@ -338,14 +329,6 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 		dto.setTubeMitogene(null);
 		dto.setTubeMitogeneGT10(null);
 		dto.setDrugSusceptibility(null);
-	}
-
-	@Override
-	protected void unbindLegacyFields() {
-		if (drugSusceptibilityField != null) {
-			fieldGroup.unbind(drugSusceptibilityField);
-			drugSusceptibilityField = null;
-		}
 	}
 
 	private void bindTubePair(

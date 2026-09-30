@@ -23,15 +23,12 @@ import java.util.List;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SerotypingMethod;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
 import de.symeda.sormas.ui.samples.events.TestResultChangedEvent;
 import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
@@ -84,13 +81,7 @@ public class IpiSectionComponent extends AbstractDiseaseSectionComponent {
 		binder.forField(serotypingMethodField).bind(PathogenTestDto::getSeroTypingMethod, PathogenTestDto::setSeroTypingMethod);
 		binder.forField(serotypingMethodTextField).bind(PathogenTestDto::getSeroTypingMethodText, PathogenTestDto::setSeroTypingMethodText);
 
-		// DrugSusceptibilityForm — legacy v7, bound via parent FieldGroup
-		drugSusceptibilityField = new DrugSusceptibilityForm(
-			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
-		drugSusceptibilityField.setCaption(null);
-		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
-		addDrugSusceptibilityField(drugSusceptibilityField);
+		drugSusceptibilityField = addDrugSusceptibilityField();
 	}
 
 	@Override
@@ -161,13 +152,5 @@ public class IpiSectionComponent extends AbstractDiseaseSectionComponent {
 		dto.setSeroTypingMethod(null);
 		dto.setSeroTypingMethodText(null);
 		dto.setDrugSusceptibility(null);
-	}
-
-	@Override
-	protected void unbindLegacyFields() {
-		if (drugSusceptibilityField != null) {
-			fieldGroup.unbind(drugSusceptibilityField);
-			drugSusceptibilityField = null;
-		}
 	}
 }
