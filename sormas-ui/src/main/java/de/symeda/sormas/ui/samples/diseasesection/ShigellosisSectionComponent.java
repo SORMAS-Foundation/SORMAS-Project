@@ -22,14 +22,11 @@ import java.util.Arrays;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SerotypingMethod;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
 import de.symeda.sormas.ui.samples.events.TestResultChangedEvent;
 import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
@@ -82,15 +79,7 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 		binder.forField(specieTextField).bind(PathogenTestDto::getSpecieText, PathogenTestDto::setSpecieText);
 		binder.forField(serotypeTF).bind(PathogenTestDto::getSerotypeText, PathogenTestDto::setSerotypeText);
 
-		// DrugSusceptibilityForm
-		drugSusceptibilityField = new DrugSusceptibilityForm(
-			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
-		drugSusceptibilityField.setCaption(null);
-
-		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
-
-		addDrugSusceptibilityField(drugSusceptibilityField);
+		drugSusceptibilityField = addDrugSusceptibilityField();
 	}
 
 	@Override
@@ -173,19 +162,6 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 	}
 
 	@Override
-	public void cleanup() {
-		PathogenTestDto dto = binder.getBean();
-		if (dto == null) {
-			return;
-		}
-		dto.setDrugSusceptibility(null);
-		dto.setSeroTypingMethod(null);
-		dto.setSeroTypingMethodText(null);
-		dto.setSpecie(null);
-		dto.setSpecieText(null);
-	}
-
-	@Override
 	protected void clearOwnedFields() {
 		PathogenTestDto dto = binder.getBean();
 		if (dto == null) {
@@ -196,14 +172,5 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 		dto.setSeroTypingMethodText(null);
 		dto.setSpecie(null);
 		dto.setSpecieText(null);
-
-	}
-
-	@Override
-	protected void unbindLegacyFields() {
-		if (drugSusceptibilityField != null) {
-			fieldGroup.unbind(drugSusceptibilityField);
-			drugSusceptibilityField = null;
-		}
 	}
 }
