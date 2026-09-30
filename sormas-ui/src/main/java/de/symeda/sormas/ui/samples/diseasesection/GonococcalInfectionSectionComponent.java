@@ -19,12 +19,8 @@ package de.symeda.sormas.ui.samples.diseasesection;
 
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
 import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
 import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
@@ -52,12 +48,7 @@ public class GonococcalInfectionSectionComponent extends AbstractDiseaseSectionC
 		binder.forField(genogroup).bind(PathogenTestDto::getGenogroup, PathogenTestDto::setGenogroup);
 		setGenotypingVisible(false);
 
-		drugSusceptibilityField = new DrugSusceptibilityForm(
-			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
-		drugSusceptibilityField.setCaption(null);
-		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
-		addDrugSusceptibilityField(drugSusceptibilityField);
+		drugSusceptibilityField = addDrugSusceptibilityField();
 	}
 
 	@Override
@@ -67,34 +58,26 @@ public class GonococcalInfectionSectionComponent extends AbstractDiseaseSectionC
 			setGenotypingVisible(currentTestType == PathogenTestType.GENOTYPING);
 			boolean astVisible = drugSusceptibilityField.updateFieldsVisibility(disease, currentTestType);
 			setDrugSusceptibilityRowVisible(astVisible);
-			if (currentTestType == PathogenTestType.GENOTYPING || currentTestType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-				eventBus.fire(new SetTestResultEvent(PathogenTestResultType.NOT_APPLICABLE));
-			} else if (currentTestType != null) {
+			if (currentTestType != null) {
 				eventBus.fire(new SetTestResultEvent(null));
 			}
 		}));
 	}
 
 	private void setGenotypingVisible(boolean visible) {
-		porBAllele.setVisible(visible);
-		tbpBAllele.setVisible(visible);
-		sequenceType.setVisible(visible);
-		genogroup.setVisible(visible);
-
-		if (!visible) {
-			setVisibleClear(visible, porBAllele, tbpBAllele, sequenceType, genogroup);
+		if (visible) {
+			porBAllele.setVisible(true);
+			tbpBAllele.setVisible(true);
+			sequenceType.setVisible(true);
+			genogroup.setVisible(true);
+		} else {
+			setVisibleClear(false, porBAllele, tbpBAllele, sequenceType, genogroup);
 		}
-
 		updateRowAndSelfVisibility();
 	}
 
 	@Override
-	protected boolean hasVisibleContent() {
-		return porBAllele.isVisible() || super.hasVisibleContent();
-	}
-
-	@Override
-	public void cleanup() {
+	protected void clearOwnedFields() {
 		PathogenTestDto dto = binder.getBean();
 		if (dto == null) {
 			return;
@@ -104,18 +87,5 @@ public class GonococcalInfectionSectionComponent extends AbstractDiseaseSectionC
 		dto.setSequenceType(null);
 		dto.setGenogroup(null);
 		dto.setDrugSusceptibility(null);
-	}
-
-	@Override
-	protected void clearOwnedFields() {
-		cleanup();
-	}
-
-	@Override
-	protected void unbindLegacyFields() {
-		if (drugSusceptibilityField != null) {
-			fieldGroup.unbind(drugSusceptibilityField);
-			drugSusceptibilityField = null;
-		}
 	}
 }
