@@ -17505,6 +17505,142 @@ CREATE INDEX IF NOT EXISTS idx_event717assessment_timelinessstatus ON event717as
 
 INSERT INTO schema_version (version_number, comment) VALUES (671, '#13165 - 7-1-7 directory: stored timeliness of 7-1-7 assessments');
 
+
+-- #14312 - Gonococcal infection antimicrobial susceptibility and molecular typing
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
+
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
+
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS porballele varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS genogroup varchar(512);
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS porballele varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS genogroup varchar(512);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS porballele varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS genogroup varchar(512);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximemic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS cefiximemethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinemic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tetracyclinemethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinmic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gentamicinmethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinmic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS spectinomycinmethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS porballele varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tbpballele varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS sequencetype varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS genogroup varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (672, '#14312 - Add Gonococcal infection antimicrobial susceptibility and molecular typing fields');
+
+-- #14312 - Store contact.prescribeddrug by name instead of by ordinal
+-- Ordinals follow the Drug order released in v1.104.0
+ALTER TABLE contact DISABLE TRIGGER versioning_trigger;
+
+UPDATE contact SET prescribeddrug = drug.name
+FROM (VALUES
+    ('0', 'AMIKACIN'),
+    ('1', 'BEDAQUILINE'),
+    ('2', 'CAPREOMYCIN'),
+    ('3', 'CIPROFLOXACIN'),
+    ('4', 'DELAMANID'),
+    ('5', 'ETHAMBUTOL'),
+    ('6', 'GATIFLOXACIN'),
+    ('7', 'ISONIAZID'),
+    ('8', 'KANAMYCIN'),
+    ('9', 'LEVOFLOXACIN'),
+    ('10', 'MOXIFLOXACIN'),
+    ('11', 'OFLOXACIN'),
+    ('12', 'RIFAMPICIN'),
+    ('13', 'STREPTOMYCIN'),
+    ('14', 'CEFTRIAXONE'),
+    ('15', 'PENICILLIN'),
+    ('16', 'ERYTHROMYCIN'),
+    ('17', 'AZITHROMYCIN'),
+    ('18', 'CEFTAZIDIME'),
+    ('19', 'CEFOTAXIME'),
+    ('20', 'AMPICILLIN'),
+    ('21', 'TRIMETHOPRIM_SULFAMETHOXAZOLE'),
+    ('22', 'OTHER')) AS drug (ordinal, name)
+WHERE contact.prescribeddrug = drug.ordinal;
+
+UPDATE contact_history SET prescribeddrug = drug.name
+FROM (VALUES
+    ('0', 'AMIKACIN'),
+    ('1', 'BEDAQUILINE'),
+    ('2', 'CAPREOMYCIN'),
+    ('3', 'CIPROFLOXACIN'),
+    ('4', 'DELAMANID'),
+    ('5', 'ETHAMBUTOL'),
+    ('6', 'GATIFLOXACIN'),
+    ('7', 'ISONIAZID'),
+    ('8', 'KANAMYCIN'),
+    ('9', 'LEVOFLOXACIN'),
+    ('10', 'MOXIFLOXACIN'),
+    ('11', 'OFLOXACIN'),
+    ('12', 'RIFAMPICIN'),
+    ('13', 'STREPTOMYCIN'),
+    ('14', 'CEFTRIAXONE'),
+    ('15', 'PENICILLIN'),
+    ('16', 'ERYTHROMYCIN'),
+    ('17', 'AZITHROMYCIN'),
+    ('18', 'CEFTAZIDIME'),
+    ('19', 'CEFOTAXIME'),
+    ('20', 'AMPICILLIN'),
+    ('21', 'TRIMETHOPRIM_SULFAMETHOXAZOLE'),
+    ('22', 'OTHER')) AS drug (ordinal, name)
+WHERE contact_history.prescribeddrug = drug.ordinal;
+
+ALTER TABLE contact ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (673, '#14312 - Store the contact prescribed drug by name instead of ordinal');
+
 -- 15-09-2026 : 14325 - Diphtheria changes.
 -- Rename the DIPHTERIA enum value to DIPHTHERIA in every place a Disease is stored, before the application loads it.
 DO $$
@@ -17620,6 +17756,6 @@ ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmic var
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
 ALTER TABLE epidata_history ALTER COLUMN infectionsource TYPE varchar(512);
-INSERT INTO schema_version (version_number, comment) VALUES (672, '#14325 - Diphtheria changes.');
+INSERT INTO schema_version (version_number, comment) VALUES (674, '#14325 - Diphtheria changes.');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

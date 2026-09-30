@@ -14,6 +14,12 @@
 
 package de.symeda.sormas.backend.therapy;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
@@ -24,6 +30,11 @@ import de.symeda.sormas.backend.util.DtoHelper;
 @LocalBean
 @Stateless(name = "DrugSusceptibilityMapper")
 public class DrugSusceptibilityMapper {
+
+	private static final List<Field> DRUG_RESULT_FIELDS = Arrays.stream(DrugSusceptibilityDto.class.getDeclaredFields())
+		.filter(field -> !field.isSynthetic() && !Modifier.isStatic(field.getModifiers()))
+		.map(DrugSusceptibilityMapper::accessible)
+		.collect(Collectors.toList());
 
 	public static DrugSusceptibilityDto toDto(DrugSusceptibility source) {
 
@@ -100,6 +111,18 @@ public class DrugSusceptibilityMapper {
 		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
 		target.setCefotaximeMethod(source.getCefotaximeMethod());
 		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
+		target.setCefiximeMic(source.getCefiximeMic());
+		target.setCefiximeSusceptibility(source.getCefiximeSusceptibility());
+		target.setCefiximeMethod(source.getCefiximeMethod());
+		target.setTetracyclineMic(source.getTetracyclineMic());
+		target.setTetracyclineSusceptibility(source.getTetracyclineSusceptibility());
+		target.setTetracyclineMethod(source.getTetracyclineMethod());
+		target.setGentamicinMic(source.getGentamicinMic());
+		target.setGentamicinSusceptibility(source.getGentamicinSusceptibility());
+		target.setGentamicinMethod(source.getGentamicinMethod());
+		target.setSpectinomycinMic(source.getSpectinomycinMic());
+		target.setSpectinomycinSusceptibility(source.getSpectinomycinSusceptibility());
+		target.setSpectinomycinMethod(source.getSpectinomycinMethod());
 
 		target.setClindamycinMethod(source.getClindamycinMethod());
 		target.setClindamycinMic(source.getClindamycinMic());
@@ -193,6 +216,18 @@ public class DrugSusceptibilityMapper {
 		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
 		target.setCefotaximeMethod(source.getCefotaximeMethod());
 		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
+		target.setCefiximeMic(source.getCefiximeMic());
+		target.setCefiximeSusceptibility(source.getCefiximeSusceptibility());
+		target.setCefiximeMethod(source.getCefiximeMethod());
+		target.setTetracyclineMic(source.getTetracyclineMic());
+		target.setTetracyclineSusceptibility(source.getTetracyclineSusceptibility());
+		target.setTetracyclineMethod(source.getTetracyclineMethod());
+		target.setGentamicinMic(source.getGentamicinMic());
+		target.setGentamicinSusceptibility(source.getGentamicinSusceptibility());
+		target.setGentamicinMethod(source.getGentamicinMethod());
+		target.setSpectinomycinMic(source.getSpectinomycinMic());
+		target.setSpectinomycinSusceptibility(source.getSpectinomycinSusceptibility());
+		target.setSpectinomycinMethod(source.getSpectinomycinMethod());
 
 		target.setClindamycinMethod(source.getClindamycinMethod());
 		target.setClindamycinMic(source.getClindamycinMic());
@@ -214,76 +249,20 @@ public class DrugSusceptibilityMapper {
 	}
 
 	public static boolean hasData(DrugSusceptibilityDto dto) {
-		if (dto == null) {
-			return false;
-		}
-
-		return dto.getAmikacinMic() != null
-			|| dto.getAmikacinSusceptibility() != null
-			|| dto.getBedaquilineMic() != null
-			|| dto.getBedaquilineSusceptibility() != null
-			|| dto.getCapreomycinMic() != null
-			|| dto.getCapreomycinSusceptibility() != null
-			|| dto.getCiprofloxacinMic() != null
-			|| dto.getCiprofloxacinSusceptibility() != null
-			|| dto.getDelamanidMic() != null
-			|| dto.getDelamanidSusceptibility() != null
-			|| dto.getEthambutolMic() != null
-			|| dto.getEthambutolSusceptibility() != null
-			|| dto.getGatifloxacinMic() != null
-			|| dto.getGatifloxacinSusceptibility() != null
-			|| dto.getIsoniazidMic() != null
-			|| dto.getIsoniazidSusceptibility() != null
-			|| dto.getKanamycinMic() != null
-			|| dto.getKanamycinSusceptibility() != null
-			|| dto.getLevofloxacinMic() != null
-			|| dto.getLevofloxacinSusceptibility() != null
-			|| dto.getMoxifloxacinMic() != null
-			|| dto.getMoxifloxacinSusceptibility() != null
-			|| dto.getOfloxacinMic() != null
-			|| dto.getOfloxacinSusceptibility() != null
-			|| dto.getRifampicinMic() != null
-			|| dto.getRifampicinSusceptibility() != null
-			|| dto.getStreptomycinMic() != null
-			|| dto.getStreptomycinSusceptibility() != null
-			|| dto.getCeftriaxoneMic() != null
-			|| dto.getCeftriaxoneSusceptibility() != null
-			|| dto.getPenicillinMic() != null
-			|| dto.getPenicillinSusceptibility() != null
-			|| dto.getErythromycinMic() != null
-			|| dto.getErythromycinSusceptibility() != null
-			|| dto.getAmikacinMethod() != null
-			|| dto.getBedaquilineMethod() != null
-			|| dto.getCapreomycinMethod() != null
-			|| dto.getCiprofloxacinMethod() != null
-			|| dto.getDelamanidMethod() != null
-			|| dto.getEthambutolMethod() != null
-			|| dto.getGatifloxacinMethod() != null
-			|| dto.getIsoniazidMethod() != null
-			|| dto.getKanamycinMethod() != null
-			|| dto.getLevofloxacinMethod() != null
-			|| dto.getMoxifloxacinMethod() != null
-			|| dto.getOfloxacinMethod() != null
-			|| dto.getRifampicinMethod() != null
-			|| dto.getStreptomycinMethod() != null
-			|| dto.getCeftriaxoneMethod() != null
-			|| dto.getPenicillinMethod() != null
-			|| dto.getErythromycinMethod() != null
-			|| dto.getErythromycinSusceptibility() != null
-			|| dto.getAzithromycinMic() != null
-			|| dto.getAzithromycinSusceptibility() != null
-			|| dto.getAzithromycinMethod() != null
-			|| dto.getCeftazidimeMic() != null
-			|| dto.getCeftazidimeSusceptibility() != null
-			|| dto.getCeftazidimeMethod() != null
-			|| dto.getCefotaximeMic() != null
-			|| dto.getCefotaximeSusceptibility() != null
-			|| dto.getCefotaximeMethod() != null
-			|| dto.getAmpicillinMic() != null
-			|| dto.getAmpicillinSusceptibility() != null
-			|| dto.getAmpicillinMethod() != null
-			|| dto.getTrimethoprimSulfamethoxazoleMic() != null
-			|| dto.getTrimethoprimSulfamethoxazoleSusceptibility() != null
-			|| dto.getTrimethoprimSulfamethoxazoleMethod() != null;
+		return dto != null && DRUG_RESULT_FIELDS.stream().anyMatch(field -> readField(field, dto) != null);
 	}
+
+	private static Field accessible(Field field) {
+		field.setAccessible(true);
+		return field;
+	}
+
+	private static Object readField(Field field, DrugSusceptibilityDto dto) {
+		try {
+			return field.get(dto);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
 }

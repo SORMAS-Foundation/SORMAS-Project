@@ -11768,6 +11768,7 @@ components:
               - WHOLE_GENOME_SEQUENCING
               - DNA_MICROARRAY
               - NAAT
+              - NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST
               - MULTILOCUS_SEQUENCE_TYPING
               - CGMLST
               - SNP_TYPING
@@ -11807,6 +11808,7 @@ components:
               - QUANTITATIVE_BUFFY_COAT
               - THICK_BLOOD_SMEAR
               - THIN_BLOOD_SMEAR
+              - PENICILLINASE_ACTIVITY
               - ANTIBIOTIC_SUSCEPTIBILITY
               - GENOTYPIC_RESISTANCE_TEST
               - IGRA
@@ -11857,6 +11859,7 @@ components:
               - WHOLE_GENOME_SEQUENCING
               - DNA_MICROARRAY
               - NAAT
+              - NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST
               - MULTILOCUS_SEQUENCE_TYPING
               - CGMLST
               - SNP_TYPING
@@ -11896,6 +11899,7 @@ components:
               - QUANTITATIVE_BUFFY_COAT
               - THICK_BLOOD_SMEAR
               - THIN_BLOOD_SMEAR
+              - PENICILLINASE_ACTIVITY
               - ANTIBIOTIC_SUSCEPTIBILITY
               - GENOTYPIC_RESISTANCE_TEST
               - IGRA
@@ -11932,6 +11936,7 @@ components:
               - WHOLE_GENOME_SEQUENCING
               - DNA_MICROARRAY
               - NAAT
+              - NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST
               - MULTILOCUS_SEQUENCE_TYPING
               - CGMLST
               - SNP_TYPING
@@ -11971,6 +11976,7 @@ components:
               - QUANTITATIVE_BUFFY_COAT
               - THICK_BLOOD_SMEAR
               - THIN_BLOOD_SMEAR
+              - PENICILLINASE_ACTIVITY
               - ANTIBIOTIC_SUSCEPTIBILITY
               - GENOTYPIC_RESISTANCE_TEST
               - IGRA
@@ -12488,6 +12494,10 @@ components:
           - PENICILLIN
           - ERYTHROMYCIN
           - AZITHROMYCIN
+          - CEFIXIME
+          - TETRACYCLINE
+          - GENTAMICIN
+          - SPECTINOMYCIN
           - CEFTAZIDIME
           - CEFOTAXIME
           - AMPICILLIN
@@ -12900,6 +12910,10 @@ components:
           - PENICILLIN
           - ERYTHROMYCIN
           - AZITHROMYCIN
+          - CEFIXIME
+          - TETRACYCLINE
+          - GENTAMICIN
+          - SPECTINOMYCIN
           - CEFTAZIDIME
           - CEFOTAXIME
           - AMPICILLIN
@@ -13329,6 +13343,10 @@ components:
           - PENICILLIN
           - ERYTHROMYCIN
           - AZITHROMYCIN
+          - CEFIXIME
+          - TETRACYCLINE
+          - GENTAMICIN
+          - SPECTINOMYCIN
           - CEFTAZIDIME
           - CEFOTAXIME
           - AMPICILLIN
@@ -13609,6 +13627,10 @@ components:
           - PENICILLIN
           - ERYTHROMYCIN
           - AZITHROMYCIN
+          - CEFIXIME
+          - TETRACYCLINE
+          - GENTAMICIN
+          - SPECTINOMYCIN
           - CEFTAZIDIME
           - CEFOTAXIME
           - AMPICILLIN
@@ -15675,7 +15697,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15695,7 +15719,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15715,7 +15741,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15735,7 +15763,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15755,7 +15785,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15769,13 +15801,37 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        cefiximeMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        cefiximeMic:
+          type: string
+        cefiximeSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         cefotaximeMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15795,7 +15851,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15815,7 +15873,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15838,7 +15898,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15861,7 +15923,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15881,7 +15945,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15901,7 +15967,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15921,13 +15989,37 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
         gatifloxacinMic:
           type: string
         gatifloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        gentamicinMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        gentamicinMic:
+          type: string
+        gentamicinSusceptibility:
           type: string
           enum:
           - NOT_APPLICABLE
@@ -15943,7 +16035,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15963,7 +16057,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -15983,7 +16079,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -16003,7 +16101,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -16023,7 +16123,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -16043,7 +16145,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -16065,7 +16169,9 @@ components:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -16079,13 +16185,37 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        spectinomycinMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        spectinomycinMic:
+          type: string
+        spectinomycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         streptomycinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -16099,13 +16229,37 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        tetracyclineMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        tetracyclineMic:
+          type: string
+        tetracyclineSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         trimethoprimSulfamethoxazoleMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
           - AGAR_DILUTION
           - DISK_DIFFUSION
+          - BREAKPOINT
           - ETEST
+          - MIC
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
           - OTHER
@@ -23546,6 +23700,10 @@ components:
           - UNKNOWN
         genoTypeText:
           type: string
+        genogroup:
+          type: string
+          maxLength: 512
+          minLength: 0
         inJurisdiction:
           type: boolean
         isoniazidResistant:
@@ -23575,6 +23733,10 @@ components:
           - N501Y_MUTATION_DETECTION
         performedByReferenceLaboratory:
           type: boolean
+        porBAllele:
+          type: string
+          maxLength: 512
+          minLength: 0
         preliminary:
           type: boolean
         prescriberAddress:
@@ -23645,6 +23807,10 @@ components:
         sequenceId:
           type: string
           maxLength: 255
+          minLength: 0
+        sequenceType:
+          type: string
+          maxLength: 512
           minLength: 0
         seroConversion:
           type: boolean
@@ -23763,6 +23929,10 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        tbpBAllele:
+          type: string
+          maxLength: 512
+          minLength: 0
         testDateTime:
           type: string
           format: date-time
@@ -23815,6 +23985,7 @@ components:
           - WHOLE_GENOME_SEQUENCING
           - DNA_MICROARRAY
           - NAAT
+          - NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST
           - MULTILOCUS_SEQUENCE_TYPING
           - CGMLST
           - SNP_TYPING
@@ -23854,6 +24025,7 @@ components:
           - QUANTITATIVE_BUFFY_COAT
           - THICK_BLOOD_SMEAR
           - THIN_BLOOD_SMEAR
+          - PENICILLINASE_ACTIVITY
           - ANTIBIOTIC_SUSCEPTIBILITY
           - GENOTYPIC_RESISTANCE_TEST
           - IGRA
@@ -25562,6 +25734,7 @@ components:
             - WHOLE_GENOME_SEQUENCING
             - DNA_MICROARRAY
             - NAAT
+            - NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST
             - MULTILOCUS_SEQUENCE_TYPING
             - CGMLST
             - SNP_TYPING
@@ -25601,6 +25774,7 @@ components:
             - QUANTITATIVE_BUFFY_COAT
             - THICK_BLOOD_SMEAR
             - THIN_BLOOD_SMEAR
+            - PENICILLINASE_ACTIVITY
             - ANTIBIOTIC_SUSCEPTIBILITY
             - GENOTYPIC_RESISTANCE_TEST
             - IGRA
@@ -26008,6 +26182,7 @@ components:
           - WHOLE_GENOME_SEQUENCING
           - DNA_MICROARRAY
           - NAAT
+          - NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST
           - MULTILOCUS_SEQUENCE_TYPING
           - CGMLST
           - SNP_TYPING
@@ -26047,6 +26222,7 @@ components:
           - QUANTITATIVE_BUFFY_COAT
           - THICK_BLOOD_SMEAR
           - THIN_BLOOD_SMEAR
+          - PENICILLINASE_ACTIVITY
           - ANTIBIOTIC_SUSCEPTIBILITY
           - GENOTYPIC_RESISTANCE_TEST
           - IGRA
@@ -29705,6 +29881,28 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        cefiximeMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        cefiximeMic:
+          type: string
+        cefiximeSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         ceftriaxoneMic:
           type: string
         ceftriaxoneSusceptibility:
@@ -29864,6 +30062,32 @@ components:
           - GENOTYPE_UNK
           - OTHER
           - UNKNOWN
+        genogroup:
+          type: string
+          maxLength: 512
+          minLength: 0
+        gentamicinMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        gentamicinMic:
+          type: string
+        gentamicinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         isoniazidMic:
           type: string
         isoniazidSusceptibility:
@@ -29936,6 +30160,10 @@ components:
           - UNKNOWN
         performedByReferenceLaboratory:
           type: boolean
+        porBAllele:
+          type: string
+          maxLength: 512
+          minLength: 0
         preliminary:
           type: boolean
         prescriberAddress:
@@ -29987,6 +30215,10 @@ components:
           - INDETERMINATE
         sampleReport:
           $ref: '#/components/schemas/SampleReportReferenceDto'
+        sequenceType:
+          type: string
+          maxLength: 512
+          minLength: 0
         seroGroupSpecification:
           type: string
           enum:
@@ -30067,6 +30299,28 @@ components:
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
+        spectinomycinMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        spectinomycinMic:
+          type: string
+        spectinomycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         strainCallStatus:
           type: string
           enum:
@@ -30099,6 +30353,10 @@ components:
         syphilisSerologyMethodText:
           type: string
           maxLength: 255
+          minLength: 0
+        tbpBAllele:
+          type: string
+          maxLength: 512
           minLength: 0
         testDateTime:
           type: string
@@ -30167,6 +30425,7 @@ components:
           - WHOLE_GENOME_SEQUENCING
           - DNA_MICROARRAY
           - NAAT
+          - NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST
           - MULTILOCUS_SEQUENCE_TYPING
           - CGMLST
           - SNP_TYPING
@@ -30206,6 +30465,7 @@ components:
           - QUANTITATIVE_BUFFY_COAT
           - THICK_BLOOD_SMEAR
           - THIN_BLOOD_SMEAR
+          - PENICILLINASE_ACTIVITY
           - ANTIBIOTIC_SUSCEPTIBILITY
           - GENOTYPIC_RESISTANCE_TEST
           - IGRA
@@ -30224,6 +30484,28 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        tetracyclineMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        tetracyclineMic:
+          type: string
+        tetracyclineSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         tubeAgTb1:
           type: number
           format: float
