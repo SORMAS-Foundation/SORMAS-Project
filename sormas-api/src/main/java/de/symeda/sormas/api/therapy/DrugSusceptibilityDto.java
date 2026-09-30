@@ -164,8 +164,8 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-			Disease.DIPHTHERIA })
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String ciprofloxacinMic;
@@ -173,8 +173,8 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-			Disease.DIPHTHERIA })
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ciprofloxacinSusceptibility;
@@ -347,8 +347,8 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA })
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod ciprofloxacinMethod;
@@ -428,22 +428,22 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA })
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String azithromycinMic;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA })
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType azithromycinSusceptibility;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA })
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod azithromycinMethod;

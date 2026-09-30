@@ -190,7 +190,7 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private DrugSusceptibilityType tetracyclinesSusceptibility;
 	private SusceptibilityMethod tetracyclinesMethod;
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAmikacinMic() {
 		return amikacinMic;
 	}

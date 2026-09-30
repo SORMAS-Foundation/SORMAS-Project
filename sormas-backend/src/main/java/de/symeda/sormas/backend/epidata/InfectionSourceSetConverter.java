@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package de.symeda.sormas.api.epidata;
+package de.symeda.sormas.backend.epidata;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,33 +36,33 @@ import de.symeda.sormas.api.exposure.InfectionSource;
  */
 public class InfectionSourceSetConverter implements AttributeConverter<Set<InfectionSource>, String> {
 
-    /**
-     * Joins the given infection sources into a comma-separated string for storage.
-     *
-     * @param infectionSources
-     *            the infection sources to persist, or {@code null}
-     * @return a comma-separated string of {@link InfectionSource} names, or {@code null} if
-     *         {@code infectionSources} is {@code null}
-     */
-    @Override
-    public String convertToDatabaseColumn(Set<InfectionSource> infectionSources) {
-        return infectionSources != null ? String.join(",", infectionSources.stream().map(InfectionSource::name).collect(Collectors.toSet())) : null;
-    }
+	/**
+	 * Joins the given infection sources into a comma-separated string for storage.
+	 *
+	 * @param infectionSources
+	 *            the infection sources to persist, or {@code null}
+	 * @return a comma-separated string of {@link InfectionSource} names, or {@code null} if
+	 *         {@code infectionSources} is {@code null}
+	 */
+	@Override
+	public String convertToDatabaseColumn(Set<InfectionSource> infectionSources) {
+		return infectionSources != null
+			? String.join(",", infectionSources.stream().map(InfectionSource::name).collect(Collectors.toSet()))
+			: null;
+	}
 
-    /**
-     * Splits the given comma-separated database value back into a set of infection sources.
-     *
-     * @param infectionSourcesText
-     *            a comma-separated string of {@link InfectionSource} names, or {@code null}
-     * @return the parsed set of {@link InfectionSource} values, or {@code null} if
-     *         {@code infectionSourcesText} is {@code null}
-     */
-    @Override
-    public Set<InfectionSource> convertToEntityAttribute(String infectionSourcesText) {
-        return infectionSourcesText != null
-            ? Stream.of(StringUtils.split(infectionSourcesText, ",")).map(InfectionSource::valueOf).collect(Collectors.toSet())
-            : null;
-
-    }
-
+	/**
+	 * Splits the given comma-separated database value back into a set of infection sources.
+	 *
+	 * @param infectionSourcesText
+	 *            a comma-separated string of {@link InfectionSource} names, or {@code null}
+	 * @return the parsed set of {@link InfectionSource} values, or {@code null} if
+	 *         {@code infectionSourcesText} is {@code null}
+	 */
+	@Override
+	public Set<InfectionSource> convertToEntityAttribute(String infectionSourcesText) {
+		return infectionSourcesText != null
+			? Stream.of(StringUtils.split(infectionSourcesText, ",")).map(InfectionSource::valueOf).collect(Collectors.toSet())
+			: null;
+	}
 }

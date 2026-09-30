@@ -95,12 +95,12 @@ public enum InfectionSource {
 	OTHER_ANIMAL_CONTACT, // Contact with other animal(s)
 
 	@Diseases({
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
 	RAW_MILK_PRODUCTS, // Raw milk/raw milk products
 
 	@Diseases({
-		Disease.SHIGELLOSIS,
-		Disease.DIPHTHERIA })
+		Disease.SHIGELLOSIS })
 	FISH_PRODUCTS, // Fish and fish products
 
 	@Diseases({

@@ -17,12 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -31,7 +34,6 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.TargetTest;
 import de.symeda.sormas.api.sample.TestRunStatus;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.events.SetResultTextEvent;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
@@ -50,6 +52,7 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 
 	private PathogenTestType testType;
 	private PathogenTestResultType testResult;
+	private FieldVisibilityCheckers visibilityCheckers;
 
 	private DrugSusceptibilityForm drugSusceptibilityField;
 	private ComboBox<PathogenSpecie> specieField;
@@ -76,6 +79,8 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 	 */
 	@Override
 	protected void buildLayout() {
+
+		visibilityCheckers = FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 
 		specieField = createComboBox(PathogenTestDto.SPECIE);
 		specieField.setItemCaptionGenerator(PathogenSpecie::toString);
@@ -105,7 +110,6 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 
 		targetTestTextField = createTextField(PathogenTestDto.TARGET_TEST_TEXT);
 		targetTestTextField.setVisible(false);
-		addRow(targetTestField, targetTestTextField);
 		// Rendered above testResultComponent (Diphtheria only) instead of in this section's own body.
 		targetTestRow = createRow(targetTestField, targetTestTextField);
 		targetTestRow.setVisible(false);
@@ -134,15 +138,7 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 		cgMlstClusterTextField.setVisible(false);
 		addRow(mlstSequenceTypeTextField, cgMlstClusterTextField);
 
-		// DrugSusceptibilityForm
-		drugSusceptibilityField = new DrugSusceptibilityForm(
-			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
-		drugSusceptibilityField.setCaption(null);
-
-		addDrugSusceptibilityField(drugSusceptibilityField);
-
-		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
+		drugSusceptibilityField = addDrugSusceptibilityField();
 
 		binder.forField(bioTypeField).bind(PathogenTestDto::getBiotype, PathogenTestDto::setBiotype);
 		binder.forField(bioTypeTextField).bind(PathogenTestDto::getBiotypeText, PathogenTestDto::setBiotypeText);
@@ -209,7 +205,6 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 			if (!showText) {
 				setVisibleClear(false, targetTestTextField);
 			}
-			eventBus.fire(new SetResultTextEvent(test == TargetTest.TOXIN_PRODUCTION ? "Tox gene detected" : null));
 
 		}));
 
@@ -240,8 +235,10 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 
 		// PCR test
 		boolean isPCRTest = testType == PathogenTestType.PCR_RT_PCR;
-		boolean isPositiveTargetSpecieIdentified = isPositive && isPCRTest && targetTestField.getValue() == TargetTest.SPECIES_IDENTIFICATION;
-		boolean isTargetOther = isPCRTest && targetTestField.getValue() == TargetTest.OTHER; // verify this constant name against your enum
+		boolean showTargetTest = isPCRTest && isAllowed(PathogenTestDto.TARGET_TEST);
+		boolean isPositiveTargetSpecieIdentified = isPositive && showTargetTest && targetTestField.getValue() == TargetTest.SPECIES_IDENTIFICATION;
+		boolean isPositiveToxisProduction = isPositive && showTargetTest && targetTestField.getValue() == TargetTest.TOXIN_PRODUCTION;
+		boolean isTargetOther = showTargetTest && targetTestField.getValue() == TargetTest.OTHER;
 
 		boolean isWGSTest = testType == PathogenTestType.WHOLE_GENOME_SEQUENCING;
 		boolean isSequenceDataUploaded = isWGSTest && sequenceDataUploadedToPublicRepField.getValue() == YesNoUnknown.YES;
@@ -262,34 +259,40 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 		}
 
 		// --- PCR branch ---
-		targetTestField.setVisible(isPCRTest);
-		targetTestRow.setVisible(isPCRTest);
-		if (!isPCRTest) {
-			setVisibleClear(false, targetTestField, targetTestTextField);
+		showOrClear(showTargetTest, targetTestField, PathogenTestDto.TARGET_TEST);
+		targetTestRow.setVisible(showTargetTest);
+		showOrClear(isTargetOther, targetTestTextField, PathogenTestDto.TARGET_TEST_TEXT);
+		// If PCR positive with toxin production, pre-fill the test result details; otherwise clear the pre-filled text.
+		String toxGeneText = I18nProperties.getString(Strings.infoToxGeneDetected);
+		if (isPositiveToxisProduction) {
+			eventBus.fire(new SetResultTextEvent(toxGeneText, toxGeneText));
 		} else {
-			targetTestTextField.setVisible(isTargetOther);
-			if (!isTargetOther) {
-				setVisibleClear(false, targetTestTextField);
-			}
+			eventBus.fire(new SetResultTextEvent(null, toxGeneText));
 		}
 
-		// --- WGS branch — deliberately independent of isCulturePositive, which is always false
-		// for a WGS test and previously wiped these fields out right after showing them.
-		testRunStatus.setVisible(isWGSTest);
-		sequenceDataUploadedToPublicRepField.setVisible(isWGSTest);
-		mlstSequenceTypeTextField.setVisible(isWGSTest);
-		cgMlstClusterTextField.setVisible(isWGSTest);
-		if (!isWGSTest) {
-			setVisibleClear(false, testRunStatus, sequenceDataUploadedToPublicRepField, mlstSequenceTypeTextField, cgMlstClusterTextField);
-		}
-
-		sraRunIdTextField.setVisible(isSequenceDataUploaded);
-		accessionNumberTextField.setVisible(isSequenceDataUploaded);
-		if (!isSequenceDataUploaded) {
-			setVisibleClear(false, sraRunIdTextField, accessionNumberTextField);
-		}
+		// --- WGS branch — deliberately independent of isCulturePositive, which is always false for a WGS test.
+		showOrClear(isWGSTest, testRunStatus, PathogenTestDto.TEST_RUN_STATUS);
+		showOrClear(isWGSTest, sequenceDataUploadedToPublicRepField, PathogenTestDto.SEQUENCE_DATA_UPLOADED_TO_PUBLIC_REPOSITORY);
+		showOrClear(isWGSTest, mlstSequenceTypeTextField, PathogenTestDto.MLST_SEQUENCE_TYPE);
+		showOrClear(isWGSTest, cgMlstClusterTextField, PathogenTestDto.CG_MLST_CLUSTER);
+		showOrClear(isSequenceDataUploaded, sraRunIdTextField, PathogenTestDto.SRA_RUN_ID);
+		showOrClear(isSequenceDataUploaded, accessionNumberTextField, PathogenTestDto.ACCESSION_NUMBER);
 
 		updateRowAndSelfVisibility();
+	}
+
+	/** True when @Diseases / @HideForCountriesExcept on PathogenTestDto allow this property for the current disease and country. */
+	private boolean isAllowed(String propertyId) {
+		return visibilityCheckers.isVisible(PathogenTestDto.class, propertyId);
+	}
+
+	/** Shows the field only if the rule wants it AND the DTO annotations allow it; otherwise hides and clears it. */
+	private void showOrClear(boolean show, AbstractComponent field, String propertyId) {
+		boolean visible = show && isAllowed(propertyId);
+		field.setVisible(visible);
+		if (!visible) {
+			setVisibleClear(false, field);
+		}
 	}
 
 	private void updateDrugSusceptibility(PathogenTestType testType) {
@@ -315,14 +318,8 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 		dto.setAccessionNumber(null);
 		dto.setMlstSequenceType(null);
 		dto.setCgMlstCluster(null);
+		dto.setBiotypeText(null);
+		dto.setSequenceDataUploadedToPublicRepository(null);
+		dto.setDrugSusceptibility(null);
 	}
-
-	@Override
-	protected void unbindLegacyFields() {
-		if (drugSusceptibilityField != null) {
-			fieldGroup.unbind(drugSusceptibilityField);
-			drugSusceptibilityField = null;
-		}
-	}
-
 }

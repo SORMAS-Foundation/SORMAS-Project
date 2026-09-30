@@ -314,7 +314,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		activeSection.initialize(getFieldGroup(), eventBus, formConfig, newDisease);
 		activeSection.setVisibilityCallback(visible -> diseaseSectionSlot.setVisible(visible));
 		diseaseSectionSlot.addComponent(activeSection);
-
+		attachPreResultComponent(activeSection);
 		PathogenTestDto dto = getValue();
 		if (dto != null) {
 			activeSection.setDto(dto);

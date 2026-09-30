@@ -87,8 +87,8 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -103,8 +103,8 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -161,8 +161,8 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
 
@@ -192,8 +192,8 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@NotSelectableForNewTests
 	CQ_VALUE_DETECTION,
 
@@ -585,8 +585,8 @@ public enum PathogenTestType {
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
-		Disease.YERSINIOSIS,
-		Disease.DIPHTHERIA }, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ANTIBODY_DETECTION,
@@ -655,8 +655,8 @@ public enum PathogenTestType {
 		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	NEUTRALIZING_ANTIBODIES,
@@ -838,8 +838,8 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -867,8 +867,8 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	@NotSelectableForNewTests
@@ -895,8 +895,8 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA}, hide = true)
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	@NotSelectableForNewTests
@@ -1243,8 +1243,8 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA })
+        Disease.DIPHTHERIA,
+		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	// AST has no result value type of its own — its result is the drug-susceptibility grid, not a
 	// Positive/Negative/numeric/text value. The empty set hides the Test result selector and all quantitative

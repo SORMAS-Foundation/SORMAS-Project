@@ -25,12 +25,26 @@ package de.symeda.sormas.ui.samples.events;
 public class SetResultTextEvent {
 
     private final String resultText;
+    private final String expectedCurrentText;
 
     public SetResultTextEvent(String resultText) {
+        this(resultText, null);
+    }
+
+    /**
+     * Conditional variant: the text is only replaced if the field is currently blank or still holds
+     * {@code expectedCurrentText}, so user-entered text is never overwritten.
+     */
+    public SetResultTextEvent(String resultText, String expectedCurrentText) {
         this.resultText = resultText;
+        this.expectedCurrentText = expectedCurrentText;
     }
 
     public String getResultText() {
         return resultText;
+    }
+
+    public String getExpectedCurrentText() {
+        return expectedCurrentText;
     }
 }

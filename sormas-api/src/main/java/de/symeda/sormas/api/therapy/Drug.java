@@ -111,7 +111,7 @@ public enum Drug {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
 		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA })
+        Disease.DIPHTHERIA })
 	AZITHROMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })

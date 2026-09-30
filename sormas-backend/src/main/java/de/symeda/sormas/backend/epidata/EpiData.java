@@ -36,7 +36,6 @@ import javax.persistence.OneToMany;
 
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
-import de.symeda.sormas.api.epidata.InfectionSourceSetConverter;
 import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.epidata.TypeOfClinicalService;
 import de.symeda.sormas.api.exposure.InfectionSource;

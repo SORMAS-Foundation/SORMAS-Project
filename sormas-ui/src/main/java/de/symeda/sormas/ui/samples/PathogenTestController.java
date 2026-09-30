@@ -76,7 +76,7 @@ public class PathogenTestController {
 
 	private final PathogenTestFacade facade = FacadeProvider.getPathogenTestFacade();
 
-	// Antibiotic susceptibility test is applicable for TB(Lux), IMI, IPI, Shigellosis,Diphtheria and Gonococcal infection. For others it should be null.
+	// Antibiotic susceptibility test is applicable for TB(Lux), IMI, IPI, Shigellosis, Diphtheria and Gonococcal infection. For others it should be null.
 	private static final List<Disease> AST_ALLOWED_DISEASES = Arrays
 		.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.SHIGELLOSIS, Disease.GONOCOCCAL_INFECTION, Disease.DIPHTHERIA);
 
