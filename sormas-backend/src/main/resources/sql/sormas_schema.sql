@@ -17579,4 +17579,66 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS genogroup varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (672, '#14312 - Add Gonococcal infection antimicrobial susceptibility and molecular typing fields');
 
+-- #14312 - Store contact.prescribeddrug by name instead of by ordinal
+-- Ordinals follow the Drug order released in v1.104.0
+ALTER TABLE contact DISABLE TRIGGER versioning_trigger;
+
+UPDATE contact SET prescribeddrug = drug.name
+FROM (VALUES
+    ('0', 'AMIKACIN'),
+    ('1', 'BEDAQUILINE'),
+    ('2', 'CAPREOMYCIN'),
+    ('3', 'CIPROFLOXACIN'),
+    ('4', 'DELAMANID'),
+    ('5', 'ETHAMBUTOL'),
+    ('6', 'GATIFLOXACIN'),
+    ('7', 'ISONIAZID'),
+    ('8', 'KANAMYCIN'),
+    ('9', 'LEVOFLOXACIN'),
+    ('10', 'MOXIFLOXACIN'),
+    ('11', 'OFLOXACIN'),
+    ('12', 'RIFAMPICIN'),
+    ('13', 'STREPTOMYCIN'),
+    ('14', 'CEFTRIAXONE'),
+    ('15', 'PENICILLIN'),
+    ('16', 'ERYTHROMYCIN'),
+    ('17', 'AZITHROMYCIN'),
+    ('18', 'CEFTAZIDIME'),
+    ('19', 'CEFOTAXIME'),
+    ('20', 'AMPICILLIN'),
+    ('21', 'TRIMETHOPRIM_SULFAMETHOXAZOLE'),
+    ('22', 'OTHER')) AS drug (ordinal, name)
+WHERE contact.prescribeddrug = drug.ordinal;
+
+UPDATE contact_history SET prescribeddrug = drug.name
+FROM (VALUES
+    ('0', 'AMIKACIN'),
+    ('1', 'BEDAQUILINE'),
+    ('2', 'CAPREOMYCIN'),
+    ('3', 'CIPROFLOXACIN'),
+    ('4', 'DELAMANID'),
+    ('5', 'ETHAMBUTOL'),
+    ('6', 'GATIFLOXACIN'),
+    ('7', 'ISONIAZID'),
+    ('8', 'KANAMYCIN'),
+    ('9', 'LEVOFLOXACIN'),
+    ('10', 'MOXIFLOXACIN'),
+    ('11', 'OFLOXACIN'),
+    ('12', 'RIFAMPICIN'),
+    ('13', 'STREPTOMYCIN'),
+    ('14', 'CEFTRIAXONE'),
+    ('15', 'PENICILLIN'),
+    ('16', 'ERYTHROMYCIN'),
+    ('17', 'AZITHROMYCIN'),
+    ('18', 'CEFTAZIDIME'),
+    ('19', 'CEFOTAXIME'),
+    ('20', 'AMPICILLIN'),
+    ('21', 'TRIMETHOPRIM_SULFAMETHOXAZOLE'),
+    ('22', 'OTHER')) AS drug (ordinal, name)
+WHERE contact_history.prescribeddrug = drug.ordinal;
+
+ALTER TABLE contact ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (673, '#14312 - Store the contact prescribed drug by name instead of ordinal');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
