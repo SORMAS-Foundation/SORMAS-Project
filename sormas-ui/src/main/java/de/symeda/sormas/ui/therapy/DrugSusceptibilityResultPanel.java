@@ -16,14 +16,20 @@
 package de.symeda.sormas.ui.therapy;
 
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.AMPICILLIN_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.AZITHROMYCIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.CEFIXIME_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.CEFOTAXIME_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.CEFTAZIDIME_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.GENTAMICIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY;
@@ -31,7 +37,10 @@ import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.MOXIFLOXACIN_SU
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.TETRACYCLINE_SUSCEPTIBILITY;
+import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
 import java.util.Arrays;
@@ -88,6 +97,15 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 		STREPTOMYCIN_SUSCEPTIBILITY,
 		CEFTRIAXONE_SUSCEPTIBILITY,
 		PENICILLIN_SUSCEPTIBILITY,
+		AZITHROMYCIN_SUSCEPTIBILITY,
+		CEFIXIME_SUSCEPTIBILITY,
+		TETRACYCLINE_SUSCEPTIBILITY,
+		GENTAMICIN_SUSCEPTIBILITY,
+		SPECTINOMYCIN_SUSCEPTIBILITY,
+		CEFTAZIDIME_SUSCEPTIBILITY,
+		CEFOTAXIME_SUSCEPTIBILITY,
+		AMPICILLIN_SUSCEPTIBILITY,
+		TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY,
 		ERYTHROMYCIN_SUSCEPTIBILITY);
 
 	public DrugSusceptibilityResultPanel(PathogenTestDto pathogenTestDto) {

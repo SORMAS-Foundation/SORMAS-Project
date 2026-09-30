@@ -87,6 +87,7 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
@@ -102,6 +103,7 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
@@ -127,6 +129,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -158,6 +161,7 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
@@ -188,6 +192,7 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
 	@NotSelectableForNewTests
 	CQ_VALUE_DETECTION,
@@ -223,6 +228,8 @@ public enum PathogenTestType {
 	// Molecular Assays
 	// ----------------------------------------------------------------------------------------------
 
+	@Diseases(value = {
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText
 	@ResultValueTypeRel({
@@ -247,6 +254,7 @@ public enum PathogenTestType {
 		Disease.SYPHILIS,
 		Disease.MEASLES,
 		Disease.MALARIA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -273,6 +281,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -308,6 +317,7 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -335,6 +345,7 @@ public enum PathogenTestType {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -362,6 +373,7 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -387,6 +399,7 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -401,6 +414,7 @@ public enum PathogenTestType {
 		Disease.MUMPS,
 		Disease.SYPHILIS,
 		Disease.MALARIA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -442,6 +456,7 @@ public enum PathogenTestType {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -455,12 +470,18 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.SYPHILIS,
 		Disease.MALARIA,
-		Disease.YERSINIOSIS })
+		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
 		ResultValueType.NUMERIC })
 	NAAT,
+
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	NON_AMPLIFIED_NUCLEIC_ACID_PROBE_TEST,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -508,6 +529,7 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MUMPS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
@@ -560,6 +582,7 @@ public enum PathogenTestType {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -603,6 +626,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -631,6 +655,7 @@ public enum PathogenTestType {
 		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
@@ -693,6 +718,7 @@ public enum PathogenTestType {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -716,6 +742,7 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -748,6 +775,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -773,6 +801,7 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -809,6 +838,7 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
@@ -837,6 +867,7 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
@@ -864,7 +895,8 @@ public enum PathogenTestType {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.DIPHTHERIA }, hide = true)
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	@NotSelectableForNewTests
@@ -889,6 +921,7 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -941,6 +974,7 @@ public enum PathogenTestType {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -966,6 +1000,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -992,6 +1027,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1018,6 +1054,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1047,6 +1084,7 @@ public enum PathogenTestType {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1076,6 +1114,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1105,6 +1144,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1132,6 +1172,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1158,6 +1199,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1189,6 +1231,11 @@ public enum PathogenTestType {
 	// Antimicrobial Susceptibility Testing
 	// ----------------------------------------------------------------------------------------------
 
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	PENICILLINASE_ACTIVITY,
+
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
@@ -1196,6 +1243,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	// AST has no result value type of its own — its result is the drug-susceptibility grid, not a
@@ -1221,6 +1269,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1268,6 +1317,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GONOCOCCAL_INFECTION,
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
@@ -1442,7 +1492,8 @@ public enum PathogenTestType {
 	 * the rule cannot drift.
 	 *
 	 * <p>
-	 * The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria.
+	 * The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, {@code Q_PCR} on Malaria, or
+	 * {@code NAAT} on Gonococcal infection.
 	 * Tuberculosis is included as well (#14030): a positive TB PCR shows the Cq value like every other disease.
 	 *
 	 * @param disease
@@ -1451,6 +1502,9 @@ public enum PathogenTestType {
 	 *            the test method (may be {@code null})
 	 */
 	public static boolean cqInputApplies(Disease disease, PathogenTestType testType) {
-		return testType == PCR_RT_PCR || testType == CQ_VALUE_DETECTION || (disease == Disease.MALARIA && testType == Q_PCR);
+		return testType == PCR_RT_PCR
+			|| testType == CQ_VALUE_DETECTION
+			|| (disease == Disease.MALARIA && testType == Q_PCR)
+			|| (disease == Disease.GONOCOCCAL_INFECTION && testType == NAAT);
 	}
 }

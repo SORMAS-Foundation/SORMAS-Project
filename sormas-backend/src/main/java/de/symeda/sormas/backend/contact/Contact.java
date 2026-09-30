@@ -1187,6 +1187,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public Drug getPrescribedDrug() {
 		return prescribedDrug;
 	}

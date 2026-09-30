@@ -2583,6 +2583,7 @@ public interface Captions {
 	String PathogenTest_externalOrderId = "PathogenTest.externalOrderId";
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
 	String PathogenTest_fourFoldIncreaseAntibodyTiter_DENGUE = "PathogenTest.fourFoldIncreaseAntibodyTiter.DENGUE";
+	String PathogenTest_genogroup = "PathogenTest.genogroup";
 	String PathogenTest_genoType = "PathogenTest.genoType";
 	String PathogenTest_genoTypeText = "PathogenTest.genoTypeText";
 	String PathogenTest_isoniazidResistant = "PathogenTest.isoniazidResistant";
@@ -2593,6 +2594,7 @@ public interface Captions {
 	String PathogenTest_patternProfile = "PathogenTest.patternProfile";
 	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
 	String PathogenTest_performedByReferenceLaboratory = "PathogenTest.performedByReferenceLaboratory";
+	String PathogenTest_porBAllele = "PathogenTest.porBAllele";
 	String PathogenTest_preliminary = "PathogenTest.preliminary";
 	String PathogenTest_prescriber = "PathogenTest.prescriber";
 	String PathogenTest_prescriberAddress = "PathogenTest.prescriberAddress";
@@ -2614,6 +2616,7 @@ public interface Captions {
 	String PathogenTest_rsvSubtype = "PathogenTest.rsvSubtype";
 	String PathogenTest_sequenceDataUploadedToPublicRepository = "PathogenTest.sequenceDataUploadedToPublicRepository";
 	String PathogenTest_sequenceId = "PathogenTest.sequenceId";
+	String PathogenTest_sequenceType = "PathogenTest.sequenceType";
 	String PathogenTest_seroConversion = "PathogenTest.seroConversion";
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
 	String PathogenTest_seroGroupSpecificationText = "PathogenTest.seroGroupSpecificationText";
@@ -2632,6 +2635,7 @@ public interface Captions {
 	String PathogenTest_syphilisSerologyMethodText = "PathogenTest.syphilisSerologyMethodText";
 	String PathogenTest_targetTest = "PathogenTest.targetTest";
 	String PathogenTest_targetTestText = "PathogenTest.targetTestText";
+	String PathogenTest_tbpBAllele = "PathogenTest.tbpBAllele";
 	String PathogenTest_testCategory = "PathogenTest.testCategory";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
