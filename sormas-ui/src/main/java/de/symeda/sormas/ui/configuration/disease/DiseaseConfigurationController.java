@@ -23,6 +23,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DiseaseConfigurationController {
@@ -34,6 +35,17 @@ public class DiseaseConfigurationController {
 
 		final CommitDiscardWrapperComponent<DiseaseConfigurationEditForm> cdw =
 			new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
+		cdw.setPreCommitListener(successCallback -> {
+			if (editForm.hasDeprecatedExposureCategories()) {
+				// Show the deprecated values hint as a warning instead of the generic validation error
+				NotificationHelper.showNotification(
+					I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues),
+					Notification.Type.WARNING_MESSAGE,
+					-1);
+			} else {
+				successCallback.run();
+			}
+		});
 		cdw.addCommitListener(() -> {
 			FacadeProvider.getDiseaseConfigurationFacade().saveDiseaseConfiguration(editForm.getValue());
 			FacadeProvider.getDiseaseConfigurationFacade().loadData();
