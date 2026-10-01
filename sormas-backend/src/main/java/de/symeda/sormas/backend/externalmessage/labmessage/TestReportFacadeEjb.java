@@ -185,6 +185,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPathogenTestCategory(source.getPathogenTestCategory());
 		target.setFourFoldIncreaseAntibodyTiter(source.getFourFoldIncreaseAntibodyTiter());
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+		target.setSeroConversion(source.getSeroConversion());
 
 		target.setBiotype(source.getBiotype());
 		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
@@ -309,6 +310,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPathogenTestCategory(source.getPathogenTestCategory());
 		target.setFourFoldIncreaseAntibodyTiter(source.getFourFoldIncreaseAntibodyTiter());
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+		target.setSeroConversion(source.getSeroConversion());
 
 		target.setBiotype(source.getBiotype());
 		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
