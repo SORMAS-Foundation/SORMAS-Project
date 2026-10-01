@@ -211,6 +211,7 @@ public class TestReport extends AbstractDomainObject {
 	private PathogenTestCategory pathogenTestCategory;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private Boolean performedByReferenceLaboratory;
+	private Boolean seroConversion;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -1151,6 +1152,15 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
 		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	@Column
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
 	}
 
 	@Column
