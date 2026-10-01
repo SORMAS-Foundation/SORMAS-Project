@@ -9,7 +9,7 @@ import de.symeda.sormas.api.location.LocationDto;
 public interface PersonalDataProviderFacade {
 
 	@Nullable
-	PersonalDataDto findDataByNationalHealthId(@NotNull String nationalHealthId);
+	PersonalDataSummaryDto findDataByNationalHealthId(@NotNull String nationalHealthId);
 
 	@Nullable
 	PersonalDataForDisplayDto findDisplayDataByNationalHealthId(@NotNull String nationalHealthId);
