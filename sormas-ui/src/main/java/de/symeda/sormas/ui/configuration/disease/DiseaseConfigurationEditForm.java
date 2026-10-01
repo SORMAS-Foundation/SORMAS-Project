@@ -34,8 +34,6 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.RichTextArea;
@@ -254,16 +252,6 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		}
 
 		updateDeprecatedValuesWarning();
-	}
-
-	@Override
-	public void preCommit(FieldGroup.CommitEvent commitEvent) throws FieldGroup.CommitException {
-		super.preCommit(commitEvent);
-
-		// Deprecated exposure categories are kept for historical data but must be removed before the configuration can be saved
-		if (hasDeprecatedExposureCategories()) {
-			throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues));
-		}
 	}
 
 	@SuppressWarnings("unchecked")

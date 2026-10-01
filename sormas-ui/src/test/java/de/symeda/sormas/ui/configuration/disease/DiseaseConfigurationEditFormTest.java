@@ -16,9 +16,7 @@
 package de.symeda.sormas.ui.configuration.disease;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -29,8 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
 
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
@@ -100,15 +96,8 @@ class DiseaseConfigurationEditFormTest extends AbstractUiBeanTest {
 		config.setExposureCategories(new HashSet<>(EnumSet.of(ExposureCategory.AIR_BORNE, ExposureCategory.RESPIRATORY)));
 		form.setValue(config);
 
-		Validator.InvalidValueException exception = assertThrows(Validator.InvalidValueException.class, () -> form.preCommit(null));
-		assertEquals(I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues), exception.getMessage());
-
-		// The save button commits the field group, which must fail with the same message
-		FieldGroup.CommitException commitException = assertThrows(FieldGroup.CommitException.class, () -> form.getFieldGroup().commit());
-		assertTrue(commitException.getCause() instanceof Validator.InvalidValueException);
-		assertEquals(
-			I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues),
-			commitException.getCause().getMessage());
+		// The save listener of the controller blocks the save while this is true
+		assertTrue(form.hasDeprecatedExposureCategories());
 	}
 
 	@Test
@@ -125,7 +114,7 @@ class DiseaseConfigurationEditFormTest extends AbstractUiBeanTest {
 		exposureCategoriesField.setValue(new HashSet<>(EnumSet.of(ExposureCategory.RESPIRATORY)));
 
 		assertFalse(isDeprecatedValuesWarningVisible(form));
-		assertDoesNotThrow(() -> form.preCommit(null));
+		assertFalse(form.hasDeprecatedExposureCategories());
 	}
 
 	@Test
@@ -138,7 +127,7 @@ class DiseaseConfigurationEditFormTest extends AbstractUiBeanTest {
 		assertDoesNotThrow(() -> form.setValue(config));
 
 		assertFalse(isDeprecatedValuesWarningVisible(form));
-		assertDoesNotThrow(() -> form.preCommit(null));
+		assertFalse(form.hasDeprecatedExposureCategories());
 	}
 
 	@Test
@@ -150,7 +139,7 @@ class DiseaseConfigurationEditFormTest extends AbstractUiBeanTest {
 		assertDoesNotThrow(() -> form.setValue(config));
 
 		assertFalse(isDeprecatedValuesWarningVisible(form));
-		assertDoesNotThrow(() -> form.preCommit(null));
+		assertFalse(form.hasDeprecatedExposureCategories());
 	}
 
 	private static boolean isDeprecatedValuesWarningVisible(DiseaseConfigurationEditForm form) {

@@ -83,7 +83,6 @@ public interface Validations {
 	String eventSubordinateEventFromDateFilterValidation = "eventSubordinateEventFromDateFilterValidation";
 	String eventSuperordinateEventToDateFilterValidation = "eventSuperordinateEventToDateFilterValidation";
 	String exportNoNameSpecified = "exportNoNameSpecified";
-	String exposureDeprecatedValue = "exposureDeprecatedValue";
 	String externalJournalPersonSynchronizationFailure = "externalJournalPersonSynchronizationFailure";
 	String externalJournalPersonSynchronizationPartial = "externalJournalPersonSynchronizationPartial";
 	String externalJournalPersonSynchronizationSuccess = "externalJournalPersonSynchronizationSuccess";

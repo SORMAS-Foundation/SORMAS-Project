@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
@@ -30,8 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
@@ -167,7 +164,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 	@Test
 	void shouldDisableLegacySubSettingAfterDeselection() {
 		ExposureForm form = new ExposureForm(
-			true,
+			false,
 			CaseDataDto.class,
 			Collections.emptyList(),
 			FieldVisibilityCheckers.withDisease(Disease.MALARIA),
@@ -248,13 +245,8 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 		exposure.setExposureSetting(ExposureSetting.INDOOR);
 		form.setValue(exposure);
 
-		Validator.InvalidValueException exception = assertThrows(Validator.InvalidValueException.class, () -> form.preCommit(null));
-		assertEquals(I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues), exception.getMessage());
-
-		// The commit button of the popup commits the field group, which must fail with the same message
-		FieldGroup.CommitException commitException = assertThrows(FieldGroup.CommitException.class, () -> form.getFieldGroup().commit());
-		assertTrue(commitException.getCause() instanceof Validator.InvalidValueException);
-		assertEquals(I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues), commitException.getCause().getMessage());
+		// The save listener of the exposure popup blocks the save while this is true
+		assertTrue(form.hasDeprecatedValues());
 	}
 
 	@Test
@@ -270,7 +262,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 		categoryField.setValue(ExposureCategory.RESPIRATORY);
 
 		assertFalse(isDeprecatedValuesWarningVisible(form));
-		assertDoesNotThrow(() -> form.preCommit(null));
+		assertFalse(form.hasDeprecatedValues());
 	}
 
 	@Test
@@ -288,7 +280,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 		Set<ExposureSubSetting> subSettings = (Set<ExposureSubSetting>) form.getField(ExposureDto.SUB_SETTINGS).getValue();
 		assertTrue(subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD));
 		assertTrue(isDeprecatedValuesWarningVisible(form));
-		assertThrows(Validator.InvalidValueException.class, () -> form.preCommit(null));
+		assertTrue(form.hasDeprecatedValues());
 	}
 
 	@Test
@@ -307,14 +299,14 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 		// the deprecated setting is still selected, so the save must still be blocked
 		assertTrue(isDeprecatedValuesWarningVisible(form));
-		assertThrows(Validator.InvalidValueException.class, () -> form.preCommit(null));
+		assertTrue(form.hasDeprecatedValues());
 
 		// switching to an active category clears the deprecated setting
 		ComboBox categoryField = (ComboBox) form.getField(ExposureDto.EXPOSURE_CATEGORY);
 		categoryField.setValue(ExposureCategory.RESPIRATORY);
 
 		assertFalse(isDeprecatedValuesWarningVisible(form));
-		assertDoesNotThrow(() -> form.preCommit(null));
+		assertFalse(form.hasDeprecatedValues());
 	}
 
 	@Test
@@ -327,7 +319,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 		assertDoesNotThrow(() -> form.setValue(exposure));
 
 		assertFalse(isDeprecatedValuesWarningVisible(form));
-		assertDoesNotThrow(() -> form.preCommit(null));
+		assertFalse(form.hasDeprecatedValues());
 	}
 
 	@Test
@@ -355,7 +347,20 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 		assertNull(categoryField.getValue());
 		assertFalse(categoryField.getItemIds().contains(ExposureCategory.DIRECT_CONTACT));
 		assertFalse(isDeprecatedValuesWarningVisible(form));
-		assertDoesNotThrow(() -> form.preCommit(null));
+		assertFalse(form.hasDeprecatedValues());
+	}
+
+	@Test
+	void shouldDropDeprecatedPresetSubSettingsForNewExposure() {
+		ExposureForm form = createMalariaForm(true);
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.setExposureCategory(ExposureCategory.VECTOR_BORNE);
+		exposure.setSubSettings(EnumSet.of(ExposureSubSetting.TRAVELED_ABROAD));
+		form.setValue(exposure);
+
+		assertFalse(isDeprecatedValuesWarningVisible(form));
+		assertFalse(form.hasDeprecatedValues());
 	}
 
 	@Test
@@ -401,7 +406,7 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 
 		assertNull(form.getField(ExposureDto.EXPOSURE_SETTING).getValue());
 		assertFalse(isDeprecatedValuesWarningVisible(form));
-		assertDoesNotThrow(() -> form.preCommit(null));
+		assertFalse(form.hasDeprecatedValues());
 	}
 
 	private static ExposureForm createMalariaForm(boolean create) {

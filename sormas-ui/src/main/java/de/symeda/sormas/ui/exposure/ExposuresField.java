@@ -26,12 +26,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
-import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;

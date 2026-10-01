@@ -39,8 +39,6 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -637,19 +635,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			// if the disease is Malaria or Dengue and the category is VECTOR_BORNE, preselect MOSQUITO_BORNE as setting (since it's the only valid option in this case)
 			boolean isVectorBorneAutoSetting =
 				Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE;
-			// Sexually transmitted infections: Direct contact defaults to Person to person, but remains editable (other settings are available)
-			boolean isSexuallyTransmittedInfectionDirectContact =
-				(disease == Disease.SYPHILIS || disease == Disease.GONOCOCCAL_INFECTION) && category == ExposureCategory.DIRECT_CONTACT;
 
 			// FIXME - address the auto selection based on the new exposure values
-			ExposureSetting defaultSetting;
-			if (isVectorBorneAutoSetting) {
-				defaultSetting = ExposureSetting.MOSQUITO_BORNE;
-			} else if (isSexuallyTransmittedInfectionDirectContact) {
-				defaultSetting = ExposureSetting.PERSON_TO_PERSON;
-			} else {
-				defaultSetting = null;
-			}
+			ExposureSetting defaultSetting = isVectorBorneAutoSetting ? ExposureSetting.MOSQUITO_BORNE : null;
 
 			ExposureSetting valueToSet;
 			if (currentSetting != null && settings.contains(currentSetting)) {
@@ -892,6 +880,26 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		return deprecatedChecker.test((T) value);
 	}
 
+	/**
+	 * Returns a copy of the given values without the deprecated ones. A copy is returned because the given set may be
+	 * immutable.
+	 *
+	 * @param values
+	 *            the values to filter, may be null
+	 * @param deprecatedChecker
+	 *            tells whether a value is deprecated
+	 * @return a new set with only the active values, or null if the given values are null
+	 */
+	private static <T> Set<T> withoutDeprecated(Set<T> values, Predicate<T> deprecatedChecker) {
+		if (values == null) {
+			return null;
+		}
+
+		Set<T> activeValues = new LinkedHashSet<>(values);
+		activeValues.removeIf(deprecatedChecker);
+		return activeValues;
+	}
+
 	public boolean hasDeprecatedValues() {
 		return containsDeprecatedValue(categoryField.getValue(), ExposureCategory::isDeprecated)
 			|| containsDeprecatedValue(settingField.getValue(), ExposureSetting::isDeprecated)
@@ -903,16 +911,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private void updateDeprecatedValuesWarning() {
 		if (deprecatedValuesWarningLabel != null) {
 			deprecatedValuesWarningLabel.setVisible(hasDeprecatedValues());
-		}
-	}
-
-	@Override
-	public void preCommit(FieldGroup.CommitEvent commitEvent) throws FieldGroup.CommitException {
-		super.preCommit(commitEvent);
-
-		// Deprecated values are kept for historical data but must be replaced or removed before the exposure can be saved
-		if (hasDeprecatedValues()) {
-			throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues));
 		}
 	}
 
@@ -1002,6 +1000,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			if (newFieldValue.getExposureSetting() != null && newFieldValue.getExposureSetting().isDeprecated()) {
 				newFieldValue.setExposureSetting(null);
 			}
+			newFieldValue.setSubSettings(withoutDeprecated(newFieldValue.getSubSettings(), ExposureSubSetting::isDeprecated));
+			newFieldValue.setContactFactors(withoutDeprecated(newFieldValue.getContactFactors(), ExposureContactFactor::isDeprecated));
+			newFieldValue.setProtectiveMeasures(
+				withoutDeprecated(newFieldValue.getProtectiveMeasures(), ExposureProtectiveMeasure::isDeprecated));
 		}
 		super.setValue(newFieldValue);
 
