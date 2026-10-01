@@ -74,6 +74,7 @@ import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.audit.ExternalSystemCallAuditRequest;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
@@ -497,6 +498,11 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	@Override
 	public void logExternalMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias) {
 		logLabMessageError(messageUuid, EXPORT_CODING, LAB_MESSAGE_CONVERT_TO_PDF, outcome, error, start, end, authAlias);
+	}
+
+	@Override
+	public void logExternalSystemCall(ExternalSystemCallAuditRequest request) {
+
 	}
 
 	private void logLabMessageError(
