@@ -106,6 +106,7 @@ public interface Validations {
 	String externalMessageInitError = "externalMessageInitError";
 	String externalMessagePdfConversionError = "externalMessagePdfConversionError";
 	String externalMessageRefersToMultipleEntities = "externalMessageRefersToMultipleEntities";
+	String externalPersonDataProviderConfigError = "externalPersonDataProviderConfigError";
 	String feverTemperatureAboveThreshold = "feverTemperatureAboveThreshold";
 	String feverTemperatureBelowThreshold = "feverTemperatureBelowThreshold";
 	String fileTooBig = "fileTooBig";
