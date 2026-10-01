@@ -30377,6 +30377,8 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        seroConversion:
+          type: boolean
         seroGroupSpecification:
           type: string
           enum:
