@@ -53,6 +53,9 @@ public class ImmunizationController {
 		navigator.addView(ImmunizationsView.VIEW_NAME, ImmunizationsView.class);
 		navigator.addView(ImmunizationDataView.VIEW_NAME, ImmunizationDataView.class);
 		navigator.addView(ImmunizationPersonView.VIEW_NAME, ImmunizationPersonView.class);
+		if (UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)) {
+			navigator.addView(ImmunizationExternalPersonDataView.VIEW_NAME, ImmunizationExternalPersonDataView.class);
+		}
 	}
 
 	public void create() {

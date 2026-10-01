@@ -50,6 +50,7 @@ import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
+import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -259,7 +260,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			menu.addView(CaseExternalDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_DATA), params);
 		}
 
-		if (CaseExternalPersonDataView.isAvailable()) {
+		if (ExternalPersonDataComponent.isAvailable()) {
 			menu.addView(CaseExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
 		}
 
