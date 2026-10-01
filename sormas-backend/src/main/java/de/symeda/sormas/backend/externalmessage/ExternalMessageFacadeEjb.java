@@ -53,23 +53,13 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.jayway.jsonpath.JsonPath;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
@@ -142,8 +132,6 @@ import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
-import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.backend.user.KeycloakService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -164,7 +152,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private static final String SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_CONFIG_KEY = "SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY";
 	public static final String DEFAULT_SURVEY_PERIOD_INTERVAL_DAYS = "5";
 
-	private static final Logger logger = LoggerFactory.getLogger(ExternalMessageFacadeEjb.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -202,10 +190,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private de.symeda.sormas.backend.patch.partial_retrieval.PartialRetrieverImpl partialRetriever;
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
-	@EJB
-	private KeycloakService keycloakService;
-	@EJB
-	private CurrentUserService currentUserService;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -364,8 +348,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
-		keyCloakStuff(null);
-
 		if (since == null) {
 			int dateRange = Integer.parseInt(
 				Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_DAYS_CONFIG_KEY))
@@ -447,78 +429,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 
 		return savedDtos;
-	}
-
-	// TODO: do not commit this
-	private void keyCloakStuff(String token) {
-		try {
-			logKeycloakStuff(token);
-
-			logger.error("XXXXXXXX---- NEW KEY_CLOAK TESTS START ----XXXXXXXX");
-			String oicdcToken = currentUserService.getCurrentAccessToken().orElse("MISSING_TOKEN");
-
-			logger.error("oicdcToken: {}", oicdcToken);
-
-			logger.error("XXXXXXXX---- NEW KEY_CLOAK TESTS END ----XXXXXXXX");
-
-		} catch (RuntimeException e) {
-			logger.error("Failure during keycloak logging", e);
-		}
-	}
-
-	private void logKeycloakStuff(String token) {
-		logger.error("XXXXXXXX---- KEY_CLOAK TESTS START ----XXXXXXXX");
-
-		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
-
-		if (oidcJson.isEmpty()) {
-			logger.error("missing OIDC config that should not happen");
-			return;
-		}
-
-		String keycloakJsonConfig = oidcJson.get();
-
-		logger.error("Full ODIC config: [{}]", keycloakJsonConfig);
-
-		String authServerUrl = JsonPath.read(keycloakJsonConfig, "auth-server-url");
-
-		logger.error("realm [{}]", (String) JsonPath.read(keycloakJsonConfig, "realm"));
-		logger.error("authServerUrl [{}]", authServerUrl);
-		logger.error("clientSecret [{}]", (String) JsonPath.read(keycloakJsonConfig, "credentials.secret"));
-
-		String securityToken = token != null ? token : keycloakService.getSecurityToken();
-
-		if (StringUtils.isBlank(securityToken)) {
-			logger.error("Keycloak security token is empty");
-		}
-
-		logger.error("Keycloak security token [{}]", securityToken);
-
-		Client client = ClientBuilder.newClient().register((ClientRequestFilter) ctx -> {
-			ctx.getHeaders().add("Authorization", "Bearer " + securityToken);
-		}).register(new JacksonJsonProvider(ObjectMapperProvider.getInstance()));
-
-		WebTarget target = client.target(authServerUrl).path("realms/SORMAS/broker/oidc/token");
-
-		Response response = target.request().get();
-
-		// Status
-		int status = response.getStatus();
-		Response.StatusType statusInfo = response.getStatusInfo();
-
-// Headers
-		MultivaluedMap<String, Object> headers = response.getHeaders();
-
-// Build log message
-		logger.error("Response status: {} {}", status, statusInfo.getReasonPhrase());
-		logger.error("Response headers: {}", headers);
-
-		if (response.hasEntity()) {
-			String body = response.readEntity(String.class);
-			logger.error("Response body: {}", body);
-		}
-
-		logger.error("XXXXXXXX---- KEY_CLOAK TESTS END ----XXXXXXXX");
 	}
 
 	@Override
@@ -1117,12 +1027,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public boolean exists(String uuid) {
-		String token = uuid;
-
-		logger.error("Retrieved following token: [{}]", token);
-
-		keyCloakStuff(token);
-
 		return externalMessageService.exists(uuid);
 	}
 
