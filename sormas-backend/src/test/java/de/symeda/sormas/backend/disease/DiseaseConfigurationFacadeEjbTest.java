@@ -23,7 +23,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		creator.updateDiseaseConfiguration(Disease.CHOLERA, true, false, true, false, null, true, 0, 5);
 		creator.updateDiseaseConfiguration(Disease.DENGUE, false, true, true, false, null, true, 2, 14);
 		creator.updateDiseaseConfiguration(Disease.LASSA, false, false, false, true, null, true, 3, 21);
-		creator.updateDiseaseConfiguration(Disease.DIPHTERIA, true, false, false, true, null, true, 1, 10);
+		creator.updateDiseaseConfiguration(Disease.DIPHTHERIA, true, false, false, true, null, true, 1, 10);
 		creator.updateDiseaseConfiguration(Disease.MALARIA, true, true, false, true, null, true, 7, 60);
 		creator.updateDiseaseConfiguration(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, true, true, true, false, null, true, 1, 10);
 		creator.updateDiseaseConfiguration(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, true, true, true, false, null, true, 1, 3);
@@ -34,7 +34,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(diseases.contains(Disease.CHOLERA));
 		assertFalse(diseases.contains(Disease.DENGUE));
 		assertFalse(diseases.contains(Disease.LASSA));
-		assertFalse(diseases.contains(Disease.DIPHTERIA));
+		assertFalse(diseases.contains(Disease.DIPHTHERIA));
 		assertFalse(diseases.contains(Disease.MALARIA));
 		assertTrue(diseases.contains(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		assertTrue(diseases.contains(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
@@ -45,7 +45,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(diseases.contains(Disease.CHOLERA));
 		assertFalse(diseases.contains(Disease.DENGUE));
 		assertFalse(diseases.contains(Disease.LASSA));
-		assertFalse(diseases.contains(Disease.DIPHTERIA));
+		assertFalse(diseases.contains(Disease.DIPHTHERIA));
 		assertFalse(diseases.contains(Disease.MALARIA));
 		assertFalse(diseases.contains(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		assertFalse(diseases.contains(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
@@ -55,7 +55,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(diseases.contains(Disease.CHOLERA));
 		assertFalse(diseases.contains(Disease.DENGUE));
 		assertFalse(diseases.contains(Disease.LASSA));
-		assertFalse(diseases.contains(Disease.DIPHTERIA));
+		assertFalse(diseases.contains(Disease.DIPHTHERIA));
 		assertFalse(diseases.contains(Disease.MALARIA));
 		assertTrue(diseases.contains(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		assertTrue(diseases.contains(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
@@ -65,7 +65,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(diseases.contains(Disease.CHOLERA));
 		assertFalse(diseases.contains(Disease.DENGUE));
 		assertFalse(diseases.contains(Disease.LASSA));
-		assertTrue(diseases.contains(Disease.DIPHTERIA));
+		assertTrue(diseases.contains(Disease.DIPHTHERIA));
 		assertTrue(diseases.contains(Disease.MALARIA));
 		assertFalse(diseases.contains(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		assertFalse(diseases.contains(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
@@ -75,7 +75,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(diseases.contains(Disease.CHOLERA));
 		assertTrue(diseases.contains(Disease.DENGUE));
 		assertFalse(diseases.contains(Disease.LASSA));
-		assertFalse(diseases.contains(Disease.DIPHTERIA));
+		assertFalse(diseases.contains(Disease.DIPHTHERIA));
 		assertFalse(diseases.contains(Disease.MALARIA));
 		assertFalse(diseases.contains(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		assertFalse(diseases.contains(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
@@ -85,7 +85,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(diseases.contains(Disease.CHOLERA));
 		assertFalse(diseases.contains(Disease.DENGUE));
 		assertTrue(diseases.contains(Disease.LASSA));
-		assertFalse(diseases.contains(Disease.DIPHTERIA));
+		assertFalse(diseases.contains(Disease.DIPHTHERIA));
 		assertFalse(diseases.contains(Disease.MALARIA));
 		assertFalse(diseases.contains(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		assertFalse(diseases.contains(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
@@ -101,7 +101,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(diseases.contains(Disease.CHOLERA));
 		assertFalse(diseases.contains(Disease.DENGUE));
 		assertFalse(diseases.contains(Disease.LASSA));
-		assertFalse(diseases.contains(Disease.DIPHTERIA));
+		assertFalse(diseases.contains(Disease.DIPHTHERIA));
 		assertFalse(diseases.contains(Disease.MALARIA));
 
 		diseases = getDiseaseConfigurationFacade().getAllDiseases(true, null, false, true);
@@ -109,7 +109,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(diseases.contains(Disease.CHOLERA));
 		assertFalse(diseases.contains(Disease.DENGUE));
 		assertFalse(diseases.contains(Disease.LASSA));
-		assertTrue(diseases.contains(Disease.DIPHTERIA));
+		assertTrue(diseases.contains(Disease.DIPHTHERIA));
 		assertTrue(diseases.contains(Disease.MALARIA));
 	}
 }

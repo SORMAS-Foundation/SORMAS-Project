@@ -203,6 +203,30 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		return row;
 	}
 
+	/**
+	 * Builds a row exactly like {@link #addRow}, but does not attach it to this component or track it
+	 * for automatic show/hide - for content a subclass hands off to be rendered in a different container
+	 * (e.g. a disease section's {@code getPreResultComponent()}).
+	 */
+	protected HorizontalLayout createRow(Component... fields) {
+		HorizontalLayout row = new HorizontalLayout();
+		row.setWidth(100, Unit.PERCENTAGE);
+		row.setSpacing(true);
+		for (Component field : fields) {
+			if (field != null) {
+				row.addComponent(field);
+				row.setExpandRatio(field, 1);
+			}
+		}
+		if (fields.length == 1 || (fields.length == 2 && fields[1] == null)) {
+			Label spacer = new Label();
+			spacer.setWidth(100, Unit.PERCENTAGE);
+			row.addComponent(spacer);
+			row.setExpandRatio(spacer, 1);
+		}
+		return row;
+	}
+
 	/** Creates a row with custom expand ratios per field. */
 	protected HorizontalLayout addRow(float[] expandRatios, Component... fields) {
 		HorizontalLayout row = new HorizontalLayout();

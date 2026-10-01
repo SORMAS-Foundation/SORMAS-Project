@@ -125,7 +125,7 @@ public class LuxembourgImmunizationValidityCalculator implements ImmunizationVal
 
 		profiles.put(Disease.CORONAVIRUS, DiseaseImmunityProfile.ofVaccination(14, 1, null));
 		profiles.put(Disease.DENGUE, DiseaseImmunityProfile.ofVaccinationAndRecovery(28, 3, 7L * 365L, LIFELONG_DURATION_DAYS));
-		profiles.put(Disease.DIPHTERIA, DiseaseImmunityProfile.ofVaccination(28, 3, 10L * 365L));
+		profiles.put(Disease.DIPHTHERIA, DiseaseImmunityProfile.ofVaccination(28, 3, 10L * 365L));
 		profiles.put(Disease.INFLUENZA, DiseaseImmunityProfile.ofVaccination(14, 1, 300L));
 		profiles.put(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, DiseaseImmunityProfile.ofVaccination(14, 1, 5L * 365L));
 		profiles.put(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, DiseaseImmunityProfile.ofVaccination(null, 1, null));

@@ -419,7 +419,9 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
-	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
+	@Diseases({
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	private Boolean prophylaxisPrescribed;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_LUXEMBOURG })
@@ -432,7 +434,8 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private String prescribedDrugText;
 	@Diseases(value = {
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.DIPHTHERIA })
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_LUXEMBOURG })
 	private boolean vaccinationProposed;
