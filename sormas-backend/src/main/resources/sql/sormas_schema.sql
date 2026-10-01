@@ -17752,4 +17752,18 @@ ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmethod 
 ALTER TABLE epidata_history ALTER COLUMN infectionsource TYPE varchar(1024);
 INSERT INTO schema_version (version_number, comment) VALUES (674, '#14325 - Diphtheria changes.');
 
+-- #14353 Replace deprecated exposure categories for syphilis and gonococcal infection
+UPDATE diseaseconfiguration dc
+SET exposurecategories = (
+    SELECT string_agg(DISTINCT cat, ',')
+    FROM unnest(coalesce(string_to_array(dc.exposurecategories, ','), '{}') || ARRAY['PERSON_TO_PERSON', 'VERTICAL_TRANSMISSION']) AS cat
+    WHERE cat NOT IN ('DIRECT_CONTACT', 'MEDICAL_CARE')
+),
+    changedate = now()
+WHERE dc.disease IN ('SYPHILIS', 'GONOCOCCAL_INFECTION')
+  AND (dc.exposurecategories IS NULL
+    OR NOT string_to_array(dc.exposurecategories, ',') @> ARRAY['PERSON_TO_PERSON', 'VERTICAL_TRANSMISSION']
+    OR string_to_array(dc.exposurecategories, ',') && ARRAY['DIRECT_CONTACT', 'MEDICAL_CARE']);
+INSERT INTO schema_version (version_number, comment) VALUES (675, '#14353 - Replace deprecated exposure categories for syphilis and gonococcal infection');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

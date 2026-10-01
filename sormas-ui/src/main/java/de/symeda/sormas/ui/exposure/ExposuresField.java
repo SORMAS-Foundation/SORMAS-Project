@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Property;
@@ -60,6 +61,7 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings({
@@ -224,7 +226,17 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		final CommitDiscardWrapperComponent<ExposureForm> component =
 			new CommitDiscardWrapperComponent<>(exposureForm, UiUtil.permitted(isEditAllowed, UserRight.CASE_EDIT), exposureForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
-
+		component.setPreCommitListener(successCallback -> {
+			if (exposureForm.hasDeprecatedValues()) {
+				// Show the deprecated values hint as a warning instead of the generic validation error
+				NotificationHelper.showNotification(
+					I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues),
+					Notification.Type.WARNING_MESSAGE,
+					-1);
+			} else {
+				successCallback.run();
+			}
+		});
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.entityExposure));
 		popupWindow.setHeight(90, Unit.PERCENTAGE);
 
