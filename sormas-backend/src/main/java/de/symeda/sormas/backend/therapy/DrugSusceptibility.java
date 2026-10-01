@@ -173,6 +173,19 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private DrugSusceptibilityType spectinomycinSusceptibility;
 	private SusceptibilityMethod spectinomycinMethod;
 
+	// clindamycin
+	private String clindamycinMic;
+	private DrugSusceptibilityType clindamycinSusceptibility;
+	private SusceptibilityMethod clindamycinMethod;
+	// linezolid
+	private String linezolidMic;
+	private DrugSusceptibilityType linezolidSusceptibility;
+	private SusceptibilityMethod linezolidMethod;
+	// meropenem
+	private String meropenemMic;
+	private DrugSusceptibilityType meropenemSusceptibility;
+	private SusceptibilityMethod meropenemMethod;
+
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAmikacinMic() {
 		return amikacinMic;
@@ -873,5 +886,86 @@ public class DrugSusceptibility extends AbstractDomainObject {
 
 	public void setSpectinomycinMethod(SusceptibilityMethod value) {
 		this.spectinomycinMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getClindamycinMic() {
+		return clindamycinMic;
+	}
+
+	public void setClindamycinMic(String clindamycinMic) {
+		this.clindamycinMic = clindamycinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getClindamycinSusceptibility() {
+		return clindamycinSusceptibility;
+	}
+
+	public void setClindamycinSusceptibility(DrugSusceptibilityType clindamycinSusceptibility) {
+		this.clindamycinSusceptibility = clindamycinSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getClindamycinMethod() {
+		return clindamycinMethod;
+	}
+
+	public void setClindamycinMethod(SusceptibilityMethod clindamycinMethod) {
+		this.clindamycinMethod = clindamycinMethod;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getLinezolidMic() {
+		return linezolidMic;
+	}
+
+	public void setLinezolidMic(String linezolidMic) {
+		this.linezolidMic = linezolidMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getLinezolidSusceptibility() {
+		return linezolidSusceptibility;
+	}
+
+	public void setLinezolidSusceptibility(DrugSusceptibilityType linezolidSusceptibility) {
+		this.linezolidSusceptibility = linezolidSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getLinezolidMethod() {
+		return linezolidMethod;
+	}
+
+	public void setLinezolidMethod(SusceptibilityMethod linezolidMethod) {
+		this.linezolidMethod = linezolidMethod;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getMeropenemMic() {
+		return meropenemMic;
+	}
+
+	public void setMeropenemMic(String meropenemMic) {
+		this.meropenemMic = meropenemMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getMeropenemSusceptibility() {
+		return meropenemSusceptibility;
+	}
+
+	public void setMeropenemSusceptibility(DrugSusceptibilityType meropenemSusceptibility) {
+		this.meropenemSusceptibility = meropenemSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getMeropenemMethod() {
+		return meropenemMethod;
+	}
+
+	public void setMeropenemMethod(SusceptibilityMethod meropenemMethod) {
+		this.meropenemMethod = meropenemMethod;
 	}
 }

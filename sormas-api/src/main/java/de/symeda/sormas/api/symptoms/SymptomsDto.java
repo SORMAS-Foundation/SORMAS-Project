@@ -36,7 +36,7 @@ import static de.symeda.sormas.api.Disease.C_PNEUMONIAE;
 import static de.symeda.sormas.api.Disease.DENGUE;
 import static de.symeda.sormas.api.Disease.DIARRHEA_BLOOD;
 import static de.symeda.sormas.api.Disease.DIARRHEA_DEHYDRATION;
-import static de.symeda.sormas.api.Disease.DIPHTERIA;
+import static de.symeda.sormas.api.Disease.DIPHTHERIA;
 import static de.symeda.sormas.api.Disease.ENTEROVIRUS;
 import static de.symeda.sormas.api.Disease.EVD;
 import static de.symeda.sormas.api.Disease.FHA;
@@ -1595,7 +1595,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		NEONATAL_TETANUS,
 		ONCHOCERCIASIS,
 		OTHER,
-		DIPHTERIA,
+		DIPHTHERIA,
 		TRACHOMA,
 		YAWS_ENDEMIC_SYPHILIS,
 		MATERNAL_DEATHS,
@@ -1671,7 +1671,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		NEONATAL_TETANUS,
 		ONCHOCERCIASIS,
 		OTHER,
-		DIPHTERIA,
+		DIPHTHERIA,
 		TRACHOMA,
 		YAWS_ENDEMIC_SYPHILIS,
 		MATERNAL_DEATHS,

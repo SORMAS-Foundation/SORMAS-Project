@@ -124,6 +124,18 @@ public class DrugSusceptibilityMapper {
 		target.setSpectinomycinSusceptibility(source.getSpectinomycinSusceptibility());
 		target.setSpectinomycinMethod(source.getSpectinomycinMethod());
 
+		target.setClindamycinMethod(source.getClindamycinMethod());
+		target.setClindamycinMic(source.getClindamycinMic());
+		target.setClindamycinSusceptibility(source.getClindamycinSusceptibility());
+
+		target.setLinezolidMethod(source.getLinezolidMethod());
+		target.setLinezolidMic(source.getLinezolidMic());
+		target.setLinezolidSusceptibility(source.getLinezolidSusceptibility());
+
+		target.setMeropenemMethod(source.getMeropenemMethod());
+		target.setMeropenemMic(source.getMeropenemMic());
+		target.setMeropenemSusceptibility(source.getMeropenemSusceptibility());
+
 		return target;
 	}
 
@@ -212,6 +224,18 @@ public class DrugSusceptibilityMapper {
 		target.setSpectinomycinMic(source.getSpectinomycinMic());
 		target.setSpectinomycinSusceptibility(source.getSpectinomycinSusceptibility());
 		target.setSpectinomycinMethod(source.getSpectinomycinMethod());
+
+		target.setClindamycinMethod(source.getClindamycinMethod());
+		target.setClindamycinMic(source.getClindamycinMic());
+		target.setClindamycinSusceptibility(source.getClindamycinSusceptibility());
+
+		target.setLinezolidMethod(source.getLinezolidMethod());
+		target.setLinezolidMic(source.getLinezolidMic());
+		target.setLinezolidSusceptibility(source.getLinezolidSusceptibility());
+
+		target.setMeropenemMethod(source.getMeropenemMethod());
+		target.setMeropenemMic(source.getMeropenemMic());
+		target.setMeropenemSusceptibility(source.getMeropenemSusceptibility());
 
 		return target;
 	}

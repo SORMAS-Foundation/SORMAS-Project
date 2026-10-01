@@ -110,7 +110,8 @@ public enum Drug {
 		TypeOfDrug.ANTIBIOTIC })
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION })
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	AZITHROMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
@@ -118,7 +119,9 @@ public enum Drug {
 	CEFIXIME,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	TETRACYCLINE,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
@@ -146,8 +149,28 @@ public enum Drug {
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
 	TRIMETHOPRIM_SULFAMETHOXAZOLE,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	CLINDAMYCIN,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	LINEZOLID,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	MEROPENEM,
+
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	OTHER;
