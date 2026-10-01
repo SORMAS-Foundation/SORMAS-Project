@@ -126,10 +126,6 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String MEROPENEM_SUSCEPTIBILITY = "meropenemSusceptibility";
 	public static final String MEROPENEM_METHOD = "meropenemMethod";
 
-	public static final String TETRACYCLINES_MIC = "tetracyclinesMic";
-	public static final String TETRACYCLINES_SUSCEPTIBILITY = "tetracyclinesSusceptibility";
-	public static final String TETRACYCLINES_METHOD = "tetracyclinesMethod";
-
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -164,7 +160,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
-        Disease.DIPHTHERIA,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
@@ -173,7 +169,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
-        Disease.DIPHTHERIA,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
@@ -347,7 +343,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
-        Disease.DIPHTHERIA,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
@@ -428,21 +424,21 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-        Disease.DIPHTHERIA,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String azithromycinMic;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-        Disease.DIPHTHERIA,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType azithromycinSusceptibility;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-        Disease.DIPHTHERIA,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
@@ -522,13 +518,19 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@Diseases(Disease.GONOCOCCAL_INFECTION)
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private SusceptibilityMethod cefiximeMethod;
-	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private String tetracyclineMic;
-	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private DrugSusceptibilityType tetracyclineSusceptibility;
-	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private SusceptibilityMethod tetracyclineMethod;
 	@Diseases(Disease.GONOCOCCAL_INFECTION)
@@ -600,23 +602,6 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod meropenemMethod;
-
-	//Tetracyclines
-	@Diseases(value = {
-		Disease.DIPHTHERIA })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private String tetracyclinesMic;
-	@Diseases(value = {
-		Disease.DIPHTHERIA })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private DrugSusceptibilityType tetracyclinesSusceptibility;
-	@Diseases(value = {
-		Disease.DIPHTHERIA })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilityMethod tetracyclinesMethod;
 
 	public static DrugSusceptibilityDto build() {
 		DrugSusceptibilityDto drugSusceptibility = new DrugSusceptibilityDto();
@@ -1318,29 +1303,5 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	public void setMeropenemMethod(SusceptibilityMethod meropenemMethod) {
 		this.meropenemMethod = meropenemMethod;
-	}
-
-	public String getTetracyclinesMic() {
-		return tetracyclinesMic;
-	}
-
-	public void setTetracyclinesMic(String tetracyclinesMic) {
-		this.tetracyclinesMic = tetracyclinesMic;
-	}
-
-	public DrugSusceptibilityType getTetracyclinesSusceptibility() {
-		return tetracyclinesSusceptibility;
-	}
-
-	public void setTetracyclinesSusceptibility(DrugSusceptibilityType tetracyclinesSusceptibility) {
-		this.tetracyclinesSusceptibility = tetracyclinesSusceptibility;
-	}
-
-	public SusceptibilityMethod getTetracyclinesMethod() {
-		return tetracyclinesMethod;
-	}
-
-	public void setTetracyclinesMethod(SusceptibilityMethod tetracyclinesMethod) {
-		this.tetracyclinesMethod = tetracyclinesMethod;
 	}
 }

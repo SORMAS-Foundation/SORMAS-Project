@@ -17704,16 +17704,13 @@ ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS accessionnumber varchar(512);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinmic varchar(512);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinsusceptibility varchar(255);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clindamycinmethod varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesmic varchar(512);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinessusceptibility varchar(255);
-ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS tetracyclinesmethod varchar(255);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemmic varchar(512);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemsusceptibility varchar(255);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS meropenemmethod varchar(255);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidmic varchar(512);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
-ALTER TABLE epidata ALTER COLUMN infectionsource TYPE varchar(512);
+ALTER TABLE epidata ALTER COLUMN infectionsource TYPE varchar(1024);
 UPDATE diseaseconfiguration SET exposurecategories = 'RESPIRATORY,ANIMAL_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'DIPHTHERIA';
 -- Apply the new Diphtheria contagious / incubation defaults on existing systems.
 -- The columns were added with DEFAULT false, so the Disease enum defaults never apply to rows that already existed.
@@ -17746,16 +17743,13 @@ ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS cgmlstcluster varchar(
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinmic varchar(512);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinsusceptibility varchar(255);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clindamycinmethod varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesmic varchar(512);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinessusceptibility varchar(255);
-ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS tetracyclinesmethod varchar(255);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemmic varchar(512);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemsusceptibility varchar(255);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS meropenemmethod varchar(255);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmic varchar(512);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
 ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
-ALTER TABLE epidata_history ALTER COLUMN infectionsource TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN infectionsource TYPE varchar(1024);
 INSERT INTO schema_version (version_number, comment) VALUES (674, '#14325 - Diphtheria changes.');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
