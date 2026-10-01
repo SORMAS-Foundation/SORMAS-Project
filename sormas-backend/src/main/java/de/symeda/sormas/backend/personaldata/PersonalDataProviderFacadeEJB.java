@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.personaldata;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,7 +22,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.ExternalSystemCallAuditRequest;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.personaldata.CreatableEntityDto;
 import de.symeda.sormas.api.personaldata.PersonalDataAddressRequestDto;
 import de.symeda.sormas.api.personaldata.PersonalDataForDisplayDto;
 import de.symeda.sormas.api.personaldata.PersonalDataProviderAdapterFacade;
@@ -109,11 +107,6 @@ public class PersonalDataProviderFacadeEJB implements PersonalDataProviderFacade
 		auditLogger.logExternalSystemCall(buildAuditRequestWithDetails("search", Map.of("PersonalDataSearchRequest", request)));
 
 		return getPersonalDataProvider().search(request);
-	}
-
-	@Override
-	public List<CreatableEntityDto> getCreatableEntityDtos() {
-		return getPersonalDataProvider().getCreatableEntityDtos();
 	}
 
 	@Override

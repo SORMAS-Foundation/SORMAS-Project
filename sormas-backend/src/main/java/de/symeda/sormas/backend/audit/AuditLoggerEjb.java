@@ -31,6 +31,7 @@ import static org.reflections.util.ReflectionUtilsPredicates.withAnnotation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -502,7 +503,30 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 	@Override
 	public void logExternalSystemCall(ExternalSystemCallAuditRequest request) {
+		AuditEvent externalSystemCall = new AuditEvent();
+		externalSystemCall.setType(new Coding(VALUESET_AUDIT_EVENT_TYPE_HTML, "110100", "Application Activity"));
+		externalSystemCall.setAction(inferBackendAction(request.getActionType()));
+		externalSystemCall.setRecorded(Date.from(request.getDateTime().atZone(ZoneId.systemDefault()).toInstant()));
+		externalSystemCall.setOutcomeDesc(request.getOutcomeDescription());
+		externalSystemCall.addAgent(getAuditEventAgentComponent());
 
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(String.format("%s - %s", auditSourceSite, request.getSystemName()));
+		AuditSourceType auditSourceType = AuditSourceType._4;
+		source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
+		externalSystemCall.setSource(source);
+
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(new Reference(request.getActionType()));
+		entity.setName(request.getSystemName());
+		if (request.getDetails() != null) {
+			request.getDetails().forEach((key, value) -> {
+				entity.addDetail(new AuditEvent.AuditEventEntityDetailComponent(new StringType(key), new StringType(value)));
+			});
+		}
+		externalSystemCall.addEntity(entity);
+
+		accept(externalSystemCall);
 	}
 
 	private void logLabMessageError(

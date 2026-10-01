@@ -9,7 +9,7 @@ public class ExternalSystemCallAuditRequest {
 	private String systemName;
 	private String actionType;
 
-	private String additionalMessage;
+	private String outcomeDescription;
 
 	private Map<String, String> details;
 
@@ -31,12 +31,12 @@ public class ExternalSystemCallAuditRequest {
 		this.actionType = actionType;
 	}
 
-	public String getAdditionalMessage() {
-		return additionalMessage;
+	public String getOutcomeDescription() {
+		return outcomeDescription;
 	}
 
-	public void setAdditionalMessage(String additionalMessage) {
-		this.additionalMessage = additionalMessage;
+	public void setOutcomeDescription(String outcomeDescription) {
+		this.outcomeDescription = outcomeDescription;
 	}
 
 	public LocalDateTime getDateTime() {
@@ -62,13 +62,13 @@ public class ExternalSystemCallAuditRequest {
 		ExternalSystemCallAuditRequest that = (ExternalSystemCallAuditRequest) o;
 		return Objects.equals(systemName, that.systemName)
 			&& Objects.equals(actionType, that.actionType)
-			&& Objects.equals(additionalMessage, that.additionalMessage)
+			&& Objects.equals(outcomeDescription, that.outcomeDescription)
 			&& Objects.equals(details, that.details)
 			&& Objects.equals(dateTime, that.dateTime);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(systemName, actionType, additionalMessage, details, dateTime);
+		return Objects.hash(systemName, actionType, outcomeDescription, details, dateTime);
 	}
 }

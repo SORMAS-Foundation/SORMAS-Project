@@ -259,6 +259,10 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			menu.addView(CaseExternalDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_DATA), params);
 		}
 
+		if (CaseExternalPersonDataView.isAvailable()) {
+			menu.addView(CaseExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
+		}
+
 		setMainHeaderComponent(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));
 
 		if (caseFollowupEnabled && UiUtil.permitted(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {

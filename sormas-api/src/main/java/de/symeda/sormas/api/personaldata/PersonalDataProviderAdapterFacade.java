@@ -1,10 +1,7 @@
 package de.symeda.sormas.api.personaldata;
 
-import java.util.List;
-
 import javax.annotation.Nullable;
 import javax.ejb.Remote;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EntityDto;
@@ -28,9 +25,6 @@ public interface PersonalDataProviderAdapterFacade {
 
 	@NotNull
 	PersonalDataSearchResponse search(@NotNull PersonalDataSearchRequest request);
-
-	@NotEmpty
-	List<CreatableEntityDto> getCreatableEntityDtos();
 
 	<T extends EntityDto> T createDtoFrom(@NotNull String nationalHealthId, @NotNull Class<T> clazzToCreate);
 }

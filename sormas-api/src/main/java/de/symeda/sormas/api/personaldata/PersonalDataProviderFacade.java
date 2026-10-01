@@ -1,15 +1,14 @@
 package de.symeda.sormas.api.personaldata;
 
-import java.util.List;
-
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.LocationDto;
 
 public interface PersonalDataProviderFacade {
+
+	String EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED = "EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED";
 
 	@Nullable
 	PersonalDataSummaryDto findDataByNationalHealthId(@NotNull String nationalHealthId);
@@ -23,9 +22,6 @@ public interface PersonalDataProviderFacade {
 
 	@NotNull
 	PersonalDataSearchResponse search(@NotNull PersonalDataSearchRequest request);
-
-	@NotEmpty
-	List<CreatableEntityDto> getCreatableEntityDtos();
 
 	<T extends EntityDto> T createDtoFrom(@NotNull String nationalHealthId, @NotNull Class<T> clazzToCreate);
 }

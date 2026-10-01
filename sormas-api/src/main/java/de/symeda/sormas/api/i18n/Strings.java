@@ -354,6 +354,7 @@ public interface Strings {
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalEmailAttachmentCannotEncrypt = "errorExternalEmailAttachmentCannotEncrypt";
 	String errorExternalEmailMissingPersonEmailAddress = "errorExternalEmailMissingPersonEmailAddress";
+	String errorExternalPersonDataLoad = "errorExternalPersonDataLoad";
 	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
@@ -373,6 +374,7 @@ public interface Strings {
 	String errorInvalidValue = "errorInvalidValue";
 	String errorLabResultsAdapterNotFound = "errorLabResultsAdapterNotFound";
 	String errorNoAccessToWeb = "errorNoAccessToWeb";
+	String errorNoNationalHealthIdInContext = "errorNoNationalHealthIdInContext";
 	String errorNoPopulationDataFound = "errorNoPopulationDataFound";
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNoRightsForChangingField = "errorNoRightsForChangingField";
@@ -1179,6 +1181,7 @@ public interface Strings {
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";
+	String infoNoExternalPersonData = "infoNoExternalPersonData";
 	String infoNoImmunizationAdverseEvents = "infoNoImmunizationAdverseEvents";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
@@ -1212,7 +1215,8 @@ public interface Strings {
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
-	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent = "infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
+	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent =
+		"infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
 	String infoPlaceOfStayInHospital = "infoPlaceOfStayInHospital";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
@@ -1251,7 +1255,8 @@ public interface Strings {
 	String infoSyncUsers = "infoSyncUsers";
 	String infoSystemConfigurationValueDescriptionCronArchiveCases = "infoSystemConfigurationValueDescriptionCronArchiveCases";
 	String infoSystemConfigurationValueDescriptionCronArchiveContacts = "infoSystemConfigurationValueDescriptionCronArchiveContacts";
-	String infoSystemConfigurationValueDescriptionCronArchiveEventParticipants = "infoSystemConfigurationValueDescriptionCronArchiveEventParticipants";
+	String infoSystemConfigurationValueDescriptionCronArchiveEventParticipants =
+		"infoSystemConfigurationValueDescriptionCronArchiveEventParticipants";
 	String infoSystemConfigurationValueDescriptionCronArchiveEvents = "infoSystemConfigurationValueDescriptionCronArchiveEvents";
 	String infoSystemConfigurationValueDescriptionCronArchiveImmunizations = "infoSystemConfigurationValueDescriptionCronArchiveImmunizations";
 	String infoSystemConfigurationValueDescriptionCronArchiveTravelEntry = "infoSystemConfigurationValueDescriptionCronArchiveTravelEntry";
@@ -1259,25 +1264,33 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionCronCleanupDeletedDocuments = "infoSystemConfigurationValueDescriptionCronCleanupDeletedDocuments";
 	String infoSystemConfigurationValueDescriptionCronCleanUpTemporaryFiles = "infoSystemConfigurationValueDescriptionCronCleanUpTemporaryFiles";
 	String infoSystemConfigurationValueDescriptionCronDeleteExpiredEntities = "infoSystemConfigurationValueDescriptionCronDeleteExpiredEntities";
-	String infoSystemConfigurationValueDescriptionCronDeleteExpiredFeatureConfigurations = "infoSystemConfigurationValueDescriptionCronDeleteExpiredFeatureConfigurations";
-	String infoSystemConfigurationValueDescriptionCronDeleteExpiredSpecialCaseAccesses = "infoSystemConfigurationValueDescriptionCronDeleteExpiredSpecialCaseAccesses";
+	String infoSystemConfigurationValueDescriptionCronDeleteExpiredFeatureConfigurations =
+		"infoSystemConfigurationValueDescriptionCronDeleteExpiredFeatureConfigurations";
+	String infoSystemConfigurationValueDescriptionCronDeleteExpiredSpecialCaseAccesses =
+		"infoSystemConfigurationValueDescriptionCronDeleteExpiredSpecialCaseAccesses";
 	String infoSystemConfigurationValueDescriptionCronDeleteSystemEvents = "infoSystemConfigurationValueDescriptionCronDeleteSystemEvents";
 	String infoSystemConfigurationValueDescriptionCronFetchExternalMessages = "infoSystemConfigurationValueDescriptionCronFetchExternalMessages";
 	String infoSystemConfigurationValueDescriptionCronFetchSurveyResponses = "infoSystemConfigurationValueDescriptionCronFetchSurveyResponses";
 	String infoSystemConfigurationValueDescriptionCronGenerateAutomaticTasks = "infoSystemConfigurationValueDescriptionCronGenerateAutomaticTasks";
-	String infoSystemConfigurationValueDescriptionCronSendNewAndDueTaskMessages = "infoSystemConfigurationValueDescriptionCronSendNewAndDueTaskMessages";
-	String infoSystemConfigurationValueDescriptionCronSoftDeleteOldNegativeSamples = "infoSystemConfigurationValueDescriptionCronSoftDeleteOldNegativeSamples";
+	String infoSystemConfigurationValueDescriptionCronSendNewAndDueTaskMessages =
+		"infoSystemConfigurationValueDescriptionCronSendNewAndDueTaskMessages";
+	String infoSystemConfigurationValueDescriptionCronSoftDeleteOldNegativeSamples =
+		"infoSystemConfigurationValueDescriptionCronSoftDeleteOldNegativeSamples";
 	String infoSystemConfigurationValueDescriptionCronSyncInfraWithCentral = "infoSystemConfigurationValueDescriptionCronSyncInfraWithCentral";
-	String infoSystemConfigurationValueDescriptionCronSyncUsersFromAuthProvider = "infoSystemConfigurationValueDescriptionCronSyncUsersFromAuthProvider";
-	String infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses = "infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses";
+	String infoSystemConfigurationValueDescriptionCronSyncUsersFromAuthProvider =
+		"infoSystemConfigurationValueDescriptionCronSyncUsersFromAuthProvider";
+	String infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses =
+		"infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses";
 	String infoSystemConfigurationValueDescriptionEmailSenderAddress = "infoSystemConfigurationValueDescriptionEmailSenderAddress";
 	String infoSystemConfigurationValueDescriptionEmailSenderName = "infoSystemConfigurationValueDescriptionEmailSenderName";
 	String infoSystemConfigurationValueDescriptionMenuBackgroundColor = "infoSystemConfigurationValueDescriptionMenuBackgroundColor";
 	String infoSystemConfigurationValueDescriptionSmsAuthKey = "infoSystemConfigurationValueDescriptionSmsAuthKey";
 	String infoSystemConfigurationValueDescriptionSmsAuthSecret = "infoSystemConfigurationValueDescriptionSmsAuthSecret";
 	String infoSystemConfigurationValueDescriptionSmsSenderName = "infoSystemConfigurationValueDescriptionSmsSenderName";
-	String infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus = "infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus";
-	String infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation = "infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation";
+	String infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus =
+		"infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus";
+	String infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation =
+		"infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
