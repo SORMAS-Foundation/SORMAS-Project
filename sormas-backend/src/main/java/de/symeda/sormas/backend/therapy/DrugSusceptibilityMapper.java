@@ -136,10 +136,6 @@ public class DrugSusceptibilityMapper {
 		target.setMeropenemMic(source.getMeropenemMic());
 		target.setMeropenemSusceptibility(source.getMeropenemSusceptibility());
 
-		target.setTetracyclinesMethod(source.getTetracyclinesMethod());
-		target.setTetracyclinesMic(source.getTetracyclinesMic());
-		target.setTetracyclinesSusceptibility(source.getTetracyclinesSusceptibility());
-
 		return target;
 	}
 
@@ -240,10 +236,6 @@ public class DrugSusceptibilityMapper {
 		target.setMeropenemMethod(source.getMeropenemMethod());
 		target.setMeropenemMic(source.getMeropenemMic());
 		target.setMeropenemSusceptibility(source.getMeropenemSusceptibility());
-
-		target.setTetracyclinesMethod(source.getTetracyclinesMethod());
-		target.setTetracyclinesMic(source.getTetracyclinesMic());
-		target.setTetracyclinesSusceptibility(source.getTetracyclinesSusceptibility());
 
 		return target;
 	}

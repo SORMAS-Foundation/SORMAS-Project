@@ -591,7 +591,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		UNSPECIFIED_VHF,
 		SALMONELLOSIS,
-		YERSINIOSIS,
 		UNDEFINED,
 		OTHER })
 	@Complication(value = {
@@ -1771,7 +1770,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		SALMONELLOSIS,
 		UNDEFINED,
-		YERSINIOSIS,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -1796,7 +1794,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		SALMONELLOSIS,
 		UNDEFINED,
-		YERSINIOSIS,
 		OTHER })
 	@Outbreaks
 	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
@@ -2823,6 +2820,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MUMPS,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER,
 		RUBELLA,
@@ -2853,6 +2851,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
 		MUMPS,
+		YERSINIOSIS,
 		UNDEFINED,
 		OTHER,
 		RUBELLA,
@@ -2868,6 +2867,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
 		MUMPS,
+		YERSINIOSIS,
 		RUBELLA,
 		CONGENITAL_RUBELLA })
 	private String otherComplicationsText;
@@ -3090,7 +3090,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		SYPHILIS,
 		SHIGELLOSIS,
-		YERSINIOSIS,
 		GONOCOCCAL_INFECTION,
 		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -3106,7 +3105,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		SYPHILIS,
 		SHIGELLOSIS,
-		YERSINIOSIS,
 		GONOCOCCAL_INFECTION,
 		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -3445,7 +3443,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	@Diseases(value = {
-		SHIGELLOSIS })
+		SHIGELLOSIS,
+		YERSINIOSIS })
 	@Complication({
 		SHIGELLOSIS })
 	private SymptomState bloodyDiarrhea;
@@ -3648,7 +3647,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	// Yersiniosis-specific symptoms
 	@Diseases({
 		YERSINIOSIS })
-	@Complication()
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState pseudoAppendicularSyndrome;
 

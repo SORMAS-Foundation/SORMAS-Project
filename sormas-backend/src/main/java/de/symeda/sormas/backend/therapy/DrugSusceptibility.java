@@ -185,12 +185,8 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private String meropenemMic;
 	private DrugSusceptibilityType meropenemSusceptibility;
 	private SusceptibilityMethod meropenemMethod;
-	// tetracyclines
-	private String tetracyclinesMic;
-	private DrugSusceptibilityType tetracyclinesSusceptibility;
-	private SusceptibilityMethod tetracyclinesMethod;
 
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAmikacinMic() {
 		return amikacinMic;
 	}
@@ -971,32 +967,5 @@ public class DrugSusceptibility extends AbstractDomainObject {
 
 	public void setMeropenemMethod(SusceptibilityMethod meropenemMethod) {
 		this.meropenemMethod = meropenemMethod;
-	}
-
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getTetracyclinesMic() {
-		return tetracyclinesMic;
-	}
-
-	public void setTetracyclinesMic(String tetracyclinesMic) {
-		this.tetracyclinesMic = tetracyclinesMic;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public DrugSusceptibilityType getTetracyclinesSusceptibility() {
-		return tetracyclinesSusceptibility;
-	}
-
-	public void setTetracyclinesSusceptibility(DrugSusceptibilityType tetracyclinesSusceptibility) {
-		this.tetracyclinesSusceptibility = tetracyclinesSusceptibility;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public SusceptibilityMethod getTetracyclinesMethod() {
-		return tetracyclinesMethod;
-	}
-
-	public void setTetracyclinesMethod(SusceptibilityMethod tetracyclinesMethod) {
-		this.tetracyclinesMethod = tetracyclinesMethod;
 	}
 }

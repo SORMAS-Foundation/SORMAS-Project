@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_MEDIUM;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.util.ArrayList;
@@ -234,7 +235,7 @@ public class EpiData extends AbstractDomainObject {
 		this.modeOfTransmissionType = modeOfTransmissionType;
 	}
 
-	@Column
+	@Column(length = CHARACTER_LIMIT_MEDIUM)
 	@Convert(converter = InfectionSourceSetConverter.class)
 	public Set<InfectionSource> getInfectionSource() {
 		return infectionSource;

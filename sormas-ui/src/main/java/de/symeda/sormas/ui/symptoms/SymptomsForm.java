@@ -211,7 +211,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.PERTUSSIS,
 		Disease.SHIGELLOSIS,
-		Disease.GONOCOCCAL_INFECTION);
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.YERSINIOSIS);
 	// other complicated symptom for onset field listener action
 	private static final List<String> OTHER_COMPLICATED_SYMPTOMS = Collections
 		.unmodifiableList(Arrays.asList(LESIONS_THAT_ITCH, OTHER_COMPLICATIONS_TEXT, UNKNOWN_COMPLICATIONS, OTHER_NEUROLOGICAL_SYMPTOMS_TEXT));

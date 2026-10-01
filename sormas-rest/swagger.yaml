@@ -10054,6 +10054,11 @@ components:
           - YERSINIA_ENTEROCOLITICA
           - YERSINIA_PSEUDOTUBERCULOSIS
           - YERSINIA_SPP
+          - DIPH_CORY_DIPH
+          - NOT_UNDER_SURVEILLANCE
+          - DIPH_NOT_SPECIFIED
+          - DIPH_CORY_PSEU
+          - DIPH_CORY_ULC
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
@@ -11780,6 +11785,7 @@ components:
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
               - ANTIBODY_DETECTION
+              - ELEK_TEST
               - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - WESTERN_BLOT
               - NEUTRALIZING_ANTIBODIES
@@ -11871,6 +11877,7 @@ components:
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
               - ANTIBODY_DETECTION
+              - ELEK_TEST
               - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - WESTERN_BLOT
               - NEUTRALIZING_ANTIBODIES
@@ -11948,6 +11955,7 @@ components:
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
               - ANTIBODY_DETECTION
+              - ELEK_TEST
               - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - WESTERN_BLOT
               - NEUTRALIZING_ANTIBODIES
@@ -12502,6 +12510,9 @@ components:
           - CEFOTAXIME
           - AMPICILLIN
           - TRIMETHOPRIM_SULFAMETHOXAZOLE
+          - CLINDAMYCIN
+          - LINEZOLID
+          - MEROPENEM
           - OTHER
         prescribedDrugText:
           type: string
@@ -12918,6 +12929,9 @@ components:
           - CEFOTAXIME
           - AMPICILLIN
           - TRIMETHOPRIM_SULFAMETHOXAZOLE
+          - CLINDAMYCIN
+          - LINEZOLID
+          - MEROPENEM
           - OTHER
         prescribedDrugText:
           type: string
@@ -13351,6 +13365,9 @@ components:
           - CEFOTAXIME
           - AMPICILLIN
           - TRIMETHOPRIM_SULFAMETHOXAZOLE
+          - CLINDAMYCIN
+          - LINEZOLID
+          - MEROPENEM
           - OTHER
         prescribedDrugText:
           type: string
@@ -13635,6 +13652,9 @@ components:
           - CEFOTAXIME
           - AMPICILLIN
           - TRIMETHOPRIM_SULFAMETHOXAZOLE
+          - CLINDAMYCIN
+          - LINEZOLID
+          - MEROPENEM
           - OTHER
         prescribedDrugText:
           type: string
@@ -15914,6 +15934,28 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        clindamycinMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        clindamycinMic:
+          type: string
+        clindamycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         creationDate:
           type: string
           format: date-time
@@ -16088,6 +16130,50 @@ components:
         levofloxacinMic:
           type: string
         levofloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        linezolidMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        linezolidMic:
+          type: string
+        linezolidSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        meropenemMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - AGAR_DILUTION
+          - DISK_DIFFUSION
+          - BREAKPOINT
+          - ETEST
+          - MIC
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - OTHER
+        meropenemMic:
+          type: string
+        meropenemSusceptibility:
           type: string
           enum:
           - NOT_APPLICABLE
@@ -16669,49 +16755,55 @@ components:
         inJurisdiction:
           type: boolean
         infectionSource:
-          type: string
-          enum:
-          - FOOD
-          - ANIMAL
-          - BAKERY_PRODUCTS
-          - BATS_CONTACT
-          - BOVINE_MEAT_PRODUCTS
-          - BROILER_MEAT_PRODUCTS
-          - CANNED_FOOD_PRODUCTS
-          - CATS_CONTACT
-          - CEREAL_PRODUCTS
-          - CHEESE
-          - NON_CHEESES_DAIRY_PRODUCTS
-          - DOGS_CONTACT
-          - DRINKS_BOTTLED_WATER
-          - EGG_PRODUCTS
-          - EXOTIC_PET_CONTACT
-          - FARM_ANIMAL_CONTACT
-          - FISH_PRODUCTS
-          - FOX_CONTACT
-          - FRUITS_AND_JUICES
-          - GAME_MEAT_NOT_WILD_BOAR
-          - HERBS_AND_SPICES
-          - MILK
-          - BUFFET_MEALS
-          - MIXED_MEAT_PRODUCTS
-          - OTHER_FOODS
-          - OTHER_MEAT_PRODUCTS
-          - OTHER_PET_CONTACT
-          - UNSPECIFIED_POULTRY
-          - OTHER_WILD_ANIMAL_CONTACT
-          - PORK_PRODUCTS
-          - SHEEP_MEAT_PRODUCTS
-          - SHELLFISH_PRODUCTS
-          - Sprouts
-          - confectionery
-          - TAP_AND_WELL_WATER
-          - TURKEY_MEAT_PRODUCTS
-          - JUICE_AND_VEGETABLE_PRODUCTS
-          - WILD_BOAR_MEAT_PRODUCTS
-          - UNKNOWN
-          - NOT_APPLICABLE
-          - OTHER
+          type: array
+          items:
+            type: string
+            enum:
+            - FOOD
+            - ANIMAL
+            - BAKERY_PRODUCTS
+            - BATS_CONTACT
+            - BOVINE_MEAT_PRODUCTS
+            - BROILER_MEAT_PRODUCTS
+            - CANNED_FOOD_PRODUCTS
+            - CATS_CONTACT
+            - CEREAL_PRODUCTS
+            - CHEESE
+            - NON_CHEESES_DAIRY_PRODUCTS
+            - DOGS_CONTACT
+            - DRINKS_BOTTLED_WATER
+            - EGG_PRODUCTS
+            - EXOTIC_PET_CONTACT
+            - DOMESTIC_PET_CONTACT
+            - FARM_ANIMAL_CONTACT
+            - OTHER_ANIMAL_CONTACT
+            - RAW_MILK_PRODUCTS
+            - FISH_PRODUCTS
+            - FOX_CONTACT
+            - FRUITS_AND_JUICES
+            - GAME_MEAT_NOT_WILD_BOAR
+            - HERBS_AND_SPICES
+            - MILK
+            - BUFFET_MEALS
+            - MIXED_MEAT_PRODUCTS
+            - OTHER_FOODS
+            - OTHER_MEAT_PRODUCTS
+            - OTHER_PET_CONTACT
+            - UNSPECIFIED_POULTRY
+            - OTHER_WILD_ANIMAL_CONTACT
+            - PORK_PRODUCTS
+            - SHEEP_MEAT_PRODUCTS
+            - SHELLFISH_PRODUCTS
+            - Sprouts
+            - confectionery
+            - TAP_AND_WELL_WATER
+            - TURKEY_MEAT_PRODUCTS
+            - JUICE_AND_VEGETABLE_PRODUCTS
+            - WILD_BOAR_MEAT_PRODUCTS
+            - UNKNOWN
+            - NOT_APPLICABLE
+            - OTHER
+          uniqueItems: true
         infectionSourceText:
           type: string
         largeOutbreaksArea:
@@ -23572,6 +23664,10 @@ components:
     PathogenTestDto:
       type: object
       properties:
+        accessionNumber:
+          type: string
+          maxLength: 512
+          minLength: 0
         antibodyTitre:
           type: string
           maxLength: 512
@@ -23586,7 +23682,22 @@ components:
           - YERSINIOSIS_3
           - YERSINIOSIS_4
           - YERSINIOSIS_5
+          - NOT_APP
+          - NOT_UND_SUR
+          - OTHER
+          - VAR_BELF
+          - VAR_GRAV
+          - VAR_INTE
+          - VAR_MITI
           - UNKNOWN
+        biotypeText:
+          type: string
+          maxLength: 512
+          minLength: 0
+        cgMlstCluster:
+          type: string
+          maxLength: 512
+          minLength: 0
         changeDate:
           type: string
           format: date-time
@@ -23720,6 +23831,10 @@ components:
           minLength: 0
         labUser:
           $ref: '#/components/schemas/UserReferenceDto'
+        mlstSequenceType:
+          type: string
+          maxLength: 512
+          minLength: 0
         otherDeletionReason:
           type: string
           maxLength: 1000000
@@ -23804,6 +23919,12 @@ components:
           - INDETERMINATE
         sample:
           $ref: '#/components/schemas/SampleReferenceDto'
+        sequenceDataUploadedToPublicRepository:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         sequenceId:
           type: string
           maxLength: 255
@@ -23899,10 +24020,19 @@ components:
           - YERSINIA_ENTEROCOLITICA
           - YERSINIA_PSEUDOTUBERCULOSIS
           - YERSINIA_SPP
+          - DIPH_CORY_DIPH
+          - NOT_UNDER_SURVEILLANCE
+          - DIPH_NOT_SPECIFIED
+          - DIPH_CORY_PSEU
+          - DIPH_CORY_ULC
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
         specieText:
+          type: string
+          maxLength: 512
+          minLength: 0
+        sraRunId:
           type: string
           maxLength: 512
           minLength: 0
@@ -23929,6 +24059,16 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        targetTest:
+          type: string
+          enum:
+          - SPECIES_IDENTIFICATION
+          - TOXIN_PRODUCTION
+          - OTHER
+        targetTestText:
+          type: string
+          maxLength: 512
+          minLength: 0
         tbpBAllele:
           type: string
           maxLength: 512
@@ -23951,6 +24091,13 @@ components:
           minLength: 0
         testResultVerified:
           type: boolean
+        testRunStatus:
+          type: string
+          enum:
+          - PENDING
+          - COMPLETED
+          - FAILED
+          - INDETERMINATE
         testScale:
           type: string
           enum:
@@ -23997,6 +24144,7 @@ components:
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
           - ANTIBODY_DETECTION
+          - ELEK_TEST
           - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - WESTERN_BLOT
           - NEUTRALIZING_ANTIBODIES
@@ -25746,6 +25894,7 @@ components:
             - SPOLIGOTYPING
             - MIRU_PATTERN_CODE
             - ANTIBODY_DETECTION
+            - ELEK_TEST
             - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
             - WESTERN_BLOT
             - NEUTRALIZING_ANTIBODIES
@@ -26194,6 +26343,7 @@ components:
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
           - ANTIBODY_DETECTION
+          - ELEK_TEST
           - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - WESTERN_BLOT
           - NEUTRALIZING_ANTIBODIES
@@ -29870,6 +30020,13 @@ components:
           - YERSINIOSIS_3
           - YERSINIOSIS_4
           - YERSINIOSIS_5
+          - NOT_APP
+          - NOT_UND_SUR
+          - OTHER
+          - VAR_BELF
+          - VAR_GRAV
+          - VAR_INTE
+          - VAR_MITI
           - UNKNOWN
         capreomycinMic:
           type: string
@@ -30148,6 +30305,7 @@ components:
           - MICROSCOPY_AND_STAINING
           - ANTIMICROBIAL_SUSCEPTIBILITY_TESTING
           - FUNCTIONAL_IMMUNE_ASSAYS
+          - PHENOTYPIC_CHARACTERIZATION
         penicillinMic:
           type: string
         penicillinSusceptibility:
@@ -30296,6 +30454,11 @@ components:
           - YERSINIA_ENTEROCOLITICA
           - YERSINIA_PSEUDOTUBERCULOSIS
           - YERSINIA_SPP
+          - DIPH_CORY_DIPH
+          - NOT_UNDER_SURVEILLANCE
+          - DIPH_NOT_SPECIFIED
+          - DIPH_CORY_PSEU
+          - DIPH_CORY_ULC
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
@@ -30437,6 +30600,7 @@ components:
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
           - ANTIBODY_DETECTION
+          - ELEK_TEST
           - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - WESTERN_BLOT
           - NEUTRALIZING_ANTIBODIES
