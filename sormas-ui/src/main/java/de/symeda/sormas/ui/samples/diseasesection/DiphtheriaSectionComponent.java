@@ -54,7 +54,6 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 	private PathogenTestResultType testResult;
 	private FieldVisibilityCheckers visibilityCheckers;
 
-	private DrugSusceptibilityForm drugSusceptibilityField;
 	private ComboBox<PathogenSpecie> specieField;
 	private TextField specieTextField;
 
@@ -138,7 +137,7 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 		cgMlstClusterTextField.setVisible(false);
 		addRow(mlstSequenceTypeTextField, cgMlstClusterTextField);
 
-		drugSusceptibilityField = addDrugSusceptibilityField();
+		addDrugSusceptibilityField();
 
 		binder.forField(bioTypeField).bind(PathogenTestDto::getBiotype, PathogenTestDto::setBiotype);
 		binder.forField(bioTypeTextField).bind(PathogenTestDto::getBiotypeText, PathogenTestDto::setBiotypeText);
@@ -296,6 +295,7 @@ public class DiphtheriaSectionComponent extends AbstractDiseaseSectionComponent 
 	}
 
 	private void updateDrugSusceptibility(PathogenTestType testType) {
+		DrugSusceptibilityForm drugSusceptibilityField = getDrugSusceptibilityField();
 		if (drugSusceptibilityField != null) {
 			boolean visible = drugSusceptibilityField.updateFieldsVisibility(disease, testType);
 			setDrugSusceptibilityRowVisible(visible);

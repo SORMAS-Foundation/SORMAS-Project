@@ -80,7 +80,6 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 	private static final String CLINDAMYCIN_LABEL_LOC = "clindamycinLabelLoc";
 	private static final String LINEZOLID_LABEL_LOC = "linezolidLabelLoc";
 	private static final String MEROPENEM_LABEL_LOC = "meropenemLabelLoc";
-	private static final String TETRACYCLINES_LABEL_LOC = "tetracyclinesLabelLoc";
 
 	private Label formHeadingLabel;
 

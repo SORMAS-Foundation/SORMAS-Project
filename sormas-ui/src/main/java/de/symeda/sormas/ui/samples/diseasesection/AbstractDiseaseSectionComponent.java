@@ -155,6 +155,10 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 		}
 	}
 
+	protected DrugSusceptibilityForm getDrugSusceptibilityField() {
+		return drugSusceptibilityField;
+	}
+
 	protected void setDrugSusceptibilityRowVisible(boolean visible) {
 		if (drugSusceptibilityField != null) {
 			drugSusceptibilityField.setVisible(visible);
