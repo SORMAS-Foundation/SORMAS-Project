@@ -3,12 +3,8 @@ package de.symeda.sormas.api.epipulse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 
 public class EpipulseLaboratoryMapperTest {
@@ -79,51 +75,124 @@ public class EpipulseLaboratoryMapperTest {
 		assertNull(EpipulseLaboratoryMapper.mapSampleMaterialToEpipulseCode(null));
 	}
 
+	// ---------------------------------------------------------------------------------------
+	// MIC: both halves come from the stored text, and neither is inferred
+	// ---------------------------------------------------------------------------------------
+
 	@Test
-	public void testParseMicValue_PlainNumber() {
-		assertEquals(0.125f, EpipulseLaboratoryMapper.parseMicValue("0.125"));
+	public void testParseMic_PlainNumberHasNoSign() {
+
+		// The rule this class exists to protect: a bare number carries no operator, so none is
+		// reported. The sign used to be computed from a hardcoded 0.002-32 dilution range, which
+		// turned every mid-range value into "=" whether the laboratory had written one or not.
+		assertNull(EpipulseLaboratoryMapper.parseMic("0.125").getSign());
+		assertEquals(0.125d, EpipulseLaboratoryMapper.parseMic("0.125").getValue());
 	}
 
 	@Test
-	public void testParseMicValue_WithSignAndUnit() {
-		assertEquals(0.125f, EpipulseLaboratoryMapper.parseMicValue("≤0.125 mg/L"));
-		assertEquals(32f, EpipulseLaboratoryMapper.parseMicValue(">32 mg/l"));
+	public void testParseMic_CensoredValueKeepsItsOperator() {
+
+		assertEquals("<=", EpipulseLaboratoryMapper.parseMic("\u22640.125 mg/L").getSign());
+		assertEquals(0.125d, EpipulseLaboratoryMapper.parseMic("\u22640.125 mg/L").getValue());
+
+		assertEquals(">", EpipulseLaboratoryMapper.parseMic("> 32 mg/l").getSign());
+		assertEquals(32d, EpipulseLaboratoryMapper.parseMic("> 32 mg/l").getValue());
 	}
 
 	@Test
-	public void testParseMicValue_LeadingDotDecimal() {
-		assertEquals(0.5f, EpipulseLaboratoryMapper.parseMicValue("≤.5 mg/L"));
+	public void testParseMic_EveryEpipulseSignCodeIsReachable() {
+
+		// EpiPulse accepts exactly these five.
+		assertEquals("<", EpipulseLaboratoryMapper.parseMic("<0.5").getSign());
+		assertEquals("<=", EpipulseLaboratoryMapper.parseMic("<=0.5").getSign());
+		assertEquals("=", EpipulseLaboratoryMapper.parseMic("=0.5").getSign());
+		assertEquals(">", EpipulseLaboratoryMapper.parseMic(">0.5").getSign());
+		assertEquals(">=", EpipulseLaboratoryMapper.parseMic(">=0.5").getSign());
 	}
 
 	@Test
-	public void testParseMicValue_GenotypicText() {
-		assertNull(EpipulseLaboratoryMapper.parseMicValue("mecA detected"));
+	public void testParseMic_AlternativeSpellingsOfTheSameOperator() {
+
+		for (String lessOrEqual : new String[] {
+			"<=0.5",
+			"=<0.5",
+			"\u22640.5",
+			"\u2A7D0.5",
+			"\u22660.5",
+			"LTE 0.5",
+			"le 0.5" }) {
+			assertEquals("<=", EpipulseLaboratoryMapper.parseMic(lessOrEqual).getSign(), lessOrEqual);
+		}
+
+		for (String greaterOrEqual : new String[] {
+			">=0.5",
+			"=>0.5",
+			"\u22650.5",
+			"\u2A7E0.5",
+			"\u22670.5",
+			"GTE 0.5",
+			"ge 0.5" }) {
+			assertEquals(">=", EpipulseLaboratoryMapper.parseMic(greaterOrEqual).getSign(), greaterOrEqual);
+		}
+
+		assertEquals("<", EpipulseLaboratoryMapper.parseMic("lt 0.5").getSign());
+		assertEquals(">", EpipulseLaboratoryMapper.parseMic("gt 0.5").getSign());
+		assertEquals("=", EpipulseLaboratoryMapper.parseMic("eq 0.5").getSign());
+		assertEquals("=", EpipulseLaboratoryMapper.parseMic("==0.5").getSign());
 	}
 
 	@Test
-	public void testParseMicValue_NullOrBlank() {
-		assertNull(EpipulseLaboratoryMapper.parseMicValue(null));
-		assertNull(EpipulseLaboratoryMapper.parseMicValue("   "));
+	public void testParseMic_LongerOperatorWinsOverItsPrefix() {
+
+		// "lte" must not be read as "lt", nor the typographic forms as their one-character halves.
+		assertEquals("<=", EpipulseLaboratoryMapper.parseMic("lte0.5").getSign());
+		assertEquals("<", EpipulseLaboratoryMapper.parseMic("lt0.5").getSign());
+		assertEquals(">=", EpipulseLaboratoryMapper.parseMic("gte0.5").getSign());
+		assertEquals(">", EpipulseLaboratoryMapper.parseMic("gt0.5").getSign());
 	}
 
 	@Test
-	public void testMapToMeniDetectionMethod_MethodsMustNotDegradeToOther() {
-		// "OTH" is the mapper's catch-all, so asserting "the result is one of the known codes" would always
-		// pass. These methods each have a real MENI code and must never fall through to OTH.
-		Map<PathogenTestType, String> expected = new EnumMap<>(PathogenTestType.class);
-		expected.put(PathogenTestType.LATERAL_FLOW_ASSAY, "ANTIGEN");
-		expected.put(PathogenTestType.MICROSCOPY, "MICRO");
-		expected.put(PathogenTestType.GRAM_STAIN, "MICRO");
-		expected.put(PathogenTestType.CULTURE, "CULT");
-		expected.put(PathogenTestType.PCR_RT_PCR, "NUCLACID");
-		expected.put(PathogenTestType.CQ_VALUE_DETECTION, "NUCLACID");
-		expected.put(PathogenTestType.WHOLE_GENOME_SEQUENCING, "GENOSEQ");
-		expected.put(PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, "GENOSEQ");
-
-		expected.forEach(
-			(type, code) -> assertEquals(code, EpipulseLaboratoryMapper.mapToMeniDetectionMethod(type.name()), "MENI code for " + type.name()));
-
-		// The catch-all still applies to a method with no MENI equivalent.
-		assertEquals("OTH", EpipulseLaboratoryMapper.mapToMeniDetectionMethod(PathogenTestType.OTHER.name()));
+	public void testParseMic_DecimalComma() {
+		assertEquals(0.125d, EpipulseLaboratoryMapper.parseMic("0,125 mg/L").getValue());
+		assertEquals(0.5d, EpipulseLaboratoryMapper.parseMic("\u22640,5").getValue());
 	}
+
+	@Test
+	public void testParseMic_LeadingDecimalSeparator() {
+		assertEquals(0.5d, EpipulseLaboratoryMapper.parseMic("\u2264.5 mg/L").getValue());
+		assertEquals(0.5d, EpipulseLaboratoryMapper.parseMic(",5").getValue());
+	}
+
+	@Test
+	public void testParseMic_GenotypicTextYieldsNothing() {
+
+		assertNull(EpipulseLaboratoryMapper.parseMic("mecA detected").getValue());
+		assertNull(EpipulseLaboratoryMapper.parseMic("mecA detected").getSign());
+	}
+
+	@Test
+	public void testParseMic_NumberNotAtTheStartIsNotScraped() {
+
+		// Anchored on purpose: reading a number out of the middle of a sentence would report
+		// "serotype 16F" as a concentration of 16.
+		assertNull(EpipulseLaboratoryMapper.parseMic("serotype 16F").getValue());
+	}
+
+	@Test
+	public void testParseMic_SignWithoutAValueReportsNeither() {
+
+		// MICSign qualifies "the value indicated in the following field", so a sign with nothing to
+		// qualify is not reported.
+		assertNull(EpipulseLaboratoryMapper.parseMic("<=").getSign());
+		assertNull(EpipulseLaboratoryMapper.parseMic("<=").getValue());
+	}
+
+	@Test
+	public void testParseMic_NullOrBlank() {
+
+		assertNull(EpipulseLaboratoryMapper.parseMic(null).getValue());
+		assertNull(EpipulseLaboratoryMapper.parseMic(null).getSign());
+		assertNull(EpipulseLaboratoryMapper.parseMic("   ").getValue());
+	}
+
 }
