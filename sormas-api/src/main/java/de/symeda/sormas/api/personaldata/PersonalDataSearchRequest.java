@@ -7,6 +7,7 @@ import de.symeda.sormas.api.person.Sex;
 
 public class PersonalDataSearchRequest {
 
+	private String nationalHealthId;
 	private String lastName;
 	private String firstName;
 	private Sex sex;
@@ -19,6 +20,14 @@ public class PersonalDataSearchRequest {
 	private Integer ageFrom;
 	private Integer ageTo;
 	private Boolean alive;
+
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
+	}
 
 	public String getLastName() {
 		return lastName;
@@ -118,12 +127,11 @@ public class PersonalDataSearchRequest {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
-			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
 		PersonalDataSearchRequest that = (PersonalDataSearchRequest) o;
-		return Objects.equals(lastName, that.lastName)
+		return Objects.equals(nationalHealthId, that.nationalHealthId)
+			&& Objects.equals(lastName, that.lastName)
 			&& Objects.equals(firstName, that.firstName)
 			&& sex == that.sex
 			&& Objects.equals(birthDate, that.birthDate)
@@ -140,6 +148,7 @@ public class PersonalDataSearchRequest {
 	@Override
 	public int hashCode() {
 		return Objects.hash(
+			nationalHealthId,
 			lastName,
 			firstName,
 			sex,

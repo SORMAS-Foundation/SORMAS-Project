@@ -423,6 +423,9 @@ public interface Strings {
 	String exposureEndDate = "exposureEndDate";
 	String exposureStartDate = "exposureStartDate";
 	String externalMessageMultipleSampleReports = "externalMessageMultipleSampleReports";
+	String externalPersonsEnterCriteria = "externalPersonsEnterCriteria";
+	String externalPersonsFirst100Results = "externalPersonsFirst100Results";
+	String externalPersonsInvalidRange = "externalPersonsInvalidRange";
 	String ExternalSurveillanceToolGateway_confirmDeleteCase = "ExternalSurveillanceToolGateway.confirmDeleteCase";
 	String ExternalSurveillanceToolGateway_confirmDeleteEvent = "ExternalSurveillanceToolGateway.confirmDeleteEvent";
 	String ExternalSurveillanceToolGateway_confirmSendCase = "ExternalSurveillanceToolGateway.confirmSendCase";

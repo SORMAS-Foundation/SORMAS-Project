@@ -39,7 +39,18 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 		}
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
-		String nationalHealthId = person.getNationalHealthId();
+		load(person.getNationalHealthId());
+	}
+
+	public ExternalPersonDataComponent(String nationalHealthId) {
+		super(() -> null);
+		setSizeFull();
+		if (isAvailable()) {
+			load(nationalHealthId);
+		}
+	}
+
+	private void load(String nationalHealthId) {
 		if (StringUtils.isBlank(nationalHealthId)) {
 			showError(Strings.errorNoNationalHealthIdInContext);
 			return;

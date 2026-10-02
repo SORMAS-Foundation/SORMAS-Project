@@ -29,6 +29,45 @@ import de.symeda.sormas.ui.UiUtil;
 class ExternalPersonDataComponentTest {
 
 	@Test
+	void loadsExternalDataByHealthIdWithoutLoadingLocalPerson() {
+		try (Context context = new Context(true, "true")) {
+			new ExternalPersonDataComponent("health-id");
+			verify(context.provider).findDisplayDataByNationalHealthId("health-id");
+			verifyNoInteractions(context.personFacade);
+		}
+	}
+
+	@Test
+	void searchUsesOnlyVisibleCriteriaAndDoesNotSearchOnArrival() {
+		try (Context context = new Context(true, "true")) {
+			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
+				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			response.setResults(java.util.Collections.emptyList());
+			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
+			ExternalPersonsView view = new ExternalPersonsView();
+			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) view.getComponent(1);
+			com.vaadin.ui.HorizontalLayout actions = (com.vaadin.ui.HorizontalLayout) content.getComponent(3);
+			com.vaadin.ui.Button search = (com.vaadin.ui.Button) actions.getComponent(0);
+			verifyNoInteractions(context.provider);
+			search.click();
+			verifyNoInteractions(context.provider);
+			com.vaadin.ui.TextField id = (com.vaadin.ui.TextField) content.getComponent(0);
+			id.setValue("invalid-id");
+			search.click();
+			verifyNoInteractions(context.provider);
+			((com.vaadin.ui.Button) content.getComponent(1)).click();
+			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(2);
+			((com.vaadin.ui.TextField) filters.getComponent(0, 0)).setValue("Doe");
+			search.click();
+			org.mockito.ArgumentCaptor<de.symeda.sormas.api.personaldata.PersonalDataSearchRequest> request =
+				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.personaldata.PersonalDataSearchRequest.class);
+			verify(context.provider).search(request.capture());
+			assertEquals("Doe", request.getValue().getLastName());
+			assertEquals(null, request.getValue().getNationalHealthId());
+		}
+	}
+
+	@Test
 	void doesNotLoadPersonOrExternalDataWithoutPermission() {
 		try (Context context = new Context(false, "true")) {
 			assertEquals(0, context.create().getComponentCount());
@@ -106,12 +145,20 @@ class ExternalPersonDataComponentTest {
 
 		private final MockedStatic<FacadeProvider> facades = mockStatic(FacadeProvider.class);
 		private final MockedStatic<UiUtil> ui = mockStatic(UiUtil.class);
-		private final MockedStatic<I18nProperties> i18n = mockStatic(I18nProperties.class);
+		private final MockedStatic<I18nProperties> i18n = mockStatic(I18nProperties.class, invocation -> {
+			if (invocation.getMethod().getReturnType() == String.class && invocation.getArguments().length > 0) {
+				return invocation.getArgument(0);
+			}
+			return org.mockito.Answers.RETURNS_DEFAULTS.answer(invocation);
+		});
 		private final PersonFacade personFacade = mock(PersonFacade.class);
 		private final PersonalDataProviderFacade provider = mock(PersonalDataProviderFacade.class);
 		private final PersonDto person = new PersonDto();
 
 		private Context(boolean permitted, String enabled) {
+			i18n.when(() -> I18nProperties.getValidationError(de.symeda.sormas.api.i18n.Validations.invalidNationalHealthId))
+				.thenReturn("Invalid national health ID");
+			i18n.when(() -> I18nProperties.getString("externalPersonsInvalidRange")).thenReturn("Invalid range");
 			SystemConfigurationValueFacade configuration = mock(SystemConfigurationValueFacade.class);
 			facades.when(FacadeProvider::getSystemConfigurationValueFacade).thenReturn(configuration);
 			facades.when(FacadeProvider::getPersonFacade).thenReturn(personFacade);
