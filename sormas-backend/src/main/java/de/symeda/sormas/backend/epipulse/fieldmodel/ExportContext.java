@@ -16,20 +16,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package de.symeda.sormas.api.epipulse;
+package de.symeda.sormas.backend.epipulse.fieldmodel;
 
 import java.util.List;
 
-public class EpipulseDiseaseExportResult {
+import de.symeda.sormas.api.sample.PathogenTestType;
 
-	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
+/** Export-level context passed to readers: server NUTS code, subject-code pathogen test types. */
+public final class ExportContext {
 
-	public List<EpipulseDiseaseExportEntryDto> getExportEntryList() {
-		return exportEntryList;
+	private final String serverCountryNutsCode;
+	private final List<PathogenTestType> subjectCodePathogenTestTypes;
+
+	public ExportContext(String serverCountryNutsCode, List<PathogenTestType> subjectCodePathogenTestTypes) {
+		this.serverCountryNutsCode = serverCountryNutsCode;
+		this.subjectCodePathogenTestTypes = subjectCodePathogenTestTypes;
 	}
 
-	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
-		this.exportEntryList = exportEntryList;
+	/** Server's own NUTS code (not a column). */
+	public String getServerCountryNutsCode() {
+		return serverCountryNutsCode;
 	}
 
+	/** Pathogen test types valid for this subject code. */
+	public List<PathogenTestType> getSubjectCodePathogenTestTypes() {
+		return subjectCodePathogenTestTypes;
+	}
 }

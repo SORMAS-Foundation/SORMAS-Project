@@ -16,20 +16,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package de.symeda.sormas.api.epipulse;
+package de.symeda.sormas.backend.epipulse.disease;
 
 import java.util.List;
 
-public class EpipulseDiseaseExportResult {
+import de.symeda.sormas.api.epipulse.EpipulseMapping;
+import de.symeda.sormas.api.epipulse.EpipulseVariable;
+import de.symeda.sormas.backend.epipulse.fieldmodel.ValueDef;
 
-	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
+/**
+ * The {@code CountryOfBirth} column, for subject codes that report it.
+ */
+final class CountryOfBirthFields {
 
-	public List<EpipulseDiseaseExportEntryDto> getExportEntryList() {
-		return exportEntryList;
+	private CountryOfBirthFields() {
 	}
 
-	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
-		this.exportEntryList = exportEntryList;
-	}
+	static void addCountryOfBirth(List<ValueDef> fields) {
 
+		fields.add(
+			ValueDef.direct(
+				"birth_country_nutscode",
+				"person_birth_country.nutscode",
+				(dto, row) -> dto.setBirthCountryNutsCode((String) row.get("birth_country_nutscode")),
+				EpipulseVariable.COUNTRY_OF_BIRTH,
+				EpipulseMapping::countryOfBirth));
+	}
 }

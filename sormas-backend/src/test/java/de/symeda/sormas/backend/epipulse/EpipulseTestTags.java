@@ -16,20 +16,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package de.symeda.sormas.api.epipulse;
+package de.symeda.sormas.backend.epipulse;
 
-import java.util.List;
+/**
+ * JUnit tags used by the EpiPulse test suites.
+ */
+public final class EpipulseTestTags {
 
-public class EpipulseDiseaseExportResult {
+	/**
+	 * Marks a test that needs a real PostgreSQL instance and will not run on H2.
+	 */
+	public static final String POSTGRES = "postgres";
 
-	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
-
-	public List<EpipulseDiseaseExportEntryDto> getExportEntryList() {
-		return exportEntryList;
+	private EpipulseTestTags() {
 	}
-
-	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
-		this.exportEntryList = exportEntryList;
-	}
-
 }

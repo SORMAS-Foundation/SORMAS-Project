@@ -16,20 +16,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package de.symeda.sormas.api.epipulse;
+package de.symeda.sormas.backend.epipulse.sql;
 
-import java.util.List;
+/**
+ * The join behind {@code CountryOfNationality}, for the subject codes that report it.
+ * 
+ */
+public final class EpipulseCountryOfNationalitySql {
 
-public class EpipulseDiseaseExportResult {
-
-	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
-
-	public List<EpipulseDiseaseExportEntryDto> getExportEntryList() {
-		return exportEntryList;
+	private EpipulseCountryOfNationalitySql() {
 	}
 
-	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
-		this.exportEntryList = exportEntryList;
-	}
+	public static SqlQueryModel spec() {
 
+		return SqlQueryModel.builder().joins("LEFT JOIN country person_citizenship ON person.citizenship_id = person_citizenship.id").build();
+	}
 }

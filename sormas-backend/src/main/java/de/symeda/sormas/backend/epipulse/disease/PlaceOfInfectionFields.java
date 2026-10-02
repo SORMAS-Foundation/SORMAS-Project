@@ -16,20 +16,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package de.symeda.sormas.api.epipulse;
+package de.symeda.sormas.backend.epipulse.disease;
 
 import java.util.List;
 
-public class EpipulseDiseaseExportResult {
+import de.symeda.sormas.backend.epipulse.fieldmodel.ValueDef;
 
-	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
+/**
+ * PlaceOfInfection column (28 of 37 EpiPulse subject codes declare it). Optional fragment: models
+ * opt-in and merge EpipulsePlaceOfInfectionSql.spec(). Width decided per-model (MENI floors to >= 1;
+ * MEAS can emit 0 when no case carries a place).
+ */
+final class PlaceOfInfectionFields {
 
-	public List<EpipulseDiseaseExportEntryDto> getExportEntryList() {
-		return exportEntryList;
+	private PlaceOfInfectionFields() {
 	}
 
-	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
-		this.exportEntryList = exportEntryList;
-	}
+	static void addPlaceOfInfectionSource(List<ValueDef> fields) {
 
+		fields.add(
+			ValueDef.sqlOnly(
+				"places_of_infection",
+				"poi.places_of_infection",
+				(dto, row) -> dto.setPlaceOfInfection(FieldReaders.splitCollection((String) row.get("places_of_infection")))));
+	}
 }

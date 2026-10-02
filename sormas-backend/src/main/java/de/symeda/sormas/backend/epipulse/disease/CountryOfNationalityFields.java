@@ -16,20 +16,36 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package de.symeda.sormas.api.epipulse;
+package de.symeda.sormas.backend.epipulse.disease;
 
 import java.util.List;
 
-public class EpipulseDiseaseExportResult {
+import de.symeda.sormas.api.epipulse.EpipulseMapping;
+import de.symeda.sormas.api.epipulse.EpipulseVariable;
+import de.symeda.sormas.backend.epipulse.fieldmodel.ValueDef;
 
-	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
+/**
+ * Shared {@code CountryOfNationality} field block.
+ *
+ * <p>
+ * Reads {@code Person.citizenship} as required by EpiPulse's citizenship definition. Models add
+ * this together with the matching SQL fragment.
+ *
+ * @see CountryOfBirthFields
+ */
+final class CountryOfNationalityFields {
 
-	public List<EpipulseDiseaseExportEntryDto> getExportEntryList() {
-		return exportEntryList;
+	private CountryOfNationalityFields() {
 	}
 
-	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
-		this.exportEntryList = exportEntryList;
-	}
+	static void addCountryOfNationality(List<ValueDef> fields) {
 
+		fields.add(
+			ValueDef.direct(
+				"citizenship_nutscode",
+				"person_citizenship.nutscode",
+				(dto, row) -> dto.setCitizenshipCountryNutsCode((String) row.get("citizenship_nutscode")),
+				EpipulseVariable.COUNTRY_OF_NATIONALITY,
+				EpipulseMapping::countryOfNationality));
+	}
 }
