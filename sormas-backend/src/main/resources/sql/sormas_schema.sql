@@ -17773,4 +17773,16 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroconversion boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (676, '#14356 - Carry IgG seroconversion on lab message test reports');
 
+-- 2026-10-02 External personal data provider configuration
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id, uuid)
+SELECT 'EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED', 'false', id, false, '^true|false$',
+       false, 'de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider',
+       'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid()
+FROM systemconfigurationcategory
+WHERE name = 'GENERAL_CATEGORY';
+
+INSERT INTO schema_version (version_number, comment) VALUES (677, 'Add external personal data provider configuration');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

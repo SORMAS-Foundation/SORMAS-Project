@@ -26,4 +26,6 @@ public interface AuditLoggerFacade {
 
 	void logExternalMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias);
 
+	void logExternalSystemCall(ExternalSystemCallAuditRequest request);
+
 }

@@ -101,6 +101,9 @@ public class PersonController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(PersonsView.VIEW_NAME, PersonsView.class);
 		navigator.addView(PersonDataView.VIEW_NAME, PersonDataView.class);
+		if (UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)) {
+			navigator.addView(PersonExternalPersonDataView.VIEW_NAME, PersonExternalPersonDataView.class);
+		}
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 	}
 
