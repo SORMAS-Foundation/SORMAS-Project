@@ -114,6 +114,18 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY = "trimethoprimSulfamethoxazoleSusceptibility";
 	public static final String TRIMETHOPRIM_SULFAMETHOXAZOLE_METHOD = "trimethoprimSulfamethoxazoleMethod";
 
+	public static final String CLINDAMYCIN_MIC = "clindamycinMic";
+	public static final String CLINDAMYCIN_SUSCEPTIBILITY = "clindamycinSusceptibility";
+	public static final String CLINDAMYCIN_METHOD = "clindamycinMethod";
+
+	public static final String LINEZOLID_MIC = "linezolidMic";
+	public static final String LINEZOLID_SUSCEPTIBILITY = "linezolidSusceptibility";
+	public static final String LINEZOLID_METHOD = "linezolidMethod";
+
+	public static final String MEROPENEM_MIC = "meropenemMic";
+	public static final String MEROPENEM_SUSCEPTIBILITY = "meropenemSusceptibility";
+	public static final String MEROPENEM_METHOD = "meropenemMethod";
+
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -148,6 +160,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
@@ -156,6 +169,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
@@ -242,13 +256,15 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	private DrugSusceptibilityType ofloxacinSusceptibility;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String rifampicinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType rifampicinSusceptibility;
@@ -282,24 +298,28 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String penicillinMic;
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType penicillinSusceptibility;
 
 	@Diseases(value = {
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String erythromycinMic;
 	@Diseases(value = {
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType erythromycinSusceptibility;
@@ -323,6 +343,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
@@ -369,7 +390,8 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	private SusceptibilityMethod ofloxacinMethod;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod rifampicinMethod;
@@ -388,30 +410,35 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	private SusceptibilityMethod ceftriaxoneMethod;
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod penicillinMethod;
 	@Diseases(value = {
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod erythromycinMethod;
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String azithromycinMic;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType azithromycinSusceptibility;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
@@ -464,17 +491,20 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod ampicillinMethod;
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String trimethoprimSulfamethoxazoleMic;
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility;
 	@Diseases(value = {
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod trimethoprimSulfamethoxazoleMethod;
@@ -488,13 +518,19 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@Diseases(Disease.GONOCOCCAL_INFECTION)
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private SusceptibilityMethod cefiximeMethod;
-	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private String tetracyclineMic;
-	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private DrugSusceptibilityType tetracyclineSusceptibility;
-	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.DIPHTHERIA })
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private SusceptibilityMethod tetracyclineMethod;
 	@Diseases(Disease.GONOCOCCAL_INFECTION)
@@ -515,6 +551,57 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@Diseases(Disease.GONOCOCCAL_INFECTION)
 	@ApplicableToPathogenTests(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 	private SusceptibilityMethod spectinomycinMethod;
+
+	// Clindamycin
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private String clindamycinMic;
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType clindamycinSusceptibility;
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private SusceptibilityMethod clindamycinMethod;
+
+	//Linezolid
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private String linezolidMic;
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType linezolidSusceptibility;
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private SusceptibilityMethod linezolidMethod;
+
+	// Meropenem
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private String meropenemMic;
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType meropenemSusceptibility;
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private SusceptibilityMethod meropenemMethod;
 
 	public static DrugSusceptibilityDto build() {
 		DrugSusceptibilityDto drugSusceptibility = new DrugSusceptibilityDto();
@@ -1144,5 +1231,77 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	public void setSpectinomycinMethod(SusceptibilityMethod value) {
 		this.spectinomycinMethod = value;
+	}
+
+	public String getClindamycinMic() {
+		return clindamycinMic;
+	}
+
+	public void setClindamycinMic(String clindamycinMic) {
+		this.clindamycinMic = clindamycinMic;
+	}
+
+	public DrugSusceptibilityType getClindamycinSusceptibility() {
+		return clindamycinSusceptibility;
+	}
+
+	public void setClindamycinSusceptibility(DrugSusceptibilityType clindamycinSusceptibility) {
+		this.clindamycinSusceptibility = clindamycinSusceptibility;
+	}
+
+	public SusceptibilityMethod getClindamycinMethod() {
+		return clindamycinMethod;
+	}
+
+	public void setClindamycinMethod(SusceptibilityMethod clindamycinMethod) {
+		this.clindamycinMethod = clindamycinMethod;
+	}
+
+	public String getLinezolidMic() {
+		return linezolidMic;
+	}
+
+	public void setLinezolidMic(String linezolidMic) {
+		this.linezolidMic = linezolidMic;
+	}
+
+	public DrugSusceptibilityType getLinezolidSusceptibility() {
+		return linezolidSusceptibility;
+	}
+
+	public void setLinezolidSusceptibility(DrugSusceptibilityType linezolidSusceptibility) {
+		this.linezolidSusceptibility = linezolidSusceptibility;
+	}
+
+	public SusceptibilityMethod getLinezolidMethod() {
+		return linezolidMethod;
+	}
+
+	public void setLinezolidMethod(SusceptibilityMethod linezolidMethod) {
+		this.linezolidMethod = linezolidMethod;
+	}
+
+	public String getMeropenemMic() {
+		return meropenemMic;
+	}
+
+	public void setMeropenemMic(String meropenemMic) {
+		this.meropenemMic = meropenemMic;
+	}
+
+	public DrugSusceptibilityType getMeropenemSusceptibility() {
+		return meropenemSusceptibility;
+	}
+
+	public void setMeropenemSusceptibility(DrugSusceptibilityType meropenemSusceptibility) {
+		this.meropenemSusceptibility = meropenemSusceptibility;
+	}
+
+	public SusceptibilityMethod getMeropenemMethod() {
+		return meropenemMethod;
+	}
+
+	public void setMeropenemMethod(SusceptibilityMethod meropenemMethod) {
+		this.meropenemMethod = meropenemMethod;
 	}
 }

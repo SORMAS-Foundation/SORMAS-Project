@@ -23,6 +23,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.v7.data.Item;
@@ -62,6 +63,7 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 
 	private DrugSusceptibilityForm drugSusceptibilityField;
 	private Consumer<Boolean> visibilityCallback;
+	private Component preResultComponent;
 
 	protected AbstractDiseaseSectionComponent() {
 		super(PathogenTestDto.class);
@@ -69,6 +71,19 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 
 	public void setVisibilityCallback(Consumer<Boolean> callback) {
 		this.visibilityCallback = callback;
+	}
+
+	/**
+	 * Registers a component that PathogenTestForm should render above testResultComponent instead of
+	 * inside this section's own body - e.g. a field that needs to be visible/filled before the result.
+	 */
+	protected void setPreResultComponent(Component component) {
+		this.preResultComponent = component;
+	}
+
+	/** Component to render above testResultComponent for this disease, or null if this section has none. */
+	public Component getPreResultComponent() {
+		return preResultComponent;
 	}
 
 	@Override
@@ -138,6 +153,10 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 			fieldGroup.unbind(drugSusceptibilityField);
 			drugSusceptibilityField = null;
 		}
+	}
+
+	protected DrugSusceptibilityForm getDrugSusceptibilityField() {
+		return drugSusceptibilityField;
 	}
 
 	protected void setDrugSusceptibilityRowVisible(boolean visible) {

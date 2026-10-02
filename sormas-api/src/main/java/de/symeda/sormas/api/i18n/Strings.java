@@ -562,6 +562,7 @@ public interface Strings {
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
 	String headingContactsRestored = "headingContactsRestored";
 	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
+	String headingControlMeasuresLoc = "headingControlMeasuresLoc";
 	String headingCorrectPathogenTest = "headingCorrectPathogenTest";
 	String headingCorrectPerson = "headingCorrectPerson";
 	String headingCorrectSample = "headingCorrectSample";
@@ -1292,6 +1293,7 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation =
 		"infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
+	String infoToxGeneDetected = "infoToxGeneDetected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";
@@ -1519,6 +1521,7 @@ public interface Strings {
 	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
 	String messageDeleteWithPendingShareRequest = "messageDeleteWithPendingShareRequest";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
+	String messageDiseaseConfigurationContainsDeprecatedValues = "messageDiseaseConfigurationContainsDeprecatedValues";
 	String messageDiseaseConfigurationSaved = "messageDiseaseConfigurationSaved";
 	String messageDiseaseNotSpecifiedInLabMessage = "messageDiseaseNotSpecifiedInLabMessage";
 	String messageDistrictArchived = "messageDistrictArchived";
@@ -1602,6 +1605,7 @@ public interface Strings {
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
+	String messageExposureContainsDeprecatedValues = "messageExposureContainsDeprecatedValues";
 	String messageExternalEmailAttachmentNotAvailableInfo = "messageExternalEmailAttachmentNotAvailableInfo";
 	String messageExternalEmailAttachmentPassword = "messageExternalEmailAttachmentPassword";
 	String messageExternalEmailNoAttachments = "messageExternalEmailNoAttachments";

@@ -77,6 +77,9 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 	private static final String TETRACYCLINE_LABEL_LOC = "tetracyclineLabelLoc";
 	private static final String GENTAMICIN_LABEL_LOC = "gentamicinLabelLoc";
 	private static final String SPECTINOMYCIN_LABEL_LOC = "spectinomycinLabelLoc";
+	private static final String CLINDAMYCIN_LABEL_LOC = "clindamycinLabelLoc";
+	private static final String LINEZOLID_LABEL_LOC = "linezolidLabelLoc";
+	private static final String MEROPENEM_LABEL_LOC = "meropenemLabelLoc";
 
 	private Label formHeadingLabel;
 
@@ -97,33 +100,36 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 	//@formatter:off
     private static final String HTML_LAYOUT =
 		loc(FORM_HEADING_LOC) +
-			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, HEADER_DRUG_LOC, HEADER_METHOD_LOC, HEADER_VALUE_LOC, HEADER_INTERPRETATION_LOC)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AMIKACIN_LABEL_LOC, DrugSusceptibilityDto.AMIKACIN_METHOD, DrugSusceptibilityDto.AMIKACIN_MIC, DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, BEDAQUILINE_LABEL_LOC, DrugSusceptibilityDto.BEDAQUILINE_METHOD, DrugSusceptibilityDto.BEDAQUILINE_MIC, DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CAPREOMYCIN_LABEL_LOC, DrugSusceptibilityDto.CAPREOMYCIN_METHOD, DrugSusceptibilityDto.CAPREOMYCIN_MIC, DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CIPROFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.CIPROFLOXACIN_METHOD, DrugSusceptibilityDto.CIPROFLOXACIN_MIC, DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DELAMANID_LABEL_LOC, DrugSusceptibilityDto.DELAMANID_METHOD, DrugSusceptibilityDto.DELAMANID_MIC, DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ETHAMBUTOL_LABEL_LOC, DrugSusceptibilityDto.ETHAMBUTOL_METHOD, DrugSusceptibilityDto.ETHAMBUTOL_MIC, DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, GATIFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.GATIFLOXACIN_METHOD, DrugSusceptibilityDto.GATIFLOXACIN_MIC, DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AZITHROMYCIN_LABEL_LOC, DrugSusceptibilityDto.AZITHROMYCIN_METHOD, DrugSusceptibilityDto.AZITHROMYCIN_MIC, DrugSusceptibilityDto.AZITHROMYCIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AMPICILLIN_LABEL_LOC, DrugSusceptibilityDto.AMPICILLIN_METHOD, DrugSusceptibilityDto.AMPICILLIN_MIC, DrugSusceptibilityDto.AMPICILLIN_SUSCEPTIBILITY)
-			+			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ISONIAZID_LABEL_LOC, DrugSusceptibilityDto.ISONIAZID_METHOD, DrugSusceptibilityDto.ISONIAZID_MIC, DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, KANAMYCIN_LABEL_LOC, DrugSusceptibilityDto.KANAMYCIN_METHOD, DrugSusceptibilityDto.KANAMYCIN_MIC, DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, LEVOFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.LEVOFLOXACIN_METHOD, DrugSusceptibilityDto.LEVOFLOXACIN_MIC, DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, MOXIFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.MOXIFLOXACIN_METHOD, DrugSusceptibilityDto.MOXIFLOXACIN_MIC, DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, OFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.OFLOXACIN_METHOD, DrugSusceptibilityDto.OFLOXACIN_MIC, DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, RIFAMPICIN_LABEL_LOC, DrugSusceptibilityDto.RIFAMPICIN_METHOD, DrugSusceptibilityDto.RIFAMPICIN_MIC, DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, STREPTOMYCIN_LABEL_LOC, DrugSusceptibilityDto.STREPTOMYCIN_METHOD, DrugSusceptibilityDto.STREPTOMYCIN_MIC, DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFTRIAXONE_LABEL_LOC, DrugSusceptibilityDto.CEFTRIAXONE_METHOD, DrugSusceptibilityDto.CEFTRIAXONE_MIC, DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, PENICILLIN_LABEL_LOC, DrugSusceptibilityDto.PENICILLIN_METHOD, DrugSusceptibilityDto.PENICILLIN_MIC, DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFTAZIDIME_LABEL_LOC, DrugSusceptibilityDto.CEFTAZIDIME_METHOD, DrugSusceptibilityDto.CEFTAZIDIME_MIC, DrugSusceptibilityDto.CEFTAZIDIME_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFOTAXIME_LABEL_LOC, DrugSusceptibilityDto.CEFOTAXIME_METHOD, DrugSusceptibilityDto.CEFOTAXIME_MIC, DrugSusceptibilityDto.CEFOTAXIME_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ERYTHROMYCIN_LABEL_LOC, DrugSusceptibilityDto.ERYTHROMYCIN_METHOD, DrugSusceptibilityDto.ERYTHROMYCIN_MIC, DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)
-			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, TRIMETHOPRIM_SULFAMETHOXAZOLE_LABEL_LOC, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_METHOD, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_MIC, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY)
-			+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFIXIME_LABEL_LOC, DrugSusceptibilityDto.CEFIXIME_METHOD, DrugSusceptibilityDto.CEFIXIME_MIC, DrugSusceptibilityDto.CEFIXIME_SUSCEPTIBILITY)
-			+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, TETRACYCLINE_LABEL_LOC, DrugSusceptibilityDto.TETRACYCLINE_METHOD, DrugSusceptibilityDto.TETRACYCLINE_MIC, DrugSusceptibilityDto.TETRACYCLINE_SUSCEPTIBILITY)
-			+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, GENTAMICIN_LABEL_LOC, DrugSusceptibilityDto.GENTAMICIN_METHOD, DrugSusceptibilityDto.GENTAMICIN_MIC, DrugSusceptibilityDto.GENTAMICIN_SUSCEPTIBILITY)
-			+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, SPECTINOMYCIN_LABEL_LOC, DrugSusceptibilityDto.SPECTINOMYCIN_METHOD, DrugSusceptibilityDto.SPECTINOMYCIN_MIC, DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY);
+				fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, HEADER_DRUG_LOC, HEADER_METHOD_LOC, HEADER_VALUE_LOC, HEADER_INTERPRETATION_LOC)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AMIKACIN_LABEL_LOC, DrugSusceptibilityDto.AMIKACIN_METHOD, DrugSusceptibilityDto.AMIKACIN_MIC, DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AMPICILLIN_LABEL_LOC, DrugSusceptibilityDto.AMPICILLIN_METHOD, DrugSusceptibilityDto.AMPICILLIN_MIC, DrugSusceptibilityDto.AMPICILLIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AZITHROMYCIN_LABEL_LOC, DrugSusceptibilityDto.AZITHROMYCIN_METHOD, DrugSusceptibilityDto.AZITHROMYCIN_MIC, DrugSusceptibilityDto.AZITHROMYCIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, BEDAQUILINE_LABEL_LOC, DrugSusceptibilityDto.BEDAQUILINE_METHOD, DrugSusceptibilityDto.BEDAQUILINE_MIC, DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CAPREOMYCIN_LABEL_LOC, DrugSusceptibilityDto.CAPREOMYCIN_METHOD, DrugSusceptibilityDto.CAPREOMYCIN_MIC, DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFOTAXIME_LABEL_LOC, DrugSusceptibilityDto.CEFOTAXIME_METHOD, DrugSusceptibilityDto.CEFOTAXIME_MIC, DrugSusceptibilityDto.CEFOTAXIME_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFTAZIDIME_LABEL_LOC, DrugSusceptibilityDto.CEFTAZIDIME_METHOD, DrugSusceptibilityDto.CEFTAZIDIME_MIC, DrugSusceptibilityDto.CEFTAZIDIME_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFTRIAXONE_LABEL_LOC, DrugSusceptibilityDto.CEFTRIAXONE_METHOD, DrugSusceptibilityDto.CEFTRIAXONE_MIC, DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CIPROFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.CIPROFLOXACIN_METHOD, DrugSusceptibilityDto.CIPROFLOXACIN_MIC, DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CLINDAMYCIN_LABEL_LOC, DrugSusceptibilityDto.CLINDAMYCIN_METHOD, DrugSusceptibilityDto.CLINDAMYCIN_MIC, DrugSusceptibilityDto.CLINDAMYCIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DELAMANID_LABEL_LOC, DrugSusceptibilityDto.DELAMANID_METHOD, DrugSusceptibilityDto.DELAMANID_MIC, DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ERYTHROMYCIN_LABEL_LOC, DrugSusceptibilityDto.ERYTHROMYCIN_METHOD, DrugSusceptibilityDto.ERYTHROMYCIN_MIC, DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ETHAMBUTOL_LABEL_LOC, DrugSusceptibilityDto.ETHAMBUTOL_METHOD, DrugSusceptibilityDto.ETHAMBUTOL_MIC, DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, GATIFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.GATIFLOXACIN_METHOD, DrugSusceptibilityDto.GATIFLOXACIN_MIC, DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ISONIAZID_LABEL_LOC, DrugSusceptibilityDto.ISONIAZID_METHOD, DrugSusceptibilityDto.ISONIAZID_MIC, DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, KANAMYCIN_LABEL_LOC, DrugSusceptibilityDto.KANAMYCIN_METHOD, DrugSusceptibilityDto.KANAMYCIN_MIC, DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, LEVOFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.LEVOFLOXACIN_METHOD, DrugSusceptibilityDto.LEVOFLOXACIN_MIC, DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, LINEZOLID_LABEL_LOC, DrugSusceptibilityDto.LINEZOLID_METHOD, DrugSusceptibilityDto.LINEZOLID_MIC, DrugSusceptibilityDto.LINEZOLID_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, MEROPENEM_LABEL_LOC, DrugSusceptibilityDto.MEROPENEM_METHOD, DrugSusceptibilityDto.MEROPENEM_MIC, DrugSusceptibilityDto.MEROPENEM_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, MOXIFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.MOXIFLOXACIN_METHOD, DrugSusceptibilityDto.MOXIFLOXACIN_MIC, DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, OFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.OFLOXACIN_METHOD, DrugSusceptibilityDto.OFLOXACIN_MIC, DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, PENICILLIN_LABEL_LOC, DrugSusceptibilityDto.PENICILLIN_METHOD, DrugSusceptibilityDto.PENICILLIN_MIC, DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, RIFAMPICIN_LABEL_LOC, DrugSusceptibilityDto.RIFAMPICIN_METHOD, DrugSusceptibilityDto.RIFAMPICIN_MIC, DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, STREPTOMYCIN_LABEL_LOC, DrugSusceptibilityDto.STREPTOMYCIN_METHOD, DrugSusceptibilityDto.STREPTOMYCIN_MIC, DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY)
+				+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, TRIMETHOPRIM_SULFAMETHOXAZOLE_LABEL_LOC, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_METHOD, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_MIC, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY)
+                + fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFIXIME_LABEL_LOC, DrugSusceptibilityDto.CEFIXIME_METHOD, DrugSusceptibilityDto.CEFIXIME_MIC, DrugSusceptibilityDto.CEFIXIME_SUSCEPTIBILITY)
+                + fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, TETRACYCLINE_LABEL_LOC, DrugSusceptibilityDto.TETRACYCLINE_METHOD, DrugSusceptibilityDto.TETRACYCLINE_MIC, DrugSusceptibilityDto.TETRACYCLINE_SUSCEPTIBILITY)
+                + fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, GENTAMICIN_LABEL_LOC, DrugSusceptibilityDto.GENTAMICIN_METHOD, DrugSusceptibilityDto.GENTAMICIN_MIC, DrugSusceptibilityDto.GENTAMICIN_SUSCEPTIBILITY)
+                + fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, SPECTINOMYCIN_LABEL_LOC, DrugSusceptibilityDto.SPECTINOMYCIN_METHOD, DrugSusceptibilityDto.SPECTINOMYCIN_MIC, DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY);
     //@formatter:on
 
 	public DrugSusceptibilityForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
@@ -325,6 +331,27 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 			DrugSusceptibilityDto.SPECTINOMYCIN_METHOD,
 			DrugSusceptibilityDto.SPECTINOMYCIN_MIC,
 			DrugSusceptibilityDto.SPECTINOMYCIN_SUSCEPTIBILITY);
+
+		addDrugRow(
+			CLINDAMYCIN_LABEL_LOC,
+			Drug.CLINDAMYCIN,
+			DrugSusceptibilityDto.CLINDAMYCIN_METHOD,
+			DrugSusceptibilityDto.CLINDAMYCIN_MIC,
+			DrugSusceptibilityDto.CLINDAMYCIN_SUSCEPTIBILITY);
+
+		addDrugRow(
+			LINEZOLID_LABEL_LOC,
+			Drug.LINEZOLID,
+			DrugSusceptibilityDto.LINEZOLID_METHOD,
+			DrugSusceptibilityDto.LINEZOLID_MIC,
+			DrugSusceptibilityDto.LINEZOLID_SUSCEPTIBILITY);
+
+		addDrugRow(
+			MEROPENEM_LABEL_LOC,
+			Drug.MEROPENEM,
+			DrugSusceptibilityDto.MEROPENEM_METHOD,
+			DrugSusceptibilityDto.MEROPENEM_MIC,
+			DrugSusceptibilityDto.MEROPENEM_SUSCEPTIBILITY);
 
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
 	}

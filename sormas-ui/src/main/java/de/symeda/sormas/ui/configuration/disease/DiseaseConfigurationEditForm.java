@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.configuration.disease;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.RichTextArea;
@@ -68,8 +72,10 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			+ fluidRowLocs(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
 	//@formatter:on
 	public static final String MAIN_ACCORDION_LOC = "mainAccordionLoc";
+	private static final String LOC_DEPRECATED_VALUES_WARNING = "locDeprecatedValuesWarning";
 
-	private static final String HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.DISEASE) + fluidRowLocs(MAIN_ACCORDION_LOC);
+	private static final String HTML_LAYOUT =
+		fluidRowLocs(DiseaseConfigurationDto.DISEASE) + loc(LOC_DEPRECATED_VALUES_WARNING) + fluidRowLocs(MAIN_ACCORDION_LOC);
 
 	private ComboBox cbDisease;
 	private CheckBox cbCaseSurveillance;
@@ -88,6 +94,7 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	private TextField tfMaxContagiousPeriod;
 
 	private CheckboxSet<ExposureCategory> exposureCategoriesField;
+	private Label deprecatedValuesWarningLabel;
 	private boolean updatingExposureCategoryItems;
 	private boolean settingFormValue;
 
@@ -138,6 +145,13 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		cbIsContagious = addField(generalLayout, DiseaseConfigurationDto.IS_CONTAGIOUS, CheckBox.class);
 		tfMinContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, TextField.class);
 		tfMaxContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD, TextField.class);
+
+		deprecatedValuesWarningLabel = new Label(
+			VaadinIcons.WARNING.getHtml() + " " + I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues),
+			ContentMode.HTML);
+		CssStyles.style(deprecatedValuesWarningLabel, CssStyles.LABEL_RELEVANT, CssStyles.LABEL_BOLD, CssStyles.VSPACE_3);
+		deprecatedValuesWarningLabel.setVisible(false);
+		getContent().addComponent(deprecatedValuesWarningLabel, LOC_DEPRECATED_VALUES_WARNING);
 
 		exposureCategoriesField = addField(generalLayout, DiseaseConfigurationDto.EXPOSURE_CATEGORIES, CheckboxSet.class);
 		exposureCategoriesField.setColumnCount(3);
@@ -235,6 +249,20 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			exposureCategoriesField.setValue(selected.stream().filter(items::contains).collect(Collectors.toCollection(LinkedHashSet::new)));
 		} finally {
 			updatingExposureCategoryItems = false;
+		}
+
+		updateDeprecatedValuesWarning();
+	}
+
+	@SuppressWarnings("unchecked")
+	public boolean hasDeprecatedExposureCategories() {
+		Set<ExposureCategory> selectedCategories = (Set<ExposureCategory>) exposureCategoriesField.getValue();
+		return selectedCategories != null && selectedCategories.stream().anyMatch(ExposureCategory::isDeprecated);
+	}
+
+	private void updateDeprecatedValuesWarning() {
+		if (deprecatedValuesWarningLabel != null) {
+			deprecatedValuesWarningLabel.setVisible(hasDeprecatedExposureCategories());
 		}
 	}
 

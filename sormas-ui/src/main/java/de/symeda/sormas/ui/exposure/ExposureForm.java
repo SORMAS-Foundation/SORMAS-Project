@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,6 +101,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String LOC_EXPOSURES_HEADING = "locExposuresHeading";
 	private static final String LOC_LOCATION_HEADING = "locLocationHeading";
 	private static final String LOC_CONCLUSION_HEADING = "locConclusionHeading";
+	private static final String LOC_DEPRECATED_VALUES_WARNING = "locDeprecatedValuesWarning";
 
 	public static final String MAIN_ACCORDION_LAYOUT = fluidRowLocs(MAIN_ACCORDION_LOC);
 
@@ -178,6 +180,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private Label exposuresHeading;
 	private Label locationHeading;
 	private Label conclusionHeading;
+	private Label deprecatedValuesWarningLabel;
 
 	private LocationEditForm locationForm;
 	private Disease disease;
@@ -211,6 +214,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private CustomizableFieldsGroup locationGeneralPanel;
 	private boolean updatingCategoryFieldItems;
 	private boolean updatingSettingFieldItems;
+	private final boolean create;
 
 	public ExposureForm(
 		boolean create,
@@ -228,6 +232,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		this.sourceContacts = sourceContacts;
 		this.epiDataParentClass = epiDataParentClass;
 		this.disease = disease;
+		this.create = create;
 
 		setCustomizableFieldsMetadata(customizableFieldsMetadata);
 		setCustomizableFieldsValues(customizableFieldsValues);
@@ -317,6 +322,18 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		conclusionHeading = new Label(h3(I18nProperties.getString(Strings.headingEpiConclusion)), ContentMode.HTML);
 		getContent().addComponent(conclusionHeading, LOC_CONCLUSION_HEADING);
+
+		deprecatedValuesWarningLabel = new Label(
+			VaadinIcons.WARNING.getHtml() + " " + I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues),
+			ContentMode.HTML);
+		CssStyles.style(
+			deprecatedValuesWarningLabel,
+			CssStyles.LABEL_RELEVANT,
+			CssStyles.LABEL_BOLD,
+			CssStyles.LABEL_WHITE_SPACE_NORMAL,
+			CssStyles.VSPACE_3);
+		deprecatedValuesWarningLabel.setVisible(false);
+		getContent().addComponent(deprecatedValuesWarningLabel, LOC_DEPRECATED_VALUES_WARNING);
 	}
 
 	private void addBasicFields() {
@@ -552,6 +569,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		addField(locationDetailsLayout, ExposureDto.WORK_ENVIRONMENT, ComboBox.class);
 
 		updateTravelRelatedFieldVisibility();
+
+		Stream.of(categoryField, settingField, subSettingsField, contactFactorsField, protectiveMeasuresField)
+			.forEach(f -> f.addValueChangeListener(e -> updateDeprecatedValuesWarning()));
 	}
 
 	private void setUpVisibilityDependencies() {
@@ -615,21 +635,18 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			// if the disease is Malaria or Dengue and the category is VECTOR_BORNE, preselect MOSQUITO_BORNE as setting (since it's the only valid option in this case)
 			boolean isVectorBorneAutoSetting =
 				Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE;
-			// Sexually transmitted infections: Direct contact defaults to Person to person, but remains editable (other settings are available)
-			boolean isSexuallyTransmittedInfectionDirectContact =
-				(disease == Disease.SYPHILIS || disease == Disease.GONOCOCCAL_INFECTION) && category == ExposureCategory.DIRECT_CONTACT;
 
 			// FIXME - address the auto selection based on the new exposure values
-			ExposureSetting defaultSetting;
-			if (isVectorBorneAutoSetting) {
-				defaultSetting = ExposureSetting.MOSQUITO_BORNE;
-			} else if (isSexuallyTransmittedInfectionDirectContact) {
-				defaultSetting = ExposureSetting.PERSON_TO_PERSON;
-			} else {
-				defaultSetting = null;
-			}
+			ExposureSetting defaultSetting = isVectorBorneAutoSetting ? ExposureSetting.MOSQUITO_BORNE : null;
 
-			ExposureSetting valueToSet = currentSetting != null && settings.contains(currentSetting) ? currentSetting : defaultSetting;
+			ExposureSetting valueToSet;
+			if (currentSetting != null && settings.contains(currentSetting)) {
+				valueToSet = currentSetting;
+			} else if (defaultSetting != null && settings.contains(defaultSetting)) {
+				valueToSet = defaultSetting;
+			} else {
+				valueToSet = null;
+			}
 			settingField.setValue(valueToSet);
 			settingField.setEnabled(true);
 
@@ -850,6 +867,53 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private static <T> boolean containsDeprecatedValue(Object value, Predicate<T> deprecatedChecker) {
+		if (value == null) {
+			return false;
+		}
+
+		if (value instanceof Collection) {
+			return ((Collection<T>) value).stream().anyMatch(deprecatedChecker);
+		}
+
+		return deprecatedChecker.test((T) value);
+	}
+
+	/**
+	 * Returns a copy of the given values without the deprecated ones. A copy is returned because the given set may be
+	 * immutable.
+	 *
+	 * @param values
+	 *            the values to filter, may be null
+	 * @param deprecatedChecker
+	 *            tells whether a value is deprecated
+	 * @return a new set with only the active values, or null if the given values are null
+	 */
+	private static <T> Set<T> withoutDeprecated(Set<T> values, Predicate<T> deprecatedChecker) {
+		if (values == null) {
+			return null;
+		}
+
+		Set<T> activeValues = new LinkedHashSet<>(values);
+		activeValues.removeIf(deprecatedChecker);
+		return activeValues;
+	}
+
+	public boolean hasDeprecatedValues() {
+		return containsDeprecatedValue(categoryField.getValue(), ExposureCategory::isDeprecated)
+			|| containsDeprecatedValue(settingField.getValue(), ExposureSetting::isDeprecated)
+			|| containsDeprecatedValue(subSettingsField.getValue(), ExposureSubSetting::isDeprecated)
+			|| containsDeprecatedValue(contactFactorsField.getValue(), ExposureContactFactor::isDeprecated)
+			|| containsDeprecatedValue(protectiveMeasuresField.getValue(), ExposureProtectiveMeasure::isDeprecated);
+	}
+
+	private void updateDeprecatedValuesWarning() {
+		if (deprecatedValuesWarningLabel != null) {
+			deprecatedValuesWarningLabel.setVisible(hasDeprecatedValues());
+		}
+	}
+
 	private static String formatDeprecatedCaption(Object item, boolean deprecated) {
 		String escapedCaption = escapeHtml(String.valueOf(item));
 		if (!deprecated) {
@@ -928,6 +992,19 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	@Override
 	public void setValue(ExposureDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		if (create && newFieldValue != null) {
+			// New exposures may only be created with active values, so drop deprecated defaults
+			if (newFieldValue.getExposureCategory() != null && newFieldValue.getExposureCategory().isDeprecated()) {
+				newFieldValue.setExposureCategory(null);
+			}
+			if (newFieldValue.getExposureSetting() != null && newFieldValue.getExposureSetting().isDeprecated()) {
+				newFieldValue.setExposureSetting(null);
+			}
+			newFieldValue.setSubSettings(withoutDeprecated(newFieldValue.getSubSettings(), ExposureSubSetting::isDeprecated));
+			newFieldValue.setContactFactors(withoutDeprecated(newFieldValue.getContactFactors(), ExposureContactFactor::isDeprecated));
+			newFieldValue.setProtectiveMeasures(
+				withoutDeprecated(newFieldValue.getProtectiveMeasures(), ExposureProtectiveMeasure::isDeprecated));
+		}
 		super.setValue(newFieldValue);
 
 		populateExposureTypes(newFieldValue);
@@ -1091,6 +1168,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		locationForm.discard();
+
+		updateDeprecatedValuesWarning();
 	}
 
 	private void populateExposureTypes(ExposureDto exposure) {
@@ -1166,7 +1245,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	@Override
 	protected String createHtmlLayout() {
 		//@formatter:off
-		String HTML_LAYOUT = UUID_REPORTING_USER + MAIN_ACCORDION_LAYOUT;
+		String HTML_LAYOUT = loc(LOC_DEPRECATED_VALUES_WARNING) + UUID_REPORTING_USER + MAIN_ACCORDION_LAYOUT;
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && epiDataParentClass == CaseDataDto.class) {
 			HTML_LAYOUT += fluidRowLocs(ExposureDto.PROBABLE_INFECTION_ENVIRONMENT) +
 			(FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()

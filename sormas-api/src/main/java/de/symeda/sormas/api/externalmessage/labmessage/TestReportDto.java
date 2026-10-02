@@ -77,6 +77,7 @@ public class TestReportDto extends EntityDto {
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
+	public static final String SERO_CONVERSION = "seroConversion";
 	public static final String SYPHILIS_SEROLOGY_METHOD = "syphilisSerologyMethod";
 	public static final String SYPHILIS_SEROLOGY_METHOD_TEXT = "syphilisSerologyMethodText";
 
@@ -252,6 +253,7 @@ public class TestReportDto extends EntityDto {
 	private PathogenTestCategory pathogenTestCategory;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private Boolean performedByReferenceLaboratory;
+	private Boolean seroConversion;
 
 	private Biotype biotype;
 	private Boolean virulenceGenesDetected;
@@ -1117,6 +1119,14 @@ public class TestReportDto extends EntityDto {
 
 	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
 		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
 	}
 
 	public Biotype getBiotype() {

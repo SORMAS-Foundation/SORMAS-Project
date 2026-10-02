@@ -304,6 +304,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 		target.setSerotypeText(source.getSerotypeText());
 		target.setBiotype(source.getBiotype());
+		target.setBiotypeText(source.getBiotypeText());
 		target.setWgsPerformed(source.getWgsPerformed());
 		target.setWgsClusterId(source.getWgsClusterId());
 		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
@@ -375,6 +376,15 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
 		target.setTubeMitogene(source.getTubeMitogene());
 		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+
+		target.setTargetTest(source.getTargetTest());
+		target.setTargetTestText(source.getTargetTestText());
+		target.setTestRunStatus(source.getTestRunStatus());
+		target.setSequenceDataUploadedToPublicRepository(source.getSequenceDataUploadedToPublicRepository());
+		target.setSraRunId(source.getSraRunId());
+		target.setAccessionNumber(source.getAccessionNumber());
+		target.setMlstSequenceType(source.getMlstSequenceType());
+		target.setCgMlstCluster(source.getCgMlstCluster());
 		return target;
 	}
 
@@ -642,6 +652,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSerotype(source.getSerotype());
 		target.setSerotypeText(source.getSerotypeText());
 		target.setBiotype(source.getBiotype());
+		target.setBiotypeText(source.getBiotypeText());
 		target.setWgsPerformed(source.getWgsPerformed());
 		target.setWgsClusterId(source.getWgsClusterId());
 		target.setVirulenceGenesDetected(source.getVirulenceGenesDetected());
@@ -743,6 +754,15 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			target.setTubeMitogene(source.getTubeMitogene());
 			target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
 		}
+
+		target.setTargetTest(source.getTargetTest());
+		target.setTargetTestText(source.getTargetTestText());
+		target.setTestRunStatus(source.getTestRunStatus());
+		target.setSequenceDataUploadedToPublicRepository(source.getSequenceDataUploadedToPublicRepository());
+		target.setSraRunId(source.getSraRunId());
+		target.setAccessionNumber(source.getAccessionNumber());
+		target.setMlstSequenceType(source.getMlstSequenceType());
+		target.setCgMlstCluster(source.getCgMlstCluster());
 		return target;
 	}
 

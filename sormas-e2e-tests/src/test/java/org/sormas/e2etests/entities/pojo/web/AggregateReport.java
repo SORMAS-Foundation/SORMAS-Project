@@ -11,6 +11,7 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class AggregateReport {
+
   String facility;
   String pointOfEntry;
   String epiWeek;
@@ -36,9 +37,9 @@ public class AggregateReport {
   int diarrheaDehydrationCases;
   int diarrheaDehydrationLabConfirmations;
   int diarrheaDehydrationDeaths;
-  int diphteriaCases;
-  int diphteriaLabConfirmations;
-  int diphteriaDeaths;
+  int diphtheriaCases;
+  int diphtheriaLabConfirmations;
+  int diphtheriaDeaths;
   int functionalHypothalamicAmenorrheaCases;
   int functionalHypothalamicAmenorrheaLabConfirmations;
   int functionalHypothalamicAmenorrheaDeaths;

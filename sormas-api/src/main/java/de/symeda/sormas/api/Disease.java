@@ -69,7 +69,7 @@ public enum Disease
 	PERTUSSIS(true, false, false, true, true, 0, true, false, false, true, 4, 21, false, 0, 0),
 	NEONATAL_TETANUS(true, false, false, true, false, 0, true, false, false, true, 3, 21, false, 0, 0),
 	ONCHOCERCIASIS(true, false, false, true, false, 0, true, false, false, false, 0, 0, false, 0, 0),
-	DIPHTERIA(true, false, false, true, false, 0, true, false, false, true, 1, 10, false, 0, 0),
+	DIPHTHERIA(true, true, true, true, true, 10, true, false, false, true, 1, 10, true, 0, 28),
 	TRACHOMA(true, false, false, true, false, 0, true, false, false, false, 0, 0, false, 0, 0),
 	YAWS_ENDEMIC_SYPHILIS(true, false, false, true, false, 0, true, false, false, false, 0, 0, false, 0, 0),
 	MATERNAL_DEATHS(true, false, false, true, false, 0, true, false, false, false, 0, 0, false, 0, 0),

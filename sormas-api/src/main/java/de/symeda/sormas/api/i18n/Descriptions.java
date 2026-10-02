@@ -67,6 +67,7 @@ public interface Descriptions {
 	String descGdpr = "descGdpr";
 	String descPointOfEntryFilter = "descPointOfEntryFilter";
 	String discardDescription = "discardDescription";
+	String DiseaseConfiguration_minContagiousPeriod = "DiseaseConfiguration.minContagiousPeriod";
 	String EpiData_bats = "EpiData.bats";
 	String EpiData_birds = "EpiData.birds";
 	String EpiData_burialAttended = "EpiData.burialAttended";

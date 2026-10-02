@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,10 +18,15 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.Serotype;
+import de.symeda.sormas.api.sample.TargetTest;
+import de.symeda.sormas.api.sample.ToxinResult;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -142,8 +148,23 @@ public class SideComponentField extends HorizontalLayout {
 				PathogenTestType.SPOLIGOTYPING,
 				PathogenTestType.MIRU_PATTERN_CODE));
 		map.put(Disease.MUMPS, Arrays.asList(PathogenTestType.GENOTYPING));
+		map.put(Disease.DIPHTHERIA, Arrays.asList(PathogenTestType.ELEK_TEST, PathogenTestType.CULTURE, PathogenTestType.PCR_RT_PCR));
 		map.replaceAll((disease, testTypes) -> Collections.unmodifiableList(testTypes));
 		VARIANT_MAP = Collections.unmodifiableMap(map);
+	}
+
+	/** Disease -> the logic that extracts the variant string for that disease's relevant test types. */
+	private static final Map<Disease, Function<PathogenTestDto, String>> VARIANT_EXTRACTORS;
+	static {
+		Map<Disease, Function<PathogenTestDto, String>> extractors = new EnumMap<>(Disease.class);
+		extractors.put(Disease.TUBERCULOSIS, SideComponentField::determineTuberculosisVariant);
+		extractors.put(Disease.MALARIA, SideComponentField::determineSpecieVariant);
+		extractors.put(Disease.SHIGELLOSIS, SideComponentField::determineSpecieVariant);
+		extractors.put(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, SideComponentField::determineSerotypeVariant);
+		extractors.put(Disease.DENGUE, SideComponentField::determineDengueVariant);
+		extractors.put(Disease.MUMPS, SideComponentField::determineGenoTypeVariant);
+		extractors.put(Disease.DIPHTHERIA, SideComponentField::determineDiphtheriaVariant);
+		VARIANT_EXTRACTORS = Collections.unmodifiableMap(extractors);
 	}
 
 	/**
@@ -154,62 +175,124 @@ public class SideComponentField extends HorizontalLayout {
 	 * @return
 	 */
 	public String determineSideComponentVariant(PathogenTestDto pathogenTest) {
-		if (pathogenTest.getTestType() == null || pathogenTest.getTestedDisease() == null)
+		if (pathogenTest.getTestType() == null || pathogenTest.getTestedDisease() == null) {
 			return null;
-
-		String variant = null;
-		if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).contains(pathogenTest.getTestType())) {
-			if (pathogenTest.getTestType() == PathogenTestType.MICROSCOPY) {
-				variant = StringUtils.abbreviate((pathogenTest.getTestScale() != null ? pathogenTest.getTestScale().toString() : ""), 125);
-			} else if (pathogenTest.getTestType() == PathogenTestType.BEIJINGGENOTYPING) {
-				variant =
-					StringUtils.abbreviate((pathogenTest.getStrainCallStatus() != null ? pathogenTest.getStrainCallStatus().toString() : ""), 125);
-			} else if (pathogenTest.getTestType() == PathogenTestType.SPOLIGOTYPING) {
-				variant = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
-			} else if (pathogenTest.getTestType() == PathogenTestType.MIRU_PATTERN_CODE) {
-				variant = StringUtils.abbreviate(pathogenTest.getPatternProfile(), 125);
-			}
-		} else if (Arrays.asList(Disease.MALARIA, Disease.SHIGELLOSIS).contains(pathogenTest.getTestedDisease())
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(pathogenTest.getTestType()::equals)) {	// handling other specie
-			if (pathogenTest.getSpecie() == PathogenSpecie.OTHER) {
-				variant = StringUtils.abbreviate((pathogenTest.getSpecieText() != null ? pathogenTest.getSpecieText().toString() : ""), 125);
-			} else {
-				variant = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
-			}
-
-		} else if (pathogenTest.getTestedDisease() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(pathogenTest.getTestType()::equals)) {	// IPI serotyping stores the serogroup/serotype in the free-text field; show it instead of the plain result
-			if (!DataHelper.isNullOrEmpty(pathogenTest.getSerotypeText())) {
-				variant = StringUtils.abbreviate(pathogenTest.getSerotypeText(), 125);
-			} else if (pathogenTest.getSerotype() != null) {
-				variant = StringUtils.abbreviate(pathogenTest.getSerotype().toString(), 125);
-			} else {
-				variant = null;
-			}
-
-		} else if (pathogenTest.getTestedDisease() == Disease.DENGUE
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(pathogenTest.getTestType()::equals)) {
-			// handling other serotypes
-			if (pathogenTest.getSerotype() == Serotype.OTHER) {
-				variant = StringUtils.abbreviate((pathogenTest.getSerotypeText() != null ? pathogenTest.getSerotypeText().toString() : ""), 125);
-			} else {
-				variant = StringUtils.abbreviate((pathogenTest.getSerotype() != null ? pathogenTest.getSerotype().toString() : ""), 125);
-			}
-
-		} else if (pathogenTest.getTestedDisease() == Disease.MUMPS
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(pathogenTest.getTestType()::equals)) {
-			if (!DataHelper.isNullOrEmpty(pathogenTest.getGenoTypeText())) {
-				variant = StringUtils.abbreviate(pathogenTest.getGenoTypeText(), 125);
-			} else if (pathogenTest.getGenoType() != null) {
-				variant = StringUtils.abbreviate((pathogenTest.getGenoType() != null ? pathogenTest.getGenoType().toString() : ""), 125);
-			} else {
-				variant = null;
-			}
-
-		} else {
-			variant = null;
 		}
-		return variant;
+
+		Disease disease = pathogenTest.getTestedDisease();
+		List<PathogenTestType> relevantTestTypes = VARIANT_MAP.get(disease);
+		if (relevantTestTypes == null || !relevantTestTypes.contains(pathogenTest.getTestType())) {
+			return null;
+		}
+
+		Function<PathogenTestDto, String> extractor = VARIANT_EXTRACTORS.get(disease);
+		return extractor != null ? extractor.apply(pathogenTest) : null;
+	}
+
+	private static String determineTuberculosisVariant(PathogenTestDto pathogenTest) {
+		switch (pathogenTest.getTestType()) {
+		case MICROSCOPY:
+			return abbreviateOrEmpty(pathogenTest.getTestScale());
+		case BEIJINGGENOTYPING:
+			return abbreviateOrEmpty(pathogenTest.getStrainCallStatus());
+		case SPOLIGOTYPING:
+			return abbreviateOrEmpty(pathogenTest.getSpecie());
+		case MIRU_PATTERN_CODE:
+			return abbreviate(pathogenTest.getPatternProfile());
+		default:
+			return null;
+		}
+	}
+
+	// shared by MALARIA and SHIGELLOSIS: handling other specie
+	private static String determineSpecieVariant(PathogenTestDto pathogenTest) {
+		return abbreviateOtherAware(pathogenTest.getSpecie(), PathogenSpecie.OTHER, pathogenTest.getSpecieText());
+	}
+
+	// IPI serotyping stores the serogroup/serotype in the free-text field; show it instead of the plain result
+	private static String determineSerotypeVariant(PathogenTestDto pathogenTest) {
+		if (!DataHelper.isNullOrEmpty(pathogenTest.getSerotypeText())) {
+			return abbreviate(pathogenTest.getSerotypeText());
+		} else if (pathogenTest.getSerotype() != null) {
+			return abbreviate(pathogenTest.getSerotype().toString());
+		}
+		return null;
+	}
+
+	// handling other serotypes
+	private static String determineDengueVariant(PathogenTestDto pathogenTest) {
+		return abbreviateOtherAware(pathogenTest.getSerotype(), Serotype.OTHER, pathogenTest.getSerotypeText());
+	}
+
+	private static String determineGenoTypeVariant(PathogenTestDto pathogenTest) {
+		if (!DataHelper.isNullOrEmpty(pathogenTest.getGenoTypeText())) {
+			return abbreviate(pathogenTest.getGenoTypeText());
+		} else if (pathogenTest.getGenoType() != null) {
+			return abbreviateOrEmpty(pathogenTest.getGenoType());
+		}
+		return null;
+	}
+
+	private static String determineDiphtheriaVariant(PathogenTestDto pathogenTest) {
+		switch (pathogenTest.getTestType()) {
+		case ELEK_TEST:
+			return determineElekTestVariant(pathogenTest);
+		case CULTURE:
+			return determineCultureVariant(pathogenTest);
+		case PCR_RT_PCR:
+			return determinePcrVariant(pathogenTest);
+		default:
+			return abbreviateOrEmpty(pathogenTest.getTestResult());
+		}
+	}
+
+	private static String determineElekTestVariant(PathogenTestDto pathogenTest) {
+		if (PathogenTestResultType.POSITIVE == pathogenTest.getTestResult()) {
+			return abbreviate(I18nProperties.getEnumCaption(ToxinResult.POSITIVE));
+		} else if (PathogenTestResultType.NEGATIVE == pathogenTest.getTestResult()) {
+			return abbreviate(I18nProperties.getEnumCaption(ToxinResult.NEGATIVE));
+		}
+		return abbreviateOrEmpty(pathogenTest.getTestResult());
+	}
+
+	// Culture positive should add the Specie + Biotype details to the side component.
+	private static String determineCultureVariant(PathogenTestDto pathogenTest) {
+		if (PathogenTestResultType.POSITIVE != pathogenTest.getTestResult()) {
+			return abbreviateOrEmpty(pathogenTest.getTestResult());
+		}
+		String specie = abbreviateOtherAware(pathogenTest.getSpecie(), PathogenSpecie.OTHER, pathogenTest.getSpecieText());
+		String biotype = abbreviateOtherAware(pathogenTest.getBiotype(), Biotype.OTHER, pathogenTest.getBiotypeText());
+		String variant = !biotype.isEmpty() ? specie + " - " + biotype : specie;
+		return abbreviate(variant);
+	}
+
+	// for PCR, Target test is Species identification + test result positive, should show the target test + Specie
+	private static String determinePcrVariant(PathogenTestDto pathogenTest) {
+		if (PathogenTestResultType.POSITIVE != pathogenTest.getTestResult() || pathogenTest.getTargetTest() == null) {
+			return abbreviateOrEmpty(pathogenTest.getTestResult());
+		}
+		String targetTest = abbreviateOtherAware(pathogenTest.getTargetTest(), TargetTest.OTHER, pathogenTest.getTargetTestText());
+		String specie = abbreviateOtherAware(pathogenTest.getSpecie(), PathogenSpecie.OTHER, pathogenTest.getSpecieText());
+		String variant = !specie.isEmpty() ? targetTest + " - " + specie : targetTest;
+		return abbreviate(variant);
+	}
+
+	private static String abbreviate(String value) {
+		return StringUtils.abbreviate(value, 125);
+	}
+
+	private static String abbreviateOrEmpty(Object value) {
+		return StringUtils.abbreviate(value != null ? value.toString() : "", 125);
+	}
+
+	/**
+	 * If {@code value} equals {@code otherValue} ("Other"), prefer the accompanying free-text field when it's filled in;
+	 * otherwise (including when {@code value} isn't "Other") fall back to the enum value itself.
+	 */
+	private static <E extends Enum<E>> String abbreviateOtherAware(E value, E otherValue, String text) {
+		if (value == otherValue && !DataHelper.isNullOrEmpty(text)) {
+			return abbreviate(text);
+		}
+		return abbreviateOrEmpty(value);
 	}
 }
