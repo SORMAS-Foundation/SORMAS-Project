@@ -361,6 +361,14 @@ public abstract class AbstractBeanTest {
 	}
 
 	protected void initH2Functions() {
+
+		// These are H2 replacements for functions PostgreSQL provides natively, and CREATE ALIAS is
+		// H2 syntax that PostgreSQL rejects outright. init() runs before every test, so without
+		// this guard no test could run against the PostgreSQL persistence unit.
+		if (EntityManagerTestProducer.isPostgres()) {
+			return;
+		}
+
 		executeInTransaction(em -> {
 			Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
 			nativeQuery.executeUpdate();
