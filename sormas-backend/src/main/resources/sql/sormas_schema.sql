@@ -17766,4 +17766,11 @@ WHERE dc.disease IN ('SYPHILIS', 'GONOCOCCAL_INFECTION')
     OR string_to_array(dc.exposurecategories, ',') && ARRAY['DIRECT_CONTACT', 'MEDICAL_CARE']);
 INSERT INTO schema_version (version_number, comment) VALUES (675, '#14353 - Replace deprecated exposure categories for syphilis and gonococcal infection');
 
+-- 2026-09-30 Carry IgG seroconversion on lab message test reports (issue #14356)
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroconversion boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroconversion boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (676, '#14356 - Carry IgG seroconversion on lab message test reports');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

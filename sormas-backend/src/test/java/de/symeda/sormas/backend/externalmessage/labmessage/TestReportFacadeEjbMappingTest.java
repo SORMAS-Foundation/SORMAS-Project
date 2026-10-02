@@ -129,6 +129,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSyphilisSerologyMethod(SyphilisSerologyMethod.TPPA_TPHA);
 		source.setSyphilisSerologyMethodText("Screening assay");
 		source.setPerformedByReferenceLaboratory(true);
+		source.setSeroConversion(true);
 
 		TestReport result = sut.fromDto(source, true);
 
@@ -201,6 +202,7 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(SyphilisSerologyMethod.TPPA_TPHA, result.getSyphilisSerologyMethod());
 		assertEquals("Screening assay", result.getSyphilisSerologyMethodText());
 		assertEquals(source.getPerformedByReferenceLaboratory(), result.getPerformedByReferenceLaboratory());
+		assertEquals(source.getSeroConversion(), result.getSeroConversion());
 
 	}
 
@@ -285,6 +287,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSerotype(Serotype.OTHER);
 		source.setSerotypeText("Other Serotype");
 		source.setPerformedByReferenceLaboratory(true);
+		source.setSeroConversion(true);
 
 		TestReportDto result = TestReportFacadeEjb.toDto(source);
 
@@ -360,5 +363,6 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getSerotype(), result.getSerotype());
 		assertEquals(source.getSerotypeText(), result.getSerotypeText());
 		assertEquals(source.getPerformedByReferenceLaboratory(), result.getPerformedByReferenceLaboratory());
+		assertEquals(source.getSeroConversion(), result.getSeroConversion());
 	}
 }

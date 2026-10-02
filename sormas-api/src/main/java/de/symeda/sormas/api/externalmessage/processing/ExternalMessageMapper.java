@@ -1167,6 +1167,11 @@ public final class ExternalMessageMapper {
 							pathogenTest.getPerformedByReferenceLaboratory(),
 							sourceTestReport.getPerformedByReferenceLaboratory(),
 							PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY),
+						Mapping.of(
+							pathogenTest::setSeroConversion,
+							pathogenTest.getSeroConversion(),
+							sourceTestReport.getSeroConversion(),
+							PathogenTestDto.SERO_CONVERSION),
 						Mapping.of(pathogenTest::setBiotype, pathogenTest.getBiotype(), sourceTestReport.getBiotype(), PathogenTestDto.BIOTYPE),
 						Mapping.of(
 							pathogenTest::setVirulenceGenesDetected,
