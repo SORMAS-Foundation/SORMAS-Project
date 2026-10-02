@@ -102,6 +102,10 @@
 		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory</class>
 		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
 		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseExport</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
@@ -130,4 +134,155 @@
 			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 		</properties>
 	</persistence-unit>
+
+	<!--
+		PostgreSQL variant of beanTestPU, used by tests that exercise the native SQL the
+		EpiPulse export relies on (DISTINCT ON, the ~ regex operator, STRING_AGG ... ORDER BY,
+		FILTER, = ANY(array)), none of which H2 can run.
+
+		The jdbc:tc: URL is Testcontainers' own driver: it starts a PostgreSQL container on
+		first connection, so the URL can stay static here and no test code needs to know the
+		port. Select it with -Dsormas.test.pu=beanTestPgPU.
+	-->
+	<persistence-unit name="beanTestPgPU" transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+		<class>de.symeda.sormas.backend.action.Action</class>
+		<class>de.symeda.sormas.backend.caze.Case</class>
+		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
+		<class>de.symeda.sormas.backend.common.DeletableAdo</class>
+		<class>de.symeda.sormas.backend.common.CoreAdo</class>
+		<class>de.symeda.sormas.backend.contact.Contact</class>
+		<class>de.symeda.sormas.backend.epidata.EpiData</class>
+		<class>de.symeda.sormas.backend.environment.Environment</class>
+		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
+		<class>de.symeda.sormas.backend.event.Event</class>
+		<class>de.symeda.sormas.backend.event.EventParticipant</class>
+		<class>de.symeda.sormas.backend.event.EventGroup</class>
+		<class>de.symeda.sormas.backend.infrastructure.facility.Facility</class>
+		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
+		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
+		<class>de.symeda.sormas.backend.location.Location</class>
+		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
+		<class>de.symeda.sormas.backend.person.Person</class>
+		<class>de.symeda.sormas.backend.infrastructure.community.Community</class>
+		<class>de.symeda.sormas.backend.infrastructure.district.District</class>
+		<class>de.symeda.sormas.backend.infrastructure.region.Region</class>
+		<class>de.symeda.sormas.backend.infrastructure.country.Country</class>
+		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
+		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
+		<class>de.symeda.sormas.backend.sample.Sample</class>
+		<class>de.symeda.sormas.backend.sample.PathogenTest</class>
+		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
+		<class>de.symeda.sormas.backend.task.Task</class>
+		<class>de.symeda.sormas.backend.user.User</class>
+		<class>de.symeda.sormas.backend.user.UserReference</class>
+		<class>de.symeda.sormas.backend.user.UserRole</class>
+		<class>de.symeda.sormas.backend.visit.Visit</class>
+		<class>de.symeda.sormas.backend.therapy.Therapy</class>
+		<class>de.symeda.sormas.backend.therapy.Treatment</class>
+		<class>de.symeda.sormas.backend.therapy.Prescription</class>
+		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalCourse</class>
+		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalVisit</class>
+		<class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
+		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
+		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
+		<class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
+		<class>de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry</class>
+		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
+		<class>de.symeda.sormas.backend.importexport.ExportConfiguration</class>
+		<class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
+		<class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
+		<class>de.symeda.sormas.backend.report.AggregateReport</class>
+		<class>de.symeda.sormas.backend.campaign.Campaign</class>
+		<class>de.symeda.sormas.backend.campaign.form.CampaignFormMeta</class>
+		<class>de.symeda.sormas.backend.infrastructure.area.Area</class>
+		<class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
+		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
+		<class>de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo</class>
+		<class>de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo</class>
+		<class>de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo</class>
+		<class>de.symeda.sormas.backend.document.Document</class>
+		<class>de.symeda.sormas.backend.document.DocumentRelatedEntity</class>
+		<class>de.symeda.sormas.backend.exposure.Exposure</class>
+		<class>de.symeda.sormas.backend.manualmessagelog.ManualMessageLog</class>
+		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
+		<class>de.symeda.sormas.backend.externalmessage.ExternalMessage</class>
+		<class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>
+		<class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
+		<class>de.symeda.sormas.backend.share.ExternalShareInfo</class>
+		<class>de.symeda.sormas.backend.person.PersonContactDetail</class>
+		<class>de.symeda.sormas.backend.infrastructure.continent.Continent</class>
+		<class>de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent</class>
+		<class>de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequest</class>
+		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
+		<class>de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadata</class>
+		<class>de.symeda.sormas.backend.customizablefield.CustomizableFieldValue</class>
+		<class>de.symeda.sormas.backend.immunization.entity.BaseImmunization</class>
+		<class>de.symeda.sormas.backend.immunization.entity.Immunization</class>
+		<class>de.symeda.sormas.backend.immunization.entity.DirectoryImmunization</class>
+		<class>de.symeda.sormas.backend.travelentry.TravelEntry</class>
+		<class>de.symeda.sormas.backend.vaccination.Vaccination</class>
+		<class>de.symeda.sormas.backend.vaccination.LastVaccineType</class>
+		<class>de.symeda.sormas.backend.vaccination.LastVaccinationDate</class>
+		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
+		<class>de.symeda.sormas.backend.externalmessage.labmessage.TestReport</class>
+		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
+		<class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
+		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
+		<class>de.symeda.sormas.backend.selfreport.SelfReport</class>
+		<class>de.symeda.sormas.backend.docgeneration.DocumentTemplate</class>
+		<class>de.symeda.sormas.backend.survey.Survey</class>
+		<class>de.symeda.sormas.backend.survey.SurveyToken</class>
+		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue</class>
+		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory</class>
+		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
+		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseExport</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		<validation-mode>CALLBACK</validation-mode>
+		<properties>
+			<!--
+				Must be the Extended dialect, matching sormas-backend/src/main/resources/META-INF/persistence.xml.
+				It registers function templates the entity model calls by name — at_end_of_day,
+				unaccent, ilike, array_to_string, window_first_value_desc, fulltext_search,
+				empty_to_null and others. With the plain PostgreSQL94Dialect Hibernate passes those
+				names through as literal SQL function calls and PostgreSQL rejects them, e.g.
+				"function at_end_of_day(unknown) does not exist" when saving a Vaccination.
+			-->
+			<property name="hibernate.dialect" value="de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect"/>
+			<property name="hibernate.criteria.literal_handling_mode" value="bind"/>
+			<property name="hibernate.transaction.jta.platform"
+					  value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+			<!--
+				TC_INITFUNCTION applies versioning_function.sql and sormas_schema.sql once per
+				container, so the schema is the migrated one rather than an hbm2ddl-generated
+				approximation. See SormasPostgresSchemaInitializer for why that matters.
+				The user is sormas_user because sormas_schema.sql assigns table ownership to it.
+			-->
+			<property name="javax.persistence.jdbc.driver" value="org.testcontainers.jdbc.ContainerDatabaseDriver"/>
+			<property name="javax.persistence.jdbc.url"
+					  value="jdbc:tc:postgresql:10.18-alpine:///sormas?TC_DAEMON=true&amp;TC_INITFUNCTION=de.symeda.sormas.backend.SormasPostgresSchemaInitializer::initialize"/>
+			<property name="javax.persistence.jdbc.user" value="sormas_user"/>
+			<property name="javax.persistence.jdbc.password" value="sormas_user"/>
+			<!-- the schema comes from the migration scripts; Hibernate must not touch it -->
+			<property name="hibernate.hbm2ddl.auto" value="none"/>
+
+			<property name="hibernate.show_sql" value="false"/>
+			<property name="hibernate.format_sql" value="false"/>
+
+			<property name="hibernate.cache.use_second_level_cache" value="true"/>
+			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.internal.SingletonEhcacheRegionFactory"/>
+
+			<property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+		</properties>
+	</persistence-unit>
+
 </persistence>

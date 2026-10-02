@@ -36,6 +36,9 @@ import de.symeda.sormas.api.exposure.InfectionSource;
  */
 public class InfectionSourceSetConverter implements AttributeConverter<Set<InfectionSource>, String> {
 
+	/** Separates the {@link InfectionSource} names in the database column. */
+	public static final String SEPARATOR = ",";
+
 	/**
 	 * Joins the given infection sources into a comma-separated string for storage.
 	 *
@@ -47,7 +50,7 @@ public class InfectionSourceSetConverter implements AttributeConverter<Set<Infec
 	@Override
 	public String convertToDatabaseColumn(Set<InfectionSource> infectionSources) {
 		return infectionSources != null
-			? String.join(",", infectionSources.stream().map(InfectionSource::name).collect(Collectors.toSet()))
+			? String.join(SEPARATOR, infectionSources.stream().map(InfectionSource::name).collect(Collectors.toSet()))
 			: null;
 	}
 
@@ -62,7 +65,7 @@ public class InfectionSourceSetConverter implements AttributeConverter<Set<Infec
 	@Override
 	public Set<InfectionSource> convertToEntityAttribute(String infectionSourcesText) {
 		return infectionSourcesText != null
-			? Stream.of(StringUtils.split(infectionSourcesText, ",")).map(InfectionSource::valueOf).collect(Collectors.toSet())
+			? Stream.of(StringUtils.split(infectionSourcesText, SEPARATOR)).map(InfectionSource::valueOf).collect(Collectors.toSet())
 			: null;
 	}
 }
