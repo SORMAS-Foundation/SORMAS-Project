@@ -12,6 +12,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.server.FileDownloader;
@@ -54,6 +58,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 
 	private static final long serialVersionUID = 1L;
 	private static final int COMMIT_CHUNK_SIZE = 20;
+	private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalImportLayout.class);
 
 	private final HierarchicalImportFacade facade = FacadeProvider.getHierarchicalImportFacade();
 	private final ImportWizardModel model = new ImportWizardModel();
@@ -140,22 +145,38 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		ui.setPollInterval(500);
 		refresh();
 		new Thread(() -> {
-			I18nProperties.setUserLanguage(currentUser.getLanguage());
-			FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
-			for (int i = 0; i < chunks.size() && !model.isCancelRequested(); i++) {
-				ImportReportDto report = facade.commit(definitionId, model.sheet(), new HashMap<>(chunks.get(i)));
-				float done = (float) (i + 1) / chunks.size();
-				ui.access(() -> {
-					model.chunkCommitted(report);
-					progress.setValue(done);
-				});
+			Optional<RuntimeException> failure = Optional.empty();
+			try {
+				I18nProperties.setUserLanguage(currentUser.getLanguage());
+				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
+				failure = ChunkedCommit.run(
+					chunks,
+					chunk -> facade.commit(definitionId, model.sheet(), new HashMap<>(chunk)),
+					(report, done) -> ui.access(() -> {
+						model.chunkCommitted(report);
+						progress.setValue(done);
+					}),
+					model::isCancelRequested);
+			} catch (RuntimeException e) {
+				failure = Optional.of(e);
+			} finally {
+				Optional<RuntimeException> outcome = failure;
+				ui.access(() -> finishCommit(outcome));
 			}
-			ui.access(() -> {
-				model.finished();
-				ui.setPollInterval(-1);
-				refresh();
-			});
 		}).start();
+	}
+
+	private void finishCommit(Optional<RuntimeException> failure) {
+		model.finished();
+		ui.setPollInterval(-1);
+		refresh();
+		failure.ifPresent(e -> {
+			LOGGER.error("Nested import commit failed", e);
+			Notification.show(
+				I18nProperties.getString(Strings.headingImportFailed),
+				I18nProperties.getString(Strings.messageImportFailedFull),
+				Notification.Type.ERROR_MESSAGE);
+		});
 	}
 
 	private void refresh() {

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -97,7 +98,14 @@ public final class SheetReader {
 			boolean hasTime = cell.getNumericCellValue() % 1 != 0;
 			return new SimpleDateFormat(hasTime ? language.getDateTimeFormat() : language.getDateFormat()).format(cell.getDateCellValue());
 		}
+		if (cell.getCellType() == CellType.NUMERIC && isWholeNumber(cell.getNumericCellValue())) {
+			return BigDecimal.valueOf(cell.getNumericCellValue()).toBigInteger().toString();
+		}
 		return formatter.formatCellValue(cell, evaluator);
+	}
+
+	private static boolean isWholeNumber(double value) {
+		return !Double.isInfinite(value) && value == Math.rint(value);
 	}
 
 	private static void dropTrailingBlankRows(List<List<String>> table) {

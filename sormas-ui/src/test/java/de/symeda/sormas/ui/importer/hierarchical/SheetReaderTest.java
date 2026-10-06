@@ -91,6 +91,21 @@ class SheetReaderTest {
 		assertEquals("ignored by merge", sheet.getRows().get(1).cell(0));
 	}
 
+	@Test
+	void keepsLongExcelNumbersExact() throws IOException {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+			Sheet sheet = workbook.createSheet();
+			sheet.createRow(0).createCell(0).setCellValue("person.nationalHealthId");
+			sheet.createRow(1).createCell(0).setCellValue(1234567890123d);
+			workbook.write(bytes);
+		}
+
+		ImportSheet sheet = SheetReader.read(new ByteArrayInputStream(bytes.toByteArray()), "upload.xlsx", ',', CAPTIONS);
+
+		assertEquals("1234567890123", sheet.getRows().get(0).cell(0));
+	}
+
 	private static ImportSheet read(String content, String fileName, char separator) throws IOException {
 		return SheetReader.read(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), fileName, separator, CAPTIONS);
 	}
