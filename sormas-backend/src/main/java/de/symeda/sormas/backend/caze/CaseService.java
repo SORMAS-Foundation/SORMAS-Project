@@ -1894,6 +1894,23 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<Case> getByExternalIds(Collection<String> externalIds) {
+
+		if (externalIds.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<Case> cases = new ArrayList<>();
+		IterableHelper.executeBatched(new ArrayList<>(externalIds), ModelConstants.PARAMETER_LIMIT, batch -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+			Root<Case> caseRoot = cq.from(Case.class);
+			cq.where(caseRoot.get(Case.EXTERNAL_ID).in(batch), cb.equal(caseRoot.get(Case.DELETED), Boolean.FALSE));
+			cases.addAll(em.createQuery(cq).getResultList());
+		});
+		return cases;
+	}
+
 	public List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
