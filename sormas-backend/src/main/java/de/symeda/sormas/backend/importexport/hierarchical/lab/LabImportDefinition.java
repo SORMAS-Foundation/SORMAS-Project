@@ -71,7 +71,7 @@ public class LabImportDefinition implements ImportDefinition {
 			return new SampleHandler(sampleFacade, currentUserService);
 		}
 		if (level == LabImportSchema.TEST_LEVEL) {
-			return new TestHandler(pathogenTestFacade, currentUserService);
+			return new TestHandler(pathogenTestFacade, currentUserService, new AstFolder(cellWriter));
 		}
 		throw new IllegalArgumentException(level.name() + " has no handler");
 	}

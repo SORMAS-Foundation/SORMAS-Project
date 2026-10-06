@@ -32,10 +32,12 @@ final class TestHandler implements LevelHandler {
 
 	private final PathogenTestFacadeEjbLocal pathogenTestFacade;
 	private final CurrentUserService currentUserService;
+	private final AstFolder astFolder;
 
-	TestHandler(PathogenTestFacadeEjbLocal pathogenTestFacade, CurrentUserService currentUserService) {
+	TestHandler(PathogenTestFacadeEjbLocal pathogenTestFacade, CurrentUserService currentUserService, AstFolder astFolder) {
 		this.pathogenTestFacade = pathogenTestFacade;
 		this.currentUserService = currentUserService;
+		this.astFolder = astFolder;
 	}
 
 	@Override
@@ -99,6 +101,7 @@ final class TestHandler implements LevelHandler {
 
 	@Override
 	public void complete(PlannedRecord record) {
+		astFolder.fold(record);
 		if (record.isNew() && !currentUserService.hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.PATHOGEN_TEST_CREATE));
 		}
