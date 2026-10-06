@@ -1,0 +1,8 @@
+| case.key | case.name | sample | test | ast |
+|          | Muller    | S9     | IgM  |     |
+|          |           |        | IgG  |     |
+===
+Muller@2
+  S9@2
+    IgM@2
+    IgG@3

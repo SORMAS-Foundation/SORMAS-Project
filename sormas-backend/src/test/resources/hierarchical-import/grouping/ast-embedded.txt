@@ -1,0 +1,11 @@
+| case | sample | test    | ast    |
+| A    | S1     | Culture | Cipro  |
+|      |        |         | Ceftri |
+|      |        | PCR     |        |
+===
+A@2
+  S1@2
+    Culture@2
+      Cipro@2
+      Ceftri@3
+    PCR@4
