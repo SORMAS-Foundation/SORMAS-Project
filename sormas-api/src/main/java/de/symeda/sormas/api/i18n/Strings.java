@@ -756,6 +756,7 @@ public interface Strings {
 	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCaseContacts = "headingImportCaseContacts";
 	String headingImportCases = "headingImportCases";
+	String headingImportCasesSamplesTests = "headingImportCasesSamplesTests";
 	String headingImportCommunities = "headingImportCommunities";
 	String headingImportContacts = "headingImportContacts";
 	String headingImportContinents = "headingImportContinents";
@@ -1616,6 +1617,10 @@ public interface Strings {
 	String messageGdprCheck = "messageGdprCheck";
 	String messageGeocodingInsufficientAddress = "messageGeocodingInsufficientAddress";
 	String messageGeocodingNoResult = "messageGeocodingNoResult";
+	String messageHierarchicalImportCounts = "messageHierarchicalImportCounts";
+	String messageHierarchicalImportFileErrors = "messageHierarchicalImportFileErrors";
+	String messageHierarchicalImportReport = "messageHierarchicalImportReport";
+	String messageHierarchicalImportSummary = "messageHierarchicalImportSummary";
 	String messageImmunizationArchived = "messageImmunizationArchived";
 	String messageImmunizationDearchived = "messageImmunizationDearchived";
 	String messageImmunizationOutsideJurisdictionDeletionDenied = "messageImmunizationOutsideJurisdictionDeletionDenied";
