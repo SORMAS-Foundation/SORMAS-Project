@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.importexport.hierarchical.lab;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,9 @@ public class LabCellWriter implements CellWriter {
 		Object owner = PropertyPaths.owner(targets.get(target), propertyPath);
 		PropertyDescriptor property = PropertyPaths.descriptor(owner.getClass(), propertyPath[propertyPath.length - 1]);
 		try {
-			if (!importFacade.executeDefaultInvoke(property, owner, value, propertyPath, false)) {
+			if (property.getPropertyType() == Date.class) {
+				property.getWriteMethod().invoke(owner, DateHelper.parseDateTimeWithException(value, I18nProperties.getUserLanguage()));
+			} else if (!importFacade.executeDefaultInvoke(property, owner, value, propertyPath, false)) {
 				property.getWriteMethod().invoke(owner, resolveReference(property.getPropertyType(), targets, target, header, value));
 			}
 		} catch (ImportErrorException e) {

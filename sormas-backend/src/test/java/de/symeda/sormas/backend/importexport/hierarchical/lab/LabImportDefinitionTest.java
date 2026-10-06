@@ -29,6 +29,9 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
@@ -179,6 +182,108 @@ public class LabImportDefinitionTest extends AbstractBeanTest {
 
 		assertEquals(List.of(), preview.allIssues());
 		assertEquals(1, preview.countBlocks(BlockStatus.READY));
+	}
+
+	@Test
+	public void aCaseReachedByUuidAndByExternalIdInTwoBlocksFailsTheLaterBlock() {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), rdcf, c -> c.setExternalID("ALIAS-1"));
+		ImportSheet sheet = SheetFixtures.table(
+			"| case.uuid | case.externalID | sample.fieldSampleID | sample.sampleDateTime | sample.sampleMaterial | sample.lab |",
+			"| " + caze.getUuid() + " | | S1 | 9/2/2026 | BLOOD | Central Lab |",
+			"| | ALIAS-1 | S2 | 9/2/2026 | BLOOD | Central Lab |");
+
+		ImportPreviewDto preview = facade.dryRun(LAB, sheet);
+
+		assertEquals(BlockStatus.READY, preview.getBlocks().get(0).getStatus());
+		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(1).getStatus());
+	}
+
+	@Test
+	public void aDeletedCaseIsNotFoundByUuid() {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), creator.createPerson().toReference(), rdcf);
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test"));
+
+		ImportPreviewDto preview =
+			facade.dryRun(LAB, SheetFixtures.table("| case.uuid | person.firstName |", "| " + caze.getUuid() + " | Anna |"));
+
+		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(0).getStatus());
+		assertEquals("case.uuid", preview.getBlocks().get(0).getIssues().get(0).getColumn());
+	}
+
+	@Test
+	public void twoStoredSamplesWithTheSameFieldSampleIdFailTheBlock() {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), creator.createPerson().toReference(), rdcf);
+		for (int i = 0; i < 2; i++) {
+			SampleDto sample = creator.createSample(caze.toReference(), nationalAdmin.toReference(), centralLab());
+			sample.setFieldSampleID("S1");
+			getSampleFacade().saveSample(sample);
+		}
+
+		ImportPreviewDto preview = facade.dryRun(
+			LAB,
+			SheetFixtures.table("| case.uuid | sample.fieldSampleID | sample.sampleMaterial |", "| " + caze.getUuid() + " | S1 | SERA |"));
+
+		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(0).getStatus());
+		assertEquals("sample.fieldSampleID", preview.getBlocks().get(0).getIssues().get(0).getColumn());
+	}
+
+	@Test
+	public void aUserWithoutCaseEditCannotUpdateACase() {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), creator.createPerson().toReference(), rdcf);
+		UserRoleReferenceDto noEdit = creator.createUserRole(
+			"NoCaseEdit",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.SAMPLE_VIEW,
+			UserRight.SAMPLE_CREATE,
+			UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION);
+		loginWith(creator.createUser(rdcf, noEdit));
+
+		ImportPreviewDto preview =
+			facade.dryRun(LAB, SheetFixtures.table("| case.uuid | person.firstName |", "| " + caze.getUuid() + " | Anna |"));
+
+		assertTrue(messages(preview).contains(I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_EDIT)));
+	}
+
+	@Test
+	public void aCaseOutsideTheUsersJurisdictionCannotBeChanged() {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), creator.createPerson().toReference(), rdcf);
+		TestDataCreator.RDCF elsewhere = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2");
+		loginWith(creator.createUser(elsewhere, DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		ImportPreviewDto preview =
+			facade.dryRun(LAB, SheetFixtures.table("| case.uuid | person.firstName |", "| " + caze.getUuid() + " | Anna |"));
+
+		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(0).getStatus());
+		assertEquals("case.uuid", preview.getBlocks().get(0).getIssues().get(0).getColumn());
+	}
+
+	@Test
+	public void aRecordTheUserSeesMaskedCannotBeChanged() {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), creator.createPerson().toReference(), rdcf);
+		UserRoleReferenceDto masked = creator.createUserRole(
+			"NoPersonalData",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.CASE_EDIT,
+			UserRight.CASE_IMPORT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.SAMPLE_VIEW,
+			UserRight.SAMPLE_CREATE);
+		loginWith(creator.createUser(rdcf, masked));
+
+		ImportPreviewDto preview =
+			facade.dryRun(LAB, SheetFixtures.table("| case.uuid | person.firstName |", "| " + caze.getUuid() + " | Anna |"));
+
+		assertTrue(messages(preview).contains(I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord)), messages(preview).toString());
+	}
+
+	private static List<String> messages(ImportPreviewDto preview) {
+		List<String> messages = new ArrayList<>();
+		preview.getBlocks().forEach(block -> block.getIssues().forEach(issue -> messages.add(issue.getMessage())));
+		return messages;
 	}
 
 	private de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto centralLab() {

@@ -70,6 +70,16 @@ public class LabCellWriterTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void keepsTheTimeOfADateTimeCell() throws CellWriteException {
+		writer.write(targets, LabImportSchema.SAMPLE, new String[] { SampleDto.SAMPLE_DATE_TIME }, "sample.sampleDateTime", "9/2/2026 2:30 PM");
+
+		java.util.Calendar calendar = java.util.Calendar.getInstance();
+		calendar.setTime(((SampleDto) targets.get(LabImportSchema.SAMPLE)).getSampleDateTime());
+		assertEquals(14, calendar.get(java.util.Calendar.HOUR_OF_DAY));
+		assertEquals(30, calendar.get(java.util.Calendar.MINUTE));
+	}
+
+	@Test
 	public void rejectsAnUnknownLaboratory() {
 		assertThrows(
 			CellWriteException.class,

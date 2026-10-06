@@ -152,6 +152,7 @@ public interface Validations {
 	String importHierarchicalDuplicateDrug = "importHierarchicalDuplicateDrug";
 	String importHierarchicalDuplicateKey = "importHierarchicalDuplicateKey";
 	String importHierarchicalExternalIdAmbiguous = "importHierarchicalExternalIdAmbiguous";
+	String importHierarchicalMaskedRecord = "importHierarchicalMaskedRecord";
 	String importHierarchicalMissingRight = "importHierarchicalMissingRight";
 	String importHierarchicalNotUnique = "importHierarchicalNotUnique";
 	String importHierarchicalOrphanRow = "importHierarchicalOrphanRow";

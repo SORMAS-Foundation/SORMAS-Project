@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.importexport.hierarchical.lab;
 
 import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.CASE;
 import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.SAMPLE;
+import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.SAMPLE_FIELD_SAMPLE_ID;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,7 +10,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,12 +62,12 @@ final class SampleHandler implements LevelHandler {
 			.map(draft -> draft.parent().<CaseDataDto> target(CASE).getUuid())
 			.distinct()
 			.collect(Collectors.toList());
-		Map<String, SampleDto> existing = caseUuids.isEmpty()
+		Map<String, List<SampleDto>> existing = caseUuids.isEmpty()
 			? Map.of()
 			: sampleFacade.getByCaseUuids(caseUuids)
 				.stream()
 				.filter(sample -> StringUtils.isNotBlank(sample.getFieldSampleID()))
-				.collect(Collectors.toMap(sample -> sample.getAssociatedCase().getUuid() + "/" + sample.getFieldSampleID(), Function.identity(), (a, b) -> a));
+				.collect(Collectors.groupingBy(sample -> sample.getAssociatedCase().getUuid() + "/" + sample.getFieldSampleID()));
 
 		Map<ImportNode, Match> matches = new IdentityHashMap<>();
 		for (PlannedRecord draft : drafts) {
@@ -75,8 +75,15 @@ final class SampleHandler implements LevelHandler {
 			if (draft.parent().isNew() || fieldSampleId.isEmpty()) {
 				continue;
 			}
-			SampleDto sample = existing.get(draft.parent().<CaseDataDto> target(CASE).getUuid() + "/" + fieldSampleId.get());
-			if (sample != null) {
+			List<SampleDto> candidates = existing.getOrDefault(draft.parent().<CaseDataDto> target(CASE).getUuid() + "/" + fieldSampleId.get(), List.of());
+			if (candidates.size() > 1) {
+				matches.put(
+					draft.node(),
+					Match.error(
+						SAMPLE_FIELD_SAMPLE_ID,
+						I18nProperties.getValidationError(Validations.importHierarchicalNotUnique, fieldSampleId.get(), SAMPLE_FIELD_SAMPLE_ID)));
+			} else if (candidates.size() == 1) {
+				SampleDto sample = candidates.get(0);
 				Map<String, Object> targets = new HashMap<>();
 				targets.put(SAMPLE, sample);
 				matches.put(draft.node(), Match.existing(sample.getUuid(), targets, Collections.singletonList(sample.getChangeDate())));
@@ -103,6 +110,10 @@ final class SampleHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.SAMPLE_EDIT));
 		}
 		if (record.operation() == OperationType.UNCHANGED) {
+			return;
+		}
+		if (MaskedRecords.isMasked(record)) {
+			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
 		try {

@@ -80,7 +80,10 @@ final class CaseHandler implements LevelHandler {
 			.collect(Collectors.toSet());
 		Map<String, Case> byUuid = uuids.isEmpty()
 			? Map.of()
-			: caseService.getByUuids(new ArrayList<>(uuids)).stream().collect(Collectors.toMap(Case::getUuid, Function.identity()));
+			: caseService.getByUuids(new ArrayList<>(uuids))
+				.stream()
+				.filter(caze -> !caze.isDeleted())
+				.collect(Collectors.toMap(Case::getUuid, Function.identity()));
 		Map<String, List<Case>> byExternalId = caseService.getByExternalIds(externalIds).stream().collect(Collectors.groupingBy(Case::getExternalID));
 
 		Map<ImportNode, Match> matches = new IdentityHashMap<>();
@@ -162,6 +165,10 @@ final class CaseHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_EDIT));
 		}
 		if (record.operation() == OperationType.UNCHANGED) {
+			return;
+		}
+		if (MaskedRecords.isMasked(record)) {
+			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
 		try {
