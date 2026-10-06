@@ -32,6 +32,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
@@ -122,6 +123,10 @@ public class NotificationService {
 		Supplier<Map<User, String>> emailUserMessagesSupplier,
 		Supplier<Map<User, String>> smsUserMessagesSupplier)
 		throws NotificationDeliveryFailedException {
+
+		if (RequestContextHolder.isImport()) {
+			return;
+		}
 
 		Set<NotificationType> allowedNotificationTypes = getAllowedNotificationTypes(notificationTypes);
 

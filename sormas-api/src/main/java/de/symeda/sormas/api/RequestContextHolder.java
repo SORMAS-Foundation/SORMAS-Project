@@ -30,6 +30,20 @@ public final class RequestContextHolder {
 		return threadLocalContext.get() != null ? threadLocalContext.get().isMobileSync() : false;
 	}
 
+	public static boolean isImport() {
+		return threadLocalContext.get() != null && threadLocalContext.get().isImport();
+	}
+
+	public static void runInImportContext(Runnable runnable) {
+		RequestContextTO previous = threadLocalContext.get();
+		threadLocalContext.set(new RequestContextTO(previous != null && previous.isMobileSync(), true));
+		try {
+			runnable.run();
+		} finally {
+			setRequestContext(previous);
+		}
+	}
+
 	public static void setRequestContext(RequestContextTO requestContext) {
 		if (requestContext == null) {
 			reset();
