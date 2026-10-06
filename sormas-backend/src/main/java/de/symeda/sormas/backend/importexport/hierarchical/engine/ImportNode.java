@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
@@ -35,7 +37,12 @@ public final class ImportNode {
 	}
 
 	public int lastLineNumber() {
-		return subtree().mapToInt(ImportNode::lineNumber).max().orElse(lineNumber);
+		IntStream nodeLines = subtree().mapToInt(ImportNode::lineNumber);
+		IntStream issueLines = subtree().flatMap(node -> node.issues.stream())
+			.map(ImportIssueDto::getLineNumber)
+			.filter(Objects::nonNull)
+			.mapToInt(Integer::intValue);
+		return IntStream.concat(nodeLines, issueLines).max().orElse(lineNumber);
 	}
 
 	public Map<String, String> cells() {

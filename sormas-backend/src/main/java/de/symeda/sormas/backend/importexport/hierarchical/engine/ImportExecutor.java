@@ -34,6 +34,9 @@ public final class ImportExecutor {
 	}
 
 	private static BlockResultDto commitBlock(ImportDefinition definition, PlannedBlock block, String previewedFingerprint, BlockRunner runner) {
+		if (block.status() == BlockStatus.ERROR) {
+			return new BlockResultDto(block.index(), BlockOutcome.FAILED, block.issues());
+		}
 		if (!block.fingerprint().equals(previewedFingerprint)) {
 			List<ImportIssueDto> issues = new ArrayList<>(block.issues());
 			issues.add(

@@ -128,6 +128,9 @@ public final class ToyDefinition implements ImportDefinition {
 			Map<ImportNode, Match> matches = new IdentityHashMap<>();
 			for (PlannedRecord draft : drafts) {
 				String key = draft.node().cell("parent.key");
+				if (key.startsWith("~")) {
+					key = key.substring(1);
+				}
 				if (key.startsWith("!")) {
 					matches.put(draft.node(), Match.error("parent.key", "unknown parent " + key));
 				} else if (parents.containsKey(key)) {

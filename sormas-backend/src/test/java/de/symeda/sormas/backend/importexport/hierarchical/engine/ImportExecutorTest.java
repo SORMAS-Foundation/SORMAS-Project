@@ -72,6 +72,18 @@ class ImportExecutorTest {
 		assertEquals(0, runs.get());
 	}
 
+	@Test
+	void neverCommitsABlockThePlannerRejected() {
+		ToyDefinition toy = new ToyDefinition();
+		ImportSheet sheet = sheet("| !P | Alpha | | | |");
+
+		ImportReportDto report = new ImportExecutor().commit(toy, sheet, Map.of(0, ""), countingRunner);
+
+		assertEquals(BlockOutcome.FAILED, report.getResults().get(0).getOutcome());
+		assertEquals(0, runs.get());
+		assertEquals(List.of(), toy.committed);
+	}
+
 	private static ImportPreviewDto preview(ToyDefinition toy, ImportSheet sheet) {
 		return PreviewMapper.toPreview(toy, new Planner().plan(toy, sheet, null));
 	}

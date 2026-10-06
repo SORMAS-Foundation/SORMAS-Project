@@ -26,4 +26,13 @@ class PreviewMapperTest {
 		assertEquals(2, preview.countOperations("child", OperationType.CREATE));
 		assertEquals("C2", block.getOperations().get(2).getLabel());
 	}
+
+	@Test
+	void aBlockRangeIncludesATrailingOrphanRow() {
+		ToyDefinition toy = new ToyDefinition();
+		ImportPreviewDto preview = PreviewMapper
+			.toPreview(toy, new Planner().plan(toy, SheetFixtures.table(ToyDefinition.HEADER, "| P1 | Alpha | | | |", "| | | | | stray |"), null));
+
+		assertEquals(3, preview.getBlocks().get(0).getLastLine());
+	}
 }

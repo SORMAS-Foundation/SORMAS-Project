@@ -82,6 +82,17 @@ class PlannerTest {
 	}
 
 	@Test
+	void twoBlocksMatchingTheSameStoredRecordFailTheLaterOne() {
+		ToyDefinition toy = new ToyDefinition().withParent("P1", "Alpha", V1);
+
+		ImportPlan plan = plan(toy, "| P1 | Beta | | | |", "| ~P1 | Gamma | | | |");
+
+		assertEquals(BlockStatus.READY, plan.blocks().get(0).status());
+		assertEquals(BlockStatus.ERROR, plan.blocks().get(1).status());
+		assertTrue(plan.blocks().get(1).issues().get(0).getMessage().contains("2"));
+	}
+
+	@Test
 	void aChildKeyRepeatedUnderTheSameParentFails() {
 		ImportPlan plan = plan(new ToyDefinition(), "| P1 | Alpha | C1 | 1 | |", "|    |       | C1 | 2 | |");
 

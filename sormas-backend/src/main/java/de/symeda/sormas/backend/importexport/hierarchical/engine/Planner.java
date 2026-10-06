@@ -29,6 +29,7 @@ public final class Planner {
 		List<ColumnSpec> columns = definition.columns();
 		RecordBinder binder = new RecordBinder(definition.cellWriter());
 		Map<ImportNode, PlannedRecord> records = new IdentityHashMap<>();
+		Map<String, ImportNode> rootsByIdentity = new HashMap<>();
 
 		for (ImportLevel level : definition.schema().levels()) {
 			if (level.isEmbedded()) {
@@ -43,6 +44,9 @@ public final class Planner {
 				Match match = matches.getOrDefault(draft.node(), Match.create());
 				if (match.isError()) {
 					draft.reportIssue(match.errorColumn(), match.errorMessage());
+					continue;
+				}
+				if (draft.parent() == null && match.isExisting() && isRepeatedRoot(draft, match, rootsByIdentity)) {
 					continue;
 				}
 				PlannedRecord record = match.isExisting() ? rebind(draft, match, binder, columns) : draft;
@@ -105,6 +109,17 @@ public final class Planner {
 				draft.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalDuplicateKey, key.get(), first.lineNumber()));
 			}
 		}
+	}
+
+	private static boolean isRepeatedRoot(PlannedRecord draft, Match match, Map<String, ImportNode> rootsByIdentity) {
+		ImportNode first = rootsByIdentity.putIfAbsent(match.identity(), draft.node());
+		if (first == null) {
+			return false;
+		}
+		draft.reportIssue(
+			null,
+			I18nProperties.getValidationError(Validations.importHierarchicalDuplicateKey, draft.node().label(), first.lineNumber()));
+		return true;
 	}
 
 	private static PlannedRecord rebind(PlannedRecord draft, Match match, RecordBinder binder, List<ColumnSpec> columns) {
