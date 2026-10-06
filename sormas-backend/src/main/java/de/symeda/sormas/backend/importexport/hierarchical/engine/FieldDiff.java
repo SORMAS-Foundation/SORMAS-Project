@@ -23,11 +23,18 @@ public final class FieldDiff {
 			}
 			Object oldValue = PropertyPaths.read(before.get(column.target()), column.propertyPath());
 			Object newValue = PropertyPaths.read(after.get(column.target()), column.propertyPath());
-			if (!Objects.equals(oldValue, newValue)) {
+			if (!sameValue(oldValue, newValue)) {
 				changes.add(new FieldChangeDto(column.header(), display(oldValue), display(newValue)));
 			}
 		}
 		return changes;
+	}
+
+	public static boolean sameValue(Object oldValue, Object newValue) {
+		if (oldValue instanceof Date && newValue instanceof Date) {
+			return ((Date) oldValue).getTime() == ((Date) newValue).getTime();
+		}
+		return Objects.equals(oldValue, newValue);
 	}
 
 	public static String display(Object value) {
