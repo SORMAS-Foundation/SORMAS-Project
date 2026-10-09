@@ -138,7 +138,7 @@ dependencies {
     implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.8'
     implementation 'org.slf4j:slf4j-api:2.0.7'
     // Align versions of all Kotlin components
-    implementation platform("org.jetbrains.kotlin:kotlin-bom:1.9.0")
+    implementation platform("org.jetbrains.kotlin:kotlin-bom:1.9.10")
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.hamcrest:hamcrest-core:2.2'
