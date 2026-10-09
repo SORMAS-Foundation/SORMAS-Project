@@ -108,7 +108,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf'
     implementation 'com.google.firebase:firebase-config'
     implementation("de.symeda.sormas:sormas-api:$sormasVersion") { changing = true }
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
     implementation 'com.github.mpkorstanje:simmetrics-core:4.1.1'
     implementation 'com.google.guava:guava:32.0.1-jre'
     implementation 'com.opencsv:opencsv:5.7.1'
