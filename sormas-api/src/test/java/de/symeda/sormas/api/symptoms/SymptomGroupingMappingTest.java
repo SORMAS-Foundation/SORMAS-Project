@@ -171,9 +171,18 @@ class SymptomGroupingMappingTest {
     }
 
     /**
-     * Mapped symptoms without a disease list ("N/A": shown for every disease) that the DTO still hides for some diseases.
+     * Mapped symptoms that the DTO hides for diseases the mapping shows them for: either for some of the listed diseases, or,
+     * for a symptom without a disease list ("N/A": shown for every disease), for some diseases at all.
+     * <p>
+     * Example: the mapping lists {@code onsetSymptom} for Diphtheria, but the first symptom dropdown is disabled for
+     * Diphtheria, so the DTO hides it there.
      */
-    private static final Map<String, Set<Disease>> KNOWN_HIDDEN_FOR_DISEASES = Map.of(SymptomsDto.ASYMPTOMATIC, EnumSet.of(Disease.TUBERCULOSIS));
+    private static final Map<String, Set<Disease>> KNOWN_HIDDEN_FOR_DISEASES = Map.of(
+        SymptomsDto.ASYMPTOMATIC,
+        EnumSet.of(Disease.TUBERCULOSIS),
+        // the first symptom dropdown is disabled for Diphtheria
+        SymptomsDto.ONSET_SYMPTOM,
+        EnumSet.of(Disease.DIPHTHERIA));
 
     /**
      * Dependent fields that the DTO shows for a disease although their {@link DependantOn} parent is hidden for it.
@@ -438,7 +447,10 @@ class SymptomGroupingMappingTest {
         Set<Disease> notVisible = mappedDiseases(entry).stream()
             .filter(d -> !isVisible(entry.symptom, d))
             .collect(Collectors.toCollection(() -> EnumSet.noneOf(Disease.class)));
-        assertTrue(notVisible.isEmpty(), entry.symptom + " is hidden for mapped diseases " + notVisible);
+        assertEquals(
+            KNOWN_HIDDEN_FOR_DISEASES.getOrDefault(entry.symptom, EnumSet.noneOf(Disease.class)),
+            notVisible,
+            entry.symptom + " is hidden for mapped diseases (update KNOWN_HIDDEN_FOR_DISEASES)");
     }
 
     @ParameterizedTest
