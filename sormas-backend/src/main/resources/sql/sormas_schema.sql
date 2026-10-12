@@ -17773,4 +17773,144 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroconversion boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (676, '#14356 - Carry IgG seroconversion on lab message test reports');
 
+-- #13399 - Store symptom states by name instead of ordinal (0=YES, 1=NO, 2=UNKNOWN)
+-- Diphtheria symptoms
+-- Duplicate columns are mapped correctly with migration script.
+-- 14326 Diphtheria symptoms
+CREATE OR REPLACE FUNCTION pg_temp.symptomstate_ordinal_to_name(val varchar) RETURNS varchar AS $$
+SELECT CASE val WHEN '0' THEN 'YES' WHEN '1' THEN 'NO' WHEN '2' THEN 'UNKNOWN' ELSE val END;
+$$ LANGUAGE sql IMMUTABLE;
+
+ALTER TABLE symptoms DISABLE TRIGGER versioning_trigger;
+
+UPDATE symptoms SET
+    convulsion = pg_temp.symptomstate_ordinal_to_name(convulsion),
+    asymptomatic = pg_temp.symptomstate_ordinal_to_name(asymptomatic),
+    hemorrhagicrash = pg_temp.symptomstate_ordinal_to_name(hemorrhagicrash),
+    arthritis = pg_temp.symptomstate_ordinal_to_name(arthritis),
+    meningitis = pg_temp.symptomstate_ordinal_to_name(meningitis),
+    otherclinicalpresentation = pg_temp.symptomstate_ordinal_to_name(otherclinicalpresentation),
+    septicaemia = pg_temp.symptomstate_ordinal_to_name(septicaemia),
+    unknownsymptom = pg_temp.symptomstate_ordinal_to_name(unknownsymptom),
+    othercomplications = pg_temp.symptomstate_ordinal_to_name(othercomplications)
+WHERE convulsion IN ('0', '1', '2') OR asymptomatic IN ('0', '1', '2') OR hemorrhagicrash IN ('0', '1', '2')
+    OR arthritis IN ('0', '1', '2') OR meningitis IN ('0', '1', '2') OR otherclinicalpresentation IN ('0', '1', '2')
+    OR septicaemia IN ('0', '1', '2') OR unknownsymptom IN ('0', '1', '2') OR othercomplications IN ('0', '1', '2');
+
+UPDATE symptoms_history SET
+    convulsion = pg_temp.symptomstate_ordinal_to_name(convulsion),
+    asymptomatic = pg_temp.symptomstate_ordinal_to_name(asymptomatic),
+    hemorrhagicrash = pg_temp.symptomstate_ordinal_to_name(hemorrhagicrash),
+    arthritis = pg_temp.symptomstate_ordinal_to_name(arthritis),
+    meningitis = pg_temp.symptomstate_ordinal_to_name(meningitis),
+    otherclinicalpresentation = pg_temp.symptomstate_ordinal_to_name(otherclinicalpresentation),
+    septicaemia = pg_temp.symptomstate_ordinal_to_name(septicaemia),
+    unknownsymptom = pg_temp.symptomstate_ordinal_to_name(unknownsymptom),
+    othercomplications = pg_temp.symptomstate_ordinal_to_name(othercomplications)
+WHERE convulsion IN ('0', '1', '2') OR asymptomatic IN ('0', '1', '2') OR hemorrhagicrash IN ('0', '1', '2')
+    OR arthritis IN ('0', '1', '2') OR meningitis IN ('0', '1', '2') OR otherclinicalpresentation IN ('0', '1', '2')
+    OR septicaemia IN ('0', '1', '2') OR unknownsymptom IN ('0', '1', '2') OR othercomplications IN ('0', '1', '2');
+
+ALTER TABLE symptoms ENABLE TRIGGER versioning_trigger;
+
+-- Diphtheria clinical criteria
+ALTER TABLE symptoms
+    ADD COLUMN conjunctivalpresentation varchar(255),
+    ADD COLUMN cutaneouspresentation varchar(255),
+    ADD COLUMN genitalpresentation varchar(255),
+    ADD COLUMN nasaldischargecleartobloody varchar(255),
+    ADD COLUMN otherclinicalcriteria varchar(255),
+    ADD COLUMN otherclinicalcriteriatext varchar(512),
+    ADD COLUMN respiratoryandcutaneouspresentation varchar(255),
+    ADD COLUMN respiratorywithmembrane varchar(255),
+    ADD COLUMN respiratorywithoutmembrane varchar(255),
+    ADD COLUMN unknownclinicalcriteria varchar(255);
+
+ALTER TABLE symptoms_history
+    ADD COLUMN conjunctivalpresentation varchar(255),
+    ADD COLUMN cutaneouspresentation varchar(255),
+    ADD COLUMN genitalpresentation varchar(255),
+    ADD COLUMN nasaldischargecleartobloody varchar(255),
+    ADD COLUMN otherclinicalcriteria varchar(255),
+    ADD COLUMN otherclinicalcriteriatext varchar(512),
+    ADD COLUMN respiratoryandcutaneouspresentation varchar(255),
+    ADD COLUMN respiratorywithmembrane varchar(255),
+    ADD COLUMN respiratorywithoutmembrane varchar(255),
+    ADD COLUMN unknownclinicalcriteria varchar(255);
+
+-- Diphtheria complication diagnosis
+ALTER TABLE symptoms
+    ADD COLUMN nocomplicationdiagnosis varchar(255),
+    ADD COLUMN cardiacdisorder varchar(255),
+    ADD COLUMN neurologicalcomplicationdiagnosis varchar(255),
+    ADD COLUMN neurologicalandcardiacdisorder varchar(255),
+    ADD COLUMN othercomplicationdiagnosis varchar(255),
+    ADD COLUMN othercomplicationdiagnosistext varchar(512),
+    ADD COLUMN unknowncomplicationdiagnosis varchar(255);
+
+ALTER TABLE symptoms_history
+    ADD COLUMN nocomplicationdiagnosis varchar(255),
+    ADD COLUMN cardiacdisorder varchar(255),
+    ADD COLUMN neurologicalcomplicationdiagnosis varchar(255),
+    ADD COLUMN neurologicalandcardiacdisorder varchar(255),
+    ADD COLUMN othercomplicationdiagnosis varchar(255),
+    ADD COLUMN othercomplicationdiagnosistext varchar(512),
+    ADD COLUMN unknowncomplicationdiagnosis varchar(255);
+
+-- #13399 - Merge the deprecated duplicate symptoms into their replacing fields
+-- Precedence when both fields hold a value: YES > NO > UNKNOWN
+-- The deprecated columns are NOT dropped: they are hidden in the UI (@Diseases({}) in SymptomsDto) but still mapped, so older
+-- app versions can keep syncing.
+CREATE OR REPLACE FUNCTION pg_temp.merge_symptomstate(kept varchar, removed varchar) RETURNS varchar AS $$
+SELECT CASE
+    WHEN kept = 'YES' OR removed = 'YES' THEN 'YES'
+    WHEN kept = 'NO' OR removed = 'NO' THEN 'NO'
+    ELSE COALESCE(kept, removed)
+END;
+$$ LANGUAGE sql IMMUTABLE;
+
+ALTER TABLE symptoms DISABLE TRIGGER versioning_trigger;
+
+UPDATE symptoms SET
+    encephalitis = pg_temp.merge_symptomstate(encephalitis, acuteencephalitis),
+    confuseddisoriented = pg_temp.merge_symptomstate(confuseddisoriented, confusion),
+    conjunctivitis = pg_temp.merge_symptomstate(conjunctivitis, conjunctivalinjection),
+    seizures = pg_temp.merge_symptomstate(seizures, convulsion),
+    coughingblood = pg_temp.merge_symptomstate(coughingblood, coughwithheamoptysis),
+    malaise = pg_temp.merge_symptomstate(malaise, feelingill),
+    alteredconsciousness = pg_temp.merge_symptomstate(alteredconsciousness, alteredlevelofconsciousness),
+    arthralgia = pg_temp.merge_symptomstate(arthralgia, jointpain),
+    skinrash = pg_temp.merge_symptomstate(skinrash, maculopapularrash),
+    hepatomegaly = pg_temp.merge_symptomstate(hepatomegaly, palpableliver),
+    splenomegaly = pg_temp.merge_symptomstate(splenomegaly, palpablespleen),
+    changedate = now()
+WHERE acuteencephalitis IS NOT NULL OR confusion IS NOT NULL OR conjunctivalinjection IS NOT NULL
+    OR convulsion IS NOT NULL OR coughwithheamoptysis IS NOT NULL OR feelingill IS NOT NULL
+    OR alteredlevelofconsciousness IS NOT NULL OR jointpain IS NOT NULL OR maculopapularrash IS NOT NULL
+    OR palpableliver IS NOT NULL OR palpablespleen IS NOT NULL;
+
+UPDATE symptoms_history SET
+    encephalitis = pg_temp.merge_symptomstate(encephalitis, acuteencephalitis),
+    confuseddisoriented = pg_temp.merge_symptomstate(confuseddisoriented, confusion),
+    conjunctivitis = pg_temp.merge_symptomstate(conjunctivitis, conjunctivalinjection),
+    seizures = pg_temp.merge_symptomstate(seizures, convulsion),
+    coughingblood = pg_temp.merge_symptomstate(coughingblood, coughwithheamoptysis),
+    malaise = pg_temp.merge_symptomstate(malaise, feelingill),
+    alteredconsciousness = pg_temp.merge_symptomstate(alteredconsciousness, alteredlevelofconsciousness),
+    arthralgia = pg_temp.merge_symptomstate(arthralgia, jointpain),
+    skinrash = pg_temp.merge_symptomstate(skinrash, maculopapularrash),
+    hepatomegaly = pg_temp.merge_symptomstate(hepatomegaly, palpableliver),
+    splenomegaly = pg_temp.merge_symptomstate(splenomegaly, palpablespleen)
+WHERE acuteencephalitis IS NOT NULL OR confusion IS NOT NULL OR conjunctivalinjection IS NOT NULL
+    OR convulsion IS NOT NULL OR coughwithheamoptysis IS NOT NULL OR feelingill IS NOT NULL
+    OR alteredlevelofconsciousness IS NOT NULL OR jointpain IS NOT NULL OR maculopapularrash IS NOT NULL
+    OR palpableliver IS NOT NULL OR palpablespleen IS NOT NULL;
+
+ALTER TABLE symptoms ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (677, '#13399 - Store symptom states by name instead of ordinal and #14326 Diphtheria symptoms');
+
+
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

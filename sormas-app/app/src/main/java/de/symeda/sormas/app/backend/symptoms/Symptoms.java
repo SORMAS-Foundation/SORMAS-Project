@@ -183,6 +183,8 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState cough;
 	@Enumerated(EnumType.STRING)
 	private SymptomState coughWithSputum;
+	// #13399 - deprecated, replaced by coughingBlood
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	private SymptomState coughWithHeamoptysis;
 	@Enumerated(EnumType.STRING)
@@ -209,8 +211,13 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState anorexiaAppetiteLoss;
 	@Enumerated(EnumType.STRING)
 	private SymptomState refusalFeedorDrink;
+	// #13399 - deprecated, replaced by arthralgia
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	private SymptomState jointPain;
+	// #13399 - replaces jointPain
+	@Enumerated(EnumType.STRING)
+	private SymptomState arthralgia;
 	@Enumerated(EnumType.STRING)
 	private SymptomState hiccups;
 	@Enumerated(EnumType.STRING)
@@ -300,8 +307,15 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState oedemaLowerExtremity;
 	@Enumerated(EnumType.STRING)
 	private SymptomState lossSkinTurgor;
+	// #13399 - deprecated, replaced by hepatomegaly
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	private SymptomState palpableLiver;
+	// #13399 - replaces palpableLiver
+	@Enumerated(EnumType.STRING)
+	private SymptomState hepatomegaly;
+	// #13399 - deprecated, replaced by splenomegaly
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	private SymptomState palpableSpleen;
 	@Enumerated(EnumType.STRING)
@@ -354,12 +368,16 @@ public class Symptoms extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private SymptomState respiratoryDiseaseVentilation;
 	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "generalSignsOfDisease")
+	// #13399 - deprecated, replaced by malaise
+	@Deprecated
 	private SymptomState feelingIll;
 	@Enumerated(EnumType.STRING)
 	private SymptomState fastHeartRate;
 	@Enumerated(EnumType.STRING)
 	private SymptomState oxygenSaturationLower94;
 
+	// #13399 - deprecated, replaced by seizures
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	private SymptomState convulsion;
 	@Enumerated(EnumType.STRING)
@@ -422,6 +440,8 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState fluidInLungCavityXray;
 	@Enumerated(EnumType.STRING)
 	private SymptomState abnormalLungXrayFindings;
+	// #13399 - deprecated, replaced by conjunctivitis
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	private SymptomState conjunctivalInjection;
 	@Enumerated(EnumType.STRING)
@@ -473,8 +493,13 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState shivering;
 	@Enumerated(EnumType.STRING)
 	private ClinicalPresentationStatus clinicalPresentationStatus;
+    // #13399 - deprecated, replaced by encephalitis
+    @Deprecated
     @Enumerated(EnumType.STRING)
     private SymptomState acuteEncephalitis;
+    // #13399 - replaces acuteEncephalitis
+    @Enumerated(EnumType.STRING)
+    private SymptomState encephalitis;
     @Enumerated(EnumType.STRING)
     private SymptomState eggyBurps;
     @Enumerated(EnumType.STRING)
@@ -729,12 +754,23 @@ public class Symptoms extends PseudonymizableAdo {
 		this.musclePain = musclePain;
 	}
 
+	// #13399 - deprecated, replaced by arthralgia
+	@Deprecated
 	public SymptomState getJointPain() {
 		return jointPain;
 	}
 
+	@Deprecated
 	public void setJointPain(SymptomState jointPain) {
 		this.jointPain = jointPain;
+	}
+
+	public SymptomState getArthralgia() {
+		return arthralgia;
+	}
+
+	public void setArthralgia(SymptomState arthralgia) {
+		this.arthralgia = arthralgia;
 	}
 
 	public SymptomState getHeadache() {
@@ -1393,18 +1429,32 @@ public class Symptoms extends PseudonymizableAdo {
 		this.lossSkinTurgor = lossSkinTurgor;
 	}
 
+	// #13399 - deprecated, replaced by hepatomegaly
+	@Deprecated
 	public SymptomState getPalpableLiver() {
 		return palpableLiver;
 	}
 
+	@Deprecated
 	public void setPalpableLiver(SymptomState palpableLiver) {
 		this.palpableLiver = palpableLiver;
 	}
 
+	public SymptomState getHepatomegaly() {
+		return hepatomegaly;
+	}
+
+	public void setHepatomegaly(SymptomState hepatomegaly) {
+		this.hepatomegaly = hepatomegaly;
+	}
+
+	// #13399 - deprecated, replaced by splenomegaly
+	@Deprecated
 	public SymptomState getPalpableSpleen() {
 		return palpableSpleen;
 	}
 
+	@Deprecated
 	public void setPalpableSpleen(SymptomState palpableSpleen) {
 		this.palpableSpleen = palpableSpleen;
 	}
@@ -1593,10 +1643,13 @@ public class Symptoms extends PseudonymizableAdo {
 		this.coma = coma;
 	}
 
+	// #13399 - deprecated, replaced by seizures
+	@Deprecated
 	public SymptomState getConvulsion() {
 		return convulsion;
 	}
 
+	@Deprecated
 	public void setConvulsion(SymptomState convulsion) {
 		this.convulsion = convulsion;
 	}
@@ -1825,10 +1878,13 @@ public class Symptoms extends PseudonymizableAdo {
 		this.abnormalLungXrayFindings = abnormalLungXrayFindings;
 	}
 
+	// #13399 - deprecated, replaced by conjunctivitis
+	@Deprecated
 	public SymptomState getConjunctivalInjection() {
 		return conjunctivalInjection;
 	}
 
+	@Deprecated
 	public void setConjunctivalInjection(SymptomState conjunctivalInjection) {
 		this.conjunctivalInjection = conjunctivalInjection;
 	}
@@ -1873,10 +1929,13 @@ public class Symptoms extends PseudonymizableAdo {
 		this.coughWithSputum = coughWithSputum;
 	}
 
+	// #13399 - deprecated, replaced by coughingBlood
+	@Deprecated
 	public SymptomState getCoughWithHeamoptysis() {
 		return coughWithHeamoptysis;
 	}
 
+	@Deprecated
 	public void setCoughWithHeamoptysis(SymptomState coughWithHeamoptysis) {
 		this.coughWithHeamoptysis = coughWithHeamoptysis;
 	}
@@ -1945,10 +2004,13 @@ public class Symptoms extends PseudonymizableAdo {
 		this.respiratoryDiseaseVentilation = respiratoryDiseaseVentilation;
 	}
 
+	// #13399 - deprecated, replaced by malaise
+	@Deprecated
 	public SymptomState getFeelingIll() {
 		return feelingIll;
 	}
 
+	@Deprecated
 	public void setFeelingIll(SymptomState feelingIll) {
 		this.feelingIll = feelingIll;
 	}
@@ -2145,12 +2207,23 @@ public class Symptoms extends PseudonymizableAdo {
         this.eggyBurps = eggyBurps;
     }
 
+    // #13399 - deprecated, replaced by encephalitis
+    @Deprecated
     public SymptomState getAcuteEncephalitis() {
         return acuteEncephalitis;
     }
 
+    @Deprecated
     public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
         this.acuteEncephalitis = acuteEncephalitis;
+    }
+
+    public SymptomState getEncephalitis() {
+        return encephalitis;
+    }
+
+    public void setEncephalitis(SymptomState encephalitis) {
+        this.encephalitis = encephalitis;
     }
 
     public Float getTimeOffWorkDays() {
