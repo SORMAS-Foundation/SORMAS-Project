@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_MEDIUM;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
@@ -93,6 +94,7 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown healthcareProfessional;
 	private String placeOfInfection;
 	private String residenceAtOnset;
+	private String patientIllLocation;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
 	private Country motherCountryOfBirth;
 	private Country motherCitizenship;
@@ -314,6 +316,15 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setResidenceAtOnset(String residenceAtOnset) {
 		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPatientIllLocation() {
+		return patientIllLocation;
+	}
+
+	public void setPatientIllLocation(String patientIllLocation) {
+		this.patientIllLocation = patientIllLocation;
 	}
 
 	@Enumerated(EnumType.STRING)

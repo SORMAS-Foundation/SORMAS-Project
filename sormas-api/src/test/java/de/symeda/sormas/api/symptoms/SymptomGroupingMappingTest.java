@@ -54,6 +54,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.Diseases;
@@ -217,11 +218,22 @@ class SymptomGroupingMappingTest {
     }
 
     /**
+     * #13399 - symptoms the mapping marks "move to epidata", by the {@link EpiDataDto} field that takes them over. Like the
+     * {@link #DEPRECATED_SYMPTOMS} they stay deprecated and hidden in {@link SymptomsDto}; the epi data field has to be
+     * visible for exactly the diseases the mapping lists for the symptom.
+     * <p>
+     * Example: {@code patientIllLocation -> patientIllLocation}; the mapping lists it for AFP, Guinea worm, Monkeypox, Polio,
+     * Undefined and Other, so {@code EpiDataDto.patientIllLocation} is checked to be visible for these six and hidden for
+     * all other diseases.
+     */
+    private static final Map<String, String> MOVED_TO_EPI_DATA = Map.of(SymptomsDto.PATIENT_ILL_LOCATION, EpiDataDto.PATIENT_ILL_LOCATION);
+
+    /**
      * Annotations that control where and how a symptom is shown; a deprecated symptom must carry none of them, so that only
      * {@code @Diseases({})} decides that it is hidden.
      */
-    private static final List<Class<? extends Annotation>> VISIBILITY_ANNOTATIONS = List
-        .of(SymptomGrouping.class, Complication.class, Outbreaks.class, HideForCountries.class, HideForCountriesExcept.class, DependantOn.class);
+    private static final List<Class<? extends Annotation>> VISIBILITY_ANNOTATIONS =
+        List.of(SymptomGrouping.class, Complication.class, Outbreaks.class, HideForCountries.class, HideForCountriesExcept.class, DependantOn.class);
 
     private static List<MappingEntry> mapping;
     private static Map<String, MappingEntry> mappingBySymptom;
@@ -249,10 +261,11 @@ class SymptomGroupingMappingTest {
     }
 
     /**
-     * Mapping entries of symptoms that are shown in the form, i.e. all entries except the {@link #DEPRECATED_SYMPTOMS}.
+     * Mapping entries of symptoms that are shown in the form, i.e. all entries except the {@link #DEPRECATED_SYMPTOMS} and
+     * the symptoms {@link #MOVED_TO_EPI_DATA}.
      */
     static Stream<Arguments> activeMappingEntries() throws IOException {
-        return mappingEntries().filter(a -> !DEPRECATED_SYMPTOMS.containsKey(entryOf(a).symptom));
+        return mappingEntries().filter(a -> isShownInSymptomsForm(entryOf(a).symptom));
     }
 
     static Stream<Arguments> restrictedMappingEntries() throws IOException {
@@ -265,6 +278,18 @@ class SymptomGroupingMappingTest {
 
     static Stream<Arguments> deprecatedSymptoms() {
         return DEPRECATED_SYMPTOMS.keySet().stream().map(Arguments::of);
+    }
+
+    /**
+     * The {@link #DEPRECATED_SYMPTOMS} and the symptoms {@link #MOVED_TO_EPI_DATA}: both stay in {@link SymptomsDto}, deprecated
+     * and hidden for every disease.
+     */
+    static Stream<Arguments> deprecatedOrMovedSymptoms() {
+        return Stream.concat(DEPRECATED_SYMPTOMS.keySet().stream(), MOVED_TO_EPI_DATA.keySet().stream()).map(Arguments::of);
+    }
+
+    static Stream<Arguments> movedSymptoms() {
+        return MOVED_TO_EPI_DATA.keySet().stream().map(Arguments::of);
     }
 
     private static MappingEntry entryOf(Arguments arguments) {
@@ -456,7 +481,7 @@ class SymptomGroupingMappingTest {
     @EnumSource(Disease.class)
     void mappedSymptomsOfDiseaseAreVisible(Disease disease) {
         Set<String> hidden = mapping.stream()
-            .filter(e -> !DEPRECATED_SYMPTOMS.containsKey(e.symptom))
+            .filter(e -> isShownInSymptomsForm(e.symptom))
             .filter(e -> mapsToDisease(e, disease))
             .map(e -> e.symptom)
             .filter(symptom -> !KNOWN_HIDDEN_FOR_DISEASES.getOrDefault(symptom, Collections.emptySet()).contains(disease))
@@ -524,7 +549,7 @@ class SymptomGroupingMappingTest {
     // ---------------------------------------------------------------------------------------------------------------
 
     @ParameterizedTest
-    @MethodSource("deprecatedSymptoms")
+    @MethodSource("deprecatedOrMovedSymptoms")
     void deprecatedSymptomIsKeptAndMarkedDeprecated(String symptom) {
         Field field = dtoFields.get(symptom);
         assertNotNull(field, symptom + " was deleted from SymptomsDto - it must only be deprecated");
@@ -544,7 +569,7 @@ class SymptomGroupingMappingTest {
     }
 
     @ParameterizedTest
-    @MethodSource("deprecatedSymptoms")
+    @MethodSource("deprecatedOrMovedSymptoms")
     void deprecatedSymptomIsHiddenForEveryDisease(String symptom) {
         Field field = dtoFields.get(symptom);
         assertNotNull(field, symptom + " was deleted from SymptomsDto - it must only be deprecated");
@@ -575,10 +600,40 @@ class SymptomGroupingMappingTest {
         Set<Disease> diseases = deprecatedEntry.diseases.isEmpty()
             ? EnumSet.allOf(Disease.class)
             : deprecatedEntry.diseases.stream().map(Disease::valueOf).collect(Collectors.toCollection(() -> EnumSet.noneOf(Disease.class)));
-        Set<Disease> notCovered = diseases.stream()
-            .filter(d -> !isVisible(replacing, d))
-            .collect(Collectors.toCollection(() -> EnumSet.noneOf(Disease.class)));
+        Set<Disease> notCovered =
+            diseases.stream().filter(d -> !isVisible(replacing, d)).collect(Collectors.toCollection(() -> EnumSet.noneOf(Disease.class)));
         assertTrue(notCovered.isEmpty(), replacing + " replaces " + symptom + " but is hidden for its diseases " + notCovered);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+    // Symptoms moved to the epi data (#13399)
+    // ---------------------------------------------------------------------------------------------------------------
+
+    @ParameterizedTest
+    @MethodSource("movedSymptoms")
+    void movedSymptomIsMarkedMoveToEpiDataInTheMapping(String symptom) {
+        MappingEntry entry = mappingBySymptom.get(symptom);
+        assertNotNull(entry, symptom + " is not in the mapping, so the diseases of its epi data field are unknown");
+        assertEquals("move to epidata", entry.proposedSymptomGroup.trim(), "Proposed group of " + symptom);
+    }
+
+    @ParameterizedTest
+    @MethodSource("movedSymptoms")
+    void epiDataFieldIsVisibleForExactlyTheMappedDiseases(String symptom) {
+        String epiDataField = MOVED_TO_EPI_DATA.get(symptom);
+        boolean hasField = Arrays.stream(EpiDataDto.class.getDeclaredFields())
+            .anyMatch(f -> !Modifier.isStatic(f.getModifiers()) && f.getName().equals(epiDataField));
+        assertTrue(hasField, "EpiDataDto has no field '" + epiDataField + "' to take over " + symptom);
+
+        MappingEntry entry = mappingBySymptom.get(symptom);
+        assertNotNull(entry, symptom + " is not in the mapping, so the diseases of its epi data field are unknown");
+        Set<Disease> expected = entry.diseases.isEmpty()
+            ? EnumSet.allOf(Disease.class)
+            : entry.diseases.stream().map(Disease::valueOf).collect(Collectors.toCollection(() -> EnumSet.noneOf(Disease.class)));
+        Set<Disease> visible = Arrays.stream(Disease.values())
+            .filter(d -> new DiseaseFieldVisibilityChecker(d).isVisible(EpiDataDto.class, epiDataField))
+            .collect(Collectors.toCollection(() -> EnumSet.noneOf(Disease.class)));
+        assertEquals(expected, visible, "EpiDataDto." + epiDataField + " takes over " + symptom + " but is visible for other diseases");
     }
 
     // ---------------------------------------------------------------------------------------------------------------
@@ -587,6 +642,15 @@ class SymptomGroupingMappingTest {
 
     private static boolean isVisible(String symptom, Disease disease) {
         return new DiseaseFieldVisibilityChecker(disease).isVisible(SymptomsDto.class, symptom);
+    }
+
+    /**
+     * Returns whether the symptom is still shown in the symptoms form, i.e. it is neither one of the
+     * {@link #DEPRECATED_SYMPTOMS} nor {@link #MOVED_TO_EPI_DATA}. Example: {@code fever} returns {@code true},
+     * {@code palpableSpleen} and {@code patientIllLocation} return {@code false}.
+     */
+    private static boolean isShownInSymptomsForm(String symptom) {
+        return !DEPRECATED_SYMPTOMS.containsKey(symptom) && !MOVED_TO_EPI_DATA.containsKey(symptom);
     }
 
     private static boolean mapsToDisease(MappingEntry entry, Disease disease) {

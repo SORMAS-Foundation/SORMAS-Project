@@ -1,4 +1,4 @@
--- If a DB update was performed, insert a new line with a comment to the table SCHEMA_VERSION.
+ -- If a DB update was performed, insert a new line with a comment to the table SCHEMA_VERSION.
 -- Example: INSERT INTO schema_version (version_number, comment) VALUES (1, 'Init database');
 
 -- #1
@@ -17773,16 +17773,76 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroconversion boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (676, '#14356 - Carry IgG seroconversion on lab message test reports');
 
--- #13399 - Store symptom states by name instead of ordinal (0=YES, 1=NO, 2=UNKNOWN)
--- Diphtheria symptoms
--- Duplicate columns are mapped correctly with migration script.
--- 14326 Diphtheria symptoms
+-- 2026-10-12 Symptoms regrouping and Diphtheria symptoms (issues #13399, #14326)
+-- 1. Add the Diphtheria clinical criteria and complication diagnosis columns
+-- 2. Store symptom states by name instead of ordinal (0 = YES, 1 = NO, 2 = UNKNOWN)
+-- 3. Merge the deprecated duplicate symptoms into their replacing fields
+-- 4. Move patientIllLocation from symptoms to epidata
+
+-- #14326 - Diphtheria clinical criteria
+ALTER TABLE symptoms
+    ADD COLUMN conjunctivalpresentation varchar(255),
+    ADD COLUMN cutaneouspresentation varchar(255),
+    ADD COLUMN genitalpresentation varchar(255),
+    ADD COLUMN nasaldischargecleartobloody varchar(255),
+    ADD COLUMN otherclinicalcriteria varchar(255),
+    ADD COLUMN otherclinicalcriteriatext varchar(512),
+    ADD COLUMN respiratoryandcutaneouspresentation varchar(255),
+    ADD COLUMN respiratorywithmembrane varchar(255),
+    ADD COLUMN respiratorywithoutmembrane varchar(255),
+    ADD COLUMN unknownclinicalcriteria varchar(255);
+
+ALTER TABLE symptoms_history
+    ADD COLUMN conjunctivalpresentation varchar(255),
+    ADD COLUMN cutaneouspresentation varchar(255),
+    ADD COLUMN genitalpresentation varchar(255),
+    ADD COLUMN nasaldischargecleartobloody varchar(255),
+    ADD COLUMN otherclinicalcriteria varchar(255),
+    ADD COLUMN otherclinicalcriteriatext varchar(512),
+    ADD COLUMN respiratoryandcutaneouspresentation varchar(255),
+    ADD COLUMN respiratorywithmembrane varchar(255),
+    ADD COLUMN respiratorywithoutmembrane varchar(255),
+    ADD COLUMN unknownclinicalcriteria varchar(255);
+
+-- #14326 - Diphtheria complication diagnosis
+ALTER TABLE symptoms
+    ADD COLUMN nocomplicationdiagnosis varchar(255),
+    ADD COLUMN cardiacdisorder varchar(255),
+    ADD COLUMN neurologicalcomplicationdiagnosis varchar(255),
+    ADD COLUMN neurologicalandcardiacdisorder varchar(255),
+    ADD COLUMN othercomplicationdiagnosis varchar(255),
+    ADD COLUMN othercomplicationdiagnosistext varchar(512),
+    ADD COLUMN unknowncomplicationdiagnosis varchar(255);
+
+ALTER TABLE symptoms_history
+    ADD COLUMN nocomplicationdiagnosis varchar(255),
+    ADD COLUMN cardiacdisorder varchar(255),
+    ADD COLUMN neurologicalcomplicationdiagnosis varchar(255),
+    ADD COLUMN neurologicalandcardiacdisorder varchar(255),
+    ADD COLUMN othercomplicationdiagnosis varchar(255),
+    ADD COLUMN othercomplicationdiagnosistext varchar(512),
+    ADD COLUMN unknowncomplicationdiagnosis varchar(255);
+
+-- #13399 - Store symptom states by name instead of ordinal
 CREATE OR REPLACE FUNCTION pg_temp.symptomstate_ordinal_to_name(val varchar) RETURNS varchar AS $$
 SELECT CASE val WHEN '0' THEN 'YES' WHEN '1' THEN 'NO' WHEN '2' THEN 'UNKNOWN' ELSE val END;
 $$ LANGUAGE sql IMMUTABLE;
 
+-- #13399 - Merge the deprecated duplicate symptoms into their replacing fields
+-- Precedence when both fields hold a value: YES > NO > UNKNOWN.
+-- The deprecated columns are NOT dropped: they are hidden in the UI (@Diseases({}) in SymptomsDto)
+-- but still mapped, so older app versions can keep syncing.
+CREATE OR REPLACE FUNCTION pg_temp.merge_symptomstate(kept varchar, removed varchar) RETURNS varchar AS $$
+SELECT CASE
+    WHEN kept = 'YES' OR removed = 'YES' THEN 'YES'
+    WHEN kept = 'NO' OR removed = 'NO' THEN 'NO'
+    ELSE COALESCE(kept, removed)
+END;
+$$ LANGUAGE sql IMMUTABLE;
+
 ALTER TABLE symptoms DISABLE TRIGGER versioning_trigger;
 
+-- Ordinal to name: must run before the merge, which compares against 'YES' and 'NO'
 UPDATE symptoms SET
     convulsion = pg_temp.symptomstate_ordinal_to_name(convulsion),
     asymptomatic = pg_temp.symptomstate_ordinal_to_name(asymptomatic),
@@ -17811,66 +17871,7 @@ WHERE convulsion IN ('0', '1', '2') OR asymptomatic IN ('0', '1', '2') OR hemorr
     OR arthritis IN ('0', '1', '2') OR meningitis IN ('0', '1', '2') OR otherclinicalpresentation IN ('0', '1', '2')
     OR septicaemia IN ('0', '1', '2') OR unknownsymptom IN ('0', '1', '2') OR othercomplications IN ('0', '1', '2');
 
-ALTER TABLE symptoms ENABLE TRIGGER versioning_trigger;
-
--- Diphtheria clinical criteria
-ALTER TABLE symptoms
-    ADD COLUMN conjunctivalpresentation varchar(255),
-    ADD COLUMN cutaneouspresentation varchar(255),
-    ADD COLUMN genitalpresentation varchar(255),
-    ADD COLUMN nasaldischargecleartobloody varchar(255),
-    ADD COLUMN otherclinicalcriteria varchar(255),
-    ADD COLUMN otherclinicalcriteriatext varchar(512),
-    ADD COLUMN respiratoryandcutaneouspresentation varchar(255),
-    ADD COLUMN respiratorywithmembrane varchar(255),
-    ADD COLUMN respiratorywithoutmembrane varchar(255),
-    ADD COLUMN unknownclinicalcriteria varchar(255);
-
-ALTER TABLE symptoms_history
-    ADD COLUMN conjunctivalpresentation varchar(255),
-    ADD COLUMN cutaneouspresentation varchar(255),
-    ADD COLUMN genitalpresentation varchar(255),
-    ADD COLUMN nasaldischargecleartobloody varchar(255),
-    ADD COLUMN otherclinicalcriteria varchar(255),
-    ADD COLUMN otherclinicalcriteriatext varchar(512),
-    ADD COLUMN respiratoryandcutaneouspresentation varchar(255),
-    ADD COLUMN respiratorywithmembrane varchar(255),
-    ADD COLUMN respiratorywithoutmembrane varchar(255),
-    ADD COLUMN unknownclinicalcriteria varchar(255);
-
--- Diphtheria complication diagnosis
-ALTER TABLE symptoms
-    ADD COLUMN nocomplicationdiagnosis varchar(255),
-    ADD COLUMN cardiacdisorder varchar(255),
-    ADD COLUMN neurologicalcomplicationdiagnosis varchar(255),
-    ADD COLUMN neurologicalandcardiacdisorder varchar(255),
-    ADD COLUMN othercomplicationdiagnosis varchar(255),
-    ADD COLUMN othercomplicationdiagnosistext varchar(512),
-    ADD COLUMN unknowncomplicationdiagnosis varchar(255);
-
-ALTER TABLE symptoms_history
-    ADD COLUMN nocomplicationdiagnosis varchar(255),
-    ADD COLUMN cardiacdisorder varchar(255),
-    ADD COLUMN neurologicalcomplicationdiagnosis varchar(255),
-    ADD COLUMN neurologicalandcardiacdisorder varchar(255),
-    ADD COLUMN othercomplicationdiagnosis varchar(255),
-    ADD COLUMN othercomplicationdiagnosistext varchar(512),
-    ADD COLUMN unknowncomplicationdiagnosis varchar(255);
-
--- #13399 - Merge the deprecated duplicate symptoms into their replacing fields
--- Precedence when both fields hold a value: YES > NO > UNKNOWN
--- The deprecated columns are NOT dropped: they are hidden in the UI (@Diseases({}) in SymptomsDto) but still mapped, so older
--- app versions can keep syncing.
-CREATE OR REPLACE FUNCTION pg_temp.merge_symptomstate(kept varchar, removed varchar) RETURNS varchar AS $$
-SELECT CASE
-    WHEN kept = 'YES' OR removed = 'YES' THEN 'YES'
-    WHEN kept = 'NO' OR removed = 'NO' THEN 'NO'
-    ELSE COALESCE(kept, removed)
-END;
-$$ LANGUAGE sql IMMUTABLE;
-
-ALTER TABLE symptoms DISABLE TRIGGER versioning_trigger;
-
+-- Merge the deprecated duplicate symptoms
 UPDATE symptoms SET
     encephalitis = pg_temp.merge_symptomstate(encephalitis, acuteencephalitis),
     confuseddisoriented = pg_temp.merge_symptomstate(confuseddisoriented, confusion),
@@ -17908,9 +17909,26 @@ WHERE acuteencephalitis IS NOT NULL OR confusion IS NOT NULL OR conjunctivalinje
 
 ALTER TABLE symptoms ENABLE TRIGGER versioning_trigger;
 
-INSERT INTO schema_version (version_number, comment) VALUES (677, '#13399 - Store symptom states by name instead of ordinal and #14326 Diphtheria symptoms');
+-- #13399 - Move patientIllLocation from symptoms to epidata
+-- Only the case symptoms are copied: the field is hidden for visits and clinical visits,
+-- and a contact has no symptoms. An epidata value that is already set is not overwritten.
+-- The symptoms column is kept for older app versions and REST clients.
+ALTER TABLE epidata ADD COLUMN patientilllocation varchar(512);
+ALTER TABLE epidata_history ADD COLUMN patientilllocation varchar(512);
 
+ALTER TABLE epidata DISABLE TRIGGER versioning_trigger;
 
+UPDATE epidata SET
+    patientilllocation = s.patientilllocation,
+    changedate = now()
+FROM cases c
+JOIN symptoms s ON s.id = c.symptoms_id
+WHERE c.epidata_id = epidata.id
+    AND s.patientilllocation IS NOT NULL
+    AND epidata.patientilllocation IS NULL;
 
+ALTER TABLE epidata ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (677, '#13399, #14326 - Symptoms regrouping and Diphtheria symptoms');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

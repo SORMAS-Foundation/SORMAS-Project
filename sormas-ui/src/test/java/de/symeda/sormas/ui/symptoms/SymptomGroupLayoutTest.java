@@ -119,7 +119,7 @@ class SymptomGroupLayoutTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldPlaceFieldWithoutSymptomGroupingInOtherSection() {
-		// e.g. patientIllLocation: no @SymptomGrouping and no parent, so it is shown in "Other" instead of staying unrendered
+		// a field without @SymptomGrouping and without parent is shown in "Other" instead of staying unrendered
 		TextField notGrouped = new TextField();
 		notGrouped.setId("notASymptomField");
 		// addField() of the form parks every field in the CustomLayout

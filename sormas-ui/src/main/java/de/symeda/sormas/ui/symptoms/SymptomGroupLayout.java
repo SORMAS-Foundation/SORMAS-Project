@@ -183,8 +183,8 @@ final class SymptomGroupLayout {
 		SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE);
 
 	/**
-	 * The group of a visible top-level field that has no {@link SymptomGrouping}; see {@link #fallbackGroup}. Example:
-	 * {@code patientIllLocation} is shown in the "Other" section.
+	 * The group of a visible top-level field that has no {@link SymptomGrouping}; see {@link #fallbackGroup}. Example: a
+	 * field that is added to {@link SymptomsDto} without {@code @SymptomGrouping} is shown in the "Other" section.
 	 */
 	private static final SymptomGroup FALLBACK_GROUP = SymptomGroup.OTHER;
 
@@ -524,8 +524,8 @@ final class SymptomGroupLayout {
 	 * <li>a field the form has already placed somewhere else, i.e. one that is no longer in the parking layout.</li>
 	 * </ul>
 	 * <p>
-	 * Example: {@code patientIllLocation} has no {@code @SymptomGrouping} and no parent, so for an AFP case it is shown in the
-	 * "Other" section; {@code otherHemorrhagicSymptomsText} without a group would still be placed below
+	 * Example: a field that is added to {@link SymptomsDto} without {@code @SymptomGrouping} and without parent is shown in
+	 * the "Other" section; {@code otherHemorrhagicSymptomsText} without a group would still be placed below
 	 * {@code otherHemorrhagicSymptoms}.
 	 *
 	 * @param fieldId

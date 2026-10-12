@@ -275,6 +275,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String PARALYSIS = "paralysis";
 	public static final String PARASTHESIA_AROUND_WOUND = "paresthesiaAroundWound";
 	public static final String PARESIS = "paresis";
+	// #13399 - deprecated, moved to EpiDataDto.PATIENT_ILL_LOCATION
+	@Deprecated
 	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
 	public static final String PERICARDITIS = "pericarditis";
 	public static final String PHARYNGEAL_ERYTHEMA = "pharyngealErythema";
@@ -1699,7 +1701,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		NEONATAL_TETANUS,
 		ONCHOCERCIASIS,
 		OTHER,
-		DIPHTHERIA,
 		TRACHOMA,
 		YAWS_ENDEMIC_SYPHILIS,
 		MATERNAL_DEATHS,
@@ -1872,13 +1873,10 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({})
 	private SymptomState palpableSpleen;
 
-	@Diseases({
-		AFP,
-		GUINEA_WORM,
-		MONKEYPOX,
-		POLIO,
-		UNDEFINED,
-		OTHER })
+	// #13399 - deprecated, moved to EpiDataDto.patientIllLocation. Hidden for every disease, but still mapped so that
+	// older app versions and REST clients keep working.
+	@Deprecated
+	@Diseases({})
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String patientIllLocation;
@@ -5686,12 +5684,15 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.clinicalManifestationText = clinicalManifestationText;
 	}
 
+	// #13399 - deprecated, moved to EpiDataDto.getPatientIllLocation()
+	@Deprecated
 	@ImportIgnore
 	@Order(380)
 	public String getPatientIllLocation() {
 		return patientIllLocation;
 	}
 
+	@Deprecated
 	public void setPatientIllLocation(String patientIllLocation) {
 		this.patientIllLocation = patientIllLocation;
 	}

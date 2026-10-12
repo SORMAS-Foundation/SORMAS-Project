@@ -1693,6 +1693,7 @@ public interface Captions {
 	String EpiData_motherCitizenship = "EpiData.motherCitizenship";
 	String EpiData_motherCountryOfBirth = "EpiData.motherCountryOfBirth";
 	String EpiData_otherDetails = "EpiData.otherDetails";
+	String EpiData_patientIllLocation = "EpiData.patientIllLocation";
 	String EpiData_placeOfInfection = "EpiData.placeOfInfection";
 	String EpiData_probableRouteOfTransmission = "EpiData.probableRouteOfTransmission";
 	String EpiData_residenceAtOnset = "EpiData.residenceAtOnset";
