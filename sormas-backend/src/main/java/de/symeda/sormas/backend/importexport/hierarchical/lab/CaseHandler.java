@@ -176,9 +176,13 @@ final class CaseHandler implements LevelHandler {
 		}
 		try {
 			personFacade.validate(record.target(PERSON));
+		} catch (ValidationRuntimeException e) {
+			ValidationIssues.report(record.node(), PERSON, e);
+		}
+		try {
 			caseFacade.validate(record.target(CASE));
 		} catch (ValidationRuntimeException e) {
-			record.reportIssue(null, e.getMessage());
+			ValidationIssues.report(record.node(), CASE, e);
 		}
 	}
 }

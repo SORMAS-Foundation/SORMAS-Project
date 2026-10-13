@@ -121,7 +121,7 @@ final class TestHandler implements LevelHandler {
 		try {
 			pathogenTestFacade.validate(record.target(TEST));
 		} catch (ValidationRuntimeException e) {
-			record.reportIssue(null, e.getMessage());
+			ValidationIssues.report(record.node(), TEST, e);
 		}
 	}
 }

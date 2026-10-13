@@ -122,7 +122,7 @@ final class SampleHandler implements LevelHandler {
 		try {
 			sampleFacade.validate(record.target(SAMPLE), false);
 		} catch (ValidationRuntimeException e) {
-			record.reportIssue(null, e.getMessage());
+			ValidationIssues.report(record.node(), SAMPLE, e);
 		}
 	}
 }
