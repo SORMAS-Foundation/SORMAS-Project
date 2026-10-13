@@ -171,6 +171,9 @@ final class CaseHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
+		if (RejectedRecords.alreadyRejected(record)) {
+			return;
+		}
 		try {
 			personFacade.validate(record.target(PERSON));
 			caseFacade.validate(record.target(CASE));

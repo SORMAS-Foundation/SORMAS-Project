@@ -115,7 +115,7 @@ public class LabAstImportTest extends AbstractBeanTest {
 
 		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(0).getStatus());
 		assertTrue(
-			preview.getBlocks().get(0).getIssues().stream().anyMatch(issue -> LabImportSchema.AST_DRUG.equals(issue.getColumn())),
+			preview.getBlocks().get(0).getIssues().stream().allMatch(issue -> LabImportSchema.AST_DRUG.equals(issue.getColumn())),
 			preview.getBlocks().get(0).getIssues().toString());
 	}
 

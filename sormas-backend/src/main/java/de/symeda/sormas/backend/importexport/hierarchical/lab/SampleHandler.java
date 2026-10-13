@@ -116,6 +116,9 @@ final class SampleHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
+		if (RejectedRecords.alreadyRejected(record)) {
+			return;
+		}
 		try {
 			sampleFacade.validate(record.target(SAMPLE), false);
 		} catch (ValidationRuntimeException e) {

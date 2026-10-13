@@ -115,6 +115,9 @@ final class TestHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
+		if (RejectedRecords.alreadyRejected(record)) {
+			return;
+		}
 		try {
 			pathogenTestFacade.validate(record.target(TEST));
 		} catch (ValidationRuntimeException e) {
