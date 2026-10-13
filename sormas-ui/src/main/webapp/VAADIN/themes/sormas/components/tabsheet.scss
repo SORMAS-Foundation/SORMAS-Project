@@ -48,6 +48,16 @@
             font-size: 16px;
           }
         } 
+
+        &.v-tabsheet-tabitem-critical {
+          .v-caption {
+            color: $s-critical-color;
+          }
+
+          &.selected .v-caption {
+            border-top-color: $s-critical-color;
+          }
+        }
       }
       
       &:first-child {

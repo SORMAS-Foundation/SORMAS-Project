@@ -45,6 +45,10 @@ public final class PreviewPresentation {
 		return newRecords;
 	}
 
+	public boolean hasProblems() {
+		return !problems.isEmpty();
+	}
+
 	public boolean nothingToReview() {
 		return problems.isEmpty() && changes.isEmpty();
 	}

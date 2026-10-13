@@ -23,6 +23,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -54,11 +55,13 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class HierarchicalImportLayout extends VerticalLayout {
 
 	private static final long serialVersionUID = 1L;
 	private static final int COMMIT_CHUNK_SIZE = 20;
+	private static final String NBSP = "\u00A0";
 	private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalImportLayout.class);
 
 	private final HierarchicalImportFacade facade = FacadeProvider.getHierarchicalImportFacade();
@@ -73,7 +76,11 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private final Upload upload = new Upload(I18nProperties.getCaption(Captions.hierarchicalImportUpload), null);
 	private final String uploadButtonCaption = upload.getButtonCaption();
 	private final Label fileName = new Label("", ContentMode.TEXT);
-	private final Label statusLine = new Label("", ContentMode.TEXT);
+	private final Label readyCount = new Label("", ContentMode.TEXT);
+	private final Label unchangedCount = new Label("", ContentMode.TEXT);
+	private final Label errorCount = new Label("", ContentMode.TEXT);
+	private final CssLayout blockCounts = new CssLayout(readyCount, unchangedCount, errorCount);
+	private final Label statusMessage = new Label("", ContentMode.TEXT);
 	private final Label countsLine = new Label("", ContentMode.TEXT);
 	private final Label readyHeading = new Label("", ContentMode.TEXT);
 	private final Label readyMessage = new Label(I18nProperties.getString(Strings.messageHierarchicalImportNothingToReview), ContentMode.TEXT);
@@ -119,7 +126,9 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		readyHeading.addStyleName(ValoTheme.LABEL_BOLD);
 		readyPanel.setMargin(false);
 		readyPanel.setSpacing(false);
-		statusLine.addStyleName(ValoTheme.LABEL_BOLD);
+		for (Label count : List.of(readyCount, unchangedCount, errorCount, statusMessage)) {
+			count.addStyleName(ValoTheme.LABEL_BOLD);
+		}
 
 		errorFileDownloader.extend(errorFileButton);
 
@@ -135,7 +144,8 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		addComponents(
 			setupSection,
 			uploadRow,
-			statusLine,
+			blockCounts,
+			statusMessage,
 			countsLine,
 			readyPanel,
 			resultTabs,
@@ -225,7 +235,8 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		progress.setVisible(step == ImportWizardModel.Step.COMMITTING || step == ImportWizardModel.Step.DONE);
 		errorFileButton.setVisible(previewed && (!model.failedBlocks().isEmpty() || !model.looseIssues().isEmpty()));
 
-		statusLine.setVisible(previewed);
+		blockCounts.setVisible(false);
+		statusMessage.setVisible(false);
 		countsLine.setVisible(previewed && preview.getFileIssues().isEmpty());
 		readyPanel.setVisible(false);
 		resultTabs.setVisible(false);
@@ -238,7 +249,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private void showPreview(ImportPreviewDto preview, ImportWizardModel.Step step) {
 		long ready = preview.countBlocks(BlockStatus.READY);
 		importButton.setCaption(I18nProperties.getCaption(Captions.actionImport) + " (" + ready + ")");
-		statusLine.setValue(statusText(preview, step));
+		showStatus(preview, step);
 		countsLine.setValue(countsText(preview));
 
 		PreviewPresentation presentation = new PreviewPresentation(preview, model.report());
@@ -246,6 +257,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		readyPanel.setVisible(step == ImportWizardModel.Step.PREVIEWED && model.canCommit() && presentation.nothingToReview());
 
 		showTab(issueGrid, Captions.hierarchicalImportProblems, presentation.problems());
+		resultTabs.getTab(issueGrid).setStyleName(presentation.hasProblems() ? CssStyles.LABEL_CRITICAL : null);
 		showTab(changeGrid, Captions.hierarchicalImportChanges, presentation.changes());
 		showTab(newRecordGrid, Captions.hierarchicalImportNewRecords, presentation.newRecords());
 		resultTabs.setVisible(anyTabVisible());
@@ -291,24 +303,45 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		}
 	}
 
-	private String statusText(ImportPreviewDto preview, ImportWizardModel.Step step) {
+	private void showStatus(ImportPreviewDto preview, ImportWizardModel.Step step) {
 		if (!preview.getFileIssues().isEmpty()) {
-			return I18nProperties.getString(Strings.messageHierarchicalImportFileErrors);
+			showStatusMessage(I18nProperties.getString(Strings.messageHierarchicalImportFileErrors), true);
+			return;
 		}
 		if (step == ImportWizardModel.Step.DONE) {
 			ImportReportDto report = model.report();
-			return String.format(
-				I18nProperties.getString(Strings.messageHierarchicalImportReport),
-				report.count(BlockOutcome.COMMITTED),
-				report.count(BlockOutcome.UNCHANGED),
-				report.count(BlockOutcome.FAILED),
-				report.count(BlockOutcome.CHANGED_SINCE_PREVIEW));
+			long failed = report.count(BlockOutcome.FAILED) + report.count(BlockOutcome.CHANGED_SINCE_PREVIEW);
+			showStatusMessage(
+				String.format(
+					I18nProperties.getString(Strings.messageHierarchicalImportReport),
+					report.count(BlockOutcome.COMMITTED),
+					report.count(BlockOutcome.UNCHANGED),
+					report.count(BlockOutcome.FAILED),
+					report.count(BlockOutcome.CHANGED_SINCE_PREVIEW)),
+				failed > 0);
+			return;
 		}
-		return String.format(
-			I18nProperties.getString(Strings.messageHierarchicalImportSummary),
-			preview.countBlocks(BlockStatus.READY),
-			preview.countBlocks(BlockStatus.UNCHANGED),
-			preview.countBlocks(BlockStatus.ERROR));
+		long errors = preview.countBlocks(BlockStatus.ERROR);
+		readyCount.setValue(String.format(I18nProperties.getString(Strings.messageHierarchicalImportReadyCount), preview.countBlocks(BlockStatus.READY)) + NBSP);
+		unchangedCount
+			.setValue(String.format(I18nProperties.getString(Strings.messageHierarchicalImportUnchangedCount), preview.countBlocks(BlockStatus.UNCHANGED)) + NBSP);
+		errorCount.setValue(String.format(I18nProperties.getString(Strings.messageHierarchicalImportErrorCount), errors));
+		markCritical(errorCount, errors > 0);
+		blockCounts.setVisible(true);
+	}
+
+	private void showStatusMessage(String message, boolean critical) {
+		statusMessage.setValue(message);
+		markCritical(statusMessage, critical);
+		statusMessage.setVisible(true);
+	}
+
+	private static void markCritical(Label label, boolean critical) {
+		if (critical) {
+			label.addStyleName(CssStyles.LABEL_CRITICAL);
+		} else {
+			label.removeStyleName(CssStyles.LABEL_CRITICAL);
+		}
 	}
 
 	private static String countsText(ImportPreviewDto preview) {

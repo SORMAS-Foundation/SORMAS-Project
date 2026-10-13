@@ -1619,10 +1619,12 @@ public interface Strings {
 	String messageGeocodingInsufficientAddress = "messageGeocodingInsufficientAddress";
 	String messageGeocodingNoResult = "messageGeocodingNoResult";
 	String messageHierarchicalImportCounts = "messageHierarchicalImportCounts";
+	String messageHierarchicalImportErrorCount = "messageHierarchicalImportErrorCount";
 	String messageHierarchicalImportFileErrors = "messageHierarchicalImportFileErrors";
 	String messageHierarchicalImportNothingToReview = "messageHierarchicalImportNothingToReview";
+	String messageHierarchicalImportReadyCount = "messageHierarchicalImportReadyCount";
 	String messageHierarchicalImportReport = "messageHierarchicalImportReport";
-	String messageHierarchicalImportSummary = "messageHierarchicalImportSummary";
+	String messageHierarchicalImportUnchangedCount = "messageHierarchicalImportUnchangedCount";
 	String messageImmunizationArchived = "messageImmunizationArchived";
 	String messageImmunizationDearchived = "messageImmunizationDearchived";
 	String messageImmunizationOutsideJurisdictionDeletionDenied = "messageImmunizationOutsideJurisdictionDeletionDenied";

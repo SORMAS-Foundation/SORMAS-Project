@@ -72,6 +72,14 @@ class PreviewPresentationTest {
 	}
 
 	@Test
+	void flagsProblemsOnlyWhenThereAreSome() {
+		BlockPreviewDto broken = new BlockPreviewDto(1, 5, 5, "B", BlockStatus.ERROR, "", List.of(), List.of(BAD_DATE));
+
+		assertFalse(new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2))), emptyReport()).hasProblems());
+		assertTrue(new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2)), broken), emptyReport()).hasProblems());
+	}
+
+	@Test
 	void sizesGridsToTheirRowsWithinBounds() {
 		assertEquals(1, PreviewPresentation.gridRows(0));
 		assertEquals(3, PreviewPresentation.gridRows(3));
