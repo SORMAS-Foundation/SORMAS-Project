@@ -25,7 +25,8 @@ public enum VaccineManufacturer {
 		Disease.CORONAVIRUS })
 	BIONTECH_PFIZER,
 	@Diseases(value = {
-		Disease.CSM })
+		Disease.CSM,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	PFIZER,
 	@Diseases(value = {
 		Disease.MONKEYPOX })
@@ -52,6 +53,22 @@ public enum VaccineManufacturer {
 		Disease.MONKEYPOX })
 	SANOFI_PASTEUR_BIOLOGICS,
 	VALNEVA,
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	MERCK,
+	@Diseases(value = {
+		Disease.DENGUE })
+	SANOFI_PASTEUR,
+	@Diseases(value = {
+		Disease.DENGUE })
+	TAKEDA,
+	@Diseases(value = {
+		Disease.MALARIA })
+	GSK,
+	@Diseases(value = {
+		Disease.MALARIA })
+	// Oxford/Serum Institute
+	OXFORD,
 	UNKNOWN,
 	OTHER;
 

@@ -46,11 +46,13 @@ public class Community extends InfrastructureAdoWithDefault {
 	public static final String DISTRICT = "district";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String NUTS_CODE = "nutsCode";
 
 	private String name;
 	private District district;
 	private Float growthRate;
 	private String externalID;
+	private String nutsCode;
 
 	public String getName() {
 		return name;
@@ -85,5 +87,13 @@ public class Community extends InfrastructureAdoWithDefault {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 }

@@ -96,7 +96,7 @@ public class ContactDtoHelper extends PersonDependentDtoHelper<Contact, ContactD
 		target.setTracingApp(source.getTracingApp());
 		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactCategory(source.getContactCategory());
-		target.setContactProximity(source.getContactProximity());
+		target.setContactProximities(source.getContactProximities());
 		target.setContactProximityDetails(source.getContactProximityDetails());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());
@@ -229,7 +229,7 @@ public class ContactDtoHelper extends PersonDependentDtoHelper<Contact, ContactD
 		target.setTracingApp(source.getTracingApp());
 		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactCategory(source.getContactCategory());
-		target.setContactProximity(source.getContactProximity());
+		target.setContactProximities(source.getContactProximities());
 		target.setContactProximityDetails(source.getContactProximityDetails());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());

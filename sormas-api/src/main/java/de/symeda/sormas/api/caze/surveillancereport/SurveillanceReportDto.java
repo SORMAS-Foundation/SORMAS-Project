@@ -33,6 +33,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class SurveillanceReportDto extends SormasToSormasShareableDto {
@@ -52,6 +53,9 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
 	public static final String NOTIFICATION_DETAILS = "notificationDetails";
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
 	private UserReferenceDto reportingUser;
 
 	@NotNull(message = Validations.requiredField)
@@ -79,6 +83,12 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String notificationDetails;
+
+	private YesNoUnknown treatmentStarted;
+
+	private boolean treatmentNotApplicable;
+
+	private Date treatmentStartDate;
 
 	private CaseReferenceDto caze;
 
@@ -180,6 +190,30 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 
 	public void setNotificationDetails(String notificationDetails) {
 		this.notificationDetails = notificationDetails;
+	}
+
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 
 	public CaseReferenceDto getCaze() {

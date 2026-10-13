@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.news;
 
+import java.time.ZonedDateTime;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -9,7 +12,7 @@ public class EiosBoardConfig extends AbstractDomainObject {
 
 	public static final String ENABLE = "enabled";
 	private Long boardId;
-	private Long startTimeStamp;
+	private ZonedDateTime startDateTime;
 	private Boolean enabled;
 
 	public Long getBoardId() {
@@ -20,12 +23,16 @@ public class EiosBoardConfig extends AbstractDomainObject {
 		this.boardId = boardId;
 	}
 
-	public Long getStartTimeStamp() {
-		return startTimeStamp;
+	/**
+	 * Point in time up to which the board's articles have been fetched; the next sync starts from here.
+	 */
+	@Column(name = "startdatetime")
+	public ZonedDateTime getStartDateTime() {
+		return startDateTime;
 	}
 
-	public void setStartTimeStamp(Long startTimeStamp) {
-		this.startTimeStamp = startTimeStamp;
+	public void setStartDateTime(ZonedDateTime startDateTime) {
+		this.startDateTime = startDateTime;
 	}
 
 	public Boolean getEnabled() {

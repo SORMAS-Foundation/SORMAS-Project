@@ -100,6 +100,8 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	private Date creationDate;
 	private String personUuid;
 	@PersonalData
+	private String nationalHealthId;
+	@PersonalData
 	private String firstName;
 	@PersonalData
 	private String lastName;
@@ -118,7 +120,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	private TracingApp tracingApp;
 	@SensitiveData
 	private String tracingAppDetails;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	private ContactStatus contactStatus;
 	private Float completeness;
 	private FollowUpStatus followUpStatus;
@@ -245,13 +247,17 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	private Boolean isInJurisdiction;
 
 	//@formatter:off
+	/**
+	 * Constructor for JPA queries where contactProximities cannot be directly selected (ElementCollection limitation).
+	 * ContactProximities should be populated separately after query execution.
+	 */
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 							ContactClassification contactClassification, Boolean multiDayContact, Date firstContactDate, Date lastContactDate, Date creationDate,
-							String personUuid, String firstName, String lastName,
+							String personUuid, String firstName, String lastName, String nationalHealthId,
 							Salutation salutation, String otherSalutation, Sex sex,
 							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactIdentificationSource contactIdentificationSource,
-							String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, ContactProximity contactProximity,
+							String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, Long contactIdPlaceholder,
 							ContactStatus contactStatus, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
 							QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
 							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate,
@@ -286,6 +292,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.lastContactDate = lastContactDate;
 		this.creationDate = creationDate;
 		this.personUuid = personUuid;
+		this.nationalHealthId = nationalHealthId;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.salutation = salutation;
@@ -298,7 +305,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
 		this.tracingApp = tracingApp;
 		this.tracingAppDetails = tracingAppDetails;
-		this.contactProximity = contactProximity;
+		// contactProximities intentionally not set here - populated separately after query
 		this.contactStatus = contactStatus;
 		this.completeness = completeness;
 		this.followUpStatus = followUpStatus;
@@ -474,13 +481,22 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	@Order(12)
 	@ExportProperty({
 		CaseDataDto.PERSON,
+		PersonDto.NATIONAL_HEALTH_ID })
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	@Order(13)
+	@ExportProperty({
+		CaseDataDto.PERSON,
 		PersonDto.FIRST_NAME })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getFirstName() {
 		return firstName;
 	}
 
-	@Order(13)
+	@Order(14)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.LAST_NAME })
@@ -489,7 +505,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return lastName;
 	}
 
-	@Order(14)
+	@Order(15)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.SALUTATION })
@@ -499,7 +515,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return salutation;
 	}
 
-	@Order(15)
+	@Order(16)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OTHER_SALUTATION })
@@ -509,7 +525,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return otherSalutation;
 	}
 
-	@Order(16)
+	@Order(17)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.SEX })
@@ -518,14 +534,14 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return sex;
 	}
 
-	@Order(17)
+	@Order(18)
 	@ExportProperty(BIRTH_DATE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
 	}
 
-	@Order(18)
+	@Order(19)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.APPROXIMATE_AGE })
@@ -534,147 +550,147 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return approximateAge;
 	}
 
-	@Order(19)
+	@Order(20)
 	@ExportProperty(ContactDto.REPORT_DATE_TIME)
 	@ExportGroup(ExportGroupType.CORE)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@Order(20)
+	@Order(21)
 	@ExportProperty(ContactDto.REGION)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(21)
+	@Order(22)
 	@ExportProperty(ContactDto.DISTRICT)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getDistrict() {
 		return district;
 	}
 
-	@Order(22)
+	@Order(23)
 	@ExportProperty(ContactDto.COMMUNITY)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getCommunity() {
 		return community;
 	}
 
-	@Order(23)
+	@Order(24)
 	@ExportProperty(ContactDto.CONTACT_IDENTIFICATION_SOURCE)
 	@ExportGroup(ExportGroupType.CORE)
 	public ContactIdentificationSource getContactIdentificationSource() {
 		return contactIdentificationSource;
 	}
 
-	@Order(24)
+	@Order(25)
 	@ExportProperty(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getContactIdentificationSourceDetails() {
 		return contactIdentificationSourceDetails;
 	}
 
-	@Order(25)
+	@Order(26)
 	@ExportProperty(ContactDto.TRACING_APP)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public TracingApp getTracingApp() {
 		return tracingApp;
 	}
 
-	@Order(26)
+	@Order(27)
 	@ExportProperty(ContactDto.TRACING_APP_DETAILS)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getTracingAppDetails() {
 		return tracingAppDetails;
 	}
 
-	@Order(27)
-	@ExportProperty(ContactDto.CONTACT_PROXIMITY)
+	@Order(28)
+	@ExportProperty(ContactDto.CONTACT_PROXIMITIES)
 	@ExportGroup(ExportGroupType.CORE)
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	public Set<ContactProximity> getContactProximities() {
+		return contactProximities;
 	}
 
-	@Order(28)
+	@Order(29)
 	@ExportProperty(ContactDto.CONTACT_STATUS)
 	@ExportGroup(ExportGroupType.CORE)
 	public ContactStatus getContactStatus() {
 		return contactStatus;
 	}
 
-	@Order(29)
+	@Order(30)
 	@ExportProperty(COMPLETENESS)
 	@ExportGroup(ExportGroupType.CORE)
 	public Float getCompleteness() {
 		return completeness;
 	}
 
-	@Order(30)
+	@Order(31)
 	@ExportProperty(ContactDto.FOLLOW_UP_STATUS)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
 
-	@Order(31)
+	@Order(32)
 	@ExportProperty(ContactDto.FOLLOW_UP_UNTIL)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public Date getFollowUpUntil() {
 		return followUpUntil;
 	}
 
-	@Order(32)
+	@Order(33)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
 
-	@Order(33)
+	@Order(34)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getQuarantineTypeDetails() {
 		return quarantineTypeDetails;
 	}
 
-	@Order(34)
+	@Order(35)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
 
-	@Order(35)
+	@Order(36)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
 
-	@Order(36)
+	@Order(37)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getPreviousQuarantineTo() {
 		return previousQuarantineTo;
 	}
 
-	@Order(36)
+	@Order(37)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getQuarantineChangeComment() {
 		return quarantineChangeComment;
 	}
 
-	@Order(37)
+	@Order(38)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
 
-	@Order(38)
+	@Order(39)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -684,7 +700,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return quarantineOrderedVerbally;
 	}
 
-	@Order(39)
+	@Order(40)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -694,7 +710,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return quarantineOrderedOfficialDocument;
 	}
 
-	@Order(40)
+	@Order(41)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -704,7 +720,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return quarantineOrderedVerballyDate;
 	}
 
-	@Order(41)
+	@Order(42)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -714,7 +730,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return quarantineOrderedOfficialDocumentDate;
 	}
 
-	@Order(42)
+	@Order(43)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -724,7 +740,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return quarantineOfficialOrderSent;
 	}
 
-	@Order(43)
+	@Order(44)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -734,42 +750,42 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return quarantineOfficialOrderSentDate;
 	}
 
-	@Order(44)
+	@Order(45)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineExtended() {
 		return quarantineExtended;
 	}
 
-	@Order(45)
+	@Order(46)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineReduced() {
 		return quarantineReduced;
 	}
 
-	@Order(46)
+	@Order(47)
 	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public YesNoUnknown getProhibitionToWork() {
 		return prohibitionToWork;
 	}
 
-	@Order(47)
+	@Order(48)
 	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getProhibitionToWorkFrom() {
 		return prohibitionToWorkFrom;
 	}
 
-	@Order(48)
+	@Order(49)
 	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getProhibitionToWorkUntil() {
 		return prohibitionToWorkUntil;
 	}
 
-	@Order(49)
+	@Order(50)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.PRESENT_CONDITION })
@@ -778,7 +794,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return presentCondition;
 	}
 
-	@Order(50)
+	@Order(51)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.DEATH_DATE })
@@ -787,7 +803,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return deathDate;
 	}
 
-	@Order(53)
+	@Order(54)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -797,7 +813,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return addressRegion;
 	}
 
-	@Order(54)
+	@Order(55)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -807,7 +823,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return addressDistrict;
 	}
 
-	@Order(55)
+	@Order(56)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -817,7 +833,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return addressCommunity;
 	}
 
-	@Order(56)
+	@Order(57)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -827,7 +843,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return city;
 	}
 
-	@Order(57)
+	@Order(58)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -837,7 +853,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return street;
 	}
 
-	@Order(58)
+	@Order(59)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -847,7 +863,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return houseNumber;
 	}
 
-	@Order(59)
+	@Order(60)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -857,7 +873,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return additionalInformation;
 	}
 
-	@Order(60)
+	@Order(61)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -867,7 +883,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return postalCode;
 	}
 
-	@Order(61)
+	@Order(62)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -877,7 +893,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return facility;
 	}
 
-	@Order(62)
+	@Order(63)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -887,7 +903,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return facilityDetails;
 	}
 
-	@Order(68)
+	@Order(69)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.PHONE })
@@ -896,7 +912,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return phone;
 	}
 
-	@Order(69)
+	@Order(70)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.PHONE_OWNER })
@@ -905,7 +921,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return phoneOwner;
 	}
 
-	@Order(70)
+	@Order(71)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.EMAIL_ADDRESS })
@@ -914,7 +930,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return emailAddress;
 	}
 
-	@Order(71)
+	@Order(72)
 	@ExportProperty({
 		ContactDto.PERSON,
 		PersonDto.OTHER_CONTACT_DETAILS })
@@ -923,7 +939,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return otherContactDetails;
 	}
 
-	@Order(72)
+	@Order(73)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_TYPE })
@@ -932,7 +948,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return occupationType;
 	}
 
-	@Order(73)
+	@Order(74)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_DETAILS })
@@ -941,7 +957,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return occupationDetails;
 	}
 
-	@Order(74)
+	@Order(75)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ARMED_FORCES_RELATION_TYPE })
@@ -950,35 +966,35 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return armedForcesRelationType;
 	}
 
-	@Order(78)
+	@Order(79)
 	@ExportProperty(NUMBER_OF_VISITS)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(79)
+	@Order(80)
 	@ExportProperty(LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(80)
+	@Order(81)
 	@ExportProperty(LAST_COOPERATIVE_VISIT_DATE)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(81)
+	@Order(82)
 	@ExportProperty(LAST_COOPERATIVE_VISIT_SYMPTOMS)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
 
-	@Order(82)
+	@Order(83)
 	@ExportProperty(TRAVELED)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
 	public boolean isTraveled() {
@@ -989,7 +1005,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.traveled = traveled;
 	}
 
-	@Order(83)
+	@Order(84)
 	@ExportProperty(TRAVEL_HISTORY)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
 	public String getTravelHistory() {
@@ -1000,7 +1016,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.travelHistory = travelHistory;
 	}
 
-	@Order(84)
+	@Order(85)
 	@ExportProperty(BURIAL_ATTENDED)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
 	public boolean isBurialAttended() {
@@ -1011,7 +1027,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(85)
+	@Order(86)
 	@ExportProperty({
 		CaseDataDto.EPI_DATA,
 		EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN })
@@ -1020,7 +1036,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		return contactWithSourceCaseKnown;
 	}
 
-	@Order(86)
+	@Order(87)
 	@ExportProperty(ContactDto.RETURNING_TRAVELER)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public YesNoUnknown getReturningTraveler() {
@@ -1316,6 +1332,10 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.creationDate = creationDate;
 	}
 
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
+	}
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
@@ -1352,8 +1372,8 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.tracingAppDetails = tracingAppDetails;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	public void setContactStatus(ContactStatus contactStatus) {

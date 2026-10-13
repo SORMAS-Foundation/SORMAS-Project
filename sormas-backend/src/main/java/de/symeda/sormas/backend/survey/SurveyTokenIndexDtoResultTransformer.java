@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.hibernate.transform.ResultTransformer;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 
 public class SurveyTokenIndexDtoResultTransformer implements ResultTransformer {
@@ -35,10 +34,15 @@ public class SurveyTokenIndexDtoResultTransformer implements ResultTransformer {
 			(String) tuple[++index],
 			(String) tuple[++index],
 			(String) tuple[++index],
-			new CaseReferenceDto((String) tuple[++index], (String) tuple[++index], (String) tuple[++index]),
+			(String) tuple[++index],
 			(Date) tuple[++index],
 			(String) tuple[++index],
-			(Boolean) tuple[++index]);
+			(Boolean) tuple[++index],
+			(String) tuple[++index],
+			(String) tuple[++index],
+			(String) tuple[++index],
+			(Date) tuple[++index],
+			(String) tuple[++index]);
 	}
 
 	@Override

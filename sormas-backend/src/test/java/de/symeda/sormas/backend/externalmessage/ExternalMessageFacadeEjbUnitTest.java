@@ -27,12 +27,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 
@@ -57,6 +60,9 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 	@InjectMocks
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
+
+	@Mock
+	private SymptomsFacadeEjb.SymptomsFacadeEjbLocal symptomsFacadeEjb;
 
 	@Mock
 	private CriteriaBuilder criteriaBuilder;
@@ -107,6 +113,12 @@ public class ExternalMessageFacadeEjbUnitTest {
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);
 		when(countryService.getByReferenceDto(null)).thenReturn(null);
 		when(facilityService.getByReferenceDto(null)).thenReturn(null);
+		
+		final SymptomsDto symptomsDto = new SymptomsDto();
+		externalMessageDto.setCaseSymptoms(symptomsDto);
+
+		when(symptomsFacadeEjb.fillOrBuildEntity(symptomsDto, null, true)).thenReturn(new Symptoms());
+
 		sut.save(externalMessageDto);
 
 		verify(externalMessageService).ensurePersisted(externalMessage);

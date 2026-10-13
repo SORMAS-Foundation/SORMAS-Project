@@ -88,4 +88,18 @@ public class DataHelperTest {
 		assertFalse(DataHelper.equal("notdate", new Date(time)));
 		assertFalse(DataHelper.equal(new Date(time), "notdate"));
 	}
+
+	@Test
+	public void testIsHttpUrl() {
+
+		assertTrue(DataHelper.isHttpUrl("http://example.com"));
+		assertTrue(DataHelper.isHttpUrl(" HTTPS://example.com/news?id=1 "));
+		assertFalse(DataHelper.isHttpUrl(null));
+		assertFalse(DataHelper.isHttpUrl(" "));
+		assertFalse(DataHelper.isHttpUrl("javascript:alert(1)"));
+		assertFalse(DataHelper.isHttpUrl(" JavaScript:alert(1)"));
+		assertFalse(DataHelper.isHttpUrl("data:text/html,<script>alert(1)</script>"));
+		assertFalse(DataHelper.isHttpUrl("file:///etc/passwd"));
+		assertFalse(DataHelper.isHttpUrl("example.com"));
+	}
 }

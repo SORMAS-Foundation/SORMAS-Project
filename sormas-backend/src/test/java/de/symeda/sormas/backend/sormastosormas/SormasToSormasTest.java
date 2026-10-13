@@ -196,7 +196,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		PathogenTestDto pathogenTest = PathogenTestDto.build(sample.toReference(), userRef);
 		pathogenTest.setTestDateTime(new Date());
 		pathogenTest.setTestResultVerified(true);
-		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
+		pathogenTest.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 		pathogenTest.setLab(rdcf.facility);
 		pathogenTest.setTestedDisease(Disease.CORONAVIRUS);
 		pathogenTest.setTestResult(PathogenTestResultType.PENDING);

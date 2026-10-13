@@ -28,6 +28,15 @@ class EiosBoardConfigServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void manageEiosConfigAtStartUp_WithWhitespaceAndInvalidBoardIds() {
+		EiosBoardConfigService eiosBoardConfigService = getEiosBoardConfigService();
+		eiosBoardConfigService.manageEiosConfigAtStartUp(" 1, ,2,abc, 3 ,2,");
+		List<EiosBoardConfig> boardConfigs = eiosBoardConfigService.getAll();
+		Assertions.assertEquals(3, boardConfigs.size());
+		Assertions.assertEquals(3, eiosBoardConfigService.getEnabledBoards().size());
+	}
+
+	@Test
 	void manageEiosConfigAtStartUp_EnableBoardToDisable() {
 		EiosBoardConfigService eiosBoardConfigService = getEiosBoardConfigService();
 		EiosBoardConfig eiosBoardConfig = DtoHelper.fillOrBuildEntity(new EntityDto() {

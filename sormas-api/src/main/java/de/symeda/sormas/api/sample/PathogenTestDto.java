@@ -19,6 +19,7 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -35,14 +36,18 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
@@ -74,6 +79,12 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
+	public static final String SEROTYPE_TEXT = "serotypeText";
+	public static final String BIOTYPE = "biotype";
+	public static final String BIOTYPE_TEXT = "biotypeText";
+	public static final String WGS_PERFORMED = "wgsPerformed";
+	public static final String WGS_CLUSTER_ID = "wgsClusterId";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -97,6 +108,53 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 	public static final String ENVIRONMENT_SAMPLE = "environmentSample";
+	public static final String RIFAMPICIN_RESISTANT = "rifampicinResistant";
+	public static final String ISONIAZID_RESISTANT = "isoniazidResistant";
+	public static final String SPECIE = "specie";
+	public static final String SPECIE_TEXT = "specieText";
+	public static final String PATTERN_PROFILE = "patternProfile";
+	public static final String STRAIN_CALL_STATUS = "strainCallStatus";
+	public static final String TEST_SCALE = "testScale";
+	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
+	public static final String SEROTYPING_METHOD = "seroTypingMethod";
+	public static final String SERO_TYPING_METHOD_TEXT = "seroTypingMethodText";
+	public static final String SYPHILIS_SEROLOGY_METHOD = "syphilisSerologyMethod";
+	public static final String SYPHILIS_SEROLOGY_METHOD_TEXT = "syphilisSerologyMethodText";
+	public static final String SERO_GROUP_SPECIFICATION = "seroGroupSpecification";
+	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
+	public static final String GENOTYPE = "genoType";
+	public static final String GENOTYPE_TEXT = "genoTypeText";
+	public static final String POR_B_ALLELE = "porBAllele";
+	public static final String TBP_B_ALLELE = "tbpBAllele";
+	public static final String SEQUENCE_TYPE = "sequenceType";
+	public static final String GENOGROUP = "genogroup";
+	public static final String RSV_SUBTYPE = "rsvSubtype";
+	public static final String TUBE_NIL = "tubeNil";
+	public static final String TUBE_NIL_GT10 = "tubeNilGT10";
+	public static final String TUBE_AG_TB1 = "tubeAgTb1";
+	public static final String TUBE_AG_TB1_GT10 = "tubeAgTb1GT10";
+	public static final String TUBE_AG_TB2 = "tubeAgTb2";
+	public static final String TUBE_AG_TB2_GT10 = "tubeAgTb2GT10";
+	public static final String TUBE_MITOGENE = "tubeMitogene";
+	public static final String TUBE_MITOGENE_GT10 = "tubeMitogeneGT10";
+	public static final String ANTIBODY_TITRE = "antibodyTitre";
+	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
+	public static final String RETEST_REQUESTED = "retestRequested";
+	public static final String QUANTITATIVE_VALUE = "quantitativeValue";
+	public static final String QUANTITATIVE_UNIT = "quantitativeUnit";
+	public static final String QUANTITATIVE_BOOLEAN = "quantitativeBoolean";
+	public static final String SMEAR_GRADE = "smearGrade";
+	public static final String WESTERN_BLOT_INTERPRETATION = "westernBlotInterpretation";
+	public static final String SEQUENCE_ID = "sequenceId";
+	public static final String SERO_CONVERSION = "seroConversion";
+	public static final String TARGET_TEST = "targetTest";
+	public static final String TARGET_TEST_TEXT = "targetTestText";
+	public static final String TEST_RUN_STATUS = "testRunStatus";
+	public static final String SEQUENCE_DATA_UPLOADED_TO_PUBLIC_REPOSITORY = "sequenceDataUploadedToPublicRepository";
+	public static final String SRA_RUN_ID = "sraRunId";
+	public static final String ACCESSION_NUMBER = "accessionNumber";
+	public static final String MLST_SEQUENCE_TYPE = "mlstSequenceType";
+	public static final String CG_MLST_CLUSTER = "cgMlstCluster";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -130,12 +188,31 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String testResultText;
-	@NotNull(message = Validations.requiredField)
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	@SensitiveData
+	private Serotype serotype;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String serotype;
+	private String serotypeText;
+	@Diseases(value = {
+		Disease.YERSINIOSIS,
+		Disease.DIPHTHERIA })
+	private Biotype biotype;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private String biotypeText;
+
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	private YesNoUnknown wgsPerformed;
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String wgsClusterId;
+	@Diseases(value = {
+		Disease.YERSINIOSIS })
+	private Boolean virulenceGenesDetected;
 	private Float cqValue;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Float ctValueE;
@@ -149,7 +226,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Float ctValueOrf1;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Float ctValueRdrpS;
-	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private Date reportDate;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private boolean viaLims;
@@ -195,6 +274,203 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private String prescriberCity;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto prescriberCountry;
+	private YesNoUnknown rifampicinResistant;
+	private YesNoUnknown isoniazidResistant;
+	private PathogenSpecie specie;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String specieText;
+	private String patternProfile;
+	private PathogenStrainCallStatus strainCallStatus;
+	private PathogenTestScale testScale;
+	private DrugSusceptibilityDto drugSusceptibility;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
+	private String seroTypingMethodText;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
+	private SerotypingMethod seroTypingMethod;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.MEASLES,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
+	private GenoType genoType;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.MEASLES,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
+	private String genoTypeText;
+
+	@SensitiveData
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String porBAllele;
+	@SensitiveData
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String tbpBAllele;
+	@SensitiveData
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String sequenceType;
+	@SensitiveData
+	@Diseases(Disease.GONOCOCCAL_INFECTION)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String genogroup;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+	private SeroGroupSpecification seroGroupSpecification;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+	private String seroGroupSpecificationText;
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private RsvSubtype rsvSubtype;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private SyphilisSerologyMethod syphilisSerologyMethod;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String syphilisSerologyMethodText;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	private Float tubeNil;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	private Boolean tubeNilGT10;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	private Float tubeAgTb1;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	private Boolean tubeAgTb1GT10;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	private Float tubeAgTb2;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	private Boolean tubeAgTb2GT10;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	private Float tubeMitogene;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	private Boolean tubeMitogeneGT10;
+	// Dengue and Malaria changes
+	@Diseases(value = {
+		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String antibodyTitre;
+	private Boolean performedByReferenceLaboratory;
+	// defaulting this test to false.
+	private Boolean retestRequested = false;
+
+	// Generic quantitative result fields, shown per the test method's ResultValueType (issue #13952).
+	private Float quantitativeValue;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String quantitativeUnit;
+	private YesNoUnknown quantitativeBoolean;
+	private SmearGrade smearGrade;
+	private WesternBlotInterpretation westernBlotInterpretation;
+	// Sequencing ID/reference text
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String sequenceId;
+	private Boolean seroConversion;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private TargetTest targetTest;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@DependantOn(TARGET_TEST)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String targetTestText;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private TestRunStatus testRunStatus;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	private YesNoUnknown sequenceDataUploadedToPublicRepository;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String sraRunId;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String accessionNumber;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String mlstSequenceType;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.DIPHTHERIA })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String cgMlstCluster;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -210,6 +486,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 			pathogenTest.setLabDetails(sample.getLabDetails());
 		}
 		pathogenTest.setLabUser(currentUser.toReference());
+		pathogenTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 		return pathogenTest;
 	}
 
@@ -219,6 +496,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 		pathogenTest.setUuid(DataHelper.createUuid());
 		pathogenTest.setSample(sample);
 		pathogenTest.setLabUser(currentUser);
+		pathogenTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 		return pathogenTest;
 	}
 
@@ -226,7 +504,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 		PathogenTestDto pathogenTest = new PathogenTestDto();
 		pathogenTest.setUuid(DataHelper.createUuid());
 		pathogenTest.setEnvironmentSample(environmentSample.toReference());
-
+		// Initialize with an empty drug susceptibility to avoid multiple unnecessary conditional addFields ana checks of the drug susceptibility field in the form
+		pathogenTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 		pathogenTest.setLab(currentUser.getLaboratory());
 		if (pathogenTest.getLab() == null) {
 			pathogenTest.setLab(environmentSample.getLaboratory());
@@ -410,11 +689,11 @@ public class PathogenTestDto extends PseudonymizableDto {
 		return new PathogenTestReferenceDto(getUuid());
 	}
 
-	public String getSerotype() {
+	public Serotype getSerotype() {
 		return serotype;
 	}
 
-	public void setSerotype(String serotype) {
+	public void setSerotype(Serotype serotype) {
 		this.serotype = serotype;
 	}
 
@@ -610,6 +889,432 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setPrescriberCountry(CountryReferenceDto prescriberCountry) {
 		this.prescriberCountry = prescriberCountry;
+	}
+
+	public YesNoUnknown getRifampicinResistant() {
+		return rifampicinResistant;
+	}
+
+	public void setRifampicinResistant(YesNoUnknown rifampicinResistant) {
+		this.rifampicinResistant = rifampicinResistant;
+	}
+
+	public YesNoUnknown getIsoniazidResistant() {
+		return isoniazidResistant;
+	}
+
+	public void setIsoniazidResistant(YesNoUnknown isoniazidResistant) {
+		this.isoniazidResistant = isoniazidResistant;
+	}
+
+	public PathogenSpecie getSpecie() {
+		return specie;
+	}
+
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
+	}
+
+	public String getPatternProfile() {
+		return patternProfile;
+	}
+
+	public void setPatternProfile(String patternProfile) {
+		this.patternProfile = patternProfile;
+	}
+
+	public PathogenStrainCallStatus getStrainCallStatus() {
+		return strainCallStatus;
+	}
+
+	public void setStrainCallStatus(PathogenStrainCallStatus strainCallStatus) {
+		this.strainCallStatus = strainCallStatus;
+	}
+
+	public PathogenTestScale getTestScale() {
+		return testScale;
+	}
+
+	public void setTestScale(PathogenTestScale testScale) {
+		this.testScale = testScale;
+	}
+
+	public DrugSusceptibilityDto getDrugSusceptibility() {
+		return drugSusceptibility;
+	}
+
+	public void setDrugSusceptibility(DrugSusceptibilityDto drugSusceptibility) {
+		this.drugSusceptibility = drugSusceptibility;
+	}
+
+	public SerotypingMethod getSeroTypingMethod() {
+		return seroTypingMethod;
+	}
+
+	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
+		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	@JsonAlias("genoTypeResult")
+	public GenoType getGenoType() {
+		return genoType;
+	}
+
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
+	}
+
+	@JsonAlias("genoTypeResultText")
+	public String getGenoTypeText() {
+		return genoTypeText;
+	}
+
+	public void setGenoTypeText(String genoTypeText) {
+		this.genoTypeText = genoTypeText;
+	}
+
+	public String getPorBAllele() {
+		return porBAllele;
+	}
+
+	public void setPorBAllele(String value) {
+		this.porBAllele = value;
+	}
+
+	public String getTbpBAllele() {
+		return tbpBAllele;
+	}
+
+	public void setTbpBAllele(String value) {
+		this.tbpBAllele = value;
+	}
+
+	public String getSequenceType() {
+		return sequenceType;
+	}
+
+	public void setSequenceType(String value) {
+		this.sequenceType = value;
+	}
+
+	public String getGenogroup() {
+		return genogroup;
+	}
+
+	public void setGenogroup(String value) {
+		this.genogroup = value;
+	}
+
+	public String getSeroTypingMethodText() {
+		return seroTypingMethodText;
+	}
+
+	public void setSeroTypingMethodText(String seroTypingMethodText) {
+		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	public SeroGroupSpecification getSeroGroupSpecification() {
+		return seroGroupSpecification;
+	}
+
+	public void setSeroGroupSpecification(SeroGroupSpecification seroGroupSpecification) {
+		this.seroGroupSpecification = seroGroupSpecification;
+	}
+
+	public String getSeroGroupSpecificationText() {
+		return seroGroupSpecificationText;
+	}
+
+	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
+		this.seroGroupSpecificationText = seroGroupSpecificationText;
+	}
+
+	public RsvSubtype getRsvSubtype() {
+		return rsvSubtype;
+	}
+
+	public void setRsvSubtype(RsvSubtype rsvSubtype) {
+		this.rsvSubtype = rsvSubtype;
+	}
+
+	public SyphilisSerologyMethod getSyphilisSerologyMethod() {
+		return syphilisSerologyMethod;
+	}
+
+	public void setSyphilisSerologyMethod(SyphilisSerologyMethod syphilisSerologyMethod) {
+		this.syphilisSerologyMethod = syphilisSerologyMethod;
+	}
+
+	public String getSyphilisSerologyMethodText() {
+		return syphilisSerologyMethodText;
+	}
+
+	public void setSyphilisSerologyMethodText(String syphilisSerologyMethodText) {
+		this.syphilisSerologyMethodText = syphilisSerologyMethodText;
+	}
+
+	public Float getTubeNil() {
+		return tubeNil;
+	}
+
+	public void setTubeNil(Float tubeNil) {
+		this.tubeNil = tubeNil;
+	}
+
+	public Boolean getTubeNilGT10() {
+		return tubeNilGT10;
+	}
+
+	public void setTubeNilGT10(Boolean tubeNilGT10) {
+		this.tubeNilGT10 = tubeNilGT10;
+	}
+
+	public Float getTubeAgTb1() {
+		return tubeAgTb1;
+	}
+
+	public void setTubeAgTb1(Float tubeAgTb1) {
+		this.tubeAgTb1 = tubeAgTb1;
+	}
+
+	public Boolean getTubeAgTb1GT10() {
+		return tubeAgTb1GT10;
+	}
+
+	public void setTubeAgTb1GT10(Boolean tubeAgTb1GT10) {
+		this.tubeAgTb1GT10 = tubeAgTb1GT10;
+	}
+
+	public Float getTubeAgTb2() {
+		return tubeAgTb2;
+	}
+
+	public void setTubeAgTb2(Float tubeAgTb2) {
+		this.tubeAgTb2 = tubeAgTb2;
+	}
+
+	public Boolean getTubeAgTb2GT10() {
+		return tubeAgTb2GT10;
+	}
+
+	public void setTubeAgTb2GT10(Boolean tubeAgTb2GT10) {
+		this.tubeAgTb2GT10 = tubeAgTb2GT10;
+	}
+
+	public Float getTubeMitogene() {
+		return tubeMitogene;
+	}
+
+	public void setTubeMitogene(Float tubeMitogene) {
+		this.tubeMitogene = tubeMitogene;
+	}
+
+	public Boolean getTubeMitogeneGT10() {
+		return tubeMitogeneGT10;
+	}
+
+	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
+		this.tubeMitogeneGT10 = tubeMitogeneGT10;
+	}
+
+	public String getAntibodyTitre() {
+		return antibodyTitre;
+	}
+
+	public void setAntibodyTitre(String antibodyTitre) {
+		this.antibodyTitre = antibodyTitre;
+	}
+
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	public Boolean getRetestRequested() {
+		return retestRequested;
+	}
+
+	public void setRetestRequested(Boolean retestRequested) {
+		this.retestRequested = retestRequested;
+	}
+
+	public String getSerotypeText() {
+		return serotypeText;
+	}
+
+	public void setSerotypeText(String serotypeText) {
+		this.serotypeText = serotypeText;
+	}
+
+	public Biotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(Biotype biotype) {
+		this.biotype = biotype;
+	}
+
+	public String getBiotypeText() {
+		return biotypeText;
+	}
+
+	public void setBiotypeText(String biotypeText) {
+		this.biotypeText = biotypeText;
+	}
+
+	public YesNoUnknown getWgsPerformed() {
+		return wgsPerformed;
+	}
+
+	public void setWgsPerformed(YesNoUnknown wgsPerformed) {
+		this.wgsPerformed = wgsPerformed;
+	}
+
+	public String getWgsClusterId() {
+		return wgsClusterId;
+	}
+
+	public void setWgsClusterId(String wgsClusterId) {
+		this.wgsClusterId = wgsClusterId;
+	}
+
+	public Boolean getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(Boolean virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
+	}
+
+	public String getSpecieText() {
+		return specieText;
+	}
+
+	public void setSpecieText(String specieText) {
+		this.specieText = specieText;
+	}
+
+	public Float getQuantitativeValue() {
+		return quantitativeValue;
+	}
+
+	public void setQuantitativeValue(Float quantitativeValue) {
+		this.quantitativeValue = quantitativeValue;
+	}
+
+	public String getQuantitativeUnit() {
+		return quantitativeUnit;
+	}
+
+	public void setQuantitativeUnit(String quantitativeUnit) {
+		this.quantitativeUnit = quantitativeUnit;
+	}
+
+	public YesNoUnknown getQuantitativeBoolean() {
+		return quantitativeBoolean;
+	}
+
+	public void setQuantitativeBoolean(YesNoUnknown quantitativeBoolean) {
+		this.quantitativeBoolean = quantitativeBoolean;
+	}
+
+	public SmearGrade getSmearGrade() {
+		return smearGrade;
+	}
+
+	public void setSmearGrade(SmearGrade smearGrade) {
+		this.smearGrade = smearGrade;
+	}
+
+	public WesternBlotInterpretation getWesternBlotInterpretation() {
+		return westernBlotInterpretation;
+	}
+
+	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
+		this.westernBlotInterpretation = westernBlotInterpretation;
+	}
+
+	public String getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(String sequenceId) {
+		this.sequenceId = sequenceId;
+	}
+
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
+	}
+
+	public TargetTest getTargetTest() {
+		return targetTest;
+	}
+
+	public void setTargetTest(TargetTest targetTest) {
+		this.targetTest = targetTest;
+	}
+
+	public String getTargetTestText() {
+		return targetTestText;
+	}
+
+	public void setTargetTestText(String targetTestText) {
+		this.targetTestText = targetTestText;
+	}
+
+	public TestRunStatus getTestRunStatus() {
+		return testRunStatus;
+	}
+
+	public void setTestRunStatus(TestRunStatus testRunStatus) {
+		this.testRunStatus = testRunStatus;
+	}
+
+	public YesNoUnknown getSequenceDataUploadedToPublicRepository() {
+		return sequenceDataUploadedToPublicRepository;
+	}
+
+	public void setSequenceDataUploadedToPublicRepository(YesNoUnknown sequenceDataUploadedToPublicRepository) {
+		this.sequenceDataUploadedToPublicRepository = sequenceDataUploadedToPublicRepository;
+	}
+
+	public String getSraRunId() {
+		return sraRunId;
+	}
+
+	public void setSraRunId(String sraRunId) {
+		this.sraRunId = sraRunId;
+	}
+
+	public String getAccessionNumber() {
+		return accessionNumber;
+	}
+
+	public void setAccessionNumber(String accessionNumber) {
+		this.accessionNumber = accessionNumber;
+	}
+
+	public String getMlstSequenceType() {
+		return mlstSequenceType;
+	}
+
+	public void setMlstSequenceType(String mlstSequenceType) {
+		this.mlstSequenceType = mlstSequenceType;
+	}
+
+	public String getCgMlstCluster() {
+		return cgMlstCluster;
+	}
+
+	public void setCgMlstCluster(String cgMlstCluster) {
+		this.cgMlstCluster = cgMlstCluster;
 	}
 
 	@Override

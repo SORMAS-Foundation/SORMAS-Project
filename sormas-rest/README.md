@@ -84,7 +84,7 @@ The follow-up status describes the follow-up for a contact or a case. Possible v
 [the FollowUpStatus enum](https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/contact/FollowUpStatus.java)
 
 Follow up can be done with, or without an external journal, the follow-up status makes no distinction there. Because the
-follow-up status is contact and case specific,but the communication with external journals is person based, SORMAS
+follow-up status is contact and case specific, but the communication with external journals is person based, SORMAS
 determines the most important follow-up status of all contacts and cases related to the person in question when
 communicating with external journals. Whenever there is follow-up ongoing for any of the persons contacts (and cases if
 the case follow-up feature is enabled in SORMAS), SORMAS will state the `FollowUpStatus.FOLLOW_UP` for that person
@@ -163,7 +163,7 @@ supervisor, contact officer, community officer, surveillance officer, surveillan
 
 First comes a SORMAS-internal validation of contact details.
 The person to be registered needs to have at least an email address (or a phone number if that is accepted for
-registration, see `interface.patientdiary.acceptPhoneContact`) to pass this validation.Also, when there are several
+registration, see `interface.patientdiary.acceptPhoneContact`) to pass this validation. Also, when there are several
 email addresses or phone numbers, one of them has to be marked primary contact detail, so that it is clear which contact
 detail shall be used.
 

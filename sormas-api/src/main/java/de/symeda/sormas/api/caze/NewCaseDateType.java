@@ -28,6 +28,7 @@ public enum NewCaseDateType
 	implements
 	CriteriaDateType {
 
+	@Deprecated
 	MOST_RELEVANT,
 	ONSET,
 	REPORT;

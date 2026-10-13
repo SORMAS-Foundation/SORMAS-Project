@@ -20,25 +20,31 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 
-@Entity(name = "surveys")
+@Entity(name = Survey.TABLE_NAME)
 public class Survey extends AbstractDomainObject {
+
+	public static final String TABLE_NAME = "surveys";
 
 	private static final long serialVersionUID = -4596338259032187530L;
 
 	public static final String NAME = "name";
 	public static final String DISEASE = "disease";
+	public static final String DOCUMENT_TEMPLATE = "documentTemplate";
+	public static final String EMAIL_TEMPLATE = "emailTemplate";
+	public static final String EXTERNAL_ID = "externalId";
 
 	private String name;
 	private Disease disease;
 	private DocumentTemplate documentTemplate;
 	private DocumentTemplate emailTemplate;
+	private String externalId;
 
 	@Column(nullable = false, length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
 	public String getName() {
@@ -58,7 +64,7 @@ public class Survey extends AbstractDomainObject {
 		this.disease = disease;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	public DocumentTemplate getDocumentTemplate() {
 		return documentTemplate;
 	}
@@ -67,12 +73,21 @@ public class Survey extends AbstractDomainObject {
 		this.documentTemplate = documentTemplate;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	public DocumentTemplate getEmailTemplate() {
 		return emailTemplate;
 	}
 
 	public void setEmailTemplate(DocumentTemplate emailTemplate) {
 		this.emailTemplate = emailTemplate;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 }

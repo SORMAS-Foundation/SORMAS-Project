@@ -674,6 +674,7 @@ public class SampleFacadeEjb implements SampleFacade {
 					pathogenTest.getTestType(),
 					pathogenTest.getTestTypeText(),
 					DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()),
+					pathogenTest.getTestedDisease(),
 					pathogenTest.getTestDateTime(),
 					lab,
 					pathogenTest.getTestResult(),

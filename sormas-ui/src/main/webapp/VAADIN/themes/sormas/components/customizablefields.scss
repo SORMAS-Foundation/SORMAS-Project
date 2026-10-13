@@ -1,0 +1,15 @@
+@mixin sormas-customizablefields {
+
+  .customizable-fields-group {
+    background-color: #fffcf6;
+    border-radius: 0 4px 4px 0;
+    padding-bottom: 8px;
+    margin-bottom: 0.5rem;
+    font-size: 0.95em;
+    color: #5a6a78;
+
+    .v-caption {
+      font-style: italic;
+    }
+  }
+}

@@ -138,6 +138,9 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 	@PersonalData
 	@SensitiveData
 	private String lastName;
+	@PersonalData
+	@SensitiveData
+	private String nationalHealthId;
 	private Salutation salutation;
 	@SensitiveData
 	private String otherSalutation;
@@ -251,7 +254,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 	@EmbeddedSensitiveData
 	private SymptomsDto symptoms;
 	//	private Date onsetDate;
-//	private String symptoms;
+	//	private String symptoms;
 	private VaccinationStatus vaccinationStatus;
 	private String numberOfDoses;
 	private VaccinationInfoSource vaccinationInfoSource;
@@ -365,7 +368,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 	public CaseExportDto(long id, long personId, Double personAddressLatitude, Double personAddressLongitude, Float personAddressLatLonAcc, long epiDataId, long symptomsId,
 						 long hospitalizationId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, String diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
-						 String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
+						 String personUuid, String firstName, String lastName, String nationalHealthId, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
 						 Integer birthdateYYYY, Date reportDate, String region, String district, String community,
 						 FacilityType facilityType, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
@@ -426,6 +429,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.personUuid = personUuid;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.nationalHealthId = nationalHealthId;
 		this.salutation = salutation;
 		this.otherSalutation = otherSalutation;
 		this.sex = sex;
@@ -506,7 +510,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.occupationType = new OccupationTypeConverter().convertToEntityAttribute(null, occupationType);
 		this.occupationDetails = occupationDetails;
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
-//		this.onsetDate = onsetDate;
+		//		this.onsetDate = onsetDate;
 		this.vaccinationStatus = vaccinationStatus;
 
 		this.postpartum = postpartum;
@@ -720,13 +724,26 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 	@ExportEntity(PersonDto.class)
 	@ExportProperty({
 		CaseDataDto.PERSON,
+		PersonDto.NATIONAL_HEALTH_ID })
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	@Order(14)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		CaseDataDto.PERSON,
 		PersonDto.FIRST_NAME })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getFirstName() {
 		return firstName;
 	}
 
-	@Order(14)
+	@Order(15)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -739,7 +756,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return lastName;
 	}
 
-	@Order(15)
+	@Order(16)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -753,7 +770,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return salutation;
 	}
 
-	@Order(16)
+	@Order(17)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -767,7 +784,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return otherSalutation;
 	}
 
-	@Order(17)
+	@Order(18)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -780,7 +797,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return sex;
 	}
 
-	@Order(18)
+	@Order(19)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -790,7 +807,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return pregnant;
 	}
 
-	@Order(19)
+	@Order(20)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -800,7 +817,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return trimester;
 	}
 
-	@Order(20)
+	@Order(21)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -810,7 +827,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return postpartum;
 	}
 
-	@Order(21)
+	@Order(22)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -823,7 +840,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return approximateAge;
 	}
 
-	@Order(22)
+	@Order(23)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -836,7 +853,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return ageGroup;
 	}
 
-	@Order(23)
+	@Order(24)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -847,7 +864,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return birthdate;
 	}
 
-	@Order(24)
+	@Order(25)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -857,7 +874,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return reportDate;
 	}
 
-	@Order(25)
+	@Order(26)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -867,7 +884,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return responsibleRegion;
 	}
 
-	@Order(26)
+	@Order(27)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -877,7 +894,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return responsibleDistrict;
 	}
 
-	@Order(27)
+	@Order(28)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -887,7 +904,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return responsibleCommunity;
 	}
 
-	@Order(28)
+	@Order(29)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -897,7 +914,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return region;
 	}
 
-	@Order(29)
+	@Order(30)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -907,7 +924,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return district;
 	}
 
-	@Order(30)
+	@Order(31)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -917,7 +934,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return community;
 	}
 
-	@Order(31)
+	@Order(32)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -927,7 +944,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return facilityType;
 	}
 
-	@Order(32)
+	@Order(33)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -937,7 +954,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return healthFacility;
 	}
 
-	@Order(33)
+	@Order(34)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -947,7 +964,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return healthFacilityDetails;
 	}
 
-	@Order(34)
+	@Order(35)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -957,7 +974,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return pointOfEntry;
 	}
 
-	@Order(35)
+	@Order(36)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -967,7 +984,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return pointOfEntryDetails;
 	}
 
-	@Order(36)
+	@Order(37)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -977,7 +994,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return initialDetectionPlace;
 	}
 
-	@Order(37)
+	@Order(38)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseDataDto.CASE_CLASSIFICATION)
@@ -986,7 +1003,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return caseClassification;
 	}
 
-	@Order(38)
+	@Order(39)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -996,7 +1013,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return clinicalConfirmation;
 	}
 
-	@Order(39)
+	@Order(40)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1006,7 +1023,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return epidemiologicalConfirmation;
 	}
 
-	@Order(40)
+	@Order(41)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1016,7 +1033,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return laboratoryDiagnosticConfirmation;
 	}
 
-	@Order(41)
+	@Order(42)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseDataDto.INVESTIGATION_STATUS)
@@ -1025,7 +1042,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return investigationStatus;
 	}
 
-	@Order(42)
+	@Order(43)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseDataDto.INVESTIGATED_DATE)
@@ -1034,7 +1051,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return investigatedDate;
 	}
 
-	@Order(43)
+	@Order(44)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1044,7 +1061,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return outcome;
 	}
 
-	@Order(44)
+	@Order(45)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1054,7 +1071,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return outcomeDate;
 	}
 
-	@Order(45)
+	@Order(46)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1064,7 +1081,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return sequelae;
 	}
 
-	@Order(46)
+	@Order(47)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1074,7 +1091,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return sequelaeDetails;
 	}
 
-	@Order(47)
+	@Order(48)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1085,7 +1102,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return bloodOrganOrTissueDonated;
 	}
 
-	@Order(48)
+	@Order(49)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1096,7 +1113,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return nosocomialOutbreak;
 	}
 
-	@Order(49)
+	@Order(50)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1107,7 +1124,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return infectionSetting;
 	}
 
-	@Order(50)
+	@Order(51)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1118,7 +1135,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return prohibitionToWork;
 	}
 
-	@Order(51)
+	@Order(52)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1129,7 +1146,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return prohibitionToWorkFrom;
 	}
 
-	@Order(52)
+	@Order(53)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1140,7 +1157,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return prohibitionToWorkUntil;
 	}
 
-	@Order(53)
+	@Order(54)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1151,7 +1168,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return reInfection;
 	}
 
-	@Order(54)
+	@Order(55)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1162,7 +1179,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return previousInfectionDate;
 	}
 
-	@Order(55)
+	@Order(56)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1173,7 +1190,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return reinfectionStatus;
 	}
 
-	@Order(56)
+	@Order(57)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1184,7 +1201,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return reinfectionDetails;
 	}
 
-	@Order(57)
+	@Order(58)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1194,7 +1211,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantine;
 	}
 
-	@Order(58)
+	@Order(59)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1204,7 +1221,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineTypeDetails;
 	}
 
-	@Order(59)
+	@Order(60)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1214,7 +1231,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineFrom;
 	}
 
-	@Order(60)
+	@Order(61)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1224,7 +1241,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineTo;
 	}
 
-	@Order(61)
+	@Order(62)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1234,7 +1251,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return previousQuarantineTo;
 	}
 
-	@Order(62)
+	@Order(63)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1244,7 +1261,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineChangeComment;
 	}
 
-	@Order(63)
+	@Order(64)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1254,7 +1271,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineHelpNeeded;
 	}
 
-	@Order(64)
+	@Order(65)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1267,7 +1284,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineOrderedVerbally;
 	}
 
-	@Order(65)
+	@Order(66)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1280,7 +1297,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineOrderedOfficialDocument;
 	}
 
-	@Order(66)
+	@Order(67)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1293,7 +1310,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineOrderedVerballyDate;
 	}
 
-	@Order(67)
+	@Order(68)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1306,7 +1323,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineOrderedOfficialDocumentDate;
 	}
 
-	@Order(68)
+	@Order(69)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1319,7 +1336,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineOfficialOrderSent;
 	}
 
-	@Order(69)
+	@Order(70)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1332,7 +1349,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineOfficialOrderSentDate;
 	}
 
-	@Order(70)
+	@Order(71)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1342,7 +1359,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineExtended;
 	}
 
-	@Order(71)
+	@Order(72)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1352,7 +1369,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return quarantineReduced;
 	}
 
-	@Order(72)
+	@Order(73)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(MAX_SOURCE_CASE_CLASSIFICATION)
@@ -1361,7 +1378,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return maxSourceCaseClassification;
 	}
 
-	@Order(73)
+	@Order(74)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(ASSOCIATED_WITH_OUTBREAK)
@@ -1374,7 +1391,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.maxSourceCaseClassification = maxSourceCaseClassification;
 	}
 
-	@Order(74)
+	@Order(75)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1387,7 +1404,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return admittedToHealthFacility;
 	}
 
-	@Order(75)
+	@Order(76)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1400,7 +1417,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return admissionDate;
 	}
 
-	@Order(76)
+	@Order(77)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1417,7 +1434,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.dischargeDate = dischargeDate;
 	}
 
-	@Order(77)
+	@Order(78)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1434,7 +1451,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.leftAgainstAdvice = leftAgainstAdvice;
 	}
 
-	@Order(78)
+	@Order(79)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1447,7 +1464,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return presentCondition;
 	}
 
-	@Order(79)
+	@Order(80)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty({
@@ -1458,7 +1475,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return deathDate;
 	}
 
-	@Order(80)
+	@Order(81)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(BURIAL_INFO)
@@ -1468,7 +1485,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return burialInfo;
 	}
 
-	@Order(81)
+	@Order(82)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1482,7 +1499,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return addressRegion;
 	}
 
-	@Order(82)
+	@Order(83)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1496,7 +1513,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return addressDistrict;
 	}
 
-	@Order(83)
+	@Order(84)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1510,7 +1527,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return addressCommunity;
 	}
 
-	@Order(84)
+	@Order(85)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1524,7 +1541,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return city;
 	}
 
-	@Order(85)
+	@Order(86)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1538,7 +1555,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return street;
 	}
 
-	@Order(86)
+	@Order(87)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1552,7 +1569,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return houseNumber;
 	}
 
-	@Order(87)
+	@Order(88)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1566,7 +1583,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return additionalInformation;
 	}
 
-	@Order(88)
+	@Order(89)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1580,7 +1597,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return postalCode;
 	}
 
-	@Order(89)
+	@Order(90)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1590,7 +1607,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return addressGpsCoordinates;
 	}
 
-	@Order(90)
+	@Order(91)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1604,7 +1621,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return facility;
 	}
 
-	@Order(91)
+	@Order(92)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1618,7 +1635,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return facilityDetails;
 	}
 
-	@Order(92)
+	@Order(93)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1631,7 +1648,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return phone;
 	}
 
-	@Order(93)
+	@Order(94)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1644,7 +1661,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return phoneOwner;
 	}
 
-	@Order(94)
+	@Order(95)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1657,7 +1674,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return emailAddress;
 	}
 
-	@Order(95)
+	@Order(96)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1670,7 +1687,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return otherContactDetails;
 	}
 
-	@Order(96)
+	@Order(97)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1686,7 +1703,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return educationType;
 	}
 
-	@Order(97)
+	@Order(98)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1699,7 +1716,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return educationDetails;
 	}
 
-	@Order(98)
+	@Order(99)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1712,7 +1729,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return occupationType;
 	}
 
-	@Order(99)
+	@Order(100)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1725,7 +1742,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return occupationDetails;
 	}
 
-	@Order(100)
+	@Order(101)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1738,7 +1755,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return armedForcesRelationType;
 	}
 
-	@Order(101)
+	@Order(102)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVELED)
@@ -1751,7 +1768,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.traveled = traveled;
 	}
 
-	@Order(102)
+	@Order(103)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVEL_HISTORY)
@@ -1760,7 +1777,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return travelHistory;
 	}
 
-	@Order(103)
+	@Order(104)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(BURIAL_ATTENDED)
@@ -1773,7 +1790,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(104)
+	@Order(105)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportEntity(EpiDataDto.class)
@@ -1789,7 +1806,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 	}
 
-	@Order(105)
+	@Order(106)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1799,7 +1816,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return vaccinationStatus;
 	}
 
-	@Order(106)
+	@Order(107)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1809,7 +1826,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return numberOfDoses;
 	}
 
-	@Order(107)
+	@Order(108)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1819,7 +1836,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return vaccinationInfoSource;
 	}
 
-	@Order(108)
+	@Order(109)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1829,7 +1846,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return firstVaccinationDate;
 	}
 
-	@Order(109)
+	@Order(110)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1839,7 +1856,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return lastVaccinationDate;
 	}
 
-	@Order(110)
+	@Order(111)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1849,7 +1866,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return vaccineName;
 	}
 
-	@Order(111)
+	@Order(112)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1859,7 +1876,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return otherVaccineName;
 	}
 
-	@Order(112)
+	@Order(113)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1869,7 +1886,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return vaccineManufacturer;
 	}
 
-	@Order(113)
+	@Order(114)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1879,7 +1896,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return otherVaccineManufacturer;
 	}
 
-	@Order(114)
+	@Order(115)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1889,7 +1906,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return vaccineInn;
 	}
 
-	@Order(115)
+	@Order(116)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1899,7 +1916,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return vaccineBatchNumber;
 	}
 
-	@Order(116)
+	@Order(117)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1909,7 +1926,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return vaccineUniiCode;
 	}
 
-	@Order(117)
+	@Order(118)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1919,15 +1936,15 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		return vaccineAtcCode;
 	}
 
-//	@Order(97)
-//	public Date getOnsetDate() {
-//		return onsetDate;
-//	}
-//
-//	@Order(98)
-//	public String getSymptoms() {
-//		return symptoms;
-//	}
+	//	@Order(97)
+	//	public Date getOnsetDate() {
+	//		return onsetDate;
+	//	}
+	//
+	//	@Order(98)
+	//	public String getSymptoms() {
+	//		return symptoms;
+	//	}
 
 	@Order(121)
 	@ExportTarget(caseExportTypes = {
@@ -2478,6 +2495,10 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
 	}
 
 	public void setSalutation(Salutation salutation) {

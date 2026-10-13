@@ -9,6 +9,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -60,11 +61,11 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private ContactRelation relationToCase;
 
 	//@formatter:off
-	public ContactIndexDetailedDto(String uuid, String personUuid, String personFirstName, String personLastName,
+	public ContactIndexDetailedDto(String uuid, String personUuid, String nationalHealthId, String personFirstName, String personLastName,
 								   String cazeUuid,
 								   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
 								   String districtName, Date lastContactDate, ContactCategory contactCategory,
-								   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
+								   Long id, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
 								   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
 								   String caseRegionName,
@@ -73,15 +74,17 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String externalID, String externalToken, String internalToken, String caseReferenceNumber, DeletionReason deletionReason, String otherDeleteReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount
+								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount,
+								   Boolean prophylaxisPrescribed, Drug prescribedDrug, String prescribedDrugText
 	) {
 	//@formatter:on
 
 		//@formatter:off
-		super(uuid, personUuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
-			regionName, districtName, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
+		super(uuid, personUuid, nationalHealthId, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
+			regionName, districtName, lastContactDate, contactCategory, id, contactClassification, contactStatus,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, caseReferenceNumber, deletionReason, otherDeleteReason,isInJurisdiction, isCaseInJurisdiction , visitCount);
+			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, caseReferenceNumber, deletionReason, otherDeleteReason,isInJurisdiction, isCaseInJurisdiction , visitCount,
+				prophylaxisPrescribed, prescribedDrug, prescribedDrugText);
 
 		//@formatter:on
 

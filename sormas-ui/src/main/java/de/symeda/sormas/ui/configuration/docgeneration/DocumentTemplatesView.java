@@ -23,7 +23,9 @@ import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_O
 
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.importer.DocumentTemplateReceiver;
 
 public class DocumentTemplatesView extends AbstractConfigurationView {
 
@@ -37,11 +39,24 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 
 		super(VIEW_NAME);
 		gridLayout = new VerticalLayout(
-			new DocumentTemplateSection(QUARANTINE_ORDER_CASE, true),
-			new DocumentTemplateSection(QUARANTINE_ORDER_CONTACT, true),
-			new DocumentTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT, true),
-			new DocumentTemplateSection(QUARANTINE_ORDER_TRAVEL_ENTRY, true),
-			new DocumentTemplateSection(EVENT_HANDOUT, true));
+
+			new DocumentTemplateSection(
+				new DocumentTemplateCriteria(QUARANTINE_ORDER_CASE, null, null),
+				true,
+				new DocumentTemplateReceiver(QUARANTINE_ORDER_CASE)),
+			new DocumentTemplateSection(
+				new DocumentTemplateCriteria(QUARANTINE_ORDER_CONTACT, null, null),
+				true,
+				new DocumentTemplateReceiver(QUARANTINE_ORDER_CONTACT)),
+			new DocumentTemplateSection(
+				new DocumentTemplateCriteria(QUARANTINE_ORDER_EVENT_PARTICIPANT, null, null),
+				true,
+				new DocumentTemplateReceiver(QUARANTINE_ORDER_EVENT_PARTICIPANT)),
+			new DocumentTemplateSection(
+				new DocumentTemplateCriteria(QUARANTINE_ORDER_TRAVEL_ENTRY, null, null),
+				true,
+				new DocumentTemplateReceiver(QUARANTINE_ORDER_TRAVEL_ENTRY)),
+			new DocumentTemplateSection(new DocumentTemplateCriteria(EVENT_HANDOUT, null, null), true, new DocumentTemplateReceiver(EVENT_HANDOUT)));
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
 		gridLayout.setMargin(true);

@@ -110,6 +110,22 @@ public class CriteriaBuilderHelper {
 		return hasUuid == null ? filter : andEquals(cb, joinSupplier.get(), filter, hasUuid.getUuid(), AbstractDomainObject.UUID);
 	}
 
+	/**
+	 * 
+	 * @param cb
+	 *            The builder of the query to filter.
+	 * @param expression
+	 *            string field to check for null and "empty-ness".
+	 * @return Predicate that results to true if field is not null and not empty.
+	 *         Example: "" -> false, null -> false, "SORMAS" -> true.
+	 */
+	public static Predicate notNullAndNotEmpty(CriteriaBuilder cb, Expression<String> expression) {
+		Predicate notNull = cb.isNotNull(expression);
+		Predicate notEmpty = cb.gt(cb.length(expression), 0);
+
+		return cb.and(notNull, notEmpty);
+	}
+
 	public static Predicate andInValues(Collection<?> values, Predicate filter, CriteriaBuilder cb, Path<Object> path) {
 		if (CollectionUtils.isEmpty(values)) {
 			return filter;
@@ -217,13 +233,28 @@ public class CriteriaBuilderHelper {
 				cb.function("date_part", Double.class, cb.literal("epoch"), date2)));
 	}
 
+	/**
+	 * Useful for sorting purposes: to lower case and replace '' (empty string) by NULL.
+	 * 
+	 * @param cb
+	 *            CriteriaBuilder that used to create the expression.
+	 * @param expression
+	 *            field on which the expression will be applied.
+	 * @return changes expression to lower case and replace '' by null.
+	 */
+	public static Expression<String> lowerAndEmptyToNull(CriteriaBuilder cb, Expression<String> expression) {
+		return cb.lower(cb.function(ExtendedPostgreSQL94Dialect.EMPTY_TO_NULL, String.class, expression));
+	}
+
 	public static List<Order> orders(CriteriaBuilder cb, boolean ascending, Expression<?>... expressions) {
 		return Stream.of(expressions).map(e -> ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList());
 	}
 
 	public interface OrderBuilder {
+
 		List<Order> build(Expression<?>... expressions);
 	}
+
 	public static OrderBuilder createOrderBuilder(CriteriaBuilder cb, boolean ascending) {
 		return (Expression<?>... expressions) -> Stream.of(expressions).map(e -> ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList());
 	}

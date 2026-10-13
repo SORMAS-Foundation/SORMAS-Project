@@ -35,7 +35,9 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
+import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -52,6 +54,8 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String MUST_HAVE_NO_GEO_COORDINATES = "mustHaveNoGeoCoordinates";
 	public static final String MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY = "mustBePortHealthCaseWithoutFacility";
 	public static final String MUST_HAVE_CASE_MANAGEMENT_DATA = "mustHaveCaseManagementData";
+	public static final String HAS_DOCTOR_DECLARATION = "hasDoctorDeclaration";
+	public static final String WITHOUT_DOCTOR_DECLARATION = "withoutDoctorDeclaration";
 	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
 	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
@@ -84,13 +88,23 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
+	public static final String ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING = "onlyCasesNotExcludedFromReporting";
+	public static final String ONLY_CASES_EXCLUDED_FROM_REPORTING = "onlyCasesExcludedFromReporting";
 	public static final String PERSON_LIKE = "personLike";
 	public static final String JURISDICTION_TYPE = "jurisdictionType";
 	public static final String ENTITY_RELEVANCE_STATUS = "relevanceStatus";
+	public static final String SURVEY_ASSIGNED_FROM = "surveyAssignedFrom";
+	public static final String SURVEY_ASSIGNED_TO = "surveyAssignedTo";
+	public static final String SURVEY_RESPONSE_STATUS = "surveyResponseStatus";
+	public static final String SURVEY = "survey";
+	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
+	public static final String SEROGROUP = "serogroup";
 
 	private UserRoleReferenceDto reportingUserRole;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
+	private PathogenTestResultType pathogenTestResult;
+	private String serogroup;
 	private CaseOutcome outcome;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
@@ -116,6 +130,8 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
+	private Boolean hasDoctorDeclaration;
+	private Boolean withoutDoctorDeclaration;
 	private Boolean withoutResponsibleOfficer;
 	private Boolean withExtendedQuarantine;
 	private Boolean withReducedQuarantine;
@@ -152,8 +168,15 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
+	private Boolean onlyCasesNotExcludedFromReporting;
+	private Boolean onlyCasesExcludedFromReporting;
 	private String personLike;
 	private Boolean withOwnership;
+	private Date surveyAssignedFrom;
+	private Date surveyAssignedTo;
+	private SurveyResponseStatus surveyResponseStatus;
+	private SurveyReferenceDto survey;
+
 	/**
 	 * Used for filtering merge-able cases to filter both lead and similar cases.
 	 */
@@ -223,6 +246,33 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
+	}
+
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
+	}
+
+	public CaseCriteria pathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		setPathogenTestResult(pathogenTestResult);
+		return this;
+	}
+
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+
+	public void setSerogroup(String serogroup) {
+		this.serogroup = serogroup;
+	}
+
+	public CaseCriteria serogroup(String serogroup) {
+		setSerogroup(serogroup);
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getSerogroup() {
+		return serogroup;
 	}
 
 	public void setJurisdictionType(CaseJurisdictionType jurisdictionType) {
@@ -369,6 +419,22 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public Boolean getMustHaveCaseManagementData() {
 		return mustHaveCaseManagementData;
+	}
+
+	public void setHasDoctorDeclaration(Boolean hasDoctorDeclaration) {
+		this.hasDoctorDeclaration = hasDoctorDeclaration;
+	}
+
+	public Boolean getHasDoctorDeclaration() {
+		return hasDoctorDeclaration;
+	}
+
+	public void setWithoutDoctorDeclaration(Boolean withoutDoctorDeclaration) {
+		this.withoutDoctorDeclaration = withoutDoctorDeclaration;
+	}
+
+	public Boolean getWithoutDoctorDeclaration() {
+		return withoutDoctorDeclaration;
 	}
 
 	public void setWithoutResponsibleOfficer(Boolean withoutResponsibleOfficer) {
@@ -767,6 +833,22 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.onlyShowCasesWithFulfilledReferenceDefinition = onlyShowCasesWithFulfilledReferenceDefinition;
 	}
 
+	public Boolean getOnlyCasesNotExcludedFromReporting() {
+		return onlyCasesNotExcludedFromReporting;
+	}
+
+	public void setOnlyCasesNotExcludedFromReporting(Boolean onlyCasesNotExcludedFromReporting) {
+		this.onlyCasesNotExcludedFromReporting = onlyCasesNotExcludedFromReporting;
+	}
+
+	public Boolean getOnlyCasesExcludedFromReporting() {
+		return onlyCasesExcludedFromReporting;
+	}
+
+	public void setOnlyCasesExcludedFromReporting(Boolean onlyCasesExcludedFromReporting) {
+		this.onlyCasesExcludedFromReporting = onlyCasesExcludedFromReporting;
+	}
+
 	public Date getFollowUpVisitsFrom() {
 		return followUpVisitsFrom;
 	}
@@ -832,5 +914,37 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public CaseCriteria caseReferenceNumber(String caseReferenceNumber) {
 		this.caseReferenceNumber = caseReferenceNumber;
 		return this;
+	}
+
+	public Date getSurveyAssignedFrom() {
+		return surveyAssignedFrom;
+	}
+
+	public void setSurveyAssignedFrom(Date surveyAssignedFrom) {
+		this.surveyAssignedFrom = surveyAssignedFrom;
+	}
+
+	public Date getSurveyAssignedTo() {
+		return surveyAssignedTo;
+	}
+
+	public void setSurveyAssignedTo(Date surveyAssignedTo) {
+		this.surveyAssignedTo = surveyAssignedTo;
+	}
+
+	public SurveyResponseStatus getSurveyResponseStatus() {
+		return surveyResponseStatus;
+	}
+
+	public void setSurveyResponseStatus(SurveyResponseStatus surveyResponseStatus) {
+		this.surveyResponseStatus = surveyResponseStatus;
+	}
+
+	public SurveyReferenceDto getSurvey() {
+		return survey;
+	}
+
+	public void setSurvey(SurveyReferenceDto survey) {
+		this.survey = survey;
 	}
 }

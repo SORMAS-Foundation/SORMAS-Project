@@ -39,6 +39,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.dashboard.adverseeventsfollowingimmunization.AefiDashboardFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
@@ -52,10 +54,12 @@ import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentImportFacade;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
+import de.symeda.sormas.api.epipulse.EpipulseExportFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
+import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentFacade;
 import de.symeda.sormas.api.externalemail.ExternalEmailFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
@@ -86,6 +90,7 @@ import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.news.NewsFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.notifier.NotifierFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -104,8 +109,13 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareReq
 import de.symeda.sormas.api.sormastosormas.share.outgoing.ShareRequestInfoFacade;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoFacade;
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
+import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
+import de.symeda.sormas.api.survey.alias.PathAliasFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.api.systemconfiguration.CronJobFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.systemevents.sync.SyncFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -217,6 +227,10 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(ActionFacade.class);
 	}
 
+	public static Event717AssessmentFacade getEvent717AssessmentFacade() {
+		return get().lookupEjbRemote(Event717AssessmentFacade.class);
+	}
+
 	public static SampleFacade getSampleFacade() {
 		return get().lookupEjbRemote(SampleFacade.class);
 	}
@@ -311,6 +325,10 @@ public class FacadeProvider {
 
 	public static PrescriptionFacade getPrescriptionFacade() {
 		return get().lookupEjbRemote(PrescriptionFacade.class);
+	}
+
+	public static PathAliasFacade getPathAliasFacade() {
+		return get().lookupEjbRemote(PathAliasFacade.class);
 	}
 
 	public static TreatmentFacade getTreatmentFacade() {
@@ -504,6 +522,14 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(CustomizableEnumFacade.class);
 	}
 
+	public static CustomizableFieldMetadataFacade getCustomizableFieldMetadataFacade() {
+		return get().lookupEjbRemote(CustomizableFieldMetadataFacade.class);
+	}
+
+	public static CustomizableFieldValueFacade getCustomizableFieldValueFacade() {
+		return get().lookupEjbRemote(CustomizableFieldValueFacade.class);
+	}
+
 	public static InfoFacade getInfoFacade() {
 		return get().lookupEjbRemote(InfoFacade.class);
 	}
@@ -556,8 +582,32 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(SelfReportImportFacade.class);
 	}
 
+	public static SurveyFacade getSurveyFacade() {
+		return get().lookupEjbRemote(SurveyFacade.class);
+	}
+
 	public static SurveyTokenFacade getSurveyTokenFacade() {
 		return get().lookupEjbRemote(SurveyTokenFacade.class);
+	}
+
+	public static SystemConfigurationValueFacade getSystemConfigurationValueFacade() {
+		return get().lookupEjbRemote(SystemConfigurationValueFacade.class);
+	}
+
+	public static SystemConfigurationCategoryFacade getSystemConfigurationCategoryFacade() {
+		return get().lookupEjbRemote(SystemConfigurationCategoryFacade.class);
+	}
+
+	public static CronJobFacade getCronJobFacade() {
+		return get().lookupEjbRemote(CronJobFacade.class);
+	}
+
+	public static NotifierFacade getNotifierFacade() {
+		return get().lookupEjbRemote(NotifierFacade.class);
+	}
+
+	public static EpipulseExportFacade getEpipulseExportFacade() {
+		return get().lookupEjbRemote(EpipulseExportFacade.class);
 	}
 
 	public static NewsFacade getNewsFacade() {

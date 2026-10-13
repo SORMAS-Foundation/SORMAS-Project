@@ -139,6 +139,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
 	public static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
+	private static final String GEOCODING_SERVICE_USER_AGENT = "geocodingServiceUserAgent";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
 	private static final String GEOCODING_EPSG4326_WKT = "geocodingEPSG4326_WKT";
@@ -460,31 +461,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getEmailSenderAddress() {
-		return getProperty(EMAIL_SENDER_ADDRESS, "noreply@sormas.org");
-	}
-
-	@Override
-	public String getEmailSenderName() {
-		return getProperty(EMAIL_SENDER_NAME, "SORMAS Support");
-	}
-
-	@Override
-	public String getSmsSenderName() {
-		return getProperty(SMS_SENDER_NAME, "SORMAS");
-	}
-
-	@Override
-	public String getSmsAuthKey() {
-		return getProperty(SMS_AUTH_KEY, "");
-	}
-
-	@Override
-	public String getSmsAuthSecret() {
-		return getProperty(SMS_AUTH_SECRET, "");
-	}
-
-	@Override
 	public boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
 		return getBoolean(DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES, false);
 	}
@@ -522,6 +498,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeocodingServiceUrlTemplate() {
 		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
+	}
+
+	@Override
+	public String getGeocodingServiceUserAgent() {
+		return getProperty(GEOCODING_SERVICE_USER_AGENT, null);
 	}
 
 	@Override

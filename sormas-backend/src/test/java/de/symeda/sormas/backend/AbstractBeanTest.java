@@ -42,6 +42,8 @@ import org.junit.jupiter.api.function.Executable;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.hilling.junit.cdi.CdiTestJunitExtension;
 import de.hilling.junit.cdi.ContextControlWrapper;
@@ -97,6 +99,9 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.news.NewsFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
+import de.symeda.sormas.api.patch.DataPatcher;
+import de.symeda.sormas.api.patch.partial_retrieval.PartialRetriever;
+import de.symeda.sormas.api.person.notifier.NotifierFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -112,6 +117,8 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareReq
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -172,6 +179,8 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.event.sevenoneseven.Event717AssessmentFacadeEjb.Event717AssessmentFacadeEjbLocal;
+import de.symeda.sormas.backend.event.sevenoneseven.Event717AssessmentService;
 import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
@@ -218,8 +227,12 @@ import de.symeda.sormas.backend.news.EiosFacadeEjb;
 import de.symeda.sormas.backend.news.NewsFacadeEjb;
 import de.symeda.sormas.backend.news.NewsService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
+import de.symeda.sormas.backend.patch.DataPatcherImpl;
+import de.symeda.sormas.backend.patch.partial_retrieval.PartialRetrieverImpl;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.person.notifier.NotifierEjb;
+import de.symeda.sormas.backend.person.notifier.NotifierService;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
@@ -265,6 +278,10 @@ import de.symeda.sormas.backend.survey.SurveyService;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskService;
@@ -291,6 +308,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public abstract class AbstractBeanTest {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
 
@@ -562,6 +581,14 @@ public abstract class AbstractBeanTest {
 
 	public ActionFacade getActionFacade() {
 		return getBean(ActionFacadeEjb.ActionFacadeEjbLocal.class);
+	}
+
+	public Event717AssessmentFacadeEjbLocal getEvent717AssessmentFacade() {
+		return getBean(Event717AssessmentFacadeEjbLocal.class);
+	}
+
+	public Event717AssessmentService getEvent717AssessmentService() {
+		return getBean(Event717AssessmentService.class);
 	}
 
 	public AggregateReportFacade getAggregateReportFacade() {
@@ -1118,6 +1145,55 @@ public abstract class AbstractBeanTest {
 
 	public SurveyTokenService getSurveyTokenService() {
 		return getBean(SurveyTokenService.class);
+	}
+
+	public SystemConfigurationCategoryFacade getSystemConfigurationCategoryFacade() {
+		return getBean(SystemConfigurationCategoryEjb.SystemConfigurationCategoryEjbLocal.class);
+	}
+
+	public SystemConfigurationCategoryService getSystemConfigurationCategoryService() {
+		return getBean(SystemConfigurationCategoryService.class);
+	}
+
+	public SystemConfigurationValueFacade getSystemConfigurationValueFacade() {
+		return getBean(SystemConfigurationValueEjb.class);
+	}
+
+	public SystemConfigurationValueService getSystemConfigurationValueService() {
+		return getBean(SystemConfigurationValueService.class);
+	}
+
+	public NotifierFacade getNotifierFacade() {
+		return getBean(NotifierEjb.NotifierEjbLocal.class);
+	}
+
+	public NotifierService getNotifierService() {
+		return getBean(NotifierService.class);
+	}
+
+	public DataPatcher getCaseDataPatcher() {
+		return getBean(DataPatcherImpl.class);
+	}
+
+	public PartialRetriever getPartialRetriever() {
+		return getBean(PartialRetrieverImpl.class);
+	}
+
+	/**
+	 * The context of the {@link AbstractBeanTest} does not possess a proper (Initial)Context, therefore if you want to ma
+	 * 
+	 * @param beanClass
+	 *            must be used with the exact class to work.
+	 * @param instance
+	 *            actual instance that will be returned by the context.
+	 */
+	public <T, S extends T> void registerBeanForLookup(Class<T> beanClass, S instance) {
+		String classSimpleName = beanClass.getSimpleName();
+		try {
+			when(MockProducer.initialContext.lookup("java:module/" + classSimpleName)).thenReturn(instance);
+		} catch (NamingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public NewsFacade getNewsFacade() {

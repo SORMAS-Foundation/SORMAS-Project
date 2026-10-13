@@ -1,12 +1,15 @@
 package de.symeda.sormas.api.news.eios;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EiosArticleSourceDto {
 
 	private Long sourceId;
 	private String id;
 	private String name;
-	private String language;
-	private String country;
+	private EiosKeyLabelDto language;
+	private EiosKeyLabelDto country;
 	private String countryIso;
 	private String subject;
 	private String url;
@@ -50,19 +53,19 @@ public class EiosArticleSourceDto {
 		this.name = name;
 	}
 
-	public String getLanguage() {
+	public EiosKeyLabelDto getLanguage() {
 		return language;
 	}
 
-	public void setLanguage(String language) {
+	public void setLanguage(EiosKeyLabelDto language) {
 		this.language = language;
 	}
 
-	public String getCountry() {
+	public EiosKeyLabelDto getCountry() {
 		return country;
 	}
 
-	public void setCountry(String country) {
+	public void setCountry(EiosKeyLabelDto country) {
 		this.country = country;
 	}
 

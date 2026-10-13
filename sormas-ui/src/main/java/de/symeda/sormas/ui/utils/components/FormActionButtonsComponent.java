@@ -36,4 +36,8 @@ public class FormActionButtonsComponent extends HorizontalLayout {
 	public void style(String style) {
 		applyResetButtonsComponent.style(style);
 	}
+
+	public ApplyResetButtonsComponent getApplyResetButtonsComponent() {
+		return applyResetButtonsComponent;
+	}
 }

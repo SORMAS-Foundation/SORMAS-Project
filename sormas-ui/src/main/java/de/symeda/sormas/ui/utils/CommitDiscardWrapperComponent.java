@@ -73,6 +73,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -140,6 +141,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private boolean dirty = false;
 
 	private boolean shortcutsEnabled = false;
+
+	private boolean hideButtons = false;
+
 	protected transient List<ClickShortcut> actions;
 
 	protected CommitDiscardWrapperComponent() {
@@ -151,10 +155,30 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	public CommitDiscardWrapperComponent(C component, Boolean isEditingAllowed, FieldGroup... fieldGroups) {
+		this(component, isEditingAllowed, false, fieldGroups);
+	}
+
+	public CommitDiscardWrapperComponent(C component, Boolean isEditingAllowed, boolean hideButtons, FieldGroup... fieldGroups) {
+		this.hideButtons = hideButtons;
 		setWrappedComponent(component, fieldGroups);
 		if (isEditingAllowed != null) {
 			setEnabled(isEditingAllowed);
 		}
+	}
+
+	/**
+	 * Meant to be used when the wrapper is required due to used API but the inner component(s) already contains the discard/save/delete UI.
+	 * 
+	 * @param component
+	 *            that will be integrated within the wrapper.
+	 * @param fieldGroups
+	 *            additional fields
+	 * @return invisible wrapper: no buttons
+	 * @param <C>
+	 *            component type.
+	 */
+	public static <C extends Component> CommitDiscardWrapperComponent<C> withoutButtons(C component, FieldGroup... fieldGroups) {
+		return new CommitDiscardWrapperComponent<>(component, true, true, fieldGroups);
 	}
 
 	protected void setWrappedComponent(C component, FieldGroup... fieldGroups) {
@@ -177,23 +201,25 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		addComponent(contentPanel);
 		setExpandRatio(contentPanel, 1);
 
-		buttonsPanel = new HorizontalLayout();
-		buttonsPanel.setMargin(false);
-		buttonsPanel.setSpacing(true);
-		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
+		if (!hideButtons) {
+			buttonsPanel = new HorizontalLayout();
+			buttonsPanel.setMargin(false);
+			buttonsPanel.setSpacing(true);
+			buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		Button discardButton = getDiscardButton();
-		buttonsPanel.addComponent(discardButton);
-		buttonsPanel.setComponentAlignment(discardButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(discardButton, 1);
+			Button discardButton = getDiscardButton();
+			buttonsPanel.addComponent(discardButton);
+			buttonsPanel.setComponentAlignment(discardButton, Alignment.BOTTOM_RIGHT);
+			buttonsPanel.setExpandRatio(discardButton, 1);
 
-		Button commitButton = getCommitButton();
-		buttonsPanel.addComponent(commitButton);
-		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(commitButton, 0);
+			Button commitButton = getCommitButton();
+			buttonsPanel.addComponent(commitButton);
+			buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
+			buttonsPanel.setExpandRatio(commitButton, 0);
 
-		addComponent(buttonsPanel);
-		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
+			addComponent(buttonsPanel);
+			setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
+		}
 
 		setShortcutsEnabled(shortcutsEnabled);
 
@@ -298,6 +324,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					}
+				} else if (source instanceof HealthConditionsForm) {
+					final HealthConditionsForm healthConditionsForm = (HealthConditionsForm) source;
+					if (healthConditionsForm.isModified()) {
 						dirty = true;
 					}
 				} else if (source instanceof AccessibleTextField) {

@@ -347,6 +347,26 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
+	public void setServerFeatureEnabled(FeatureType featureType, boolean enabled) {
+
+		if (!featureType.isServerFeature()) {
+			throw new IllegalArgumentException("FeatureType " + featureType + " is not a server feature and cannot be toggled here.");
+		}
+
+		List<FeatureConfiguration> configurations = service.getServerFeatureConfigurationsByType(featureType);
+		if (configurations.isEmpty()) {
+			FeatureConfiguration configuration = FeatureConfiguration.build(featureType, enabled);
+			configuration.setProperties(featureType.getSupportedPropertyDefaults());
+			service.ensurePersisted(configuration);
+		} else {
+			for (FeatureConfiguration configuration : configurations) {
+				configuration.setEnabled(enabled);
+				service.ensurePersisted(configuration);
+			}
+		}
+	}
+
+	@Override
 	public void deleteAllFeatureConfigurations(FeatureConfigurationCriteria criteria) {
 
 		if (criteria == null) {

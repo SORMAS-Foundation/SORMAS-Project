@@ -8,7 +8,9 @@ import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiListCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.aefilink.AefiListComponent;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -58,10 +60,11 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 		ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getImmunizationByUuid(getReference().getUuid());
 
         if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT)
-                && (immunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION
+                && UiUtil.permitted(UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW)
+				&& (immunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION
                 || immunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION_RECOVERY)) {
-            AefiListCriteria aefiListCriteria = new AefiListCriteria.Builder(getReference()).build();
 
+			AefiListCriteria aefiListCriteria = new AefiListCriteria.Builder(getReference()).build();
             AefiListComponent aefiListComponent =
                     new AefiListComponent(aefiListCriteria, this::showUnsavedChangesPopup, isEditAllowed(), immunization.getVaccinations().size());
             CssStyles.style(aefiListComponent, CssStyles.VIEW_SECTION);

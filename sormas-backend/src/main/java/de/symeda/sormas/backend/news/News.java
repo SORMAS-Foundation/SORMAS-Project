@@ -26,6 +26,7 @@ public class News extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "News";
 	public static final String EIOS_ID = "eiosId";
+	public static final String EIOS_URL = "eiosUrl";
 	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
 	public static final String URL = "url";
@@ -37,7 +38,7 @@ public class News extends AbstractDomainObject {
 	public static final String STATUS = "status";
 	public static final String DISEASE = "disease";
 
-	private Long eiosId;
+	private String eiosId;
 	private String comments;
 	private String title;
 	private String url;
@@ -58,11 +59,12 @@ public class News extends AbstractDomainObject {
 		return news;
 	}
 
-	public Long getEiosId() {
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT, unique = true)
+	public String getEiosId() {
 		return eiosId;
 	}
 
-	public void setEiosId(Long eiosId) {
+	public void setEiosId(String eiosId) {
 		this.eiosId = eiosId;
 	}
 

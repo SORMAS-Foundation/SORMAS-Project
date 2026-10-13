@@ -19,7 +19,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.news.NewsCriteria;
 import de.symeda.sormas.api.news.eios.NewsStatus;
-import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -91,24 +90,28 @@ public class NewsListViewModel extends ViewModel {
 				protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
 					CriteriaWithSorting<NewsCriteria> criteriaWithSorting = new CriteriaWithSorting<>();
 					criteriaWithSorting.setCaseCriteria(toNewCriteria(criteria));
-					RetroProvider.connect(context);
-					Call<Page<News>> pageCall = RetroProvider.getNewsFacade().pullNewsIndexList(criteriaWithSorting, offset, NEWS_PAGE_SIZE);
-					Response<Page<News>> response = pageCall.execute();
-					if (response.isSuccessful()) {
-						Page<News> newsListPage = response.body();
-						Log.i("NewsDataSource", "loadNewsList: " + newsListPage);
-						consumer.accept(newsListPage);
-					} else {
-						Log.e("NewsDataSource", "loadNewsList: " + response.errorBody().string());
+					// the connection is shared with the synchronization - reuse it and only close a connection opened here
+					boolean connectedHere = false;
+					if (!RetroProvider.isConnected()) {
+						RetroProvider.connect(context);
+						connectedHere = true;
+					}
+					try {
+						Call<Page<News>> pageCall = RetroProvider.getNewsFacade().pullNewsIndexList(criteriaWithSorting, offset, NEWS_PAGE_SIZE);
+						Response<Page<News>> response = pageCall.execute();
+						if (response.isSuccessful()) {
+							Page<News> newsListPage = response.body();
+							Log.i("NewsDataSource", "loadNewsList: " + newsListPage);
+							consumer.accept(newsListPage);
+						} else {
+							Log.e("NewsDataSource", "loadNewsList: " + response.errorBody().string());
+						}
+					} finally {
+						if (connectedHere) {
+							RetroProvider.disconnect();
+						}
 					}
 				}
-
-				@Override
-				protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-					super.onPostExecute(taskResult);
-					RetroProvider.disconnect();
-				}
-
 			};
 			task.executeOnThreadPool();
 		}

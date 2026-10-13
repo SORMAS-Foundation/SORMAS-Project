@@ -109,3 +109,40 @@ User roles are fully configurable, allowing admins to create new user roles and 
 * Data access based on user rights and user's jurisdiction: [https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-backend/doc/UserDataAccess.md](https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-backend/doc/UserDataAccess.md)
 * Using keycloak as authentication provider: [https://github.com/sormas-foundation/SORMAS-Project/blob/development/docs/SERVER_SETUP.md#keycloak-server](https://github.com/sormas-foundation/SORMAS-Project/blob/development/docs/SERVER_SETUP.md#keycloak-server)
 * The available jurisdiction levels (nation, region, district, health facility, etc.) are defined in Java code [https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/user/JurisdictionLevel.java](https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/user/JurisdictionLevel.java)
+
+## Scheduled Jobs
+
+The execution time of every scheduled job is configurable at runtime under
+**Configuration → System Configuration**, in the **Scheduled jobs** category. Each job has one
+entry named `CRON.<JOB>`.
+
+A value is six space-separated fields in the order `second minute hour day-of-month month
+day-of-week`. Note that this is **not** the five-field Unix cron format: the first field is
+seconds, and a five-field value is rejected. Every field accepts `*`, a number, a range (`1-5`),
+or a list (`1,13`). An increment (`*/10`, `1-5/2`) is additionally accepted, but only in the
+second, minute and hour fields. The day-of-month, month and day-of-week fields do not support
+increments, matching what the underlying EJB timer service allows. Times are interpreted in the
+server's default timezone, unchanged from the previous behaviour.
+
+Only the forms listed above are supported. EJB-specific forms such as `Last`, `1st Fri`, negative
+day-of-month values, and textual names (`Jan`, `Mon`) are not accepted by this parser.
+
+Examples:
+
+| Value | Meaning |
+|---|---|
+| `0 15 1 * * *` | 01:15 every day |
+| `0 */10 * * * *` | every ten minutes |
+| `0 0 * * * *` | every hour, on the hour |
+| `0 0 1,13 * * *` | 01:00 and 13:00 every day |
+
+Leaving a value **empty disables the job entirely**. Disabled jobs are listed with a warning in
+the server log at every startup. Take care when disabling data-lifecycle jobs such as
+`CRON.DELETE_EXPIRED_ENTITIES` or `CRON.ARCHIVE_CASES`, as these may be required for compliance.
+
+Changes take effect as soon as they are saved & no restart is needed. Rescheduling only affects
+future executions, so moving a job from 03:00 to 01:00 at 02:00 on a given day means it will not
+run again until the following day.
+
+If a value is rejected at load time, the job keeps its previous schedule and an error naming the
+configuration key is written to the server log.

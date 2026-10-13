@@ -17,21 +17,36 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_MEDIUM;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import de.symeda.sormas.api.epidata.CaseImportedStatus;
+import de.symeda.sormas.api.epidata.ClusterType;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
+import de.symeda.sormas.api.epidata.TypeOfClinicalService;
+import de.symeda.sormas.api.exposure.InfectionSource;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.NotExposedToApi;
 import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 
 @Entity
 public class EpiData extends AbstractDomainObject {
@@ -43,6 +58,7 @@ public class EpiData extends AbstractDomainObject {
 	public static final String CONTACT_WITH_SOURCE_CASE_KNOWN = "contactWithSourceCaseKnown";
 	public static final String EXPOSURES = "exposures";
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
+	public static final String OTHER_DETAILS = "otherDetails";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -51,10 +67,38 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown largeOutbreaksArea;
 	private YesNoUnknown areaInfectedAnimals;
 
+	private YesNoUnknown importedCase;
+	private CaseImportedStatus caseImportedStatus;
+	private ClusterType clusterType;
+	private String clusterTypeText;
+	private boolean clusterRelated;
+	private String clusterIdentifier;
+
+	// Giardiasis & Cryptosporidiosis specific
+	private Set<InfectionSource> infectionSource;
+	private String infectionSourceText;
+	private ModeOfTransmission modeOfTransmission;
+	private String modeOfTransmissionType;
+
+	private Country country;
+
 	private List<Exposure> exposures = new ArrayList<>();
 	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
 	@NotExposedToApi
 	private Date changeDateOfEmbeddedLists;
+
+	private String otherDetails;
+
+	private YesNoUnknown airportWorker;
+	private YesNoUnknown healthcareProfessional;
+	private String placeOfInfection;
+	private String residenceAtOnset;
+	private ProbableRouteOfTransmission probableRouteOfTransmission;
+	private Country motherCountryOfBirth;
+	private Country motherCitizenship;
+	private YesNoUnknown sexWorker;
+	private YesNoUnknown contactWithSexWorker;
+	private TypeOfClinicalService typeOfClinicalService;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getExposureDetailsKnown() {
@@ -138,4 +182,201 @@ public class EpiData extends AbstractDomainObject {
 	public void setContactWithSourceCaseKnown(YesNoUnknown contactWithSourceCaseKnown) {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseImportedStatus getCaseImportedStatus() {
+		return caseImportedStatus;
+	}
+
+	public void setCaseImportedStatus(CaseImportedStatus caseImportedStatus) {
+		this.caseImportedStatus = caseImportedStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
+	}
+
+	@Column(nullable = false)
+	public boolean isClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	@Column(length = CHARACTER_LIMIT_MEDIUM)
+	@Convert(converter = InfectionSourceSetConverter.class)
+	public Set<InfectionSource> getInfectionSource() {
+		return infectionSource;
+	}
+
+	public void setInfectionSource(Set<InfectionSource> infectionSource) {
+		this.infectionSource = infectionSource;
+	}
+
+	public String getInfectionSourceText() {
+		return infectionSourceText;
+	}
+
+	public void setInfectionSourceText(String infectionSourceText) {
+		this.infectionSourceText = infectionSourceText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getImportedCase() {
+		return importedCase;
+	}
+
+	public void setImportedCase(YesNoUnknown importedCase) {
+		this.importedCase = importedCase;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getOtherDetails() {
+		return otherDetails;
+	}
+
+	public void setOtherDetails(String otherDetails) {
+		this.otherDetails = otherDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPlaceOfInfection() {
+		return placeOfInfection;
+	}
+
+	public void setPlaceOfInfection(String placeOfInfection) {
+		this.placeOfInfection = placeOfInfection;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getResidenceAtOnset() {
+		return residenceAtOnset;
+	}
+
+	public void setResidenceAtOnset(String residenceAtOnset) {
+		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TypeOfClinicalService getTypeOfClinicalService() {
+		return typeOfClinicalService;
+	}
+
+	public void setTypeOfClinicalService(TypeOfClinicalService typeOfClinicalService) {
+		this.typeOfClinicalService = typeOfClinicalService;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ProbableRouteOfTransmission getProbableRouteOfTransmission() {
+		return probableRouteOfTransmission;
+	}
+
+	public void setProbableRouteOfTransmission(ProbableRouteOfTransmission probableRouteOfTransmission) {
+		this.probableRouteOfTransmission = probableRouteOfTransmission;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getMotherCountryOfBirth() {
+		return motherCountryOfBirth;
+	}
+
+	public void setMotherCountryOfBirth(Country motherCountryOfBirth) {
+		this.motherCountryOfBirth = motherCountryOfBirth;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getMotherCitizenship() {
+		return motherCitizenship;
+	}
+
+	public void setMotherCitizenship(Country motherCitizenship) {
+		this.motherCitizenship = motherCitizenship;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSexWorker() {
+		return sexWorker;
+	}
+
+	public void setSexWorker(YesNoUnknown sexWorker) {
+		this.sexWorker = sexWorker;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getContactWithSexWorker() {
+		return contactWithSexWorker;
+	}
+
+	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+		this.contactWithSexWorker = contactWithSexWorker;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
 }

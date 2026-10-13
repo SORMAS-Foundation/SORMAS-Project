@@ -17,10 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.util.Optional;
+
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
@@ -94,7 +97,7 @@ public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 				addDescLabel(
 					firstColumn,
 					ContactDto.CONTACT_OFFICER,
-					contactDto.getContactOfficer(),
+					Optional.ofNullable(contactDto.getContactOfficer()).map(ReferenceDto::getCaption).orElse(""),
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_OFFICER));
 			}
 		}

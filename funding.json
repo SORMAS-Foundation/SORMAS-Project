@@ -1,0 +1,90 @@
+{
+    "$schema": "https://floss.fund/schema/v1.0.0/funding.schema.json#",
+    "version": "v1.0.0",
+    "entity": {
+        "type": "organisation",
+        "role": "owner",
+        "name": "SORMAS Foundation",
+        "email": "info@sormas.org",
+        "phone": "004953139399434",
+        "description": "The SORMAS Foundation is a non-profit organization that aims to support countries in strengthening their surveillance and outbreak management systems through the implementation of SORMAS, as well as to ensure the high-quality standards and sustainability of the software itself.",
+        "webpageUrl": {
+            "url": "https://github.com/SORMAS-Foundation/SORMAS-Project",
+            "wellKnown": ""
+        }
+    },
+    "projects": [{
+        "guid": "sormas",
+        "name": "SORMAS (Surveillance Outbreak Response Management and Analysis System)",
+        "description": "SORMAS is an open-source digital platform for epidemic and pandemic preparedness and response. The system allows epidemiological diseases surveillance, early detection and management of disease outbreaks. It started as a research project in 2015 and has since then been recognized as a Digital Public Good (DPG) and mature digital Global Good (DGG) and is in use in several countries across 5 WHO regions.",
+        "webpageUrl": {
+            "url": "https://github.com/SORMAS-Foundation/SORMAS-Project",
+			"wellKnown": ""
+        },
+        "repositoryUrl": {
+            "url": "https://github.com/SORMAS-Foundation/SORMAS-Project",
+			"wellKnown": ""
+        },
+        "licenses": ["spdx:GPL-3.0"],
+        "tags": ["publichealth", "health", "surveillance", "epidemic", "nonprofit", "globalgood", "digitalpublicgood"]
+    }],
+    "funding": {
+        "channels": [
+            {
+                "guid": "bank",
+                "type": "bank",
+                "address": "",
+                "description": "We accept donations through direct bank transfer. Please e-mail us for more details."
+            },
+            {
+                "guid": "paypal",
+                "type": "payment-provider",
+                "address": "https://paypal.me/sormasfoundation",
+                "description": "We accept donations through PayPal. Please note that we can not provide donation receipts in this case. If you require a donation receipt, please e-mail us for information about making a donation through direct bank transfer."
+            }
+        ],
+        "plans": [
+            {
+                "guid": "infrastructure-hosting",
+                "status": "active",
+                "name": "Hosting Costs for Infrastructure",
+                "description": "This will cover our monthly costs for maintaining Development and QA systems, as well as a publicly available demo system.",
+                "amount": 500,
+                "currency": "EUR",
+                "frequency": "monthly",
+                "channels": ["bank", "paypal"]
+            },
+			{
+                "guid": "community-exchange-systems",
+                "status": "active",
+                "name": "Community Exchange Systems",
+                "description": "This will cover our monthly costs for hosting our public website (https://www.sormas.org) as well as the community exchange platform (https://community.sormas.org) for one month.",
+                "amount": 200,
+                "currency": "EUR",
+                "frequency": "yearly",
+                "channels": ["bank", "paypal"]
+            },
+            {
+                "guid": "developer-full-time-onemonth",
+                "status": "active",
+                "name": "Developer Salary Full-Time Monthly",
+                "description": "This will cover the cost of one developer working full-time on the project for one month.",
+                "amount": 8000,
+                "currency": "EUR",
+                "frequency": "monthly",
+                "channels": ["bank", "paypal"]
+            },
+            {
+                "guid": "angel-plan",
+                "status": "active",
+                "name": "Goodwill plan",
+                "description": "Pay anything you wish to show your support for the project. Thank you for your support!",
+                "amount": 0,
+                "currency": "EUR",
+                "frequency": "one-time",
+                "channels": ["bank", "paypal"]
+            }
+		]
+    }
+}
+

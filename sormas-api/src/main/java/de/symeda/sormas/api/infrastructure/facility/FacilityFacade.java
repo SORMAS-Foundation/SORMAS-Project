@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.ejb.Remote;
 
@@ -32,6 +33,14 @@ import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface FacilityFacade extends InfrastructureFacade<FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityCriteria> {
+
+	List<FacilityReferenceDto> getActiveFacilitiesByType(FacilityType type, boolean includeOtherFacility, boolean includeNoneFacility);
+
+	List<FacilityReferenceDto> getActiveFacilitiesNameMatching(
+		FacilityType type,
+		Pattern pattern,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility);
 
 	List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
 		CommunityReferenceDto community,
@@ -64,7 +73,7 @@ public interface FacilityFacade extends InfrastructureFacade<FacilityDto, Facili
 		FacilityType type,
 		boolean includeArchivedEntities);
 
-	FacilityReferenceDto getByAddress(String street, String postalCode, String city);
+	FacilityReferenceDto getByAddress(String street, String houseNumber, String postalCode, String city);
 
 	List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities);
 

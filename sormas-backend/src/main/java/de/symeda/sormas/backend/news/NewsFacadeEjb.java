@@ -22,8 +22,12 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.news.NewsCriteria;
 import de.symeda.sormas.api.news.NewsDto;
 import de.symeda.sormas.api.news.NewsFacade;
@@ -31,6 +35,7 @@ import de.symeda.sormas.api.news.NewsIndexDto;
 import de.symeda.sormas.api.news.NewsReferenceDto;
 import de.symeda.sormas.api.news.eios.NewsStatus;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
@@ -45,6 +50,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -81,27 +87,36 @@ public class NewsFacadeEjb extends AbstractBaseEjb<News, NewsDto, NewsIndexDto, 
 
 	@Override
 	public List<NewsIndexDto> getIndexList(NewsCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<NewsIndexDto> cq = cb.createQuery(NewsIndexDto.class);
-		Root<News> root = cq.from(News.class);
-		NewsJoin newsJoin = new NewsJoin(root);
-		cq.multiselect(
-			root.get(News.ID),
-			root.get(News.UUID),
-			root.get(News.TITLE),
-			root.get(News.URL),
-			root.get(News.DESCRIPTION),
-			newsJoin.getRegion().get(Region.NAME),
-			newsJoin.getDistrict().get(District.NAME),
-			newsJoin.getCommunity().get(Community.NAME),
-			root.get(News.NEWS_DATE),
-			root.get(News.RISK_LEVEL),
-			root.get(News.STATUS),
-			root.get(News.DISEASE));
 		List<Long> indexListIds = getIndexListIds(criteria, first, max, sortProperties);
-		sortBy(sortProperties, new NewsQueryContext(cb, cq, root));
-		cq.where(root.get(News.ID).in(indexListIds));
-		return em.createQuery(cq).getResultList();
+
+		List<NewsIndexDto> newsIndexList = new ArrayList<>();
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<NewsIndexDto> cq = cb.createQuery(NewsIndexDto.class);
+			Root<News> root = cq.from(News.class);
+			NewsQueryContext queryContext = new NewsQueryContext(cb, cq, root);
+			NewsJoin newsJoin = queryContext.getJoins();
+			cq.multiselect(
+				root.get(News.ID),
+				root.get(News.UUID),
+				root.get(News.TITLE),
+				root.get(News.URL),
+				root.get(News.DESCRIPTION),
+				newsJoin.getRegion().get(Region.NAME),
+				newsJoin.getRegion().get(Region.UUID),
+				newsJoin.getDistrict().get(District.NAME),
+				newsJoin.getDistrict().get(District.UUID),
+				newsJoin.getCommunity().get(Community.NAME),
+				newsJoin.getCommunity().get(Community.UUID),
+				root.get(News.NEWS_DATE),
+				root.get(News.RISK_LEVEL),
+				root.get(News.STATUS),
+				root.get(News.DISEASE));
+			cq.where(root.get(News.ID).in(batchedIds));
+			sortBy(sortProperties, queryContext);
+			newsIndexList.addAll(em.createQuery(cq).getResultList());
+		});
+		return newsIndexList;
 	}
 
 	@Override
@@ -192,7 +207,9 @@ public class NewsFacadeEjb extends AbstractBaseEjb<News, NewsDto, NewsIndexDto, 
 
 	@Override
 	public void validate(NewsDto dto) throws ValidationRuntimeException {
-
+		if (StringUtils.isNotBlank(dto.getLink()) && !DataHelper.isHttpUrl(dto.getLink())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.newsInvalidLink));
+		}
 	}
 
 	@Override

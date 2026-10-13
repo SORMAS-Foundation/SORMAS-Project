@@ -436,13 +436,60 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		/**
 		 * Expected to save the updated data because, it is a really rare edge case that is not handled at the moment.
 		 * Probably won't be a need to handle it.
-		 * 
+		 *
 		 * @see de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer#isValuePseudonymized(Double)
 		 *      and
 		 * @see de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer#isValuePseudonymized(Double)
 		 */
 		assertThat(savedCase.getReportLat(), is(44.432));
 		assertThat(savedCase.getReportLon(), is(22.234));
+	}
+
+	@Test
+	public void testOtherConditionsHiddenWithoutSensitiveDataRight() {
+		// A user without SEE_SENSITIVE_DATA_IN_JURISDICTION must not see otherConditions,
+		// regardless of jurisdiction — it is @SensitiveData and pseudonymized on the backend.
+		loginWith(nationalAdmin);
+		UserRoleReferenceDto noSensitiveDataRole = creator.createUserRoleWithRequiredRights(
+			"ContactPersonNoSensitive",
+			JurisdictionLevel.DISTRICT,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.CLINICAL_COURSE_VIEW,
+			UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION);
+
+		UserDto contactPerson =
+			creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Contact", "Person", noSensitiveDataRole);
+
+		// Create case with otherConditions set at creation time
+		CaseDataDto caze = creator.createCase(
+			user1.toReference(),
+			createPerson().toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.NOT_CLASSIFIED,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf1,
+			c -> {
+				c.setRegion(rdcf1.region);
+				c.setDistrict(rdcf1.district);
+				c.setCommunity(rdcf1.community);
+				c.setReportingUser(user1.toReference());
+				c.getHealthConditions().setOtherConditions("Sensitive pre-existing condition");
+			});
+
+		// user without sensitive data right: healthConditions is @SensitiveData so the entire field is pseudonymized (null),
+		// and isPseudonymized=true because sensitive data was hidden
+		loginWith(contactPerson);
+		CaseDataDto result = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertThat(result.isPseudonymized(), is(true));
+		assertThat(result.getHealthConditions(), is(nullValue()));
+
+		// nationalAdmin has all rights including SEE_SENSITIVE_DATA: otherConditions must be visible
+		loginWith(nationalAdmin);
+		CaseDataDto resultWithRight = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertThat(resultWithRight.isPseudonymized(), is(false));
+		assertThat(resultWithRight.getHealthConditions().getOtherConditions(), is("Sensitive pre-existing condition"));
 	}
 
 	@Test

@@ -14,19 +14,19 @@ jobs:
 
     steps:
       - name: Checkout development branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           path: head
 
       - name: Checkout master branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           ref: master
           path: base
 
-      # --fail-on-incompatible is also possible
+      # --fail-on-changed is also possible (fails on any change, including backward-compatible)
       - name: Run OpenAPI Diff for external journal API
         run: |
-          java -jar /app/openapi-diff.jar --fail-on-changed base/sormas-rest/swagger.yaml \
+          java -jar /app/openapi-diff.jar --fail-on-incompatible base/sormas-rest/swagger.yaml \
           head/sormas-rest/swagger.yaml
           

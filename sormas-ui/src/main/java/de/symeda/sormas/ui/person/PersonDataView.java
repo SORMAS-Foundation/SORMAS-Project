@@ -53,13 +53,9 @@ public class PersonDataView extends AbstractEditAllowedDetailView<PersonReferenc
 		CustomLayout layout = addPageLayout(container, editComponent);
 		setSubComponent(container);
 
-		addSideComponents(layout, null, null, getReference(), this::showUnsavedChangesPopup, isEditAllowed);
+		addSideComponents(layout, null, null, getReference(), null, null, this::showUnsavedChangesPopup, isEditAllowed);
 
-		setEditPermission(
-			editComponent,
-			UiUtil.permitted(UserRight.PERSON_EDIT),
-			PersonDto.ADDRESSES,
-			PersonDto.PERSON_CONTACT_DETAILS);
+		setEditPermission(editComponent, UiUtil.permitted(UserRight.PERSON_EDIT), PersonDto.ADDRESSES, PersonDto.PERSON_CONTACT_DETAILS);
 	}
 
 	@Override

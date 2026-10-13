@@ -39,9 +39,12 @@ import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
 import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
+import de.symeda.sormas.ui.environment.EnvironmentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
 import de.symeda.sormas.ui.events.groups.EventGroupListComponent;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717AssessmentSideComponent;
+import de.symeda.sormas.ui.events.sevenoneseven.Event717AssessmentView;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceShareComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -67,7 +70,9 @@ public class EventDataView extends AbstractEventView {
 	public static final String SUBORDINATE_EVENTS_LOC = "subordinate-events";
 	public static final String SUPERORDINATE_EVENT_LOC = "superordinate-event";
 	public static final String EVENT_GROUPS_LOC = "event-groups";
+	public static final String ENVIRONMENT_LOC = "environment";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
+	public static final String EVENT_717_ASSESSMENT_LOC = "event717Assessment";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
 	private ExternalSurveillanceShareComponent externalSurvToolLayout;
@@ -94,6 +99,7 @@ public class EventDataView extends AbstractEventView {
 
 		LayoutWithSidePanel layout = new LayoutWithSidePanel(
 			editComponent,
+			EVENT_717_ASSESSMENT_LOC,
 			TASKS_LOC,
 			ACTIONS_LOC,
 			DOCUMENTS_LOC,
@@ -101,6 +107,7 @@ public class EventDataView extends AbstractEventView {
 			SUPERORDINATE_EVENT_LOC,
 			SUBORDINATE_EVENTS_LOC,
 			EVENT_GROUPS_LOC,
+			ENVIRONMENT_LOC,
 			SORMAS_TO_SORMAS_LOC,
 			ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC,
 			SHORTCUT_LINKS_LOC);
@@ -119,6 +126,19 @@ public class EventDataView extends AbstractEventView {
 				new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease(), this::showUnsavedChangesPopup, isEditAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
+		}
+
+		if (UiUtil.permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_VIEW)) {
+			EnvironmentListComponent environmentList =
+				new EnvironmentListComponent(event.toReference(), isEditAllowed, this::showUnsavedChangesPopup);
+			environmentList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addSidePanelComponent(environmentList, ENVIRONMENT_LOC);
+		}
+
+		if (Event717AssessmentView.isAvailable()) {
+			Event717AssessmentSideComponent event717Assessment = new Event717AssessmentSideComponent(getEventRef(), this::showUnsavedChangesPopup);
+			event717Assessment.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addSidePanelComponent(event717Assessment, EVENT_717_ASSESSMENT_LOC);
 		}
 
 		ActionStatsComponent actionList = new ActionStatsComponent(ActionContext.EVENT, getEventRef());

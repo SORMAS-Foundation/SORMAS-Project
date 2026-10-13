@@ -47,7 +47,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
@@ -138,8 +137,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
 
 		setRequired(true, CampaignDto.UUID, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.NAME);
-
-		FieldHelper.addSoftRequiredStyle(description);
 
 		final HorizontalLayout usageLayout = new HorizontalLayout();
 		usageLayout.setWidthFull();

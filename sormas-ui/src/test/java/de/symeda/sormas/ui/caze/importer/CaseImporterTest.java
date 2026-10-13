@@ -33,8 +33,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
@@ -459,11 +461,11 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 
 		List<PathogenTestDto> case3Sample2Tests = FacadeProvider.getPathogenTestFacade().getAllBySample(case3Samples.get(1).toReference());
 		assertEquals(2, case3Sample2Tests.size());
-		assertEquals(PathogenTestType.ANTIGEN_DETECTION, case3Sample2Tests.get(0).getTestType());
-		assertEquals(PathogenTestResultType.PENDING, case3Sample2Tests.get(0).getTestResult());
+		Map<PathogenTestType, PathogenTestResultType> case3Sample2ResultsByType =
+			case3Sample2Tests.stream().collect(Collectors.toMap(PathogenTestDto::getTestType, PathogenTestDto::getTestResult));
 
-		assertEquals(PathogenTestType.RAPID_TEST, case3Sample2Tests.get(1).getTestType());
-		assertEquals(PathogenTestResultType.NEGATIVE, case3Sample2Tests.get(1).getTestResult());
+		assertEquals(PathogenTestResultType.PENDING, case3Sample2ResultsByType.get(PathogenTestType.LATERAL_FLOW_ASSAY));
+		assertEquals(PathogenTestResultType.NEGATIVE, case3Sample2ResultsByType.get(PathogenTestType.PCR_RT_PCR));
 	}
 
 	@Test

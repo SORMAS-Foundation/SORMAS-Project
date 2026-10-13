@@ -181,6 +181,7 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	@ElementCollection(fetch = FetchType.LAZY)
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = TABLE_NAME_EMAIL_NOTIFICATIONS,
 		joinColumns = @JoinColumn(name = "userrole_id", referencedColumnName = UserRole.ID, nullable = false),
@@ -197,6 +198,7 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	@ElementCollection(fetch = FetchType.LAZY)
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = TABLE_NAME_SMS_NOTIFICATIONS,
 		joinColumns = @JoinColumn(name = "userrole_id", referencedColumnName = UserRole.ID, nullable = false),

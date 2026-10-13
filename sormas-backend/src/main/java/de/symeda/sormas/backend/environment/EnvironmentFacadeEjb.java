@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -49,6 +50,9 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -72,6 +76,9 @@ public class EnvironmentFacadeEjb
 
 	public EnvironmentFacadeEjb() {
 	}
+
+	@EJB
+	private EventService eventService;
 
 	@Inject
 	public EnvironmentFacadeEjb(EnvironmentService service) {
@@ -121,6 +128,36 @@ public class EnvironmentFacadeEjb
 
 		cq.select(cb.countDistinct(environment));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public List<EnvironmentIndexDto> getEnvironmentsByEvent(EnvironmentCriteria environmentCriteria) {
+		Predicate filter = null;
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EnvironmentIndexDto> cq = cb.createQuery(EnvironmentIndexDto.class);
+		Root<Environment> environment = cq.from(Environment.class);
+		cq.multiselect(
+			environment.get(Environment.UUID),
+			environment.get(Environment.EXTERNAL_ID),
+			environment.get(Environment.ENVIRONMENT_NAME),
+			environment.get(Environment.ENVIRONMENT_MEDIA),
+			environment.get(Environment.REPORT_DATE),
+			environment.get(Environment.INVESTIGATION_STATUS),
+			environment.get(Environment.DELETION_REASON),
+			environment.get(Environment.OTHER_DELETION_REASON));
+
+		EnvironmentQueryContext queryContext = new EnvironmentQueryContext(cb, cq, environment);
+		EnvironmentJoins joins = queryContext.getJoins();
+		Join<Environment, Event> eventJoin = joins.getEvents();
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(eventJoin.get(Event.UUID), environmentCriteria.getEvent().getUuid()));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+		return em.createQuery(cq).getResultList();
+
 	}
 
 	@Override
@@ -203,8 +240,12 @@ public class EnvironmentFacadeEjb
 		CriteriaQuery<?> cq = environmentQueryContext.getQuery();
 		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
+			Join<Location, Region> region = environmentQueryContext.getJoins().getLocationJoins().getRegion();
+			Join<Location, District> district = environmentQueryContext.getJoins().getLocationJoins().getDistrict();
+			Join<Location, Community> community = environmentQueryContext.getJoins().getLocationJoins().getCommunity();
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				Expression<?> expression = null;
 				switch (sortProperty.propertyName) {
 				case EnvironmentIndexDto.UUID:
 				case EnvironmentIndexDto.EXTERNAL_ID:
@@ -215,15 +256,12 @@ public class EnvironmentFacadeEjb
 					expression = environmentQueryContext.getRoot().get(sortProperty.propertyName);
 					break;
 				case EnvironmentIndexDto.REGION:
-					Join<Location, Region> region = environmentQueryContext.getJoins().getLocationJoins().getRegion();
 					expression = region.get(Region.NAME);
 					break;
 				case EnvironmentIndexDto.DISTRICT:
-					Join<Location, District> district = environmentQueryContext.getJoins().getLocationJoins().getDistrict();
 					expression = district.get(District.NAME);
 					break;
 				case EnvironmentIndexDto.COMMUNITY:
-					Join<Location, Community> community = environmentQueryContext.getJoins().getLocationJoins().getCommunity();
 					expression = community.get(Community.NAME);
 					break;
 				case EnvironmentIndexDto.POSTAL_CODE:
@@ -233,11 +271,23 @@ public class EnvironmentFacadeEjb
 					Join<Environment, Location> location = environmentQueryContext.getJoins().getLocation();
 					expression = location.get(sortProperty.propertyName);
 					break;
+				case EnvironmentIndexDto.ENVIRONMENT_LOCATION:
+					order.addAll(
+						orderBuilder.build(
+							cb.lower(region.get(Region.NAME)),
+							cb.lower(district.get(District.NAME)),
+							cb.lower(community.get(Community.NAME))));
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-				selections.add(expression);
+				if (expression != null) {
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					selections.add(expression);
+				} else {
+					selections.addAll(order.stream().map(Order::getExpression).collect(Collectors.toList()));
+				}
+
 			}
 			cq.orderBy(order);
 		} else {
@@ -312,6 +362,16 @@ public class EnvironmentFacadeEjb
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
+		target.setVectorType(EnvironmentMedia.VECTORS.equals(source.getEnvironmentMedia()) ? source.getVectorType() : null);
+
+		if (source.getEventReferenceDtos() != null) {
+			target.setEvents(
+				source.getEventReferenceDtos()
+					.stream()
+					.filter(Objects::nonNull)
+					.map(e -> eventService.getByReferenceDto(e))
+					.collect(Collectors.toList()));
+		}
 
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
@@ -343,7 +403,11 @@ public class EnvironmentFacadeEjb
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
-
+		target.setVectorType(source.getVectorType());
+		if (source.getEvents() != null) {
+			target.setEventReferenceDtos(
+				source.getEvents().stream().filter(Objects::nonNull).map(EventFacadeEjb::toReferenceDto).collect(Collectors.toList()));
+		}
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
@@ -456,6 +520,19 @@ public class EnvironmentFacadeEjb
 		}
 
 		return service.getAllActiveUuids(user);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_LINK)
+	public void unlinkEnvironment(EnvironmentIndexDto environmentIndexDto, String eventUuid) {
+		if (environmentIndexDto != null && eventUuid != null) {
+			Event event = eventService.getByUuid(eventUuid);
+			Environment environment = service.getByUuid(environmentIndexDto.getUuid());
+			event.unlinkEnvironment(environment);
+			service.ensurePersisted(environment);
+		} else {
+			throw new IllegalArgumentException("Invalid environment UUID : " + environmentIndexDto.getUuid() + " and event UUID : " + eventUuid);
+		}
 	}
 
 	@Override

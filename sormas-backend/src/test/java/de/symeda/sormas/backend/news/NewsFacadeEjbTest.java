@@ -19,7 +19,9 @@ import de.symeda.sormas.api.news.eios.NewsStatus;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -112,6 +114,60 @@ class NewsFacadeEjbTest extends AbstractBeanTest {
 		List<NewsIndexDto> newsIndexList = newsFacade.getIndexList(criteria, 0, 100, null);
 		Assertions.assertEquals(1, newsIndexList.size());
 
+	}
+
+	@Test
+	void testGetIndexListWithoutResults() {
+		loginWith(nationalUser);
+		NewsFacade newsFacade = getNewsFacade();
+		Assertions.assertTrue(newsFacade.getIndexList(new NewsCriteria(), 0, 100, null).isEmpty());
+
+		newsFacade.save(createNews(null, null, null));
+		// a page beyond the last result must not run an "IN ()" query
+		Assertions.assertTrue(newsFacade.getIndexList(new NewsCriteria(), 100, 100, null).isEmpty());
+	}
+
+	@Test
+	void testSaveRejectsNonHttpLink() {
+		loginWith(nationalUser);
+		NewsDto news = createNews(null, null, null);
+		news.setLink("javascript:alert(document.cookie)");
+		Assertions.assertThrows(ValidationRuntimeException.class, () -> getNewsFacade().save(news));
+
+		news.setLink("https://example.com/article");
+		Assertions.assertEquals("https://example.com/article", getNewsFacade().save(news).getLink());
+	}
+
+	@Test
+	void testEndDateFilterIncludesTheWholeDay() {
+		loginWith(nationalUser);
+		NewsDto news = createNews(null, null, null);
+		news.setNewsDate(DateHelper.addSeconds(DateHelper.getStartOfDay(new Date()), 16 * 3600));
+		getNewsFacade().save(news);
+
+		NewsCriteria criteria = new NewsCriteria();
+		// the UI passes the selected day at midnight
+		criteria.setStartDate(DateHelper.getStartOfDay(new Date()));
+		criteria.setEndDate(DateHelper.getStartOfDay(new Date()));
+		Assertions.assertEquals(1, getNewsFacade().count(criteria));
+	}
+
+	@Test
+	void testIndexListContainsJurisdictionUuids() {
+		loginWith(nationalUser);
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		getNewsFacade().save(createNews(rdcf.region, rdcf.district, rdcf.community));
+
+		NewsIndexDto news = getNewsFacade().getIndexList(new NewsCriteria(), 0, 100, null).get(0);
+		Assertions.assertEquals(rdcf.region.getUuid(), news.getRegionUuid());
+		Assertions.assertEquals(rdcf.district.getUuid(), news.getDistrictUuid());
+		Assertions.assertEquals(rdcf.community.getUuid(), news.getCommunityUuid());
+		Assertions.assertEquals("Region", news.getRegion());
+	}
+
+	@Test
+	void testNewNewsIsPending() {
+		Assertions.assertEquals(NewsStatus.PENDING, NewsDto.build().getStatus());
 	}
 
 	@NotNull

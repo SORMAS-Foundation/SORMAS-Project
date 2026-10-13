@@ -29,9 +29,19 @@ import de.symeda.sormas.api.utils.UtilDate;
 
 public enum ApproximateAgeType {
 
-	YEARS,
-	MONTHS,
-	DAYS;
+	YEARS("Y"),
+	MONTHS("M"),
+	DAYS("D");
+
+	private String code;
+
+	ApproximateAgeType(String code) {
+		this.code = code;
+	}
+
+	public String getCode() {
+		return code;
+	}
 
 	@Override
 	public String toString() {

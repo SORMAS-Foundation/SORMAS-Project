@@ -22,7 +22,8 @@ public enum DocumentRelatedEntityType {
 	CONTACT,
 	ACTION,
 	EVENT,
-	TRAVEL_ENTRY;
+	TRAVEL_ENTRY,
+	SURVEY;
 
 	@Override
 	public String toString() {

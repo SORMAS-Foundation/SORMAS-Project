@@ -116,7 +116,7 @@ Feature: mSERS functionalities
     Then I select Diarrhea w/ Dehydration (< 5) disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
-    Then I select Diphteria disease from Disease combobox in mSers directory page
+    Then I select Diphtheria disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0
     Then I select FHA (Functional Hypothalamic Amenorrhea) disease from Disease combobox in mSers directory page

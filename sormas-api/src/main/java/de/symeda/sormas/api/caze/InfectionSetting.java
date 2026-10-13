@@ -16,9 +16,11 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
 
 public enum InfectionSetting {
 
+	@ValueMapperDefault
 	UNKNOWN(null),
 	AMBULATORY(null),
 	MEDICAL_PRACTICE(AMBULATORY),

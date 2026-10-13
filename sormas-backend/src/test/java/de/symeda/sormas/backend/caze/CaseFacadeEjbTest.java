@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.caze;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -91,6 +92,7 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -531,9 +533,32 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// Follow-up status and duration should be set to no follow-up and null
 		// respectively because
 		// Measles does not require a follow-up
+		// As per latest commit 199db4db282aee51ffed6571fdab208df0569626 Measles required followup
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21), UtilDate.toLocalDate(contact.getFollowUpUntil()));
+
+		caze.setDisease(Disease.DENGUE);
+		getCaseFacade().save(caze);
+
+		// Dengue does not require a follow-up
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertNull(contact.getFollowUpUntil());
+
+		// IPI does not require a follow-up
+		caze.setDisease(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+		getCaseFacade().save(caze);
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
+		assertNull(contact.getFollowUpUntil());
+
+		// IMI required the follow-up
+		caze.setDisease(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		getCaseFacade().save(caze);
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(7), UtilDate.toLocalDate(contact.getFollowUpUntil()));
 	}
 
 	@Test
@@ -653,6 +678,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			caze.getDisease(),
 			DateHelper.subtractDays(new Date(), 1),
 			DateHelper.addDays(new Date(), 1),
+			null,
 			null);
 
 		List<MapCaseDto> mapCaseDtos = getCaseFacade().getCasesForMap(
@@ -661,6 +687,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			caze.getDisease(),
 			DateHelper.subtractDays(new Date(), 1),
 			DateHelper.addDays(new Date(), 1),
+			null,
 			null);
 
 		// List should have one entry
@@ -1040,7 +1067,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			surveillanceSupervisor.toReference(),
 			SampleMaterial.CRUST,
 			rdcf.facility);
-		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.LATERAL_FLOW_ASSAY, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 		ImmunizationDto immunization = creator.createImmunization(
 			caze.getDisease(),
@@ -1053,7 +1080,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 10),
 			DateHelper.subtractDays(new Date(), 5),
 			DateHelper.subtractDays(new Date(), 1),
-			null);
+			DateHelper.addDays(new Date(), 1));
 		creator.createImmunization(
 			caze.getDisease(),
 			caze.getPerson(),
@@ -1348,6 +1375,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cases1.add(caze1);
 		assertEquals(getCaseFacade().getRelevantCasesForVaccination(firstRelevantVaccinationForCase1), cases1);
 		assertTrue(getCaseFacade().getRelevantCasesForVaccination(notRelevantVaccinationForCase1).isEmpty());
+		// IPI vaccination test
+		final Date today = new Date();
+		caze1 = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			cazePerson1.toReference(),
+			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addDays(today, -1),
+			rdcf);
+		cases1.add(caze1);
+		VaccinationDto ipiVaccincation = creator.createVaccinationWithDetails(
+			caze1.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 7),
+			Vaccine.PNEUMOVAX_23_MERCK,
+			VaccineManufacturer.MERCK,
+			VaccinationInfoSource.UNKNOWN,
+			"inn1",
+			"123",
+			"code123",
+			"1");
+		assertEquals(getCaseFacade().getRelevantCasesForVaccination(ipiVaccincation), cases1);
 	}
 
 	/**
@@ -3396,6 +3447,196 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(caze.getDisease(), is(Disease.ANTHRAX));
 		assertThat(caze.getDiseaseVariant(), is(nullValue()));
 		assertThat(caze.getDiseaseVariantDetails(), is(nullValue()));
+	}
+
+	@Test
+	public void testLabResultsFieldsRoundTrip() {
+		// Guards the hand-written CaseFacadeEjb mapper for the lab-results tab header fields (#13948).
+		CaseDataDto caze = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Lab", "Case").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		// Truncate to day granularity so the round-trip assertion is not brittle to sub-second precision
+		// differences in DB/JPA timestamp handling.
+		Date dateOther = DateHelper.getStartOfDay(new Date());
+		caze.setDateOther(dateOther);
+		caze.setDateOtherDetails("Sampling visit");
+		caze.setExternalComments("Lab sent confirmation");
+		getCaseFacade().save(caze);
+
+		CaseDataDto reloaded = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(dateOther, reloaded.getDateOther());
+		assertEquals("Sampling visit", reloaded.getDateOtherDetails());
+		assertEquals("Lab sent confirmation", reloaded.getExternalComments());
+	}
+
+	@Test
+	public void testFilterCasesByTestResultAndSerogroup() {
+		// Case A: a POSITIVE sample whose pathogen test has serotype "Serogroup B".
+		CaseDataDto caseA = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Filter", "CaseA").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SampleDto sampleA = creator.createSample(
+			caseA.toReference(),
+			surveillanceSupervisor.toReference(),
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+		creator.createPathogenTest(sampleA.toReference(), surveillanceSupervisor.toReference(), t -> {
+			t.setTestedDisease(Disease.EVD);
+			t.setLab(rdcf.facility);
+			t.setSerotypeText("Serogroup B");
+		});
+
+		// Case B: a NEGATIVE sample whose pathogen test has serotype "Type A".
+		CaseDataDto caseB = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Filter", "CaseB").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SampleDto sampleB = creator.createSample(
+			caseB.toReference(),
+			surveillanceSupervisor.toReference(),
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.NEGATIVE));
+		creator.createPathogenTest(sampleB.toReference(), surveillanceSupervisor.toReference(), t -> {
+			t.setTestedDisease(Disease.EVD);
+			t.setLab(rdcf.facility);
+			t.setSerotypeText("Type A");
+		});
+
+		// Test-result filter narrows to the matching case only.
+		List<CaseIndexDto> positives =
+			getCaseFacade().getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE), 0, 100, null);
+		assertEquals(1, positives.size());
+		assertEquals(caseA.getUuid(), positives.get(0).getUuid());
+
+		// Serogroup filter is case-insensitive and partial (matches "Serogroup B" via "serogroup").
+		List<CaseIndexDto> serogroupMatches = getCaseFacade().getIndexList(new CaseCriteria().serogroup("serogroup"), 0, 100, null);
+		assertEquals(1, serogroupMatches.size());
+		assertEquals(caseA.getUuid(), serogroupMatches.get(0).getUuid());
+
+		List<CaseIndexDto> typeAMatches = getCaseFacade().getIndexList(new CaseCriteria().serogroup("type a"), 0, 100, null);
+		assertEquals(1, typeAMatches.size());
+		assertEquals(caseB.getUuid(), typeAMatches.get(0).getUuid());
+
+		// Mismatched combination returns nothing.
+		assertEquals(
+			0,
+			getCaseFacade().getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).serogroup("type a"), 0, 100, null)
+				.size());
+
+		// Case C: the result and the serotype live on DIFFERENT samples. The two filters are independent
+		// EXISTS subqueries (result on any sample, serogroup on any sample's test), so a case matches when
+		// each condition is satisfied by a different sample. This documents that intended cross-sample
+		// semantics.
+		CaseDataDto caseC = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Filter", "CaseC").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		creator.createSample(
+			caseC.toReference(),
+			surveillanceSupervisor.toReference(),
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+		SampleDto caseCSecondSample = creator.createSample(
+			caseC.toReference(),
+			surveillanceSupervisor.toReference(),
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.NEGATIVE));
+		creator.createPathogenTest(caseCSecondSample.toReference(), surveillanceSupervisor.toReference(), t -> {
+			t.setTestedDisease(Disease.EVD);
+			t.setLab(rdcf.facility);
+			t.setSerotypeText("Cross C");
+		});
+
+		List<CaseIndexDto> crossSampleMatches =
+			getCaseFacade().getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).serogroup("cross c"), 0, 100, null);
+		assertEquals(1, crossSampleMatches.size());
+		assertEquals(caseC.getUuid(), crossSampleMatches.get(0).getUuid());
+	}
+
+	@Test
+	public void testFilterByHasDoctorDeclaration() {
+		PersonDto personDto = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caseWithDoctorDeclaration = creator.createCase(
+			surveillanceOfficer.toReference(),
+			personDto.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		SurveillanceReportDto doctorDeclaration =
+			SurveillanceReportDto.build(caseWithDoctorDeclaration.toReference(), surveillanceOfficer.toReference());
+		doctorDeclaration.setReportingType(ReportingType.DOCTOR);
+		doctorDeclaration.setReportDate(new Date());
+		getSurveillanceReportFacade().save(doctorDeclaration);
+
+		final CaseCriteria criteriaWithDoctorDeclaration = new CaseCriteria();
+		criteriaWithDoctorDeclaration.setHasDoctorDeclaration(Boolean.TRUE);
+		List<CaseIndexDto> casesWithDoctorDeclaration = getCaseFacade().getIndexList(criteriaWithDoctorDeclaration, 0, 100, null);
+		assertThat(casesWithDoctorDeclaration, hasSize(1));
+		assertEquals(caseWithDoctorDeclaration.getUuid(), casesWithDoctorDeclaration.get(0).getUuid());
+	}
+
+	@Test
+	public void testFilterByWithoutDoctorDeclaration() {
+		// Create a case without doctor declaration
+		PersonDto personDto1 = creator.createPerson("Case", "Person1", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caseWithoutDoctorDeclaration = creator.createCase(
+			surveillanceOfficer.toReference(),
+			personDto1.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		// Create a case with doctor declaration
+		PersonDto personDto2 = creator.createPerson("Case", "Person2", Sex.FEMALE, 1990, 1, 1);
+		CaseDataDto caseWithDoctorDeclaration = creator.createCase(
+			surveillanceOfficer.toReference(),
+			personDto2.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SurveillanceReportDto doctorDeclaration =
+			SurveillanceReportDto.build(caseWithDoctorDeclaration.toReference(), surveillanceOfficer.toReference());
+		doctorDeclaration.setReportingType(ReportingType.DOCTOR);
+		doctorDeclaration.setReportDate(new Date());
+		getSurveillanceReportFacade().save(doctorDeclaration);
+
+		// Test filter for cases WITHOUT doctor declaration
+		final CaseCriteria criteriaWithoutDoctorDeclaration = new CaseCriteria();
+		criteriaWithoutDoctorDeclaration.setWithoutDoctorDeclaration(Boolean.TRUE);
+		List<CaseIndexDto> casesWithoutDoctorDeclaration = getCaseFacade().getIndexList(criteriaWithoutDoctorDeclaration, 0, 100, null);
+		assertThat(casesWithoutDoctorDeclaration, hasSize(1));
+		assertEquals(caseWithoutDoctorDeclaration.getUuid(), casesWithoutDoctorDeclaration.get(0).getUuid());
+
+		// Verify that the case WITH doctor declaration is not in the results
+		assertThat(
+			casesWithoutDoctorDeclaration.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
+			not(contains(caseWithDoctorDeclaration.getUuid())));
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

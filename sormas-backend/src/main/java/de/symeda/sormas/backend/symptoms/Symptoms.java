@@ -28,9 +28,16 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.symptoms.ClinicalManifestation;
+import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
+import de.symeda.sormas.api.symptoms.DiagnosisType;
+import de.symeda.sormas.api.symptoms.InfectionSite;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectiousness;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisStage;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -88,11 +95,15 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState otherHemorrhagicSymptoms;
 	private String otherHemorrhagicSymptomsText;
 	private SymptomState skinRash;
+	private Date skinRashOnsetDate;
 	private SymptomState neckStiffness;
 	private SymptomState soreThroat;
+	private SymptomState apnoea;
 	private SymptomState cough;
 	private SymptomState coughWithSputum;
 	private SymptomState coughWithHeamoptysis;
+	private SymptomState coughingBouts;
+	private SymptomState coughsProvokeVomiting;
 	private SymptomState runnyNose;
 	private SymptomState difficultyBreathing;
 	private SymptomState chestPain;
@@ -138,6 +149,20 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState lymphadenopathyInguinal;
 	private SymptomState lymphadenopathyAxillary;
 	private SymptomState lymphadenopathyCervical;
+	private SymptomState bronchitis;
+	private SymptomState myocarditis;
+	private SymptomState pericarditis;
+	private SymptomState thrombocytopenia;
+	private SymptomState lymphadenopathySuboccipital;
+	private SymptomState lymphadenopathyRetroauricular;
+	private SymptomState stillbornInfant;
+	private SymptomState unknownClinicalPresentation;
+	private SymptomState neurologicalComplications;
+	private SymptomState lowBirthWeight;
+	private SymptomState hepatitis;
+	private SymptomState thrombocytopenicPurpura;
+	private SymptomState rubellaArthritis;
+	private SymptomState greggsTriad;
 	private SymptomState chillsSweats;
 	private SymptomState bedridden;
 	private SymptomState oralUlcers;
@@ -194,6 +219,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState lossOfTaste;
 	private SymptomState lossOfSmell;
 	private SymptomState wheezing;
+	private SymptomState whoopSound;
 	private SymptomState skinUlcers;
 	private SymptomState inabilityToWalk;
 	private SymptomState inDrawingOfChestWall;
@@ -202,6 +228,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState shivering;
 	private SymptomState fastHeartRate;
 	private SymptomState oxygenSaturationLower94;
+	private SymptomState nocturnalCough;
 
 	private SymptomState feverishFeeling;
 	private SymptomState weakness;
@@ -236,6 +263,147 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState otherComplications;
 	private String otherComplicationsText;
 
+	// Clinical Presentation
+	private SymptomState asymptomatic;
+	private SymptomState hemorrhagicRash;
+	private SymptomState arthritis;
+	private SymptomState meningitis;
+	private SymptomState septicaemia;
+	private SymptomState otherClinicalPresentation;
+	private String otherClinicalPresentationText;
+
+	private DiagnosisType diagnosis;
+	private InfectionSite majorSite;
+	private String otherMajorSiteDetails;
+	private InfectionSite minorSite;
+	private String otherMinorSiteDetails;
+	private YesNoUnknown dateOfOnsetKnown;
+	private ClinicalPresentationStatus clinicalPresentationStatus;
+	// Added in case, enrolling person is not known about the symptoms, but sure of the case.
+	private SymptomState unknownSymptom;
+	private SymptomState acuteEncephalitis;
+
+	// RSV-specific symptoms
+	private SymptomState difficultyBreathingDuringMeals;
+	private SymptomState paradoxicalBreathing;
+	private SymptomState respiratoryFatigue;
+	private YesNoUnknown parentTimeOffWork;
+	private Float timeOffWorkDays;
+
+	// Giardia & Cryptosporidiosis-specific symptoms
+	private SymptomState eggyBurps;
+	private SymptomState weightLoss;
+	private Float weightLossAmount;
+	private SymptomState symptomCurrentStatus;
+	private Integer durationOfSymptoms;
+	private SymptomState reoccurrence;
+	private SymptomState overnightStayRequired;
+	private SymptomState bloating;
+	// Malaria and Dengue-specific symptoms
+	private SymptomState clammySkin;
+	private SymptomState coldSkin;
+	private SymptomState encephalitis;
+	private SymptomState guillainBarreSyndrome;
+	private SymptomState lethargy;
+	private SymptomState confusion;
+	private SymptomState persistentVomiting;
+	private SymptomState restlessness;
+	private SymptomState acuteBleeding;
+	private SymptomState severeOrganImpairment;
+	private SymptomState plasmaLeakageSign;
+	private SymptomState polydipsia;
+	private SymptomState syndromicFlu;
+	private SymptomState anemia;
+	private SymptomState alteredLevelOfConsciousness;
+	private SymptomState severeAnemia;
+	private SymptomState metabolicAcidosis;
+	private SymptomState acuteKidneyFailure;
+	private Date offsetDate;
+	private ClinicalManifestation clinicalManifestation;
+	private String clinicalManifestationText;
+	private SymptomState cerebralMalaria;
+	private SymptomState scantHemorrhage;
+	private YesNoUnknown otherNeurologicalSymptoms;
+	private String otherNeurologicalSymptomsText;
+	private SymptomState disseminatedIntraVascularCoagulation;
+	private SymptomState fatalRisk;
+	private SymptomState constipation;
+	private SymptomState dysuria;
+	private SymptomState eyeIrritation;
+	private SymptomState tenesmus;
+	private SymptomState haemolyticUremicSyndrome;
+	private SymptomState bloodyDiarrhea;
+	private SymptomState wateryDiarrhea;
+	// Unilateral or bilateral swelling of the parotid gland or other salivary glands
+	private SymptomState salivarySwelling;
+	private SymptomState orchitis;
+	private SymptomState pancreatitis;
+	private YesNoUnknown noComplications;
+	private YesNoUnknown unknownComplications;
+	private YesNoUnknown otherGeneralSymptoms;
+	private String otherGeneralSymptomsText;
+
+	// Syphilis-specific symptoms
+	private SymptomState patchyAlopecia;
+	private SymptomState chancre;
+	private SymptomState condylomaVenereum;
+	private SymptomState mucousPatches;
+	private SymptomState generalizedLymphadenopathy;
+	private SymptomState ocularManifestations;
+	private SymptomState neurologicalManifestations;
+	private SymptomState condylomaLata;
+	private SymptomState bonyAbnormalities;
+	private SymptomState pseudoparalysis;
+	private SymptomState refractoryRhinitis;
+	private SymptomState centralNervousSystemDamage;
+	private SymptomState malnutrition;
+	private SymptomState nephroticSyndrome;
+	private SymptomState arthralgia;
+	private SymptomState hepatomegaly;
+	private SymptomState hepatosplenomegaly;
+	private SymptomState lowGradeFever;
+	private SymptomState mucocutaneousLesion;
+	private SymptomState maculopapularRash;
+	private SyphilisInfectionSite syphilisInfectionSite;
+	private SyphilisStage syphilisStage;
+	private SyphilisInfectiousness syphilisInfectiousness;
+	private YesNoUnknown clinicalCriteriaMet;
+	private SymptomState cervicitis;
+	private SymptomState newbornConjunctivitis;
+	private SymptomState epididymitis;
+	private SymptomState pelvicInflammatoryDisease;
+	private SymptomState proctitis;
+	private SymptomState acuteSalpingitis;
+	private SymptomState urethritis;
+	private SymptomState gonococcalInfectionSiteAnorectal;
+	private SymptomState gonococcalInfectionSiteBlood;
+	private SymptomState gonococcalInfectionSiteCerebrospinalFluid;
+	private SymptomState gonococcalInfectionSiteEye;
+	private SymptomState gonococcalInfectionSiteGenital;
+	private SymptomState gonococcalInfectionSiteJointFluid;
+	private SymptomState gonococcalInfectionSitePharyngeal;
+	private SymptomState gonococcalInfectionSiteUnknown;
+	private SymptomState gonococcalInfectionSiteOther;
+	private String gonococcalInfectionSiteOtherText;
+	private SymptomState noConcurrentSti;
+	private SymptomState concurrentStiChlamydia;
+	private SymptomState concurrentStiGenitalHerpes;
+	private SymptomState concurrentStiLgv;
+	private SymptomState concurrentStiMycoplasmaGenitalium;
+	private SymptomState concurrentStiInfectiousSyphilis;
+	private SymptomState concurrentStiTrichomonasVaginalis;
+	private SymptomState concurrentStiGenitalWarts;
+	private SymptomState concurrentStiOther;
+	private String concurrentStiOtherText;
+	private SymptomState concurrentStiUnknown;
+
+	// Yersiniosis-specific symptoms
+	private SymptomState pseudoAppendicularSyndrome;
+	private SymptomState necrotizingEnterocolitis;
+	private SymptomState reactiveArthritis;
+	private SymptomState erythemaNodosum;
+	private Date symptomEndDate;
+
 	// when adding new fields make sure to extend toHumanString
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -245,6 +413,15 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getOffsetDate() {
+		return offsetDate;
+	}
+
+	public void setOffsetDate(Date offsetDate) {
+		this.offsetDate = offsetDate;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -966,6 +1143,132 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setLymphadenopathyCervical(SymptomState lymphadenopathyCervical) {
 		this.lymphadenopathyCervical = lymphadenopathyCervical;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBronchitis() {
+		return bronchitis;
+	}
+
+	public void setBronchitis(SymptomState bronchitis) {
+		this.bronchitis = bronchitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMyocarditis() {
+		return myocarditis;
+	}
+
+	public void setMyocarditis(SymptomState myocarditis) {
+		this.myocarditis = myocarditis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPericarditis() {
+		return pericarditis;
+	}
+
+	public void setPericarditis(SymptomState pericarditis) {
+		this.pericarditis = pericarditis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getThrombocytopenia() {
+		return thrombocytopenia;
+	}
+
+	public void setThrombocytopenia(SymptomState thrombocytopenia) {
+		this.thrombocytopenia = thrombocytopenia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLymphadenopathySuboccipital() {
+		return lymphadenopathySuboccipital;
+	}
+
+	public void setLymphadenopathySuboccipital(SymptomState lymphadenopathySuboccipital) {
+		this.lymphadenopathySuboccipital = lymphadenopathySuboccipital;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLymphadenopathyRetroauricular() {
+		return lymphadenopathyRetroauricular;
+	}
+
+	public void setLymphadenopathyRetroauricular(SymptomState lymphadenopathyRetroauricular) {
+		this.lymphadenopathyRetroauricular = lymphadenopathyRetroauricular;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getStillbornInfant() {
+		return stillbornInfant;
+	}
+
+	public void setStillbornInfant(SymptomState stillbornInfant) {
+		this.stillbornInfant = stillbornInfant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getUnknownClinicalPresentation() {
+		return unknownClinicalPresentation;
+	}
+
+	public void setUnknownClinicalPresentation(SymptomState unknownClinicalPresentation) {
+		this.unknownClinicalPresentation = unknownClinicalPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNeurologicalComplications() {
+		return neurologicalComplications;
+	}
+
+	public void setNeurologicalComplications(SymptomState neurologicalComplications) {
+		this.neurologicalComplications = neurologicalComplications;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLowBirthWeight() {
+		return lowBirthWeight;
+	}
+
+	public void setLowBirthWeight(SymptomState lowBirthWeight) {
+		this.lowBirthWeight = lowBirthWeight;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHepatitis() {
+		return hepatitis;
+	}
+
+	public void setHepatitis(SymptomState hepatitis) {
+		this.hepatitis = hepatitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getThrombocytopenicPurpura() {
+		return thrombocytopenicPurpura;
+	}
+
+	public void setThrombocytopenicPurpura(SymptomState thrombocytopenicPurpura) {
+		this.thrombocytopenicPurpura = thrombocytopenicPurpura;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRubellaArthritis() {
+		return rubellaArthritis;
+	}
+
+	public void setRubellaArthritis(SymptomState rubellaArthritis) {
+		this.rubellaArthritis = rubellaArthritis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGreggsTriad() {
+		return greggsTriad;
+	}
+
+	public void setGreggsTriad(SymptomState greggsTriad) {
+		this.greggsTriad = greggsTriad;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -1839,4 +2142,1178 @@ public class Symptoms extends AbstractDomainObject {
 	public void setOtherComplicationsText(String otherComplicationsText) {
 		this.otherComplicationsText = otherComplicationsText;
 	}
+
+	public SymptomState getAsymptomatic() {
+		return asymptomatic;
+	}
+
+	public void setAsymptomatic(SymptomState asymptomatic) {
+		this.asymptomatic = asymptomatic;
+	}
+
+	public SymptomState getHemorrhagicRash() {
+		return hemorrhagicRash;
+	}
+
+	public void setHemorrhagicRash(SymptomState hemorrhagicRash) {
+		this.hemorrhagicRash = hemorrhagicRash;
+	}
+
+	public SymptomState getArthritis() {
+		return arthritis;
+	}
+
+	public void setArthritis(SymptomState arthritis) {
+		this.arthritis = arthritis;
+	}
+
+	public SymptomState getMeningitis() {
+		return meningitis;
+	}
+
+	public void setMeningitis(SymptomState meningitis) {
+		this.meningitis = meningitis;
+	}
+
+	public SymptomState getOtherClinicalPresentation() {
+		return otherClinicalPresentation;
+	}
+
+	public void setOtherClinicalPresentation(SymptomState otherClinicalPresentation) {
+		this.otherClinicalPresentation = otherClinicalPresentation;
+	}
+
+	public String getOtherClinicalPresentationText() {
+		return otherClinicalPresentationText;
+	}
+
+	public void setOtherClinicalPresentationText(String otherClinicalPresentationText) {
+		this.otherClinicalPresentationText = otherClinicalPresentationText;
+	}
+
+	public SymptomState getSepticaemia() {
+		return septicaemia;
+	}
+
+	public void setSepticaemia(SymptomState septicaemia) {
+		this.septicaemia = septicaemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getApnoea() {
+		return apnoea;
+	}
+
+	public void setApnoea(SymptomState apnoea) {
+		this.apnoea = apnoea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getWhoopSound() {
+		return whoopSound;
+	}
+
+	public void setWhoopSound(SymptomState whoopSound) {
+		this.whoopSound = whoopSound;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughingBouts() {
+		return coughingBouts;
+	}
+
+	public void setCoughingBouts(SymptomState coughingBouts) {
+		this.coughingBouts = coughingBouts;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughsProvokeVomiting() {
+		return coughsProvokeVomiting;
+	}
+
+	public void setCoughsProvokeVomiting(SymptomState coughsProvokeVomiting) {
+		this.coughsProvokeVomiting = coughsProvokeVomiting;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DiagnosisType getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(DiagnosisType diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionSite getMajorSite() {
+		return majorSite;
+	}
+
+	public void setMajorSite(InfectionSite majorSite) {
+		this.majorSite = majorSite;
+	}
+
+	public String getOtherMajorSiteDetails() {
+		return otherMajorSiteDetails;
+	}
+
+	public void setOtherMajorSiteDetails(String otherMajorSiteDetails) {
+		this.otherMajorSiteDetails = otherMajorSiteDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionSite getMinorSite() {
+		return minorSite;
+	}
+
+	public void setMinorSite(InfectionSite minorSite) {
+		this.minorSite = minorSite;
+	}
+
+	public String getOtherMinorSiteDetails() {
+		return otherMinorSiteDetails;
+	}
+
+	public void setOtherMinorSiteDetails(String otherMinorSiteDetails) {
+		this.otherMinorSiteDetails = otherMinorSiteDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDateOfOnsetKnown() {
+		return dateOfOnsetKnown;
+	}
+
+	public void setDateOfOnsetKnown(YesNoUnknown dateOfOnsetKnown) {
+		this.dateOfOnsetKnown = dateOfOnsetKnown;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClinicalPresentationStatus getClinicalPresentationStatus() {
+		return clinicalPresentationStatus;
+	}
+
+	public void setClinicalPresentationStatus(ClinicalPresentationStatus clinicalPresentationStatus) {
+		this.clinicalPresentationStatus = clinicalPresentationStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNocturnalCough() {
+		return nocturnalCough;
+	}
+
+	public void setNocturnalCough(SymptomState nocturnalCough) {
+		this.nocturnalCough = nocturnalCough;
+	}
+
+	public SymptomState getUnknownSymptom() {
+		return unknownSymptom;
+	}
+
+	public void setUnknownSymptom(SymptomState unknownSymptom) {
+		this.unknownSymptom = unknownSymptom;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDifficultyBreathingDuringMeals() {
+		return difficultyBreathingDuringMeals;
+	}
+
+	public void setDifficultyBreathingDuringMeals(SymptomState difficultyBreathingDuringMeals) {
+		this.difficultyBreathingDuringMeals = difficultyBreathingDuringMeals;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getParadoxicalBreathing() {
+		return paradoxicalBreathing;
+	}
+
+	public void setParadoxicalBreathing(SymptomState paradoxicalBreathing) {
+		this.paradoxicalBreathing = paradoxicalBreathing;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRespiratoryFatigue() {
+		return respiratoryFatigue;
+	}
+
+	public void setRespiratoryFatigue(SymptomState respiratoryFatigue) {
+		this.respiratoryFatigue = respiratoryFatigue;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getParentTimeOffWork() {
+		return parentTimeOffWork;
+	}
+
+	public void setParentTimeOffWork(YesNoUnknown parentTimeOffWork) {
+		this.parentTimeOffWork = parentTimeOffWork;
+	}
+
+	public Float getTimeOffWorkDays() {
+		return timeOffWorkDays;
+	}
+
+	public void setTimeOffWorkDays(Float timeOffWorkDays) {
+		this.timeOffWorkDays = timeOffWorkDays;
+	}
+
+	public Date getSkinRashOnsetDate() {
+		return skinRashOnsetDate;
+	}
+
+	public void setSkinRashOnsetDate(Date skinRashOnsetDate) {
+		this.skinRashOnsetDate = skinRashOnsetDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteEncephalitis() {
+		return acuteEncephalitis;
+	}
+
+	public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
+		this.acuteEncephalitis = acuteEncephalitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEggyBurps() {
+		return eggyBurps;
+	}
+
+	public void setEggyBurps(SymptomState eggyBurps) {
+		this.eggyBurps = eggyBurps;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getWeightLoss() {
+		return weightLoss;
+	}
+
+	public void setWeightLoss(SymptomState weightLoss) {
+		this.weightLoss = weightLoss;
+	}
+
+	public Float getWeightLossAmount() {
+		return weightLossAmount;
+	}
+
+	public void setWeightLossAmount(Float weightLossAmount) {
+		this.weightLossAmount = weightLossAmount;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSymptomCurrentStatus() {
+		return symptomCurrentStatus;
+	}
+
+	public void setSymptomCurrentStatus(SymptomState symptomCurrentStatus) {
+		this.symptomCurrentStatus = symptomCurrentStatus;
+	}
+
+	public Integer getDurationOfSymptoms() {
+		return durationOfSymptoms;
+	}
+
+	public void setDurationOfSymptoms(Integer durationOfSymptoms) {
+		this.durationOfSymptoms = durationOfSymptoms;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getReoccurrence() {
+		return reoccurrence;
+	}
+
+	public void setReoccurrence(SymptomState reoccurrence) {
+		this.reoccurrence = reoccurrence;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOvernightStayRequired() {
+		return overnightStayRequired;
+	}
+
+	public void setOvernightStayRequired(SymptomState overnightStayRequired) {
+		this.overnightStayRequired = overnightStayRequired;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBloating() {
+		return bloating;
+	}
+
+	public void setBloating(SymptomState bloating) {
+		this.bloating = bloating;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getClammySkin() {
+		return clammySkin;
+	}
+
+	public void setClammySkin(SymptomState clammySkin) {
+		this.clammySkin = clammySkin;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getColdSkin() {
+		return coldSkin;
+	}
+
+	public void setColdSkin(SymptomState coldSkin) {
+		this.coldSkin = coldSkin;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEncephalitis() {
+		return encephalitis;
+	}
+
+	public void setEncephalitis(SymptomState encephalitis) {
+		this.encephalitis = encephalitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGuillainBarreSyndrome() {
+		return guillainBarreSyndrome;
+	}
+
+	public void setGuillainBarreSyndrome(SymptomState guillainBarreSyndrome) {
+		this.guillainBarreSyndrome = guillainBarreSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLethargy() {
+		return lethargy;
+	}
+
+	public void setLethargy(SymptomState lethargy) {
+		this.lethargy = lethargy;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConfusion() {
+		return confusion;
+	}
+
+	public void setConfusion(SymptomState confusion) {
+		this.confusion = confusion;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPersistentVomiting() {
+		return persistentVomiting;
+	}
+
+	public void setPersistentVomiting(SymptomState persistentVomiting) {
+		this.persistentVomiting = persistentVomiting;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRestlessness() {
+		return restlessness;
+	}
+
+	public void setRestlessness(SymptomState restlessness) {
+		this.restlessness = restlessness;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteBleeding() {
+		return acuteBleeding;
+	}
+
+	public void setAcuteBleeding(SymptomState acuteBleeding) {
+		this.acuteBleeding = acuteBleeding;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSevereOrganImpairment() {
+		return severeOrganImpairment;
+	}
+
+	public void setSevereOrganImpairment(SymptomState severeOrganImpairment) {
+		this.severeOrganImpairment = severeOrganImpairment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPlasmaLeakageSign() {
+		return plasmaLeakageSign;
+	}
+
+	public void setPlasmaLeakageSign(SymptomState plasmaLeakageSign) {
+		this.plasmaLeakageSign = plasmaLeakageSign;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPolydipsia() {
+		return polydipsia;
+	}
+
+	public void setPolydipsia(SymptomState polydipsia) {
+		this.polydipsia = polydipsia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSyndromicFlu() {
+		return syndromicFlu;
+	}
+
+	public void setSyndromicFlu(SymptomState syndromicFlu) {
+		this.syndromicFlu = syndromicFlu;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAnemia() {
+		return anemia;
+	}
+
+	public void setAnemia(SymptomState anemia) {
+		this.anemia = anemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAlteredLevelOfConsciousness() {
+		return alteredLevelOfConsciousness;
+	}
+
+	public void setAlteredLevelOfConsciousness(SymptomState alteredLevelOfConsciousness) {
+		this.alteredLevelOfConsciousness = alteredLevelOfConsciousness;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSevereAnemia() {
+		return severeAnemia;
+	}
+
+	public void setSevereAnemia(SymptomState severeAnemia) {
+		this.severeAnemia = severeAnemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMetabolicAcidosis() {
+		return metabolicAcidosis;
+	}
+
+	public void setMetabolicAcidosis(SymptomState metabolicAcidosis) {
+		this.metabolicAcidosis = metabolicAcidosis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteKidneyFailure() {
+		return acuteKidneyFailure;
+	}
+
+	public void setAcuteKidneyFailure(SymptomState acuteKidneyFailure) {
+		this.acuteKidneyFailure = acuteKidneyFailure;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClinicalManifestation getClinicalManifestation() {
+		return clinicalManifestation;
+	}
+
+	public void setClinicalManifestation(ClinicalManifestation clinicalManifestation) {
+		this.clinicalManifestation = clinicalManifestation;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getClinicalManifestationText() {
+		return clinicalManifestationText;
+	}
+
+	public void setClinicalManifestationText(String clinicalManifestationText) {
+		this.clinicalManifestationText = clinicalManifestationText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCerebralMalaria() {
+		return cerebralMalaria;
+	}
+
+	public void setCerebralMalaria(SymptomState cerebralMalaria) {
+		this.cerebralMalaria = cerebralMalaria;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getScantHemorrhage() {
+		return scantHemorrhage;
+	}
+
+	public void setScantHemorrhage(SymptomState scantHemorrhage) {
+		this.scantHemorrhage = scantHemorrhage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getOtherNeurologicalSymptoms() {
+		return otherNeurologicalSymptoms;
+	}
+
+	public void setOtherNeurologicalSymptoms(YesNoUnknown otherNeurologicalSymptoms) {
+		this.otherNeurologicalSymptoms = otherNeurologicalSymptoms;
+	}
+
+	public String getOtherNeurologicalSymptomsText() {
+		return otherNeurologicalSymptomsText;
+	}
+
+	public void setOtherNeurologicalSymptomsText(String otherNeurologicalSymptomsText) {
+		this.otherNeurologicalSymptomsText = otherNeurologicalSymptomsText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDisseminatedIntraVascularCoagulation() {
+		return disseminatedIntraVascularCoagulation;
+	}
+
+	public void setDisseminatedIntraVascularCoagulation(SymptomState disseminatedIntraVascularCoagulation) {
+		this.disseminatedIntraVascularCoagulation = disseminatedIntraVascularCoagulation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConstipation() {
+		return constipation;
+	}
+
+	public void setConstipation(SymptomState constipation) {
+		this.constipation = constipation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDysuria() {
+		return dysuria;
+	}
+
+	public void setDysuria(SymptomState dysuria) {
+		this.dysuria = dysuria;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEyeIrritation() {
+		return eyeIrritation;
+	}
+
+	public void setEyeIrritation(SymptomState eyeIrritation) {
+		this.eyeIrritation = eyeIrritation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFatalRisk() {
+		return fatalRisk;
+	}
+
+	public void setFatalRisk(SymptomState fatalRisk) {
+		this.fatalRisk = fatalRisk;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getTenesmus() {
+		return tenesmus;
+	}
+
+	public void setTenesmus(SymptomState tenesmus) {
+		this.tenesmus = tenesmus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHaemolyticUremicSyndrome() {
+		return haemolyticUremicSyndrome;
+	}
+
+	public void setHaemolyticUremicSyndrome(SymptomState haemolyticUremicSyndrome) {
+		this.haemolyticUremicSyndrome = haemolyticUremicSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBloodyDiarrhea() {
+		return bloodyDiarrhea;
+	}
+
+	public void setBloodyDiarrhea(SymptomState bloodyDiarrhea) {
+		this.bloodyDiarrhea = bloodyDiarrhea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getWateryDiarrhea() {
+		return wateryDiarrhea;
+	}
+
+	public void setWateryDiarrhea(SymptomState wateryDiarrhea) {
+		this.wateryDiarrhea = wateryDiarrhea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPatchyAlopecia() {
+		return patchyAlopecia;
+	}
+
+	public void setPatchyAlopecia(SymptomState patchyAlopecia) {
+		this.patchyAlopecia = patchyAlopecia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getChancre() {
+		return chancre;
+	}
+
+	public void setChancre(SymptomState chancre) {
+		this.chancre = chancre;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCondylomaVenereum() {
+		return condylomaVenereum;
+	}
+
+	public void setCondylomaVenereum(SymptomState condylomaVenereum) {
+		this.condylomaVenereum = condylomaVenereum;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMucousPatches() {
+		return mucousPatches;
+	}
+
+	public void setMucousPatches(SymptomState mucousPatches) {
+		this.mucousPatches = mucousPatches;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGeneralizedLymphadenopathy() {
+		return generalizedLymphadenopathy;
+	}
+
+	public void setGeneralizedLymphadenopathy(SymptomState generalizedLymphadenopathy) {
+		this.generalizedLymphadenopathy = generalizedLymphadenopathy;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOcularManifestations() {
+		return ocularManifestations;
+	}
+
+	public void setOcularManifestations(SymptomState ocularManifestations) {
+		this.ocularManifestations = ocularManifestations;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNeurologicalManifestations() {
+		return neurologicalManifestations;
+	}
+
+	public void setNeurologicalManifestations(SymptomState neurologicalManifestations) {
+		this.neurologicalManifestations = neurologicalManifestations;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCondylomaLata() {
+		return condylomaLata;
+	}
+
+	public void setCondylomaLata(SymptomState condylomaLata) {
+		this.condylomaLata = condylomaLata;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBonyAbnormalities() {
+		return bonyAbnormalities;
+	}
+
+	public void setBonyAbnormalities(SymptomState bonyAbnormalities) {
+		this.bonyAbnormalities = bonyAbnormalities;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPseudoparalysis() {
+		return pseudoparalysis;
+	}
+
+	public void setPseudoparalysis(SymptomState pseudoparalysis) {
+		this.pseudoparalysis = pseudoparalysis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRefractoryRhinitis() {
+		return refractoryRhinitis;
+	}
+
+	public void setRefractoryRhinitis(SymptomState refractoryRhinitis) {
+		this.refractoryRhinitis = refractoryRhinitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCentralNervousSystemDamage() {
+		return centralNervousSystemDamage;
+	}
+
+	public void setCentralNervousSystemDamage(SymptomState centralNervousSystemDamage) {
+		this.centralNervousSystemDamage = centralNervousSystemDamage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMalnutrition() {
+		return malnutrition;
+	}
+
+	public void setMalnutrition(SymptomState malnutrition) {
+		this.malnutrition = malnutrition;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNephroticSyndrome() {
+		return nephroticSyndrome;
+	}
+
+	public void setNephroticSyndrome(SymptomState nephroticSyndrome) {
+		this.nephroticSyndrome = nephroticSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getArthralgia() {
+		return arthralgia;
+	}
+
+	public void setArthralgia(SymptomState arthralgia) {
+		this.arthralgia = arthralgia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHepatomegaly() {
+		return hepatomegaly;
+	}
+
+	public void setHepatomegaly(SymptomState hepatomegaly) {
+		this.hepatomegaly = hepatomegaly;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHepatosplenomegaly() {
+		return hepatosplenomegaly;
+	}
+
+	public void setHepatosplenomegaly(SymptomState hepatosplenomegaly) {
+		this.hepatosplenomegaly = hepatosplenomegaly;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLowGradeFever() {
+		return lowGradeFever;
+	}
+
+	public void setLowGradeFever(SymptomState lowGradeFever) {
+		this.lowGradeFever = lowGradeFever;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMucocutaneousLesion() {
+		return mucocutaneousLesion;
+	}
+
+	public void setMucocutaneousLesion(SymptomState mucocutaneousLesion) {
+		this.mucocutaneousLesion = mucocutaneousLesion;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMaculopapularRash() {
+		return maculopapularRash;
+	}
+
+	public void setMaculopapularRash(SymptomState maculopapularRash) {
+		this.maculopapularRash = maculopapularRash;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisInfectionSite getSyphilisInfectionSite() {
+		return syphilisInfectionSite;
+	}
+
+	public void setSyphilisInfectionSite(SyphilisInfectionSite syphilisInfectionSite) {
+		this.syphilisInfectionSite = syphilisInfectionSite;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisStage getSyphilisStage() {
+		return syphilisStage;
+	}
+
+	public void setSyphilisStage(SyphilisStage syphilisStage) {
+		this.syphilisStage = syphilisStage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisInfectiousness getSyphilisInfectiousness() {
+		return syphilisInfectiousness;
+	}
+
+	public void setSyphilisInfectiousness(SyphilisInfectiousness syphilisInfectiousness) {
+		this.syphilisInfectiousness = syphilisInfectiousness;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getClinicalCriteriaMet() {
+		return clinicalCriteriaMet;
+	}
+
+	public void setClinicalCriteriaMet(YesNoUnknown clinicalCriteriaMet) {
+		this.clinicalCriteriaMet = clinicalCriteriaMet;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPseudoAppendicularSyndrome() {
+		return pseudoAppendicularSyndrome;
+	}
+
+	public void setPseudoAppendicularSyndrome(SymptomState pseudoAppendicularSyndrome) {
+		this.pseudoAppendicularSyndrome = pseudoAppendicularSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNecrotizingEnterocolitis() {
+		return necrotizingEnterocolitis;
+	}
+
+	public void setNecrotizingEnterocolitis(SymptomState necrotizingEnterocolitis) {
+		this.necrotizingEnterocolitis = necrotizingEnterocolitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getReactiveArthritis() {
+		return reactiveArthritis;
+	}
+
+	public void setReactiveArthritis(SymptomState reactiveArthritis) {
+		this.reactiveArthritis = reactiveArthritis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getErythemaNodosum() {
+		return erythemaNodosum;
+	}
+
+	public void setErythemaNodosum(SymptomState erythemaNodosum) {
+		this.erythemaNodosum = erythemaNodosum;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getSymptomEndDate() {
+		return symptomEndDate;
+	}
+
+	public void setSymptomEndDate(Date symptomEndDate) {
+		this.symptomEndDate = symptomEndDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSalivarySwelling() {
+		return salivarySwelling;
+	}
+
+	public void setSalivarySwelling(SymptomState salivarySwelling) {
+		this.salivarySwelling = salivarySwelling;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOrchitis() {
+		return orchitis;
+	}
+
+	public void setOrchitis(SymptomState orchitis) {
+		this.orchitis = orchitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getNoComplications() {
+		return noComplications;
+	}
+
+	public void setNoComplications(YesNoUnknown noComplications) {
+		this.noComplications = noComplications;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getUnknownComplications() {
+		return unknownComplications;
+	}
+
+	public void setUnknownComplications(YesNoUnknown unknownComplications) {
+		this.unknownComplications = unknownComplications;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPancreatitis() {
+		return pancreatitis;
+	}
+
+	public void setPancreatitis(SymptomState pancreatitis) {
+		this.pancreatitis = pancreatitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getOtherGeneralSymptoms() {
+		return otherGeneralSymptoms;
+	}
+
+	public void setOtherGeneralSymptoms(YesNoUnknown otherGeneralSymptoms) {
+		this.otherGeneralSymptoms = otherGeneralSymptoms;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getOtherGeneralSymptomsText() {
+		return otherGeneralSymptomsText;
+	}
+
+	public void setOtherGeneralSymptomsText(String otherGeneralSymptomsText) {
+		this.otherGeneralSymptomsText = otherGeneralSymptomsText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCervicitis() {
+		return cervicitis;
+	}
+
+	public void setCervicitis(SymptomState cervicitis) {
+		this.cervicitis = cervicitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNewbornConjunctivitis() {
+		return newbornConjunctivitis;
+	}
+
+	public void setNewbornConjunctivitis(SymptomState newbornConjunctivitis) {
+		this.newbornConjunctivitis = newbornConjunctivitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEpididymitis() {
+		return epididymitis;
+	}
+
+	public void setEpididymitis(SymptomState epididymitis) {
+		this.epididymitis = epididymitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPelvicInflammatoryDisease() {
+		return pelvicInflammatoryDisease;
+	}
+
+	public void setPelvicInflammatoryDisease(SymptomState pelvicInflammatoryDisease) {
+		this.pelvicInflammatoryDisease = pelvicInflammatoryDisease;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getProctitis() {
+		return proctitis;
+	}
+
+	public void setProctitis(SymptomState proctitis) {
+		this.proctitis = proctitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteSalpingitis() {
+		return acuteSalpingitis;
+	}
+
+	public void setAcuteSalpingitis(SymptomState acuteSalpingitis) {
+		this.acuteSalpingitis = acuteSalpingitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getUrethritis() {
+		return urethritis;
+	}
+
+	public void setUrethritis(SymptomState urethritis) {
+		this.urethritis = urethritis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteAnorectal() {
+		return gonococcalInfectionSiteAnorectal;
+	}
+
+	public void setGonococcalInfectionSiteAnorectal(SymptomState gonococcalInfectionSiteAnorectal) {
+		this.gonococcalInfectionSiteAnorectal = gonococcalInfectionSiteAnorectal;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteBlood() {
+		return gonococcalInfectionSiteBlood;
+	}
+
+	public void setGonococcalInfectionSiteBlood(SymptomState gonococcalInfectionSiteBlood) {
+		this.gonococcalInfectionSiteBlood = gonococcalInfectionSiteBlood;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteCerebrospinalFluid() {
+		return gonococcalInfectionSiteCerebrospinalFluid;
+	}
+
+	public void setGonococcalInfectionSiteCerebrospinalFluid(SymptomState gonococcalInfectionSiteCerebrospinalFluid) {
+		this.gonococcalInfectionSiteCerebrospinalFluid = gonococcalInfectionSiteCerebrospinalFluid;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteEye() {
+		return gonococcalInfectionSiteEye;
+	}
+
+	public void setGonococcalInfectionSiteEye(SymptomState gonococcalInfectionSiteEye) {
+		this.gonococcalInfectionSiteEye = gonococcalInfectionSiteEye;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteGenital() {
+		return gonococcalInfectionSiteGenital;
+	}
+
+	public void setGonococcalInfectionSiteGenital(SymptomState gonococcalInfectionSiteGenital) {
+		this.gonococcalInfectionSiteGenital = gonococcalInfectionSiteGenital;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteJointFluid() {
+		return gonococcalInfectionSiteJointFluid;
+	}
+
+	public void setGonococcalInfectionSiteJointFluid(SymptomState gonococcalInfectionSiteJointFluid) {
+		this.gonococcalInfectionSiteJointFluid = gonococcalInfectionSiteJointFluid;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSitePharyngeal() {
+		return gonococcalInfectionSitePharyngeal;
+	}
+
+	public void setGonococcalInfectionSitePharyngeal(SymptomState gonococcalInfectionSitePharyngeal) {
+		this.gonococcalInfectionSitePharyngeal = gonococcalInfectionSitePharyngeal;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteUnknown() {
+		return gonococcalInfectionSiteUnknown;
+	}
+
+	public void setGonococcalInfectionSiteUnknown(SymptomState gonococcalInfectionSiteUnknown) {
+		this.gonococcalInfectionSiteUnknown = gonococcalInfectionSiteUnknown;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGonococcalInfectionSiteOther() {
+		return gonococcalInfectionSiteOther;
+	}
+
+	public void setGonococcalInfectionSiteOther(SymptomState gonococcalInfectionSiteOther) {
+		this.gonococcalInfectionSiteOther = gonococcalInfectionSiteOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getGonococcalInfectionSiteOtherText() {
+		return gonococcalInfectionSiteOtherText;
+	}
+
+	public void setGonococcalInfectionSiteOtherText(String gonococcalInfectionSiteOtherText) {
+		this.gonococcalInfectionSiteOtherText = gonococcalInfectionSiteOtherText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNoConcurrentSti() {
+		return noConcurrentSti;
+	}
+
+	public void setNoConcurrentSti(SymptomState noConcurrentSti) {
+		this.noConcurrentSti = noConcurrentSti;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiChlamydia() {
+		return concurrentStiChlamydia;
+	}
+
+	public void setConcurrentStiChlamydia(SymptomState concurrentStiChlamydia) {
+		this.concurrentStiChlamydia = concurrentStiChlamydia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiGenitalHerpes() {
+		return concurrentStiGenitalHerpes;
+	}
+
+	public void setConcurrentStiGenitalHerpes(SymptomState concurrentStiGenitalHerpes) {
+		this.concurrentStiGenitalHerpes = concurrentStiGenitalHerpes;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiLgv() {
+		return concurrentStiLgv;
+	}
+
+	public void setConcurrentStiLgv(SymptomState concurrentStiLgv) {
+		this.concurrentStiLgv = concurrentStiLgv;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiMycoplasmaGenitalium() {
+		return concurrentStiMycoplasmaGenitalium;
+	}
+
+	public void setConcurrentStiMycoplasmaGenitalium(SymptomState concurrentStiMycoplasmaGenitalium) {
+		this.concurrentStiMycoplasmaGenitalium = concurrentStiMycoplasmaGenitalium;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiInfectiousSyphilis() {
+		return concurrentStiInfectiousSyphilis;
+	}
+
+	public void setConcurrentStiInfectiousSyphilis(SymptomState concurrentStiInfectiousSyphilis) {
+		this.concurrentStiInfectiousSyphilis = concurrentStiInfectiousSyphilis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiTrichomonasVaginalis() {
+		return concurrentStiTrichomonasVaginalis;
+	}
+
+	public void setConcurrentStiTrichomonasVaginalis(SymptomState concurrentStiTrichomonasVaginalis) {
+		this.concurrentStiTrichomonasVaginalis = concurrentStiTrichomonasVaginalis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiGenitalWarts() {
+		return concurrentStiGenitalWarts;
+	}
+
+	public void setConcurrentStiGenitalWarts(SymptomState concurrentStiGenitalWarts) {
+		this.concurrentStiGenitalWarts = concurrentStiGenitalWarts;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiOther() {
+		return concurrentStiOther;
+	}
+
+	public void setConcurrentStiOther(SymptomState concurrentStiOther) {
+		this.concurrentStiOther = concurrentStiOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getConcurrentStiOtherText() {
+		return concurrentStiOtherText;
+	}
+
+	public void setConcurrentStiOtherText(String concurrentStiOtherText) {
+		this.concurrentStiOtherText = concurrentStiOtherText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConcurrentStiUnknown() {
+		return concurrentStiUnknown;
+	}
+
+	public void setConcurrentStiUnknown(SymptomState concurrentStiUnknown) {
+		this.concurrentStiUnknown = concurrentStiUnknown;
+	}
+
 }

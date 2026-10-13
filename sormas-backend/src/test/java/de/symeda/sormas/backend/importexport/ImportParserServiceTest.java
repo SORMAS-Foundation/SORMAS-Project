@@ -37,6 +37,8 @@ import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -61,6 +63,19 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 				CaseDataDto.CASE_CLASSIFICATION });
 
 		assertThat(parsed, is(CaseClassification.CONFIRMED_NO_SYMPTOMS));
+	}
+
+	@Test
+	public void testParseRetiredEnumFieldValue() throws IntrospectionException, ImportErrorException {
+		// A CSV exported before the pathogen-test-type merge still carries the retired name & it must resolve to the
+		// method that absorbed it rather than be rejected, matching the sormas-ui DataImporter.
+		Object parsed = getImportParserService().parseValue(
+			new PropertyDescriptor(PathogenTestDto.TEST_TYPE, PathogenTestDto.class),
+			"RDT",
+			new String[] {
+				PathogenTestDto.TEST_TYPE });
+
+		assertThat(parsed, is(PathogenTestType.LATERAL_FLOW_ASSAY));
 	}
 
 	@Test

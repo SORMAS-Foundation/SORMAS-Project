@@ -31,6 +31,7 @@ public interface Descriptions {
 	String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";
 	String Contact_community = "Contact.community";
+	String Contact_contactProximities = "Contact.contactProximities";
 	String Contact_contactProximity = "Contact.contactProximity";
 	String Contact_district = "Contact.district";
 	String Contact_followUpStatus = "Contact.followUpStatus";
@@ -39,12 +40,14 @@ public interface Descriptions {
 	String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
 	String descCaseFilterCasesWithReinfection = "descCaseFilterCasesWithReinfection";
 	String descCaseFilterExcludeSharedCases = "descCaseFilterExcludeSharedCases";
+	String descCaseFilterHasDoctorDeclaration = "descCaseFilterHasDoctorDeclaration";
 	String descCaseFilterIncludeCasesFromOtherJurisdictions = "descCaseFilterIncludeCasesFromOtherJurisdictions";
 	String descCaseFilterOnlyCasesWithFulfilledReferenceDefinition = "descCaseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String descCaseFilterOnlyFromOtherInstances = "descCaseFilterOnlyFromOtherInstances";
 	String descCaseFilterPortHealthWithoutFacility = "descCaseFilterPortHealthWithoutFacility";
 	String descCaseFilterRelatedToEvent = "descCaseFilterRelatedToEvent";
 	String descCaseFilterWithExtendedQuarantine = "descCaseFilterWithExtendedQuarantine";
+	String descCaseFilterWithoutDoctorDeclaration = "descCaseFilterWithoutDoctorDeclaration";
 	String descCaseFilterWithoutGeo = "descCaseFilterWithoutGeo";
 	String descCaseFilterWithoutResponsibleUser = "descCaseFilterWithoutResponsibleUser";
 	String descCaseFilterWithReducedQuarantine = "descCaseFilterWithReducedQuarantine";
@@ -64,6 +67,7 @@ public interface Descriptions {
 	String descGdpr = "descGdpr";
 	String descPointOfEntryFilter = "descPointOfEntryFilter";
 	String discardDescription = "discardDescription";
+	String DiseaseConfiguration_minContagiousPeriod = "DiseaseConfiguration.minContagiousPeriod";
 	String EpiData_bats = "EpiData.bats";
 	String EpiData_birds = "EpiData.birds";
 	String EpiData_burialAttended = "EpiData.burialAttended";
@@ -141,6 +145,7 @@ public interface Descriptions {
 	String sampleDashboardCountsBySpecimenCondition = "sampleDashboardCountsBySpecimenCondition";
 	String sampleDashboardDiseaseFilter = "sampleDashboardDiseaseFilter";
 	String sampleDashboardDistrictFilter = "sampleDashboardDistrictFilter";
+	String sampleDashboardHumans = "sampleDashboardHumans";
 	String sampleDashboardRegionFilter = "sampleDashboardRegionFilter";
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SurveillanceReport_associatedMessage = "SurveillanceReport.associatedMessage";

@@ -156,7 +156,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		Date testDate = DateHelper.subtractDays(new Date(), 4);
 		creator.createPathogenTest(
 			sample.toReference(),
-			PathogenTestType.RAPID_TEST,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			Disease.CORONAVIRUS,
 			testDate,
 			FacilityDto.build().toReference(),
@@ -206,7 +206,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(dateFormat.format(firstCase.getSampleDate()), is(dateFormat.format(sampleDate)));
 		assertThat(dateFormat.format(firstCase.getLabReportDate()), is(dateFormat.format(testDate)));
-		assertThat(firstCase.getTestType(), is(PathogenTestType.RAPID_TEST));
+		assertThat(firstCase.getTestType(), is(PathogenTestType.LATERAL_FLOW_ASSAY));
 		assertThat(firstCase.getTestResult(), is(PathogenTestResultType.POSITIVE));
 
 		assertThat(firstCase.getContactCaseLinkCaseYn(), is(nullValue()));
@@ -327,7 +327,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		Date testDate = DateHelper.subtractDays(new Date(), 4);
 		creator.createPathogenTest(
 			sample.toReference(),
-			PathogenTestType.RAPID_TEST,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			Disease.CORONAVIRUS,
 			testDate,
 			FacilityDto.build().toReference(),
@@ -366,7 +366,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstContact.getWorkPlaceName(), isEmptyOrNullString());
 
 		assertThat(dateFormat.format(firstContact.getSampleDate()), is(dateFormat.format(sampleDate)));
-		assertThat(firstContact.getTestType(), is(PathogenTestType.RAPID_TEST));
+		assertThat(firstContact.getTestType(), is(PathogenTestType.LATERAL_FLOW_ASSAY));
 		assertThat(firstContact.getTestResult(), is(PathogenTestResultType.POSITIVE));
 
 		assertThat(firstContact.getOtherExposureLocation(), isEmptyOrNullString());

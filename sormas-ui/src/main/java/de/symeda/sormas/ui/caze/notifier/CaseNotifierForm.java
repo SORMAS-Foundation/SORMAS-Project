@@ -1,0 +1,368 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.ui.caze.notifier;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.server.UserError;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.RadioButtonGroup;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.notifier.NotifierDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.ui.utils.CssStyles;
+
+/**
+ * Form for creating and editing notifier information.
+ * Provides editable fields for personal info, contact details, and treatment status.
+ * 
+ * Creates or updates a surveillance report with PHONE_NOTIFICATION reporting type.
+ */
+public class CaseNotifierForm extends VerticalLayout {
+
+    private static final long serialVersionUID = 1L;
+
+    // Form fields
+    private TextField firstNameField;
+    private TextField lastNameField;
+    private TextField registrationNumberField;
+    private TextField phoneField;
+    private TextField emailField;
+    private TextArea addressField;
+    private DateField notificationDateField;
+    private DateField diagnosticDateField;
+    private RadioButtonGroup<TreatmentOption> treatmentGroup;
+    private TextField agentFirstNameField;
+    private TextField agentLastNameField;
+
+    // Data objects
+    private NotifierDto notifier;
+    private SurveillanceReportDto surveillanceReport;
+
+    /**
+     * Creates a new notifier form.
+     */
+    protected CaseNotifierForm() {
+        setStyleName("notifier-edit-form");
+        setMargin(true);
+        setSpacing(true);
+        setWidth(800, Unit.PIXELS);
+        buildForm();
+    }
+
+    /**
+     * Creates a new notifier form with initial data.
+     */
+    public CaseNotifierForm(NotifierDto notifier, SurveillanceReportDto surveillanceReport) {
+        this();
+
+        if (notifier == null) {
+            throw new IllegalArgumentException("Notifier is null");
+        }
+
+        if (surveillanceReport == null) {
+            throw new IllegalArgumentException("SurveillanceReport is null");
+        }
+
+        this.notifier = notifier;
+        this.surveillanceReport = surveillanceReport;
+        populateFields();
+    }
+
+    /**
+     * Builds the form layout with all necessary fields.
+     */
+    private void buildForm() {
+        // Personal Information Section
+        Label personalInfoLabel = new Label(I18nProperties.getString(Strings.headingPersonInformation));
+        CssStyles.style(personalInfoLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_BOTTOM_LINE);
+        addComponent(personalInfoLabel);
+
+        // Name fields
+        HorizontalLayout nameLayout = new HorizontalLayout();
+        nameLayout.setSpacing(true);
+        nameLayout.setWidth(100, Unit.PERCENTAGE);
+
+        firstNameField = new TextField(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, NotifierDto.FIRST_NAME));
+        firstNameField.setRequiredIndicatorVisible(true);
+        firstNameField.setWidth(100, Unit.PERCENTAGE);
+
+        lastNameField = new TextField(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, NotifierDto.LAST_NAME));
+        lastNameField.setRequiredIndicatorVisible(true);
+        lastNameField.setWidth(100, Unit.PERCENTAGE);
+
+        nameLayout.addComponents(firstNameField, lastNameField);
+        nameLayout.setExpandRatio(firstNameField, 1);
+        nameLayout.setExpandRatio(lastNameField, 1);
+        addComponent(nameLayout);
+
+        // Registration number
+        registrationNumberField = new TextField(I18nProperties.getCaption(Captions.Notification_registrationNumber));
+        registrationNumberField.setRequiredIndicatorVisible(true);
+        registrationNumberField.setWidth(100, Unit.PERCENTAGE);
+        addComponent(registrationNumberField);
+
+        // Contact Information Section
+        Label contactInfoLabel = new Label(I18nProperties.getString(Strings.headingContactInformation));
+        CssStyles.style(contactInfoLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_BOTTOM_LINE);
+        addComponent(contactInfoLabel);
+
+        // Contact fields
+        HorizontalLayout contactLayout = new HorizontalLayout();
+        contactLayout.setSpacing(true);
+        contactLayout.setWidth(100, Unit.PERCENTAGE);
+
+        phoneField = new TextField(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, NotifierDto.PHONE));
+        phoneField.setWidth(100, Unit.PERCENTAGE);
+
+        emailField = new TextField(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, NotifierDto.EMAIL));
+        emailField.setWidth(100, Unit.PERCENTAGE);
+
+        contactLayout.addComponents(phoneField, emailField);
+        contactLayout.setExpandRatio(phoneField, 1);
+        contactLayout.setExpandRatio(emailField, 1);
+        addComponent(contactLayout);
+
+        // Address
+        addressField = new TextArea(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, NotifierDto.ADDRESS));
+        addressField.setRows(3);
+        addressField.setWidth(100, Unit.PERCENTAGE);
+        addComponent(addressField);
+
+        // Notification Dates Section
+        Label datesLabel = new Label(I18nProperties.getCaption(Captions.Notification_notifierInformation));
+        CssStyles.style(datesLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_BOTTOM_LINE);
+        addComponent(datesLabel);
+
+        // Date fields
+        HorizontalLayout dateLayout = new HorizontalLayout();
+        dateLayout.setSpacing(true);
+        dateLayout.setWidth(100, Unit.PERCENTAGE);
+
+        notificationDateField = new DateField(I18nProperties.getCaption(Captions.Notification_dateOfNotification));
+        notificationDateField.setWidth(100, Unit.PERCENTAGE);
+        notificationDateField.setEnabled(false); // Read-only as it's automatically set
+        notificationDateField.setDescription(I18nProperties.getString(Strings.notificationNotificationDateInformation));
+
+        diagnosticDateField = new DateField(I18nProperties.getCaption(Captions.SurveillanceReport_dateOfDiagnosis));
+        diagnosticDateField.setWidth(100, Unit.PERCENTAGE);
+
+        dateLayout.addComponents(notificationDateField, diagnosticDateField);
+        dateLayout.setExpandRatio(notificationDateField, 1);
+        dateLayout.setExpandRatio(diagnosticDateField, 1);
+        addComponent(dateLayout);
+
+        // Treatment Section
+        treatmentGroup = buildTreatmentOptions();
+        addComponent(treatmentGroup);
+
+        // Reporting Agent Section
+        Label agentLabel = new Label(I18nProperties.getCaption(Captions.Notification_reportingAgent));
+        CssStyles.style(agentLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_BOTTOM_LINE);
+        addComponent(agentLabel);
+
+        // Agent fields
+        HorizontalLayout agentLayout = new HorizontalLayout();
+        agentLayout.setSpacing(true);
+        agentLayout.setWidth(100, Unit.PERCENTAGE);
+
+        agentFirstNameField = new TextField(I18nProperties.getCaption(Captions.firstName));
+        agentFirstNameField.setWidth(100, Unit.PERCENTAGE);
+
+        agentLastNameField = new TextField(I18nProperties.getCaption(Captions.lastName));
+        agentLastNameField.setWidth(100, Unit.PERCENTAGE);
+
+        agentLayout.addComponents(agentFirstNameField, agentLastNameField);
+        agentLayout.setExpandRatio(agentFirstNameField, 1);
+        agentLayout.setExpandRatio(agentLastNameField, 1);
+        addComponent(agentLayout);
+    }
+
+    /**
+     * Builds treatment options as a radio button group.
+     */
+    private RadioButtonGroup<TreatmentOption> buildTreatmentOptions() {
+        RadioButtonGroup<TreatmentOption> group = new RadioButtonGroup<>(I18nProperties.getCaption(Captions.Treatment));
+        group.setDataProvider(DataProvider.ofCollection(TreatmentOption.ALL_OPTIONS));
+        group.setItemCaptionGenerator(TreatmentOption::getCaption);
+        group.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+        group.setValue(TreatmentOption.UNKNOWN); // Default value
+
+        return group;
+    }
+
+    /**
+     * Populates form fields with notifier and related data.
+     */
+    private void populateFields() {
+        if (notifier != null) {
+            firstNameField.setValue(notifier.getFirstName() != null ? notifier.getFirstName() : "");
+            lastNameField.setValue(notifier.getLastName() != null ? notifier.getLastName() : "");
+            registrationNumberField.setValue(notifier.getRegistrationNumber() != null ? notifier.getRegistrationNumber() : "");
+            phoneField.setValue(notifier.getPhone() != null ? notifier.getPhone() : "");
+            emailField.setValue(notifier.getEmail() != null ? notifier.getEmail() : "");
+            addressField.setValue(notifier.getAddress() != null ? notifier.getAddress() : "");
+            agentFirstNameField.setValue(notifier.getAgentFirstName() != null ? notifier.getAgentFirstName() : "");
+            agentLastNameField.setValue(notifier.getAgentLastName() != null ? notifier.getAgentLastName() : "");
+
+            // Set notification date to notifier's creation/modification date
+            if (notifier.getCreationDate() != null) {
+                notificationDateField.setValue(notifier.getCreationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            } else if (notifier.getChangeDate() != null) {
+                notificationDateField.setValue(notifier.getChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            }
+
+            // Set diagnostic date if available
+            if (surveillanceReport != null && surveillanceReport.getDateOfDiagnosis() != null) {
+                diagnosticDateField.setValue(surveillanceReport.getDateOfDiagnosis().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            }
+        } else {
+            // For new notifier, set notification date to current date
+            notificationDateField.setValue(java.time.LocalDate.now());
+        }
+
+        treatmentGroup.clear();
+
+        if (surveillanceReport != null) {
+            // Read treatment values from surveillance report
+            if (surveillanceReport.isTreatmentNotApplicable()) {
+                treatmentGroup.setValue(TreatmentOption.NOT_APPLICABLE);
+            } else {
+                final YesNoUnknown treatmentStarted = surveillanceReport.getTreatmentStarted();
+                if (treatmentStarted != null) {
+                    treatmentGroup.setValue(TreatmentOption.forValue(treatmentStarted));
+                }
+            }
+
+            // Set notification date from report date
+            if (surveillanceReport.getReportDate() != null) {
+                notificationDateField.setValue(surveillanceReport.getReportDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            }
+
+            // Set diagnostic date if available
+            if (surveillanceReport.getDateOfDiagnosis() != null) {
+                diagnosticDateField.setValue(surveillanceReport.getDateOfDiagnosis().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            }
+        }
+
+    }
+
+    /**
+     * Gets current notifier data from form fields.
+     */
+    public NotifierDto getValue() {
+        if (notifier == null) {
+            notifier = new NotifierDto();
+        }
+
+        notifier.setFirstName(firstNameField.getValue());
+        notifier.setLastName(lastNameField.getValue());
+        notifier.setRegistrationNumber(registrationNumberField.getValue());
+        notifier.setPhone(phoneField.getValue());
+        notifier.setEmail(emailField.getValue());
+        notifier.setAddress(addressField.getValue());
+        notifier.setAgentFirstName(agentFirstNameField.getValue());
+        notifier.setAgentLastName(agentLastNameField.getValue());
+
+        // Note: notification date is handled automatically by the system
+        // based on creation/modification times, not user input
+
+        return notifier;
+    }
+
+    /**
+     * Gets the notification date from the form.
+     */
+    public LocalDate getNotificationDate() {
+        return notificationDateField.getValue();
+    }
+
+    /**
+     * Gets the diagnostic date from the form.
+     */
+    public LocalDate getDiagnosticDate() {
+        return diagnosticDateField.getValue();
+    }
+
+    /**
+     * Gets the selected treatment option from the form.
+     */
+    public TreatmentOption getSelectedTreatmentOption() {
+        return treatmentGroup.getValue();
+    }
+
+    /**
+     * Sets notifier data and populates form fields.
+     */
+    public void setValue(NotifierDto notifier, SurveillanceReportDto surveillanceReport) {
+        if (notifier == null) {
+            throw new IllegalArgumentException("Notifier is null");
+        }
+
+        if (surveillanceReport == null) {
+            throw new IllegalArgumentException("SurveillanceReport is null");
+        }
+
+        this.notifier = notifier;
+        this.surveillanceReport = surveillanceReport;
+        populateFields();
+    }
+
+    /**
+     * Validates form and returns true if all required fields are filled.
+     */
+    public boolean isValid() {
+        boolean valid = true;
+
+        if (firstNameField.getValue() == null || firstNameField.getValue().trim().isEmpty()) {
+            firstNameField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.requiredField)));
+            valid = false;
+        } else {
+            firstNameField.setComponentError(null);
+        }
+
+        if (lastNameField.getValue() == null || lastNameField.getValue().trim().isEmpty()) {
+            lastNameField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.requiredField)));
+            valid = false;
+        } else {
+            lastNameField.setComponentError(null);
+        }
+
+        if (registrationNumberField.getValue() == null || registrationNumberField.getValue().trim().isEmpty()) {
+            registrationNumberField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.requiredField)));
+            valid = false;
+        } else {
+            registrationNumberField.setComponentError(null);
+        }
+
+        return valid;
+    }
+}

@@ -90,6 +90,12 @@ public @interface Diseases {
 			return diseaseConfig.get(propertyName).contains(disease);
 		}
 
+		public static <E extends Enum<E>> List<E> getVisibleValues(Class<E> enumClass, Disease disease) {
+			return Arrays.stream(enumClass.getEnumConstants())
+				.filter(e -> isDefinedOrMissing(enumClass, e.name(), disease))
+				.collect(Collectors.toList());
+		}
+
 		private static synchronized void readDiseaseConfig(Class<?> clazz) {
 
 			HashMap<String, List<Disease>> diseaseConfig = new HashMap<>();

@@ -40,8 +40,8 @@ public class AboutDirectorySteps implements En {
   public static final String DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH =
       String.format("sormas_datenschutzbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
   public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
-  private static final String RELEASE_PAGE =
-      "https://github.com/sormas-foundation/SORMAS-Project/releases";
+  private static final String GITHUB_PAGE = "https://github.com/SORMAS-Foundation/SORMAS-Project";
+  private static final String RELEASE_PAGE = GITHUB_PAGE + "/releases";
   private static AssertHelpers assertHelpers;
 
   @Inject
@@ -257,9 +257,7 @@ public class AboutDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.switchToOtherWindow();
           softly.assertEquals(
-              "https://github.com/sormas-foundation/SORMAS-Project",
-              webDriverHelpers.returnURL(),
-              "Sormas github link is not correct");
+              GITHUB_PAGE, webDriverHelpers.returnURL(), "Sormas github link is not correct");
           softly.assertAll();
           webDriverHelpers.closeActiveWindow();
         });

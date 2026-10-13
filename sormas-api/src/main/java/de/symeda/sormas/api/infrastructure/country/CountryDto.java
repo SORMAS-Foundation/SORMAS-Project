@@ -28,6 +28,7 @@ public class CountryDto extends InfrastructureDto {
 	public static final String ISO_CODE = "isoCode";
 	public static final String UNO_CODE = "unoCode";
 	public static final String SUBCONTINENT = "subcontinent";
+	public static final String NUTS_CODE = "nutsCode";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String defaultName;
@@ -38,6 +39,7 @@ public class CountryDto extends InfrastructureDto {
 	@Size(min = 1, max = 3, message = Validations.textSizeNotInRange)
 	private String unoCode;
 	private SubcontinentReferenceDto subcontinent;
+	private String nutsCode;
 
 	public CountryDto(
 		Date creationDate,
@@ -97,12 +99,21 @@ public class CountryDto extends InfrastructureDto {
 	public void setUnoCode(String unoCode) {
 		this.unoCode = unoCode;
 	}
+
 	public SubcontinentReferenceDto getSubcontinent() {
 		return subcontinent;
 	}
 
 	public void setSubcontinent(SubcontinentReferenceDto subcontinent) {
 		this.subcontinent = subcontinent;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 
 	@Override

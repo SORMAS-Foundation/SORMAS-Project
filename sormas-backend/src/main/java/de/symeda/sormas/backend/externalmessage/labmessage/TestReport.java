@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.externalmessage.labmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.util.Date;
 import java.util.List;
@@ -36,9 +37,21 @@ import org.hibernate.annotations.TypeDef;
 
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
+import de.symeda.sormas.api.sample.Biotype;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenSpecie;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
+import de.symeda.sormas.api.sample.PathogenTestCategory;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.RsvSubtype;
+import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
+import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
+import de.symeda.sormas.api.therapy.SusceptibilityMethod;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 
@@ -57,12 +70,15 @@ public class TestReport extends AbstractDomainObject {
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
 	public static final String TEST_LAB_CITY = "testLabCity";
 	public static final String TEST_TYPE = "testType";
+	public static final String TEST_TYPE_DETAILS = "testTypeDetails";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
 	public static final String DATE_OF_RESULT = "dateOfResult";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
+	public static final String BIOTYPE = "biotype";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -85,6 +101,7 @@ public class TestReport extends AbstractDomainObject {
 	private String testLabCity;
 
 	private PathogenTestType testType;
+	private String testTypeDetails;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
 	private Date dateOfResult;
@@ -97,6 +114,8 @@ public class TestReport extends AbstractDomainObject {
 	private String testedDiseaseVariantDetails;
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
+	private Biotype biotype;
+	private Boolean virulenceGenesDetected;
 	private Float cqValue;
 	private Float ctValueE;
 	private Float ctValueN;
@@ -115,6 +134,84 @@ public class TestReport extends AbstractDomainObject {
 	private String prescriberPostalCode;
 	private String prescriberCity;
 	private Country prescriberCountry;
+	private GenoType genoType;
+	private RsvSubtype rsvSubtype;
+
+	private PathogenSpecie specie;
+	private Float tubeNil;
+	private Boolean tubeNilGT10;
+	private Float tubeAgTb1;
+	private Boolean tubeAgTb1GT10;
+	private Float tubeAgTb2;
+	private Boolean tubeAgTb2GT10;
+	private Float tubeMitogene;
+	private Boolean tubeMitogeneGT10;
+	private PathogenStrainCallStatus strainCallStatus;
+
+	// Drug susceptibility
+	private String amikacinMic;
+	private DrugSusceptibilityType amikacinSusceptibility;
+	private String bedaquilineMic;
+	private DrugSusceptibilityType bedaquilineSusceptibility;
+	private String capreomycinMic;
+	private DrugSusceptibilityType capreomycinSusceptibility;
+	private String ciprofloxacinMic;
+	private DrugSusceptibilityType ciprofloxacinSusceptibility;
+	private String delamanidMic;
+	private DrugSusceptibilityType delamanidSusceptibility;
+	private String ethambutolMic;
+	private DrugSusceptibilityType ethambutolSusceptibility;
+	private String gatifloxacinMic;
+	private DrugSusceptibilityType gatifloxacinSusceptibility;
+	private String isoniazidMic;
+	private DrugSusceptibilityType isoniazidSusceptibility;
+	private String kanamycinMic;
+	private DrugSusceptibilityType kanamycinSusceptibility;
+	private String levofloxacinMic;
+	private DrugSusceptibilityType levofloxacinSusceptibility;
+	private String moxifloxacinMic;
+	private DrugSusceptibilityType moxifloxacinSusceptibility;
+	private String ofloxacinMic;
+	private DrugSusceptibilityType ofloxacinSusceptibility;
+	private String rifampicinMic;
+	private DrugSusceptibilityType rifampicinSusceptibility;
+	private String streptomycinMic;
+	private DrugSusceptibilityType streptomycinSusceptibility;
+	private String ceftriaxoneMic;
+	private DrugSusceptibilityType ceftriaxoneSusceptibility;
+	private String penicillinMic;
+	private DrugSusceptibilityType penicillinSusceptibility;
+	private String erythromycinMic;
+	private DrugSusceptibilityType erythromycinSusceptibility;
+	private String cefiximeMic;
+	private DrugSusceptibilityType cefiximeSusceptibility;
+	private SusceptibilityMethod cefiximeMethod;
+	private String tetracyclineMic;
+	private DrugSusceptibilityType tetracyclineSusceptibility;
+	private SusceptibilityMethod tetracyclineMethod;
+	private String gentamicinMic;
+	private DrugSusceptibilityType gentamicinSusceptibility;
+	private SusceptibilityMethod gentamicinMethod;
+	private String spectinomycinMic;
+	private DrugSusceptibilityType spectinomycinSusceptibility;
+	private SusceptibilityMethod spectinomycinMethod;
+	private String porBAllele;
+	private String tbpBAllele;
+	private String sequenceType;
+	private String genogroup;
+
+	private SeroGroupSpecification seroGroupSpecification;
+	private String seroGroupSpecificationText;
+	private SerotypingMethod seroTypingMethod;
+	private String seroTypingMethodText;
+	private SyphilisSerologyMethod syphilisSerologyMethod;
+	private String syphilisSerologyMethodText;
+	private Serotype serotype;
+	private String serotypeText;
+	private PathogenTestCategory pathogenTestCategory;
+	private boolean fourFoldIncreaseAntibodyTiter;
+	private Boolean performedByReferenceLaboratory;
+	private Boolean seroConversion;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -160,6 +257,15 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTestTypeDetails() {
+		return testTypeDetails;
+	}
+
+	public void setTestTypeDetails(String testTypeDetails) {
+		this.testTypeDetails = testTypeDetails;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -411,4 +517,669 @@ public class TestReport extends AbstractDomainObject {
 	public void setPrescriberCountry(Country prescriberCountry) {
 		this.prescriberCountry = prescriberCountry;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public GenoType getGenoType() {
+		return genoType;
+	}
+
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RsvSubtype getRsvSubtype() {
+		return rsvSubtype;
+	}
+
+	public void setRsvSubtype(RsvSubtype rsvSubtype) {
+		this.rsvSubtype = rsvSubtype;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenSpecie getSpecie() {
+		return specie;
+	}
+
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
+	}
+
+	@Column
+	public Float getTubeNil() {
+		return tubeNil;
+	}
+
+	public void setTubeNil(Float tubeNil) {
+		this.tubeNil = tubeNil;
+	}
+
+	@Column
+	public Boolean getTubeNilGT10() {
+		return tubeNilGT10;
+	}
+
+	public void setTubeNilGT10(Boolean tubeNilGT10) {
+		this.tubeNilGT10 = tubeNilGT10;
+	}
+
+	@Column
+	public Float getTubeAgTb1() {
+		return tubeAgTb1;
+	}
+
+	public void setTubeAgTb1(Float tubeAgTb1) {
+		this.tubeAgTb1 = tubeAgTb1;
+	}
+
+	@Column
+	public Boolean getTubeAgTb1GT10() {
+		return tubeAgTb1GT10;
+	}
+
+	public void setTubeAgTb1GT10(Boolean tubeAgTb1GT10) {
+		this.tubeAgTb1GT10 = tubeAgTb1GT10;
+	}
+
+	@Column
+	public Float getTubeAgTb2() {
+		return tubeAgTb2;
+	}
+
+	public void setTubeAgTb2(Float tubeAgTb2) {
+		this.tubeAgTb2 = tubeAgTb2;
+	}
+
+	@Column
+	public Boolean getTubeAgTb2GT10() {
+		return tubeAgTb2GT10;
+	}
+
+	public void setTubeAgTb2GT10(Boolean tubeAgTb2GT10) {
+		this.tubeAgTb2GT10 = tubeAgTb2GT10;
+	}
+
+	@Column
+	public Float getTubeMitogene() {
+		return tubeMitogene;
+	}
+
+	public void setTubeMitogene(Float tubeMitogene) {
+		this.tubeMitogene = tubeMitogene;
+	}
+
+	@Column
+	public Boolean getTubeMitogeneGT10() {
+		return tubeMitogeneGT10;
+	}
+
+	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
+		this.tubeMitogeneGT10 = tubeMitogeneGT10;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenStrainCallStatus getStrainCallStatus() {
+		return strainCallStatus;
+	}
+
+	public void setStrainCallStatus(PathogenStrainCallStatus strainCallStatus) {
+		this.strainCallStatus = strainCallStatus;
+	}
+
+	public String getAmikacinMic() {
+		return amikacinMic;
+	}
+
+	public void setAmikacinMic(String amikacinMic) {
+		this.amikacinMic = amikacinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getAmikacinSusceptibility() {
+		return amikacinSusceptibility;
+	}
+
+	public void setAmikacinSusceptibility(DrugSusceptibilityType amikacinSusceptibility) {
+		this.amikacinSusceptibility = amikacinSusceptibility;
+	}
+
+	public String getBedaquilineMic() {
+		return bedaquilineMic;
+	}
+
+	public void setBedaquilineMic(String bedaquilineMic) {
+		this.bedaquilineMic = bedaquilineMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getBedaquilineSusceptibility() {
+		return bedaquilineSusceptibility;
+	}
+
+	public void setBedaquilineSusceptibility(DrugSusceptibilityType bedaquilineSusceptibility) {
+		this.bedaquilineSusceptibility = bedaquilineSusceptibility;
+	}
+
+	public String getCapreomycinMic() {
+		return capreomycinMic;
+	}
+
+	public void setCapreomycinMic(String capreomycinMic) {
+		this.capreomycinMic = capreomycinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCapreomycinSusceptibility() {
+		return capreomycinSusceptibility;
+	}
+
+	public void setCapreomycinSusceptibility(DrugSusceptibilityType capreomycinSusceptibility) {
+		this.capreomycinSusceptibility = capreomycinSusceptibility;
+	}
+
+	public String getCiprofloxacinMic() {
+		return ciprofloxacinMic;
+	}
+
+	public void setCiprofloxacinMic(String ciprofloxacinMic) {
+		this.ciprofloxacinMic = ciprofloxacinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCiprofloxacinSusceptibility() {
+		return ciprofloxacinSusceptibility;
+	}
+
+	public void setCiprofloxacinSusceptibility(DrugSusceptibilityType ciprofloxacinSusceptibility) {
+		this.ciprofloxacinSusceptibility = ciprofloxacinSusceptibility;
+	}
+
+	public String getDelamanidMic() {
+		return delamanidMic;
+	}
+
+	public void setDelamanidMic(String delamanidMic) {
+		this.delamanidMic = delamanidMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getDelamanidSusceptibility() {
+		return delamanidSusceptibility;
+	}
+
+	public void setDelamanidSusceptibility(DrugSusceptibilityType delamanidSusceptibility) {
+		this.delamanidSusceptibility = delamanidSusceptibility;
+	}
+
+	public String getEthambutolMic() {
+		return ethambutolMic;
+	}
+
+	public void setEthambutolMic(String ethambutolMic) {
+		this.ethambutolMic = ethambutolMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getEthambutolSusceptibility() {
+		return ethambutolSusceptibility;
+	}
+
+	public void setEthambutolSusceptibility(DrugSusceptibilityType ethambutolSusceptibility) {
+		this.ethambutolSusceptibility = ethambutolSusceptibility;
+	}
+
+	public String getGatifloxacinMic() {
+		return gatifloxacinMic;
+	}
+
+	public void setGatifloxacinMic(String gatifloxacinMic) {
+		this.gatifloxacinMic = gatifloxacinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getGatifloxacinSusceptibility() {
+		return gatifloxacinSusceptibility;
+	}
+
+	public void setGatifloxacinSusceptibility(DrugSusceptibilityType gatifloxacinSusceptibility) {
+		this.gatifloxacinSusceptibility = gatifloxacinSusceptibility;
+	}
+
+	public String getIsoniazidMic() {
+		return isoniazidMic;
+	}
+
+	public void setIsoniazidMic(String isoniazidMic) {
+		this.isoniazidMic = isoniazidMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getIsoniazidSusceptibility() {
+		return isoniazidSusceptibility;
+	}
+
+	public void setIsoniazidSusceptibility(DrugSusceptibilityType isoniazidSusceptibility) {
+		this.isoniazidSusceptibility = isoniazidSusceptibility;
+	}
+
+	public String getKanamycinMic() {
+		return kanamycinMic;
+	}
+
+	public void setKanamycinMic(String kanamycinMic) {
+		this.kanamycinMic = kanamycinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getKanamycinSusceptibility() {
+		return kanamycinSusceptibility;
+	}
+
+	public void setKanamycinSusceptibility(DrugSusceptibilityType kanamycinSusceptibility) {
+		this.kanamycinSusceptibility = kanamycinSusceptibility;
+	}
+
+	public String getLevofloxacinMic() {
+		return levofloxacinMic;
+	}
+
+	public void setLevofloxacinMic(String levofloxacinMic) {
+		this.levofloxacinMic = levofloxacinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getLevofloxacinSusceptibility() {
+		return levofloxacinSusceptibility;
+	}
+
+	public void setLevofloxacinSusceptibility(DrugSusceptibilityType levofloxacinSusceptibility) {
+		this.levofloxacinSusceptibility = levofloxacinSusceptibility;
+	}
+
+	public String getMoxifloxacinMic() {
+		return moxifloxacinMic;
+	}
+
+	public void setMoxifloxacinMic(String moxifloxacinMic) {
+		this.moxifloxacinMic = moxifloxacinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getMoxifloxacinSusceptibility() {
+		return moxifloxacinSusceptibility;
+	}
+
+	public void setMoxifloxacinSusceptibility(DrugSusceptibilityType moxifloxacinSusceptibility) {
+		this.moxifloxacinSusceptibility = moxifloxacinSusceptibility;
+	}
+
+	public String getOfloxacinMic() {
+		return ofloxacinMic;
+	}
+
+	public void setOfloxacinMic(String ofloxacinMic) {
+		this.ofloxacinMic = ofloxacinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getOfloxacinSusceptibility() {
+		return ofloxacinSusceptibility;
+	}
+
+	public void setOfloxacinSusceptibility(DrugSusceptibilityType ofloxacinSusceptibility) {
+		this.ofloxacinSusceptibility = ofloxacinSusceptibility;
+	}
+
+	public String getRifampicinMic() {
+		return rifampicinMic;
+	}
+
+	public void setRifampicinMic(String rifampicinMic) {
+		this.rifampicinMic = rifampicinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getRifampicinSusceptibility() {
+		return rifampicinSusceptibility;
+	}
+
+	public void setRifampicinSusceptibility(DrugSusceptibilityType rifampicinSusceptibility) {
+		this.rifampicinSusceptibility = rifampicinSusceptibility;
+	}
+
+	public String getStreptomycinMic() {
+		return streptomycinMic;
+	}
+
+	public void setStreptomycinMic(String streptomycinMic) {
+		this.streptomycinMic = streptomycinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getStreptomycinSusceptibility() {
+		return streptomycinSusceptibility;
+	}
+
+	public void setStreptomycinSusceptibility(DrugSusceptibilityType streptomycinSusceptibility) {
+		this.streptomycinSusceptibility = streptomycinSusceptibility;
+	}
+
+	public String getCeftriaxoneMic() {
+		return ceftriaxoneMic;
+	}
+
+	public void setCeftriaxoneMic(String ceftriaxoneMic) {
+		this.ceftriaxoneMic = ceftriaxoneMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCeftriaxoneSusceptibility() {
+		return ceftriaxoneSusceptibility;
+	}
+
+	public void setCeftriaxoneSusceptibility(DrugSusceptibilityType ceftriaxoneSusceptibility) {
+		this.ceftriaxoneSusceptibility = ceftriaxoneSusceptibility;
+	}
+
+	public String getPenicillinMic() {
+		return penicillinMic;
+	}
+
+	public void setPenicillinMic(String penicillinMic) {
+		this.penicillinMic = penicillinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getPenicillinSusceptibility() {
+		return penicillinSusceptibility;
+	}
+
+	public void setPenicillinSusceptibility(DrugSusceptibilityType penicillinSusceptibility) {
+		this.penicillinSusceptibility = penicillinSusceptibility;
+	}
+
+	public String getErythromycinMic() {
+		return erythromycinMic;
+	}
+
+	public void setErythromycinMic(String erythromycinMic) {
+		this.erythromycinMic = erythromycinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getErythromycinSusceptibility() {
+		return erythromycinSusceptibility;
+	}
+
+	public void setErythromycinSusceptibility(DrugSusceptibilityType erythromycinSusceptibility) {
+		this.erythromycinSusceptibility = erythromycinSusceptibility;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCefiximeMic() {
+		return cefiximeMic;
+	}
+
+	public void setCefiximeMic(String value) {
+		cefiximeMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCefiximeSusceptibility() {
+		return cefiximeSusceptibility;
+	}
+
+	public void setCefiximeSusceptibility(DrugSusceptibilityType value) {
+		cefiximeSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCefiximeMethod() {
+		return cefiximeMethod;
+	}
+
+	public void setCefiximeMethod(SusceptibilityMethod value) {
+		cefiximeMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTetracyclineMic() {
+		return tetracyclineMic;
+	}
+
+	public void setTetracyclineMic(String value) {
+		tetracyclineMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getTetracyclineSusceptibility() {
+		return tetracyclineSusceptibility;
+	}
+
+	public void setTetracyclineSusceptibility(DrugSusceptibilityType value) {
+		tetracyclineSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getTetracyclineMethod() {
+		return tetracyclineMethod;
+	}
+
+	public void setTetracyclineMethod(SusceptibilityMethod value) {
+		tetracyclineMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getGentamicinMic() {
+		return gentamicinMic;
+	}
+
+	public void setGentamicinMic(String value) {
+		gentamicinMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getGentamicinSusceptibility() {
+		return gentamicinSusceptibility;
+	}
+
+	public void setGentamicinSusceptibility(DrugSusceptibilityType value) {
+		gentamicinSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getGentamicinMethod() {
+		return gentamicinMethod;
+	}
+
+	public void setGentamicinMethod(SusceptibilityMethod value) {
+		gentamicinMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSpectinomycinMic() {
+		return spectinomycinMic;
+	}
+
+	public void setSpectinomycinMic(String value) {
+		spectinomycinMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getSpectinomycinSusceptibility() {
+		return spectinomycinSusceptibility;
+	}
+
+	public void setSpectinomycinSusceptibility(DrugSusceptibilityType value) {
+		spectinomycinSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getSpectinomycinMethod() {
+		return spectinomycinMethod;
+	}
+
+	public void setSpectinomycinMethod(SusceptibilityMethod value) {
+		spectinomycinMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPorBAllele() {
+		return porBAllele;
+	}
+
+	public void setPorBAllele(String value) {
+		porBAllele = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTbpBAllele() {
+		return tbpBAllele;
+	}
+
+	public void setTbpBAllele(String value) {
+		tbpBAllele = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSequenceType() {
+		return sequenceType;
+	}
+
+	public void setSequenceType(String value) {
+		sequenceType = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getGenogroup() {
+		return genogroup;
+	}
+
+	public void setGenogroup(String value) {
+		genogroup = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SeroGroupSpecification getSeroGroupSpecification() {
+		return seroGroupSpecification;
+	}
+
+	public void setSeroGroupSpecification(SeroGroupSpecification seroGroupSpecification) {
+		this.seroGroupSpecification = seroGroupSpecification;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getSeroGroupSpecificationText() {
+		return seroGroupSpecificationText;
+	}
+
+	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
+		this.seroGroupSpecificationText = seroGroupSpecificationText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SerotypingMethod getSeroTypingMethod() {
+		return seroTypingMethod;
+	}
+
+	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
+		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	public String getSeroTypingMethodText() {
+		return seroTypingMethodText;
+	}
+
+	public void setSeroTypingMethodText(String seroTypingMethodText) {
+		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisSerologyMethod getSyphilisSerologyMethod() {
+		return syphilisSerologyMethod;
+	}
+
+	public void setSyphilisSerologyMethod(SyphilisSerologyMethod syphilisSerologyMethod) {
+		this.syphilisSerologyMethod = syphilisSerologyMethod;
+	}
+
+	public String getSyphilisSerologyMethodText() {
+		return syphilisSerologyMethodText;
+	}
+
+	public void setSyphilisSerologyMethodText(String syphilisSerologyMethodText) {
+		this.syphilisSerologyMethodText = syphilisSerologyMethodText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Serotype getSerotype() {
+		return serotype;
+	}
+
+	public void setSerotype(Serotype serotype) {
+		this.serotype = serotype;
+	}
+
+	public String getSerotypeText() {
+		return serotypeText;
+	}
+
+	public void setSerotypeText(String serotypeText) {
+		this.serotypeText = serotypeText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenTestCategory getPathogenTestCategory() {
+		return pathogenTestCategory;
+	}
+
+	public void setPathogenTestCategory(PathogenTestCategory pathogenTestCategory) {
+		this.pathogenTestCategory = pathogenTestCategory;
+	}
+
+	public boolean getFourFoldIncreaseAntibodyTiter() {
+		return fourFoldIncreaseAntibodyTiter;
+	}
+
+	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+	}
+
+	@Column
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	@Column
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
+	}
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	public Biotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(Biotype biotype) {
+		this.biotype = biotype;
+	}
+
+	@Column
+	public Boolean getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(Boolean virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
+	}
+
 }

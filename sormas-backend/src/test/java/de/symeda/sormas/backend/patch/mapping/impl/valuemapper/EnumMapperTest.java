@@ -1,0 +1,140 @@
+package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+
+import de.symeda.sormas.api.caze.InfectionSetting;
+import de.symeda.sormas.api.caze.Trimester;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.backend.AbstractUnitTest;
+
+class EnumMapperTest extends AbstractUnitTest {
+
+	@InjectMocks
+	private EnumPatchMapper victim;
+
+	@Test
+	void getSupportedTypes_containsEnumClass() {
+		// PREPARE
+		Set<Class<?>> expected = Set.of(Enum.class);
+
+		// EXECUTE
+		Set<Class<?>> actual = victim.getSupportedTypes();
+
+		// CHECK
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	void map_sex_exactMatch_male() {
+		// EXECUTE & CHECK
+		assertEquals(Sex.MALE, victim.map("MALE", Sex.class).getData());
+	}
+
+	@Test
+	void map_sex_exactMatch_female() {
+		// EXECUTE & CHECK
+		assertEquals(Sex.FEMALE, victim.map("FEMALE", Sex.class).getData());
+	}
+
+	@Test
+	void map_sex_exactMatch_unknown() {
+		// EXECUTE & CHECK
+		assertEquals(Sex.UNKNOWN, victim.map("UNKNOWN", Sex.class).getData());
+	}
+
+	@Test
+	void map_sex_caseInsensitive_lowercase() {
+		// EXECUTE & CHECK
+		assertEquals(Sex.MALE, victim.map("male", Sex.class).getData());
+	}
+
+	@Test
+	void map_sex_caseInsensitive_mixedCase() {
+		// EXECUTE & CHECK
+		assertEquals(Sex.FEMALE, victim.map("fEmAlE", Sex.class).getData());
+	}
+
+	@Test
+	void map_sex_trimsWhitespace() {
+		// EXECUTE & CHECK
+		assertEquals(Sex.MALE, victim.map("  MALE  ", Sex.class).getData());
+	}
+
+	@Test
+	void map_sex_unknownValue_fallsBackToOther() {
+		// EXECUTE & CHECK
+		assertEquals(Sex.OTHER, victim.map("SOMETHING_UNKNOWN", Sex.class).getData());
+	}
+
+	@Test
+	void map_infectionSetting_exactMatch_ambulatory() {
+		// EXECUTE & CHECK
+		assertEquals(InfectionSetting.AMBULATORY, victim.map("AMBULATORY", InfectionSetting.class).getData());
+	}
+
+	@Test
+	void map_infectionSetting_exactMatch_normalWard() {
+		// EXECUTE & CHECK
+		assertEquals(InfectionSetting.NORMAL_WARD, victim.map("NORMAL_WARD", InfectionSetting.class).getData());
+	}
+
+	@Test
+	void map_infectionSetting_unknownValue_fallsBackToAnnotatedDefault() {
+		// EXECUTE & CHECK
+		assertEquals(InfectionSetting.UNKNOWN, victim.map("SOMETHING_UNKNOWN", InfectionSetting.class).getData());
+	}
+
+	@Test
+	void map_trimester_exactMatch_first() {
+		// EXECUTE & CHECK
+		assertEquals(Trimester.FIRST, victim.map("FIRST", Trimester.class).getData());
+	}
+
+	@Test
+	void map_trimester_exactMatch_second() {
+		// EXECUTE & CHECK
+		assertEquals(Trimester.SECOND, victim.map("SECOND", Trimester.class).getData());
+	}
+
+	@Test
+	void map_trimester_exactMatch_third() {
+		// EXECUTE & CHECK
+		assertEquals(Trimester.THIRD, victim.map("THIRD", Trimester.class).getData());
+	}
+
+	@Test
+	void map_trimester_unknownValue_fallsBackToAnnotatedDefault() {
+		// EXECUTE & CHECK
+		assertEquals(Trimester.UNKNOWN, victim.map("SOMETHING_UNKNOWN", Trimester.class).getData());
+	}
+
+	@Test
+	void map_noFallback_throwsEnumConstantNotPresentException() {
+		// PREPARE
+		// Direction has no OTHER constant and no @ValueMapperDefault annotation
+
+		// EXECUTE & CHECK
+		assertEquals(
+			DataPatchFailureCause.NOT_PRESENT_IN_REFERENCE_DATA_LIST,
+			victim.map("SOMETHING_UNKNOWN", NoFallbackEnum.class).getDataPatchFailureCause());
+	}
+
+	@Test
+	void map_noFallback_notAnEnum() {
+		// EXECUTE & CHECK
+		assertEquals(DataPatchFailureCause.TECHNICAL, victim.map("SOMETHING_UNKNOWN", Long.class).getDataPatchFailureCause());
+	}
+
+	private enum NoFallbackEnum {
+		NORTH,
+		SOUTH,
+		EAST,
+		WEST
+	}
+}

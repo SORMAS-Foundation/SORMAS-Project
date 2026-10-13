@@ -152,6 +152,7 @@ public class CommunityFacadeEjb
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 		dto.setExternalID(entity.getExternalID());
+		dto.setNutsCode(entity.getNutsCode());
 		applyToDtoInheritance(dto, entity);
 
 		return dto;
@@ -178,6 +179,7 @@ public class CommunityFacadeEjb
 		target.setGrowthRate(source.getGrowthRate());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setExternalID(source.getExternalID());
+		target.setNutsCode(source.getNutsCode());
 		applyFillOrBuildEntityInheritance(target, source);
 
 		return target;

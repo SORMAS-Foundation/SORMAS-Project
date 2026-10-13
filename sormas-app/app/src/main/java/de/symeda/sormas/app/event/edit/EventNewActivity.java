@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import androidx.annotation.NonNull;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -34,6 +35,8 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -42,6 +45,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.eventparticipant.EventParticipantSaver;
+import de.symeda.sormas.app.news.News;
 import de.symeda.sormas.app.util.Bundler;
 
 public class EventNewActivity extends BaseEditActivity<Event> {
@@ -51,6 +55,8 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 	private AsyncTask saveTask;
 
 	private String caseUuid = null;
+
+	private News news = null;
 
 	public static void startActivity(Context fromActivity) {
 		BaseEditActivity.startActivity(fromActivity, EventNewActivity.class, buildBundle(null));
@@ -64,8 +70,8 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 		return BaseEditActivity.buildBundle(null).setCaseUuid(caseUuid);
 	}
 
-	public static void startActivity(Context fromActivity, Bundler bundler) {
-		BaseEditActivity.startActivity(fromActivity, EventNewActivity.class, bundler);
+	public static void startActivityFromNews(Context fromActivity, News news) {
+		BaseEditActivity.startActivity(fromActivity, EventNewActivity.class, BaseEditActivity.buildBundle(null).setNews(news));
 	}
 
 	@Override
@@ -76,7 +82,33 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 	@Override
 	protected Event buildRootEntity() {
 		Event event = DatabaseHelper.getEventDao().build();
+		if (news != null) {
+			event.setEventTitle(news.getTitle());
+			event.setEventDesc(news.getDescription());
+			event.setRiskLevel(news.getRiskLevel());
+			event.setStartDate(news.getNewsDate());
+			if (news.getDisease() != null) {
+				event.setDisease(news.getDisease());
+			}
+			event.setSrcType(EventSourceType.MEDIA_NEWS);
+			event.setSrcMediaWebsite(news.getNewsLink());
+			event.setSrcMediaName(news.getNewsSource());
+			fillLocationFromNews(event.getEventLocation(), news);
+		}
 		return event;
+	}
+
+	/**
+	 * Uses the jurisdiction of the news when it is available on this device, otherwise the default (the user's jurisdiction) is kept.
+	 */
+	private static void fillLocationFromNews(Location location, News news) {
+		Region region = news.getRegionUuid() != null ? DatabaseHelper.getRegionDao().queryUuid(news.getRegionUuid()) : null;
+		if (location == null || region == null) {
+			return;
+		}
+		location.setRegion(region);
+		location.setDistrict(news.getDistrictUuid() != null ? DatabaseHelper.getDistrictDao().queryUuid(news.getDistrictUuid()) : null);
+		location.setCommunity(news.getCommunityUuid() != null ? DatabaseHelper.getCommunityDao().queryUuid(news.getCommunityUuid()) : null);
 	}
 
 	@Override
@@ -103,6 +135,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 		super.onCreateInner(savedInstanceState);
 		Bundler bundler = new Bundler(savedInstanceState);
 		caseUuid = bundler.getCaseUuid();
+		news = bundler.getNews();
 	}
 
 	@Override
@@ -110,6 +143,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 		super.onSaveInstanceState(outState);
 		Bundler bundler = new Bundler(outState);
 		bundler.setCaseUuid(caseUuid);
+		bundler.setNews(news);
 	}
 
 	@Override

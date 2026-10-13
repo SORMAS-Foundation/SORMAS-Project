@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -1227,6 +1229,17 @@ public class TextViewBindingAdapters {
 			visibilityDependencies = null;
 
 		setVisibilityDependencies(field, visibilityDependencies, true);
+	}
+
+	@BindingAdapter(value = {
+		"value",
+		"defaultValue" }, requireAll = false)
+	public static void setValue(TextView textField, Set<? extends Enum<?>> enumSet, String defaultValue) {
+		if (enumSet == null || enumSet.isEmpty()) {
+			textField.setText(defaultValue != null ? defaultValue : textField.getContext().getResources().getString(R.string.notAnswered));
+		} else {
+			textField.setText(enumSet.stream().map(Enum::toString).sorted().collect(Collectors.joining(", ")));
+		}
 	}
 
 	@BindingAdapter(value = {

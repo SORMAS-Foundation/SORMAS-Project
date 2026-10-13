@@ -75,7 +75,7 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(outbreakDiseases.contains(Disease.AFP));
 		assertTrue(outbreakDiseases.contains(Disease.CHOLERA));
 
-		creator.updateDiseaseConfiguration(Disease.AFP, null, false, null, null, null);
+		creator.updateDiseaseConfiguration(Disease.AFP, null, false, null, null, null, true, 7, 30);
 		outbreakDtos = getOutbreakFacade().getActive(criteria);
 		assertEquals(1, outbreakDtos.size());
 		outbreakDiseases = outbreakDtos.stream().map(o -> o.getDisease()).collect(Collectors.toList());
@@ -96,7 +96,7 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(outbreakDiseases.contains(Disease.AFP));
 		assertTrue(outbreakDiseases.contains(Disease.CHOLERA));
 
-		creator.updateDiseaseConfiguration(Disease.AFP, null, null, false, null, null);
+		creator.updateDiseaseConfiguration(Disease.AFP, null, null, false, null, null, true, 7, 30);
 		outbreakDtos = getOutbreakFacade().getActive(criteria);
 		assertEquals(1, outbreakDtos.size());
 		outbreakDiseases = outbreakDtos.stream().map(o -> o.getDisease()).collect(Collectors.toList());

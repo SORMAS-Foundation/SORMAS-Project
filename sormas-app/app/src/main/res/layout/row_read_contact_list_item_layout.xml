@@ -122,8 +122,8 @@
                         android:gravity="top"
                         android:textSize="@dimen/row_entry_secondary_text_size"
                         android:textColor="@color/row_entry_secondary_text"
-                        app:value="@{data.contactProximity}"
-                        app:goneIfEmpty="@{data.contactProximity}" />
+                        app:value="@{data.contactProximities}"
+                        app:goneIfEmpty="@{data.contactProximities}" />
 
                     <TextView
                         android:id="@+id/last_contact_date"

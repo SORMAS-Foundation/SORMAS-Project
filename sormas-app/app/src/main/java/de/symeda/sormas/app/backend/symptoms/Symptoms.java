@@ -28,7 +28,10 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
+import de.symeda.sormas.api.symptoms.DiagnosisType;
+import de.symeda.sormas.api.symptoms.InfectionSite;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -86,6 +89,49 @@ public class Symptoms extends PseudonymizableAdo {
 	private Integer midUpperArmCircumference;
 	@Column
 	private Integer glasgowComaScale;
+
+	@Enumerated(EnumType.STRING)
+	private SymptomState apnoea;
+	@Enumerated(EnumType.STRING)
+	private SymptomState arthritis;
+	@Enumerated(EnumType.STRING)
+	private SymptomState asymptomatic;
+
+	@Enumerated(EnumType.STRING)
+	private SymptomState coughingBouts;
+	@Enumerated(EnumType.STRING)
+	private SymptomState coughsProvokeVomiting;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown dateOfOnsetKnown;
+	@Enumerated(EnumType.STRING)
+	private DiagnosisType diagnosis;
+	@Enumerated(EnumType.STRING)
+	private SymptomState hemorrhagicRash;
+	@Enumerated(EnumType.STRING)
+	private InfectionSite majorSite;
+	@Enumerated(EnumType.STRING)
+	private SymptomState meningitis;
+	@Enumerated(EnumType.STRING)
+	private InfectionSite minorSite;
+	@Enumerated(EnumType.STRING)
+	private SymptomState nocturnalCough;
+	@Enumerated(EnumType.STRING)
+	private SymptomState otherClinicalPresentation;
+	@Enumerated(EnumType.STRING)
+	private SymptomState septicaemia;
+	@Enumerated(EnumType.STRING)
+	private SymptomState whoopSound;
+
+	@Column
+	private String otherClinicalPresentationText;
+
+	@Column
+	private String otherMajorSiteDetails;
+
+	@Column
+	private String otherMinorSiteDetails;
+
+
 
 	@Enumerated(EnumType.STRING)
 	private SymptomState fever;
@@ -425,6 +471,43 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState urinaryRetention;
 	@Enumerated(EnumType.STRING)
 	private SymptomState shivering;
+	@Enumerated(EnumType.STRING)
+	private ClinicalPresentationStatus clinicalPresentationStatus;
+    @Enumerated(EnumType.STRING)
+    private SymptomState acuteEncephalitis;
+    @Enumerated(EnumType.STRING)
+    private SymptomState eggyBurps;
+    @Enumerated(EnumType.STRING)
+    private SymptomState weightLoss;
+    @Column
+    private Float weightLossAmount;
+    @Enumerated(EnumType.STRING)
+    private SymptomState reoccurrence;
+    @Enumerated(EnumType.STRING)
+    private SymptomState symptomCurrentStatus;
+    @Column
+    private Integer durationOfSymptoms;
+    @Enumerated(EnumType.STRING)
+    private SymptomState overnightStayRequired;
+    @Enumerated(EnumType.STRING)
+    private SymptomState bloating;
+
+    @Enumerated(EnumType.STRING)
+    private SymptomState difficultyBreathingDuringMeals;
+    @Enumerated(EnumType.STRING)
+    private SymptomState paradoxicalBreathing;
+    @Enumerated(EnumType.STRING)
+    private SymptomState respiratoryFatigue;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown parentTimeOffWork;
+    @Column
+    private Float timeOffWorkDays;
+    @Enumerated(EnumType.STRING)
+    private SymptomState unknownSymptom;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date skinRashOnsetDate;
+
+
 
 	@Override
 	public String getI18nPrefix() {
@@ -477,6 +560,125 @@ public class Symptoms extends PseudonymizableAdo {
 
 	public void setHeartRate(Integer heartRate) {
 		this.heartRate = heartRate;
+	}
+
+	public SymptomState getApnoea() { 
+		return apnoea; 
+	}
+	
+	public void setApnoea(SymptomState apnoea) { 
+		this.apnoea = apnoea; 
+	}
+
+	public SymptomState getArthritis() { 
+		return arthritis; 
+	}
+
+	public void setArthritis(SymptomState arthritis) { 
+		this.arthritis = arthritis; 
+	}
+
+	public SymptomState getAsymptomatic() { 
+		return asymptomatic; 
+	}
+
+	public void setAsymptomatic(SymptomState asymptomatic) { 
+		this.asymptomatic = asymptomatic; 
+	}
+
+	public SymptomState getCoughingBouts() {
+		return coughingBouts;
+	}
+	public void setCoughingBouts(SymptomState coughingBouts) {
+		this.coughingBouts = coughingBouts;
+	}
+
+	public SymptomState getCoughsProvokeVomiting() {
+		return coughsProvokeVomiting;
+	}
+
+	public void setCoughsProvokeVomiting(SymptomState coughsProvokeVomiting) {
+		this.coughsProvokeVomiting = coughsProvokeVomiting;
+	}
+
+	public YesNoUnknown getDateOfOnsetKnown() {
+		return dateOfOnsetKnown;
+	}
+
+	public void setDateOfOnsetKnown(YesNoUnknown dateOfOnsetKnown) {
+		this.dateOfOnsetKnown = dateOfOnsetKnown;
+	}
+
+	public DiagnosisType getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(DiagnosisType diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public SymptomState getHemorrhagicRash() {
+		return hemorrhagicRash;
+	}
+
+	public void setHemorrhagicRash(SymptomState hemorrhagicRash) {
+		this.hemorrhagicRash = hemorrhagicRash;
+	}
+
+	public InfectionSite getMajorSite() {
+		return majorSite;
+	}
+
+	public void setMajorSite(InfectionSite majorSite) {
+		this.majorSite = majorSite;
+	}
+
+	public SymptomState getMeningitis() {
+		return meningitis;
+	}
+
+	public void setMeningitis(SymptomState meningitis) {
+		this.meningitis = meningitis;
+	}
+
+	public InfectionSite getMinorSite() {
+		return minorSite;
+	}
+
+	public void setMinorSite(InfectionSite minorSite) {
+		this.minorSite = minorSite;
+	}
+
+	public void getNocturnalCough(SymptomState nocturnalCough) {
+		this.nocturnalCough = nocturnalCough;
+	}
+
+	public SymptomState getNocturnalCough() {
+		return nocturnalCough;
+	}
+
+	public SymptomState getOtherClinicalPresentation() {
+		return otherClinicalPresentation;
+	}
+
+	public void setOtherClinicalPresentation(SymptomState otherClinicalPresentation) {
+		this.otherClinicalPresentation = otherClinicalPresentation;
+	}
+
+	public SymptomState getSepticaemia() {
+		return septicaemia;
+	}
+
+	public void setSepticaemia(SymptomState septicaemia) {
+		this.septicaemia = septicaemia;
+	}
+
+	public SymptomState getWhoopSound() {
+		return whoopSound;
+	}
+
+	public void setWhoopSound(SymptomState whoopSound) {
+		this.whoopSound = whoopSound;
 	}
 
 	public SymptomState getFever() {
@@ -1870,4 +2072,144 @@ public class Symptoms extends PseudonymizableAdo {
 	public void setShivering(SymptomState shivering) {
 		this.shivering = shivering;
 	}
+
+	public ClinicalPresentationStatus getClinicalPresentationStatus() {
+		return clinicalPresentationStatus;
+	}
+
+	public void setClinicalPresentationStatus(ClinicalPresentationStatus clinicalPresentationStatus) {
+		this.clinicalPresentationStatus = clinicalPresentationStatus;
+	}
+
+    public SymptomState getBloating() {
+        return bloating;
+    }
+
+    public void setBloating(SymptomState bloating) {
+        this.bloating = bloating;
+    }
+
+    public SymptomState getOvernightStayRequired() {
+        return overnightStayRequired;
+    }
+
+    public void setOvernightStayRequired(SymptomState overnightStayRequired) {
+        this.overnightStayRequired = overnightStayRequired;
+    }
+
+    public Integer getDurationOfSymptoms() {
+        return durationOfSymptoms;
+    }
+
+    public void setDurationOfSymptoms(Integer durationOfSymptoms) {
+        this.durationOfSymptoms = durationOfSymptoms;
+    }
+
+    public SymptomState getSymptomCurrentStatus() {
+        return symptomCurrentStatus;
+    }
+
+    public void setSymptomCurrentStatus(SymptomState symptomCurrentStatus) {
+        this.symptomCurrentStatus = symptomCurrentStatus;
+    }
+
+    public SymptomState getReoccurrence() {
+        return reoccurrence;
+    }
+
+    public void setReoccurrence(SymptomState reoccurrence) {
+        this.reoccurrence = reoccurrence;
+    }
+
+    public Float getWeightLossAmount() {
+        return weightLossAmount;
+    }
+
+    public void setWeightLossAmount(Float weightLossAmount) {
+        this.weightLossAmount = weightLossAmount;
+    }
+
+    public SymptomState getWeightLoss() {
+        return weightLoss;
+    }
+
+    public void setWeightLoss(SymptomState weightLoss) {
+        this.weightLoss = weightLoss;
+    }
+
+    public SymptomState getEggyBurps() {
+        return eggyBurps;
+    }
+
+    public void setEggyBurps(SymptomState eggyBurps) {
+        this.eggyBurps = eggyBurps;
+    }
+
+    public SymptomState getAcuteEncephalitis() {
+        return acuteEncephalitis;
+    }
+
+    public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
+        this.acuteEncephalitis = acuteEncephalitis;
+    }
+
+    public Float getTimeOffWorkDays() {
+        return timeOffWorkDays;
+    }
+
+    public void setTimeOffWorkDays(Float timeOffWorkDays) {
+        this.timeOffWorkDays = timeOffWorkDays;
+    }
+
+    public YesNoUnknown getParentTimeOffWork() {
+        return parentTimeOffWork;
+    }
+
+    public void setParentTimeOffWork(YesNoUnknown parentTimeOffWork) {
+        this.parentTimeOffWork = parentTimeOffWork;
+    }
+
+    public SymptomState getRespiratoryFatigue() {
+        return respiratoryFatigue;
+    }
+
+    public void setRespiratoryFatigue(SymptomState respiratoryFatigue) {
+        this.respiratoryFatigue = respiratoryFatigue;
+    }
+
+    public SymptomState getParadoxicalBreathing() {
+        return paradoxicalBreathing;
+    }
+
+    public void setParadoxicalBreathing(SymptomState paradoxicalBreathing) {
+        this.paradoxicalBreathing = paradoxicalBreathing;
+    }
+
+    public SymptomState getDifficultyBreathingDuringMeals() {
+        return difficultyBreathingDuringMeals;
+    }
+
+    public void setDifficultyBreathingDuringMeals(SymptomState difficultyBreathingDuringMeals) {
+        this.difficultyBreathingDuringMeals = difficultyBreathingDuringMeals;
+    }
+
+    public void setNocturnalCough(SymptomState nocturnalCough) {
+        this.nocturnalCough = nocturnalCough;
+    }
+
+    public Date getSkinRashOnsetDate() {
+        return skinRashOnsetDate;
+    }
+
+    public void setSkinRashOnsetDate(Date skinRashOnsetDate) {
+        this.skinRashOnsetDate = skinRashOnsetDate;
+    }
+
+    public SymptomState getUnknownSymptom() {
+        return unknownSymptom;
+    }
+
+    public void setUnknownSymptom(SymptomState unknownSymptom) {
+        this.unknownSymptom = unknownSymptom;
+    }
 }

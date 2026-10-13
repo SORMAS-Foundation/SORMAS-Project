@@ -14,8 +14,14 @@ public class Therapy extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "therapy";
 
+	public static final String DIRECTLY_OBSERVED_TREATMENT = "directlyObservedTreatment";
+	public static final String MDR_XDR_TUBERCULOSIS = "mdrXdrTuberculosis";
+	public static final String BEIJING_LINEAGE = "beijingLineage";
 	public static final String CASE = "caze";
 
+	private boolean directlyObservedTreatment;
+	private boolean mdrXdrTuberculosis;
+	private boolean beijingLineage;
 	private Case caze;
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = Case.THERAPY)
@@ -25,5 +31,29 @@ public class Therapy extends AbstractDomainObject {
 
 	public void setCaze(Case caze) {
 		this.caze = caze;
+	}
+
+	public boolean isDirectlyObservedTreatment() {
+		return directlyObservedTreatment;
+	}
+
+	public void setDirectlyObservedTreatment(boolean directlyObservedTreatment) {
+		this.directlyObservedTreatment = directlyObservedTreatment;
+	}
+
+	public boolean isMdrXdrTuberculosis() {
+		return mdrXdrTuberculosis;
+	}
+
+	public void setMdrXdrTuberculosis(boolean mdrXdrTuberculosis) {
+		this.mdrXdrTuberculosis = mdrXdrTuberculosis;
+	}
+
+	public boolean isBeijingLineage() {
+		return beijingLineage;
+	}
+
+	public void setBeijingLineage(boolean beijingLineage) {
+		this.beijingLineage = beijingLineage;
 	}
 }

@@ -21,6 +21,10 @@
 		<class>de.symeda.sormas.backend.infrastructure.facility.Facility</class>
 		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
 		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Assessment</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Bottleneck</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Enabler</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717CorrectiveAction</class>
 		<class>de.symeda.sormas.backend.location.Location</class>
 		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
 		<class>de.symeda.sormas.backend.person.Person</class>
@@ -75,6 +79,8 @@
 		<class>de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent</class>
 		<class>de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequest</class>
 		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
+		<class>de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadata</class>
+		<class>de.symeda.sormas.backend.customizablefield.CustomizableFieldValue</class>
 		<class>de.symeda.sormas.backend.immunization.entity.BaseImmunization</class>
 		<class>de.symeda.sormas.backend.immunization.entity.Immunization</class>
 		<class>de.symeda.sormas.backend.immunization.entity.DirectoryImmunization</class>
@@ -94,7 +100,14 @@
 		<class>de.symeda.sormas.backend.docgeneration.DocumentTemplate</class>
 		<class>de.symeda.sormas.backend.survey.Survey</class>
 		<class>de.symeda.sormas.backend.survey.SurveyToken</class>
-
+		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue</class>
+		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory</class>
+		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
+		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
+		<class>de.symeda.sormas.backend.epipulse.EpipulseExport</class>
+        <class>de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration</class>
+        <class>de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration</class>
+        <class>de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration</class>
         <class>de.symeda.sormas.backend.news.News</class>
         <class>de.symeda.sormas.backend.news.EiosBoardConfig</class>
 

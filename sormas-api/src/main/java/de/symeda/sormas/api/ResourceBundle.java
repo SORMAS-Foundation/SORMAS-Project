@@ -26,4 +26,8 @@ public class ResourceBundle {
 	public String getString(String key) {
 		return getString(key, null);
 	}
+
+	public java.util.ResourceBundle getResourceBundle() {
+		return resourceBundle;
+	}
 }

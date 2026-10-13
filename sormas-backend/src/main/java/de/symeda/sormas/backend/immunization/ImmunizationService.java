@@ -18,10 +18,13 @@ package de.symeda.sormas.backend.immunization;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -43,8 +46,11 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -53,7 +59,9 @@ import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -61,6 +69,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -96,6 +105,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	private PersonService personService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
@@ -458,6 +469,21 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 
 	public void updateImmunizationStatusBasedOnVaccinations(Immunization immunization) {
 		ImmunizationStatus immunizationStatus = immunization.getImmunizationStatus();
+
+		// Backfill validFrom from vaccination dates only when it is still unset.
+		if (!immunization.getVaccinations().isEmpty()) {
+			Date earliestVaccinationDate = immunization.getVaccinations()
+				.stream()
+				.map(Vaccination::getVaccinationDate)
+				.filter(Objects::nonNull)
+				.min(Date::compareTo)
+				.orElse(null);
+
+			if (earliestVaccinationDate != null && immunization.getValidFrom() == null) {
+				immunization.setValidFrom(earliestVaccinationDate);
+			}
+		}
+
 		if (immunizationStatus != ImmunizationStatus.NOT_ACQUIRED && immunizationStatus != ImmunizationStatus.EXPIRED) {
 			final Integer numberOfDoses = immunization.getNumberOfDoses();
 			final int vaccinationCount = immunization.getVaccinations().size();
@@ -711,5 +737,295 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		}
 
 		return super.getDeleteReferenceField(deletionReference);
+	}
+
+	/**
+	 * Derives the vaccination status data for a single reference date (e.g. a case report date).
+	 * Delegates to {@link #deriveVaccinationStatus(String, Disease, Date, Date)} using the same
+	 * date for both the {@code validFrom} upper bound and the {@code validUntil} lower bound.
+	 *
+	 * @param personUuid
+	 *            UUID of the person
+	 * @param disease
+	 *            disease to match immunizations against
+	 * @param referenceDate
+	 *            the single reference date (case report date)
+	 * @return derived {@link VaccinationStatusData}; never {@code null}
+	 */
+	public VaccinationStatusData deriveVaccinationStatus(String personUuid, Disease disease, Date referenceDate) {
+		// TODO: maybe calculate the effective until date based on the disease and immunization schedule
+		return deriveVaccinationStatus(personUuid, disease, referenceDate, referenceDate);
+	}
+
+	/**
+	 * Derives the vaccination status data for a date range.
+	 * <p>
+	 * Selects the ACQUIRED immunization whose {@code validFrom} is closest to (≤) {@code fromDate}
+	 * and whose {@code validUntil} is >= {@code untilDate} (BR0011–BR0012).
+	 * A {@code null} {@code validUntil} is treated as <em>no match</em> (BR0012 edge case).
+	 * </p>
+	 *
+	 * @param personUuid
+	 *            UUID of the person
+	 * @param disease
+	 *            disease to match immunizations against
+	 * @param fromDate
+	 *            upper bound for {@code validFrom} (e.g. firstContactDate for contacts,
+	 *            event startDate for event participants)
+	 * @param untilDate
+	 *            lower bound for {@code validUntil} (e.g. lastContactDate for contacts,
+	 *            event endDate for event participants); if {@code null}, {@code fromDate} is used
+	 * @return derived {@link VaccinationStatusData}; never {@code null}
+	 */
+	public VaccinationStatusData deriveVaccinationStatus(String personUuid, Disease disease, Date fromDate, Date untilDate) {
+		if (personUuid == null || disease == null || fromDate == null) {
+			return VaccinationStatusData.Builder.createBlank()
+				.vaccinationStatus(VaccinationStatus.UNVACCINATED)
+				.informationReliability(InformationReliability.UNKNOWN)
+				.referencePeriodFrom(untilDate)
+				.referencePeriodTo(untilDate)
+				.build();
+		}
+
+		final Date effectiveUntilDate = untilDate != null ? untilDate : fromDate;
+
+		// Get all immunizations for the person and disease
+		List<Immunization> immunizations = getByPersonAndDisease(personUuid, disease, false);
+
+		if (immunizations.isEmpty()) {
+			return VaccinationStatusData.Builder.createBlank()
+				.vaccinationStatus(getFallbackVaccinationStatus(true))
+				.informationReliability(InformationReliability.UNKNOWN)
+				.referencePeriodFrom(fromDate)
+				.referencePeriodTo(effectiveUntilDate)
+				.build();
+		}
+
+		List<Immunization> notImmunized =
+			immunizations.stream().filter(i -> MeansOfImmunization.NOT_IMMUNIZED.equals(i.getMeansOfImmunization())).collect(Collectors.toList());
+
+		// We only have not immunized entries
+		if (!notImmunized.isEmpty() && notImmunized.size() == immunizations.size()) {
+			// Multiple not immunized entries could exist, 
+			// If so we just pick closest not immunized based on report date relative to fromDate.
+			// Not Immunized entries do not need to be subject to valid from / valid to because we only do this if there are no other immunizations
+			Immunization relevantNotImmunized = notImmunized.stream()
+				.filter(i -> i.getReportDate() != null)
+				.min(Comparator.comparingLong(i -> Math.abs(i.getReportDate().getTime() - fromDate.getTime())))
+				.orElse(null);
+			if (relevantNotImmunized != null) {
+				return VaccinationStatusData.Builder.createFrom(buildVaccinationStatusData(relevantNotImmunized))
+					.referencePeriodFrom(fromDate)
+					.referencePeriodTo(effectiveUntilDate)
+					.build();
+			}
+		}
+
+		// BR0010: only ACQUIRED immunizations are considered
+		List<Immunization> acquiredImmunizations =
+			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
+
+		if (acquiredImmunizations.isEmpty()) {
+			return VaccinationStatusData.Builder.createBlank()
+				.vaccinationStatus(getFallbackVaccinationStatus(false))
+				.informationReliability(InformationReliability.UNKNOWN)
+				.referencePeriodFrom(fromDate)
+				.referencePeriodTo(effectiveUntilDate)
+				.build();
+		}
+
+		// BR0011: select immunization with validFrom closest to (<=) fromDate
+		// BR0012: validUntil must be >= effectiveUntilDate; null validUntil = no match
+		Immunization relevantImmunization = acquiredImmunizations.stream()
+			.filter(i -> i.getValidFrom() != null && !i.getValidFrom().after(fromDate))
+			.filter(i -> i.getValidUntil() != null && !i.getValidUntil().before(effectiveUntilDate))
+			.max(Comparator.comparing(Immunization::getValidFrom))
+			.orElse(null);
+
+		if (relevantImmunization == null) {
+			return VaccinationStatusData.Builder.createBlank()
+				.vaccinationStatus(getFallbackVaccinationStatus(false))
+				.informationReliability(InformationReliability.UNKNOWN)
+				.referencePeriodFrom(fromDate)
+				.referencePeriodTo(effectiveUntilDate)
+				.build();
+		}
+
+		return VaccinationStatusData.Builder.createFrom(buildVaccinationStatusData(relevantImmunization))
+			.referencePeriodFrom(fromDate)
+			.referencePeriodTo(effectiveUntilDate)
+			.build();
+	}
+
+	/**
+	 * Builds a {@link VaccinationStatusData} from an immunization entity applying the simplified
+	 * means-of-immunization mapping (BR0020–BR0024).
+	 */
+	private VaccinationStatusData buildVaccinationStatusData(Immunization immunization) {
+		MeansOfImmunization meansOfImmunization = immunization.getMeansOfImmunization();
+
+		if (meansOfImmunization == null) {
+			return VaccinationStatusData.Builder.createBlank()
+				.vaccinationStatus(getFallbackVaccinationStatus(false))
+				.informationReliability(InformationReliability.UNKNOWN)
+				.build();
+		}
+
+		VaccinationStatus status;
+		String details = null;
+
+		switch (meansOfImmunization) {
+		case VACCINATION:
+		case VACCINATION_RECOVERY: // BR0023 – treat as VACCINATED until further clarification
+		case MATERNAL_VACCINATION:
+		case MONOCLONAL_ANTIBODY:
+			status = VaccinationStatus.VACCINATED;
+			break;
+		case RECOVERY:
+			status = VaccinationStatus.HAD_THE_DISEASE;
+			break;
+		case OTHER:
+			status = VaccinationStatus.OTHER;
+			details = immunization.getMeansOfImmunizationDetails();
+			break;
+		case NOT_IMMUNIZED: // BR0024 (provisional)
+			status = VaccinationStatus.UNVACCINATED;
+			break;
+		default:
+			status = getFallbackVaccinationStatus(false);
+		}
+
+		Integer numberOfDoses = immunization.getNumberOfDoses();
+		InformationReliability reliability = computeInformationReliability(immunization);
+		Date dateOfLastDose = getDateOfLastDose(immunization.getVaccinations());
+
+		return VaccinationStatusData.Builder.createBlank()
+			.vaccinationStatus(status)
+			.numberOfDoses(numberOfDoses)
+			.informationReliability(reliability)
+			.vaccinationStatusDetails(details)
+			.dateOfLastDose(dateOfLastDose)
+			.build();
+	}
+
+	private VaccinationStatus getFallbackVaccinationStatus(boolean noImmunizationEntries) {
+		// BR0080LU: Luxembourg uses UNKNOWN when no immunization records exist
+		return noImmunizationEntries && CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			? VaccinationStatus.UNKNOWN
+			: VaccinationStatus.UNVACCINATED;
+	}
+
+	/**
+	 * Gets the date of the last dose of the given list of vaccinations.
+	 *
+	 * @param vaccinations
+	 *            immunization vaccinations entries
+	 * @return
+	 */
+	private Date getDateOfLastDose(List<Vaccination> vaccinations) {
+		return vaccinations.stream()
+			.filter(Objects::nonNull)
+			.filter(v -> v.getVaccinationDate() != null)
+			.max(Comparator.comparing(Vaccination::getVaccinationDate))
+			.map(Vaccination::getVaccinationDate)
+			.orElse(null);
+	}
+
+	/**
+	 * Computes information reliability for an immunization (BR0032-BR0034).
+	 * If means of immunization is NOT_IMMUNIZED or there are no vaccination entries,
+	 * reliability is derived from the immunization-level vaccination info source.
+	 */
+	private InformationReliability computeInformationReliability(Immunization immunization) {
+		if (immunization == null) {
+			return InformationReliability.UNKNOWN;
+		}
+
+		List<Vaccination> vaccinations = immunization.getVaccinations();
+		if (MeansOfImmunization.NOT_IMMUNIZED.equals(immunization.getMeansOfImmunization()) || vaccinations == null || vaccinations.isEmpty()) {
+			return computeInformationReliability(immunization.getVaccinationInfoSource());
+		}
+
+		final long unknownCount = vaccinations.stream()
+			.filter(Objects::nonNull)
+			.filter(v -> v.getVaccinationInfoSource() == null || v.getVaccinationInfoSource() == VaccinationInfoSource.UNKNOWN)
+			.count();
+
+		if (unknownCount == vaccinations.size()) {
+			return InformationReliability.UNKNOWN;
+		}
+
+		final boolean isLuxembourg = CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		final long reliableCount = vaccinations.stream()
+			.filter(Objects::nonNull)
+			.filter(
+				v -> v.getVaccinationInfoSource() == VaccinationInfoSource.VACCINATION_CARD
+					|| v.getVaccinationInfoSource() == VaccinationInfoSource.VACCINATION_REGISTRY
+					|| (isLuxembourg && v.getVaccinationInfoSource() == VaccinationInfoSource.ORAL_COMMUNICATION))
+			.count();
+
+		if (reliableCount == vaccinations.size()) {
+			return InformationReliability.TRUSTED;
+		}
+
+		return InformationReliability.UNRELIABLE;
+	}
+
+	private InformationReliability computeInformationReliability(VaccinationInfoSource vaccinationInfoSource) {
+		if (vaccinationInfoSource == null || vaccinationInfoSource == VaccinationInfoSource.UNKNOWN) {
+			return InformationReliability.UNKNOWN;
+		}
+
+		if (vaccinationInfoSource == VaccinationInfoSource.VACCINATION_CARD
+			|| vaccinationInfoSource == VaccinationInfoSource.VACCINATION_REGISTRY
+			|| (CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+				&& vaccinationInfoSource == VaccinationInfoSource.ORAL_COMMUNICATION)) {
+			return InformationReliability.TRUSTED;
+		}
+
+		return InformationReliability.UNRELIABLE;
+	}
+
+	/**
+	 * Gets the meansOfImmunizationDetails from the relevant immunization record
+	 * used for deriving vaccination status. This is used when the vaccination status
+	 * is OTHER to display the free text description.
+	 * 
+	 * @param personUuid
+	 *            The person UUID
+	 * @param disease
+	 *            The disease
+	 * @param referenceDate
+	 *            The reference date
+	 * @return The meansOfImmunizationDetails or null if not found
+	 */
+	public String getMeansOfImmunizationDetails(String personUuid, Disease disease, Date referenceDate) {
+		if (personUuid == null || disease == null || referenceDate == null) {
+			return null;
+		}
+
+		// Get all immunizations for the person and disease
+		List<Immunization> immunizations = getByPersonAndDisease(personUuid, disease, false);
+
+		// Filter immunizations with status ACQUIRED
+		List<Immunization> acquiredImmunizations =
+			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
+
+		if (acquiredImmunizations.isEmpty()) {
+			return null;
+		}
+
+		// BR0011/BR0012: same selection logic as deriveVaccinationStatus
+		Immunization relevantImmunization = acquiredImmunizations.stream()
+			.filter(i -> i.getValidFrom() != null && !i.getValidFrom().after(referenceDate))
+			.filter(i -> i.getValidUntil() != null && !i.getValidUntil().before(referenceDate))
+			.max(Comparator.comparing(Immunization::getValidFrom))
+			.orElse(null);
+
+		if (relevantImmunization == null) {
+			return null;
+		}
+
+		return relevantImmunization.getMeansOfImmunizationDetails();
 	}
 }

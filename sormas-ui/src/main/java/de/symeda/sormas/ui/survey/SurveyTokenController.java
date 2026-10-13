@@ -15,17 +15,39 @@
 
 package de.symeda.sormas.ui.survey;
 
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class SurveyTokenController {
+
+	public void registeredViews(Navigator navigator) {
+		navigator.addView(SurveyTokenDataView.VIEW_NAME, SurveyTokenDataView.class);
+	}
+
+	public void navigateToSurveyToken(String surveyTokenUuid) {
+		final String navigationState = SurveyTokenDataView.VIEW_NAME + "/" + surveyTokenUuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	private void navigateToIndex() {
+		String navigationState = SurveyTokensView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
 
 	public void showCaseSurveyDetails(SurveyTokenReferenceDto surveyToken, Runnable callback) {
 		SurveyTokenDataForm form = new SurveyTokenDataForm();
@@ -40,5 +62,62 @@ public class SurveyTokenController {
 		});
 
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCaseSurveyDetails));
+	}
+
+	public TitleLayout getSurveyTokenViewTitleLayout(String uuid) {
+		SurveyTokenDto surveyTokenDto = findSurveyToken(uuid);
+
+		TitleLayout titleLayout = new TitleLayout();
+
+		String shortUuid = DataHelper.getShortUuid(surveyTokenDto.getUuid());
+
+		StringBuilder mainRowText = new StringBuilder(I18nProperties.getCaption(SurveyTokenDto.I18N_PREFIX));
+		mainRowText.append(" (" + shortUuid + ")");
+
+		titleLayout.addMainRow(mainRowText.toString());
+
+		return titleLayout;
+	}
+
+	private SurveyTokenDto findSurveyToken(String uuid) {
+		return FacadeProvider.getSurveyTokenFacade().getByUuid(uuid);
+	}
+
+	public CommitDiscardWrapperComponent<SurveyTokenDataForm> getSurveyTokenEditComponent(
+		String surveyTokenUuid,
+		UserRight editUserRight,
+		boolean isEditAllowed) {
+
+		SurveyTokenDto surveyTokenDto = findSurveyToken(surveyTokenUuid);
+
+		SurveyTokenDataForm surveyTokenDataForm =
+			new SurveyTokenDataForm(UiUtil.permitted(isEditAllowed, editUserRight), surveyTokenDto.toReference());
+		surveyTokenDataForm.setValue(surveyTokenDto);
+
+		CommitDiscardWrapperComponent<SurveyTokenDataForm> editComponent =
+			new CommitDiscardWrapperComponent<>(surveyTokenDataForm, isEditAllowed, surveyTokenDataForm.getFieldGroup());
+
+		editComponent.addCommitListener(() -> {
+			saveSurveyToken(surveyTokenDto);
+			navigateToSurveyToken(surveyTokenUuid);
+		});
+
+		editComponent.addDeleteListener(() -> {
+			FacadeProvider.getSurveyTokenFacade().deletePermanent(surveyTokenUuid);
+			ControllerProvider.getSurveyController().navigateToSurveyTokens(surveyTokenDto.getSurvey().getUuid());
+		}, I18nProperties.getCaption(SurveyTokenDto.I18N_PREFIX), () -> {
+			if (surveyTokenDto.getGeneratedDocument() != null) {
+				return I18nProperties.getString(Strings.messageSurveyTokenDelete);
+			}
+			return null;
+		});
+
+		return editComponent;
+	}
+
+	private void saveSurveyToken(SurveyTokenDto surveyToken) {
+		FacadeProvider.getSurveyTokenFacade().save(surveyToken);
+		Notification.show(I18nProperties.getString(Strings.messageSurveyTokenSaved), Notification.Type.WARNING_MESSAGE);
+		SormasUI.refreshView();
 	}
 }

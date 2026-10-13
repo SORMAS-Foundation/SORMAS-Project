@@ -238,7 +238,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		});
 		creator.createPathogenTest(
 			sample.toReference(),
-			PathogenTestType.RAPID_TEST,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			Disease.CORONAVIRUS,
 			sampleDateTime,
 			rdcf.facility,

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -115,19 +116,19 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			diseaseList,
 			record.getDisease() != null ? record.getDisease() : DiseaseConfigurationCache.getInstance().getDefaultDisease(),
 			e -> {
-				contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+				contentBinding.contactContactProximities.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 				if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 					contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 					contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 				}
-				contentBinding.contactContactProximity.clear();
-				contentBinding.contactContactProximity
-					.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
+				contentBinding.contactContactProximities.setValue(null);
+				contentBinding.contactContactProximities
+					.setItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale())));
 			});
 
 		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			contentBinding.contactContactProximity.addValueChangedListener(
-				e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
+			contentBinding.contactContactProximities.addValueChangedListener(
+				e -> updateContactCategory(contentBinding, (Set<ContactProximity>) contentBinding.contactContactProximities.getValue()));
 		} else {
 			contentBinding.contactContactProximityDetails.setVisibility(GONE);
 			contentBinding.contactContactCategory.setVisibility(GONE);
@@ -137,8 +138,8 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			contentBinding.contactDisease.setVisibility(GONE);
 			contentBinding.contactCaseIdExternalSystem.setVisibility(GONE);
 			contentBinding.contactCaseOrEventInformation.setVisibility(GONE);
-			contentBinding.contactContactProximity
-				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease(), ConfigProvider.getServerLocale()))));
+			contentBinding.contactContactProximities
+				.setItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease(), ConfigProvider.getServerLocale())));
 		} else {
 			contentBinding.contactDisease.setRequired(true);
 			contentBinding.contactRegion.setRequired(true);
@@ -146,7 +147,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 		}
 
 		if (getPrimaryData().getDisease() == null) {
-			contentBinding.contactContactProximity.setVisibility(GONE);
+			contentBinding.contactContactProximities.setVisibility(GONE);
 			contentBinding.contactContactProximityDetails.setVisibility(GONE);
 			contentBinding.contactContactCategory.setVisibility(GONE);
 		}
@@ -157,31 +158,44 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 	/*
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
-	private void updateContactCategory(FragmentContactNewLayoutBinding contentBinding, ContactProximity proximity) {
-		if (proximity != null) {
-			switch (proximity) {
-			case FACE_TO_FACE_LONG:
-			case TOUCHED_FLUID:
-			case AEROSOL:
-				contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK);
-				break;
-			case MEDICAL_UNSAFE:
-				contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK_MED);
-				break;
-			case MEDICAL_LIMITED:
-				contentBinding.contactContactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
-				break;
-			case SAME_ROOM:
-			case FACE_TO_FACE_SHORT:
-			case MEDICAL_SAME_ROOM:
-				contentBinding.contactContactCategory.setValue(ContactCategory.LOW_RISK);
-				break;
-			case MEDICAL_DISTANT:
-			case MEDICAL_SAFE:
-				contentBinding.contactContactCategory.setValue(ContactCategory.NO_RISK);
-				break;
-			default:
+	private void updateContactCategory(FragmentContactNewLayoutBinding contentBinding, Set<ContactProximity> proximities) {
+		ContactCategory highestCategory = null;
+		if (proximities != null) {
+			for (ContactProximity proximity : proximities) {
+				if (proximity == null) {
+					continue;
+				}
+				ContactCategory category = getContactCategoryForProximity(proximity);
+				if (category != null && (highestCategory == null || category.ordinal() < highestCategory.ordinal())) {
+					highestCategory = category;
+				}
 			}
+		}
+		contentBinding.contactContactCategory.setValue(highestCategory);
+	}
+
+	private ContactCategory getContactCategoryForProximity(ContactProximity proximity) {
+		if (proximity == null) {
+			return null;
+		}
+		switch (proximity) {
+		case FACE_TO_FACE_LONG:
+		case TOUCHED_FLUID:
+		case AEROSOL:
+			return ContactCategory.HIGH_RISK;
+		case MEDICAL_UNSAFE:
+			return ContactCategory.HIGH_RISK_MED;
+		case MEDICAL_LIMITED:
+			return ContactCategory.MEDIUM_RISK_MED;
+		case SAME_ROOM:
+		case FACE_TO_FACE_SHORT:
+		case MEDICAL_SAME_ROOM:
+			return ContactCategory.LOW_RISK;
+		case MEDICAL_DISTANT:
+		case MEDICAL_SAFE:
+			return ContactCategory.NO_RISK;
+		default:
+			return null;
 		}
 	}
 

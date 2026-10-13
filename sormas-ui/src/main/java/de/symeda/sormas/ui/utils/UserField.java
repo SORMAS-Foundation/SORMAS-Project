@@ -44,8 +44,6 @@ public class UserField extends CustomField<UserReferenceDto> {
 		userCombo = ComboBoxHelper.createComboBoxV7();
 		userCombo.addItems(items);
 
-		userCombo.setNewItemsAllowed(true);
-
 		userCombo.setImmediate(true);
 		if (getValue() != null) {
 			userCombo.addItem(getValue());

@@ -17,234 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import static de.symeda.sormas.api.user.UserRight.ACTION_CREATE;
-import static de.symeda.sormas.api.user.UserRight.ACTION_DELETE;
-import static de.symeda.sormas.api.user.UserRight.ACTION_EDIT;
-import static de.symeda.sormas.api.user.UserRight.ADDITIONAL_TEST_CREATE;
-import static de.symeda.sormas.api.user.UserRight.ADDITIONAL_TEST_DELETE;
-import static de.symeda.sormas.api.user.UserRight.ADDITIONAL_TEST_EDIT;
-import static de.symeda.sormas.api.user.UserRight.ADDITIONAL_TEST_VIEW;
-import static de.symeda.sormas.api.user.UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE;
-import static de.symeda.sormas.api.user.UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE;
-import static de.symeda.sormas.api.user.UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT;
-import static de.symeda.sormas.api.user.UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW;
-import static de.symeda.sormas.api.user.UserRight.AGGREGATE_REPORT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.AGGREGATE_REPORT_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.AGGREGATE_REPORT_VIEW;
-import static de.symeda.sormas.api.user.UserRight.BAG_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_DELETE;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_EDIT;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_FORM_DATA_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_FORM_DATA_DELETE;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_FORM_DATA_EDIT;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_FORM_DATA_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_FORM_DATA_VIEW;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_FORM_DATA_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_VIEW;
-import static de.symeda.sormas.api.user.UserRight.CAMPAIGN_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.CASE_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.CASE_CHANGE_DISEASE;
-import static de.symeda.sormas.api.user.UserRight.CASE_CHANGE_EPID_NUMBER;
-import static de.symeda.sormas.api.user.UserRight.CASE_CLASSIFY;
-import static de.symeda.sormas.api.user.UserRight.CASE_CLINICIAN_VIEW;
-import static de.symeda.sormas.api.user.UserRight.CASE_CREATE;
-import static de.symeda.sormas.api.user.UserRight.CASE_DELETE;
-import static de.symeda.sormas.api.user.UserRight.CASE_EDIT;
-import static de.symeda.sormas.api.user.UserRight.CASE_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.CASE_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.CASE_INVESTIGATE;
-import static de.symeda.sormas.api.user.UserRight.CASE_MERGE;
-import static de.symeda.sormas.api.user.UserRight.CASE_REFER_FROM_POE;
-import static de.symeda.sormas.api.user.UserRight.CASE_RESPONSIBLE;
-import static de.symeda.sormas.api.user.UserRight.CASE_SHARE;
-import static de.symeda.sormas.api.user.UserRight.CASE_TRANSFER;
-import static de.symeda.sormas.api.user.UserRight.CASE_VIEW;
-import static de.symeda.sormas.api.user.UserRight.CASE_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.CLINICAL_COURSE_EDIT;
-import static de.symeda.sormas.api.user.UserRight.CLINICAL_COURSE_VIEW;
-import static de.symeda.sormas.api.user.UserRight.CLINICAL_VISIT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.CLINICAL_VISIT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.CLINICAL_VISIT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_CONVERT;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_MERGE;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_REASSIGN_CASE;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_RESPONSIBLE;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_VIEW;
-import static de.symeda.sormas.api.user.UserRight.CONTACT_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT;
-import static de.symeda.sormas.api.user.UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW;
-import static de.symeda.sormas.api.user.UserRight.DASHBOARD_CAMPAIGNS_VIEW;
-import static de.symeda.sormas.api.user.UserRight.DASHBOARD_CONTACT_VIEW;
-import static de.symeda.sormas.api.user.UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS;
-import static de.symeda.sormas.api.user.UserRight.DASHBOARD_SAMPLES_VIEW;
-import static de.symeda.sormas.api.user.UserRight.DASHBOARD_SURVEILLANCE_VIEW;
-import static de.symeda.sormas.api.user.UserRight.DATABASE_EXPORT_ACCESS;
-import static de.symeda.sormas.api.user.UserRight.DEV_MODE;
-import static de.symeda.sormas.api.user.UserRight.DOCUMENT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.DOCUMENT_TEMPLATE_MANAGEMENT;
-import static de.symeda.sormas.api.user.UserRight.DOCUMENT_UPLOAD;
-import static de.symeda.sormas.api.user.UserRight.DOCUMENT_VIEW;
-import static de.symeda.sormas.api.user.UserRight.EDIT_NEWS;
-import static de.symeda.sormas.api.user.UserRight.EMAIL_TEMPLATE_MANAGEMENT;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_PATHOGEN_TEST_CREATE;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_PATHOGEN_TEST_EDIT;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_SAMPLE_CREATE;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_SAMPLE_DELETE;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_SAMPLE_EDIT;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_SAMPLE_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_SAMPLE_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_SAMPLE_VIEW;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_VIEW;
-import static de.symeda.sormas.api.user.UserRight.ENVIRONMENT_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.EVENTGROUP_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.EVENTGROUP_CREATE;
-import static de.symeda.sormas.api.user.UserRight.EVENTGROUP_DELETE;
-import static de.symeda.sormas.api.user.UserRight.EVENTGROUP_EDIT;
-import static de.symeda.sormas.api.user.UserRight.EVENTGROUP_LINK;
-import static de.symeda.sormas.api.user.UserRight.EVENTGROUP_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.EVENTPARTICIPANT_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.EVENTPARTICIPANT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.EVENTPARTICIPANT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.EVENTPARTICIPANT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.EVENTPARTICIPANT_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.EVENTPARTICIPANT_VIEW;
-import static de.symeda.sormas.api.user.UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.EVENT_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.EVENT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.EVENT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.EVENT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.EVENT_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.EVENT_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.EVENT_RESPONSIBLE;
-import static de.symeda.sormas.api.user.UserRight.EVENT_VIEW;
-import static de.symeda.sormas.api.user.UserRight.EVENT_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.EXPORT_DATA_PROTECTION_DATA;
-import static de.symeda.sormas.api.user.UserRight.EXTERNAL_EMAIL_ATTACH_DOCUMENTS;
-import static de.symeda.sormas.api.user.UserRight.EXTERNAL_EMAIL_SEND;
-import static de.symeda.sormas.api.user.UserRight.EXTERNAL_MESSAGE_DELETE;
-import static de.symeda.sormas.api.user.UserRight.EXTERNAL_MESSAGE_PROCESS;
-import static de.symeda.sormas.api.user.UserRight.EXTERNAL_MESSAGE_VIEW;
-import static de.symeda.sormas.api.user.UserRight.EXTERNAL_VISITS;
-import static de.symeda.sormas.api.user.UserRight.GRANT_SPECIAL_CASE_ACCESS;
-import static de.symeda.sormas.api.user.UserRight.IMMUNIZATION_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.IMMUNIZATION_CREATE;
-import static de.symeda.sormas.api.user.UserRight.IMMUNIZATION_DELETE;
-import static de.symeda.sormas.api.user.UserRight.IMMUNIZATION_EDIT;
-import static de.symeda.sormas.api.user.UserRight.IMMUNIZATION_VIEW;
-import static de.symeda.sormas.api.user.UserRight.IMMUNIZATION_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.INFRASTRUCTURE_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.INFRASTRUCTURE_CREATE;
-import static de.symeda.sormas.api.user.UserRight.INFRASTRUCTURE_EDIT;
-import static de.symeda.sormas.api.user.UserRight.INFRASTRUCTURE_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.INFRASTRUCTURE_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.INFRASTRUCTURE_VIEW;
-import static de.symeda.sormas.api.user.UserRight.INFRASTRUCTURE_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.LINE_LISTING_CONFIGURE;
-import static de.symeda.sormas.api.user.UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL;
-import static de.symeda.sormas.api.user.UserRight.MANAGE_PUBLIC_EXPORT_CONFIGURATION;
-import static de.symeda.sormas.api.user.UserRight.OUTBREAK_EDIT;
-import static de.symeda.sormas.api.user.UserRight.OUTBREAK_VIEW;
-import static de.symeda.sormas.api.user.UserRight.PATHOGEN_TEST_CREATE;
-import static de.symeda.sormas.api.user.UserRight.PATHOGEN_TEST_DELETE;
-import static de.symeda.sormas.api.user.UserRight.PATHOGEN_TEST_EDIT;
-import static de.symeda.sormas.api.user.UserRight.PERFORM_BULK_OPERATIONS;
-import static de.symeda.sormas.api.user.UserRight.PERFORM_BULK_OPERATIONS_PSEUDONYM;
-import static de.symeda.sormas.api.user.UserRight.PERSON_CONTACT_DETAILS_DELETE;
-import static de.symeda.sormas.api.user.UserRight.PERSON_DELETE;
-import static de.symeda.sormas.api.user.UserRight.PERSON_EDIT;
-import static de.symeda.sormas.api.user.UserRight.PERSON_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.PERSON_MERGE;
-import static de.symeda.sormas.api.user.UserRight.PERSON_VIEW;
-import static de.symeda.sormas.api.user.UserRight.POPULATION_MANAGE;
-import static de.symeda.sormas.api.user.UserRight.PORT_HEALTH_INFO_EDIT;
-import static de.symeda.sormas.api.user.UserRight.PORT_HEALTH_INFO_VIEW;
-import static de.symeda.sormas.api.user.UserRight.PRESCRIPTION_CREATE;
-import static de.symeda.sormas.api.user.UserRight.PRESCRIPTION_DELETE;
-import static de.symeda.sormas.api.user.UserRight.PRESCRIPTION_EDIT;
-import static de.symeda.sormas.api.user.UserRight.QUARANTINE_ORDER_CREATE;
-import static de.symeda.sormas.api.user.UserRight.SAMPLE_CREATE;
-import static de.symeda.sormas.api.user.UserRight.SAMPLE_DELETE;
-import static de.symeda.sormas.api.user.UserRight.SAMPLE_EDIT;
-import static de.symeda.sormas.api.user.UserRight.SAMPLE_EDIT_NOT_OWNED;
-import static de.symeda.sormas.api.user.UserRight.SAMPLE_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.SAMPLE_TRANSFER;
-import static de.symeda.sormas.api.user.UserRight.SAMPLE_VIEW;
-import static de.symeda.sormas.api.user.UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION;
-import static de.symeda.sormas.api.user.UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION;
-import static de.symeda.sormas.api.user.UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION;
-import static de.symeda.sormas.api.user.UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION;
-import static de.symeda.sormas.api.user.UserRight.SELF_REPORT_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.SELF_REPORT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.SELF_REPORT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.SELF_REPORT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.SELF_REPORT_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.SELF_REPORT_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.SELF_REPORT_PROCESS;
-import static de.symeda.sormas.api.user.UserRight.SELF_REPORT_VIEW;
-import static de.symeda.sormas.api.user.UserRight.SEND_MANUAL_EXTERNAL_MESSAGES;
-import static de.symeda.sormas.api.user.UserRight.SORMAS_REST;
-import static de.symeda.sormas.api.user.UserRight.SORMAS_UI;
-import static de.symeda.sormas.api.user.UserRight.STATISTICS_ACCESS;
-import static de.symeda.sormas.api.user.UserRight.STATISTICS_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_CREATE;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_DELETE;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_EDIT;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_TOKEN_CREATE;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_TOKEN_DELETE;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_TOKEN_EDIT;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_TOKEN_IMPORT;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_TOKEN_VIEW;
-import static de.symeda.sormas.api.user.UserRight.SURVEY_VIEW;
-import static de.symeda.sormas.api.user.UserRight.TASK_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.TASK_ASSIGN;
-import static de.symeda.sormas.api.user.UserRight.TASK_CREATE;
-import static de.symeda.sormas.api.user.UserRight.TASK_DELETE;
-import static de.symeda.sormas.api.user.UserRight.TASK_EDIT;
-import static de.symeda.sormas.api.user.UserRight.TASK_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.TASK_VIEW;
-import static de.symeda.sormas.api.user.UserRight.TASK_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.THERAPY_VIEW;
-import static de.symeda.sormas.api.user.UserRight.TRAVEL_ENTRY_ARCHIVE;
-import static de.symeda.sormas.api.user.UserRight.TRAVEL_ENTRY_CREATE;
-import static de.symeda.sormas.api.user.UserRight.TRAVEL_ENTRY_DELETE;
-import static de.symeda.sormas.api.user.UserRight.TRAVEL_ENTRY_EDIT;
-import static de.symeda.sormas.api.user.UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS;
-import static de.symeda.sormas.api.user.UserRight.TRAVEL_ENTRY_VIEW;
-import static de.symeda.sormas.api.user.UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED;
-import static de.symeda.sormas.api.user.UserRight.TREATMENT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.TREATMENT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.TREATMENT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.USER_CREATE;
-import static de.symeda.sormas.api.user.UserRight.USER_EDIT;
-import static de.symeda.sormas.api.user.UserRight.USER_ROLE_DELETE;
-import static de.symeda.sormas.api.user.UserRight.USER_ROLE_EDIT;
-import static de.symeda.sormas.api.user.UserRight.USER_ROLE_VIEW;
-import static de.symeda.sormas.api.user.UserRight.USER_VIEW;
-import static de.symeda.sormas.api.user.UserRight.VIEW_NEWS;
-import static de.symeda.sormas.api.user.UserRight.VISIT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.VISIT_DELETE;
-import static de.symeda.sormas.api.user.UserRight.VISIT_EDIT;
-import static de.symeda.sormas.api.user.UserRight.VISIT_EXPORT;
-import static de.symeda.sormas.api.user.UserRight.WEEKLYREPORT_CREATE;
-import static de.symeda.sormas.api.user.UserRight.WEEKLYREPORT_VIEW;
+import static de.symeda.sormas.api.user.UserRight.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -604,6 +377,8 @@ public enum DefaultUserRole {
 					EVENTGROUP_ARCHIVE,
 					EVENTGROUP_VIEW_ARCHIVED,
 					EVENTGROUP_DELETE,
+					EVENT_717_ASSESSMENT_VIEW,
+					EVENT_717_ASSESSMENT_EDIT,
 					WEEKLYREPORT_VIEW,
 					USER_CREATE,
 					USER_EDIT,
@@ -677,6 +452,7 @@ public enum DefaultUserRole {
 					ENVIRONMENT_DELETE,
 					ENVIRONMENT_IMPORT,
 					ENVIRONMENT_EXPORT,
+					ENVIRONMENT_LINK,
 					ENVIRONMENT_SAMPLE_VIEW,
 					ENVIRONMENT_SAMPLE_CREATE,
 					ENVIRONMENT_SAMPLE_EDIT,
@@ -709,7 +485,9 @@ public enum DefaultUserRole {
 					SORMAS_REST,
 					SORMAS_UI,
 					DEV_MODE,
-					CUSTOMIZABLE_ENUM_MANAGEMENT));
+					CUSTOMIZABLE_ENUM_MANAGEMENT,
+					CUSTOMIZABLE_FIELD_MANAGEMENT,
+					SYSTEM_CONFIGURATION));
 			break;
 		case ADMIN_SUPERVISOR:
 			userRights.addAll(
@@ -1620,6 +1398,8 @@ public enum DefaultUserRole {
 					EVENTGROUP_EDIT,
 					EVENTGROUP_LINK,
 					EVENTGROUP_DELETE,
+					EVENT_717_ASSESSMENT_VIEW,
+					EVENT_717_ASSESSMENT_EDIT,
 					WEEKLYREPORT_VIEW,
 					SEND_MANUAL_EXTERNAL_MESSAGES,
 					STATISTICS_ACCESS,
@@ -1652,9 +1432,16 @@ public enum DefaultUserRole {
 					CAMPAIGN_FORM_DATA_ARCHIVE,
 					CAMPAIGN_FORM_DATA_VIEW_ARCHIVED,
 					CAMPAIGN_FORM_DATA_EXPORT,
-					EXTERNAL_MESSAGE_VIEW,
-					EXTERNAL_MESSAGE_PROCESS,
-					EXTERNAL_MESSAGE_DELETE,
+					EXTERNAL_MESSAGE_ACCESS,
+					EXTERNAL_MESSAGE_LABORATORY_VIEW,
+					EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW,
+					EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW,
+					EXTERNAL_MESSAGE_LABORATORY_PROCESS,
+					EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS,
+					EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS,
+					EXTERNAL_MESSAGE_LABORATORY_DELETE,
+					EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE,
+					EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE,
 					PERFORM_BULK_OPERATIONS,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
@@ -1669,6 +1456,7 @@ public enum DefaultUserRole {
 					ENVIRONMENT_DELETE,
 					ENVIRONMENT_IMPORT,
 					ENVIRONMENT_EXPORT,
+					ENVIRONMENT_LINK,
 					ENVIRONMENT_SAMPLE_VIEW,
 					ENVIRONMENT_SAMPLE_CREATE,
 					ENVIRONMENT_SAMPLE_EDIT,
@@ -1697,6 +1485,15 @@ public enum DefaultUserRole {
 					EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI,
+					SURVEY_VIEW,
+					SURVEY_CREATE,
+					SURVEY_EDIT,
+					SURVEY_DELETE,
+					SURVEY_TOKEN_VIEW,
+					SURVEY_TOKEN_CREATE,
+					SURVEY_TOKEN_EDIT,
+					SURVEY_TOKEN_DELETE,
+					SURVEY_TOKEN_IMPORT,
 					EDIT_NEWS,
 					VIEW_NEWS));
 			break;
@@ -1847,6 +1644,7 @@ public enum DefaultUserRole {
 					ENVIRONMENT_DELETE,
 					ENVIRONMENT_IMPORT,
 					ENVIRONMENT_EXPORT,
+					ENVIRONMENT_LINK,
 					ENVIRONMENT_SAMPLE_VIEW,
 					ENVIRONMENT_SAMPLE_CREATE,
 					ENVIRONMENT_SAMPLE_EDIT,
@@ -2031,6 +1829,7 @@ public enum DefaultUserRole {
 					CONTACT_CONVERT,
 					CONTACT_EXPORT,
 					CONTACT_REASSIGN_CASE,
+					DOCUMENT_DELETE,
 					MANAGE_EXTERNAL_SYMPTOM_JOURNAL,
 					VISIT_EXPORT,
 					VISIT_DELETE,
@@ -2080,9 +1879,16 @@ public enum DefaultUserRole {
 					CAMPAIGN_FORM_DATA_VIEW,
 					CAMPAIGN_FORM_DATA_EDIT,
 					CAMPAIGN_FORM_DATA_EXPORT,
-					EXTERNAL_MESSAGE_VIEW,
-					EXTERNAL_MESSAGE_PROCESS,
-					EXTERNAL_MESSAGE_DELETE,
+					EXTERNAL_MESSAGE_ACCESS,
+					EXTERNAL_MESSAGE_LABORATORY_VIEW,
+					EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW,
+					EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW,
+					EXTERNAL_MESSAGE_LABORATORY_PROCESS,
+					EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS,
+					EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS,
+					EXTERNAL_MESSAGE_LABORATORY_DELETE,
+					EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE,
+					EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE,
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
@@ -2102,7 +1908,16 @@ public enum DefaultUserRole {
 					EXTERNAL_EMAIL_SEND,
 					EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
-					SORMAS_UI));
+					SORMAS_UI,
+					SURVEY_VIEW,
+					SURVEY_CREATE,
+					SURVEY_EDIT,
+					SURVEY_DELETE,
+					SURVEY_TOKEN_VIEW,
+					SURVEY_TOKEN_CREATE,
+					SURVEY_TOKEN_EDIT,
+					SURVEY_TOKEN_DELETE,
+					SURVEY_TOKEN_IMPORT));
 			break;
 		default:
 			throw new IllegalArgumentException(this.toString());

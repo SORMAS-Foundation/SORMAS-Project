@@ -34,6 +34,7 @@ public class ClinicalCourseController {
 		ClinicalVisitForm form = new ClinicalVisitForm(
 			true,
 			clinicalVisit.getDisease(),
+			caze.getSyphilisPresentation(),
 			FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid()),
 			false,
 			true); // Valid because jurisdiction doesn't matter for entities that are about to be created
@@ -74,6 +75,7 @@ public class ClinicalCourseController {
 		ClinicalVisitForm form = new ClinicalVisitForm(
 			false,
 			clinicalVisit.getDisease(),
+			caze.getSyphilisPresentation(),
 			FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid()),
 			clinicalVisit.isPseudonymized(),
 			clinicalVisit.isInJurisdiction());

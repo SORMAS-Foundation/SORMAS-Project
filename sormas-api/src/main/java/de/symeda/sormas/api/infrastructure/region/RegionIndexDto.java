@@ -37,6 +37,7 @@ public class RegionIndexDto extends EntityDto {
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country";
 	public static final String DEFAULT_INFRASTRUCTURE = "defaultInfrastructure";
+	public static final String NUTS_CODE = "nutsCode";
 
 	private String name;
 	private String epidCode;
@@ -46,6 +47,7 @@ public class RegionIndexDto extends EntityDto {
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;
 	private boolean defaultInfrastructure;
+	private String nutsCode;
 
 	public String getName() {
 		return name;
@@ -109,6 +111,14 @@ public class RegionIndexDto extends EntityDto {
 
 	public void setDefaultInfrastructure(boolean defaultInfrastructure) {
 		this.defaultInfrastructure = defaultInfrastructure;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 
 	public RegionReferenceDto toReference() {

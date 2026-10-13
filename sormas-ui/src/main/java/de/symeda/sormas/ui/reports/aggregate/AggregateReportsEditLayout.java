@@ -483,6 +483,24 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			return;
 		}
 
+		if (comboBoxRegion.getValue() == null) {
+			comboBoxRegion.setComponentError(new UserError(I18nProperties.getString(Validations.required)));
+			Notification.show(I18nProperties.getValidationError(Validations.validRegion), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		if (comboBoxDistrict.getValue() == null) {
+			comboBoxDistrict.setComponentError(new UserError(I18nProperties.getString(Validations.required)));
+			Notification.show(I18nProperties.getValidationError(Validations.validDistrict), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		if (UiUtil.isPortHealthUser() && comboBoxPoe.getValue() == null) {
+			comboBoxPoe.setComponentError(new UserError(I18nProperties.getString(Validations.required)));
+			Notification.show(I18nProperties.getValidationError(Validations.validPointOfEntry), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
 		for (AggregateReportEditForm editForm : editForms) {
 
 			String deathsFieldValue = (String) editForm.getField(AggregateReportDto.DEATHS).getValue();

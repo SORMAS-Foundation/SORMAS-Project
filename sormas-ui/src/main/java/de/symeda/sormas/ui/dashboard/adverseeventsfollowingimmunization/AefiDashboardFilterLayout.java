@@ -16,8 +16,6 @@
 package de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.vaadin.v7.ui.ComboBox;
 
@@ -75,18 +73,15 @@ public class AefiDashboardFilterLayout extends DashboardFilterLayout<AefiDashboa
 		diseaseFilter.setWidth(200, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
 		diseaseFilter.setDescription(I18nProperties.getDescription(Descriptions.aefiDashboardDiseaseFilter));
-		List<?> availableDisease = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+		List<Disease> availableDisease = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 
-		diseaseFilter
-			.addItems(Stream.concat(availableDisease.stream(), Stream.of(AefiDashboardCustomDiseaseFilter.values())).collect(Collectors.toList()));
+		diseaseFilter.addItems(availableDisease);
 		diseaseFilter.setValue(dashboardDataProvider.getDisease());
 
 		diseaseFilter.addValueChangeListener(e -> {
 			Object filterValue = diseaseFilter.getValue();
 			if (filterValue instanceof Disease) {
 				dashboardDataProvider.setDisease((Disease) filterValue);
-			} else if (filterValue == AefiDashboardCustomDiseaseFilter.NO_DISEASE) {
-				dashboardDataProvider.setDisease(null);
 			} else if (filterValue == null) {
 				dashboardDataProvider.setDisease(null);
 			} else {
@@ -95,15 +90,5 @@ public class AefiDashboardFilterLayout extends DashboardFilterLayout<AefiDashboa
 		});
 
 		addCustomComponent(diseaseFilter, DISEASE_FILTER);
-	}
-
-	enum AefiDashboardCustomDiseaseFilter {
-
-		NO_DISEASE;
-
-		@Override
-		public String toString() {
-			return I18nProperties.getEnumCaptionShort(this);
-		}
 	}
 }

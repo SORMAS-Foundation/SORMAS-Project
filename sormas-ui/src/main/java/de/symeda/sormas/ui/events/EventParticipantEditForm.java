@@ -29,6 +29,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -106,7 +107,12 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		addField(EventParticipantDto.VACCINATION_STATUS);
+		boolean showVaccinationStatusFields = !UiUtil.enabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			|| FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
+		ComboBox vaccinationStatusField = addField(EventParticipantDto.VACCINATION_STATUS);
+		if (!showVaccinationStatusFields) {
+			vaccinationStatusField.setVisible(false);
+		}
 
 		addField(EventParticipantDto.DELETION_REASON);
 		addField(EventParticipantDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);

@@ -19,9 +19,11 @@ package de.symeda.sormas.backend.sample;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,23 +31,40 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.environment.environmentsample.Pathogen;
-import de.symeda.sormas.api.sample.PCRTestSpecification;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.disease.PathogenConverter;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.sample.Biotype;
+import de.symeda.sormas.api.sample.GenoType;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenSpecie;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestScale;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.RsvSubtype;
+import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
+import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.sample.SmearGrade;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
+import de.symeda.sormas.api.sample.TargetTest;
+import de.symeda.sormas.api.sample.TestRunStatus;
+import de.symeda.sormas.api.sample.WesternBlotInterpretation;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -75,6 +94,11 @@ public class PathogenTest extends DeletableAdo {
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
+	public static final String SEROTYPE_TEXT = "serotypeText";
+	public static final String BIOTYPE = "biotype";
+	public static final String WGS_PERFORMED = "wgsPerformed";
+	public static final String WGS_CLUSTER_ID = "wgsClusterId";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -91,6 +115,18 @@ public class PathogenTest extends DeletableAdo {
 	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
+	public static final String RIFAMPICIN_RESISTANT = "rifampicinResistant";
+	public static final String ISONIAZID_RESISTANT = "isoniazidResistant";
+	public static final String SPECIE = "specie";
+	public static final String PATTERN_PROFILE = "patternProfile";
+	public static final String STRAIN_CALL_STATUS = "strainCallStatus";
+	public static final String TEST_SCALE = "testScale";
+	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
+	public static final String RSV_SUBTYPE = "rsvSubtype";
+	public static final String SYPHILIS_SEROLOGY_METHOD = "syphilisSerologyMethod";
+	public static final String SYPHILIS_SEROLOGY_METHOD_TEXT = "syphilisSerologyMethodText";
+	public static final String SRA_RUN_ID = "sraRunId";
+	public static final String ACCESSION_NUMBER = "accessionNumber";
 
 	private Sample sample;
 	private EnvironmentSample environmentSample;
@@ -114,7 +150,7 @@ public class PathogenTest extends DeletableAdo {
 	private String testResultText;
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
-	private String serotype;
+
 	private Float cqValue;
 	private Float ctValueE;
 	private Float ctValueN;
@@ -135,6 +171,63 @@ public class PathogenTest extends DeletableAdo {
 	private String prescriberPostalCode;
 	private String prescriberCity;
 	private Country prescriberCountry;
+	private YesNoUnknown rifampicinResistant;
+	private YesNoUnknown isoniazidResistant;
+	private PathogenSpecie specie;
+	private String specieText;
+	private String patternProfile;
+	private PathogenStrainCallStatus strainCallStatus;
+	private PathogenTestScale testScale;
+	private DrugSusceptibility drugSusceptibility;
+	private String miruPatternProfile;
+	private Serotype serotype;
+	// serotypeText to capture the custom values and to display the existing string values.
+	private String serotypeText;
+	private Biotype biotype;
+	private String biotypeText;
+	private YesNoUnknown wgsPerformed;
+	private String wgsClusterId;
+	private Boolean virulenceGenesDetected;
+	private SerotypingMethod seroTypingMethod;
+	private String seroTypingMethodText;
+	private GenoType genoType;
+	private String genoTypeText;
+	private String porBAllele;
+	private String tbpBAllele;
+	private String sequenceType;
+	private String genogroup;
+	private SeroGroupSpecification seroGroupSpecification;
+	private String seroGroupSpecificationText;
+	private RsvSubtype rsvSubtype;
+	private SyphilisSerologyMethod syphilisSerologyMethod;
+	private String syphilisSerologyMethodText;
+	private Float tubeNil;
+	private Boolean tubeNilGT10;
+	private Float tubeAgTb1;
+	private Boolean tubeAgTb1GT10;
+	private Float tubeAgTb2;
+	private Boolean tubeAgTb2GT10;
+	private Float tubeMitogene;
+	private Boolean tubeMitogeneGT10;
+	// Dengue and Malaria changes
+	private String antibodyTitre;
+	private Boolean performedByReferenceLaboratory;
+	private Boolean retestRequested;
+	private Float quantitativeValue;
+	private String quantitativeUnit;
+	private YesNoUnknown quantitativeBoolean;
+	private SmearGrade smearGrade;
+	private WesternBlotInterpretation westernBlotInterpretation;
+	private String sequenceId;
+	private Boolean seroConversion;
+	private TargetTest targetTest;
+	private String targetTestText;
+	private TestRunStatus testRunStatus;
+	private YesNoUnknown sequenceDataUploadedToPublicRepository;
+	private String sraRunId;
+	private String accessionNumber;
+	private String mlstSequenceType;
+	private String cgMlstCluster;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -324,7 +417,7 @@ public class PathogenTest extends DeletableAdo {
 		this.testResultText = testResultText;
 	}
 
-	@Column(nullable = false)
+	@Column
 	public Boolean getTestResultVerified() {
 		return testResultVerified;
 	}
@@ -342,13 +435,67 @@ public class PathogenTest extends DeletableAdo {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getSerotype() {
+	@Enumerated(EnumType.STRING)
+	public Serotype getSerotype() {
 		return serotype;
 	}
 
-	public void setSerotype(String serotype) {
+	public void setSerotype(Serotype serotype) {
 		this.serotype = serotype;
+	}
+
+	@Column
+	public String getSerotypeText() {
+		return serotypeText;
+	}
+
+	public void setSerotypeText(String serotypeText) {
+		this.serotypeText = serotypeText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Biotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(Biotype biotype) {
+		this.biotype = biotype;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getBiotypeText() {
+		return biotypeText;
+	}
+
+	public void setBiotypeText(String biotypeText) {
+		this.biotypeText = biotypeText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getWgsPerformed() {
+		return wgsPerformed;
+	}
+
+	public void setWgsPerformed(YesNoUnknown wgsPerformed) {
+		this.wgsPerformed = wgsPerformed;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getWgsClusterId() {
+		return wgsClusterId;
+	}
+
+	public void setWgsClusterId(String wgsClusterId) {
+		this.wgsClusterId = wgsClusterId;
+	}
+
+	@Column
+	public Boolean getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(Boolean virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
 	}
 
 	@Column
@@ -533,5 +680,409 @@ public class PathogenTest extends DeletableAdo {
 
 	public PathogenTestReferenceDto toReference() {
 		return new PathogenTestReferenceDto(getUuid());
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getRifampicinResistant() {
+		return rifampicinResistant;
+	}
+
+	public void setRifampicinResistant(YesNoUnknown rifampicinResistant) {
+		this.rifampicinResistant = rifampicinResistant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getIsoniazidResistant() {
+		return isoniazidResistant;
+	}
+
+	public void setIsoniazidResistant(YesNoUnknown isoniazidResistant) {
+		this.isoniazidResistant = isoniazidResistant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenSpecie getSpecie() {
+		return specie;
+	}
+
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
+	}
+
+	public String getPatternProfile() {
+		return patternProfile;
+	}
+
+	public void setPatternProfile(String patternProfile) {
+		this.patternProfile = patternProfile;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenStrainCallStatus getStrainCallStatus() {
+		return strainCallStatus;
+	}
+
+	public void setStrainCallStatus(PathogenStrainCallStatus strainCallStatus) {
+		this.strainCallStatus = strainCallStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenTestScale getTestScale() {
+		return testScale;
+	}
+
+	public void setTestScale(PathogenTestScale testScale) {
+		this.testScale = testScale;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	public DrugSusceptibility getDrugSusceptibility() {
+		return drugSusceptibility;
+	}
+
+	public void setDrugSusceptibility(DrugSusceptibility drugSusceptibility) {
+		this.drugSusceptibility = drugSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SerotypingMethod getSeroTypingMethod() {
+		return seroTypingMethod;
+	}
+
+	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
+		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisSerologyMethod getSyphilisSerologyMethod() {
+		return syphilisSerologyMethod;
+	}
+
+	public void setSyphilisSerologyMethod(SyphilisSerologyMethod syphilisSerologyMethod) {
+		this.syphilisSerologyMethod = syphilisSerologyMethod;
+	}
+
+	public String getSyphilisSerologyMethodText() {
+		return syphilisSerologyMethodText;
+	}
+
+	public void setSyphilisSerologyMethodText(String syphilisSerologyMethodText) {
+		this.syphilisSerologyMethodText = syphilisSerologyMethodText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public GenoType getGenoType() {
+		return genoType;
+	}
+
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
+	}
+
+	public String getGenoTypeText() {
+		return genoTypeText;
+	}
+
+	public void setGenoTypeText(String genoTypeText) {
+		this.genoTypeText = genoTypeText;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPorBAllele() {
+		return porBAllele;
+	}
+
+	public void setPorBAllele(String value) {
+		this.porBAllele = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTbpBAllele() {
+		return tbpBAllele;
+	}
+
+	public void setTbpBAllele(String value) {
+		this.tbpBAllele = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSequenceType() {
+		return sequenceType;
+	}
+
+	public void setSequenceType(String value) {
+		this.sequenceType = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getGenogroup() {
+		return genogroup;
+	}
+
+	public void setGenogroup(String value) {
+		this.genogroup = value;
+	}
+
+	public String getSeroTypingMethodText() {
+		return seroTypingMethodText;
+	}
+
+	public void setSeroTypingMethodText(String seroTypingMethodText) {
+		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SeroGroupSpecification getSeroGroupSpecification() {
+		return seroGroupSpecification;
+	}
+
+	public void setSeroGroupSpecification(SeroGroupSpecification seroGroupSpecification) {
+		this.seroGroupSpecification = seroGroupSpecification;
+	}
+
+	public String getSeroGroupSpecificationText() {
+		return seroGroupSpecificationText;
+	}
+
+	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
+		this.seroGroupSpecificationText = seroGroupSpecificationText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RsvSubtype getRsvSubtype() {
+		return rsvSubtype;
+	}
+
+	public void setRsvSubtype(RsvSubtype rsvSubtype) {
+		this.rsvSubtype = rsvSubtype;
+	}
+
+	public Float getTubeNil() {
+		return tubeNil;
+	}
+
+	public void setTubeNil(Float tubeNil) {
+		this.tubeNil = tubeNil;
+	}
+
+	public Boolean getTubeNilGT10() {
+		return tubeNilGT10;
+	}
+
+	public void setTubeNilGT10(Boolean tubeNilGT10) {
+		this.tubeNilGT10 = tubeNilGT10;
+	}
+
+	public Float getTubeAgTb1() {
+		return tubeAgTb1;
+	}
+
+	public void setTubeAgTb1(Float tubeAgTb1) {
+		this.tubeAgTb1 = tubeAgTb1;
+	}
+
+	public Boolean getTubeAgTb1GT10() {
+		return tubeAgTb1GT10;
+	}
+
+	public void setTubeAgTb1GT10(Boolean tubeAgTb1GT10) {
+		this.tubeAgTb1GT10 = tubeAgTb1GT10;
+	}
+
+	public Float getTubeAgTb2() {
+		return tubeAgTb2;
+	}
+
+	public void setTubeAgTb2(Float tubeAgTb2) {
+		this.tubeAgTb2 = tubeAgTb2;
+	}
+
+	public Boolean getTubeAgTb2GT10() {
+		return tubeAgTb2GT10;
+	}
+
+	public void setTubeAgTb2GT10(Boolean tubeAgTb2GT10) {
+		this.tubeAgTb2GT10 = tubeAgTb2GT10;
+	}
+
+	public Float getTubeMitogene() {
+		return tubeMitogene;
+	}
+
+	public void setTubeMitogene(Float tubeMitogene) {
+		this.tubeMitogene = tubeMitogene;
+	}
+
+	public Boolean getTubeMitogeneGT10() {
+		return tubeMitogeneGT10;
+	}
+
+	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
+		this.tubeMitogeneGT10 = tubeMitogeneGT10;
+	}
+
+	public String getAntibodyTitre() {
+		return antibodyTitre;
+	}
+
+	public void setAntibodyTitre(String antibodyTitre) {
+		this.antibodyTitre = antibodyTitre;
+	}
+
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	public Boolean getRetestRequested() {
+		return retestRequested;
+	}
+
+	public void setRetestRequested(Boolean retestRequested) {
+		this.retestRequested = retestRequested;
+	}
+
+	public String getSpecieText() {
+		return specieText;
+	}
+
+	public void setSpecieText(String specieText) {
+		this.specieText = specieText;
+	}
+
+	public Float getQuantitativeValue() {
+		return quantitativeValue;
+	}
+
+	public void setQuantitativeValue(Float quantitativeValue) {
+		this.quantitativeValue = quantitativeValue;
+	}
+
+	public String getQuantitativeUnit() {
+		return quantitativeUnit;
+	}
+
+	public void setQuantitativeUnit(String quantitativeUnit) {
+		this.quantitativeUnit = quantitativeUnit;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getQuantitativeBoolean() {
+		return quantitativeBoolean;
+	}
+
+	public void setQuantitativeBoolean(YesNoUnknown quantitativeBoolean) {
+		this.quantitativeBoolean = quantitativeBoolean;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SmearGrade getSmearGrade() {
+		return smearGrade;
+	}
+
+	public void setSmearGrade(SmearGrade smearGrade) {
+		this.smearGrade = smearGrade;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WesternBlotInterpretation getWesternBlotInterpretation() {
+		return westernBlotInterpretation;
+	}
+
+	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
+		this.westernBlotInterpretation = westernBlotInterpretation;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(String sequenceId) {
+		this.sequenceId = sequenceId;
+	}
+
+	@Column(name = "seroconversion", nullable = true)
+	public Boolean getSeroConversion() {
+		return seroConversion;
+	}
+
+	public void setSeroConversion(Boolean seroConversion) {
+		this.seroConversion = seroConversion;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTargetTestText() {
+		return targetTestText;
+	}
+
+	public void setTargetTestText(String targetTestText) {
+		this.targetTestText = targetTestText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TargetTest getTargetTest() {
+		return targetTest;
+	}
+
+	public void setTargetTest(TargetTest targetTest) {
+		this.targetTest = targetTest;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TestRunStatus getTestRunStatus() {
+		return testRunStatus;
+	}
+
+	public void setTestRunStatus(TestRunStatus testRunStatus) {
+		this.testRunStatus = testRunStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSequenceDataUploadedToPublicRepository() {
+		return sequenceDataUploadedToPublicRepository;
+	}
+
+	public void setSequenceDataUploadedToPublicRepository(YesNoUnknown sequenceDataUploadedToPublicRepository) {
+		this.sequenceDataUploadedToPublicRepository = sequenceDataUploadedToPublicRepository;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSraRunId() {
+		return sraRunId;
+	}
+
+	public void setSraRunId(String sraRunId) {
+		this.sraRunId = sraRunId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getAccessionNumber() {
+		return accessionNumber;
+	}
+
+	public void setAccessionNumber(String accessionNumber) {
+		this.accessionNumber = accessionNumber;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getMlstSequenceType() {
+		return mlstSequenceType;
+	}
+
+	public void setMlstSequenceType(String mlstSequenceType) {
+		this.mlstSequenceType = mlstSequenceType;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCgMlstCluster() {
+		return cgMlstCluster;
+	}
+
+	public void setCgMlstCluster(String cgMlstCluster) {
+		this.cgMlstCluster = cgMlstCluster;
 	}
 }

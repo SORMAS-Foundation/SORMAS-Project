@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.samples.sampleLink;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -153,6 +155,18 @@ public class SampleListEntry extends SideComponentField {
 						I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE) + ": " + latestTest.getCqValue());
 					cqValue.addStyleName(CssStyles.ALIGN_RIGHT);
 					bottomLayout.addComponent(cqValue);
+				}
+				// Need to include the variants
+				String variant = determineSideComponentVariant(latestTest);
+
+				if (StringUtils.isNotBlank(variant)) {
+					Label variantLabel = new Label(DataHelper.toStringNullable(variant == null ? latestTest.getTestResult() : variant));
+					if (latestTest.getTestResult() == PathogenTestResultType.POSITIVE) {
+						CssStyles.style(variantLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_CRITICAL);
+					} else {
+						CssStyles.style(variantLabel, CssStyles.LABEL_WARNING);
+					}
+					bottomLayout.addComponent(variantLabel);
 				}
 				latestTestLayout.addComponents(heading, testDate, bottomLayout);
 				topLeftLayout.addComponent(latestTestLayout);

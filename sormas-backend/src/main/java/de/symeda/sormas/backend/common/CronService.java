@@ -20,16 +20,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RunAs;
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
@@ -59,8 +61,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 @Singleton
 @RunAs(UserRight._SYSTEM)
 public class CronService {
-
-	public static final int TASK_UPDATE_INTERVAL = 10;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -103,19 +103,17 @@ public class CronService {
 
 	@EJB
 	private EiosFacadeEjb.EiosFacadeEjbLocal eiosFacade;
-	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
+
 	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();
 	}
 
-	@Schedule(hour = "*", minute = "*/2", second = "0", persistent = false)
 	public void calculateCaseCompletion() {
 		long timeStart = DateHelper.startTime();
 		int casesUpdated = caseFacade.updateCompleteness();
 		logger.debug("calculateCaseCompletion finished. {} cases, {} s", casesUpdated, DateHelper.durationSeconds(timeStart));
 	}
 
-	@Schedule(hour = "1", minute = "0", second = "0", persistent = false)
 	public void deleteAllExpiredFeatureConfigurations() {
 
 		// Remove all feature configurations whose end dates have been reached
@@ -123,7 +121,6 @@ public class CronService {
 		logger.info("Deleted expired feature configurations");
 	}
 
-	@Schedule(hour = "1", minute = "5", second = "0", persistent = false)
 	public void generateAutomaticTasks() {
 
 		if (featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_FOLLOW_UP)) {
@@ -134,7 +131,6 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "1", minute = "10", second = "0", persistent = false)
 	public void cleanUpTemporaryFiles() {
 
 		Date now = new Date();
@@ -167,7 +163,6 @@ public class CronService {
 		logger.info("Deleted {} export files", numberOfDeletedFiles);
 	}
 
-	@Schedule(hour = "1", minute = "15", second = "0", persistent = false)
 	public void archiveCases() {
 
 		final int daysAfterCaseGetsArchived = featureConfigurationFacade
@@ -188,7 +183,6 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "1", minute = "20", second = "0", persistent = false)
 	public void archiveEvents() {
 
 		final int daysAfterEventsGetsArchived = featureConfigurationFacade
@@ -212,12 +206,10 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "1", minute = "25", second = "0", persistent = false)
 	public void cleanupDeletedDocuments() {
 		documentFacade.cleanupDeletedDocuments();
 	}
 
-	@Schedule(hour = "1", minute = "30", second = "0", persistent = false)
 	public void deleteSystemEvents() {
 		int daysAfterSystemEventGetsDeleted = configFacade.getDaysAfterSystemEventGetsDeleted();
 		if (daysAfterSystemEventGetsDeleted >= 1) {
@@ -225,31 +217,43 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
 	public void fetchExternalMessages() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
 			externalMessageFacade.fetchAndSaveExternalMessages(null);
 		}
 	}
 
-	@Schedule(hour = "1", minute = "40", second = "0", persistent = false)
+	public void fetchSurveyResponses() {
+		if (!featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
+			|| !featureConfigurationFacade.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.SURVEY_FETCH_ENABLED)) {
+			logger.info("External messages are disabled, survey responses will not be fetched");
+			return;
+		}
+
+		List<ExternalMessageDto> surveyExternalMessages = externalMessageFacade.saveAndProcessSurveyResponses();
+
+		if (logger.isInfoEnabled()) {
+			List<String> reportIds = surveyExternalMessages.stream().map(ExternalMessageDto::getReportId).collect(Collectors.toList());
+			if (!reportIds.isEmpty()) {
+				logger.info("Survey responses with following reportIds were saved: [{}]", reportIds);
+			}
+		}
+	}
+
 	public void updateImmunizationStatuses() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.IMMUNIZATION_STATUS_AUTOMATION)) {
 			immunizationFacade.updateImmunizationStatuses();
 		}
 	}
 
-	@Schedule(hour = "1", minute = "50", persistent = false)
 	public void syncInfraWithCentral() {
 		centralInfraSyncFacade.syncAll();
 	}
 
-	@Schedule(hour = "1", minute = "55", persistent = false)
 	public void deleteExpiredEntities() {
 		coreEntityDeletionService.executeAutomaticDeletion();
 	}
 
-	@Schedule(hour = "2", minute = "15", persistent = false)
 	public void archiveContacts() {
 		final int daysAfterContactsGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
@@ -259,7 +263,6 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "2", minute = "20", persistent = false)
 	public void archiveEventParticipants() {
 		final int daysAfterEventParticipantGetsArchived = featureConfigurationFacade.getProperty(
 			FeatureType.AUTOMATIC_ARCHIVING,
@@ -272,7 +275,6 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "2", minute = "25", persistent = false)
 	public void archiveImmunizations() {
 		final int daysAfterImmunizationsGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.IMMUNIZATION, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
@@ -282,7 +284,6 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "2", minute = "30", persistent = false)
 	public void archiveTravelEntry() {
 		final int daysAfterTravelEntryGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.TRAVEL_ENTRY, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
@@ -292,25 +293,21 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "2", minute = "30", persistent = false)
 	public void deleteExpiredSpecialCaseAccesses() {
 		specialCaseAccessFacade.deleteExpiredSpecialCaseAccesses();
 	}
 
-	@Schedule(hour = "2", minute = "35", persistent = false)
 	public void syncUsersFromAuthenticationProvider() {
 		if (userFacade.isSyncEnabled() && featureConfigurationFacade.isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
 			userFacade.syncUsersFromAuthenticationProvider();
 		}
 	}
 
-	@Schedule(hour = "2", minute = "40", persistent = false)
 	public void sofDeleteOldNegativeSamples() {
 		sampleService.cleanupOldCovidSamples();
 	}
 
-	@Schedule(hour = "*/2", persistent = false)
-	public void fetchAndSaveBoardArticlesCron() {
+	public void fetchEiosBoardArticles() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.NEWS_FEATURE)) {
 			eiosFacade.fetchAndSaveBoardArticles();
 		}

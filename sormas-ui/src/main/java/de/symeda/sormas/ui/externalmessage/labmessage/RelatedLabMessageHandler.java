@@ -190,7 +190,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
 
 		CorrectionPanel<PathogenTestDto> pathogenTestCorrectionPanel = new CorrectionPanel<>(
-			() -> new PathogenTestForm(sample, false, caseSampleCount, sample.isPseudonymized(), sample.isInJurisdiction()),
+			() -> new PathogenTestForm(sample, false, caseSampleCount, sample.isPseudonymized(), sample.isInJurisdiction(), pathogenTest.getTestedDisease()),
 			pathogenTest,
 			updatedPathogenTest,
 			Strings.headingPreviousPathogenTestInformation,

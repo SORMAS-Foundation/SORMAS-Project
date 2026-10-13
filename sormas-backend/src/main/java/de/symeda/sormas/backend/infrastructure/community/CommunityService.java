@@ -188,6 +188,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 				switch (sortProperty.propertyName) {
 				case Community.NAME:
 				case Community.EXTERNAL_ID:
+				case Community.NUTS_CODE:
 					expression = cb.lower(community.get(sortProperty.propertyName));
 					break;
 				case Community.GROWTH_RATE:

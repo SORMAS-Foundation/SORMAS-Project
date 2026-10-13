@@ -489,7 +489,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport.setTestResult(pathogenTest.getTestResult());
 		testReport.setTestResultVerified(pathogenTest.getTestResultVerified());
 		testReport.setTestDateTime(pathogenTest.getTestDateTime());
-		testReport.setTestType(PathogenTestType.RAPID_TEST);
+		testReport.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Collections.singletonList(testReport));
 
 		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
@@ -505,8 +505,9 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 			assertThat(originalTest.getUuid(), is(updatedTest.getUuid()));
 
 			List<String[]> changedFields = invocation.getArgument(3);
-			assertThat(changedFields, hasSize(1));
+			assertThat(changedFields, hasSize(2));
 			assertThat(changedFields.get(0), arrayContaining(PathogenTestDto.TEST_TYPE));
+			assertThat(changedFields.get(1), arrayContaining(PathogenTestDto.LAB));
 
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).next(true);
 
@@ -561,7 +562,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport1.setTestResult(pathogenTest1.getTestResult());
 		testReport1.setTestResultVerified(pathogenTest1.getTestResultVerified());
 		testReport1.setTestDateTime(pathogenTest1.getTestDateTime());
-		testReport1.setTestType(PathogenTestType.RAPID_TEST);
+		testReport1.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setExternalId("test-external-id-2");
@@ -586,8 +587,9 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 
 				assertThat(updatedTest.getTestType(), is(testReport1.getTestType()));
 
-				assertThat(changedFields, hasSize(1));
+				assertThat(changedFields, hasSize(2));
 				assertThat(changedFields.get(0), arrayContaining(PathogenTestDto.TEST_TYPE));
+				assertThat(changedFields.get(1), arrayContaining(PathogenTestDto.LAB));
 			} else if (originalTest.getUuid().equals(pathogenTest2.getUuid())) {
 				assertThat(originalTest.getExternalId(), is("test-external-id-2"));
 				assertThat(originalTest.getTestType(), is(pathogenTest2.getTestType()));
@@ -595,8 +597,9 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 				assertThat(updatedTest.getTestType(), is(testReport2.getTestType()));
 				assertThat(updatedTest.getTestResult(), is(testReport2.getTestResult()));
 
-				assertThat(changedFields, hasSize(1));
+				assertThat(changedFields, hasSize(2));
 				assertThat(changedFields.get(0), arrayContaining(PathogenTestDto.TEST_RESULT));
+				assertThat(changedFields.get(1), arrayContaining(PathogenTestDto.LAB));
 			}
 
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).next(true);
@@ -634,7 +637,6 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(sample.getSampleMaterial());
-		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
@@ -651,7 +653,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport2.setTestResultVerified(true);
 		Date newTestDateTime = new Date();
 		testReport2.setTestDateTime(newTestDateTime);
-		testReport2.setTestType(PathogenTestType.RAPID_TEST);
+		testReport2.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
@@ -706,7 +708,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport1.setTestResult(pathogenTest.getTestResult());
 		testReport1.setTestResultVerified(pathogenTest.getTestResultVerified());
 		testReport1.setTestDateTime(pathogenTest.getTestDateTime());
-		testReport1.setTestType(PathogenTestType.RAPID_TEST);
+		testReport1.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setExternalId("test-external-id-2");

@@ -18,6 +18,8 @@ package de.symeda.sormas.api.utils.criteria;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+
 public class CriteriaDateTypeHelper {
 
 	private CriteriaDateTypeHelper() {
@@ -25,6 +27,8 @@ public class CriteriaDateTypeHelper {
 
 	public static CriteriaDateType[] getTypes(Class<? extends CriteriaDateType> defaultDateType, boolean isExternalSurvToolShareEnbaled) {
 		ArrayList<CriteriaDateType> types = new ArrayList<>(Arrays.asList(defaultDateType.getEnumConstants()));
+		// Remove any deprecated types from the list of available types
+		types.removeIf(type -> FieldAccessCheckers.isDeprecated((Enum<?>) type));
 
 		if (isExternalSurvToolShareEnbaled) {
 			types.addAll(Arrays.asList(ExternalShareDateType.values()));

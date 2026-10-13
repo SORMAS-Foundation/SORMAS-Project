@@ -50,6 +50,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -94,6 +95,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
 		CaseCriteria.VACCINATION_STATUS,
 		CaseCriteria.REINFECTION_STATUS,
+		CaseCriteria.PATHOGEN_TEST_RESULT,
+		CaseCriteria.SEROGROUP,
 		CaseCriteria.BIRTHDATE_YYYY,
 		CaseCriteria.BIRTHDATE_MM,
 		CaseCriteria.BIRTHDATE_DD)
@@ -101,7 +104,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
 			CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY,
 			CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
+			CaseCriteria.HAS_DOCTOR_DECLARATION,
+			CaseCriteria.WITHOUT_DOCTOR_DECLARATION,
 			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
+			CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING,
+			CaseCriteria.ONLY_CASES_EXCLUDED_FROM_REPORTING,
 			CaseCriteria.WITH_EXTENDED_QUARANTINE,
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
 			CaseCriteria.ONLY_QUARANTINE_HELP_NEEDED,
@@ -117,7 +124,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL,
 			CaseCriteria.ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL)
 		+ loc(WEEK_AND_DATE_FILTER)
-		+ loc(BIRTHDATE_RANGE_FILTER);
+		+ loc(BIRTHDATE_RANGE_FILTER)
+		+ filterLocs(CaseCriteria.SURVEY, CaseCriteria.SURVEY_RESPONSE_STATUS, CaseCriteria.SURVEY_ASSIGNED_FROM, CaseCriteria.SURVEY_ASSIGNED_TO);
 
 	protected CaseFilterForm() {
 		super(
@@ -269,6 +277,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REINFECTION_STATUS, 140));
 		}
 
+		// Lab filters: test result (combo over PathogenTestResultType) + serogroup (free-text serotype match).
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				CaseCriteria.PATHOGEN_TEST_RESULT,
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT),
+				140));
+		addField(
+			moreFiltersContainer,
+			TextField.class,
+			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.SEROGROUP, I18nProperties.getCaption(Captions.serogroup), 200));
+
 		ComboBox reportedByField = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
@@ -322,6 +342,41 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
 					I18nProperties.getCaption(Captions.caseFilterCasesWithCaseManagementData),
 					I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithCaseManagementData),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+		}
+
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.HAS_DOCTOR_DECLARATION,
+					I18nProperties.getCaption(Captions.caseFilterHasDoctorDeclaration),
+					I18nProperties.getDescription(Descriptions.descCaseFilterHasDoctorDeclaration),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.WITHOUT_DOCTOR_DECLARATION,
+					I18nProperties.getCaption(Captions.caseFilterWithoutDoctorDeclaration),
+					I18nProperties.getDescription(Descriptions.descCaseFilterWithoutDoctorDeclaration),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_NOT_EXCLUDED_FROM_REPORTING,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesNotExcludedFromReporting),
+					null,
+					CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_EXCLUDED_FROM_REPORTING,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesExcludedFromReporting),
+					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
@@ -454,6 +509,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(isExternalShareEnabled), WEEK_AND_DATE_FILTER);
 
 		moreFiltersContainer.addComponent(buildBirthdayRangeFilter(), BIRTHDATE_RANGE_FILTER);
+		if (UiUtil.enabled(FeatureType.SURVEYS) && UiUtil.permitted(UserRight.SURVEY_VIEW)) {
+			buildSurveyFilters(moreFiltersContainer);
+		}
 	}
 
 	@Override
@@ -822,7 +880,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		EpiWeekAndDateFilterComponent<CriteriaDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
 			false,
 			false,
-			I18nProperties.getString(Strings.infoCaseDate),
+			null,
 			CriteriaDateTypeHelper.getTypes(NewCaseDateType.class, isExternalShareEnabled),
 			I18nProperties.getString(Strings.promptNewCaseDateType),
 			null,
@@ -856,6 +914,26 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		return dateFilterRowLayout;
 	}
 
+	private void buildSurveyFilters(CustomLayout layout) {
+
+		ComboBox surveyCombo =
+			addField(layout, FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.SURVEY, I18nProperties.getString(Strings.promptSurvey), 200));
+		FieldHelper.updateItems(surveyCombo, FacadeProvider.getSurveyFacade().getAllAsReference());
+		addField(
+			layout,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.SURVEY_RESPONSE_STATUS, I18nProperties.getString(Strings.promptSurveyResponseStatus), 200));
+		addField(
+			layout,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.SURVEY_ASSIGNED_FROM, I18nProperties.getString(Strings.promptSurveyAssignedFrom), 200));
+		addField(
+			layout,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.SURVEY_ASSIGNED_TO, I18nProperties.getString(Strings.promptSurveyAssignedTo), 200));
+
+	}
+
 	private void onApplyClick(EpiWeekAndDateFilterComponent<CriteriaDateType> weekAndDateFilter) {
 		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 		Date fromDate, toDate;
@@ -872,7 +950,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria criteria = getValue();
 			CriteriaDateType newCaseDateType = (CriteriaDateType) weekAndDateFilter.getDateTypeSelector().getValue();
 
-			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
+			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.REPORT);
 			criteria.dateFilterOption(dateFilterOption);
 		} else {
 			weekAndDateFilter.setNotificationsForMissingFilters();

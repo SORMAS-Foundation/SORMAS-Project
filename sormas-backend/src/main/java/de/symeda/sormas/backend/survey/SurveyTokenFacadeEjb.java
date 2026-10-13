@@ -17,40 +17,44 @@ package de.symeda.sormas.backend.survey;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.*;
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.survey.SurveyTokenCriteria;
-import de.symeda.sormas.api.survey.SurveyTokenDto;
-import de.symeda.sormas.api.survey.SurveyTokenFacade;
-import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.survey.*;
+import de.symeda.sormas.api.survey.external.ExternalSurveyProviderFacade;
+import de.symeda.sormas.api.survey.external.views.ExternalSurveyView;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
-import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb.SurveyFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -61,6 +65,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @Stateless(name = "SurveyTokenFacade")
 @RightsAllowed(UserRight._SURVEY_TOKEN_VIEW)
 public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -79,6 +85,18 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private CaseService caseService;
 	@EJB
 	private DocumentFacadeEjbLocal documentFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private DocumentService documentService;
+	@EJB
+	private SystemConfigurationValueFacade systemConfigurationValueFacade;
+
+	public static final String EXTERNAL_SURVEY_PROVIDER_JNDI_KEY = "EXTERNAL_SURVEY_PROVIDER_JNDI_NAME";
+
+	private static final String SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME = "import_survey_tokens_template.csv";
+
+	private static final String SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME = "import_survey_token_responses_template.csv";
 
 	@Override
 	@RightsAllowed({
@@ -133,13 +151,16 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 						joins.getSurvey().get(Survey.NAME),
 						root.get(SurveyToken.TOKEN),
 						joins.getCaseAssignedTo().get(Case.UUID),
-						joins.getCaseAssignedToJoins().getPerson().get(Person.FIRST_NAME),
-						joins.getCaseAssignedToJoins().getPerson().get(Person.LAST_NAME),
 						root.get(SurveyToken.ASSIGNMENT_DATE),
 						root.get(SurveyToken.RECIPIENT_EMAIL),
-						root.get(SurveyToken.RESPONSE_RECEIVED)),
+						root.get(SurveyToken.RESPONSE_RECEIVED),
+						joins.getGeneratedDocument().get(Document.UUID),
+						joins.getGeneratedDocument().get(Document.NAME),
+						joins.getGeneratedDocument().get(Document.MIME_TYPE),
+						root.get(SurveyToken.RESPONSE_RECEIVED_DATE),
+						root.get(SurveyToken.EXTERNAL_RESPONDENT_ID)),
 					// add sort properties to select
-					sortBy(sortProperties, root, cb, cq).stream())
+					sortBy(sortProperties, root, cb, cq, joins).stream())
 				.collect(Collectors.toList()));
 
 		Predicate filter = CriteriaBuilderHelper.and(cb, surveyTokenService.buildCriteriaFilter(criteria, cb, root, joins));
@@ -153,10 +174,79 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	@Override
 	@RightsAllowed(UserRight._SURVEY_TOKEN_DELETE)
 	public void deletePermanent(String uuid) {
-		surveyTokenService.deletePermanent(surveyTokenService.getByUuid(uuid));
+		SurveyToken surveyToken = surveyTokenService.getByUuid(uuid);
+		if (surveyToken.getGeneratedDocument() != null) {
+			documentFacade.deleteDocumentFromAllRelations(surveyToken.getGeneratedDocument().getUuid());
+		}
+		surveyTokenService.deletePermanent(surveyToken);
 	}
 
-	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, Root<SurveyToken> root, CriteriaBuilder cb, CriteriaQuery<?> cq) {
+	@Override
+	public boolean exists(String uuid) {
+		return surveyTokenService.exists(uuid);
+	}
+
+	@Override
+	public SurveyTokenReferenceDto getReferenceByUuid(String uuid) {
+		SurveyToken surveyToken = surveyTokenService.getByUuid(uuid);
+		return toReferenceDto(surveyToken);
+	}
+
+	@Override
+	public String getSurveyTokensImportTemplateFilePath() {
+		return getImportTemplateFilePath(SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSurveyTokensImportTemplateFileName() {
+		return getImportTemplateFileName(SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSurveyTokenResponsesImportTemplateFilePath() {
+		return getImportTemplateFilePath(SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSurveyTokenResponsesImportTemplateFileName() {
+		return getImportTemplateFileName(SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token) {
+		return toDto(surveyTokenService.getBySurveyAndToken(survey, token));
+	}
+
+	@Override
+	public SurveyTokenDto getBySurveyExternalIdAndToken(String externalSurveyId, String token) {
+		SurveyDto surveyDto = surveyFacade.getByExternalId(externalSurveyId)
+			.orElseThrow(() -> new RuntimeException(String.format("Survey with external id: [%s] not found", externalSurveyId)));
+
+		return toDto(surveyTokenService.getBySurveyAndToken(surveyDto.toReference(), token));
+	}
+
+	@Override
+	public List<SurveyTokenDto> getBySurveyReferenceTokenTuples(
+		List<de.symeda.sormas.api.utils.Tuple<SurveyReferenceDto, String>> surveyReferenceTokenTuples) {
+		return surveyTokenService.getBySurveyReferenceTokenTuples(surveyReferenceTokenTuples).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	private String getImportTemplateFilePath(String baseFilename) {
+		java.nio.file.Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
+	}
+
+	private String getImportTemplateFileName(String baseFilename) {
+		String instanceName = DataHelper.cleanStringForFileName(configFacade.getSormasInstanceName().toLowerCase());
+		return instanceName + "_" + baseFilename;
+	}
+
+	private List<Selection<?>> sortBy(
+		List<SortProperty> sortProperties,
+		Root<SurveyToken> root,
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		SurveyTokenJoins joins) {
 
 		List<Selection<?>> selections = new ArrayList<>();
 
@@ -168,7 +258,14 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 				switch (sortProperty.propertyName) {
 				case Survey.UUID:
 				case Survey.DISEASE:
+				case SurveyToken.TOKEN:
+				case SurveyToken.ASSIGNMENT_DATE:
+				case SurveyToken.RESPONSE_RECEIVED:
+				case SurveyToken.RESPONSE_RECEIVED_DATE:
 					orderList = orderBuilder.build(root.get(sortProperty.propertyName));
+					break;
+				case SurveyTokenIndexDto.ASSIGNED_CASE_UUID:
+					orderList = orderBuilder.build(joins.getCaseAssignedTo().get(Case.UUID));
 					break;
 				case Survey.NAME:
 					orderList = orderBuilder.build(cb.lower(root.get(sortProperty.propertyName)));
@@ -202,6 +299,8 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		target.setAssignmentDate(source.getAssignmentDate());
 		target.setRecipientEmail(source.getRecipientEmail());
 		target.setResponseReceived(source.isResponseReceived());
+		target.setResponseReceivedDate(source.getResponseReceivedDate());
+		target.setExternalRespondentId(source.getExternalRespondentId());
 
 		return target;
 	}
@@ -221,8 +320,56 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		target.setRecipientEmail(source.getRecipientEmail());
 		target.setGeneratedDocument(DocumentFacadeEjb.toReferenceDto(source.getGeneratedDocument()));
 		target.setResponseReceived(source.isResponseReceived());
+		target.setResponseReceivedDate(source.getResponseReceivedDate());
+		target.setExternalRespondentId(source.getExternalRespondentId());
 
 		return target;
+	}
+
+	@Override
+	public ExternalSurveyView getExternalSurveyView(String surveyTokenUuid) {
+		SurveyToken surveyToken = surveyTokenService.getByUuid(surveyTokenUuid);
+		if (surveyToken == null) {
+			logger.error("SurveyToken with uuid [{}] not found", surveyTokenUuid);
+			return null;
+		}
+
+		String externalRespondentId = surveyToken.getExternalRespondentId();
+		String externalSurveyId = surveyToken.getSurvey() != null ? surveyToken.getSurvey().getExternalId() : null;
+
+		if (externalSurveyId == null || externalRespondentId == null) {
+			logger.error("SurveyToken with uuid [{}] had no externalSurveyId [{}] or [{}]", surveyTokenUuid, externalSurveyId, externalRespondentId);
+			return null;
+		}
+
+		ExternalSurveyProviderFacade facade = getExternalSurveyProviderFacade();
+		if (facade == null) {
+			logger.error("Facade not found");
+			return null;
+		}
+
+		return facade.getExternalSurveyView(externalSurveyId, externalRespondentId);
+	}
+
+	private ExternalSurveyProviderFacade getExternalSurveyProviderFacade() {
+		String jndiName = Optional.ofNullable(systemConfigurationValueFacade.getValue(EXTERNAL_SURVEY_PROVIDER_JNDI_KEY)).orElseGet(() -> {
+			logger.debug("External Survey Provider JNDI Key not found, using default");
+			return "java:global/sormas-esante-adapter/NgSurveyProviderFacade";
+		});
+		try {
+			return (ExternalSurveyProviderFacade) new InitialContext().lookup(jndiName);
+		} catch (NamingException e) {
+			throw new RuntimeException("Could not look up ExternalSurveyProviderFacade via JNDI: " + jndiName, e);
+		}
+	}
+
+	public SurveyTokenReferenceDto toReferenceDto(SurveyToken entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new SurveyTokenReferenceDto(entity.getUuid());
 	}
 
 	@LocalBean

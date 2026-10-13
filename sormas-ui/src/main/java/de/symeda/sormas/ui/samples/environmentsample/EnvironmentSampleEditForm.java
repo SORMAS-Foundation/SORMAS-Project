@@ -80,7 +80,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC)
 		+ fluidRowLocs(4, EnvironmentSampleDto.UUID, 2, EnvironmentSampleDto.ENVIRONMENT, 3, REPORT_INFO_LOC, 3, EnvironmentSampleDto.REPORTING_USER)
 		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_DATE_TIME, "")
-		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_MATERIAL, EnvironmentSampleDto.OTHER_SAMPLE_MATERIAL)
+		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_MATERIAL, EnvironmentSampleDto.OTHER_SAMPLE_MATERIAL, EnvironmentSampleDto.VECTOR_TYPE)
 		+ fluidRowLocs(EnvironmentSampleDto.FIELD_SAMPLE_ID, "")
 		+ loc(SAMPLE_MEASUREMENTS_HEADING_LOC)
 		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_VOLUME, EnvironmentSampleDto.TURBIDITY)
@@ -149,8 +149,13 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		addField(EnvironmentSampleDto.ENVIRONMENT).setReadOnly(true);
 
 		addField(EnvironmentSampleDto.SAMPLE_DATE_TIME).setRequired(true);
-		addField(EnvironmentSampleDto.SAMPLE_MATERIAL).setRequired(true);
+		ComboBox sampleMaterialField = addField(EnvironmentSampleDto.SAMPLE_MATERIAL);
+		sampleMaterialField.setRequired(true);
 		addField(EnvironmentSampleDto.OTHER_SAMPLE_MATERIAL);
+
+		ComboBox vectorTypeField = addField(EnvironmentSampleDto.VECTOR_TYPE, ComboBox.class);
+		vectorTypeField.setVisible(false);
+
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			EnvironmentSampleDto.OTHER_SAMPLE_MATERIAL,
@@ -185,7 +190,35 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		CheckBoxTree<WeatherCondition> weatherConditionCheckBoxTree = addField(EnvironmentSampleDto.WEATHER_CONDITIONS, CheckBoxTree.class);
 		weatherConditionCheckBoxTree.setEnumType(WeatherCondition.class, null);
 
-		addField(EnvironmentSampleDto.HEAVY_RAIN, NullableOptionGroup.class);
+		NullableOptionGroup heavyRains = addField(EnvironmentSampleDto.HEAVY_RAIN, NullableOptionGroup.class);
+
+		sampleMaterialField.addValueChangeListener(event -> {
+			if (event.getProperty().getValue() != null && (EnvironmentSampleMaterial.VECTORS.equals(event.getProperty().getValue()))) {
+				getContent().removeComponent(SAMPLE_MEASUREMENTS_HEADING_LOC);
+				setVisible(
+					false,
+					sampleVolumeField,
+					turbidityField,
+					temperatureField,
+					chlorineResidualsField,
+					phValueField,
+					weatherConditionCheckBoxTree,
+					heavyRains);
+				vectorTypeField.setVisible(true);
+			} else {
+				getContent().addComponent(buildHeadingLabel(Strings.headingEnvironmentSampleMeasurements), SAMPLE_MEASUREMENTS_HEADING_LOC);
+				setVisible(
+					true,
+					sampleVolumeField,
+					turbidityField,
+					temperatureField,
+					chlorineResidualsField,
+					phValueField,
+					weatherConditionCheckBoxTree,
+					heavyRains);
+				vectorTypeField.setVisible(false);
+			}
+		});
 
 		getContent().addComponent(buildHeadingLabel(Strings.headingEnvironmentSampleLocation), LOCATION_HEADING_LOC);
 		LocationEditForm locationForm = addField(EnvironmentSampleDto.LOCATION, LocationEditForm.class);

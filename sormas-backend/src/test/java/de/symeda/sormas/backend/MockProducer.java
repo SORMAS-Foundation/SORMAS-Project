@@ -66,7 +66,7 @@ public class MockProducer implements InitialContextFactory {
 
 	public static final String TMP_PATH = "target/tmp";
 
-	private static InitialContext initialContext = mock(InitialContext.class);
+	static InitialContext initialContext = mock(InitialContext.class);
 	private static SessionContext sessionContext = mock(SessionContext.class, withSettings().lenient());
 	private static Principal principal = mock(Principal.class, withSettings().lenient());
 	private static Topic topic = mock(Topic.class);

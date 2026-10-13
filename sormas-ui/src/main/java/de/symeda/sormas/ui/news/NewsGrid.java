@@ -13,6 +13,7 @@ import de.symeda.sormas.api.news.NewsCriteria;
 import de.symeda.sormas.api.news.NewsIndexDto;
 import de.symeda.sormas.api.news.NewsReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -77,7 +78,7 @@ public class NewsGrid extends FilteredGrid<NewsIndexDto, NewsCriteria> {
 		addItemClickListener(new ShowDetailsListener<>(NewsIndexDto.TITLE, e -> {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EDIT_NEWS)) {
 				ControllerProvider.getNewsController().updateNewsPopUP(e);
-			} else {
+			} else if (DataHelper.isHttpUrl(e.getNewsLink())) {
 				getUI().getPage().open(e.getNewsLink(), "_blank");
 			}
 		}));

@@ -137,6 +137,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -158,6 +159,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -175,6 +177,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -184,6 +187,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
+import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -252,6 +256,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
@@ -275,6 +280,8 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.importexport.ExportHelper;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -305,6 +312,8 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.person.notifier.NotifierDtoHelper;
+import de.symeda.sormas.backend.person.notifier.NotifierService;
 import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -325,6 +334,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.survey.SurveyToken;
+import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -370,6 +381,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
 	implements CaseFacade {
 
+	public static final List<Disease> CONFIRMED_CASE_CLASSIFICATION_DISEASES =
+		Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GONOCOCCAL_INFECTION);
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -483,6 +496,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
+	private CustomizableFieldValueService customizableFieldValueService;
+	@EJB
 	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
@@ -506,6 +521,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private NotifierService notifierService;
+	@EJB
+	private ImmunizationService immunizationService;
+	@EJB
+	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
+	@EJB
+	private SurveyTokenService surveyService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -802,8 +825,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				joins.getRoot().get(Case.HEALTH_CONDITIONS).get(HealthConditions.ID),
 				caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT_VALUE), caseRoot.get(Case.DISEASE_DETAILS),
-				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
-				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
+				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME), 
+				joins.getPerson().get(Person.NATIONAL_HEALTH_ID), joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE), joins.getPerson().get(Person.BIRTHDATE_DD),
 				joins.getPerson().get(Person.BIRTHDATE_MM), joins.getPerson().get(Person.BIRTHDATE_YYYY),
@@ -1331,11 +1354,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType) {
+		NewCaseDateType dateType,
+		Sex sex) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return service.countCasesForMap(region, district, disease, from, to, dateType);
+		return service.countCasesForMap(region, district, disease, from, to, dateType, sex);
 	}
 
 	@Override
@@ -1347,12 +1371,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType) {
+		NewCaseDateType dateType,
+		Sex sex) {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType);
+		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType, sex);
 
 		Pseudonymizer<MapCaseDto> pseudonymizer = createSimplePlaceholderPseudonymizer(cases);
 		pseudonymizer.pseudonymizeDtoCollection(MapCaseDto.class, cases, MapCaseDto::getInJurisdiction, null);
@@ -1707,6 +1732,22 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.ensurePersisted(caze);
 	}
 
+	@Override
+	@RightsAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._IMMUNIZATION_EDIT })
+	public void updateVaccinationStatuses(CaseReferenceDto caseRef) {
+		Case caze = service.getByReferenceDto(caseRef);
+		vaccinationFacade.updateVaccinationStatuses(caze);
+		service.ensurePersisted(caze);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_EDIT)
+	public void deleteVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		service.clearVaccinationStatuses(immunizationRef);
+	}
+
 	private CaseDataDto caseSave(
 		@Valid CaseDataDto dto,
 		boolean handleChanges,
@@ -1745,10 +1786,22 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto, boolean syncShares) {
 		service.ensurePersisted(caze);
+		ensureDefaultCustomizableFieldValues(caze, existingCaseDto);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
 			onCaseChanged(existingCaseDto, caze, syncShares);
 		}
+	}
+
+	private void ensureDefaultCustomizableFieldValues(Case caze, CaseDataDto existingCaseDto) {
+		if (existingCaseDto == null || existingCaseDto.getUuid() == null) {
+			customizableFieldValueService.ensureDefaultValuesForEntity(caze.getUuid(), CustomizableFieldContext.CASE);
+		}
+
+		epiDataFacade.ensureDefaultCustomizableFieldValues(
+			caze.getEpiData(),
+			existingCaseDto != null ? existingCaseDto.getEpiData() : null,
+			caze.getDisease());
 	}
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
@@ -2197,12 +2250,33 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			}
 		}
 
+		if (existingCase != null && newCase.getEpiData() != null) {
+			// If contact with source case is known and at least one source case (same disease) is confirmed, set YES.
+			final YesNoUnknown contactKnown = newCase.getEpiData().getContactWithSourceCaseKnown();
+			if (contactKnown == YesNoUnknown.YES) {
+				// Check if at least one source case is confirmed
+				// We only check for contacts that have this case as resulting case
+				final boolean hasConfirmedSourceCase = contactService.getAllByResultingCase(caseService.getByUuid(existingCase.getUuid()))
+					.stream()
+					.map(Contact::getCaze)
+					.filter(Objects::nonNull)
+					.anyMatch(
+						src -> src.getDisease() == newCase.getDisease()
+							&& CaseClassification.getConfirmedClassifications().contains(src.getCaseClassification()));
+				newCase.setEpidemiologicalConfirmation(hasConfirmedSourceCase ? YesNoUnknown.YES : YesNoUnknown.NO);
+			} else if (contactKnown == YesNoUnknown.NO) {
+				newCase.setEpidemiologicalConfirmation(YesNoUnknown.NO);
+			} else {
+				newCase.setEpidemiologicalConfirmation(YesNoUnknown.UNKNOWN);
+			}
+		}
+
 		// Update follow-up
 		service.updateFollowUpDetails(newCase, existingCase != null && newCase.getFollowUpStatus() != existingCase.getFollowUpStatus());
 
 		updateTasksOnCaseChanged(newCase, existingCase);
 		if ((existingCase == null || existingCase.getDisease() != newCase.getDisease())
-			&& newCase.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+			&& CONFIRMED_CASE_CLASSIFICATION_DISEASES.contains(newCase.getDisease())) {
 			newCase.setCaseClassification(CaseClassification.CONFIRMED);
 			newCase.setClassificationDate(newCase.getReportDate());
 			newCase.setClassificationUser(newCase.getReportingUser());
@@ -2250,7 +2324,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
 
-		if (existingCase == null) {
+		if (existingCase == null || hasVaccinationReferenceChanged(existingCase, newCase)) {
 			vaccinationFacade.updateVaccinationStatuses(newCase);
 		}
 
@@ -2264,6 +2338,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
+	}
+
+	private boolean hasVaccinationReferenceChanged(CaseDataDto existingCase, Case newCase) {
+		return existingCase != null
+			&& (existingCase.getDisease() != newCase.getDisease()
+				|| !DateHelper.isSameDay(existingCase.getReportDate(), newCase.getReportDate())
+				|| !Objects.equals(
+					existingCase.getPerson() != null ? existingCase.getPerson().getUuid() : null,
+					newCase.getPerson() != null ? newCase.getPerson().getUuid() : null));
 	}
 
 	private void handleClassificationOnCaseChange(CaseDataDto existingDto, Case savedCase) {
@@ -2802,6 +2885,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		service.delete(caze, deletionDetails);
+
+		customizableFieldValueService.softDeleteValuesForEntity(caze.getUuid(), CustomizableFieldContext.CASE, deletionDetails);
+		epiDataFacade.softDeleteCustomizableFieldValues(caze.getEpiData(), deletionDetails);
 	}
 
 	@Override
@@ -3038,6 +3124,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
+		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setDiseaseSpecies(source.getDiseaseSpecies());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setScreeningType(source.getScreeningType());
@@ -3091,6 +3179,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		target.setPregnant(source.getPregnant());
 		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
+		target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
+		target.setNumberOfDoses(source.getNumberOfDoses());
+		target.setInformationReliability(source.getInformationReliability());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setSmallpoxLastVaccinationDate(source.getSmallpoxLastVaccinationDate());
@@ -3113,6 +3205,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setDateOther(source.getDateOther());
+		target.setDateOtherDetails(source.getDateOtherDetails());
+		target.setExternalComments(source.getExternalComments());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
@@ -3191,6 +3286,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setPostMortem(source.isPostMortem());
+		target.setDepartment(source.getHealthFacilityDepartment());
+
+		if (source.getNotifier() != null) {
+			target.setNotifier(NotifierDtoHelper.toVersionReferenceDto(source.getNotifier(), source.getNotifierDate()));
+		}
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
+
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());
+		target.setExcludeFromReporting(source.isExcludeFromReporting());
 
 		return target;
 	}
@@ -3202,6 +3311,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
 		boolean targetWasNull = isNull(target);
+		VaccinationStatus previousVaccinationStatus = target != null ? target.getVaccinationStatus() : null;
+		String previousVaccinationStatusDetails = target != null ? target.getVaccinationStatusDetails() : null;
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Case::build, checkChangeDate);
 
@@ -3218,6 +3329,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
+		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setDiseaseSpecies(source.getDiseaseSpecies());
 		if (source.getReportDate() != null) {
 			target.setReportDate(source.getReportDate());
 		} else {
@@ -3287,6 +3400,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		target.setPregnant(source.getPregnant());
 		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
+		boolean vaccinationStatusManuallyUpdated = targetWasNull
+			? source.getVaccinationStatus() != null || source.getVaccinationStatusDetails() != null
+			: !Objects.equals(previousVaccinationStatus, source.getVaccinationStatus())
+				|| !Objects.equals(previousVaccinationStatusDetails, source.getVaccinationStatusDetails());
+		if (vaccinationStatusManuallyUpdated) {
+			target.setVaccinationStatusLastUpdated(null);
+			target.setNumberOfDoses(null);
+			target.setInformationReliability(null);
+		} else {
+			target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
+			target.setNumberOfDoses(source.getNumberOfDoses());
+			target.setInformationReliability(source.getInformationReliability());
+		}
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setSmallpoxLastVaccinationDate(source.getSmallpoxLastVaccinationDate());
@@ -3313,6 +3440,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setDateOther(source.getDateOther());
+		target.setDateOtherDetails(source.getDateOtherDetails());
+		target.setExternalComments(source.getExternalComments());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
@@ -3392,6 +3522,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setPostMortem(source.isPostMortem());
+		target.setHealthFacilityDepartment(source.getDepartment());
+
+		if (source.getNotifier() != null) {
+			target.setNotifier(notifierService.getVersionByReferenceDto(source.getNotifier()));
+			target.setNotifierDate(notifierService.getVersionDateByReferenceDto(source.getNotifier()));
+		}
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
+
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());
+		target.setExcludeFromReporting(source.getExcludeFromReporting());
 
 		return target;
 	}
@@ -3965,6 +4110,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			t.setPerson(leadCase.getPerson());
 			travelEntryService.ensurePersisted(t);
 		});
+
+		// Including survey token for merge case.
+		//		11. servey token reference
+		if (!cloning) {
+			List<SurveyToken> tokens = surveyService.findBy(new SurveyTokenCriteria().caseAssignedTo(otherCase.toReference()));
+			tokens.forEach(s -> {
+				s.setCaseAssignedTo(leadCase);
+				surveyService.ensurePersisted(s);
+			});
+		}
 	}
 
 	private void copyDtoValues(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {

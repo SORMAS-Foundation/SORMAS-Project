@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
+import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentImportFacade;
@@ -37,16 +38,19 @@ import de.symeda.sormas.api.externalemail.ExternalEmailFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
+import de.symeda.sormas.api.geocoding.GeocodingFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
+import de.symeda.sormas.api.infrastructure.continent.ContinentFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
@@ -71,6 +75,7 @@ import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.dashboard.sample.SampleDashboardFacadeEjb;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
 import de.symeda.sormas.backend.environment.EnvironmentImportFacadeEjb;
@@ -83,16 +88,19 @@ import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.geo.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
+import de.symeda.sormas.backend.geocoding.GeocodingFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb.ExportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
@@ -153,6 +161,10 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(FacilityFacadeEjbLocal.class);
 		} else if (CountryFacade.class == clazz) {
 			return (P) beanTest.getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
+		} else if (ContinentFacade.class == clazz) {
+			return (P) beanTest.getBean(ContinentFacadeEjb.ContinentFacadeEjbLocal.class);
+		} else if (SubcontinentFacade.class == clazz) {
+			return (P) beanTest.getBean(SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal.class);
 		} else if (RegionFacade.class == clazz) {
 			return (P) beanTest.getBean(RegionFacadeEjbLocal.class);
 		} else if (DistrictFacade.class == clazz) {
@@ -205,6 +217,10 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal.class);
 		} else if (FeatureConfigurationFacade.class == clazz) {
 			return (P) beanTest.getBean(FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal.class);
+		} else if (DiseaseConfigurationFacade.class == clazz) {
+			return (P) beanTest.getBean(DiseaseConfigurationFacadeEjbLocal.class);
+		} else if (GeocodingFacade.class == clazz) {
+			return (P) beanTest.getBean(GeocodingFacadeEjb.class);
 		} else if (UserRoleFacade.class == clazz) {
 			return (P) beanTest.getBean(UserRoleFacadeEjb.UserRoleFacadeEjbLocal.class);
 		} else if (SampleDashboardFacade.class == clazz) {

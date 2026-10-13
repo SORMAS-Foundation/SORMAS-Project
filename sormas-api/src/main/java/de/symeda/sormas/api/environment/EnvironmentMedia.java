@@ -7,7 +7,8 @@ public enum EnvironmentMedia {
 	WATER,
 	SOIL_ROCK,
 	AIR,
-	BIOTA;
+	BIOTA,
+	VECTORS;
 
 	@Override
 	public String toString() {

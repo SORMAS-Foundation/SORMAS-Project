@@ -21,6 +21,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -29,8 +30,10 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.document.Document;
 
-@Entity(name = "surveytokens")
+@Entity(name = SurveyToken.TABLE_NAME)
 public class SurveyToken extends AbstractDomainObject {
+
+	public static final String TABLE_NAME = "surveytokens";
 
 	private static final long serialVersionUID = -2865609720432906419L;
 
@@ -40,6 +43,9 @@ public class SurveyToken extends AbstractDomainObject {
 	public static final String ASSIGNMENT_DATE = "assignmentDate";
 	public static final String RECIPIENT_EMAIL = "recipientEmail";
 	public static final String RESPONSE_RECEIVED = "responseReceived";
+	public static final String GENERATED_DOCUMENT = "generatedDocument";
+	public static final String RESPONSE_RECEIVED_DATE = "responseReceivedDate";
+	public static final String EXTERNAL_RESPONDENT_ID = "externalRespondentId";
 
 	private String token;
 	private Survey survey;
@@ -48,6 +54,8 @@ public class SurveyToken extends AbstractDomainObject {
 	private String recipientEmail;
 	private Document generatedDocument;
 	private boolean responseReceived;
+	private Date responseReceivedDate;
+	private String externalRespondentId;
 
 	@Column(nullable = false, length = FieldConstraints.CHARACTER_LIMIT_SMALL)
 	public String getToken() {
@@ -94,7 +102,7 @@ public class SurveyToken extends AbstractDomainObject {
 		this.recipientEmail = recipientEmail;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	public Document getGeneratedDocument() {
 		return generatedDocument;
 	}
@@ -110,5 +118,23 @@ public class SurveyToken extends AbstractDomainObject {
 
 	public void setResponseReceived(boolean responseReceived) {
 		this.responseReceived = responseReceived;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getResponseReceivedDate() {
+		return responseReceivedDate;
+	}
+
+	public void setResponseReceivedDate(Date responseReceivedDate) {
+		this.responseReceivedDate = responseReceivedDate;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_UUID_MAX)
+	public String getExternalRespondentId() {
+		return externalRespondentId;
+	}
+
+	public void setExternalRespondentId(String externalRespondentId) {
+		this.externalRespondentId = externalRespondentId;
 	}
 }

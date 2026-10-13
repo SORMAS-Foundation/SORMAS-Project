@@ -18,11 +18,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Experimental;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public class PatchHelper {
 
@@ -104,7 +104,7 @@ public class PatchHelper {
 			}
 		}
 
-		if (existingObjectField.getType().isAssignableFrom(List.class)) {
+		if (Collection.class.isAssignableFrom(existingObjectField.getType())) {
 			Object existingObjectFieldInstance = null;
 			try {
 				existingObjectFieldInstance = existingObjectField.get(existingObject);

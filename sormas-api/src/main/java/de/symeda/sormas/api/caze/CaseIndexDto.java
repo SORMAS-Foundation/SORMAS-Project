@@ -53,6 +53,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String CASE_REFERENCE_NUMBER = "caseReferenceNumber";
 	public static final String PERSON_UUID = "personUuid";
+	public static final String PERSON_NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String DISEASE = "disease";
@@ -91,6 +92,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	private String internalToken;
 	private String caseReferenceNumber;
 	private String personUuid;
+	private String nationalHealthId;
 	@PersonalData
 	@SensitiveData
 	private String personFirstName;
@@ -141,7 +143,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	private Boolean isInJurisdiction;
 
 	//@formatter:off
-	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String caseReferenceNumber, String personUuid, String personFirstName, String personLastName, Disease disease,
+	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String caseReferenceNumber, String personUuid, String nationalHealthId, String personFirstName, String personLastName, Disease disease,
 						String diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 						PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid,
 						String districtUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
@@ -164,6 +166,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.internalToken = internalToken;
 		this.caseReferenceNumber = caseReferenceNumber;
 		this.personUuid = personUuid;
+		this.nationalHealthId = nationalHealthId;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.disease = disease;
@@ -223,6 +226,14 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 
 	public void setPersonUuid(String personUuid) {
 		this.personUuid = personUuid;
+	}
+
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
 	}
 
 	public String getPersonFirstName() {

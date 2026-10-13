@@ -16,8 +16,10 @@
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
 import java.text.Collator;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -37,6 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -50,13 +53,14 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.UserDto;
@@ -64,8 +68,11 @@ import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
+import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
+import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
@@ -82,6 +89,8 @@ public class AutomaticLabMessageProcessor {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB
@@ -138,8 +147,74 @@ public class AutomaticLabMessageProcessor {
 			throw new UnsupportedOperationException("Related forwarded messages not supported yet");
 		}
 
-		@Override
-		protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+		/**
+		 * Handles person picking/creation with localized logic.
+		 * In case of Luxembourg, this method checks for a valid national health ID
+		 * and attempts to find an exact matching person.
+		 * Other country specific handling could be added to this method in the future.
+		 *
+		 * @param person
+		 *            The {@link PersonDto} to process.
+		 * @param callback
+		 *            The {@link HandlerCallback} to deliver the result of the
+		 *            operation.
+		 * @return {@code true} if the person was handled by this method (either found
+		 *         or created),
+		 *         {@code false} otherwise.
+		 */
+		protected boolean localizedHandlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+
+			if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				String nationalHealthId = person.getNationalHealthId();
+				if (StringUtils.isBlank(nationalHealthId)) {
+					logger.debug("[MESSAGE PROCESSING] Incoming person's national health ID is blank. Canceling processing.");
+					callback.cancel();
+					return true;
+				}
+
+				if (!LuxembourgNationalHealthIdValidator.isValid(nationalHealthId, null, null, null)) {
+					logger.debug("[MESSAGE PROCESSING] Incoming person's national health ID is not valid. Canceling processing.");
+					callback.cancel();
+					return true;
+				}
+
+				final List<PersonDto> matchingPersons = personFacade.getByNationalHealthId(nationalHealthId);
+
+				// Multiple persons matched
+				if (matchingPersons.size() > 1) {
+					logger
+						.debug("[MESSAGE PROCESSING] Multiple persons with the same national health id found in the database. Canceling processing.");
+					callback.cancel();
+					return true;
+				}
+
+				// No persons matched
+				if (matchingPersons.isEmpty()) {
+					callback.done(new EntitySelection<>(personFacade.save(person), true));
+					return true;
+				}
+
+				// Exactly one person matched
+				callback.done(new EntitySelection<>(matchingPersons.get(0), false));
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Handles person picking/creation with default logic. This method checks for a
+		 * national health ID. If present, it searches for matching persons. If no ID is
+		 * found, it checks for similar persons based on name.
+		 *
+		 * @param person
+		 *            The {@link PersonDto} to process.
+		 * @param callback
+		 *            The {@link HandlerCallback} to deliver the result of the
+		 *            operation.
+		 */
+		protected void defaultHandlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+
 			String nationalHealthId = person.getNationalHealthId();
 			if (StringUtils.isNotBlank(nationalHealthId)) {
 				List<PersonDto> matchingPersons = personFacade.getByNationalHealthId(nationalHealthId);
@@ -154,13 +229,36 @@ public class AutomaticLabMessageProcessor {
 				}
 			} else {
 				PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true, false);
-				if (personFacade.checkMatchingNameInDatabase(user.toReference(), similarityCriteria)) {
+				if (personFacade.checkMatchingNameInDatabase(getUser().toReference(), similarityCriteria)) {
 					logger.debug("[MESSAGE PROCESSING] Similar persons found in the database. Canceling processing.");
 					callback.cancel();
 				} else {
 					callback.done(new EntitySelection<>(personFacade.save(person), true));
 				}
 			}
+		}
+
+		/**
+		 * Handles the process of picking an existing person or creating a new one.
+		 * This method first attempts to use localized handling. If that fails, it
+		 * defaults to the general handling logic.
+		 *
+		 * @param person
+		 *            The {@link PersonDto} to process.
+		 * @param callback
+		 *            The {@link HandlerCallback} to deliver the result of the
+		 *            operation.
+		 */
+		@Override
+		protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+
+			// try to see if any localized handling is processing it
+			if (localizedHandlePickOrCreatePerson(person, callback)) {
+				return;
+			}
+
+			// no localized handling was do so go with default
+			defaultHandlePickOrCreatePerson(person, callback);
 		}
 
 		@Override
@@ -176,7 +274,23 @@ public class AutomaticLabMessageProcessor {
 				result.setNewCase(true);
 				callback.done(result);
 			} else {
+				// In some cases the resulting case disease needs to change (TUBERCULOSIS message with IGRA tests => LATENT TUBERCULOSIS case)
 				Disease disease = externalMessageDto.getDisease();
+
+				// we need to keep track of the diseases that should be automatically assigned samples
+				final Set<Disease> automaticSampleAssignmentDiseases = new HashSet<>();
+				automaticSampleAssignmentDiseases.add(disease);
+
+				if (getExternalMessageProcessingFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+					if (isLatentTuberculosisMessage(externalMessageDto)) {
+						disease = Disease.LATENT_TUBERCULOSIS;
+						// original disease was Tuberculosis, so we need to add the newly created disease to the set
+						automaticSampleAssignmentDiseases.add(disease);
+					}
+
+					// other luxembourg specific settings
+				}
+
 				Integer automaticSampleAssignmentThreshold = diseaseConfigurationFacade.getAutomaticSampleAssignmentThreshold(disease);
 				if (automaticSampleAssignmentThreshold == null) {
 					logger.debug(
@@ -186,25 +300,97 @@ public class AutomaticLabMessageProcessor {
 					return;
 				}
 
-				Set<String> similarCaseUuids = similarCases.stream().map(CaseSelectionDto::getUuid).collect(Collectors.toSet());
-				Date sampleDate = externalMessageDto.getSampleReports()
+				final Date automaticAssignmentSampleDate = externalMessageDto.getSampleReports()
 					.stream()
 					.map(SampleReportDto::getSampleDateTime)
 					.filter(Objects::nonNull)
 					.min(Comparator.comparing(Date::getTime))
 					.orElse(null);
-				String caseUuid =
-					caseService.getCaseUuidForAutomaticSampleAssignment(similarCaseUuids, disease, sampleDate, automaticSampleAssignmentThreshold);
 
-				if (caseUuid == null) {
+				final Set<String> similarCaseUuids = similarCases.stream().map(CaseSelectionDto::getUuid).collect(Collectors.toSet());
+
+				final List<String> autoAssignCaseUuids = caseService.getCaseUuidsForAutomaticSampleAssignment(
+					similarCaseUuids,
+					automaticSampleAssignmentDiseases,
+					automaticAssignmentSampleDate,
+					automaticSampleAssignmentThreshold);
+
+				CaseSelectionDto caseToAssignTo = null;
+
+				if (!autoAssignCaseUuids.isEmpty()) {
+					// special case for LATENT_TUBERCULOSIS: if there are more caseUuids and we have tuberculosis cases we need to give priority to the tuberculosis cases
+					if (disease == Disease.LATENT_TUBERCULOSIS && autoAssignCaseUuids.size() > 1) {
+						// sort the cases by disease giving priority to tuberculosis cases and take the first one (the one with the highest priority and most recent report date)
+						// we can't use the autoAssignCaseUuids order because it may have at position 0 a case with LATENT_TUBERCULOSIS and we need to prioritize TUBERCULOSIS cases
+						caseToAssignTo = similarCases.stream()
+							.filter(c -> autoAssignCaseUuids.contains(c.getUuid()))
+							.sorted(
+								Comparator.comparing((CaseSelectionDto c) -> c.getDisease() == Disease.TUBERCULOSIS ? 0 : 1)
+									.thenComparing((CaseSelectionDto c) -> c.getReportDate(), Comparator.reverseOrder()))
+							.findFirst()
+							.orElse(null);
+					} else {
+						// autoAssignCaseUuids contains at least one element (checked above)
+						// autoAssignCaseUuids is ordered by date descending, so the first element is the most recent case
+						final String autoAssignMostRecentCaseUuid = autoAssignCaseUuids.get(0);
+						caseToAssignTo = similarCases.stream().filter(c -> autoAssignMostRecentCaseUuid.equals(c.getUuid())).findFirst().orElse(null);
+					}
+
+					if (logger.isDebugEnabled()) {
+						logger.debug(
+							"Similar cases : {}",
+							similarCases.stream()
+								.map(c -> String.format("%s(%s,%s)", c.getUuid(), c.getDisease().getName(), c.getReportDate()))
+								.collect(Collectors.joining(";")));
+						logger.debug("Similar case uuids: {}", similarCaseUuids);
+						logger.debug(
+							"Selected case: {}",
+							caseToAssignTo == null
+								? "null"
+								: String.format(
+									"%s(%s,%s)",
+									caseToAssignTo.getUuid(),
+									caseToAssignTo.getDisease().getName(),
+									caseToAssignTo.getReportDate()));
+					}
+				}
+
+				if (caseToAssignTo == null) {
 					logger.debug(
 						"[MESSAGE PROCESSING] None of the similar cases {} is usable for automatic sample assignment. Continue with case creation.",
 						similarCaseUuids);
 					result.setNewCase(true);
 				} else {
-					CaseSelectionDto caseToAssignTo =
-						similarCases.stream().filter(c -> c.getUuid().equals(caseUuid)).findFirst().orElseThrow(IllegalStateException::new);
-					result.setCaze(caseToAssignTo);
+					boolean overrideWithNewCase = false;
+
+					// we need to check if the existing case is a LATENT_TUBERCULOSIS with only IGRA negative tests
+					// if so and the new case has only IGRA positive test, we need to override and create a new case
+					if (getExternalMessageProcessingFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+						&& disease == Disease.LATENT_TUBERCULOSIS
+						&& samplesHaveIgraPositiveTest(externalMessageDto.getSampleReports())) {
+
+						// Unfortunately we need to load the case to check it
+						final CaseDataDto caze = getExternalMessageProcessingFacade().getCaseDataByUuid(caseToAssignTo.getUuid());
+
+						if (caze.getDisease() == Disease.LATENT_TUBERCULOSIS) {
+							// and we need to get the samples as well
+							List<SampleDto> similarCaseSamples =
+								getExternalMessageProcessingFacade().getSamplesByCaseUuids(Collections.singletonList(caseToAssignTo.getUuid()));
+
+							// if all samples are not positive, we can override
+							if (similarCaseSamples.stream().allMatch(s -> s.getPathogenTestResult() != PathogenTestResultType.POSITIVE)) {
+								overrideWithNewCase = true;
+							}
+
+							// if there was a positive case the caseUuid should be used
+						}
+					}
+
+					if (overrideWithNewCase) {
+						result.setNewCase(true);
+					} else {
+						result.setCaze(caseToAssignTo);
+					}
 				}
 
 				callback.done(result);
@@ -212,13 +398,37 @@ public class AutomaticLabMessageProcessor {
 		}
 
 		@Override
+		protected FlowThen<ExternalMessageProcessingResult> doCaseSelectedFlow(
+			CaseSelectionDto caseSelection,
+			FlowThen<ExternalMessageProcessingResult> flow) {
+
+			// When reusing an existing case, the person's in-memory changes made by mergePerson()
+			// (address, contact details, additional addresses/contacts) are not persisted automatically,
+			// unlike the new-case path where handleCreateCase explicitly saves the person.
+			// We inject a step here to persist those changes before continuing the flow.
+			FlowThen<ExternalMessageProcessingResult> flowWithPersonSaved = flow.then(previousResult -> {
+				PersonDto person = previousResult.getData().getPerson();
+				if (person != null) {
+					personFacade.save(person);
+				}
+				return ProcessingResult.continueWith(previousResult.getData()).asCompletedFuture();
+			});
+
+			return super.doCaseSelectedFlow(caseSelection, flowWithPersonSaved);
+		}
+
+		@Override
 		protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-			callback.done(caseFacade.save(caze));
+			CaseDataDto savedCase = caseFacade.save(caze);
+			// the person was already merged in-memory by mergePerson() in the base class
+			// (address, contact details, additional addresses/contacts), but not yet persisted
+			personFacade.save(person);
+			callback.done(savedCase);
 		}
 
 		@Override
 		public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
-			return CompletableFuture.completedFuture(Boolean.FALSE);
+			return CompletableFuture.completedFuture(Boolean.TRUE);
 		}
 
 		@Override

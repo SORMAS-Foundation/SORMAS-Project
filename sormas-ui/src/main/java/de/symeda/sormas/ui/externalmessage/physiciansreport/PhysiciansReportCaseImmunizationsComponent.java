@@ -60,6 +60,7 @@ import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.vaccination.VaccinationEditForm;
 
+@Deprecated
 public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
 
 	private static final long serialVersionUID = -5128676869217088760L;

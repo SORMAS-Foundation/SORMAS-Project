@@ -96,6 +96,7 @@ public class ContactListCriteriaBuilder {
 		return Arrays.asList(
 			contact.get(Contact.UUID),
 			joins.getPerson().get(Person.UUID),
+			joins.getPerson().get(Person.NATIONAL_HEALTH_ID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			joins.getCaze().get(Case.UUID),
@@ -107,7 +108,7 @@ public class ContactListCriteriaBuilder {
 			joins.getDistrict().get(District.NAME),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
-			contact.get(Contact.CONTACT_PROXIMITY),
+			contact.get(Contact.ID),
 			contact.get(Contact.CONTACT_CLASSIFICATION),
 			contact.get(Contact.CONTACT_STATUS),
 			contact.get(Contact.COMPLETENESS),
@@ -182,7 +183,7 @@ public class ContactListCriteriaBuilder {
 		switch (sortProperty.propertyName) {
 		case ContactIndexDto.UUID:
 		case ContactIndexDto.LAST_CONTACT_DATE:
-		case ContactIndexDto.CONTACT_PROXIMITY:
+		case ContactIndexDto.CONTACT_PROXIMITIES:
 		case ContactIndexDto.CONTACT_CATEGORY:
 		case ContactIndexDto.CONTACT_CLASSIFICATION:
 		case ContactIndexDto.CONTACT_STATUS:
@@ -192,6 +193,9 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.DISEASE:
 		case ContactIndexDto.CASE_CLASSIFICATION:
 		case ContactIndexDto.VACCINATION_STATUS:
+		case ContactIndexDto.PROPHYLAXIS_PRESCRIBED:
+		case ContactIndexDto.PRESCRIBED_DRUG:
+		case ContactIndexDto.PRESCRIBED_DRUG_TEXT:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.EXTERNAL_ID:
@@ -203,6 +207,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.PERSON_UUID:
 			expressions.add(joins.getPerson().get(Person.UUID));
 			break;
+		case ContactIndexDto.PERSON_NATIONAL_HEALTH_ID:
 		case ContactIndexDto.PERSON_FIRST_NAME:
 		case ContactIndexDto.PERSON_LAST_NAME:
 			expressions.add(cb.lower(joins.getPerson().get(sortProperty.propertyName)));
@@ -322,6 +327,9 @@ public class ContactListCriteriaBuilder {
 		} else {
 			selections.addAll(selectionProvider.apply(contact, contactQueryContext));
 			selections.add(cb.size(contact.get(Contact.VISITS)));
+			selections.add(contact.get(Contact.PROPHYLAXIS_PRESCRIBED));
+			selections.add(contact.get(Contact.PRESCRIBED_DRUG));
+			selections.add(contact.get(Contact.PRESCRIBED_DRUG_TEXT));
 			// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
 		}
 

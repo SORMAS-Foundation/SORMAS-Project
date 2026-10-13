@@ -129,6 +129,8 @@ public class PersonsView extends AbstractView {
 				exportLayout.addComponent(btnCustomExport);
 			}
 
+			// TODO: add option to re-enable bulk geocoord updates
+			/* Disabled until option exists to togggle on/off this behaviour
 			if (FacadeProvider.getGeocodingFacade().isEnabled()) {
 				Button setMissingCoordinatesButton = ButtonHelper.createIconButton(
 					I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
@@ -137,6 +139,7 @@ public class PersonsView extends AbstractView {
 					ValoTheme.BUTTON_PRIMARY);
 				addHeaderComponent(setMissingCoordinatesButton);
 			}
+			*/
 
 			grid.addDataSizeChangeListener(e -> updateAssociationButtons());
 		} else {

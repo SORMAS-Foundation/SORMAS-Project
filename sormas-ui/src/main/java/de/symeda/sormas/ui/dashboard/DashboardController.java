@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.dashboard;
 
 import static de.symeda.sormas.ui.UiUtil.permitted;
 
+import java.util.EnumSet;
+
 import com.vaadin.navigator.Navigator;
 
 import de.symeda.sormas.api.feature.FeatureType;
@@ -26,6 +28,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.gis.GisDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 
@@ -52,6 +55,20 @@ public class DashboardController {
 
 		if (permitted(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT, UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW)) {
 			navigator.addView(AefiDashboardView.VIEW_NAME, AefiDashboardView.class);
+		}
+
+		if (permitted(
+			EnumSet.of(
+				FeatureType.CASE_SURVEILANCE,
+				FeatureType.CONTACT_TRACING,
+				FeatureType.SAMPLES_LAB,
+				FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT),
+			new UserRight[] {
+				UserRight.DASHBOARD_SURVEILLANCE_VIEW,
+				UserRight.DASHBOARD_CONTACT_VIEW,
+				UserRight.DASHBOARD_SAMPLES_VIEW,
+				UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW })) {
+			navigator.addView(GisDashboardView.VIEW_NAME, GisDashboardView.class);
 		}
 	}
 }

@@ -18,14 +18,22 @@ public class LayoutWithSidePanel extends CustomLayout {
 
 	private static final String CONTENT_COMPONENT = "contentComponent";
 	private static final String SIDE_PANEL = "sidePanel";
-	private static final String HTML_LAYOUT =
-		LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CONTENT_COMPONENT), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SIDE_PANEL));
+	private static final int SIDE_PANEL_SPAN_SMALL_DEFAULT = 6;
+	private static final int SIDE_PANEL_SPAN_SMALL_FULL_WIDTH = 12;
 
 	private final CustomLayout sidePanel;
 	private final CommitDiscardWrapperComponent<?> editComponent;
 	private Map<String, Component> sideComponents = new HashMap<>();
 
 	public LayoutWithSidePanel(CommitDiscardWrapperComponent editComponent, String... sideComponentLocs) {
+		this(editComponent, false, sideComponentLocs);
+	}
+
+	/**
+	 * @param fullWidthSidePanelOnSmallScreens
+	 *            Whether the side panel takes the full width on small screens instead of half of it
+	 */
+	public LayoutWithSidePanel(CommitDiscardWrapperComponent editComponent, boolean fullWidthSidePanelOnSmallScreens, String... sideComponentLocs) {
 		this.editComponent = editComponent;
 
 		addStyleName(CssStyles.ROOT_COMPONENT);
@@ -37,7 +45,11 @@ public class LayoutWithSidePanel extends CustomLayout {
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 
-		setTemplateContents(HTML_LAYOUT);
+		int sidePanelSpanSmall = fullWidthSidePanelOnSmallScreens ? SIDE_PANEL_SPAN_SMALL_FULL_WIDTH : SIDE_PANEL_SPAN_SMALL_DEFAULT;
+		setTemplateContents(
+			LayoutUtil.fluidRow(
+				LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CONTENT_COMPONENT),
+				LayoutUtil.fluidColumnLoc(4, 0, sidePanelSpanSmall, 0, SIDE_PANEL)));
 		addComponent(editComponent, CONTENT_COMPONENT);
 
 		sidePanel = new CustomLayout();

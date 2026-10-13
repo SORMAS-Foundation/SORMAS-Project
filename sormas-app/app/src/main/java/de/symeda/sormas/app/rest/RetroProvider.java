@@ -106,6 +106,7 @@ public final class RetroProvider {
 	private EnvironmentFacadeRetro environmentFacadeRetro;
 	private EnvironmentSampleFacadeRetro environmentSampleFacadeRetro;
 	private NewsFacadeRetro newsFacadeRetro;
+
 	private RetroProvider(Context context) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
 		lastConnectionId = this.hashCode();
@@ -212,6 +213,7 @@ public final class RetroProvider {
 			.registerTypeAdapter(WaterUse.class, new EnumMapKeySerializer<>(WaterUse.class))
 			.registerTypeAdapter(WeatherCondition.class, new EnumMapKeySerializer<>(WeatherCondition.class))
 			.registerTypeAdapterFactory(classificationCriteriaFactory)
+			.registerTypeAdapterFactory(new LegacyEnumTypeAdapterFactory())
 			.create();
 	}
 

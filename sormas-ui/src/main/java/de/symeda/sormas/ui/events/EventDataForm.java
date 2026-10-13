@@ -82,7 +82,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
@@ -251,16 +250,17 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_IDENTIFICATION_SOURCE, NullableOptionGroup.class);
 
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
-		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
-		addField(EventDto.EVENT_INVESTIGATION_END_DATE, DateField.class);
+		DateField investigationStartDate = addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
+		DateField investigationEndDate = addField(EventDto.EVENT_INVESTIGATION_END_DATE, DateField.class);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(EventDto.EVENT_INVESTIGATION_START_DATE, EventDto.EVENT_INVESTIGATION_END_DATE),
 			EventDto.EVENT_INVESTIGATION_STATUS,
 			Arrays.asList(EventInvestigationStatus.ONGOING, EventInvestigationStatus.DONE, EventInvestigationStatus.DISCARDED),
 			true);
+		DateComparisonValidator.addStartEndValidators(investigationStartDate, investigationEndDate, true);
+		DateComparisonValidator.addStartEndValidators(startDate, investigationStartDate, true);
 		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
-		title.addStyleName(CssStyles.SOFT_REQUIRED);
 
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class, new ResizableTextAreaWrapper<>());
 		descriptionField.setRows(2);
@@ -593,24 +593,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			}
 			addRegionAndDistrict(responsibleUserField);
 		});
-
-		FieldHelper.addSoftRequiredStyle(
-			startDate,
-			endDate,
-			typeOfPlace,
-			meansOfTransport,
-			meansOfTransportDetails,
-			connectionNumber,
-			travelDate,
-			responsibleUserField,
-			srcType,
-			srcInstitutionalPartnerType,
-			srcInstitutionalPartnerTypeDetails,
-			srcFirstName,
-			srcLastName,
-			srcTelNo,
-			srcMediaWebsite,
-			srcMediaName);
 
 		// Make external ID field read-only when SORMAS is connected to a SurvNet instance
 		if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getExternalSurveillanceToolGatewayUrl())) {

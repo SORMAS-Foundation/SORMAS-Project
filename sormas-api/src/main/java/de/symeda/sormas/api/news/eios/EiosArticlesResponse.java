@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.news.eios;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,16 +10,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class EiosArticlesResponse {
 
 	@JsonProperty("result")
-	private List<ArticleDto> eiosArticlesDto;
+	private List<ArticleDto> articles;
 	private Long count;
 	private Boolean isCountAccurate;
+	private Map<String, Object> aggregations;
 
 	public List<ArticleDto> getArticles() {
-		return eiosArticlesDto;
+		return articles;
 	}
 
 	public void setArticles(List<ArticleDto> articleDtos) {
-		this.eiosArticlesDto = articleDtos;
+		this.articles = articleDtos;
 	}
 
 	public Long getCount() {
@@ -35,6 +37,14 @@ public class EiosArticlesResponse {
 
 	public void setIsCountAccurate(Boolean isCountAccurate) {
 		this.isCountAccurate = isCountAccurate;
+	}
+
+	public Map<String, Object> getAggregations() {
+		return aggregations;
+	}
+
+	public void setAggregations(Map<String, Object> aggregations) {
+		this.aggregations = aggregations;
 	}
 
 }

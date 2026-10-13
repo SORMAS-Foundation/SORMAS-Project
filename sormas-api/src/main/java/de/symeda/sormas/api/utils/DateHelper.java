@@ -55,8 +55,6 @@ import com.google.common.collect.Sets;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-import javax.validation.constraints.NotNull;
-
 public final class DateHelper {
 
 	private DateHelper() {
@@ -70,6 +68,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM yyyy");
+	private static final SimpleDateFormat DB_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	private static final Set<String> DATE_FORMAT_SEPARATORS = Sets.newHashSet(".", "/", "-");
 	private static final Pattern DATE_FORMAT_PATTERN = Pattern.compile("^(.*)([\\.\\-/])(.*)([\\.\\-/])(.*)$");
@@ -320,6 +319,15 @@ public final class DateHelper {
 			return clone(EXPORT_DATE_FORMAT).format(date);
 		} else {
 			return "";
+		}
+	}
+
+	public static String convertDateToDbFormat(Date date) {
+		if (date == null) {
+			return null;
+		}
+		synchronized (DB_DATE_FORMAT) {
+			return DB_DATE_FORMAT.format(date);
 		}
 	}
 
@@ -647,6 +655,7 @@ public final class DateHelper {
 
 	/**
 	 * Checks on day-base - not time!
+	 * 
 	 * @return false if one or both params are null
 	 */
 	public static boolean isDateAfter(Date thisDate, Date other) {
@@ -658,6 +667,7 @@ public final class DateHelper {
 
 	/**
 	 * Checks on day-base - not time!
+	 * 
 	 * @return false if one or both params are null
 	 */
 	public static boolean isDateBefore(Date thisDate, Date other) {

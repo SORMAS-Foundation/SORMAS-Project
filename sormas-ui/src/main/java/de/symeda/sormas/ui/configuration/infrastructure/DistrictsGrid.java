@@ -57,7 +57,8 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			DistrictIndexDto.EPID_CODE,
 			DistrictIndexDto.EXTERNAL_ID,
 			DistrictIndexDto.POPULATION,
-			DistrictIndexDto.GROWTH_RATE };
+			DistrictIndexDto.GROWTH_RATE,
+			DistrictIndexDto.NUTS_CODE };
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			columns = ArrayUtils.add(columns, DistrictIndexDto.DEFAULT_INFRASTRUCTURE);
 		}

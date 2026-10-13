@@ -2,11 +2,17 @@ package de.symeda.sormas.backend.clinicalcourse;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -30,8 +36,10 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown chronicKidneyDisease;
 	private YesNoUnknown chronicNeurologicCondition;
 	private YesNoUnknown downSyndrome;
+	private YesNoUnknown highIronLevel;
 	private YesNoUnknown congenitalSyphilis;
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
+	private String immunodeficiencyOtherThanHivText;
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	private YesNoUnknown obesity;
 	private YesNoUnknown currentSmoker;
@@ -40,6 +48,35 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown sickleCellDisease;
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	private String otherConditions;
+	private YesNoUnknown exposedToMosquitoBorneViruses;
+	private String exposedToMosquitoBorneVirusesText;
+	private YesNoUnknown vaccinatedAgainstMosquitoBorneViruses;
+	private YesNoUnknown malaria;
+	private Integer malariaInfectedYear;
+
+	private Integer tuberculosisInfectionYear;
+	private YesNoUnknown previousTuberculosisTreatment;
+	private ComplianceWithTreatment complianceWithTreatment;
+
+	private YesNoUnknown recurrentBronchiolitis;
+
+	private YesNoUnknown onMedication;
+	private String medicationDetails;
+	private YesNoUnknown chronicDisease;
+	private String chronicDiseaseDetails;
+
+	private HivStatus hivStatus;
+	private YesNoUnknown mentalHealthDisorder;
+	private YesNoUnknown substanceUseDisorder;
+	private String substanceUseDisorderDetails;
+	private YesNoUnknown stiProphylaxis;
+	private YesNoUnknown hivPrep;
+	private YesNoUnknown treatedForSyphilis;
+	private String syphilisDrugUsed;
+	private Integer syphilisNumberOfDoses;
+	private Date syphilisDateOfFirstDose;
+	private YesNoUnknown syphilisOrOtherStis;
+	private YesNoUnknown previousGonorrhoea;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
@@ -159,6 +196,15 @@ public class HealthConditions extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHighIronLevel() {
+		return highIronLevel;
+	}
+
+	public void setHighIronLevel(YesNoUnknown highIronLevel) {
+		this.highIronLevel = highIronLevel;
+	}
+
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getCongenitalSyphilis() {
 		return congenitalSyphilis;
 	}
@@ -247,4 +293,230 @@ public class HealthConditions extends AbstractDomainObject {
 	public void setImmunodeficiencyIncludingHiv(YesNoUnknown immunodeficiencyIncludingHiv) {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
+
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
+	}
+
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPreviousTuberculosisTreatment() {
+		return previousTuberculosisTreatment;
+	}
+
+	public void setPreviousTuberculosisTreatment(YesNoUnknown previousTuberculosisTreatment) {
+		this.previousTuberculosisTreatment = previousTuberculosisTreatment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ComplianceWithTreatment getComplianceWithTreatment() {
+		return complianceWithTreatment;
+	}
+
+	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
+		this.complianceWithTreatment = complianceWithTreatment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getRecurrentBronchiolitis() {
+		return recurrentBronchiolitis;
+	}
+
+	public void setRecurrentBronchiolitis(YesNoUnknown recurrentBronchiolitis) {
+		this.recurrentBronchiolitis = recurrentBronchiolitis;
+	}
+
+	public String getImmunodeficiencyOtherThanHivText() {
+		return immunodeficiencyOtherThanHivText;
+	}
+
+	public void setImmunodeficiencyOtherThanHivText(String immunodeficiencyOtherThanHivText) {
+		this.immunodeficiencyOtherThanHivText = immunodeficiencyOtherThanHivText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getExposedToMosquitoBorneViruses() {
+		return exposedToMosquitoBorneViruses;
+	}
+
+	public void setExposedToMosquitoBorneViruses(YesNoUnknown exposedToMosquitoBorneViruses) {
+		this.exposedToMosquitoBorneViruses = exposedToMosquitoBorneViruses;
+	}
+
+	public String getExposedToMosquitoBorneVirusesText() {
+		return exposedToMosquitoBorneVirusesText;
+	}
+
+	public void setExposedToMosquitoBorneVirusesText(String exposedToMosquitoBorneVirusesText) {
+		this.exposedToMosquitoBorneVirusesText = exposedToMosquitoBorneVirusesText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getVaccinatedAgainstMosquitoBorneViruses() {
+		return vaccinatedAgainstMosquitoBorneViruses;
+	}
+
+	public void setVaccinatedAgainstMosquitoBorneViruses(YesNoUnknown vaccinatedAgainstMosquitoBorneViruses) {
+		this.vaccinatedAgainstMosquitoBorneViruses = vaccinatedAgainstMosquitoBorneViruses;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getOnMedication() {
+		return onMedication;
+	}
+
+	public void setOnMedication(YesNoUnknown onMedication) {
+		this.onMedication = onMedication;
+	}
+
+	public String getMedicationDetails() {
+		return medicationDetails;
+	}
+
+	public void setMedicationDetails(String medicationDetails) {
+		this.medicationDetails = medicationDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getChronicDisease() {
+		return chronicDisease;
+	}
+
+	public void setChronicDisease(YesNoUnknown chronicDisease) {
+		this.chronicDisease = chronicDisease;
+	}
+
+	public String getChronicDiseaseDetails() {
+		return chronicDiseaseDetails;
+	}
+
+	public void setChronicDiseaseDetails(String chronicDiseaseDetails) {
+		this.chronicDiseaseDetails = chronicDiseaseDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public HivStatus getHivStatus() {
+		return hivStatus;
+	}
+
+	public void setHivStatus(HivStatus hivStatus) {
+		this.hivStatus = hivStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getMentalHealthDisorder() {
+		return mentalHealthDisorder;
+	}
+
+	public void setMentalHealthDisorder(YesNoUnknown mentalHealthDisorder) {
+		this.mentalHealthDisorder = mentalHealthDisorder;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSubstanceUseDisorder() {
+		return substanceUseDisorder;
+	}
+
+	public void setSubstanceUseDisorder(YesNoUnknown substanceUseDisorder) {
+		this.substanceUseDisorder = substanceUseDisorder;
+	}
+
+	public String getSubstanceUseDisorderDetails() {
+		return substanceUseDisorderDetails;
+	}
+
+	public void setSubstanceUseDisorderDetails(String substanceUseDisorderDetails) {
+		this.substanceUseDisorderDetails = substanceUseDisorderDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getStiProphylaxis() {
+		return stiProphylaxis;
+	}
+
+	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
+		this.stiProphylaxis = stiProphylaxis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHivPrep() {
+		return hivPrep;
+	}
+
+	public void setHivPrep(YesNoUnknown hivPrep) {
+		this.hivPrep = hivPrep;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatedForSyphilis() {
+		return treatedForSyphilis;
+	}
+
+	public void setTreatedForSyphilis(YesNoUnknown treatedForSyphilis) {
+		this.treatedForSyphilis = treatedForSyphilis;
+	}
+
+	public String getSyphilisDrugUsed() {
+		return syphilisDrugUsed;
+	}
+
+	public void setSyphilisDrugUsed(String syphilisDrugUsed) {
+		this.syphilisDrugUsed = syphilisDrugUsed;
+	}
+
+	public Integer getSyphilisNumberOfDoses() {
+		return syphilisNumberOfDoses;
+	}
+
+	public void setSyphilisNumberOfDoses(Integer syphilisNumberOfDoses) {
+		this.syphilisNumberOfDoses = syphilisNumberOfDoses;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getSyphilisDateOfFirstDose() {
+		return syphilisDateOfFirstDose;
+	}
+
+	public void setSyphilisDateOfFirstDose(Date syphilisDateOfFirstDose) {
+		this.syphilisDateOfFirstDose = syphilisDateOfFirstDose;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSyphilisOrOtherStis() {
+		return syphilisOrOtherStis;
+	}
+
+	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
+		this.syphilisOrOtherStis = syphilisOrOtherStis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPreviousGonorrhoea() {
+		return previousGonorrhoea;
+	}
+
+	public void setPreviousGonorrhoea(YesNoUnknown previousGonorrhoea) {
+		this.previousGonorrhoea = previousGonorrhoea;
+	}
+
 }

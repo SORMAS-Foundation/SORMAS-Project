@@ -39,6 +39,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.LegacyEnumHelper;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb.ContinentFacadeEjbLocal;
@@ -128,14 +129,9 @@ public class ImportParserService {
 	}
 
 	private Enum<?> parseEnum(String v, @SuppressWarnings("rawtypes") Class<Enum> clazz, String path) throws ImportErrorException {
-		Enum<?> enumValue = null;
-
-		try {
-			//noinspection unchecked
-			enumValue = Enum.valueOf(clazz, v.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			// ignore
-		}
+		// also accepts names retired via @LegacyEnumNames, so a CSV exported before an enum merge still imports
+		//noinspection unchecked
+		Enum<?> enumValue = LegacyEnumHelper.resolveOrNull(clazz, v.toUpperCase());
 
 		if (enumValue == null) {
 			try {

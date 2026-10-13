@@ -640,6 +640,10 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		return addButton;
 	}
 
+	protected Label getCaptionLabel() {
+		return captionLabel;
+	}
+
 	protected BeanItemContainer<E> getContainer() {
 		return container;
 	}

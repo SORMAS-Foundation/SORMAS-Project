@@ -43,6 +43,7 @@ public class RegionDto extends InfrastructureDtoWithDefault {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country";
+	public static final String NUTS_CODE = "nutsCode";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -54,6 +55,7 @@ public class RegionDto extends InfrastructureDtoWithDefault {
 	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;
+	private String nutsCode;
 
 	public RegionDto(
 		Date creationDate,
@@ -135,6 +137,14 @@ public class RegionDto extends InfrastructureDtoWithDefault {
 
 	public void setCountry(CountryReferenceDto country) {
 		this.country = country;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 
 	public RegionReferenceDto toReference() {

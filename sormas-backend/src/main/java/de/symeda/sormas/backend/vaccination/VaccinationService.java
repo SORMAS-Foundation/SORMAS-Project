@@ -301,6 +301,10 @@ public class VaccinationService extends AdoServiceWithUserFilterAndJurisdiction<
 		Expression<Date> primaryDatePath,
 		Expression<Date> fallbackDatePath) {
 
+		// If no vaccination is provided, don't filter by date (e.g., when updating from immunization change)
+		if (vaccination == null) {
+			return cb.conjunction(); // Return a predicate that is always true
+		}
 		return getRelevantVaccinationPredicate(cb, cb.literal(getRelevantVaccineDate(vaccination)), primaryDatePath, fallbackDatePath);
 	}
 

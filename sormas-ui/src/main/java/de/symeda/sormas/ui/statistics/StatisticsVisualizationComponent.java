@@ -81,7 +81,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 				}
 			}
 		});
-		CssStyles.style(visualizationSelect, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.SOFT_REQUIRED);
+		CssStyles.style(visualizationSelect, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL);
 		visualizationSelect.setNullSelectionAllowed(false);
 		addComponent(visualizationSelect);
 		setExpandRatio(visualizationSelect, 0);
@@ -96,7 +96,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 				visualizationMapType = (StatisticsVisualizationMapType) event.getProperty().getValue();
 			}
 		});
-		CssStyles.style(visualizationMapSelect, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.SOFT_REQUIRED);
+		CssStyles.style(visualizationMapSelect, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL);
 		visualizationMapSelect.setNullSelectionAllowed(false);
 		addComponent(visualizationMapSelect);
 		setExpandRatio(visualizationSelect, 0);
@@ -112,7 +112,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 				updateComponentVisibility();
 			}
 		});
-		CssStyles.style(visualizationChartSelect, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.SOFT_REQUIRED);
+		CssStyles.style(visualizationChartSelect, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL);
 		visualizationChartSelect.setNullSelectionAllowed(false);
 		addComponent(visualizationChartSelect);
 		setExpandRatio(visualizationChartSelect, 0);

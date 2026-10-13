@@ -259,7 +259,7 @@ public class TestEntityCreator {
 	}
 
 	public static PathogenTest createSampleTest(Sample sample) {
-		PathogenTestType pathogenTestType = PathogenTestType.RAPID_TEST;
+		PathogenTestType pathogenTestType = PathogenTestType.LATERAL_FLOW_ASSAY;
 		PathogenTestResultType pathogenTestResultType = PathogenTestResultType.NEGATIVE;
 		Date sampleTestDateTime = new Date();
 

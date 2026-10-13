@@ -17,287 +17,29 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.therapy;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.shared.ui.grid.HeightMode;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextField;
-
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.therapy.PrescriptionCriteria;
-import de.symeda.sormas.api.therapy.PrescriptionDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
-import de.symeda.sormas.api.therapy.TreatmentCriteria;
-import de.symeda.sormas.api.therapy.TreatmentDto;
-import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.ComboBoxHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
 @SuppressWarnings("serial")
 public class TherapyView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/therapy";
 
-	private PrescriptionCriteria prescriptionCriteria;
-	private TreatmentCriteria treatmentCriteria;
-
-	private PrescriptionGrid prescriptionGrid;
-	private TreatmentGrid treatmentGrid;
-
-	// Filter
-	private ComboBox prescriptionTypeFilter;
-	private TextField prescriptionTextFilter;
-	private ComboBox treatmentTypeFilter;
-	private TextField treatmentTextFilter;
-
 	public TherapyView() {
 		super(VIEW_NAME, false);
-
-		prescriptionCriteria = ViewModelProviders.of(TherapyView.class).get(PrescriptionCriteria.class);
-		treatmentCriteria = ViewModelProviders.of(TherapyView.class).get(TreatmentCriteria.class);
-	}
-
-	private VerticalLayout createPrescriptionsHeader() {
-
-		VerticalLayout prescriptionsHeader = new VerticalLayout();
-		prescriptionsHeader.setMargin(false);
-		prescriptionsHeader.setSpacing(false);
-		prescriptionsHeader.setWidth(100, Unit.PERCENTAGE);
-
-		HorizontalLayout headlineRow = new HorizontalLayout();
-		headlineRow.setMargin(false);
-		headlineRow.setSpacing(true);
-		headlineRow.setWidth(100, Unit.PERCENTAGE);
-		{
-			Label prescriptionsLabel = new Label(I18nProperties.getString(Strings.entityPrescriptions));
-			CssStyles.style(prescriptionsLabel, CssStyles.H3);
-			headlineRow.addComponent(prescriptionsLabel);
-			headlineRow.setExpandRatio(prescriptionsLabel, 1);
-
-			// Bulk operations
-			if (UiUtil.permitted(isEditAllowed(), UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT)) {
-				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getTherapyController().deleteAllSelectedPrescriptions(prescriptionGrid.getSelectedRows(), new Runnable() {
-
-							public void run() {
-								reloadPrescriptionGrid();
-							}
-						});
-					}));
-
-				headlineRow.addComponent(bulkOperationsDropdown);
-				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
-			}
-
-			if (UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT)) {
-				Button newPrescriptionButton = ButtonHelper.createButton(Captions.prescriptionNewPrescription, e -> {
-					ControllerProvider.getTherapyController()
-						.openPrescriptionCreateForm(prescriptionCriteria.getTherapy(), this::reloadPrescriptionGrid);
-				}, ValoTheme.BUTTON_PRIMARY);
-				if (!UiUtil.permitted(UserRight.PRESCRIPTION_CREATE)) {
-					newPrescriptionButton.setEnabled(false);
-				}
-				headlineRow.addComponent(newPrescriptionButton);
-				headlineRow.setComponentAlignment(newPrescriptionButton, Alignment.MIDDLE_RIGHT);
-			}
-
-		}
-		prescriptionsHeader.addComponent(headlineRow);
-
-		HorizontalLayout filterRow = new HorizontalLayout();
-		filterRow.setMargin(false);
-		filterRow.setSpacing(true);
-		{
-			prescriptionTypeFilter = ComboBoxHelper.createComboBoxV7();
-			prescriptionTypeFilter.setWidth(140, Unit.PIXELS);
-			prescriptionTypeFilter.setInputPrompt(I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, PrescriptionDto.PRESCRIPTION_TYPE));
-			prescriptionTypeFilter.addItems((Object[]) TreatmentType.values());
-			prescriptionTypeFilter.addValueChangeListener(e -> {
-				prescriptionCriteria.prescriptionType(((TreatmentType) e.getProperty().getValue()));
-				navigateTo(prescriptionCriteria);
-			});
-			filterRow.addComponent(prescriptionTypeFilter);
-
-			prescriptionTextFilter = new TextField();
-			prescriptionTextFilter.setWidth(300, Unit.PIXELS);
-			prescriptionTextFilter.setNullRepresentation("");
-			prescriptionTextFilter.setInputPrompt(I18nProperties.getString(Strings.promptPrescriptionTextFilter));
-			prescriptionTextFilter.addTextChangeListener(e -> {
-				prescriptionCriteria.textFilter(e.getText());
-				reloadPrescriptionGrid();
-			});
-			filterRow.addComponent(prescriptionTextFilter);
-		}
-		prescriptionsHeader.addComponent(filterRow);
-
-		return prescriptionsHeader;
-	}
-
-	private VerticalLayout createTreatmentsHeader() {
-		VerticalLayout treatmentsHeader = new VerticalLayout();
-		treatmentsHeader.setMargin(false);
-		treatmentsHeader.setSpacing(false);
-		treatmentsHeader.setWidth(100, Unit.PERCENTAGE);
-
-		HorizontalLayout headlineRow = new HorizontalLayout();
-		headlineRow.setMargin(false);
-		headlineRow.setSpacing(true);
-		headlineRow.setWidth(100, Unit.PERCENTAGE);
-		{
-			Label treatmentsLabel = new Label(I18nProperties.getString(Strings.headingTreatments));
-			CssStyles.style(treatmentsLabel, CssStyles.H3);
-			headlineRow.addComponent(treatmentsLabel);
-			headlineRow.setExpandRatio(treatmentsLabel, 1);
-
-			// Bulk operations
-			if (UiUtil.permitted(isEditAllowed(), UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT)) {
-				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getTherapyController().deleteAllSelectedTreatments(treatmentGrid.getSelectedRows(), new Runnable() {
-
-							public void run() {
-								reloadTreatmentGrid();
-							}
-						});
-					}));
-
-				headlineRow.addComponent(bulkOperationsDropdown);
-				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
-			}
-
-			if (UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT)) {
-				Button newTreatmentButton = ButtonHelper.createButton(Captions.treatmentNewTreatment, e -> {
-					ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
-				});
-				if (!UiUtil.permitted(UserRight.TREATMENT_CREATE)) {
-					newTreatmentButton.setEnabled(false);
-				}
-				headlineRow.addComponent(newTreatmentButton);
-				headlineRow.setComponentAlignment(newTreatmentButton, Alignment.MIDDLE_RIGHT);
-			}
-
-		}
-		treatmentsHeader.addComponent(headlineRow);
-
-		HorizontalLayout filterRow = new HorizontalLayout();
-		filterRow.setMargin(false);
-		filterRow.setSpacing(true);
-		{
-			treatmentTypeFilter = ComboBoxHelper.createComboBoxV7();
-			treatmentTypeFilter.setWidth(140, Unit.PIXELS);
-			treatmentTypeFilter.setInputPrompt(I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, TreatmentDto.TREATMENT_TYPE));
-			treatmentTypeFilter.addItems((Object[]) TreatmentType.values());
-			treatmentTypeFilter.addValueChangeListener(e -> {
-				treatmentCriteria.treatmentType(((TreatmentType) e.getProperty().getValue()));
-				navigateTo(treatmentCriteria);
-			});
-			filterRow.addComponent(treatmentTypeFilter);
-
-			treatmentTextFilter = new TextField();
-			treatmentTextFilter.setWidth(300, Unit.PIXELS);
-			treatmentTextFilter.setNullRepresentation("");
-			treatmentTextFilter.setInputPrompt(I18nProperties.getString(Strings.promptTreatmentTextFilter));
-			treatmentTextFilter.addTextChangeListener(e -> {
-				treatmentCriteria.textFilter(e.getText());
-				reloadTreatmentGrid();
-			});
-			filterRow.addComponent(treatmentTextFilter);
-		}
-		treatmentsHeader.addComponent(filterRow);
-
-		return treatmentsHeader;
-	}
-
-	private void update(CaseDataDto caze) {
-		// TODO: Remove this once a proper ViewModel system has been introduced
-		if (caze.getTherapy() == null) {
-			TherapyDto therapy = TherapyDto.build();
-			caze.setTherapy(therapy);
-			caze = FacadeProvider.getCaseFacade().save(caze);
-		}
-
-		prescriptionCriteria.therapy(caze.getTherapy().toReference());
-		treatmentCriteria.therapy(caze.getTherapy().toReference());
-
-		applyingCriteria = true;
-
-		prescriptionTypeFilter.setValue(prescriptionCriteria.getPrescriptionType());
-		prescriptionTextFilter.setValue(prescriptionCriteria.getTextFilter());
-		treatmentTypeFilter.setValue(treatmentCriteria.getTreatmentType());
-		treatmentTextFilter.setValue(treatmentCriteria.getTextFilter());
-
-		applyingCriteria = false;
-	}
-
-	public void reloadPrescriptionGrid() {
-		prescriptionGrid.reload();
-		prescriptionGrid.setHeightByRows(Math.max(1, Math.min(prescriptionGrid.getContainer().size(), 5)));
-	}
-
-	public void reloadTreatmentGrid() {
-		treatmentGrid.reload();
 	}
 
 	@Override
 	protected void initView(String params) {
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+		CommitDiscardWrapperComponent<TherapyForm> therapyForm = ControllerProvider.getCaseController()
+			.getTherapyEditComponent(getCaseRef().getUuid(), UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT));
+		setSubComponent(therapyForm);
+		setEditPermission(therapyForm, UiUtil.permitted(UserRight.CASE_EDIT));
 
-		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> null);
-		container.setSpacing(false);
-		container.setWidth(100, Unit.PERCENTAGE);
-		container.setMargin(true);
-
-		container.addComponent(createPrescriptionsHeader());
-
-		prescriptionGrid = new PrescriptionGrid(
-			this,
-			caze.isPseudonymized(),
-			UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
-			UiUtil.permitted(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
-
-		prescriptionGrid.setCriteria(prescriptionCriteria);
-		prescriptionGrid.setHeightMode(HeightMode.ROW);
-		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
-		container.addComponent(prescriptionGrid);
-
-		container.addComponent(createTreatmentsHeader());
-
-		treatmentGrid = new TreatmentGrid(
-			caze.isPseudonymized(),
-			UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT, UserRight.TREATMENT_EDIT),
-			UiUtil.permitted(isEditAllowed(), UserRight.TREATMENT_DELETE),
-			UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
-			UiUtil.permitted(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
-
-		treatmentGrid.setCriteria(treatmentCriteria);
-		container.addComponent(treatmentGrid);
-		container.setExpandRatio(treatmentGrid, 1);
-
-		setSubComponent(container);
-
-		update(caze);
-		reloadPrescriptionGrid();
-		reloadTreatmentGrid();
+		subComponent.setWidth(100, Unit.PERCENTAGE);
+		setSubComponent(therapyForm);
 	}
 }

@@ -215,8 +215,15 @@ public class EntityColumns {
 		if (diseases == null) {
 			return "All";
 		} else {
+			List<Disease> diseaseList;
+			if (diseases.hide()) {
+				List<Disease> hiddenDiseases = Arrays.asList(diseases.value());
+				diseaseList = Arrays.stream(Disease.values()).filter(d -> !hiddenDiseases.contains(d)).collect(Collectors.toList());
+			} else {
+				diseaseList = Arrays.asList(diseases.value());
+			}
 			StringBuilder diseasesString = new StringBuilder();
-			for (Disease disease : diseases.value()) {
+			for (Disease disease : diseaseList) {
 				if (diseasesString.length() > 0)
 					diseasesString.append(", ");
 				diseasesString.append(disease.toShortString());

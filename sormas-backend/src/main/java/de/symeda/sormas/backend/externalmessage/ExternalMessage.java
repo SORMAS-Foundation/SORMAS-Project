@@ -1,6 +1,22 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
@@ -22,28 +38,41 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
-import com.vladmihalcea.hibernate.type.array.ListArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.RadiographyCompatibility;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.epidata.ClusterType;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
-@TypeDef(name = "list-array", typeClass = ListArrayType.class)
+
+@TypeDefs({
+	@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
 public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "externalmessage";
@@ -55,7 +84,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String DISEASE_VARIANT_VALUE = "diseaseVariantValue";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_REPORT_DATE = "caseReportDate";
+	public static final String CASE_SYMPTOMS = "caseSymptoms";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -65,9 +96,14 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";
+	public static final String PERSON_PRESENT_CONDITION = "personPresentCondition";
 	public static final String PERSON_BIRTH_DATE_DD = "personBirthDateDD";
 	public static final String PERSON_BIRTH_DATE_MM = "personBirthDateMM";
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
+	public static final String PERSON_BIRTH_COUNTRY = "personBirthCountry";
+	public static final String PERSON_CITIZENSHIP = "personCitizenship";
+	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
+	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
@@ -77,6 +113,12 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_PHONE = "personPhone";
 	public static final String PERSON_PHONE_NUMBER_TYPE = "personPhoneNumberType";
 	public static final String PERSON_EMAIL = "personEmail";
+	public static final String PERSON_GUARDIAN_FIRST_NAME = "personGurdianFirstName";
+	public static final String PERSON_GUARDIAN_LAST_NAME = "personGuardianLastName";
+	public static final String PERSON_GUARDIAN_RELATIONSHIP = "personGuardianRelationship";
+	public static final String PERSON_GUARDIAN_PHONE = "personGuardianPhone";
+	public static final String PERSON_GUARDIAN_EMAIL = "personGuardianEmail";
+	public static final String PERSON_OCCUPATION = "personOccupation";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
@@ -85,14 +127,42 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
 	public static final String TSV = "tsv";
 
+	public static final String NOTIFIER_FIRST_NAME = "notifierFirstName";
+	public static final String NOTIFIER_LAST_NAME = "notifierLastName";
+	public static final String NOTIFIER_REGISTRATION_NUMBER = "notifierRegistrationNumber";
+	public static final String NOTIFIER_ADDRESS = "notifierAddress";
+	public static final String NOTIFIER_EMAIL = "notifierEmail";
+	public static final String NOTIFIER_PHONE = "notifierPhone";
+
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_STARTED_DATE = "treatmentStartedDate";
+	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
+
+	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
+	public static final String EXPOSURES = "exposures";
+	public static final String ADDITIONAL_PERSON_CONTACT_DETAILS = "additionalPersonContactDetails";
+	public static final String ADDITIONAL_PERSON_ADDRESSES = "additionalPersonAddresses";
+
+	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
+	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+	public static final String AIRPORT_WORKER = "airportWorker";
+	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
+	public static final String HIV_STATUS = "hivStatus";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
+	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
+
 	private ExternalMessageType type;
 	private Disease disease;
 	private String diseaseVariantValue;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
 	private Date messageDateTime;
-
+	private CaseClassification caseClassification;
 	private Date caseReportDate;
+	private Symptoms caseSymptoms;
 	private String reporterName;
 	private List<String> reporterExternalIds;
 	private String reporterPostalCode;
@@ -107,6 +177,10 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
+	private Country personBirthCountry;
+	private Country personCitizenship;
+	private SyphilisPresentation syphilisPresentation;
+	private YesNoUnknown stiProphylaxis;
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
@@ -116,7 +190,23 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personPhone;
 	private PhoneNumberType personPhoneNumberType;
 	private String personEmail;
+	private String personGuardianFirstName;
+	private String personGuardianLastName;
+	private String personGuardianRelationship;
+	private String personGuardianPhone;
+	private String personGuardianEmail;
+	private String personOccupation;
+	private YesNoUnknown treatmentStarted;
+	private Boolean treatmentNotApplicable;
+	private Date treatmentStartedDate;
+	private Date diagnosticDate;
+	private Date deceasedDate;
+	private CauseOfDeath causeOfDeath;
+	private String causeOfDeathDetails;
+	private Disease causeOfDeathDisease;
+
 	private String externalMessageDetails;
+	private String caseComments;
 	//External messages related to each other should have the same reportId
 	private String reportId;
 	private String reportMessageId;
@@ -130,7 +220,64 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personAdditionalDetails;
 
 	private VaccinationStatus vaccinationStatus;
+
 	private YesNoUnknown admittedToHealthFacility;
+	private String hospitalizationFacilityName;
+	private String hospitalizationFacilityExternalId;
+	private String hospitalizationFacilityDepartment;
+	private Date hospitalizationAdmissionDate;
+	private Date hospitalizationDischargeDate;
+
+	private String notifierFirstName;
+	private String notifierLastName;
+
+	private String notifierRegistrationNumber;
+	private String notifierAddress;
+	private String notifierEmail;
+	private String notifierPhone;
+
+	private String activitiesAsCase;
+	private String exposures;
+	private String additionalPersonContactDetails;
+	private String additionalPersonAddresses;
+
+	private RadiographyCompatibility radiographyCompatibility;
+	private String otherDiagnosticCriteria;
+
+	private YesNoUnknown tuberculosis;
+	private YesNoUnknown hiv;
+	private YesNoUnknown hivArt;
+
+	private Integer tuberculosisInfectionYear;
+	private YesNoUnknown previousTuberculosisTreatment;
+	private ComplianceWithTreatment complianceWithTreatment;
+	private Boolean tuberculosisDirectlyObservedTreatment;
+	private Boolean tuberculosisMdrXdrTuberculosis;
+	private Boolean tuberculosisBeijingLineage;
+
+	// Malaria and Dengue changes
+	private YesNoUnknown malaria;
+	private Integer malariaInfectedYear;
+	private YesNoUnknown airportWorker;
+	private YesNoUnknown healthcareProfessional;
+	private ModeOfTransmission modeOfTransmission;
+	private String modeOfTransmissionType;
+
+	// Mumps cluster changes
+	private String clusterIdentifier;
+	private ClusterType clusterType;
+	private String clusterTypeText;
+	private Boolean clusterRelated;
+
+	private HivStatus hivStatus;
+	private ProbableRouteOfTransmission probableRouteOfTransmission;
+	private YesNoUnknown contactWithSexWorker;
+	private Country motherCountryOfBirth;
+	private Country motherCitizenship;
+
+	private ExternalMessageAdditionalDataType additionalDataType;
+
+	private String additionalDataJson;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -168,6 +315,26 @@ public class ExternalMessage extends AbstractDomainObject {
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 		this.diseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
+	}
+
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Column
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+
+	public void setCaseSymptoms(Symptoms caseSymptoms) {
+		this.caseSymptoms = caseSymptoms;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "casesymptoms_id")
+	public Symptoms getCaseSymptoms() {
+		return caseSymptoms;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -359,6 +526,42 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getPersonBirthCountry() {
+		return personBirthCountry;
+	}
+
+	public void setPersonBirthCountry(Country personBirthCountry) {
+		this.personBirthCountry = personBirthCountry;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getPersonCitizenship() {
+		return personCitizenship;
+	}
+
+	public void setPersonCitizenship(Country personCitizenship) {
+		this.personCitizenship = personCitizenship;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisPresentation getSyphilisPresentation() {
+		return syphilisPresentation;
+	}
+
+	public void setSyphilisPresentation(SyphilisPresentation syphilisPresentation) {
+		this.syphilisPresentation = syphilisPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getStiProphylaxis() {
+		return stiProphylaxis;
+	}
+
+	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
+		this.stiProphylaxis = stiProphylaxis;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Facility getPersonFacility() {
 		return personFacility;
 	}
@@ -394,6 +597,60 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.personEmail = personEmail;
 	}
 
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getPersonGuardianFirstName() {
+		return personGuardianFirstName;
+	}
+
+	public void setPersonGuardianFirstName(String personGuardianFirstName) {
+		this.personGuardianFirstName = personGuardianFirstName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getPersonGuardianLastName() {
+		return personGuardianLastName;
+	}
+
+	public void setPersonGuardianLastName(String personGuardianLastName) {
+		this.personGuardianLastName = personGuardianLastName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getPersonGuardianRelationship() {
+		return personGuardianRelationship;
+	}
+
+	public void setPersonGuardianRelationship(String personGuardianRelationship) {
+		this.personGuardianRelationship = personGuardianRelationship;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getPersonGuardianPhone() {
+		return personGuardianPhone;
+	}
+
+	public void setPersonGuardianPhone(String personGuardianPhone) {
+		this.personGuardianPhone = personGuardianPhone;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPersonGuardianEmail() {
+		return personGuardianEmail;
+	}
+
+	public void setPersonGuardianEmail(String personGuardianEmail) {
+		this.personGuardianEmail = personGuardianEmail;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPersonOccupation() {
+		return personOccupation;
+	}
+
+	public void setPersonOccupation(String personOccupation) {
+		this.personOccupation = personOccupation;
+	}
+
 	@Column
 	public String getExternalMessageDetails() {
 		return externalMessageDetails;
@@ -401,6 +658,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setExternalMessageDetails(String labMessageDetails) {
 		this.externalMessageDetails = labMessageDetails;
+	}
+
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	public String getCaseComments() {
+		return caseComments;
+	}
+
+	public void setCaseComments(String caseComments) {
+		this.caseComments = caseComments;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -494,4 +760,465 @@ public class ExternalMessage extends AbstractDomainObject {
 	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
 		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getHospitalizationFacilityName() {
+		return hospitalizationFacilityName;
+	}
+
+	public void setHospitalizationFacilityName(String hospitalizationFacilityName) {
+		this.hospitalizationFacilityName = hospitalizationFacilityName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getHospitalizationFacilityExternalId() {
+		return hospitalizationFacilityExternalId;
+	}
+
+	public void setHospitalizationFacilityExternalId(String hospitalizationFacilityExternalId) {
+		this.hospitalizationFacilityExternalId = hospitalizationFacilityExternalId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getHospitalizationFacilityDepartment() {
+		return hospitalizationFacilityDepartment;
+	}
+
+	public void setHospitalizationFacilityDepartment(String hospitalizationFacilityDepartment) {
+		this.hospitalizationFacilityDepartment = hospitalizationFacilityDepartment;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getHospitalizationAdmissionDate() {
+		return hospitalizationAdmissionDate;
+	}
+
+	public void setHospitalizationAdmissionDate(Date hospitalizationAdmissionDate) {
+		this.hospitalizationAdmissionDate = hospitalizationAdmissionDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getHospitalizationDischargeDate() {
+		return hospitalizationDischargeDate;
+	}
+
+	public void setHospitalizationDischargeDate(Date hospitalizationDischargeDate) {
+		this.hospitalizationDischargeDate = hospitalizationDischargeDate;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierFirstName() {
+		return notifierFirstName;
+	}
+
+	public void setNotifierFirstName(String notifierFirstName) {
+		this.notifierFirstName = notifierFirstName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierLastName() {
+		return notifierLastName;
+	}
+
+	public void setNotifierLastName(String notifierLastName) {
+		this.notifierLastName = notifierLastName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierRegistrationNumber() {
+		return notifierRegistrationNumber;
+	}
+
+	public void setNotifierRegistrationNumber(String notifierRegistrationNumber) {
+		this.notifierRegistrationNumber = notifierRegistrationNumber;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getNotifierAddress() {
+		return notifierAddress;
+	}
+
+	public void setNotifierAddress(String notifierAddress) {
+		this.notifierAddress = notifierAddress;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierEmail() {
+		return notifierEmail;
+	}
+
+	public void setNotifierEmail(String notifierEmail) {
+		this.notifierEmail = notifierEmail;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierPhone() {
+		return notifierPhone;
+	}
+
+	public void setNotifierPhone(String notifierPhone) {
+		this.notifierPhone = notifierPhone;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	@Column
+	public Boolean getTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(Boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	@Column
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getTreatmentStartedDate() {
+		return treatmentStartedDate;
+	}
+
+	public void setTreatmentStartedDate(Date treatmentStartedDate) {
+		this.treatmentStartedDate = treatmentStartedDate;
+	}
+
+	@Column
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDiagnosticDate() {
+		return diagnosticDate;
+	}
+
+	public void setDiagnosticDate(Date diagnosticDate) {
+		this.diagnosticDate = diagnosticDate;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getActivitiesAsCase() {
+		return activitiesAsCase;
+	}
+
+	public void setActivitiesAsCase(String activitiesAsCase) {
+		this.activitiesAsCase = activitiesAsCase;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getAdditionalPersonContactDetails() {
+		return additionalPersonContactDetails;
+	}
+
+	public void setAdditionalPersonContactDetails(String additionalPersonContactDetails) {
+		this.additionalPersonContactDetails = additionalPersonContactDetails;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getAdditionalPersonAddresses() {
+		return additionalPersonAddresses;
+	}
+
+	public void setAdditionalPersonAddresses(String additionalPersonAddresses) {
+		this.additionalPersonAddresses = additionalPersonAddresses;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getExposures() {
+		return exposures;
+	}
+
+	public void setExposures(String exposures) {
+		this.exposures = exposures;
+	}
+
+	public Date getDeceasedDate() {
+		return deceasedDate;
+	}
+
+	public void setDeceasedDate(Date deceasedDate) {
+		this.deceasedDate = deceasedDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CauseOfDeath getCauseOfDeath() {
+		return causeOfDeath;
+	}
+
+	public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
+		this.causeOfDeath = causeOfDeath;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCauseOfDeathDetails() {
+		return causeOfDeathDetails;
+	}
+
+	public void setCauseOfDeathDetails(String causeOfDeathDetails) {
+		this.causeOfDeathDetails = causeOfDeathDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Disease getCauseOfDeathDisease() {
+		return causeOfDeathDisease;
+	}
+
+	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
+		this.causeOfDeathDisease = causeOfDeathDisease;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RadiographyCompatibility getRadiographyCompatibility() {
+		return radiographyCompatibility;
+	}
+
+	public void setRadiographyCompatibility(RadiographyCompatibility radiographyCompatibility) {
+		this.radiographyCompatibility = radiographyCompatibility;
+	}
+
+	public String getOtherDiagnosticCriteria() {
+		return otherDiagnosticCriteria;
+	}
+
+	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
+		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTuberculosis() {
+		return tuberculosis;
+	}
+
+	public void setTuberculosis(YesNoUnknown tuberculosis) {
+		this.tuberculosis = tuberculosis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHiv() {
+		return hiv;
+	}
+
+	public void setHiv(YesNoUnknown hiv) {
+		this.hiv = hiv;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHivArt() {
+		return hivArt;
+	}
+
+	public void setHivArt(YesNoUnknown hivArt) {
+		this.hivArt = hivArt;
+	}
+
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
+	}
+
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPreviousTuberculosisTreatment() {
+		return previousTuberculosisTreatment;
+	}
+
+	public void setPreviousTuberculosisTreatment(YesNoUnknown previousTuberculosisTreatment) {
+		this.previousTuberculosisTreatment = previousTuberculosisTreatment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ComplianceWithTreatment getComplianceWithTreatment() {
+		return complianceWithTreatment;
+	}
+
+	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
+		this.complianceWithTreatment = complianceWithTreatment;
+	}
+
+	public Boolean getTuberculosisDirectlyObservedTreatment() {
+		return tuberculosisDirectlyObservedTreatment;
+	}
+
+	public void setTuberculosisDirectlyObservedTreatment(Boolean tuberculosisDirectlyObservedTreatment) {
+		this.tuberculosisDirectlyObservedTreatment = tuberculosisDirectlyObservedTreatment;
+	}
+
+	public Boolean getTuberculosisMdrXdrTuberculosis() {
+		return tuberculosisMdrXdrTuberculosis;
+	}
+
+	public void setTuberculosisMdrXdrTuberculosis(Boolean tuberculosisMdrXdrTuberculosis) {
+		this.tuberculosisMdrXdrTuberculosis = tuberculosisMdrXdrTuberculosis;
+	}
+
+	public Boolean getTuberculosisBeijingLineage() {
+		return tuberculosisBeijingLineage;
+	}
+
+	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
+		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ExternalMessageAdditionalDataType getAdditionalDataType() {
+		return additionalDataType;
+	}
+
+	public ExternalMessage setAdditionalDataType(ExternalMessageAdditionalDataType additionalDataType) {
+		this.additionalDataType = additionalDataType;
+		return this;
+	}
+
+	@Column(columnDefinition = "json")
+	@Type(type = "json")
+	public String getAdditionalDataJson() {
+		return additionalDataJson;
+	}
+
+	public ExternalMessage setAdditionalDataJson(String additionalData) {
+		this.additionalDataJson = additionalData;
+		return this;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getClusterIdentifier() {
+		return clusterIdentifier;
+	}
+
+	public void setClusterIdentifier(String clusterIdentifier) {
+		this.clusterIdentifier = clusterIdentifier;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
+	}
+
+	@Column
+	public Boolean getClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(Boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public HivStatus getHivStatus() {
+		return hivStatus;
+	}
+
+	public void setHivStatus(HivStatus hivStatus) {
+		this.hivStatus = hivStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ProbableRouteOfTransmission getProbableRouteOfTransmission() {
+		return probableRouteOfTransmission;
+	}
+
+	public void setProbableRouteOfTransmission(ProbableRouteOfTransmission probableRouteOfTransmission) {
+		this.probableRouteOfTransmission = probableRouteOfTransmission;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getContactWithSexWorker() {
+		return contactWithSexWorker;
+	}
+
+	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+		this.contactWithSexWorker = contactWithSexWorker;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getMotherCountryOfBirth() {
+		return motherCountryOfBirth;
+	}
+
+	public void setMotherCountryOfBirth(Country motherCountryOfBirth) {
+		this.motherCountryOfBirth = motherCountryOfBirth;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getMotherCitizenship() {
+		return motherCitizenship;
+	}
+
+	public void setMotherCitizenship(Country motherCitizenship) {
+		this.motherCitizenship = motherCitizenship;
+	}
+
 }

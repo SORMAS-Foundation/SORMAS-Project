@@ -17,7 +17,6 @@ package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.caze.CaseDataForm.updateFacilityDetails;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
@@ -99,7 +98,6 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 		responsibleDistrict.setReadOnly(true);
 		responsibleCommunity = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
-		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 		responsibleCommunity.setReadOnly(true);
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
@@ -109,7 +107,6 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 		districtCombo.setVisible(false);
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
 		communityCombo.setNullSelectionAllowed(true);
-		communityCombo.addStyleName(SOFT_REQUIRED);
 		communityCombo.setVisible(false);
 
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);

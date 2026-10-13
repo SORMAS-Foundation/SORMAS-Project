@@ -15,23 +15,68 @@
 
 package de.symeda.sormas.api.survey;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
+import de.symeda.sormas.api.externalemail.AttachmentException;
+import de.symeda.sormas.api.externalemail.ExternalEmailException;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationException;
 
 @Remote
 public interface SurveyFacade {
 
-    SurveyDto save(@Valid SurveyDto dto);
+	SurveyDto save(@Valid SurveyDto dto);
 
-    SurveyDto getByUuid(String uuid);
+	void uploadDocumentTemplate(@NotNull SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
+		throws DocumentTemplateException;
 
-    long count(SurveyCriteria criteria);
+	SurveyDto getByUuid(String uuid);
 
-    List<SurveyIndexDto> getIndexList(SurveyCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<SurveyDto> getByExternalIds(List<String> externalIds);
 
-    void deletePermanent(String uuid);
+	default Optional<SurveyDto> getByExternalId(@NotNull String externalId) {
+		return Optional.ofNullable(getByExternalIds(List.of(externalId))).filter(CollectionUtils::isNotEmpty).map(surveys -> surveys.get(0));
+	}
+
+	long count(SurveyCriteria criteria);
+
+	List<SurveyIndexDto> getIndexList(SurveyCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	void deletePermanent(String uuid);
+
+	boolean exists(String uuid);
+
+	SurveyReferenceDto getReferenceByUuid(String uuid);
+
+	Boolean isEditAllowed(String uuid);
+
+	void uploadEmailTemplate(@NotNull SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedDocumentTemplateDto, byte[] fileContent)
+		throws DocumentTemplateException;
+
+	List<SurveyDto> getAllByDisease(Disease disease);
+
+	void generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException;
+
+	void sendDocument(SurveyDocumentOptionsDto surveyOptions)
+		throws DocumentTemplateException, ValidationException, AttachmentException, IOException, ExternalEmailException;
+
+	boolean hasUnassignedTokens(SurveyReferenceDto survey);
+
+	DocumentVariables getDocumentVariables(SurveyReferenceDto surveyRef) throws DocumentTemplateException;
+
+	List<SurveyReferenceDto> getAllAsReference();
+
+	List<SurveyDto> getAllWithExternalSurveyId();
 }

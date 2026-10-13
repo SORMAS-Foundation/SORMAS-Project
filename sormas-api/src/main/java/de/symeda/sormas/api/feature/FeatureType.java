@@ -66,6 +66,18 @@ public enum FeatureType {
 			SAMPLES_LAB },
 		null,
 		null),
+	SAMPLE_ADD_PATHOGEN_TEST(true,
+		true,
+		new FeatureType[] {
+			SAMPLES_LAB },
+		null,
+		null),
+	PATHOGEN_TEST_RESULT_REQUIRED(true,
+		true,
+		new FeatureType[] {
+			SAMPLES_LAB },
+		null,
+		null),
 	TASK_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_EDITING, Boolean.FALSE)),
 	WEEKLY_REPORTING(true, true, null, null, null),
 	IMMUNIZATION_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
@@ -123,12 +135,24 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE },
 		null,
 		null),
+	EVENT_717_ASSESSMENT(true,
+		false,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE },
+		null,
+		null),
 	EXTERNAL_MESSAGES(true,
 		false,
 		new FeatureType[] {
 			SAMPLES_LAB },
 		null,
-		ImmutableMap.of(FeatureTypeProperty.FETCH_MODE, Boolean.FALSE, FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING, false)),
+		ImmutableMap.of(
+			FeatureTypeProperty.FETCH_MODE,
+			Boolean.FALSE,
+			FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING,
+			false,
+			FeatureTypeProperty.SURVEY_FETCH_ENABLED,
+			false)),
 	MANUAL_EXTERNAL_MESSAGES(true,
 		true,
 		new FeatureType[] {
@@ -333,7 +357,10 @@ public enum FeatureType {
 			CONTACT_TRACING },
 		null,
 		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE)),
-	NEWS_FEATURE(true, false, null, null, null);
+	NEWS_FEATURE(true, false, null, null, null),
+
+	// EPIPULSE EXPORT
+	EPIPULSE_EXPORT(true, false, null, null, null);
 
 	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
 		FeatureType.CASE_SURVEILANCE,

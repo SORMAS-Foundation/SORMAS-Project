@@ -62,7 +62,8 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			RegionIndexDto.EPID_CODE,
 			RegionIndexDto.EXTERNAL_ID,
 			RegionIndexDto.POPULATION,
-			RegionIndexDto.GROWTH_RATE);
+			RegionIndexDto.GROWTH_RATE,
+			RegionIndexDto.NUTS_CODE);
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			columns = ArrayUtils.add(columns, RegionIndexDto.DEFAULT_INFRASTRUCTURE);
 		}

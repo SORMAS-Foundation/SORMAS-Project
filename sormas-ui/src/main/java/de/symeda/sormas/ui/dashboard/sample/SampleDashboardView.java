@@ -24,6 +24,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -35,6 +36,12 @@ import de.symeda.sormas.ui.dashboard.sample.components.SampleDashboardMapCompone
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.LaboratoryResultsStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SampleDashboardView extends AbstractDashboardView {
 
@@ -96,13 +103,13 @@ public class SampleDashboardView extends AbstractDashboardView {
 		dashboardLayout.addComponent(sampleCountsLayout);
 
 		sampleCountsByResultType =
-			new LaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true, false);
+			new LaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, Descriptions.sampleDashboardHumans, Captions.sampleDashboardFinalLabResults, true, false);
 		sampleCountsByResultType.hideHeading();
 		sampleCountsByResultType.setWithPercentage(true);
 		sampleCountsLayout.addComponent(sampleCountsByResultType, LAB_RESULTS);
 
 		countsByPurpose =
-			new SampleCountTilesComponent<>(SamplePurpose.class, Captions.sampleDashboardSamplePurpose, this::getBackgroundStyleForPurpose, null);
+			new SampleCountTilesComponent<>(SamplePurpose.class, Captions.sampleDashboardSamplePurpose, this::getBackgroundStyleForPurpose, Descriptions.sampleDashboardHumans);
 		countsByPurpose.setTitleStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_5);
 		countsByPurpose.setGroupLabelStyle(CssStyles.LABEL_LARGE + " " + CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		sampleCountsLayout.addComponent(countsByPurpose, SAMPLE_PURPOSE);
@@ -153,13 +160,38 @@ public class SampleDashboardView extends AbstractDashboardView {
 	public void refreshDashboard() {
 		dataProvider.refreshData();
 
-		heading.updateTotalLabel(String.valueOf(dataProvider.getSampleCountsByResultType().values().stream().mapToLong(Long::longValue).sum()));
+		// combining sample counts of humans and environment samples
+		long totalSamples = Stream.concat(dataProvider.getSampleCountsByResultType().entrySet().stream(), dataProvider.getEnvironmentSampleCount().entrySet()
+						.stream())
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue(), Long::sum))
+				.values()
+				.stream()
+				.mapToLong(Long::longValue).sum();
 
+		heading.updateTotalLabel(String.valueOf(totalSamples));
+		//Final laboratory results only for human samples.
 		sampleCountsByResultType.update(dataProvider.getSampleCountsByResultType());
 		countsByPurpose.update(dataProvider.getSampleCountsByPurpose());
-		countsBySpecimenCondition.update(dataProvider.getSampleCountsBySpecimenCondition());
-		countsByShipmentStatus.update(dataProvider.getSampleCountsByShipmentStatus());
-		testCountsByResultType.update(dataProvider.getTestResultCountsByResultType());
+
+		// Merging environment SpecimenCondition counts with human sample counts
+		Map<SpecimenCondition, Long> resultSpecimenConditionMap = new HashMap<>(dataProvider.getSampleCountsBySpecimenCondition());
+		Optional.ofNullable(dataProvider.getEnvSampleCountsBySpecimenCondition()).ifPresent(m -> m.forEach((condition, count) -> {
+			resultSpecimenConditionMap.merge(condition, count, Long::sum);
+		}));
+		countsBySpecimenCondition.update(resultSpecimenConditionMap);
+
+		// Merging environment SampleShipmentStatus counts with human sample counts
+		Map<SampleShipmentStatus, Long> resultShipmentStatusMap = new HashMap<>(dataProvider.getSampleCountsByShipmentStatus());
+		Optional.ofNullable(dataProvider.getEnvSampleCountsByShipmentStatus()).ifPresent(m -> m.forEach((status, count) -> {
+			resultShipmentStatusMap.merge(status, count, Long::sum);
+		}));
+		countsByShipmentStatus.update(resultShipmentStatusMap);
+
+		// Merging environment test result counts with human sample counts
+		Map<PathogenTestResultType, Long> testCountsResultMap = new HashMap<>(dataProvider.getTestResultCountsByResultType());
+		Optional.ofNullable(dataProvider.getEnvironmentTestResultCountsByResultType())
+				.ifPresent(m -> m.forEach((resultType, count) -> testCountsResultMap.merge(resultType, count, Long::sum)));
+		testCountsByResultType.update(testCountsResultMap);
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		mapComponent.refreshMap();
 	}

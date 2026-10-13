@@ -173,7 +173,6 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		TextField phoneNumberField = addField(SelfReportDto.PHONE_NUMBER, TextField.class);
 		phoneNumberField
 			.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumberField.getCaption())));
-		setSoftRequired(true, SelfReportDto.EMAIL, SelfReportDto.PHONE_NUMBER);
 
 		addFields(
 			SelfReportDto.DATE_OF_TEST,
@@ -182,7 +181,6 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 			SelfReportDto.DATE_WORKPLACE,
 			SelfReportDto.ISOLATION_DATE,
 			SelfReportDto.CONTACT_DATE);
-		setSoftRequired(true, SelfReportDto.DATE_OF_TEST, SelfReportDto.DATE_OF_SYMPTOMS);
 		FieldHelper.setVisibleWhen(getFieldGroup(), SelfReportDto.CONTACT_DATE, SelfReportDto.TYPE, SelfReportType.CONTACT, true);
 
 		addField(SelfReportDto.COMMENT, TextArea.class).setRows(6);

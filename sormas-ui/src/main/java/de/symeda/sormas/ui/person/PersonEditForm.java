@@ -33,12 +33,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.vaadin.v7.ui.CheckBox;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ErrorLevel;
@@ -49,6 +49,7 @@ import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
@@ -81,6 +82,7 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
+import de.symeda.sormas.api.person.WorkPlace;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -94,6 +96,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
@@ -106,14 +109,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final long serialVersionUID = -1L;
 
 	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
+	private static final String PERINATAL_DETAILS_HEADER = "perinatalDetailsHeader";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 	private static final String ADDRESSES_HEADER = "addressesHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
-	private static final String NATIONAL_HEALTH_ID_WARNING_LABEL = "nationalHealthIdWarningLoc";
+	public static final String NATIONAL_HEALTH_ID_WARNING_LABEL = "nationalHealthIdWarningLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 	public static final String HAS_GUARDIAN = "hasGuardian";
+	public static final Set<Disease> PERINATAL_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.CONGENITAL_RUBELLA, Disease.RESPIRATORY_SYNCYTIAL_VIRUS)));
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
@@ -124,25 +130,26 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
                             fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
                     ) +
-                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
-                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
-                    fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
+
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.DEATH_DATE),
-                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
-                            fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
-                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
-                    ) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
-                            oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
-                    ) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.BURIAL_DATE),
-                            oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
-                            oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
-                    ) +
+					fluidRow(
+							oneOfFourCol(PersonDto.DEATH_DATE),
+							oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
+							fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
+							oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
+					) +
+					fluidRow(
+							oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
+							oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
+					) +
+					fluidRow(
+							oneOfFourCol(PersonDto.BURIAL_DATE),
+							oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
+							oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
+					) +
+					fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
+					fluidRowLocs(PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE) +
+
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
                     fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +
 					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
@@ -150,10 +157,18 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
+                    loc(PERINATAL_DETAILS_HEADER) +
+					divsCss(VSPACE_3,fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY,"") +
+					fluidRowLocs(PersonDto.BIRTH_WEIGHT_CATEGORY, PersonDto.BIRTH_WEIGHT) +
+                    fluidRowLocs(PersonDto.MULTIPLE_BIRTH,""))+
+					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
+					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
+
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS) +
                             fluidRow(oneOfTwoCol(PersonDto.ARMED_FORCES_RELATION_TYPE)),
+                            fluidRowLocs(PersonDto.WORK_PLACE, PersonDto.WORK_PLACE_TEXT),
                             fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
                     ) +
 
@@ -175,10 +190,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									LayoutUtil.fluidRow(
 											LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 6, 0, PersonDto.NAMES_OF_GUARDIANS)) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
-                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
+	private final Label perinatalDetailsHeader = new Label(I18nProperties.getString(Strings.headingPerinatalDetails));
 	private final Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
 	private final Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private final Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
@@ -231,8 +246,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.diseaseDetails = diseaseDetails;
 		this.isPseudonymized = isPseudonymized;
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -261,8 +277,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.diseaseDetails = diseaseDetails;
 		this.isPseudonymized = isPseudonymized;
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -280,8 +297,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -361,8 +379,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
+		// Gestation Age At Birth is not required to showing. Its not in the requirements
+		tfGestationAgeAtBirth.setVisible(false);
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
 		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfBirthWeight.getCaption()));
+
+		// RSV Perinatal Details
+		ComboBox gestationalAgeCategory = addField(PersonDto.GESTATIONAL_AGE_CATEGORY, ComboBox.class);
+		ComboBox birthWeightCategory = addField(PersonDto.BIRTH_WEIGHT_CATEGORY, ComboBox.class);
+		ComboBox multipleBirth = addField(PersonDto.MULTIPLE_BIRTH, ComboBox.class);
 
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
@@ -382,20 +407,37 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox occupationTypeField = addCustomizableEnumField(PersonDto.OCCUPATION_TYPE);
 		TextField occupationTypeDetailsField = addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
 		occupationTypeDetailsField.setVisible(false);
-		FieldHelper
-			.updateItems(occupationTypeField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null));
+		String defaultOccupationDetailsCaption = occupationTypeDetailsField.getCaption();
+		FieldHelper.updateItems(
+			occupationTypeField,
+			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, disease));
 		occupationTypeField.addValueChangeListener(e -> {
 			OccupationType occupationType = (OccupationType) e.getProperty().getValue();
 			occupationTypeDetailsField.setVisible(occupationType != null && occupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
+			boolean isStudent = occupationType != null && "STUDENT".equals(occupationType.getValue());
+			boolean useSchoolCaption = Disease.YERSINIOSIS.equals(disease) && isStudent && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+			occupationTypeDetailsField
+				.setCaption(useSchoolCaption ? I18nProperties.getCaption(Captions.Person_schoolNurseryName) : defaultOccupationDetailsCaption);
 		});
+		OccupationType initialOccupationType = (OccupationType) occupationTypeField.getValue();
+		occupationTypeDetailsField
+			.setVisible(initialOccupationType != null && initialOccupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
+		boolean isStudent = initialOccupationType != null && "STUDENT".equals(initialOccupationType.getValue());
+		boolean useSchoolCaption = Disease.YERSINIOSIS.equals(disease) && isStudent && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		occupationTypeDetailsField
+			.setCaption(useSchoolCaption ? I18nProperties.getCaption(Captions.Person_schoolNurseryName) : defaultOccupationDetailsCaption);
 
 		addFields(PersonDto.ARMED_FORCES_RELATION_TYPE, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
-		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
+		ComboBox birthCountryCB = addInfrastructureField(PersonDto.BIRTH_COUNTRY);
 		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
-
 		addField(PersonDto.PASSPORT_NUMBER);
+		birthCountryCB.addItems(countries);
+
+		addField(PersonDto.LIVING_STATUS, ComboBox.class);
+		// Entry date is not a mandatory field.
+		addField(PersonDto.ENTRY_DATE, DateField.class);
 
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
@@ -413,6 +455,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 		addField(PersonDto.INTERNAL_TOKEN);
+
+		addField(PersonDto.WORK_PLACE);
+		addField(PersonDto.WORK_PLACE_TEXT);
 
 		AtomicBoolean nationalHealthIdFirstLoading = new AtomicBoolean(true);
 		nationalHealthIdField.addTextFieldValueChangeListener(e -> {
@@ -465,18 +510,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.EDUCATION_DETAILS, PersonDto.EDUCATION_TYPE, Arrays.asList(EducationType.OTHER), true);
 
-		FieldHelper.addSoftRequiredStyle(
-			presentCondition,
-			sex,
-			deathDate,
-			deathPlaceDesc,
-			deathPlaceType,
-			causeOfDeathField,
-			causeOfDeathDiseaseField,
-			causeOfDeathDetailsField,
-			burialDate,
-			burialPlaceDesc,
-			burialConductor);
+		// Lu Salmonellosis renders the place-of-work text field unconditionally and hides the WorkPlace enum;
+		// other diseases keep the existing dependent-visibility binding.
+		boolean isLuxSalmonellosis = disease == Disease.SALMONELLOSIS && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		if (isLuxSalmonellosis) {
+			setVisibleClear(false, PersonDto.WORK_PLACE);
+			getField(PersonDto.WORK_PLACE_TEXT).setVisible(true);
+		} else {
+			FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.WORK_PLACE_TEXT, PersonDto.WORK_PLACE, WorkPlace.OTHER, true);
+		}
 
 		// Set initial visibilities
 
@@ -671,13 +713,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		nameOfGuardians.setVisible(true);
 		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();
 		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
+
+		if (disease != null && !PERINATAL_DISEASES.contains(disease)) {
+			perinatalDetailsHeader.setVisible(false);
+		}
 	}
 
 	private int getApproximateAgeInYears() {
 		Date birthDate = calcBirthDateValue();
 		if (birthDate != null) {
 			Pair<Integer, ApproximateAgeType> pair =
-					ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
+				ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
 			if ((pair.getElement0() != null) && (pair.getElement1() == ApproximateAgeType.YEARS)) {
 				return pair.getElement0();
 			}
@@ -688,7 +734,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private void onEmancipatedChange() {
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
 		hasGuardian.setValue(!isEmancipatedChecked);
-		if(isEmancipatedChecked) {
+		if (isEmancipatedChecked) {
 			nameOfGuardians.setValue("");
 		}
 		updateHasGuardianCheckBox(isEmancipatedChecked);
@@ -701,7 +747,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean canBeEmancipated = personCanBeEmancipated(approximateAge, isEmancipatedChecked);
 		isEmancipated.setVisible(!isIncapacitatedChecked && canBeEmancipated);
 		hasGuardian.setValue(isIncapacitatedChecked || approximateAge < minimumAdultAge);
-		if(getApproximateAgeInYears() < minimumAdultAge) {
+		if (getApproximateAgeInYears() < minimumAdultAge) {
 			nameOfGuardians.setValue(getValue().getNamesOfGuardians());
 		}
 		updateHasGuardianCheckBox(false);
@@ -710,14 +756,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private boolean personCanBeEmancipated(int approximateAge, boolean change) {
 		boolean canBeEmancipated;
-		if(approximateAge == -1 && (approximateAgeField).getValue() != null) {
+		if (approximateAge == -1 && (approximateAgeField).getValue() != null) {
 			canBeEmancipated = false;
 		} else {
 			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
 		}
-		if(!canBeEmancipated && (approximateAgeField).getValue() != null){
-			int age = Integer.parseInt(approximateAgeField.getValue());
-			if(approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS){
+		if (!canBeEmancipated && (approximateAgeField).getValue() != null) {
+			Integer age = parseApproximateAge(approximateAgeField.getValue());
+			if (age != null && approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS) {
 				canBeEmancipated = age >= minimumEmancipatedAge && age < minimumAdultAge;
 				if (change) {
 					isEmancipated.setValue(canBeEmancipated);
@@ -725,6 +771,19 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			}
 		}
 		return canBeEmancipated;
+	}
+
+	private Integer parseApproximateAge(String ageString) {
+		if (ageString == null || ageString.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			// Remove any formatting characters (commas, spaces) and parse only digits
+			String cleanedAge = ageString.replaceAll("[^0-9]", "");
+			return cleanedAge.isEmpty() ? null : Integer.parseInt(cleanedAge);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	private void hardResetNameOfGuardians(boolean isInitialized) {
@@ -738,12 +797,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean isIncapacitatedChecked = (isIncapacitated != null) && (isIncapacitated.getValue());
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
 		boolean canBe = personCanBeEmancipated(getApproximateAgeInYears(), onEmancipatedChange);
-		if((!canBe || isIncapacitatedChecked) && isEmancipatedChecked) {
+		if ((!canBe || isIncapacitatedChecked) && isEmancipatedChecked) {
 			isEmancipatedChecked = false;
 			isEmancipated.setValue(Boolean.FALSE);
 			isIncapacitated.setVisible(true);
 		}
-		if(isEmancipatedChecked){
+		if (isEmancipatedChecked) {
 			hasGuardian.setVisible(false);
 			nameOfGuardians.setVisible(false);
 			isIncapacitated.setVisible(false);
@@ -756,7 +815,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean isChildOrUnknownDate = getApproximateAgeInYears() < minimumAdultAge;
 		nameOfGuardians.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
 		hasGuardian.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
-		if((birthDate == null) || isChildOrUnknownDate ){
+		if ((birthDate == null) || isChildOrUnknownDate) {
 			hasGuardian.setValue(Boolean.TRUE);
 		}
 	}

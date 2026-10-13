@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -145,13 +146,9 @@ public class ExternalMessageProcessingUIHelper {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
 			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
-			updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				mapper);
-
 			callback.done(caseCreateComponent.getWrappedComponent().getValue());
-
 		});
+
 		caseCreateComponent.addDiscardListener(callback::cancel);
 
 		caseCreateComponent.getWrappedComponent().setValue(caze);
@@ -163,14 +160,31 @@ public class ExternalMessageProcessingUIHelper {
 		showFormWithLabMessage(labMessage, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
 	}
 
-	public static void updateAddressAndSavePerson(PersonDto personDto, ExternalMessageMapper mapper) {
-		if (personDto.getAddress().getCity() == null
-			&& personDto.getAddress().getHouseNumber() == null
-			&& personDto.getAddress().getPostalCode() == null
-			&& personDto.getAddress().getStreet() == null) {
-			mapper.mapToLocation(personDto.getAddress());
+	/**
+	 * Loads the person by UUID, merges address and contact details from the external message mapper, and saves the person.
+	 * This should be called after a case, contact or event participant is created, because the respective controllers
+	 * process the person data independently and we need to ensure the external message data is applied.
+	 * Does nothing if {@code personUuid} is {@code null} or no person with that UUID exists.
+	 *
+	 * @param personUuid
+	 *            the UUID of the person to update
+	 * @param mapper
+	 *            the external message mapper providing the address/contact data
+	 */
+	public static void updateAddressAndSavePerson(String personUuid, ExternalMessageMapper mapper) {
+		if (personUuid == null) {
+			return;
 		}
-		FacadeProvider.getPersonFacade().save(personDto);
+
+		final PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personUuid);
+		if (person == null) {
+			return;
+		}
+
+		mapper.mergePersonAddress(person);
+		mapper.mergePersonContactDetails(person);
+		// finally it is safe to save even if no changes were actually made
+		FacadeProvider.getPersonFacade().save(person);
 	}
 
 	public static void showEditSampleWindow(
@@ -538,6 +552,16 @@ public class ExternalMessageProcessingUIHelper {
 			}
 		}
 		throw new UnsupportedOperationException("The created entity to be deleted could net be determined.");
+	}
+
+	public static void addLabelIfAvailable(HorizontalLayout layout, String text, String i18nPrefix, String captionKey) {
+		if (StringUtils.isBlank(text)) {
+			return;
+		}
+		Label label = new Label(text);
+		label.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
+		label.setWidthUndefined();
+		layout.addComponent(label);
 	}
 
 }

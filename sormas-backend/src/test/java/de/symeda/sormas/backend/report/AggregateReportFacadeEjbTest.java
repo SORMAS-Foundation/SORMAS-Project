@@ -247,10 +247,12 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAggregateReportsSummarize() {
+	public void testAggregateReportsSummarize() throws InterruptedException {
 		loginWith(informant1);
 
 		createAggregateReport(1, 1, 1, rdcf.region, rdcf.district, null, null);
+		// changeDate has millisecond resolution, delay so the later report at the same jurisdiction is unambiguously the most recent
+		Thread.sleep(1);
 		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, null, null);
 		createAggregateReport(3, 3, 3, rdcf.region, rdcf.district, rdcf.facility, null);
 
@@ -367,12 +369,14 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAggregateReportGetEditData() {
+	public void testAggregateReportGetEditData() throws InterruptedException {
 		useNationalUserLogin();
 		Disease disease = Disease.ACUTE_VIRAL_HEPATITIS;
-		creator.updateDiseaseConfiguration(disease, false, false, false, true, null);
+		creator.updateDiseaseConfiguration(disease, false, false, false, true, null, false, 0, 0);
 
 		createAggregateReport(disease, null, 1, 1, 1);
+		// changeDate has millisecond resolution, delay so getSimilarAggregateReports unambiguously picks the most recent report per age group
+		Thread.sleep(1);
 		AggregateReportDto selectedAggregateReport = createAggregateReport(disease, null, 2, 2, 2);
 
 		List<AggregateReportDto> similarAggregateReports = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
@@ -381,13 +385,15 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, similarAggregateReports.get(0).getNewCases().intValue());
 		assertFalse(similarAggregateReports.get(0).isExpiredAgeGroup());
 
-		creator.updateDiseaseConfiguration(disease, false, false, false, true, Arrays.asList("0D_28D", "1M_12M", "1Y_5Y", "6Y"));
+		creator.updateDiseaseConfiguration(disease, false, false, false, true, Arrays.asList("0D_28D", "1M_12M", "1Y_5Y", "6Y"), false, 0, 0);
 
 		createAggregateReport(disease, "0D_28D", 3, 3, 3);
 		createAggregateReport(disease, "1M_12M", 4, 4, 4);
 		createAggregateReport(disease, "1Y_5Y", 5, 5, 5);
 		createAggregateReport(disease, "6Y", 6, 6, 6);
 
+		// delay so the second batch (same age groups, higher values) is unambiguously more recent than the first
+		Thread.sleep(1);
 		createAggregateReport(disease, "0D_28D", 31, 31, 31);
 		AggregateReportDto selectedAggregateReport2 = createAggregateReport(disease, "1M_12M", 41, 41, 41);
 		createAggregateReport(disease, "1Y_5Y", 51, 51, 51);
@@ -399,7 +405,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
 		assertEquals(41, similarAggregateReports2.get(similarAggregateReports2.indexOf(selectedAggregateReport2)).getNewCases().intValue());
 
-		creator.updateDiseaseConfiguration(disease, false, false, false, true, Arrays.asList("0D_2Y", "3Y_10Y", "11Y"));
+		creator.updateDiseaseConfiguration(disease, false, false, false, true, Arrays.asList("0D_2Y", "3Y_10Y", "11Y"), false, 0, 0);
 		createAggregateReport(disease, "0D_2Y", 7, 7, 7);
 		AggregateReportDto selectedAggregateReport3 = createAggregateReport(disease, "3Y_10Y", 8, 8, 8);
 		createAggregateReport(disease, "11Y", 9, 9, 9);
@@ -410,7 +416,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport2)).isExpiredAgeGroup());
 		assertFalse(similarAggregateReports3.get(similarAggregateReports3.indexOf(selectedAggregateReport3)).isExpiredAgeGroup());
 
-		creator.updateDiseaseConfiguration(disease, false, false, false, true, null);
+		creator.updateDiseaseConfiguration(disease, false, false, false, true, null, false, 0, 0);
 		List<AggregateReportDto> similarAggregateReports4 = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
 		assertEquals(8, similarAggregateReports3.size());
 		assertFalse(similarAggregateReports4.get(similarAggregateReports4.indexOf(selectedAggregateReport)).isExpiredAgeGroup());

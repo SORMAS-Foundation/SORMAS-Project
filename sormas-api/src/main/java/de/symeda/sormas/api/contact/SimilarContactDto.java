@@ -2,6 +2,7 @@ package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -20,7 +21,7 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements IsCont
 	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
 	public static final String CAZE = "caze";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
@@ -33,16 +34,17 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements IsCont
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
 	private Date lastContactDate;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
+	private Long id;
 
 	//@formatter:off
 	public SimilarContactDto(String firstName, String lastName, String uuid,
 							 String cazeUuid, String caseFirstName, String caseLastName, String caseIdExternalSystem,
-							 Date lastContactDate, ContactProximity contactProximity, ContactClassification contactClassification,
+							 Date lastContactDate, Long id, ContactClassification contactClassification,
 							 ContactStatus contactStatus, FollowUpStatus followUpStatus, boolean isInJurisdiction, boolean isCaseInJurisdiction) {
 		//@formatter:on
 		super(uuid);
@@ -54,7 +56,7 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements IsCont
 		}
 		this.caseIdExternalSystem = caseIdExternalSystem;
 		this.lastContactDate = lastContactDate;
-		this.contactProximity = contactProximity;
+		this.id = id;
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
 		this.followUpStatus = followUpStatus;
@@ -85,12 +87,12 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements IsCont
 		this.lastContactDate = lastContactDate;
 	}
 
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	public Set<ContactProximity> getContactProximities() {
+		return contactProximities;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	public String getFirstName() {
@@ -143,5 +145,13 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements IsCont
 
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(getUuid(), getFirstName(), getLastName(), getCaze());
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

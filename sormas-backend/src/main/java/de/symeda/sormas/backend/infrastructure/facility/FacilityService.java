@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.infrastructure.facility;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 import javax.ejb.EJB;
@@ -26,6 +27,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -65,6 +67,36 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 
 	public FacilityService() {
 		super(Facility.class);
+	}
+
+	public List<Facility> getActiveFacilitiesByType(FacilityType type, boolean includeOtherFacility, boolean includeNoneFacility) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+
+		Predicate filter = createBasicFilter(cb, from);
+
+		Join<Facility, Region> regionJoin = from.join(Facility.REGION, JoinType.LEFT);
+		Join<Region, Country> countryJoin = regionJoin.join(Region.COUNTRY, JoinType.LEFT);
+
+		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), type));
+		filter = cb.and(filter, cb.isFalse(countryJoin.get(Country.ARCHIVED)));
+
+		cq.where(filter);
+		cq.distinct(true);
+		cq.orderBy(cb.asc(from.get(Facility.NAME)));
+
+		List<Facility> facilities = em.createQuery(cq).getResultList();
+
+		if (includeOtherFacility) {
+			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+		}
+		if (includeNoneFacility) {
+			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
+		}
+
+		return facilities;
 	}
 
 	public List<Facility> getActiveFacilitiesByCommunityAndType(
@@ -200,7 +232,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Facility getByAddress(String street, String postalCode, String city) {
+	public Facility getByAddress(String street, String houseNumber, String postalCode, String city) {
 
 		if (StringUtils.isAnyBlank(street, postalCode, city)) {
 			return null;
@@ -213,6 +245,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 		Predicate filter = cb.and(
 			createBasicFilter(cb, from),
 			cb.equal(cb.lower(cb.trim(from.get(Facility.STREET))), street.trim().toLowerCase()),
+			cb.equal(
+				cb.lower(cb.trim(from.get(Facility.HOUSE_NUMBER))),
+				Optional.ofNullable(houseNumber).map(s -> s.trim().toLowerCase()).orElse(null)),
 			cb.equal(cb.lower(cb.trim(from.get(Facility.POSTAL_CODE))), postalCode.trim().toLowerCase()),
 			cb.equal(cb.lower(cb.trim(from.get(Facility.CITY))), city.trim().toLowerCase()));
 

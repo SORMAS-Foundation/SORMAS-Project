@@ -80,6 +80,12 @@ public class NewsListActivity extends PagedBaseListActivity {
 		filterBinding.resetFilters.setOnClickListener(e -> resetFilter());
 	}
 
+	// pull-to-refresh reloads the list with the current filters
+	private void refresh() {
+		showPreloader();
+		viewModel.notifyCriteriaUpdated();
+	}
+
 	private void resetFilter() {
 		showPreloader();
 		pageMenu.hideAll();
@@ -96,7 +102,7 @@ public class NewsListActivity extends PagedBaseListActivity {
 	@Override
 	protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
 		NewsListFragment newsListFragment = NewsListFragment.newInstance();
-		newsListFragment.setResetFilterCallBack(this::resetFilter);
+		newsListFragment.setRefreshCallBack(this::refresh);
 		return newsListFragment;
 	}
 }

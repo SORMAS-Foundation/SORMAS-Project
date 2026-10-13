@@ -135,6 +135,46 @@
 	background-image: url("marker/event-rumor.png");
 }
 
+.marker.aefi:after {
+	content: "\e615";
+	font-family: "Vaadin-Icons";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	font-size: 25px;
+	margin-top: -6px;
+	z-index: -1;
+}
+
+.marker.aefi div {
+	border-radius: 0;
+}
+
+.marker.aefi.serious div {
+	background-color: rgba(216, 49, 43, 0.6);
+}
+
+.marker.aefi.serious:after {
+	color: rgba(216, 49, 43, 0.8);
+}
+
+.marker.aefi.non-serious div {
+	background-color: rgba(204, 173, 20, 0.6);
+}
+
+.marker.aefi.non-serious:after {
+	color: rgba(204, 173, 20, 0.8);
+}
+
+.marker.aefi.unclassified div {
+	background-color: rgba(203, 203, 203, 0.8);
+}
+
+.marker.aefi.unclassified:after {
+	color: rgba(127, 127, 127, 0.8);
+}
+
 .leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow
 	{
 	-webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.3s

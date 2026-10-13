@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
@@ -71,17 +72,11 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 		String styledHtml = createStyledHtml(templateReference.getCaption(), body);
 		if (shouldUploadGeneratedDoc) {
 			byte[] documentToSave = styledHtml.getBytes(StandardCharsets.UTF_8);//mandatory UTF_8
-			try {
-				helper.saveDocument(
-					helper.getDocumentFileName(eventReference, templateReference),
-					DocumentDto.MIME_TYPE_DEFAULT,
-					documentToSave.length,
-					helper.getDocumentRelatedEntityType(eventReference),
-					eventReference.getUuid(),
-					documentToSave);
-			} catch (Exception e) {
-				throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
-			}
+			helper.saveDocument(
+				helper.getDocumentFileName(eventReference, templateReference),
+				DocumentDto.MIME_TYPE_DEFAULT,
+				eventReference,
+				documentToSave);
 		}
 		return styledHtml;
 	}
@@ -105,7 +100,7 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 
 	@Override
 	public List<DocumentTemplateDto> getAvailableTemplates(Disease disease) {
-		return documentTemplateFacade.getAvailableTemplates(DOCUMENT_WORKFLOW, disease);
+		return documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DOCUMENT_WORKFLOW, disease, null));
 	}
 
 	@Override

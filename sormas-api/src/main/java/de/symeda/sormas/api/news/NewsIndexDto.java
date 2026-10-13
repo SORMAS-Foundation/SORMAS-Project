@@ -40,6 +40,13 @@ public class NewsIndexDto extends EntityDto {
 
 	private String community;
 
+	// uuids of the jurisdiction so clients (e.g. the mobile app) can resolve their local infrastructure entries
+	private String regionUuid;
+
+	private String districtUuid;
+
+	private String communityUuid;
+
 	private String village;
 
 	private String newsSource;
@@ -59,8 +66,11 @@ public class NewsIndexDto extends EntityDto {
 		String link,
 		String description,
 		String region,
+		String regionUuid,
 		String district,
+		String districtUuid,
 		String community,
+		String communityUuid,
 		Date newsDate,
 		RiskLevel riskLevel,
 		NewsStatus status,
@@ -73,6 +83,9 @@ public class NewsIndexDto extends EntityDto {
 		this.region = region;
 		this.district = district;
 		this.community = community;
+		this.regionUuid = regionUuid;
+		this.districtUuid = districtUuid;
+		this.communityUuid = communityUuid;
 		this.newsDate = newsDate;
 		this.riskLevel = riskLevel;
 		this.status = status;
@@ -85,6 +98,30 @@ public class NewsIndexDto extends EntityDto {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public String getRegionUuid() {
+		return regionUuid;
+	}
+
+	public void setRegionUuid(String regionUuid) {
+		this.regionUuid = regionUuid;
+	}
+
+	public String getDistrictUuid() {
+		return districtUuid;
+	}
+
+	public void setDistrictUuid(String districtUuid) {
+		this.districtUuid = districtUuid;
+	}
+
+	public String getCommunityUuid() {
+		return communityUuid;
+	}
+
+	public void setCommunityUuid(String communityUuid) {
+		this.communityUuid = communityUuid;
 	}
 
 	public Date getNewsDate() {

@@ -29,6 +29,7 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 	public final static String TIMESTAMP_SUBTRACT_14_DAYS = "timestamp_subtract_14_days";
 	public final static String AT_END_OF_DAY = "at_end_of_day";
 	public final static String FULLTEXT_SEARCH = "fulltext_search";
+	public final static String EMPTY_TO_NULL = "empty_to_null";
 
 	public ExtendedPostgreSQL94Dialect() {
 		super();
@@ -59,5 +60,6 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 			new SQLFunctionTemplate(StandardBasicTypes.DATE, "?1 - interval '" + VaccinationService.REPORT_DATE_RELEVANT_DAYS + " days'"));
 		registerFunction(AT_END_OF_DAY, new SQLFunctionTemplate(StandardBasicTypes.DATE, "?1::date + interval '1 day' - interval '1 microsecond'"));
 		registerFunction(FULLTEXT_SEARCH, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 @@ plainto_tsquery('simple', unaccent(?2))"));
+		registerFunction(EMPTY_TO_NULL, new SQLFunctionTemplate(StandardBasicTypes.STRING, "NULLIF(TRIM(?1), '')"));
 	}
 }

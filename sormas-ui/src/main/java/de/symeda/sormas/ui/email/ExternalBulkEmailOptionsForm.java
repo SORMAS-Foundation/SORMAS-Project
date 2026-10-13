@@ -28,7 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.google.common.io.ByteStreams;
@@ -45,6 +47,7 @@ import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 import de.symeda.sormas.api.DocumentHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
@@ -72,7 +75,7 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 	public static final int MAX_ATTACHMENT_NUMBER = 5;
 	public static final String CUSTOM_EMAIL_ATTACHMENT_DOCUMENT = "customEmailAttachmentDocument";
 
-	private static final String HTML_LAYOUT = fluidRowLocs(ExternalEmailOptionsWithAttachmentsDto.TEMPLATE_NAME)
+	private static final String HTML_LAYOUT = fluidRowLocs(ExternalEmailOptionsWithAttachmentsDto.TEMPLATE)
 		+ fluidRowLocs(UPLOAD_LOC)
 		+ fluidRowLocs(ExternalEmailOptionsWithAttachmentsDto.ATTACHED_DOCUMENTS)
 		+ fluidRowLocs(CUSTOM_EMAIL_ATTACHMENT_DOCUMENT);
@@ -93,7 +96,8 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 	protected ExternalBulkEmailOptionsForm(
 		DocumentWorkflow documentWorkflow,
 		DocumentRelatedEntityType documentRelatedEntityType,
-		RootEntityType rootEntityType, DocumentWorkflow templatesWorkflow) {
+		RootEntityType rootEntityType,
+		DocumentWorkflow templatesWorkflow) {
 		super(ExternalEmailOptionsWithAttachmentsDto.class, ExternalEmailOptionsWithAttachmentsDto.I18N_PREFIX, false);
 		this.documentWorkflow = documentWorkflow;
 		this.documentRelatedEntityType = documentRelatedEntityType;
@@ -112,9 +116,13 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 
 	@Override
 	protected void addFields() {
-		ComboBox templateCombo = addField(ExternalEmailOptionsWithAttachmentsDto.TEMPLATE_NAME, ComboBox.class);
+		ComboBox templateCombo = addField(ExternalEmailOptionsWithAttachmentsDto.TEMPLATE, ComboBox.class);
 		templateCombo.setRequired(true);
-		List<DocumentTemplateDto> templateNames = FacadeProvider.getExternalEmailFacade().getTemplates(documentWorkflow);
+		List<DocumentTemplateReferenceDto> templateNames = FacadeProvider.getExternalEmailFacade()
+			.getTemplates(documentWorkflow)
+			.stream()
+			.map(DocumentTemplateDto::toReference)
+			.collect(Collectors.toList());
 		FieldHelper.updateItems(templateCombo, templateNames);
 
 		if (Arrays.asList(DocumentWorkflow.CASE_EMAIL, DocumentWorkflow.CONTACT_EMAIL, DocumentWorkflow.TRAVEL_ENTRY_EMAIL)

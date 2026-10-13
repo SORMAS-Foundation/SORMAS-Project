@@ -35,6 +35,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -114,6 +116,23 @@ public class EventListComponent extends VerticalLayout {
 				ControllerProvider.getEventController().selectOrCreateSubordinateEvent(superordinateEvent);
 			} else {
 				ControllerProvider.getEventController().createSubordinateEvent(superordinateEvent);
+			}
+		}, isEditAllowed);
+	}
+
+	public EventListComponent(EnvironmentReferenceDto environment, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
+
+		this.actionCallback = actionCallback;
+		EventList eventList = new EventList(environment, actionCallback, isEditAllowed);
+		createEventListComponent(eventList, I18nProperties.getCaption(Captions.environmentEvents), true, () -> {
+			EventCriteria eventCriteria = new EventCriteria();
+			eventCriteria.setEnvironment(environment);
+			EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getByUuid(environment.getUuid());
+			long events = FacadeProvider.getEventFacade().count(eventCriteria);
+			if (events > 0) {
+				ControllerProvider.getEventController().selectOrCreateEvent(environmentDto);
+			} else {
+				ControllerProvider.getEventController().create(environmentDto);
 			}
 		}, isEditAllowed);
 	}

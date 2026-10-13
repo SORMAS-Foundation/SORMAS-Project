@@ -34,6 +34,10 @@ public class ClassificationSymptomsCriteriaDto extends ClassificationCaseCriteri
 	public ClassificationSymptomsCriteriaDto(String propertyId) {
 		super(propertyId, SymptomState.YES);
 	}
+	// to add the property values disease specific
+	public ClassificationSymptomsCriteriaDto(String propertyId, String addition) {
+		super(propertyId, addition, SymptomState.YES);
+	}
 
 	public ClassificationSymptomsCriteriaDto(String propertyId, Object... propertyValues) {
 		super(propertyId, propertyValues);
@@ -53,7 +57,7 @@ public class ClassificationSymptomsCriteriaDto extends ClassificationCaseCriteri
 	public String buildDescription() {
 
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId));
+		stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,null, addition));
 		if (!(propertyValues.get(0) instanceof SymptomState)) {
 			appendDescValues(stringBuilder);
 		}

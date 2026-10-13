@@ -45,4 +45,8 @@ public class SurveyService extends BaseAdoService<Survey> {
 
 		return filter;
 	}
+
+	public boolean isEditAllowed (Survey survey){
+		return true;
+	}
 }

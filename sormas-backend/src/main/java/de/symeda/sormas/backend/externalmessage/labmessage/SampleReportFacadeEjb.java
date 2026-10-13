@@ -15,6 +15,17 @@
 
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportReferenceDto;
@@ -27,19 +38,10 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
-
 @Stateless(name = "SampleReportFacade")
-@RightsAllowed(UserRight._EXTERNAL_MESSAGE_PROCESS)
+@RightsAllowed({
+	UserRight._EXTERNAL_MESSAGE_LABORATORY_PROCESS,
+	UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS })
 public class SampleReportFacadeEjb implements SampleReportFacade {
 
 	@EJB

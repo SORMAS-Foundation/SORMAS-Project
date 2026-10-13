@@ -39,6 +39,7 @@ import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -146,6 +147,10 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 		boolean showDuplicatesWithDifferentRegion);
 
 	void updateCompleteness(String uuid);
+
+	void updateVaccinationStatuses(ContactReferenceDto contactRef);
+
+	void deleteVaccinationStatuses(@NotNull ImmunizationReferenceDto immunizationRef);
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 

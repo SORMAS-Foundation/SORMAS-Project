@@ -21,7 +21,6 @@ import java.util.List;
 import org.hibernate.transform.ResultTransformer;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;

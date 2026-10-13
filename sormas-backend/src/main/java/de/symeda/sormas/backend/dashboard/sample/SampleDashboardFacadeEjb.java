@@ -27,6 +27,7 @@ import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -73,7 +74,7 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 
 	@Override
 	public Long countEnvironmentalSamplesForMap(SampleDashboardCriteria criteria) {
-		return sampleDashboardService.countEnvironmentSamplesForMap(criteria);
+		return sampleDashboardService.countEnvironmentalSamplesForMap(criteria);
 	}
 
 	@Override
@@ -84,6 +85,26 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 	@Override
 	public List<MapSampleDto> getEnvironmentalSamplesForMap(SampleDashboardCriteria criteria) {
 		return sampleDashboardService.getEnvironmentalSamplesForMap(criteria);
+	}
+
+	@Override
+	public Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentalSampleCountsBySpecimenCondition(dashboardCriteria);
+	}
+
+	@Override
+	public Map<SampleShipmentStatus, Long> getEnvironmentalSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentalSampleCountsByShipmentStatus(dashboardCriteria);
+	}
+
+	@Override
+	public Map<PathogenTestResultType, Long> getEnvironmentalTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentalTestResultCountsByResultType(dashboardCriteria);
+	}
+
+	@Override
+	public Map<EnvironmentSampleMaterial, Long> getEnvironmentalSampleCounts(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentalSampleCounts(dashboardCriteria);
 	}
 
 	@LocalBean

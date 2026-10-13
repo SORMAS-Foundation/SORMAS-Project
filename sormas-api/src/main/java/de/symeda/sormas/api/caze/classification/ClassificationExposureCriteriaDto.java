@@ -41,6 +41,11 @@ public class ClassificationExposureCriteriaDto extends ClassificationCaseCriteri
 		super();
 	}
 
+	public ClassificationExposureCriteriaDto(ExposureType exposureType) {
+		super();
+		this.exposureType = exposureType;
+	}
+
 	public ClassificationExposureCriteriaDto(String propertyId, ExposureType exposureType, Object... propertyValues) {
 
 		super(propertyId, propertyValues);
@@ -56,30 +61,35 @@ public class ClassificationExposureCriteriaDto extends ClassificationCaseCriteri
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events, Date lastVaccinationDate) {
 
 		for (ExposureDto exposure : caze.getEpiData().getExposures()) {
-			if (exposureType != null && exposure.getExposureType() != exposureType) {
-				continue;
-			}
-
-			Method method;
-			try {
-				method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
-			} catch (NoSuchMethodException e) {
+			// To handle a case, like an exposure type present in the case, we should return true
+			// This case is to handle the Giardiasis and Cryptosporidiosis diseases where only the exposure available but not its related property.
+			if (propertyId == null && exposure.getExposureType() == exposureType) {
+				return true;
+			} else {
+				if (exposureType != null && exposure.getExposureType() != exposureType) {
+					continue;
+				}
+				Method method;
 				try {
-					method = getInvokeClass().getMethod("is" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
-				} catch (NoSuchMethodException newE) {
-					throw new RuntimeException(newE);
+					method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
+				} catch (NoSuchMethodException e) {
+					try {
+						method = getInvokeClass().getMethod("is" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
+					} catch (NoSuchMethodException newE) {
+						throw new RuntimeException(newE);
+					}
+				} catch (SecurityException e) {
+					throw new RuntimeException(e);
 				}
-			} catch (SecurityException e) {
-				throw new RuntimeException(e);
-			}
 
-			try {
-				Object value = method.invoke(exposure);
-				if (propertyValues.contains(value) || CollectionUtils.isEmpty(propertyValues) && YesNoUnknown.YES.equals(value)) {
-					return true;
+				try {
+					Object value = method.invoke(exposure);
+					if (propertyValues.contains(value) || CollectionUtils.isEmpty(propertyValues) && YesNoUnknown.YES.equals(value)) {
+						return true;
+					}
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
+					throw new RuntimeException(e);
 				}
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
-				throw new RuntimeException(e);
 			}
 		}
 
@@ -90,9 +100,16 @@ public class ClassificationExposureCriteriaDto extends ClassificationCaseCriteri
 	public String buildDescription() {
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, propertyId));
 		if (exposureType != null) {
-			sb.append(" ").append(I18nProperties.getString(Strings.classificationCriteriaForExposureType)).append(exposureType.toString());
+			if (propertyId != null) {
+				sb.append(I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, propertyId));
+				sb.append(" ").append(I18nProperties.getString(Strings.classificationCriteriaForExposureType)).append(exposureType.toString());
+			} else {
+				sb.append(I18nProperties.getString(Strings.classificationCriteriaRestrictedToExposureType))
+					.append(" ")
+					.append(exposureType.toString());
+			}
+
 		}
 
 		return sb.toString();

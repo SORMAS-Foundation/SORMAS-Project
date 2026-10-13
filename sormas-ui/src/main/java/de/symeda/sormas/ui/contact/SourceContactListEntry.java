@@ -90,11 +90,15 @@ public class SourceContactListEntry extends SideComponentField {
 			lblContactUuid.setWidth(100, Unit.PERCENTAGE);
 			rightColumn.addComponent(lblContactUuid);
 
-			if (contact.getContactProximity() != null) {
-				Label lblContactProximity = new Label(StringUtils.abbreviate(contact.getContactProximity().toString(), 50));
+			if (contact.getContactProximities() != null && !contact.getContactProximities().isEmpty()) {
+				String proximitiesString = contact.getContactProximities().stream()
+					.map(Object::toString)
+					.reduce((a, b) -> a + ", " + b)
+					.orElse("");
+				Label lblContactProximity = new Label(StringUtils.abbreviate(proximitiesString, 50));
 				CssStyles.style(lblContactProximity, CssStyles.LABEL_TEXT_ALIGN_RIGHT);
 				lblContactProximity.setWidth(100, Unit.PERCENTAGE);
-				lblContactProximity.setDescription(contact.getContactProximity().toString());
+				lblContactProximity.setDescription(proximitiesString);
 				rightColumn.addComponent(lblContactProximity);
 			}
 

@@ -443,7 +443,6 @@ public class LineListingLayout extends VerticalLayout {
 			community = new ComboBox<>();
 			community.setItemCaptionGenerator(item -> item.buildCaption());
 			community.setId("lineListingCommunity_" + lineIndex);
-			community.addStyleName(CssStyles.SOFT_REQUIRED);
 			community.addValueChangeListener(e -> {
 				FieldHelper.removeItems(facility);
 				CommunityReferenceDto communityDto = e.getValue();
@@ -467,7 +466,6 @@ public class LineListingLayout extends VerticalLayout {
 			binder.forField(facility).asRequired().bind(CaseLineDto.FACILITY);
 			facilityDetails = new TextField();
 			facilityDetails.setId("lineListingFacilityDetails_" + lineIndex);
-			CssStyles.style(facilityDetails, CssStyles.SOFT_REQUIRED);
 			facilityDetails.setVisible(false);
 			updateFacilityFields(facility, facilityDetails);
 			binder.forField(facilityDetails).bind(CaseLineDto.FACILITY_DETAILS);
@@ -536,9 +534,9 @@ public class LineListingLayout extends VerticalLayout {
 
 		private void formatAsOtherLine() {
 
-			CssStyles.style(dateOfReport, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			CssStyles.style(facility, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			CssStyles.style(facilityDetails, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
+			CssStyles.style(dateOfReport, CssStyles.CAPTION_HIDDEN);
+			CssStyles.style(facility, CssStyles.CAPTION_HIDDEN);
+			CssStyles.style(facilityDetails, CssStyles.CAPTION_HIDDEN);
 			person.hideCaptions();
 		}
 

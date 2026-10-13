@@ -91,6 +91,7 @@ public class ClassificationPathogenTestCriteriaDto extends ClassificationCaseCri
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, propertyId));
+		appendDescValues(stringBuilder);
 		if (testTypes != null && !testTypes.isEmpty()) {
 			stringBuilder.append(" ").append(I18nProperties.getString(Strings.classificationCriteriaForTestType)).append(" ");
 			for (int i = 0; i < testTypes.size(); i++) {

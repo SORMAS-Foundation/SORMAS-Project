@@ -21,14 +21,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.SignatureException;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -52,17 +45,13 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.*;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.crypt.CmsCertificateConfig;
 import de.symeda.sormas.backend.crypt.CmsCreator;
 import de.symeda.sormas.backend.crypt.CmsPlaintext;
 import de.symeda.sormas.backend.crypt.CmsReader;
+import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 
@@ -82,7 +71,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	public SormasToSormasEncryptionFacadeEjb() {
-		objectMapper = new ObjectMapper();
+		objectMapper = ObjectMapperProvider.getInstance().copy();
 		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 		objectMapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
@@ -179,7 +168,10 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		String cnString = IETFUtils.valueToString(cn.getFirst().getValue());
 
 		if (!otherId.equals(cnString) && !otherDescriptor.getHostName().equals(cnString)) {
-			LOGGER.error("SECURITY WARNING: The received certificate from {} is not issued to the expected ID. The received ID was issued to {}.", otherId, cnString);
+			LOGGER.error(
+				"SECURITY WARNING: The received certificate from {} is not issued to the expected ID. The received ID was issued to {}.",
+				otherId,
+				cnString);
 			throw new SecurityException();
 		}
 

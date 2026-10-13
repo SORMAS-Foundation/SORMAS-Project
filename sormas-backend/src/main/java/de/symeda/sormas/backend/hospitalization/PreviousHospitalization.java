@@ -55,6 +55,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILIY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
+	public static final String HEALTH_FACILITY_DEPARTMENT = "healthFacilityDepartment";
 	public static final String ISOLATED = "isolated";
 	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String DESCRIPTION = "description";
@@ -71,6 +72,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private Community community;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
+	private String healthFacilityDepartment;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private String description;
@@ -80,6 +82,9 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
+	private Integer icuLengthOfStay;
+	private YesNoUnknown oxygenPrescribed;
+	private YesNoUnknown stillHospitalized;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getAdmittedToHealthFacility() {
@@ -190,6 +195,15 @@ public class PreviousHospitalization extends AbstractDomainObject {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getHealthFacilityDepartment() {
+		return healthFacilityDepartment;
+	}
+
+	public void setHealthFacilityDepartment(String healthFacilityDepartment) {
+		this.healthFacilityDepartment = healthFacilityDepartment;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public HospitalizationReasonType getHospitalizationReason() {
 		return hospitalizationReason;
@@ -232,5 +246,31 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
 	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
 		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
+	}
+
+	public Integer getIcuLengthOfStay() {
+		return icuLengthOfStay;
+	}
+
+	public void setIcuLengthOfStay(Integer icuLengthOfStay) {
+		this.icuLengthOfStay = icuLengthOfStay;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getOxygenPrescribed() {
+		return oxygenPrescribed;
+	}
+
+	public void setOxygenPrescribed(YesNoUnknown oxygenPrescribed) {
+		this.oxygenPrescribed = oxygenPrescribed;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getStillHospitalized() {
+		return stillHospitalized;
+	}
+
+	public void setStillHospitalized(YesNoUnknown stillHospitalized) {
+		this.stillHospitalized = stillHospitalized;
 	}
 }

@@ -437,8 +437,9 @@ public class Sample extends DeletableAdo implements IsSample, SormasToSormasShar
 			if (StringUtils.isEmpty(requestedPathogenTestsString)) {
 				requestedPathogenTests = new HashSet<>();
 			} else {
+				// split drops the trailing empty value, so a blank one means the stored string is corrupt: let it throw
 				requestedPathogenTests =
-					Arrays.stream(requestedPathogenTestsString.split(",")).map(PathogenTestType::valueOf).collect(Collectors.toSet());
+					Arrays.stream(requestedPathogenTestsString.split(",")).map(PathogenTestType::fromLegacyName).collect(Collectors.toSet());
 			}
 		}
 		return requestedPathogenTests;
@@ -493,6 +494,7 @@ public class Sample extends DeletableAdo implements IsSample, SormasToSormasShar
 		requestedAdditionalTestsString = sb.toString();
 	}
 
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getRequestedPathogenTestsString() {
 		return requestedPathogenTestsString;
 	}

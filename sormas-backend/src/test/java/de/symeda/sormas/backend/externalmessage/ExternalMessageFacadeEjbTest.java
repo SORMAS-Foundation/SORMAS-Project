@@ -16,23 +16,14 @@
 package de.symeda.sormas.backend.externalmessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,28 +36,23 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.externalmessage.*;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.externalmessage.survey.*;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.sample.*;
+import de.symeda.sormas.api.survey.SurveyDto;
+import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -492,6 +478,107 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
 		return labMessage;
 	}
+
+	/**
+	 * When the adapter returns a survey response whose token does not match any known {@link SurveyTokenDto},
+	 * the processing is cancelled and the external message is persisted with status {@link ExternalMessageStatus#UNPROCESSED}.
+	 */
+	@Test
+	public void testSaveAndProcessSurveyResponses_unknownToken_messageIsSavedAsUnprocessed() throws NamingException {
+		// PREPARE — wire a mock adapter via JNDI using the default name (no sys-config set → prod code falls back to this)
+		SurveyAsExternalMessageAdapterFacade mockAdapter = Mockito.mock(SurveyAsExternalMessageAdapterFacade.class);
+		String surveyAdapterJndi = "java:global/sormas-esante-adapter/SurveyExternalMessageAdapterFacadeEjb";
+		Mockito.when(InitialContext.doLookup(surveyAdapterJndi)).thenReturn(mockAdapter);
+
+		ExternalMessageSurveyResponseRequest request = new ExternalMessageSurveyResponseRequest().setToken("UNKNOWN-TOKEN")
+			.setExternalSurveyId("UNKNOWN-SURVEY-ID")
+			.setSkipIfAlreadyProcessed(false);
+
+		ExternalMessageDto surveyResponse = buildSurveyResponseDto("report-failure-001", request);
+
+		Mockito.when(mockAdapter.getExternalMessages(Mockito.any(Date.class)))
+			.thenReturn(new ExternalMessageResult<>(List.of(surveyResponse), new Date(), true, ""));
+
+		// EXECUTE
+		List<ExternalMessageDto> saved = getExternalMessageFacade().saveAndProcessSurveyResponses(new Date());
+
+		// CHECK
+		// Note: getByUuid is intentionally avoided — the jsonb Hibernate type double-encodes when read back via H2.
+		// The DTO returned directly by saveAndProcessSurveyResponses is safe because it comes from the in-memory entity.
+		assertThat(saved, hasSize(1));
+		assertThat(saved.get(0).getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+	}
+
+	/**
+	 * When the adapter returns a survey response whose token resolves to a case, the configured patch field is applied and the external
+	 * message is persisted with status {@link ExternalMessageStatus#PROCESSED}.
+	 */
+	@Test
+	public void testSaveAndProcessSurveyResponses_validToken_fieldIsPatchedAndMessageIsProcessed() throws NamingException {
+		// PREPARE — wire a mock adapter via JNDI
+		SurveyAsExternalMessageAdapterFacade mockAdapter = Mockito.mock(SurveyAsExternalMessageAdapterFacade.class);
+		String surveyAdapterJndi = "java:global/sormas-esante-adapter/SurveyExternalMessageAdapterFacadeEjb";
+		Mockito.when(InitialContext.doLookup(surveyAdapterJndi)).thenReturn(mockAdapter);
+
+		// Create a case that the survey token will be linked to
+		Disease disease = Disease.CORONAVIRUS;
+		CaseDataDto targetCase = creator.createUnclassifiedCase(disease);
+
+		// Create a survey with a known externalId
+		String externalSurveyId = "survey-ext-id-patch-test";
+		SurveyDto survey = SurveyDto.build();
+		survey.setName("Patch-Test Survey");
+		survey.setDisease(disease);
+		survey.setExternalId(externalSurveyId);
+		SurveyDto savedSurvey = getSurveyFacade().save(survey);
+
+		// Create the survey token that links the survey to the target case
+		String token = "TOKEN-PATCH-001";
+		SurveyTokenDto surveyToken = SurveyTokenDto.build(savedSurvey.toReference());
+		surveyToken.setToken(token);
+		surveyToken.setCaseAssignedTo(targetCase.toReference());
+		getSurveyTokenFacade().save(surveyToken);
+
+		// Build the patch request: set CaseData.clinicalConfirmation = YES
+		PatchDictionary patchDictionary = new PatchDictionary();
+		patchDictionary.put(CaseDataDto.I18N_PREFIX + "." + CaseDataDto.CLINICAL_CONFIRMATION, YesNoUnknown.YES.name());
+
+		ExternalMessageSurveyResponseRequest request = new ExternalMessageSurveyResponseRequest().setToken(token)
+			.setExternalSurveyId(externalSurveyId)
+			.setPatchDictionary(patchDictionary)
+			.setPatchedInCaseOfFailures(true)
+			.setSkipIfAlreadyProcessed(false);
+
+		ExternalMessageDto surveyResponse = buildSurveyResponseDto("report-success-001", request);
+
+		Mockito.when(mockAdapter.getExternalMessages(Mockito.any(Date.class)))
+			.thenReturn(new ExternalMessageResult<>(List.of(surveyResponse), new Date(), true, ""));
+
+		// EXECUTE
+		List<ExternalMessageDto> saved = getExternalMessageFacade().saveAndProcessSurveyResponses(new Date());
+
+		// CHECK — message was processed
+		// Note: getByUuid is intentionally avoided — the jsonb Hibernate type double-encodes when read back via H2.
+		// The DTO returned directly by saveAndProcessSurveyResponses is safe because it comes from the in-memory entity.
+		assertThat(saved, hasSize(1));
+		assertThat(saved.get(0).getStatus(), is(ExternalMessageStatus.PROCESSED));
+
+		// CHECK — the case field was actually patched (CaseDataDto has no jsonb fields — safe to read from DB)
+		CaseDataDto patchedCase = getCaseFacade().getByUuid(targetCase.getUuid());
+		assertThat(patchedCase.getClinicalConfirmation(), is(YesNoUnknown.YES));
+	}
+
+	private static ExternalMessageDto buildSurveyResponseDto(String reportId, ExternalMessageSurveyResponseRequest request) {
+		ExternalMessageSurveyResponseWrapper wrapper = new ExternalMessageSurveyResponseWrapper().setRequest(request);
+		ExternalSurveyResponseData surveyResponseData = new ExternalSurveyResponseData().setOriginal(wrapper);
+
+		ExternalMessageDto dto = ExternalMessageDto.build();
+		dto.setType(ExternalMessageType.SURVEY_RESPONSE);
+		dto.setReportId(reportId);
+		dto.setSurveyResponseData(surveyResponseData);
+		return dto;
+	}
+
 	//	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.
 //	This test should be enabled once there is a new test framework in use.
 //	@Test

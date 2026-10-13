@@ -1,25 +1,18 @@
 package de.symeda.sormas.ui.contact;
 
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import java.util.function.Consumer;
-
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.RadioButtonGroup;
-import com.vaadin.ui.VerticalLayout;
-
+import com.vaadin.ui.*;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.function.Consumer;
 
 public class ContactSelectionField extends CustomField<SimilarContactDto> {
 
@@ -164,10 +157,12 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
 		lblLastContactDate.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
 		contactDetailsLayout.addComponent(lblLastContactDate);
 
-		final Label lblContactProximity =
-			new Label(referenceContact.getContactProximity() != null ? referenceContact.getContactProximity().toString() : "");
+		final Label lblContactProximity = new Label(
+			referenceContact.getContactProximities() != null && !referenceContact.getContactProximities().isEmpty()
+				? referenceContact.getContactProximities().stream().map(Object::toString).reduce((a, b) -> a + ", " + b).orElse("")
+				: "");
 		lblContactProximity.setWidthUndefined();
-		lblContactProximity.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_PROXIMITY));
+		lblContactProximity.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_PROXIMITIES));
 		contactDetailsLayout.addComponent(lblContactProximity);
 
 		final Label lblContactClassification =

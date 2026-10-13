@@ -22,6 +22,9 @@ public class SurveyIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = -5888585683689386052L;
 
+	public static final String DISEASE = "disease";
+	public static final String SURVEY_NAME = "name";
+
 	private final String name;
 	private final Disease disease;
 

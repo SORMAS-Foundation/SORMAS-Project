@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
@@ -62,22 +63,26 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 		DocumentTemplateDto templateDto = DocumentTemplateDto.build(QUARANTINE_ORDER_CASE, "TemplateFileToBeDeleted.docx");
 		documentTemplateFacade.saveDocumentTemplate(templateDto, document);
 
-		assertTrue(documentTemplateFacade.getAvailableTemplates(QUARANTINE_ORDER_CASE, null).contains(templateDto));
+		assertTrue(
+			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(QUARANTINE_ORDER_CASE, null, null)).contains(templateDto));
 
 		DocumentTemplateDto templateForCovid = DocumentTemplateDto.build(QUARANTINE_ORDER_CASE, "TemplateFileToBeDeletedCovid.docx");
 		templateForCovid.setDisease(Disease.CORONAVIRUS);
 		documentTemplateFacade.saveDocumentTemplate(templateForCovid, document);
 
-		List<DocumentTemplateDto> templatesForCovid = documentTemplateFacade.getAvailableTemplates(QUARANTINE_ORDER_CASE, Disease.CORONAVIRUS);
+		List<DocumentTemplateDto> templatesForCovid =
+			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(QUARANTINE_ORDER_CASE, Disease.CORONAVIRUS, null));
 		assertTrue(templatesForCovid.contains(templateDto));
 		assertTrue(templatesForCovid.contains(templateForCovid));
 
-		List<DocumentTemplateDto> templatesForLassa = documentTemplateFacade.getAvailableTemplates(QUARANTINE_ORDER_CASE, Disease.LASSA);
+		List<DocumentTemplateDto> templatesForLassa =
+			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(QUARANTINE_ORDER_CASE, Disease.LASSA, null));
 		assertTrue(templatesForLassa.contains(templateDto));
 		assertFalse(templatesForLassa.contains(templateForCovid));
 
-		assertTrue(documentTemplateFacade.deleteDocumentTemplate(templateDto.toReference()));
-		assertFalse(documentTemplateFacade.getAvailableTemplates(QUARANTINE_ORDER_CASE, null).contains(templateDto));
+		assertTrue(documentTemplateFacade.deleteDocumentTemplate(templateDto.toReference(), QUARANTINE_ORDER_CASE));
+		assertFalse(
+			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(QUARANTINE_ORDER_CASE, null, null)).contains(templateDto));
 
 		FileUtils.deleteDirectory(new File(testDirectory));
 		resetCustomPath();

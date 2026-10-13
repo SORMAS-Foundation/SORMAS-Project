@@ -418,7 +418,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, sampleUser);
 		pathogenTest.setTestDateTime(new Date());
 		pathogenTest.setLab(remoteLab.toReference());
-		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
+		pathogenTest.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 		pathogenTest.setTestResult(PathogenTestResultType.PENDING);
 		pathogenTest.setTestedDisease(Disease.CORONAVIRUS);
 
@@ -455,7 +455,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		PathogenTestDto savedPathogenTest = getPathogenTestFacade().getByUuid(pathogenTest.getUuid());
 		assertThat(savedPathogenTest, is(notNullValue()));
 		assertThat(savedPathogenTest.getLab(), is(localLab.toReference()));
-		assertThat(savedPathogenTest.getTestType(), is(PathogenTestType.RAPID_TEST));
+		assertThat(savedPathogenTest.getTestType(), is(PathogenTestType.LATERAL_FLOW_ASSAY));
 		assertThat(savedPathogenTest.getTestResult(), is(PathogenTestResultType.PENDING));
 
 		AdditionalTestDto savedAdditionalTest = getAdditionalTestFacade().getByUuid(additionalTest.getUuid());

@@ -26,7 +26,7 @@ public class NewsDto extends EntityDto {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String DISEASE = "disease";
-	private Long eiosId;
+	private String eiosId;
 	private String title;
 	private String eiosUrl;
 	private String link;
@@ -46,14 +46,15 @@ public class NewsDto extends EntityDto {
 		NewsDto dto = new NewsDto();
 		dto.setUuid(DataHelper.createUuid());
 		dto.setNewsDate(new Date());
+		dto.setStatus(NewsStatus.PENDING);
 		return dto;
 	}
 
-	public Long getEiosId() {
+	public String getEiosId() {
 		return eiosId;
 	}
 
-	public void setEiosId(Long eiosId) {
+	public void setEiosId(String eiosId) {
 		this.eiosId = eiosId;
 	}
 

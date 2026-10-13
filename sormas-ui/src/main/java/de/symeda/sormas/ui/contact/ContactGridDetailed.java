@@ -39,7 +39,7 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 	@Override
 	protected Stream<String> getColumnList() {
 		List<String> columnList = super.getColumnList().collect(Collectors.toList());
-		columnList.add(columnList.indexOf(ContactIndexDetailedDto.CONTACT_PROXIMITY) + 1, ContactIndexDetailedDto.RELATION_TO_CASE);
+		columnList.add(columnList.indexOf(ContactIndexDetailedDto.CONTACT_PROXIMITIES) + 1, ContactIndexDetailedDto.RELATION_TO_CASE);
 		return Stream.concat(columnList.stream(), Stream.of(ContactIndexDetailedDto.CAZE, ContactIndexDetailedDto.REPORTING_USER));
 	}
 

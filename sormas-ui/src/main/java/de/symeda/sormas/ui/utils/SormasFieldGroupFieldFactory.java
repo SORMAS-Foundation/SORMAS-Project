@@ -36,10 +36,12 @@ import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
 import de.symeda.sormas.ui.person.PersonContactDetailsField;
+import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumPropertiesComponent;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumTranslationComponent;
+import de.symeda.sormas.ui.utils.components.DiseaseConfigurationAgeGroupComponent;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.utils.components.MultiSelectFiles;
@@ -148,7 +150,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (ExposuresField.class.isAssignableFrom(fieldType)) {
-			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
+			return (T) new ExposuresField(null,fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (ActivityAsCaseField.class.isAssignableFrom(fieldType)) {
 			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
@@ -180,6 +182,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new UserRoleNotificationCheckboxSet();
 		} else if (CustomizableEnumTranslationComponent.class.isAssignableFrom(fieldType)) {
 			return (T) new CustomizableEnumTranslationComponent();
+		} else if (DiseaseConfigurationAgeGroupComponent.class.isAssignableFrom(fieldType)) {
+			return (T) new DiseaseConfigurationAgeGroupComponent();
 		} else if (CustomizableEnumPropertiesComponent.class.isAssignableFrom(fieldType)) {
 			return (T) new CustomizableEnumPropertiesComponent();
 		} else if (UserField.class.isAssignableFrom(fieldType)) {
@@ -188,11 +192,13 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new AefiVaccinationsField(fieldAccessCheckers);
 		} else if (AdverseEventsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new AdverseEventsForm(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (DrugSusceptibilityForm.class.isAssignableFrom(fieldType)) {
+			return (T) new DrugSusceptibilityForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (CheckBoxTree.class.isAssignableFrom(fieldType)) {
 			return (T) new CheckBoxTree<>();
 		} else if (RichTextArea.class.isAssignableFrom(fieldType)) {
 			return (T) new RichTextArea();
-		}else if (SormasTextField.class.isAssignableFrom(fieldType)) {
+		} else if (SormasTextField.class.isAssignableFrom(fieldType)) {
 			return (T) new SormasTextField();
 		}
 		return super.createField(type, fieldType);

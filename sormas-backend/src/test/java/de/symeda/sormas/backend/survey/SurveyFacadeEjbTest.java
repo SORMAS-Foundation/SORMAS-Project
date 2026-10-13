@@ -45,7 +45,7 @@ public class SurveyFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testUpdateSurvey() {
-		SurveyDto survey = createSurvey("Test Survey", Disease.CORONAVIRUS);
+		SurveyDto survey = creator.createSurvey("Test Survey", Disease.CORONAVIRUS);
 
 		survey.setName("Updated Survey");
 		survey.setDisease(Disease.EVD);
@@ -53,13 +53,5 @@ public class SurveyFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(savedSurvey.getName(), is("Updated Survey"));
 		assertThat(savedSurvey.getDisease(), is(Disease.EVD));
-	}
-
-	private SurveyDto createSurvey(String name, Disease disease) {
-		SurveyDto survey = SurveyDto.build();
-		survey.setName(name);
-		survey.setDisease(disease);
-
-		return getSurveyFacade().save(survey);
 	}
 }

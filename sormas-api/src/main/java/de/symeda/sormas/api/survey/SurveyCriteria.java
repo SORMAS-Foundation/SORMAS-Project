@@ -19,14 +19,18 @@
 package de.symeda.sormas.api.survey;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SurveyCriteria extends BaseCriteria {
     private static final long serialVersionUID = -7237755677408791266L;
+    public static final String FREE_TEXT = "freeText";
+    public static final String DISEASE = "disease";
 
     private String freeText;
     private Disease disease;
 
+    @IgnoreForUrl
     public String getFreeText() {
         return freeText;
     }

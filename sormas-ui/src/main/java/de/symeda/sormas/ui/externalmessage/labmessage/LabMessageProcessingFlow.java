@@ -15,22 +15,12 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage;
 
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showCreateCaseWindow;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showFormWithLabMessage;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMultipleSamplesPopup;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
-import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreateEntryWindow;
-import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreatePersonWindow;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
@@ -55,10 +45,10 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -87,6 +77,7 @@ import de.symeda.sormas.ui.samples.humansample.SampleSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
+import de.symeda.sormas.ui.utils.processing.ProcessingUiHelper;
 
 /**
  * Lab message processing flow implemented with vaadin dialogs/components for handling confirmation and object edit/save steps
@@ -103,17 +94,17 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected CompletionStage<Boolean> handleMissingDisease() {
-		return showMissingDiseaseConfiguration();
+		return ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration();
 	}
 
 	@Override
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
-		return showRelatedForwardedMessageConfirmation();
+		return ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation();
 	}
 
 	@Override
 	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
-		showPickOrCreatePersonWindow(person, callback);
+		ProcessingUiHelper.showPickOrCreatePersonWindow(person, callback);
 	}
 
 	@Override
@@ -140,7 +131,51 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				UserRight.EVENTPARTICIPANT_EDIT);
 
 		if (optionsBuilder.size() > 1) {
-			showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), callback);
+			HandlerCallback<PickOrCreateEntryResult> postUpdateCallback = new HandlerCallback<>() {
+
+				@Override
+				public void done(PickOrCreateEntryResult result) {
+
+					String personUuid = null;
+
+					if (result.getCaze() != null) {
+						// we need to get the person from the case
+						final CaseDataDto caze = FacadeProvider.getCaseFacade().getByUuid(result.getCaze().getUuid());
+						personUuid = caze != null && caze.getPerson() != null ? caze.getPerson().getUuid() : null;
+					}
+
+					if (result.getContact() != null) {
+						// sanity check
+						if (personUuid != null) {
+							throw new IllegalStateException("Multiple selections should not happen at the same time");
+						}
+						final ContactDto contact = FacadeProvider.getContactFacade().getByUuid(result.getContact().getUuid());
+						personUuid = contact != null && contact.getPerson() != null ? contact.getPerson().getUuid() : null;
+					}
+
+					if (result.getEventParticipant() != null) {
+						// sanity check
+						if (personUuid != null) {
+							throw new IllegalStateException("Multiple selections should not happen at the same time");
+						}
+						final EventParticipantDto eventParticipant =
+							FacadeProvider.getEventParticipantFacade().getByUuid(result.getEventParticipant().getUuid());
+						personUuid = eventParticipant != null && eventParticipant.getPerson() != null ? eventParticipant.getPerson().getUuid() : null;
+					}
+
+					ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(personUuid, getMapper());
+
+					callback.done(result);
+				}
+
+				@Override
+				public void cancel() {
+					callback.cancel();
+				}
+			};
+
+			ProcessingUiHelper
+				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), postUpdateCallback);
 		} else {
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
 		}
@@ -148,12 +183,34 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-		showCreateCaseWindow(caze, person, labMessage, mapper, callback);
+
+		HandlerCallback<CaseDataDto> postUpdateCallback = new HandlerCallback<>() {
+
+			@Override
+			public void done(CaseDataDto result) {
+				// we need to call again the updates here
+				// compared to automatic processing the person is processed by the case controller
+				// @see{CaseController#getCaseCreateComponent} methods
+				// we need to load the person again from the database to get the updates following case form changes
+				ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
+					result.getPerson() != null ? result.getPerson().getUuid() : null,
+					getMapper());
+
+				callback.done(result);
+			}
+
+			@Override
+			public void cancel() {
+				callback.cancel();
+			}
+		};
+
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, labMessage, getMapper(), postUpdateCallback);
 	}
 
 	@Override
 	public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
-		return showMultipleSamplesPopup();
+		return ExternalMessageProcessingUIHelper.showMultipleSamplesPopup();
 	}
 
 	@Override
@@ -178,7 +235,12 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		sampleCreateComponent.addDiscardListener(callback::cancel);
 
 		Window window = VaadinUiUtil.createPopupWindow();
-		showFormWithLabMessage(labMessage, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample), entityCreated);
+		ExternalMessageProcessingUIHelper.showFormWithLabMessage(
+			labMessage,
+			sampleCreateComponent,
+			window,
+			I18nProperties.getString(Strings.headingCreateNewSample),
+			entityCreated);
 	}
 
 	@Override
@@ -189,18 +251,25 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
+			// we need to call again the updates here
+			// compared to automatic processing the person is processed by the contact controller
+			// @see{ContactController#getContactCreateComponent} methods
+			// we need to load the person again from the database to get the updates following contact form changes
+			// ofc. here we have another way to do it because whoever did it was too lazy to fix the contact controller
+			final ContactDto processedContact = contactCreateComponent.getWrappedComponent().getValue();
 			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				mapper);
+				processedContact.getPerson() != null ? processedContact.getPerson().getUuid() : null,
+				getMapper());
 
-			callback.done(contactCreateComponent.getWrappedComponent().getValue());
+			callback.done(processedContact);
 		});
 		contactCreateComponent.addDiscardListener(callback::cancel);
 
 		contactCreateComponent.getWrappedComponent().setValue(contact);
 		contactCreateComponent.getWrappedComponent().setPerson(person);
 
-		showFormWithLabMessage(labMessage, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact), false);
+		ExternalMessageProcessingUIHelper
+			.showFormWithLabMessage(labMessage, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact), false);
 	}
 
 	@Override
@@ -291,12 +360,17 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
 
+				ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
+					savedDto.getPerson() != null ? savedDto.getPerson().getUuid() : null,
+					getMapper());
+
 				callback.done(savedDto);
 			}
 		});
 		createComponent.addDiscardListener(callback::cancel);
 
-		showFormWithLabMessage(labMessage, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant), false);
+		ExternalMessageProcessingUIHelper
+			.showFormWithLabMessage(labMessage, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant), false);
 	}
 
 	@Override
@@ -330,15 +404,16 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		SampleReportDto sampleReport = labMessage.getSampleReportsNullSafe().get(sampleReportIndex);
 
 		Date sampleDateTime = sampleReport.getSampleDateTime();
-		addLabelIfAvailable(
+		ExternalMessageProcessingUIHelper.addLabelIfAvailable(
 			sampleDetailsLayout,
 			sampleDateTime == null ? null : sampleDateTime.toString(),
 			ExternalMessageDto.I18N_PREFIX,
 			SampleReportDto.SAMPLE_DATE_TIME);
-		addLabelIfAvailable(sampleDetailsLayout, sampleReport.getLabSampleId(), ExternalMessageDto.I18N_PREFIX, SampleReportDto.LAB_SAMPLE_ID);
+		ExternalMessageProcessingUIHelper
+			.addLabelIfAvailable(sampleDetailsLayout, sampleReport.getLabSampleId(), ExternalMessageDto.I18N_PREFIX, SampleReportDto.LAB_SAMPLE_ID);
 
 		SampleMaterial sampleMaterial = sampleReport.getSampleMaterial();
-		addLabelIfAvailable(
+		ExternalMessageProcessingUIHelper.addLabelIfAvailable(
 			sampleDetailsLayout,
 			sampleMaterial == null ? null : sampleMaterial.toString(),
 			ExternalMessageDto.I18N_PREFIX,
@@ -369,17 +444,8 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
 		selectionField.getCommitButton().setEnabled(false);
 
-		showFormWithLabMessage(labMessage, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
-	}
-
-	private void addLabelIfAvailable(HorizontalLayout layout, String text, String i18nPrefix, String captionKey) {
-		if (StringUtils.isBlank(text)) {
-			return;
-		}
-		Label label = new Label(text);
-		label.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
-		label.setWidthUndefined();
-		layout.addComponent(label);
+		ExternalMessageProcessingUIHelper
+			.showFormWithLabMessage(labMessage, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
 	}
 
 	@Override
@@ -392,7 +458,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
 		ExternalMessageProcessingUIHelper
-			.showEditSampleWindow(sample, lastSample, newPathogenTests, labMessage, mapper, callback::done, callback::cancel);
+			.showEditSampleWindow(sample, lastSample, newPathogenTests, labMessage, getMapper(), callback::done, callback::cancel);
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
@@ -408,7 +474,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
 		// always build at least one PathogenTestDto
 		if (pathogenTestsToAdd.isEmpty()) {
-			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, mapper, sample, user));
+			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, getMapper(), sample, getUser()));
 		}
 
 		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, pathogenTestSaveHandler, null);

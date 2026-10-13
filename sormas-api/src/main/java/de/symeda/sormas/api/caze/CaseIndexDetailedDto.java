@@ -5,7 +5,6 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -74,7 +73,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
-	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken,String caseReferenceNumber, String personUuid, String personFirstName, String personLastName,
+	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken,String caseReferenceNumber, String personUuid, String nationalHealthId, String personFirstName, String personLastName,
 								Disease disease, String diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 								PresentCondition presentCondition, Date reportDate, Date creationDate,
 								String regionUuid, String districtUuid,
@@ -88,7 +87,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
 								String responsibleRegion, String responsibleCommunity,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
-		super(id, uuid, epidNumber, externalID, externalToken, internalToken, caseReferenceNumber, personUuid, personFirstName, personLastName,
+		super(id, uuid, epidNumber, externalID, externalToken, internalToken, caseReferenceNumber, personUuid, nationalHealthId, personFirstName, personLastName,
 				disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, creationDate,
 				regionUuid, districtUuid, healthFacilityUuid,

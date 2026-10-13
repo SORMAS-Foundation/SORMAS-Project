@@ -1,29 +1,31 @@
 package de.symeda.sormas.api.news.eios;
 
+import java.time.ZonedDateTime;
+
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class EiosArticleCriteria extends BaseCriteria {
 
-	private Long timespan;
-	private Long untilTimespan;
+	private ZonedDateTime timeSince;
+	private ZonedDateTime timeUntil;
 	private Integer start;
 	private Integer limit;
 	private Long boardId;
 
-	public Long getTimespan() {
-		return timespan;
+	public ZonedDateTime getTimeSince() {
+		return timeSince;
 	}
 
-	public void setTimespan(Long timespan) {
-		this.timespan = timespan;
+	public void setTimeSince(ZonedDateTime timeSince) {
+		this.timeSince = timeSince;
 	}
 
-	public Long getUntilTimespan() {
-		return untilTimespan;
+	public ZonedDateTime getTimeUntil() {
+		return timeUntil;
 	}
 
-	public void setUntilTimespan(Long untilTimespan) {
-		this.untilTimespan = untilTimespan;
+	public void setTimeUntil(ZonedDateTime timeUntil) {
+		this.timeUntil = timeUntil;
 	}
 
 	public Integer getStart() {

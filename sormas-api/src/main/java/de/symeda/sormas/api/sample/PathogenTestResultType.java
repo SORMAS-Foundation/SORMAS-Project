@@ -25,7 +25,8 @@ public enum PathogenTestResultType {
 	PENDING,
 	NEGATIVE,
 	POSITIVE,
-	NOT_DONE;
+	NOT_DONE,
+	NOT_APPLICABLE;
 
 	@Override
 	public String toString() {

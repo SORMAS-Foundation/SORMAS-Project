@@ -53,6 +53,7 @@ public class Region extends InfrastructureAdoWithDefault {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country";
+	public static final String NUTS_CODE = "nutsCode";
 
 	private String name;
 	private String epidCode;
@@ -61,6 +62,7 @@ public class Region extends InfrastructureAdoWithDefault {
 	private String externalID;
 	private Area area;
 	private Country country;
+	private String nutsCode;
 
 	public String getName() {
 		return name;
@@ -122,5 +124,13 @@ public class Region extends InfrastructureAdoWithDefault {
 
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 }

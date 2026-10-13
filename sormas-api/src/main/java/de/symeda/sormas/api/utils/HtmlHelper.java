@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.utils;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
 
 // This class provides general XSS-Prevention methods using Jsoup.clean
@@ -55,8 +56,30 @@ public class HtmlHelper {
 		return (string == null) ? "" : Jsoup.clean(string, Safelist.basic());
 	}
 
+	/**
+	 * to whitelist html tags in {@code htmlText} to prevent HTML injection.
+	 * 
+	 * @param htmlText
+	 * @param whitelist
+	 * @return
+	 */
+	public static String cleanHtmlRelaxed(String htmlText, Safelist whitelist) {
+		Document.OutputSettings outputSettings = new Document.OutputSettings().prettyPrint(false);
+		return Jsoup.clean(htmlText, "", whitelist, outputSettings);
+	}
+
 	public static String cleanHtmlRelaxed(String string) {
-		return (string == null) ? "" : Jsoup.clean(string, Safelist.relaxed());
+		return (string == null)
+			? ""
+			: Jsoup.clean(
+				string,
+				Safelist.relaxed()
+					.addTags("u", "font")
+					.addAttributes("font", "size", "color")
+					.addAttributes("span", "style")
+					.addAttributes("p", "style")
+					.addAttributes("div", "style")
+					.addAttributes("font", "style"));
 	}
 
 	/**

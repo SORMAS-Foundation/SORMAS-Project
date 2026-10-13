@@ -18,6 +18,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
@@ -70,7 +72,9 @@ public class CoreEntityDeletionService {
 		EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacadeEjb,
 		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb,
 		TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacadeEjb,
-		SelfReportFacadeEjb.SelfReportFacadeEjbLocal selfReportFacadeEjb) {
+		SelfReportFacadeEjb.SelfReportFacadeEjbLocal selfReportFacadeEjb,
+		CustomizableFieldMetadataFacadeEjbLocal customizableFieldMetadataFacadeEjb,
+		CustomizableFieldValueFacadeEjbLocal customizableFieldValueFacadeEjb) {
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.CASE, caseFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.CONTACT, contactFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.EVENT, eventFacadeEjb));
@@ -78,6 +82,8 @@ public class CoreEntityDeletionService {
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.IMMUNIZATION, immunizationFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.TRAVEL_ENTRY, travelEntryFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.SELF_REPORT, selfReportFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.CUSTOMIZABLE_FIELD_METADATA, customizableFieldMetadataFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.CUSTOMIZABLE_FIELD_VALUE, customizableFieldValueFacadeEjb));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,7 +156,9 @@ public class CoreEntityDeletionService {
 			|| deletableEntityType == DeletableEntityType.CONTACT
 			|| deletableEntityType == DeletableEntityType.EVENT
 			|| deletableEntityType == DeletableEntityType.EVENT_PARTICIPANT
-			|| deletableEntityType == DeletableEntityType.SELF_REPORT;
+			|| deletableEntityType == DeletableEntityType.SELF_REPORT
+			|| deletableEntityType == DeletableEntityType.CUSTOMIZABLE_FIELD_METADATA
+			|| deletableEntityType == DeletableEntityType.CUSTOMIZABLE_FIELD_VALUE;
 	}
 
 	@SuppressWarnings("rawtypes")

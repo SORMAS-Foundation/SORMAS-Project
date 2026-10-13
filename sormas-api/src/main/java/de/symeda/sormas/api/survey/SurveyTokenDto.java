@@ -43,6 +43,8 @@ public class SurveyTokenDto extends EntityDto {
 	public static final String RECIPIENT_EMAIL = "recipientEmail";
 	public static final String GENERATED_DOCUMENT = "generatedDocument";
 	public static final String RESPONSE_RECEIVED = "responseReceived";
+	public static final String RESPONSE_RECEIVED_DATE = "responseReceivedDate";
+	public static final String EXTERNAL_RESPONDENT_ID = "externalRespondentId";
 
 	@NotNull(message = Validations.requiredField)
 	private SurveyReferenceDto survey;
@@ -55,10 +57,20 @@ public class SurveyTokenDto extends EntityDto {
 	private String recipientEmail;
 	private DocumentReferenceDto generatedDocument;
 	private boolean responseReceived;
+	private Date responseReceivedDate;
+	private String externalRespondentId;
 
 	public static SurveyTokenDto build() {
 		SurveyTokenDto token = new SurveyTokenDto();
 		token.setUuid(DataHelper.createUuid());
+
+		return token;
+	}
+
+	public static SurveyTokenDto build(SurveyReferenceDto survey) {
+		SurveyTokenDto token = new SurveyTokenDto();
+		token.setUuid(DataHelper.createUuid());
+		token.setSurvey(survey);
 
 		return token;
 	}
@@ -117,5 +129,25 @@ public class SurveyTokenDto extends EntityDto {
 
 	public void setResponseReceived(boolean responseReceived) {
 		this.responseReceived = responseReceived;
+	}
+
+	public Date getResponseReceivedDate() {
+		return responseReceivedDate;
+	}
+
+	public void setResponseReceivedDate(Date responseReceivedDate) {
+		this.responseReceivedDate = responseReceivedDate;
+	}
+
+	public SurveyTokenReferenceDto toReference() {
+		return new SurveyTokenReferenceDto(getUuid());
+	}
+
+	public String getExternalRespondentId() {
+		return externalRespondentId;
+	}
+
+	public void setExternalRespondentId(String externalRespondentId) {
+		this.externalRespondentId = externalRespondentId;
 	}
 }

@@ -254,9 +254,9 @@ public class CreateNewAggregateReportSteps implements En {
     fillLabConfirmationsFor(
         "Diarrhea w/ Dehydration (< 5)", report.getDiarrheaDehydrationLabConfirmations());
     fillDeathsFor("Diarrhea w/ Dehydration (< 5)", report.getDiarrheaDehydrationDeaths());
-    fillCasesFor("Diphteria", report.getDiphteriaCases());
-    fillLabConfirmationsFor("Diphteria", report.getDiphteriaLabConfirmations());
-    fillDeathsFor("Diphteria", report.getDiphteriaDeaths());
+    fillCasesFor("Diphtheria", report.getDiphtheriaCases());
+    fillLabConfirmationsFor("Diphtheria", report.getDiphtheriaLabConfirmations());
+    fillDeathsFor("Diphtheria", report.getDiphtheriaDeaths());
     fillCasesFor("HIV", report.getHivCases());
     fillLabConfirmationsFor("HIV", report.getHivLabConfirmations());
     fillDeathsFor("HIV", report.getHivDeaths());
@@ -370,9 +370,9 @@ public class CreateNewAggregateReportSteps implements En {
     fillLabConfirmationsFor(
         "Diarrhea w/ Dehydration (< 5)", report.getDiarrheaDehydrationLabConfirmations());
     fillDeathsFor("Diarrhea w/ Dehydration (< 5)", report.getDiarrheaDehydrationDeaths());
-    fillCasesFor("Diphteria", report.getDiphteriaCases());
-    fillLabConfirmationsFor("Diphteria", report.getDiphteriaLabConfirmations());
-    fillDeathsFor("Diphteria", report.getDiphteriaDeaths());
+    fillCasesFor("Diphtheria", report.getDiphtheriaCases());
+    fillLabConfirmationsFor("Diphtheria", report.getDiphtheriaLabConfirmations());
+    fillDeathsFor("Diphtheria", report.getDiphtheriaDeaths());
     fillCasesFor(
         "FHA (Functional Hypothalamic Amenorrhea)",
         report.getFunctionalHypothalamicAmenorrheaCases());
@@ -521,16 +521,16 @@ public class CreateNewAggregateReportSteps implements En {
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(
                     getDeathInputByDisease("Diarrhea w/ Dehydration (< 5)"))))
-        .diphteriaCases(
+        .diphtheriaCases(
             Integer.parseInt(
-                webDriverHelpers.getValueFromWebElement(getCasesInputByDisease("Diphteria"))))
-        .diphteriaLabConfirmations(
+                webDriverHelpers.getValueFromWebElement(getCasesInputByDisease("Diphtheria"))))
+        .diphtheriaLabConfirmations(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(
-                    getLabConfirmationsInputByDisease("Diphteria"))))
-        .diphteriaDeaths(
+                    getLabConfirmationsInputByDisease("Diphtheria"))))
+        .diphtheriaDeaths(
             Integer.parseInt(
-                webDriverHelpers.getValueFromWebElement(getDeathInputByDisease("Diphteria"))))
+                webDriverHelpers.getValueFromWebElement(getDeathInputByDisease("Diphtheria"))))
         .hivCases(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(getCasesInputByDisease("HIV"))))
@@ -807,16 +807,16 @@ public class CreateNewAggregateReportSteps implements En {
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(
                     getDeathInputByDisease("Diarrhea w/ Dehydration (< 5)"))))
-        .diphteriaCases(
+        .diphtheriaCases(
             Integer.parseInt(
-                webDriverHelpers.getValueFromWebElement(getCasesInputByDisease("Diphteria"))))
-        .diphteriaLabConfirmations(
+                webDriverHelpers.getValueFromWebElement(getCasesInputByDisease("Diphtheria"))))
+        .diphtheriaLabConfirmations(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(
-                    getLabConfirmationsInputByDisease("Diphteria"))))
-        .diphteriaDeaths(
+                    getLabConfirmationsInputByDisease("Diphtheria"))))
+        .diphtheriaDeaths(
             Integer.parseInt(
-                webDriverHelpers.getValueFromWebElement(getDeathInputByDisease("Diphteria"))))
+                webDriverHelpers.getValueFromWebElement(getDeathInputByDisease("Diphtheria"))))
         .functionalHypothalamicAmenorrheaCases(
             Integer.parseInt(
                 webDriverHelpers.getValueFromWebElement(

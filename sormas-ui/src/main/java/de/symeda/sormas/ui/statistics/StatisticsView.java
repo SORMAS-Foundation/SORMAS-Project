@@ -271,7 +271,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				tfIncidenceDivisor.setVisible(showCaseIncidence);
 				visualizationComponent.setStackedColumnAndPieEnabled(!showCaseIncidence);
 			});
-			CssStyles.style(ogCaseCountOrIncidence, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.SOFT_REQUIRED);
+			CssStyles.style(ogCaseCountOrIncidence, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL);
 			optionsLayout.addComponent(ogCaseCountOrIncidence);
 
 			tfIncidenceDivisor = new TextField(I18nProperties.getCaption(Captions.statisticsIncidenceDivisor));

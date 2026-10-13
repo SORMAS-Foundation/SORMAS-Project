@@ -46,10 +46,10 @@ public enum UserRightGroup {
 	DOCUMENT,
 	EXTERNAL_EMAILS,
 	SURVEY,
-
 	EXPORT,
 	CONFIGURATION,
 	EXTERNAL,
+	EPIPULSE,
 	NEWS;
 
 	@Override

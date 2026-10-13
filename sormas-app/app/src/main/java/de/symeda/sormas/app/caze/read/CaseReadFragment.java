@@ -21,7 +21,6 @@ import static android.view.View.VISIBLE;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -30,6 +29,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -133,6 +133,12 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataDiseaseVariant)) {
 			contentBinding.caseDataDiseaseVariant.setVisibility(record.getDiseaseVariant() != null ? VISIBLE : GONE);
 		}
+
+		if (record.getPerson() != null && Sex.MALE.equals(record.getPerson().getSex())) {
+			contentBinding.caseDataPregnant.setVisibility(GONE);
+			contentBinding.caseDataPostpartum.setVisibility(GONE);
+			contentBinding.caseDataTrimester.setVisibility(GONE);
+		}
 	}
 
 	private void updateCaseConfirmationFields(FragmentCaseReadLayoutBinding contentBinding) {
@@ -208,7 +214,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
 		}
 
-		if(!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataHealthFacility)){
+		if (!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataHealthFacility)) {
 			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityOrHome);
 			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityTypeGroup);
 		} else if (record.getHealthFacility() == null) {

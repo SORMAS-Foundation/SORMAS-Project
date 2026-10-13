@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import com.google.common.collect.Sets;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -33,6 +33,7 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -40,7 +41,6 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -51,7 +51,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
@@ -74,11 +76,13 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String CHOOSE_CASE_LOC = "chooseCaseLoc";
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 	private static final String ADOPT_ADDRESS_LOC = "adoptAddressLoc";
+	private static final String PROPHYLAXIS_LOC = "prophylaxisLoc";
+	private static final String CONTROL_MEASURES_LOC = "controlMeasuresLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(PERSON_NAME_LOC) +
-					LayoutUtil.fluidRowLocs(ContactDto.PERSON) + 
+					LayoutUtil.fluidRowLocs(ContactDto.PERSON) +
 					LayoutUtil.fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, CaseDataDto.CASE_REFERENCE_NUMBER) +
 					LayoutUtil.fluidRowLocs(ContactDto.DISEASE, ContactDto.DISEASE_DETAILS) +
@@ -91,23 +95,29 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
 					LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 					LayoutUtil.fluidRowLocs(ContactDto.COMMUNITY) +
-					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITIES) +
 					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
 					fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 					LayoutUtil.fluidRowLocs(ADOPT_ADDRESS_LOC) +
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
+					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
+					LayoutUtil.loc(CONTROL_MEASURES_LOC) +
+					LayoutUtil.loc(PROPHYLAXIS_LOC) +
+					LayoutUtil.fluidRowLocs(4, ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT)+
+					LayoutUtil.fluidRowLocs(6,ContactDto.VACCINATION_PROPOSED, 6,ContactDto.IMMUNE_GLOBULIN_PROPOSED);
 	//@formatter:on
 
-	private NullableOptionGroup contactProximity;
+	private OptionGroup contactProximities;
 	private Disease disease;
 	private final Boolean hasCaseRelation;
 	private final boolean asSourceContact;
+	private final boolean isPersonReadOnly;
 	private NullableOptionGroup contactCategory;
 	private TextField contactProximityDetails;
 
 	private PersonCreateForm personCreateForm;
+	private Label controlMeasuresLabel;
 
 	DateField reportDate;
 	CheckBox multiDayContact;
@@ -123,10 +133,19 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private final boolean showPersonSearchButton;
 	private Window warningSimilarPersons;
 
+	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact, boolean showPersonSearchButton) {
+		this(disease, hasCaseRelation, asSourceContact, showPersonSearchButton, false);
+	}
+
 	/**
 	 * TODO use disease and case relation information given in ContactDto
 	 */
-	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact, boolean showPersonSearchButton) {
+	public ContactCreateForm(
+		Disease disease,
+		boolean hasCaseRelation,
+		boolean asSourceContact,
+		boolean showPersonSearchButton,
+		boolean isPersonReadOnly) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
@@ -137,6 +156,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		this.disease = disease;
 		this.hasCaseRelation = hasCaseRelation;
 		this.asSourceContact = asSourceContact;
+		this.isPersonReadOnly = isPersonReadOnly;
 		this.showPersonSearchButton = showPersonSearchButton;
 
 		addFields();
@@ -158,11 +178,18 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 
 		personCreateForm = new PersonCreateForm(false, false, false, showPersonSearchButton);
+		if (isPersonReadOnly) {
+			personCreateForm.setPersonDetailsReadOnly();
+		}
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		personCreateForm.setValue(new PersonDto());
 		getContent().addComponent(personCreateForm, ContactDto.PERSON);
 
 		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			// Only check if the health ID can be edited
+			if (!personCreateForm.getNationalHealthIdField().isEnabled()) {
+				return;
+			}
 			warningSimilarPersons = PersonFormHelper
 				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
 		});
@@ -189,10 +216,19 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
 		updateDateComparison();
 
-		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
-		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		contactProximities = addField(ContactDto.CONTACT_PROXIMITIES, OptionGroup.class);
+		contactProximities.setCaption(I18nProperties.getCaption(Captions.Contact_contactProximityLongForm));
+		contactProximities.setMultiSelect(true);
+		contactProximities.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getNullableValue()));
+			contactProximities.addValueChangeListener(e -> {
+				Object value = contactProximities.getValue();
+				if (value instanceof Set) {
+					@SuppressWarnings("unchecked")
+					Set<ContactProximity> proximities = (Set<ContactProximity>) value;
+					updateContactCategory(proximities);
+				}
+			});
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
 		}
@@ -207,9 +243,23 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
-		initializeVisibilitiesAndAllowedVisibilities();
+		// Prophylaxis details for IMI (Luxembourg only) - mirrors ContactDataForm
+		controlMeasuresLabel = new Label(I18nProperties.getString(Strings.headingControlMeasuresLoc));
+		controlMeasuresLabel.addStyleName(CssStyles.H3);
+		getContent().addComponent(controlMeasuresLabel, CONTROL_MEASURES_LOC);
+		controlMeasuresLabel.setVisible(false);
 
-		CssStyles.style(CssStyles.SOFT_REQUIRED, firstContactDate, lastContactDate, contactProximity, relationToCase);
+		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
+		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
+		CssStyles.style(prophylaxisPrescribed, CssStyles.VSPACE_TOP_3);
+		addField(ContactDto.PRESCRIBED_DRUG, ComboBox.class);
+		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
+		CheckBox vaccinationProposed = addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
+		CssStyles.style(vaccinationProposed, CssStyles.VSPACE_TOP_3);
+		CheckBox immuneGlobulinProposed = addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
+		CssStyles.style(immuneGlobulinProposed, CssStyles.VSPACE_TOP_3);
+
+		initializeVisibilitiesAndAllowedVisibilities();
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -233,15 +283,26 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
-
+		// PRESCRIBED_DRUG visibility and required state are driven by updatePrescribedDrugVisibility()
+		prophylaxisPrescribed.addValueChangeListener(e -> updatePrescribedDrugVisibility());
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.PRESCRIBED_DRUG_TEXT,
+			ContactDto.PRESCRIBED_DRUG,
+			Collections.singletonList(Drug.OTHER),
+			true);
+		FieldHelper
+			.setRequiredWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG, Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT), Arrays.asList(Drug.OTHER));
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
-			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY);
+			setVisible(disease != null, ContactDto.CONTACT_PROXIMITIES);
 			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 				setVisible(disease == Disease.CORONAVIRUS, ContactDto.CONTACT_CATEGORY, ContactDto.CONTACT_PROXIMITY_DETAILS);
 			}
 			updateContactProximity();
+			updateControlMeasuresVisibility();
 		});
+		updateControlMeasuresVisibility();
 
 		if (!hasCaseRelation) {
 			Label caseInfoLabel = new Label(I18nProperties.getString(Strings.infoNoSourceCaseSelected), ContentMode.HTML);
@@ -291,7 +352,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addValueChangeListener(e -> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);
 			if (!hasCaseRelation && disease == null) {
-				setVisible(false, ContactDto.CONTACT_PROXIMITY);
+				setVisible(false, ContactDto.CONTACT_PROXIMITIES);
 				if (isConfiguredServer("de")) {
 					contactCategory.setVisible(false);
 					contactProximityDetails.setVisible(false);
@@ -312,36 +373,74 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		});
 	}
 
-	/*
-	 * Only used for Systems in Germany. Follows specific rules for german systems.
-	 */
-	private void updateContactCategory(ContactProximity proximity) {
+	private void updatePrescribedDrugVisibility() {
+		boolean prescribedDrugAllowed = FieldVisibilityCheckers.withDisease(disease)
+			.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale())
+			.isVisible(ContactDto.class, ContactDto.PRESCRIBED_DRUG);
+		boolean showPrescribedDrug = prescribedDrugAllowed && Boolean.TRUE.equals(getField(ContactDto.PROPHYLAXIS_PRESCRIBED).getValue());
 
-		if (proximity != null) {
-			switch (proximity) {
-			case FACE_TO_FACE_LONG:
-			case TOUCHED_FLUID:
-			case AEROSOL:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.HIGH_RISK));
-				break;
-			case MEDICAL_UNSAFE:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.HIGH_RISK_MED));
-				break;
-			case MEDICAL_LIMITED:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.MEDIUM_RISK_MED));
-				break;
-			case SAME_ROOM:
-			case FACE_TO_FACE_SHORT:
-			case MEDICAL_SAME_ROOM:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.LOW_RISK));
-				break;
-			case MEDICAL_DISTANT:
-			case MEDICAL_SAFE:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.NO_RISK));
-				break;
-			default:
+		setVisibleClear(showPrescribedDrug, ContactDto.PRESCRIBED_DRUG);
+		getField(ContactDto.PRESCRIBED_DRUG).setRequired(showPrescribedDrug);
+	}
+
+	/**
+	 * Update the controlMeasures label and its related fields
+	 */
+	public void updateControlMeasuresVisibility() {
+		// controlMeasures label and its related fields should be visible if any of the control measures has the visibility
+		// Prophylaxis prescribed and vaccine proposed are the parent fields, if they have the visibility, then dependent fields should be visible.
+		// Re-check @Diseases(...) against the current disease AND @HideForCountriesExcept("lu") against the deployment country.
+		FieldVisibilityCheckers checkers =
+			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+
+		for (String propertyId : new String[] {
+			ContactDto.PROPHYLAXIS_PRESCRIBED,
+			ContactDto.PRESCRIBED_DRUG,
+			ContactDto.PRESCRIBED_DRUG_TEXT,
+			ContactDto.VACCINATION_PROPOSED,
+			ContactDto.IMMUNE_GLOBULIN_PROPOSED }) {
+			if (checkers.isVisible(ContactDto.class, propertyId)) {
+				addToVisibleAllowedFields(getField(propertyId));
 			}
 		}
+
+		boolean prophylaxisPrescribedVisible = checkers.isVisible(ContactDto.class, ContactDto.PROPHYLAXIS_PRESCRIBED);
+		boolean prescribedDrugVisible = checkers.isVisible(ContactDto.class, ContactDto.PRESCRIBED_DRUG);
+		boolean vaccinationProposedVisible = checkers.isVisible(ContactDto.class, ContactDto.VACCINATION_PROPOSED);
+		boolean immuneGlobulinProposedVisible = checkers.isVisible(ContactDto.class, ContactDto.IMMUNE_GLOBULIN_PROPOSED);
+
+		// controlMeasures label is visible if any of the "parent" control measure fields applies to the current disease
+		boolean showControlMeasuresLabel = prophylaxisPrescribedVisible || vaccinationProposedVisible || immuneGlobulinProposedVisible;
+		controlMeasuresLabel.setVisible(showControlMeasuresLabel);
+
+		if (prescribedDrugVisible) {
+			// Re-filter the drug options for the selected disease; the field factory populated them at construction time
+			// (disease may have been null then, e.g. directory flow), so the list would otherwise show non-IMI drugs.
+			FieldHelper.updateEnumData(
+				(ComboBox) getField(ContactDto.PRESCRIBED_DRUG),
+				Diseases.DiseasesConfiguration.getVisibleValues(Drug.class, disease));
+		}
+
+		// Each checkbox is toggled independently by its own disease check, not by the shared label boolean -
+		// otherwise e.g. an IMI contact would force-show vaccinationProposed just because prophylaxisPrescribed applies.
+		setVisibleClear(prophylaxisPrescribedVisible, ContactDto.PROPHYLAXIS_PRESCRIBED);
+		setVisibleClear(vaccinationProposedVisible, ContactDto.VACCINATION_PROPOSED);
+		setVisibleClear(immuneGlobulinProposedVisible, ContactDto.IMMUNE_GLOBULIN_PROPOSED);
+
+		// PRESCRIBED_DRUG only when the disease allows it AND prophylaxis is ticked; PRESCRIBED_DRUG_TEXT follows PRESCRIBED_DRUG == OTHER
+		updatePrescribedDrugVisibility();
+		if (!prescribedDrugVisible) {
+			setVisibleClear(false, ContactDto.PRESCRIBED_DRUG_TEXT);
+		}
+	}
+
+	/*
+	 * Only used for Systems in Germany. Follows specific rules for german systems.
+	 * With multiple contact proximities selected, determines category based on highest risk proximity.
+	 */
+	private void updateContactCategory(Set<ContactProximity> proximities) {
+
+		ContactDataForm.deduceContactCategory(proximities, contactCategory);
 	}
 
 	private void updateFieldVisibilitiesByCase(boolean caseSelected) {
@@ -368,11 +467,13 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private void updateContactProximity() {
 
-		ContactProximity value = (ContactProximity) contactProximity.getNullableValue();
+		Object valueObj = contactProximities.getValue();
+		@SuppressWarnings("unchecked")
+		Set<ContactProximity> value = valueObj instanceof Set ? (Set<ContactProximity>) valueObj : null;
 		FieldHelper.updateEnumData(
-			contactProximity,
+			contactProximities,
 			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
-		contactProximity.setValue(value);
+		contactProximities.setValue(value);
 	}
 
 	private void hideAndFillJurisdictionFields() {
@@ -404,10 +505,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	public void setPerson(PersonDto person, boolean isNewPerson) {
 		personCreateForm.setPerson(person, isNewPerson);
-	}
-
-	public void setPersonDetailsReadOnly() {
-		personCreateForm.setPersonDetailsReadOnly();
 	}
 
 	public void setDiseaseReadOnly() {

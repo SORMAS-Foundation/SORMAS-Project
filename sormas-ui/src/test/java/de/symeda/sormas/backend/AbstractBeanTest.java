@@ -33,6 +33,8 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleFacadeEjb;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -195,6 +197,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.person.notifier.NotifierEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
@@ -997,6 +1000,14 @@ public abstract class AbstractBeanTest {
 		return getBean(SampleReportService.class);
 	}
 
+	public NotifierEjb.NotifierEjbLocal getNotifierFacade() {
+		return getBean(NotifierEjb.NotifierEjbLocal.class);
+	}
+
+	public EnvironmentSampleFacade getEnvironmentSampleFacade() {
+		return getBean(EnvironmentSampleFacadeEjb.EnvironmentSampleFacadeEjbLocal.class);
+	}
+
 	public <T extends Throwable> void assertThrowsWithMessage(Class<T> expectedType, String expectedMessage, Executable executable) {
 		T throwable = assertThrows(expectedType, executable);
 		assertEquals(expectedMessage, throwable.getMessage());
@@ -1015,13 +1026,14 @@ public abstract class AbstractBeanTest {
 			getEventParticipantFacade(),
 			getSampleFacade(),
 			getPathogenTestFacade(),
-				getRegionFacade(),
-				getDistrictFacade(),
-				getCommunityFacade(),
+			getRegionFacade(),
+			getDistrictFacade(),
+			getCommunityFacade(),
 			getFacilityFacade(),
 			getCustomizableEnumFacade(),
 			getCountryFacade(),
-			getSurveillanceReportFacade()) {
+			getSurveillanceReportFacade(),
+			getNotifierFacade()) {
 
 			@Override
 			public boolean hasAllUserRights(UserRight... userRights) {

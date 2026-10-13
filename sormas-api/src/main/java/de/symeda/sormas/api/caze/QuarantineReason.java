@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
 
 public enum QuarantineReason {
 
@@ -23,6 +24,7 @@ public enum QuarantineReason {
 	ENTRY_FROM_RISK_AREA,
 	SWISS_COVID_APP_NOTIFICATION,
 	OUTBREAK_INVESTIGATION,
+	@ValueMapperDefault
 	OTHER_REASON;
 
 	@Override

@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -20,19 +22,24 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.Serotype;
+import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
@@ -75,6 +82,247 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		final PathogenTestDto newPathogenTest = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
 
 		testSaveAndUpdatePathogenTest(newPathogenTest);
+	}
+
+	@Test
+	public void testQuantitativeResultFieldsRoundTrip() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		// QUANTITATIVE_BUFFY_COAT produces QUALITATIVE + NUMERIC, so those fields must round-trip.
+		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		test.setTestType(PathogenTestType.QUANTITATIVE_BUFFY_COAT);
+		test.setTestResult(PathogenTestResultType.POSITIVE);
+		test.setQuantitativeValue(24.0f);
+		test.setQuantitativeUnit("copies/mL");
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
+
+		assertEquals(24.0f, reloaded.getQuantitativeValue());
+		assertEquals("copies/mL", reloaded.getQuantitativeUnit());
+
+		// Partially-populated test (only a smear grade, as for Acid-Fast Stain) round-trips with the rest null.
+		final PathogenTestDto smearOnly = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		smearOnly.setTestType(PathogenTestType.ACID_FAST_STAIN);
+		smearOnly.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
+		smearOnly.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS);
+
+		final PathogenTestDto reloadedSmearOnly = getPathogenTestFacade().savePathogenTest(smearOnly);
+		assertEquals(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS, reloadedSmearOnly.getSmearGrade());
+		assertNull(reloadedSmearOnly.getQuantitativeValue());
+		assertNull(reloadedSmearOnly.getQuantitativeUnit());
+		assertNull(reloadedSmearOnly.getQuantitativeBoolean());
+		assertNull(reloadedSmearOnly.getWesternBlotInterpretation());
+	}
+
+	@Test
+	public void testSyphilisSerologyMethodRoundTrip() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		test.setTestType(PathogenTestType.TREPONEMAL_TESTS);
+		test.setTestResult(PathogenTestResultType.POSITIVE);
+		test.setSyphilisSerologyMethod(SyphilisSerologyMethod.OTHER);
+		test.setSyphilisSerologyMethodText("In-house immunoblot");
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
+
+		assertEquals(SyphilisSerologyMethod.OTHER, reloaded.getSyphilisSerologyMethod());
+		assertEquals("In-house immunoblot", reloaded.getSyphilisSerologyMethodText());
+
+		final PathogenTestDto nonTreponemal = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		nonTreponemal.setTestType(PathogenTestType.NON_TREPONEMAL_TESTS);
+		nonTreponemal.setTestResult(PathogenTestResultType.POSITIVE);
+		nonTreponemal.setSyphilisSerologyMethod(SyphilisSerologyMethod.RPR);
+		nonTreponemal.setQuantitativeValue(8.0f);
+
+		final PathogenTestDto reloadedNonTreponemal = getPathogenTestFacade().savePathogenTest(nonTreponemal);
+
+		assertEquals(SyphilisSerologyMethod.RPR, reloadedNonTreponemal.getSyphilisSerologyMethod());
+		assertEquals(8.0f, reloadedNonTreponemal.getQuantitativeValue());
+		assertNull(reloadedNonTreponemal.getSyphilisSerologyMethodText());
+	}
+
+	@Test
+	public void testYersiniosisStructuredFieldsRoundTrip() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.YERSINIOSIS,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
+		test.setTestType(PathogenTestType.ISOLATION);
+		test.setSpecie(de.symeda.sormas.api.sample.PathogenSpecie.YERSINIA_ENTEROCOLITICA);
+		test.setSerotype(Serotype.YERSINIOSIS_5_27);
+		test.setBiotype(Biotype.YERSINIOSIS_1A);
+		test.setWgsPerformed(YesNoUnknown.YES);
+		test.setWgsClusterId("cluster-42");
+		test.setVirulenceGenesDetected(Boolean.TRUE);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
+
+		assertEquals(de.symeda.sormas.api.sample.PathogenSpecie.YERSINIA_ENTEROCOLITICA, reloaded.getSpecie());
+		assertEquals(Serotype.YERSINIOSIS_5_27, reloaded.getSerotype());
+		assertEquals(Biotype.YERSINIOSIS_1A, reloaded.getBiotype());
+		assertEquals(YesNoUnknown.YES, reloaded.getWgsPerformed());
+		assertEquals("cluster-42", reloaded.getWgsClusterId());
+		assertEquals(Boolean.TRUE, reloaded.getVirulenceGenesDetected());
+	}
+
+	@Test
+	public void testSavePathogenTestDoesNotAutoCreateYersiniosisCulture() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.YERSINIOSIS,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		PathogenTestDto isolation = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
+		isolation.setTestType(PathogenTestType.ISOLATION);
+		getPathogenTestFacade().savePathogenTest(isolation);
+
+		List<PathogenTestDto> testsAfterIsolation = getPathogenTestFacade().getAllBySample(sample.toReference());
+		long cultureCount = testsAfterIsolation.stream()
+			.filter(t -> t.getTestType() == PathogenTestType.CULTURE && t.getTestResult() == PathogenTestResultType.POSITIVE)
+			.count();
+		assertEquals(0L, cultureCount);
+	}
+
+	@Test
+	public void testSavePathogenTestRepeatedIsolationDoesNotCreateYersiniosisCulture() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.YERSINIOSIS,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		PathogenTestDto firstIsolation = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
+		firstIsolation.setTestType(PathogenTestType.ISOLATION);
+		getPathogenTestFacade().savePathogenTest(firstIsolation);
+
+		List<PathogenTestDto> testsAfterFirstIsolation = getPathogenTestFacade().getAllBySample(sample.toReference());
+		long cultureCountAfterFirstIsolation = testsAfterFirstIsolation.stream()
+			.filter(t -> t.getTestType() == PathogenTestType.CULTURE && t.getTestResult() == PathogenTestResultType.POSITIVE)
+			.count();
+		assertEquals(0L, cultureCountAfterFirstIsolation);
+
+		PathogenTestDto secondIsolation = creator.buildPathogenTestDto(rdcf, user, sample, Disease.YERSINIOSIS, testDateTime);
+		secondIsolation.setTestType(PathogenTestType.ISOLATION);
+		getPathogenTestFacade().savePathogenTest(secondIsolation);
+
+		List<PathogenTestDto> testsAfterSecondIsolation = getPathogenTestFacade().getAllBySample(sample.toReference());
+		long cultureCountAfterSecondIsolation = testsAfterSecondIsolation.stream()
+			.filter(t -> t.getTestType() == PathogenTestType.CULTURE && t.getTestResult() == PathogenTestResultType.POSITIVE)
+			.count();
+		assertEquals(0L, cultureCountAfterSecondIsolation);
+	}
+
+	@Test
+	public void testQuantitativeResultFieldsClearedOnSaveForMismatchedTestType() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		// A method declaring only SMEAR_GRADE (Acid-Fast Stain) must not persist numeric/boolean/Western-Blot
+		// values, even when the DTO carries them - e.g. left over after changing the test type.
+		final PathogenTestDto smearType = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		smearType.setTestType(PathogenTestType.ACID_FAST_STAIN);
+		smearType.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
+		smearType.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS);
+		smearType.setQuantitativeValue(24.0f);
+		smearType.setQuantitativeUnit("copies/mL");
+		smearType.setQuantitativeBoolean(de.symeda.sormas.api.utils.YesNoUnknown.YES);
+		smearType.setWesternBlotInterpretation(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(smearType);
+
+		assertEquals(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS, reloaded.getSmearGrade());
+		assertNull(reloaded.getQuantitativeValue());
+		assertNull(reloaded.getQuantitativeUnit());
+		assertNull(reloaded.getQuantitativeBoolean());
+		assertNull(reloaded.getWesternBlotInterpretation());
+
+		// Changing the test type to one that no longer produces a smear grade clears the previously stored value.
+		reloaded.setTestType(PathogenTestType.PCR_RT_PCR);
+		reloaded.setTestResult(PathogenTestResultType.POSITIVE);
+		reloaded.setQuantitativeValue(12.0f);
+		reloaded.setQuantitativeUnit("IU/mL");
+
+		final PathogenTestDto retyped = getPathogenTestFacade().savePathogenTest(reloaded);
+
+		assertEquals(12.0f, retyped.getQuantitativeValue());
+		assertNull(retyped.getSmearGrade());
+		assertNull(retyped.getQuantitativeBoolean());
+		assertNull(retyped.getWesternBlotInterpretation());
+	}
+
+	@Test
+	public void testAntibioticSusceptibilityHasNoResultValueType() {
+		// ANTIBIOTIC_SUSCEPTIBILITY's real result is the drug-susceptibility grid, not a value-type-bearing
+		// field. Its @ResultValueTypeRel is explicitly empty, so saving it with NOT_APPLICABLE must round-trip
+		// cleanly and the empty-set branch in fillOrBuildEntity must null every quantitative field.
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto ast = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		ast.setTestType(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
+		ast.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
+		// Carry stale values to verify the empty-ResultValueTypeRel set clears every quantitative field on save.
+		ast.setQuantitativeValue(99.0f);
+		ast.setQuantitativeUnit("copies/mL");
+		ast.setQuantitativeBoolean(de.symeda.sormas.api.utils.YesNoUnknown.YES);
+		ast.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS);
+		ast.setWesternBlotInterpretation(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(ast);
+
+		assertEquals(PathogenTestResultType.NOT_APPLICABLE, reloaded.getTestResult());
+		assertNull(reloaded.getQuantitativeValue());
+		assertNull(reloaded.getQuantitativeUnit());
+		assertNull(reloaded.getQuantitativeBoolean());
+		assertNull(reloaded.getSmearGrade());
+		assertNull(reloaded.getWesternBlotInterpretation());
 	}
 
 	@Test
@@ -184,6 +432,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		getPathogenTestFacade().deletePathogenTest(test.getUuid(), new DeletionDetails());
 		assertThat(getCaseFacade().getCaseDataByUuid(caze.getUuid()).getCaseClassification(), is(CaseClassification.SUSPECT));
 	}
+
 	private void testSaveAndUpdatePathogenTest(PathogenTestDto newPathogenTest) {
 
 		final PathogenTestDto savedPathogenTest = getPathogenTestFacade().savePathogenTest(newPathogenTest);
@@ -208,5 +457,161 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("all good!", updatedPathogen.getTestResultText());
 		assertEquals(testDateTime, updatedPathogen.getTestDateTime());
 		assertTrue(updatedPathogen.getTestResultVerified());
+	}
+
+	@Test
+	public void testEmptyResultDefaultsToPendingWhenResultNotRequired() {
+		final RDCF rdcf = creator.createRDCF();
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		// Result is required by default (#13948 issue #13958): an empty result must be rejected.
+		final PathogenTestDto requiredTest = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		requiredTest.setTestResult(null);
+		assertThrows(de.symeda.sormas.api.utils.ValidationRuntimeException.class, () -> getPathogenTestFacade().savePathogenTest(requiredTest));
+
+		// Once the administrator turns the requirement off, an empty result is allowed and defaults to PENDING.
+		getFeatureConfigurationFacade().setServerFeatureEnabled(FeatureType.PATHOGEN_TEST_RESULT_REQUIRED, false);
+
+		final PathogenTestDto optionalTest = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		optionalTest.setTestResult(null);
+		final PathogenTestDto saved = getPathogenTestFacade().savePathogenTest(optionalTest);
+		assertEquals(PathogenTestResultType.PENDING, saved.getTestResult());
+	}
+
+	@Test
+	public void testDiphtheriaStructuredFieldsRoundTrip() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.DIPHTHERIA,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, Disease.DIPHTHERIA, testDateTime);
+		test.setTestType(PathogenTestType.CULTURE);
+		test.setTestResult(PathogenTestResultType.POSITIVE);
+		test.setSpecie(de.symeda.sormas.api.sample.PathogenSpecie.DIPH_CORY_DIPH);
+		test.setBiotype(Biotype.VAR_GRAV);
+		test.setBiotypeText("Colony morphology consistent with var gravis");
+		test.setTargetTest(de.symeda.sormas.api.sample.TargetTest.TOXIN_PRODUCTION);
+		test.setTargetTestText("Elek toxin gene PCR");
+		test.setTestRunStatus(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED);
+		test.setSequenceDataUploadedToPublicRepository(YesNoUnknown.YES);
+		test.setSraRunId("SRR12345678");
+		test.setAccessionNumber("ACC-987654");
+		test.setMlstSequenceType("ST-8");
+		test.setCgMlstCluster("cluster-diph-1");
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
+
+		assertEquals(de.symeda.sormas.api.sample.PathogenSpecie.DIPH_CORY_DIPH, reloaded.getSpecie());
+		assertEquals(Biotype.VAR_GRAV, reloaded.getBiotype());
+		assertEquals("Colony morphology consistent with var gravis", reloaded.getBiotypeText());
+		assertEquals(de.symeda.sormas.api.sample.TargetTest.TOXIN_PRODUCTION, reloaded.getTargetTest());
+		assertEquals("Elek toxin gene PCR", reloaded.getTargetTestText());
+		assertEquals(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED, reloaded.getTestRunStatus());
+		assertEquals(YesNoUnknown.YES, reloaded.getSequenceDataUploadedToPublicRepository());
+		assertEquals("SRR12345678", reloaded.getSraRunId());
+		assertEquals("ACC-987654", reloaded.getAccessionNumber());
+		assertEquals("ST-8", reloaded.getMlstSequenceType());
+		assertEquals("cluster-diph-1", reloaded.getCgMlstCluster());
+
+		// Update round-trip: change the structured fields and re-save.
+		reloaded.setBiotype(Biotype.VAR_MITI);
+		reloaded.setBiotypeText("Colony morphology consistent with var mitis");
+		reloaded.setTargetTest(de.symeda.sormas.api.sample.TargetTest.SPECIES_IDENTIFICATION);
+		reloaded.setTestRunStatus(de.symeda.sormas.api.sample.TestRunStatus.FAILED);
+
+		final PathogenTestDto updated = getPathogenTestFacade().savePathogenTest(reloaded);
+
+		assertEquals(Biotype.VAR_MITI, updated.getBiotype());
+		assertEquals("Colony morphology consistent with var mitis", updated.getBiotypeText());
+		assertEquals(de.symeda.sormas.api.sample.TargetTest.SPECIES_IDENTIFICATION, updated.getTargetTest());
+		assertEquals(de.symeda.sormas.api.sample.TestRunStatus.FAILED, updated.getTestRunStatus());
+	}
+
+	@Test
+	public void testDiphtheriaElekTestClearsQuantitativeResultFields() {
+		// ELEK_TEST (toxin production, phenotypic characterization) declares only QUALITATIVE
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.DIPHTHERIA,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto elekTest = creator.buildPathogenTestDto(rdcf, user, sample, Disease.DIPHTHERIA, testDateTime);
+		elekTest.setTestType(PathogenTestType.ELEK_TEST);
+		elekTest.setTestResult(PathogenTestResultType.POSITIVE);
+		// Carry stale values to verify the QUALITATIVE-only ResultValueType set clears every other field on save.
+		elekTest.setQuantitativeValue(5.0f);
+		elekTest.setQuantitativeUnit("mm");
+		elekTest.setQuantitativeBoolean(YesNoUnknown.YES);
+		elekTest.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS);
+		elekTest.setWesternBlotInterpretation(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(elekTest);
+
+		assertEquals(PathogenTestResultType.POSITIVE, reloaded.getTestResult());
+		assertNull(reloaded.getQuantitativeValue());
+		assertNull(reloaded.getQuantitativeUnit());
+		assertNull(reloaded.getQuantitativeBoolean());
+		assertNull(reloaded.getSmearGrade());
+		assertNull(reloaded.getWesternBlotInterpretation());
+	}
+
+	@Test
+	public void testDiphtheriaWholeGenomeSequencingFieldsRoundTrip() {
+		// WHOLE_GENOME_SEQUENCING is a visible (non-hidden) new-test method for Diphtheria. Its sequencing
+		// metadata fields (sraRunId/accessionNumber/MLST/cgMLST) are gated only by @Diseases for UI display,
+		// not by ResultValueType, so they must round-trip independently of the test's TEXT result.
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.DIPHTHERIA,
+			CaseClassification.SUSPECT,
+			de.symeda.sormas.api.caze.InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto wgs = creator.buildPathogenTestDto(rdcf, user, sample, Disease.DIPHTHERIA, testDateTime);
+		wgs.setTestType(PathogenTestType.WHOLE_GENOME_SEQUENCING);
+		wgs.setTestResult(PathogenTestResultType.POSITIVE);
+		wgs.setSraRunId("SRR00112233");
+		wgs.setAccessionNumber("PRJEB99999");
+		wgs.setMlstSequenceType("ST-40");
+		wgs.setCgMlstCluster("cgMLST-diph-cluster-7");
+		wgs.setSequenceDataUploadedToPublicRepository(YesNoUnknown.YES);
+		wgs.setTestRunStatus(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(wgs);
+
+		assertEquals("SRR00112233", reloaded.getSraRunId());
+		assertEquals("PRJEB99999", reloaded.getAccessionNumber());
+		assertEquals("ST-40", reloaded.getMlstSequenceType());
+		assertEquals("cgMLST-diph-cluster-7", reloaded.getCgMlstCluster());
+		assertEquals(YesNoUnknown.YES, reloaded.getSequenceDataUploadedToPublicRepository());
+		assertEquals(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED, reloaded.getTestRunStatus());
 	}
 }

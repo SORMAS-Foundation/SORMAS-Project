@@ -26,5 +26,7 @@ public interface GeocodingFacade {
 
 	boolean isEnabled();
 
-	GeoLatLon getLatLon(String street, String houseNumber, String postalCode, String city);
+	boolean isConfigurationValid();
+
+	GeoLatLon getLatLon(String street, String houseNumber, String postalCode, String city) throws GeocodingException;
 }

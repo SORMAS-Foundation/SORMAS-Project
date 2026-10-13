@@ -29,6 +29,10 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 	private String samplingReasonDetails;
 	private AdditionalTestingStatus additionalTestingStatus;
 	private long pathogenTestCount;
+	// Need to display these values in side view
+	private Serotype serotype;
+	private GenoType genoType;
+	private PathogenSpecie specie;
 
 	public SampleListEntryDto(
 		String uuid,
@@ -184,6 +188,30 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 
 	public void setPathogenTestCount(long pathogenTestCount) {
 		this.pathogenTestCount = pathogenTestCount;
+	}
+
+	public Serotype getSerotype() {
+		return serotype;
+	}
+
+	public void setSerotype(Serotype serotype) {
+		this.serotype = serotype;
+	}
+
+	public GenoType getGenoType() {
+		return genoType;
+	}
+
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
+	}
+
+	public PathogenSpecie getSpecie() {
+		return specie;
+	}
+
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
 	}
 
 	public SampleReferenceDto toReference() {

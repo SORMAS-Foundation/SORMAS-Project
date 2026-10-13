@@ -18,10 +18,13 @@
 package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
 
 public enum CauseOfDeath {
 
 	EPIDEMIC_DISEASE,
+
+	@ValueMapperDefault
 	OTHER_CAUSE;
 
 	@Override

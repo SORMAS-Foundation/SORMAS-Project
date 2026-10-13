@@ -21,8 +21,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum VaccinationInfoSource {
 
+	VACCINATION_REGISTRY,
 	VACCINATION_CARD,
 	ORAL_COMMUNICATION,
+	HEALTH_SERVICES,
 	NO_EVIDENCE,
 	UNKNOWN;
 

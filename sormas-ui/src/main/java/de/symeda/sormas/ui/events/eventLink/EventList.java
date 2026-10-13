@@ -31,6 +31,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -78,6 +79,39 @@ public class EventList extends PaginationList<EventIndexDto> {
 										selectedEvent,
 										caseDataDto,
 										I18nProperties.getString(Strings.messageEventParticipationUnlinked));
+								reload();
+							}
+						});
+				});
+			}
+		};
+	}
+
+	public EventList(EnvironmentReferenceDto environmentReferenceDto, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
+
+		super(5);
+		this.actionCallback = actionCallback;
+		this.isEditAllowed = isEditAllowed;
+		eventCriteria.environment(environmentReferenceDto);
+		eventCriteria.setUserFilterIncluded(false);
+		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToEnvironment));
+		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
+			if (UiUtil.permitted(isEditAllowed, UserRight.EVENT_EDIT, UserRight.CASE_EDIT)) {
+				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingUnlinkEventFromEnvironment),
+						new Label(I18nProperties.getString(Strings.confirmationUnlinkEventFromEnvironment)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						480,
+						confirmed -> {
+							if (confirmed) {
+								EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid(), false);
+								ControllerProvider.getEventController()
+									.removeLinkEnvironmentEvent(
+										selectedEvent,
+										environmentReferenceDto,
+										I18nProperties.getString(Strings.messageEventUnlinked));
 								reload();
 							}
 						});

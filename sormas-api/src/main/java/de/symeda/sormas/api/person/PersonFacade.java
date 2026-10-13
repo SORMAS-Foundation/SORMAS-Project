@@ -55,6 +55,8 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	 */
 	List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria);
 
+	public List<PersonDto> getByNationalHealthId(String nationalHealthId);
+
 	boolean checkMatchingNameInDatabase(UserReferenceDto userRef, PersonSimilarityCriteria criteria);
 
 	Boolean isValidPersonUuid(String personUuid);
