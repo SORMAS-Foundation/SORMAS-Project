@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.importexport.hierarchical.lab;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,6 +88,19 @@ public class LabCellWriterTest extends AbstractBeanTest {
 			() -> writer.write(targets, LabImportSchema.SAMPLE, new String[] { SampleDto.LAB }, "sample.lab", "Nowhere Lab"));
 
 		assertEquals("Invalid value Nowhere Lab in column sample.lab. Entry does not exist in the database or is archived", error.getMessage());
+	}
+
+	@Test
+	public void namesTheFileColumnWhenASharedParserRejectsAValue() {
+		CellWriteException region = assertThrows(
+			CellWriteException.class,
+			() -> writer.write(targets, LabImportSchema.CASE, new String[] { CaseDataDto.RESPONSIBLE_REGION }, "case.responsibleRegion", "Atlantis"));
+		CellWriteException disease = assertThrows(
+			CellWriteException.class,
+			() -> writer.write(targets, LabImportSchema.CASE, new String[] { CaseDataDto.DISEASE }, "case.disease", "FLU-X"));
+
+		assertTrue(region.getMessage().contains("column case.responsibleRegion"), region.getMessage());
+		assertTrue(disease.getMessage().contains("column case.disease"), disease.getMessage());
 	}
 
 	@Test

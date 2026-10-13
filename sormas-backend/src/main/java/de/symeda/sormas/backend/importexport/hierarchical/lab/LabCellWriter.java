@@ -49,7 +49,7 @@ public class LabCellWriter implements CellWriter {
 		try {
 			if (property.getPropertyType() == Date.class) {
 				property.getWriteMethod().invoke(owner, DateHelper.parseDateTimeWithException(value, I18nProperties.getUserLanguage()));
-			} else if (!importFacade.executeDefaultInvoke(property, owner, value, propertyPath, false)) {
+			} else if (!importFacade.executeDefaultInvoke(property, owner, value, new String[] { header }, false)) {
 				property.getWriteMethod().invoke(owner, resolveReference(property.getPropertyType(), targets, target, header, value));
 			}
 		} catch (ImportErrorException e) {
