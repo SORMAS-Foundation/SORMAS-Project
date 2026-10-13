@@ -105,11 +105,15 @@ public class HierarchicalImportLayout extends VerticalLayout {
 
 		issueGrid.addColumn(ImportIssueDto::getLineNumber).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportLine));
 		issueGrid.addColumn(ImportIssueDto::getColumn).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportColumn));
-		issueGrid.addColumn(ImportIssueDto::getMessage).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportProblem));
+		issueGrid.addColumn(ImportIssueDto::getMessage)
+			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportProblem))
+			.setDescriptionGenerator(ImportIssueDto::getMessage);
 
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getRecord).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getField).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportField));
-		changeGrid.addColumn(PreviewPresentation.ChangeRow::getChange).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportChange));
+		changeGrid.addColumn(PreviewPresentation.ChangeRow::getChange)
+			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportChange))
+			.setDescriptionGenerator(PreviewPresentation.ChangeRow::getChange);
 
 		newRecordGrid.addColumn(RecordOperationDto::getLineNumber).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportLine));
 		newRecordGrid.addColumn(operation -> recordType(operation.getLevel()))
