@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.importexport.hierarchical.lab;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashMap;
@@ -80,10 +81,21 @@ public class LabCellWriterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void rejectsAnUnknownLaboratory() {
-		assertThrows(
+	public void rejectsAnUnknownLaboratoryWithAPlainSentence() {
+		CellWriteException error = assertThrows(
 			CellWriteException.class,
 			() -> writer.write(targets, LabImportSchema.SAMPLE, new String[] { SampleDto.LAB }, "sample.lab", "Nowhere Lab"));
+
+		assertEquals("Invalid value Nowhere Lab in column sample.lab. Entry does not exist in the database or is archived", error.getMessage());
+	}
+
+	@Test
+	public void reportsAnInvalidDateWithoutASemicolon() {
+		CellWriteException error = assertThrows(
+			CellWriteException.class,
+			() -> writer.write(targets, LabImportSchema.CASE, new String[] { CaseDataDto.REPORT_DATE }, "case.reportDate", "31/31/2026"));
+
+		assertFalse(error.getMessage().contains(";"), error.getMessage());
 	}
 
 	@Test
