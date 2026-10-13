@@ -740,6 +740,7 @@ public interface Strings {
 	String headingGenerateContacts = "headingGenerateContacts";
 	String headingGisDashboardMap = "headingGisDashboardMap";
 	String headingHealthConditions = "headingHealthConditions";
+	String headingHierarchicalImportReady = "headingHierarchicalImportReady";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
 	String headingHowToMergeContacts = "headingHowToMergeContacts";
@@ -1619,6 +1620,7 @@ public interface Strings {
 	String messageGeocodingNoResult = "messageGeocodingNoResult";
 	String messageHierarchicalImportCounts = "messageHierarchicalImportCounts";
 	String messageHierarchicalImportFileErrors = "messageHierarchicalImportFileErrors";
+	String messageHierarchicalImportNothingToReview = "messageHierarchicalImportNothingToReview";
 	String messageHierarchicalImportReport = "messageHierarchicalImportReport";
 	String messageHierarchicalImportSummary = "messageHierarchicalImportSummary";
 	String messageImmunizationArchived = "messageImmunizationArchived";

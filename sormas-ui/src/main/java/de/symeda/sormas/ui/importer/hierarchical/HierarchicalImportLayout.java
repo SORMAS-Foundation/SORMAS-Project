@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +20,7 @@ import com.opencsv.CSVWriter;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
@@ -28,9 +28,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -40,7 +42,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
-import de.symeda.sormas.api.importexport.hierarchical.FieldChangeDto;
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
@@ -68,9 +69,19 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private final UserDto currentUser = UiUtil.getUser();
 
 	private final ComboBox<ValueSeparator> separator = new ComboBox<>(I18nProperties.getCaption(Captions.importValueSeparator));
-	private final Label summary = new Label("", ContentMode.TEXT);
+	private final VerticalLayout setupSection = new VerticalLayout();
+	private final Upload upload = new Upload(I18nProperties.getCaption(Captions.hierarchicalImportUpload), null);
+	private final String uploadButtonCaption = upload.getButtonCaption();
+	private final Label fileName = new Label("", ContentMode.TEXT);
+	private final Label statusLine = new Label("", ContentMode.TEXT);
+	private final Label countsLine = new Label("", ContentMode.TEXT);
+	private final Label readyHeading = new Label("", ContentMode.TEXT);
+	private final Label readyMessage = new Label(I18nProperties.getString(Strings.messageHierarchicalImportNothingToReview), ContentMode.TEXT);
+	private final VerticalLayout readyPanel = new VerticalLayout(readyHeading, readyMessage);
 	private final Grid<ImportIssueDto> issueGrid = new Grid<>();
-	private final Grid<ChangeRow> changeGrid = new Grid<>();
+	private final Grid<PreviewPresentation.ChangeRow> changeGrid = new Grid<>();
+	private final Grid<RecordOperationDto> newRecordGrid = new Grid<>();
+	private final TabSheet resultTabs = new TabSheet();
 	private final ProgressBar progress = new ProgressBar(0f);
 	private final Button importButton = ButtonHelper.createButton(Captions.actionImport, e -> startCommit(), ValoTheme.BUTTON_PRIMARY);
 	private final Button cancelButton = ButtonHelper.createButton(Captions.actionCancel, e -> model.requestCancel());
@@ -88,29 +99,46 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		issueGrid.addColumn(ImportIssueDto::getLineNumber).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportLine));
 		issueGrid.addColumn(ImportIssueDto::getColumn).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportColumn));
 		issueGrid.addColumn(ImportIssueDto::getMessage).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportProblem));
-		issueGrid.setWidth(100, Unit.PERCENTAGE);
-		issueGrid.setHeightByRows(6);
 
-		changeGrid.addColumn(row -> row.record).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
-		changeGrid.addColumn(row -> row.field).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportField));
-		changeGrid.addColumn(row -> row.change).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportChange));
-		changeGrid.setWidth(100, Unit.PERCENTAGE);
-		changeGrid.setHeightByRows(6);
+		changeGrid.addColumn(PreviewPresentation.ChangeRow::getRecord).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
+		changeGrid.addColumn(PreviewPresentation.ChangeRow::getField).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportField));
+		changeGrid.addColumn(PreviewPresentation.ChangeRow::getChange).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportChange));
+
+		newRecordGrid.addColumn(RecordOperationDto::getLineNumber).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportLine));
+		newRecordGrid.addColumn(operation -> recordType(operation.getLevel()))
+			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecordType));
+		newRecordGrid.addColumn(RecordOperationDto::getLabel).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
+
+		for (Grid<?> grid : List.of(issueGrid, changeGrid, newRecordGrid)) {
+			grid.setWidth(100, Unit.PERCENTAGE);
+			resultTabs.addTab(grid);
+		}
+		resultTabs.setWidth(100, Unit.PERCENTAGE);
+
+		readyHeading.addStyleName(ValoTheme.LABEL_SUCCESS);
+		readyHeading.addStyleName(ValoTheme.LABEL_BOLD);
+		readyPanel.setMargin(false);
+		readyPanel.setSpacing(false);
+		statusLine.addStyleName(ValoTheme.LABEL_BOLD);
 
 		errorFileDownloader.extend(errorFileButton);
 
-		Upload upload = new Upload(I18nProperties.getCaption(Captions.hierarchicalImportUpload), null);
 		SheetUploadReceiver receiver = new SheetUploadReceiver(this::onFileUploaded);
 		upload.setReceiver(receiver);
 		upload.addSucceededListener(receiver);
 
+		setupSection.setMargin(false);
+		setupSection.addComponents(templateButton(), separator);
+		HorizontalLayout uploadRow = new HorizontalLayout(fileName, upload);
+		uploadRow.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
+
 		addComponents(
-			templateButton(),
-			separator,
-			upload,
-			summary,
-			issueGrid,
-			changeGrid,
+			setupSection,
+			uploadRow,
+			statusLine,
+			countsLine,
+			readyPanel,
+			resultTabs,
 			progress,
 			new HorizontalLayout(errorFileButton, cancelButton, importButton));
 		setWidth(900, Unit.PIXELS);
@@ -125,10 +153,11 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		return button;
 	}
 
-	private void onFileUploaded(File file, String fileName) {
+	private void onFileUploaded(File file, String uploadedName) {
 		try (InputStream input = Files.newInputStream(file.toPath())) {
-			ImportSheet sheet = SheetReader.read(input, fileName, csvSeparator(), template.captionsByHeader());
+			ImportSheet sheet = SheetReader.read(input, uploadedName, csvSeparator(), template.captionsByHeader());
 			model.previewed(sheet, facade.dryRun(definitionId, sheet));
+			fileName.setValue(uploadedName);
 		} catch (IOException e) {
 			Notification.show(
 				I18nProperties.getString(Strings.headingImportFailed),
@@ -182,35 +211,91 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private void refresh() {
 		ImportPreviewDto preview = model.preview();
 		boolean previewed = preview != null;
-		importButton.setVisible(model.step() == ImportWizardModel.Step.PREVIEWED);
+		ImportWizardModel.Step step = model.step();
+
+		setupSection.setVisible(!previewed);
+		fileName.setVisible(previewed);
+		upload.setCaption(previewed ? null : I18nProperties.getCaption(Captions.hierarchicalImportUpload));
+		upload.setButtonCaption(previewed ? I18nProperties.getCaption(Captions.hierarchicalImportUploadAnother) : uploadButtonCaption);
+		upload.setEnabled(step != ImportWizardModel.Step.COMMITTING);
+
+		importButton.setVisible(step == ImportWizardModel.Step.PREVIEWED);
 		importButton.setEnabled(model.canCommit());
-		if (previewed) {
-			importButton.setCaption(
-				I18nProperties.getCaption(Captions.actionImport) + " (" + preview.countBlocks(BlockStatus.READY) + ")");
-		}
-		cancelButton.setVisible(model.step() == ImportWizardModel.Step.COMMITTING);
-		progress.setVisible(model.step() == ImportWizardModel.Step.COMMITTING || model.step() == ImportWizardModel.Step.DONE);
-		issueGrid.setVisible(previewed);
-		changeGrid.setVisible(previewed);
+		cancelButton.setVisible(step == ImportWizardModel.Step.COMMITTING);
+		progress.setVisible(step == ImportWizardModel.Step.COMMITTING || step == ImportWizardModel.Step.DONE);
 		errorFileButton.setVisible(previewed && (!model.failedBlocks().isEmpty() || !model.looseIssues().isEmpty()));
-		if (!previewed) {
-			summary.setValue("");
-			return;
+
+		statusLine.setVisible(previewed);
+		countsLine.setVisible(previewed && preview.getFileIssues().isEmpty());
+		readyPanel.setVisible(false);
+		resultTabs.setVisible(false);
+		if (previewed) {
+			showPreview(preview, step);
 		}
-		summary.setValue(summaryText(preview));
-		issueGrid.setItems(preview.allIssues());
-		changeGrid.setItems(changeRows(preview));
-		errorFileDownloader.setFileDownloadResource(
-			new StreamResource(
-				() -> csv(ErrorFile.rows(model.sheet(), model.failedBlocks(), model.looseIssues())),
-				"sormas_import_errors.csv"));
+		recenterWindow();
 	}
 
-	private String summaryText(ImportPreviewDto preview) {
+	private void showPreview(ImportPreviewDto preview, ImportWizardModel.Step step) {
+		long ready = preview.countBlocks(BlockStatus.READY);
+		importButton.setCaption(I18nProperties.getCaption(Captions.actionImport) + " (" + ready + ")");
+		statusLine.setValue(statusText(preview, step));
+		countsLine.setValue(countsText(preview));
+
+		PreviewPresentation presentation = new PreviewPresentation(preview, model.report());
+		readyHeading.setValue(String.format(I18nProperties.getString(Strings.headingHierarchicalImportReady), ready));
+		readyPanel.setVisible(step == ImportWizardModel.Step.PREVIEWED && model.canCommit() && presentation.nothingToReview());
+
+		showTab(issueGrid, Captions.hierarchicalImportProblems, presentation.problems());
+		showTab(changeGrid, Captions.hierarchicalImportChanges, presentation.changes());
+		showTab(newRecordGrid, Captions.hierarchicalImportNewRecords, presentation.newRecords());
+		resultTabs.setVisible(anyTabVisible());
+		selectFirstVisibleTab();
+
+		errorFileDownloader.setFileDownloadResource(
+			new StreamResource(() -> csv(ErrorFile.rows(model.sheet(), model.failedBlocks(), model.looseIssues())), "sormas_import_errors.csv"));
+	}
+
+	private <T> void showTab(Grid<T> grid, String captionKey, List<T> rows) {
+		grid.setItems(rows);
+		grid.setHeightByRows(PreviewPresentation.gridRows(rows.size()));
+		TabSheet.Tab tab = resultTabs.getTab(grid);
+		tab.setCaption(I18nProperties.getCaption(captionKey) + " (" + rows.size() + ")");
+		tab.setVisible(!rows.isEmpty());
+	}
+
+	private boolean anyTabVisible() {
+		for (int i = 0; i < resultTabs.getComponentCount(); i++) {
+			if (resultTabs.getTab(i).isVisible()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void selectFirstVisibleTab() {
+		if (resultTabs.getTab(resultTabs.getSelectedTab()).isVisible()) {
+			return;
+		}
+		for (int i = 0; i < resultTabs.getComponentCount(); i++) {
+			if (resultTabs.getTab(i).isVisible()) {
+				resultTabs.setSelectedTab(i);
+				return;
+			}
+		}
+	}
+
+	private void recenterWindow() {
+		Window window = findAncestor(Window.class);
+		if (window != null) {
+			window.center();
+		}
+	}
+
+	private String statusText(ImportPreviewDto preview, ImportWizardModel.Step step) {
 		if (!preview.getFileIssues().isEmpty()) {
 			return I18nProperties.getString(Strings.messageHierarchicalImportFileErrors);
 		}
-		if (model.step() == ImportWizardModel.Step.DONE) {
+		if (step == ImportWizardModel.Step.DONE) {
 			ImportReportDto report = model.report();
 			return String.format(
 				I18nProperties.getString(Strings.messageHierarchicalImportReport),
@@ -223,27 +308,29 @@ public class HierarchicalImportLayout extends VerticalLayout {
 			I18nProperties.getString(Strings.messageHierarchicalImportSummary),
 			preview.countBlocks(BlockStatus.READY),
 			preview.countBlocks(BlockStatus.UNCHANGED),
-			preview.countBlocks(BlockStatus.ERROR)) + "\n"
-			+ String.format(
-				I18nProperties.getString(Strings.messageHierarchicalImportCounts),
-				preview.countOperations("case", OperationType.CREATE),
-				preview.countOperations("case", OperationType.UPDATE),
-				preview.countOperations("sample", OperationType.CREATE),
-				preview.countOperations("sample", OperationType.UPDATE),
-				preview.countOperations("test", OperationType.CREATE),
-				preview.countOperations("test", OperationType.UPDATE));
+			preview.countBlocks(BlockStatus.ERROR));
 	}
 
-	private static List<ChangeRow> changeRows(ImportPreviewDto preview) {
-		List<ChangeRow> rows = new ArrayList<>();
-		preview.getBlocks().stream().filter(block -> block.getStatus() == BlockStatus.READY).forEach(block -> {
-			for (RecordOperationDto operation : block.getOperations()) {
-				for (FieldChangeDto change : operation.getChanges()) {
-					rows.add(new ChangeRow(operation.getLabel(), change.getField(), change.getOldValue() + " → " + change.getNewValue()));
-				}
-			}
-		});
-		return rows;
+	private static String countsText(ImportPreviewDto preview) {
+		return String.format(
+			I18nProperties.getString(Strings.messageHierarchicalImportCounts),
+			preview.countOperations("case", OperationType.CREATE),
+			preview.countOperations("case", OperationType.UPDATE),
+			preview.countOperations("sample", OperationType.CREATE),
+			preview.countOperations("sample", OperationType.UPDATE),
+			preview.countOperations("test", OperationType.CREATE),
+			preview.countOperations("test", OperationType.UPDATE));
+	}
+
+	private static String recordType(String level) {
+		switch (level) {
+		case "case":
+			return I18nProperties.getString(Strings.entityCase);
+		case "sample":
+			return I18nProperties.getString(Strings.entitySample);
+		default:
+			return I18nProperties.getCaption(Captions.PathogenTest);
+		}
 	}
 
 	private char csvSeparator() {
@@ -258,18 +345,5 @@ public class HierarchicalImportLayout extends VerticalLayout {
 			throw new IllegalStateException(e);
 		}
 		return new ByteArrayInputStream(out.toString().getBytes(StandardCharsets.UTF_8));
-	}
-
-	private static final class ChangeRow {
-
-		private final String record;
-		private final String field;
-		private final String change;
-
-		private ChangeRow(String record, String field, String change) {
-			this.record = record;
-			this.field = field;
-			this.change = change;
-		}
 	}
 }
