@@ -43,6 +43,7 @@ import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageController;
 import de.symeda.sormas.ui.immunization.ImmunizationController;
+import de.symeda.sormas.ui.news.NewsController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
@@ -119,6 +120,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SystemConfigurationController systemConfigurationController;
 	private final CaseNotifierSideViewController caseNotifierSideViewController;
 	private final EpiPulseExportController epipulseExportController;
+	private final NewsController newsController;
 
 	public ControllerProvider() {
 		super();
@@ -172,6 +174,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		systemConfigurationController = new SystemConfigurationController();
 		caseNotifierSideViewController = new CaseNotifierSideViewController();
 		epipulseExportController = new EpiPulseExportController();
+		newsController = new NewsController();
 	}
 
 	protected static ControllerProvider get() {
@@ -373,4 +376,9 @@ public class ControllerProvider extends BaseControllerProvider {
 	public static EpiPulseExportController getEpipulseExportController() {
 		return get().epipulseExportController;
 	}
+
+	public static NewsController getNewsController() {
+		return get().newsController;
+	}
+
 }

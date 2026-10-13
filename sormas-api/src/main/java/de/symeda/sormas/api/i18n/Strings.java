@@ -338,6 +338,7 @@ public interface Strings {
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorDocumentTemplateWorkflowChangeNotAllowed = "errorDocumentTemplateWorkflowChangeNotAllowed";
+	String errorEiosRequestToken = "errorEiosRequestToken";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEnvironmentSampleNoDispatchRight = "errorEnvironmentSampleNoDispatchRight";
@@ -1263,6 +1264,7 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionCronDeleteExpiredFeatureConfigurations = "infoSystemConfigurationValueDescriptionCronDeleteExpiredFeatureConfigurations";
 	String infoSystemConfigurationValueDescriptionCronDeleteExpiredSpecialCaseAccesses = "infoSystemConfigurationValueDescriptionCronDeleteExpiredSpecialCaseAccesses";
 	String infoSystemConfigurationValueDescriptionCronDeleteSystemEvents = "infoSystemConfigurationValueDescriptionCronDeleteSystemEvents";
+	String infoSystemConfigurationValueDescriptionCronFetchEiosBoardArticles = "infoSystemConfigurationValueDescriptionCronFetchEiosBoardArticles";
 	String infoSystemConfigurationValueDescriptionCronFetchExternalMessages = "infoSystemConfigurationValueDescriptionCronFetchExternalMessages";
 	String infoSystemConfigurationValueDescriptionCronFetchSurveyResponses = "infoSystemConfigurationValueDescriptionCronFetchSurveyResponses";
 	String infoSystemConfigurationValueDescriptionCronGenerateAutomaticTasks = "infoSystemConfigurationValueDescriptionCronGenerateAutomaticTasks";
@@ -1823,6 +1825,10 @@ public interface Strings {
 	String mmhg = "mmhg";
 	String month = "month";
 	String nameOf = "nameOf";
+	String newsData = "newsData";
+	String newsEndDate = "newsEndDate";
+	String newsFilterText = "newsFilterText";
+	String newsStartDate = "newsStartDate";
 	String no = "no";
 	String none = "none";
 	String notAnswered = "notAnswered";

@@ -1493,7 +1493,9 @@ public enum DefaultUserRole {
 					SURVEY_TOKEN_CREATE,
 					SURVEY_TOKEN_EDIT,
 					SURVEY_TOKEN_DELETE,
-					SURVEY_TOKEN_IMPORT));
+					SURVEY_TOKEN_IMPORT,
+					EDIT_NEWS,
+					VIEW_NEWS));
 			break;
 		case POE_INFORMANT:
 			userRights.addAll(

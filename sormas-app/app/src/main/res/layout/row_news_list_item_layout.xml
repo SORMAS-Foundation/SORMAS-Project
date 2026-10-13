@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.news.News" />
+    </data>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="fill"
+    android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+    android:paddingRight="@dimen/rowListItemHorizontalMargin">
+    <LinearLayout
+        android:id="@+id/row_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/rowListItemVerticalPadding"
+        android:paddingBottom="@dimen/rowListItemVerticalPadding"
+        android:background="@drawable/background_list_activity_row"
+        >
+        <TextView
+            android:id="@+id/newsData_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/listActivityRowTertiaryText"
+            android:fontFamily="sans-serif-medium"
+            android:text="@{data.title}"
+             />
+
+        <ImageView
+            android:layout_width="@dimen/separatorThickness"
+            android:layout_height="match_parent"
+            android:background="@color/listActivityRowTopCaptionSeparator"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="@dimen/contentHorizontalSpacing"
+            android:layout_marginRight="@dimen/contentHorizontalSpacing" />
+        <TextView
+            android:id="@+id/newsData_disease"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/listActivityRowTertiaryTextSize"
+            android:textColor="@color/listActivityRowLeastText"
+            android:fontFamily="sans-serif-medium" />
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal">
+           <TextView
+               android:id="@+id/newsData_region"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:textSize="@dimen/listActivityRowTertiaryTextSize"
+               android:textColor="@color/listActivityRowLeastText"
+               android:fontFamily="sans-serif-medium"
+               android:text="@{data.region}"
+               />
+           <TextView
+               android:id="@+id/newsData_date"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:textSize="@dimen/listActivityRowTertiaryTextSize"
+               android:layout_marginLeft="3dp"
+               android:textColor="@color/listActivityRowLeastText"
+               android:fontFamily="sans-serif-medium"
+               android:text="@{data.creationDate}"
+               />
+           <View
+               android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:layout_weight="1"/>
+           <LinearLayout
+               android:id="@+id/newsData_priorityContainer"
+               android:layout_width="25dp"
+               android:layout_height="25dp">
+               <Button
+                   android:id="@+id/newsData_actionPriority"
+                   android:layout_width="10dp"
+                   android:layout_height="10dp"
+                   android:background="@drawable/background_legend_entry_spacer"
+                   android:layout_gravity="center"
+                   android:clickable="false"
+                   android:layout_marginLeft="7.5dp"
+                   />
+           </LinearLayout>
+
+       </LinearLayout>
+    </LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

@@ -175,6 +175,7 @@ public interface Validations {
 	String missingRequiredUserRightsNoDependency = "missingRequiredUserRightsNoDependency";
 	String missingRequiredUserRightsSmallDependency = "missingRequiredUserRightsSmallDependency";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
+	String newsInvalidLink = "newsInvalidLink";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
 	String noAddressDistrictInAddressRegion = "noAddressDistrictInAddressRegion";
 	String noAddressFacilityInAddressCommunity = "noAddressFacilityInAddressCommunity";

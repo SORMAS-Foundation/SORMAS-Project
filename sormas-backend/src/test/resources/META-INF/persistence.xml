@@ -102,6 +102,8 @@
 		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory</class>
 		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
 		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
+        <class>de.symeda.sormas.backend.news.News</class>
+        <class>de.symeda.sormas.backend.news.EiosBoardConfig</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

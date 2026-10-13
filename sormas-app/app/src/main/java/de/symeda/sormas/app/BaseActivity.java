@@ -33,15 +33,10 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -49,7 +44,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
@@ -316,6 +310,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 					NavigationHelper.goToCampaigns(getContext());
 				} else if (id == R.id.menu_item_reports) {
 					NavigationHelper.goToReports(getContext());
+				} else if (id == R.id.menu_item_news) {
+					NavigationHelper.goToNews(getContext());
 				}
 
 				// necessary to prevent the drawer from staying open when the same entry is selected
@@ -419,6 +415,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			MenuItem immunizationMenu = menuNav.findItem(R.id.menu_item_immunizations);
 			MenuItem reportMenu = menuNav.findItem(R.id.menu_item_reports);
 			MenuItem campaignMenu = menuNav.findItem(R.id.menu_item_campaigns);
+			MenuItem newsMenu = menuNav.findItem(R.id.menu_item_news);
 
 			// TODO implement dashboard
 			if (dashboardMenu != null)
@@ -482,6 +479,11 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 				campaignMenu.setVisible(
 					ConfigProvider.hasUserRight(UserRight.CAMPAIGN_VIEW)
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS));
+
+			if (newsMenu != null)
+				newsMenu.setVisible(
+					ConfigProvider.hasUserRight(UserRight.VIEW_NEWS)
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.NEWS_FEATURE));
 
 		}
 

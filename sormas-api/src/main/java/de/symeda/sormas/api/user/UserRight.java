@@ -340,7 +340,9 @@ public enum UserRight {
 	EPIPULSE_EXPORT_VIEW(UserRightGroup.EPIPULSE),
 	EPIPULSE_EXPORT_CREATE(UserRightGroup.EPIPULSE),
 	EPIPULSE_EXPORT_DOWNLOAD(UserRightGroup.EPIPULSE),
-	EPIPULSE_EXPORT_DELETE(UserRightGroup.EPIPULSE);
+	EPIPULSE_EXPORT_DELETE(UserRightGroup.EPIPULSE),
+	VIEW_NEWS(UserRightGroup.NEWS),
+	EDIT_NEWS(UserRightGroup.NEWS, UserRight._VIEW_NEWS);
 
 	//@formatter:on
 
@@ -599,6 +601,8 @@ public enum UserRight {
 	public static final String _EPIPULSE_EXPORT_CREATE = "EPIPULSE_EXPORT_CREATE";
 	public static final String _EPIPULSE_EXPORT_DOWNLOAD = "EPIPULSE_EXPORT_DOWNLOAD";
 	public static final String _EPIPULSE_EXPORT_DELETE = "EPIPULSE_EXPORT_DELETE";
+	public static final String _VIEW_NEWS = "VIEW_NEWS";
+	public static final String _EDIT_NEWS = "EDIT_NEWS";
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();
 

@@ -34,6 +34,8 @@ import de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration;
 import de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
+import de.symeda.sormas.backend.news.EiosBoardConfig;
+import de.symeda.sormas.backend.news.News;
 import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
@@ -76,7 +78,9 @@ public class DatabaseExportServiceTest {
 		EpipulseExport.class,
 		EpipulseSubjectcodeConfiguration.class,
 		EpipulseDatasourceConfiguration.class,
-		EpipulseLocationConfiguration.class);
+		EpipulseLocationConfiguration.class,
+		News.class,
+		EiosBoardConfig.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {

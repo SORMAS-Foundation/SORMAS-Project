@@ -1229,6 +1229,8 @@ public interface Captions {
 	String countryActiveCountries = "countryActiveCountries";
 	String countryAllCountries = "countryAllCountries";
 	String countryArchivedCountries = "countryArchivedCountries";
+	String createEvent = "createEvent";
+	String createNew = "createNew";
 	String createSymptomJournalAccountButton = "createSymptomJournalAccountButton";
 	String creationDate = "creationDate";
 	String cronFieldDayOfMonth = "cronFieldDayOfMonth";
@@ -2323,6 +2325,7 @@ public interface Captions {
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
 	String HealthConditions_vaccinatedAgainstMosquitoBorneViruses = "HealthConditions.vaccinatedAgainstMosquitoBorneViruses";
+	String hideDescription = "hideDescription";
 	String humanSampleViewType = "humanSampleViewType";
 	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
@@ -2534,6 +2537,22 @@ public interface Captions {
 	String moreActions = "moreActions";
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
+	String news = "news";
+	String News_community = "News.community";
+	String News_description = "News.description";
+	String News_disease = "News.disease";
+	String News_district = "News.district";
+	String News_link = "News.link";
+	String News_newsDate = "News.newsDate";
+	String News_region = "News.region";
+	String News_riskLevel = "News.riskLevel";
+	String News_status = "News.status";
+	String News_title = "News.title";
+	String newsAction = "newsAction";
+	String NewsCriteria_endDate = "NewsCriteria.endDate";
+	String NewsCriteria_startDate = "NewsCriteria.startDate";
+	String newsList = "newsList";
+	String newsUpdate = "newsUpdate";
 	String notAvailableShort = "notAvailableShort";
 	String Notification_createNotification = "Notification.createNotification";
 	String Notification_dateOfNotification = "Notification.dateOfNotification";
@@ -2557,6 +2576,7 @@ public interface Captions {
 	String openInPatientDiaryButton = "openInPatientDiaryButton";
 	String openInSymptomJournalButton = "openInSymptomJournalButton";
 	String openLinkedCaseToImmunizationButton = "openLinkedCaseToImmunizationButton";
+	String openLinkInTab = "openLinkInTab";
 	String options = "options";
 	String otherDeletionReason = "otherDeletionReason";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
@@ -3092,6 +3112,7 @@ public interface Captions {
 	String selfReportSelfReportsList = "selfReportSelfReportsList";
 	String serogroup = "serogroup";
 	String sex = "sex";
+	String showDescription = "showDescription";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
 	String singleDayEventEvolutionDate = "singleDayEventEvolutionDate";
@@ -3805,6 +3826,7 @@ public interface Captions {
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
 	String unassigned = "unassigned";
 	String unknown = "unknown";
+	String updateNews = "updateNews";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";

@@ -115,6 +115,11 @@
             android:icon="@drawable/ic_drawer_assessment_blue_36dp"
             android:orderInCategory="12"
             />
-
+        <item
+                android:id="@+id/menu_item_news"
+                android:title="@string/main_menu_news"
+                android:icon="@drawable/ic_drawer_assessment_blue_36dp"
+                android:orderInCategory="10"
+        />
     </group>
 </menu>

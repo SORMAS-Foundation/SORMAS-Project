@@ -18,6 +18,7 @@ package de.symeda.sormas.app.util;
 import android.os.Bundle;
 
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.app.news.News;
 
 public class Bundler {
 
@@ -38,6 +39,7 @@ public class Bundler {
 	private static final String EMPTY_REPORT_DATE = "emptyReportDate";
 	private static final String PRESCRIPTION_UUID = "prescriptionUuid";
 	private static final String RAPID_ENTRY = "rapidEntry";
+	private static final String NEWS = "news";
 
 	private final Bundle bundle;
 
@@ -236,6 +238,18 @@ public class Bundler {
 	public EpiWeek getEpiWeek() {
 		if (bundle.containsKey(EPI_WEEK)) {
 			return (EpiWeek) bundle.getSerializable(EPI_WEEK);
+		}
+		return null;
+	}
+
+	public Bundler setNews(News news) {
+		bundle.putSerializable(NEWS, news);
+		return this;
+	}
+
+	public News getNews() {
+		if (bundle.containsKey(NEWS)) {
+			return (News) bundle.getSerializable(NEWS);
 		}
 		return null;
 	}

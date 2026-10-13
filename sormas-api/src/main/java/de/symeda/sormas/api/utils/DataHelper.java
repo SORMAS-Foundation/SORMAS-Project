@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -169,6 +170,19 @@ public final class DataHelper {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * @return true if the given value is an http or https URL. Use this before rendering or opening external links,
+	 *         to prevent e.g. "javascript:" or "data:" URLs from being executed.
+	 */
+	public static boolean isHttpUrl(String url) {
+
+		if (StringUtils.isBlank(url)) {
+			return false;
+		}
+		String lowerCaseUrl = url.trim().toLowerCase(Locale.ROOT);
+		return lowerCaseUrl.startsWith("http://") || lowerCaseUrl.startsWith("https://");
 	}
 
 	/**

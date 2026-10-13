@@ -17773,4 +17773,97 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroconversion boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (676, '#14356 - Carry IgG seroconversion on lab message test reports');
 
+-- 2026-10-12 Setup EIOS board configuration and news #13131
+CREATE TABLE eiosboardconfig
+(
+    id             bigint       not null,
+    uuid           varchar(36)  not null,
+    changedate     timestamp(3) not null,
+    creationdate   timestamp(3) not null,
+    change_user_id bigint,
+    boardid        bigint,
+    enabled        boolean,
+    startdatetime  timestamp with time zone,
+    sys_period     tstzrange    not null
+);
+ALTER TABLE eiosboardconfig OWNER TO sormas_user;
+ALTER TABLE eiosboardconfig ADD PRIMARY KEY (id);
+ALTER TABLE eiosboardconfig ADD UNIQUE (uuid);
+ALTER TABLE eiosboardconfig ADD CONSTRAINT fk_eiosboardconfig_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+
+CREATE TABLE eiosboardconfig_history (LIKE eiosboardconfig);
+ALTER TABLE eiosboardconfig_history OWNER TO sormas_user;
+DROP TRIGGER IF EXISTS versioning_trigger ON eiosboardconfig;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON eiosboardconfig
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eiosboardconfig_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON eiosboardconfig;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON eiosboardconfig
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('eiosboardconfig_history', 'id');
+
+CREATE TABLE news
+(
+    id                bigint       not null,
+    uuid              varchar(36)  not null,
+    changedate        timestamp(3) not null,
+    creationdate      timestamp(3) not null,
+    change_user_id    bigint,
+    eiosid            varchar(512),
+    eiosurl           varchar(4096),
+    title             varchar(4096),
+    description       text,
+    url               varchar(4096),
+    comments          varchar(4096),
+    contentrestricted boolean,
+    newsdate          timestamp,
+    risklevel         varchar(255),
+    status            varchar(255),
+    disease           varchar(255),
+    region_id         bigint,
+    district_id       bigint,
+    community_id      bigint,
+    sys_period        tstzrange    not null
+);
+ALTER TABLE news OWNER TO sormas_user;
+ALTER TABLE news ADD PRIMARY KEY (id);
+ALTER TABLE news ADD UNIQUE (uuid);
+ALTER TABLE news ADD UNIQUE (eiosid);
+ALTER TABLE news ADD CONSTRAINT fk_news_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE news ADD CONSTRAINT fk_news_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE news ADD CONSTRAINT fk_news_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+ALTER TABLE news ADD CONSTRAINT fk_news_community_id FOREIGN KEY (community_id) REFERENCES community (id);
+CREATE INDEX IF NOT EXISTS idx_news_region_id ON news (region_id);
+CREATE INDEX IF NOT EXISTS idx_news_district_id ON news (district_id);
+CREATE INDEX IF NOT EXISTS idx_news_community_id ON news (community_id);
+CREATE INDEX IF NOT EXISTS idx_news_status ON news (status);
+CREATE INDEX IF NOT EXISTS idx_news_newsdate ON news (newsdate);
+
+CREATE TABLE news_history (LIKE news);
+ALTER TABLE news_history OWNER TO sormas_user;
+DROP TRIGGER IF EXISTS versioning_trigger ON news;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON news
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'news_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON news;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON news
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('news_history', 'id');
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional,
+                                     value_pattern, value_encrypt, data_provider, validation_message,
+                                     changedate, creationdate, id, uuid)
+SELECT 'CRON.FETCH_EIOS_BOARD_ARTICLES', '0 0 */2 * * *',
+       'i18n/infoSystemConfigurationValueDescriptionCronFetchEiosBoardArticles',
+       v.category_id, v.value_optional, v.value_pattern, v.value_encrypt, v.data_provider, v.validation_message,
+       now(), now(), nextval('entity_seq'), generate_base32_uuid()
+FROM systemconfigurationvalue v
+WHERE v.config_key = 'CRON.FETCH_EXTERNAL_MESSAGES'
+ON CONFLICT (config_key) DO NOTHING;
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'VIEW_NEWS' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER') ON CONFLICT (userrole_id, userright) DO NOTHING;
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EDIT_NEWS' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER') ON CONFLICT (userrole_id, userright) DO NOTHING;
+
+INSERT INTO schema_version (version_number, comment) VALUES (677, '#13131 Setup EIOS board configuration and news');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

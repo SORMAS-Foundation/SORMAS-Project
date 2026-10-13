@@ -1225,6 +1225,16 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>VIEW_NEWS</role-name>
+        <group-name>VIEW_NEWS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EDIT_NEWS</role-name>
+        <group-name>EDIT_NEWS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>SYSTEM_CONFIGURATION</role-name>
         <group-name>SYSTEM_CONFIGURATION</group-name>
     </security-role-mapping>

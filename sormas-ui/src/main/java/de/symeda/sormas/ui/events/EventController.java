@@ -69,6 +69,7 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
@@ -76,6 +77,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.news.NewsDto;
+import de.symeda.sormas.api.news.NewsReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -124,6 +128,48 @@ public class EventController {
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
+	}
+
+	/**
+	 * @param prefillEvent
+	 *            fills the new event before it is bound to the form. Changing the event after the form has been bound
+	 *            is not reliably reflected in the fields (e.g. community is not shown).
+	 */
+	public EventDto create(Consumer<EventDto> prefillEvent) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(null, prefillEvent);
+		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
+		return eventDto;
+	}
+
+	public EventDto create(NewsReferenceDto newsRef) {
+		NewsDto news = FacadeProvider.getNewsFacade().getByUuid(newsRef.getUuid());
+		if (news == null) {
+			return null;
+		}
+		return create(event -> fillEventFromNews(event, news));
+	}
+
+	private void fillEventFromNews(EventDto event, NewsDto news) {
+		event.setEventTitle(news.getTitle());
+		event.setEventDesc(news.getDescription());
+		event.setSrcType(EventSourceType.MEDIA_NEWS);
+		event.setSrcMediaWebsite(news.getLink());
+		event.setRiskLevel(news.getRiskLevel());
+		event.setStartDate(news.getNewsDate());
+		if (news.getDisease() != null) {
+			event.setDisease(news.getDisease());
+		}
+		if (news.getRegion() != null) {
+			LocationDto location = event.getEventLocation();
+			if (location == null) {
+				location = LocationDto.build();
+				event.setEventLocation(location);
+			}
+			location.setRegion(news.getRegion());
+			location.setDistrict(news.getDistrict());
+			location.setCommunity(news.getCommunity());
+		}
 	}
 
 	public EventDto createFromCaseList(List<CaseReferenceDto> caseRefs, Consumer<List<CaseReferenceDto>> callback) {
@@ -758,6 +804,10 @@ public class EventController {
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(CaseReferenceDto caseRef) {
+		return getEventCreateComponent(caseRef, null);
+	}
+
+	private CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(CaseReferenceDto caseRef, Consumer<EventDto> prefillEvent) {
 
 		CaseDataDto caseDataDto = null;
 
@@ -766,11 +816,13 @@ public class EventController {
 		}
 
 		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
+		EventDto newEvent = createNewEvent(caseRef != null ? caseDataDto.getDisease() : null);
+		if (prefillEvent != null) {
+			prefillEvent.accept(newEvent);
+		}
+		eventCreateForm.setValue(newEvent);
 		if (caseRef != null) {
-			eventCreateForm.setValue(createNewEvent(caseDataDto.getDisease()));
 			eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
-		} else {
-			eventCreateForm.setValue(createNewEvent(null));
 		}
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventCreateForm,

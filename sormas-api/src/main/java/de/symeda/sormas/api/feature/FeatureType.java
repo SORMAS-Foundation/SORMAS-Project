@@ -357,6 +357,7 @@ public enum FeatureType {
 			CONTACT_TRACING },
 		null,
 		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE)),
+	NEWS_FEATURE(true, false, null, null, null),
 
 	// EPIPULSE EXPORT
 	EPIPULSE_EXPORT(true, false, null, null, null);
