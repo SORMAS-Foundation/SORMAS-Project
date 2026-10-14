@@ -8,6 +8,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
 import de.symeda.sormas.api.importexport.hierarchical.BlockPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.BlockResultDto;
@@ -17,6 +20,7 @@ import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 import de.symeda.sormas.api.importexport.hierarchical.RecordOperationDto;
 
@@ -77,6 +81,25 @@ class PreviewPresentationTest {
 
 		assertFalse(new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2))), emptyReport()).hasProblems());
 		assertTrue(new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2)), broken), emptyReport()).hasProblems());
+	}
+
+	@Test
+	void labelsEachMatchReason() {
+		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportMatchedById), PreviewPresentation.matchLabel(MatchReason.BY_ID));
+		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportMatchedBySimilarity), PreviewPresentation.matchLabel(MatchReason.BY_SIMILARITY));
+		assertEquals(
+			I18nProperties.getCaption(Captions.hierarchicalImportNewForExistingPerson),
+			PreviewPresentation.matchLabel(MatchReason.NEW_FOR_EXISTING_PERSON));
+		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportNewCase), PreviewPresentation.matchLabel(MatchReason.NEW));
+		assertEquals("", PreviewPresentation.matchLabel(null));
+	}
+
+	@Test
+	void namesIgnoredColumnsOnlyWhenThereAreSome() {
+		assertEquals("", PreviewPresentation.ignoredColumnsMessage(new ImportPreviewDto(List.of(), List.of(), List.of())));
+		String message =
+			PreviewPresentation.ignoredColumnsMessage(new ImportPreviewDto(List.of(), List.of(), List.of(), List.of("CaseData.colour", "Sample.size")));
+		assertTrue(message.endsWith("CaseData.colour, Sample.size"), message);
 	}
 
 	@Test

@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.hierarchical.BlockPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 import de.symeda.sormas.api.importexport.hierarchical.RecordOperationDto;
 
@@ -28,7 +32,12 @@ public final class PreviewPresentation {
 			.flatMap(
 				operation -> operation.getChanges()
 					.stream()
-					.map(change -> new ChangeRow(operation.getLabel(), change.getField(), change.getOldValue() + " → " + change.getNewValue())))
+					.map(
+						change -> new ChangeRow(
+							operation.getLabel(),
+							change.getField(),
+							change.getOldValue() + " → " + change.getNewValue(),
+							operation.getMatchReason())))
 			.collect(Collectors.toList());
 		this.newRecords = readyOperations(preview).filter(operation -> operation.getType() == OperationType.CREATE).collect(Collectors.toList());
 	}
@@ -53,6 +62,29 @@ public final class PreviewPresentation {
 		return problems.isEmpty() && changes.isEmpty();
 	}
 
+	public static String matchLabel(MatchReason reason) {
+		if (reason == null) {
+			return "";
+		}
+		switch (reason) {
+		case BY_ID:
+			return I18nProperties.getCaption(Captions.hierarchicalImportMatchedById);
+		case BY_SIMILARITY:
+			return I18nProperties.getCaption(Captions.hierarchicalImportMatchedBySimilarity);
+		case NEW_FOR_EXISTING_PERSON:
+			return I18nProperties.getCaption(Captions.hierarchicalImportNewForExistingPerson);
+		default:
+			return I18nProperties.getCaption(Captions.hierarchicalImportNewCase);
+		}
+	}
+
+	public static String ignoredColumnsMessage(ImportPreviewDto preview) {
+		if (preview.getIgnoredColumns().isEmpty()) {
+			return "";
+		}
+		return String.format(I18nProperties.getString(Strings.messageHierarchicalImportIgnoredColumns), String.join(", ", preview.getIgnoredColumns()));
+	}
+
 	public static int gridRows(int itemCount) {
 		return Math.max(1, Math.min(itemCount, MAX_GRID_ROWS));
 	}
@@ -70,11 +102,17 @@ public final class PreviewPresentation {
 		private final String record;
 		private final String field;
 		private final String change;
+		private final MatchReason matchReason;
 
-		ChangeRow(String record, String field, String change) {
+		ChangeRow(String record, String field, String change, MatchReason matchReason) {
 			this.record = record;
 			this.field = field;
 			this.change = change;
+			this.matchReason = matchReason;
+		}
+
+		public MatchReason getMatchReason() {
+			return matchReason;
 		}
 
 		public String getRecord() {

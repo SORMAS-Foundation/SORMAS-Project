@@ -757,7 +757,6 @@ public interface Strings {
 	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCaseContacts = "headingImportCaseContacts";
 	String headingImportCases = "headingImportCases";
-	String headingImportCasesSamplesTests = "headingImportCasesSamplesTests";
 	String headingImportCommunities = "headingImportCommunities";
 	String headingImportContacts = "headingImportContacts";
 	String headingImportContinents = "headingImportContinents";
@@ -1621,6 +1620,8 @@ public interface Strings {
 	String messageHierarchicalImportCounts = "messageHierarchicalImportCounts";
 	String messageHierarchicalImportErrorCount = "messageHierarchicalImportErrorCount";
 	String messageHierarchicalImportFileErrors = "messageHierarchicalImportFileErrors";
+	String messageHierarchicalImportIgnoredColumns = "messageHierarchicalImportIgnoredColumns";
+	String messageHierarchicalImportNestedRows = "messageHierarchicalImportNestedRows";
 	String messageHierarchicalImportNothingToReview = "messageHierarchicalImportNothingToReview";
 	String messageHierarchicalImportReadyCount = "messageHierarchicalImportReadyCount";
 	String messageHierarchicalImportReport = "messageHierarchicalImportReport";

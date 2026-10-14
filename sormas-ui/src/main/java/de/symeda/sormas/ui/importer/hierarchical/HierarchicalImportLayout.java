@@ -1,13 +1,10 @@
 package de.symeda.sormas.ui.importer.hierarchical;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +17,7 @@ import com.opencsv.CSVWriter;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,7 +26,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -40,7 +34,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
@@ -69,11 +62,8 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private final UI ui = UI.getCurrent();
 	private final UserDto currentUser = UiUtil.getUser();
 
-	private final ComboBox<ValueSeparator> separator = new ComboBox<>(I18nProperties.getCaption(Captions.importValueSeparator));
-	private final VerticalLayout setupSection = new VerticalLayout();
-	private final Upload upload = new Upload(I18nProperties.getCaption(Captions.hierarchicalImportUpload), null);
-	private final String uploadButtonCaption = upload.getButtonCaption();
-	private final Label fileName = new Label("", ContentMode.TEXT);
+	private final Label nestedNotice = new Label(I18nProperties.getString(Strings.messageHierarchicalImportNestedRows), ContentMode.TEXT);
+	private final Label ignoredColumnsNotice = new Label("", ContentMode.TEXT);
 	private final Label readyCount = new Label("", ContentMode.TEXT);
 	private final Label unchangedCount = new Label("", ContentMode.TEXT);
 	private final Label errorCount = new Label("", ContentMode.TEXT);
@@ -92,13 +82,10 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private final Button cancelButton = ButtonHelper.createButton(Captions.actionCancel, e -> model.requestCancel());
 	private final Button errorFileButton = ButtonHelper.createButton(Captions.hierarchicalImportDownloadErrors, (Button.ClickListener) null);
 	private final FileDownloader errorFileDownloader = new FileDownloader(new StreamResource(() -> null, "errors.csv"));
+	private char csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
 
 	public HierarchicalImportLayout(String definitionId) {
 		this.definitionId = definitionId;
-
-		separator.setItems(Arrays.asList(ValueSeparator.values()));
-		separator.setValue(ValueSeparator.DEFAULT);
-		separator.setEmptySelectionAllowed(false);
 
 		issueGrid.addColumn(ImportIssueDto::getLineNumber).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportLine));
 		issueGrid.addColumn(ImportIssueDto::getColumn).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportColumn));
@@ -107,6 +94,8 @@ public class HierarchicalImportLayout extends VerticalLayout {
 			.setDescriptionGenerator(ImportIssueDto::getMessage);
 
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getRecord).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
+		changeGrid.addColumn(row -> PreviewPresentation.matchLabel(row.getMatchReason()))
+			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportMatch));
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getField).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportField));
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getChange)
 			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportChange))
@@ -116,6 +105,8 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		newRecordGrid.addColumn(operation -> recordType(operation.getLevel()))
 			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecordType));
 		newRecordGrid.addColumn(RecordOperationDto::getLabel).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
+		newRecordGrid.addColumn(operation -> PreviewPresentation.matchLabel(operation.getMatchReason()))
+			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportMatch));
 
 		for (Grid<?> grid : List.of(issueGrid, changeGrid, newRecordGrid)) {
 			grid.setWidth(100, Unit.PERCENTAGE);
@@ -133,18 +124,13 @@ public class HierarchicalImportLayout extends VerticalLayout {
 
 		errorFileDownloader.extend(errorFileButton);
 
-		SheetUploadReceiver receiver = new SheetUploadReceiver(this::onFileUploaded);
-		upload.setReceiver(receiver);
-		upload.addSucceededListener(receiver);
-
-		setupSection.setMargin(false);
-		setupSection.addComponents(separator);
-		HorizontalLayout uploadRow = new HorizontalLayout(fileName, upload);
-		uploadRow.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
+		ignoredColumnsNotice.addStyleName(CssStyles.LABEL_WARNING);
+		ignoredColumnsNotice.setWidth(100, Unit.PERCENTAGE);
+		setMargin(false);
 
 		addComponents(
-			setupSection,
-			uploadRow,
+			nestedNotice,
+			ignoredColumnsNotice,
 			blockCounts,
 			statusMessage,
 			countsLine,
@@ -152,23 +138,16 @@ public class HierarchicalImportLayout extends VerticalLayout {
 			resultTabs,
 			progress,
 			new HorizontalLayout(errorFileButton, cancelButton, importButton));
-		setWidth(900, Unit.PIXELS);
+		setWidth(100, Unit.PERCENTAGE);
 		refresh();
 	}
 
-	private void onFileUploaded(File file, String uploadedName) {
-		try (InputStream input = Files.newInputStream(file.toPath())) {
-			ImportSheet sheet = SheetReader.read(input, csvSeparator());
-			model.previewed(sheet, facade.dryRun(definitionId, sheet));
-			fileName.setValue(uploadedName);
-		} catch (IOException e) {
-			Notification.show(
-				I18nProperties.getString(Strings.headingImportFailed),
-				I18nProperties.getString(Strings.messageImportFailed),
-				Notification.Type.ERROR_MESSAGE);
-		} finally {
-			file.delete();
-		}
+	public void separator(char csvSeparator) {
+		this.csvSeparator = csvSeparator;
+	}
+
+	public void preview(ImportSheet sheet) {
+		model.previewed(sheet, facade.dryRun(definitionId, sheet));
 		refresh();
 	}
 
@@ -216,11 +195,10 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		boolean previewed = preview != null;
 		ImportWizardModel.Step step = model.step();
 
-		setupSection.setVisible(!previewed);
-		fileName.setVisible(previewed);
-		upload.setCaption(previewed ? null : I18nProperties.getCaption(Captions.hierarchicalImportUpload));
-		upload.setButtonCaption(previewed ? I18nProperties.getCaption(Captions.hierarchicalImportUploadAnother) : uploadButtonCaption);
-		upload.setEnabled(step != ImportWizardModel.Step.COMMITTING);
+		nestedNotice.setVisible(previewed);
+		String ignoredColumns = previewed ? PreviewPresentation.ignoredColumnsMessage(preview) : "";
+		ignoredColumnsNotice.setValue(ignoredColumns);
+		ignoredColumnsNotice.setVisible(!ignoredColumns.isEmpty());
 
 		importButton.setVisible(step == ImportWizardModel.Step.PREVIEWED);
 		importButton.setEnabled(model.canCommit());
@@ -359,13 +337,9 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		}
 	}
 
-	private char csvSeparator() {
-		return ValueSeparator.getSeparator(separator.getValue(), FacadeProvider.getConfigFacade().getCsvSeparator());
-	}
-
 	private InputStream csv(List<String[]> rows) {
 		StringWriter out = new StringWriter();
-		try (CSVWriter writer = CSVUtils.createCSVWriter(out, csvSeparator())) {
+		try (CSVWriter writer = CSVUtils.createCSVWriter(out, csvSeparator)) {
 			rows.forEach(writer::writeNext);
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
