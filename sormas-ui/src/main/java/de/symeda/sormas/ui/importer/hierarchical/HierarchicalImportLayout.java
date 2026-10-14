@@ -147,7 +147,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	}
 
 	public void preview(ImportSheet sheet) {
-		model.previewed(sheet, facade.dryRun(definitionId, sheet));
+		model.previewed(sheet, facade.checkImport(definitionId, sheet));
 		refresh();
 	}
 
@@ -162,7 +162,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
 				failure = ChunkedCommit.run(
 					chunks,
-					chunk -> facade.commit(definitionId, model.sheet(), new HashMap<>(chunk)),
+					chunk -> facade.saveImport(definitionId, model.sheet(), new HashMap<>(chunk)),
 					(report, done) -> ui.access(() -> {
 						model.chunkCommitted(report);
 						progress.setValue(done);

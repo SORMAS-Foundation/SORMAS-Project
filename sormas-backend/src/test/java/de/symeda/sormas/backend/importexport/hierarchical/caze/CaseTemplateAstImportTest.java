@@ -48,9 +48,9 @@ public class CaseTemplateAstImportTest extends AbstractBeanTest {
 	public void savesDrugColumnsOnTheTest() {
 		ImportSheet sheet = SheetFixtures.table(HEADER, CASE_CELLS + "| ANTIBIOTIC_SUSCEPTIBILITY | 9/3/2026 | POSITIVE | 0.5 | SUSCEPTIBLE | |");
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		assertEquals(List.of(), preview.allIssues());
-		facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
 		PathogenTestDto test = onlyTest();
 		assertEquals("0.5", test.getDrugSusceptibility().getAmikacinMic());
@@ -61,7 +61,7 @@ public class CaseTemplateAstImportTest extends AbstractBeanTest {
 	public void aDrugThatDoesNotApplyToTheDiseaseIsAnIssueOnItsColumn() {
 		ImportSheet sheet = SheetFixtures.table(HEADER, CASE_CELLS + "| ANTIBIOTIC_SUSCEPTIBILITY | 9/3/2026 | POSITIVE | | | RESISTANT |");
 
-		List<ImportIssueDto> issues = facade.dryRun(CASE_TEMPLATE, sheet).allIssues();
+		List<ImportIssueDto> issues = facade.checkImport(CASE_TEMPLATE, sheet).allIssues();
 
 		assertEquals(1, issues.size(), issues.toString());
 		assertEquals("DrugSusceptibility.drugSusceptibility.meropenemSusceptibility", issues.get(0).getColumn());
@@ -71,7 +71,7 @@ public class CaseTemplateAstImportTest extends AbstractBeanTest {
 	public void aDrugColumnOnATestThatRecordsNoSusceptibilityIsAnIssue() {
 		ImportSheet sheet = SheetFixtures.table(HEADER, CASE_CELLS + "| CULTURE | 9/3/2026 | POSITIVE | 0.5 | SUSCEPTIBLE | |");
 
-		List<ImportIssueDto> issues = facade.dryRun(CASE_TEMPLATE, sheet).allIssues();
+		List<ImportIssueDto> issues = facade.checkImport(CASE_TEMPLATE, sheet).allIssues();
 
 		assertEquals(1, issues.size(), issues.toString());
 		assertEquals("DrugSusceptibility.drugSusceptibility.amikacinMic", issues.get(0).getColumn());

@@ -51,10 +51,10 @@ public class CaseSimilarityMatchTest extends AbstractBeanTest {
 		CaseDataDto caze = caseFor(jeanMuller(), Disease.TUBERCULOSIS);
 		ImportSheet sheet = SheetFixtures.table(HEADER, row("Jean", "Muller"));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 
 		assertEquals(MatchReason.BY_SIMILARITY, root(preview).getMatchReason(), preview.allIssues().toString());
-		facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 		assertEquals(1, getSampleFacade().getByCaseUuids(List.of(caze.getUuid())).size());
 	}
 
@@ -64,7 +64,7 @@ public class CaseSimilarityMatchTest extends AbstractBeanTest {
 		caseFor(person, Disease.TUBERCULOSIS);
 		caseFor(person, Disease.TUBERCULOSIS);
 
-		assertEquals(1, facade.dryRun(CASE_TEMPLATE, SheetFixtures.table(HEADER, row("Jean", "Muller"))).countBlocks(BlockStatus.ERROR));
+		assertEquals(1, facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(HEADER, row("Jean", "Muller"))).countBlocks(BlockStatus.ERROR));
 	}
 
 	@Test
@@ -73,9 +73,9 @@ public class CaseSimilarityMatchTest extends AbstractBeanTest {
 		caseFor(person, Disease.MEASLES);
 		ImportSheet sheet = SheetFixtures.table(HEADER, row("Jean", "Muller"));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		assertEquals(MatchReason.NEW_FOR_EXISTING_PERSON, root(preview).getMatchReason(), preview.allIssues().toString());
-		facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
 		assertEquals(2, getCaseFacade().getByPersonUuids(List.of(person.getUuid())).size());
 		assertEquals(2, getCaseFacade().getAllActiveUuids().size());
@@ -86,14 +86,14 @@ public class CaseSimilarityMatchTest extends AbstractBeanTest {
 		caseFor(jeanMuller(), Disease.MEASLES);
 		caseFor(jeanMuller(), Disease.MEASLES);
 
-		assertEquals(1, facade.dryRun(CASE_TEMPLATE, SheetFixtures.table(HEADER, row("Jean", "Muller"))).countBlocks(BlockStatus.ERROR));
+		assertEquals(1, facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(HEADER, row("Jean", "Muller"))).countBlocks(BlockStatus.ERROR));
 	}
 
 	@Test
 	public void nothingSimilarCreatesCaseAndPerson() {
 		caseFor(jeanMuller(), Disease.TUBERCULOSIS);
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, SheetFixtures.table(HEADER, row("Ana", "Novak")));
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(HEADER, row("Ana", "Novak")));
 
 		assertEquals(MatchReason.NEW, root(preview).getMatchReason());
 	}
@@ -104,7 +104,7 @@ public class CaseSimilarityMatchTest extends AbstractBeanTest {
 		caseFor(jeanMuller(), Disease.MEASLES);
 		creator.createCase(nationalAdmin.toReference(), rdcf, c -> c.setEpidNumber("AAA-BBB-CCC-26-009"));
 
-		ImportPreviewDto preview = facade.dryRun(
+		ImportPreviewDto preview = facade.checkImport(
 			CASE_TEMPLATE,
 			SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName | Person.person.lastName |", "| AAA-BBB-CCC-26-009 | Jean | Muller |"));
 

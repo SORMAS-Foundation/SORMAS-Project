@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public final class ImportSheet implements Serializable {
 
 	private static final long serialVersionUID = 1L;

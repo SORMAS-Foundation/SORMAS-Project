@@ -81,12 +81,12 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	public void createsACaseWithItsSampleAndTestsAndAReuploadIsUnchanged() {
 		ImportSheet sheet = SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW, SECOND_TEST_ROW);
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		assertEquals(List.of(), preview.allIssues());
 		assertEquals(1, preview.countBlocks(BlockStatus.READY));
 		assertEquals(2, preview.countOperations(CaseTemplateSchema.TEST, OperationType.CREATE));
 
-		ImportReportDto report = facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		ImportReportDto report = facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 		assertEquals(1, report.count(BlockOutcome.COMMITTED));
 
 		List<Case> cases = getBean(CaseService.class).getUndeletedByAttributeValues(Case.EPID_NUMBER, List.of("AAA-BBB-CCC-26-001"));
@@ -96,7 +96,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		assertEquals("S1", samples.get(0).getFieldSampleID());
 		assertEquals(2, getPathogenTestFacade().getAllBySample(samples.get(0).toReference()).size());
 
-		assertEquals(1, facade.dryRun(CASE_TEMPLATE, sheet).countBlocks(BlockStatus.UNCHANGED));
+		assertEquals(1, facade.checkImport(CASE_TEMPLATE, sheet).countBlocks(BlockStatus.UNCHANGED));
 	}
 
 	@Test
@@ -108,13 +108,13 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		getSampleFacade().saveSample(existing);
 		ImportSheet sheet = SheetFixtures.table("| CaseData.externalToken | Sample.fieldSampleID | Sample.sampleMaterial |", "| TOK-1 | S1 | SERA |");
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		RecordOperationDto sampleOperation = preview.getBlocks().get(0).getOperations().get(1);
 		assertEquals(OperationType.UPDATE, sampleOperation.getType());
 		assertEquals("Sample.sampleMaterial", sampleOperation.getChanges().get(0).getField());
 		assertEquals(MatchReason.BY_ID, preview.getBlocks().get(0).getOperations().get(0).getMatchReason());
 
-		facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
 		List<SampleDto> samples = getSampleFacade().getByCaseUuids(List.of(caze.getUuid()));
 		assertEquals(1, samples.size());
@@ -128,10 +128,10 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			"| CaseData.epidNumber | Sample.fieldSampleID | Sample.sampleDateTime | Sample.sampleMaterial | Sample.lab |",
 			"| AAA-BBB-CCC-26-007 | S9 | 9/2/2026 | BLOOD | Central Lab |");
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		assertEquals(OperationType.UNCHANGED, preview.getBlocks().get(0).getOperations().get(0).getType());
 
-		facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
 		assertEquals(1, getSampleFacade().getByCaseUuids(List.of(caze.getUuid())).size());
 	}
@@ -144,9 +144,9 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			"| CaseData.caseReferenceNumber | Sample.fieldSampleID | Sample.sampleDateTime | Sample.sampleMaterial | Sample.lab |",
 			"| REF-1 | S9 | 9/2/2026 | BLOOD | Central Lab |");
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		assertEquals(MatchReason.BY_ID, preview.getBlocks().get(0).getOperations().get(0).getMatchReason());
-		facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
 		assertEquals(1, getSampleFacade().getByCaseUuids(List.of(caze.getUuid())).size());
 	}
@@ -158,7 +158,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		ImportSheet sheet = SheetFixtures
 			.table("| CaseData.externalToken | CaseData.epidNumber | Sample.fieldSampleID |", "| NOSUCHTOKEN | | S1 |", "| | AAA-BBB-CCC-26-090 | S2 |");
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 
 		assertEquals(2, preview.countBlocks(BlockStatus.ERROR));
 		assertEquals(CaseTemplateSchema.EXTERNAL_TOKEN, preview.getBlocks().get(0).getIssues().get(0).getColumn());
@@ -169,7 +169,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	public void anIdOnlyRowForAMissingCaseSaysSoOnItsColumn() {
 		ImportSheet sheet = SheetFixtures.table("| CaseData.epidNumber | Sample.fieldSampleID |", "| AAA-BBB-CCC-26-099 | S1 |");
 
-		List<ImportIssueDto> issues = facade.dryRun(CASE_TEMPLATE, sheet).allIssues();
+		List<ImportIssueDto> issues = facade.checkImport(CASE_TEMPLATE, sheet).allIssues();
 
 		assertEquals(CaseTemplateSchema.EPID_NUMBER, issues.get(0).getColumn(), issues.toString());
 		assertEquals(
@@ -187,7 +187,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		creator.createCase(nationalAdmin.toReference(), rdcf, c -> c.setExternalToken("T-2"));
 		ImportSheet sheet = SheetFixtures.table("| CaseData.epidNumber | CaseData.externalToken |", "| AAA-BBB-CCC-26-011 | T-2 |");
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 
 		assertEquals(1, preview.countBlocks(BlockStatus.ERROR));
 		assertTrue(messages(preview).contains(I18nProperties.getValidationError(Validations.importHierarchicalCaseIdsDisagree)));
@@ -197,13 +197,13 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	public void aCaseEditedAfterThePreviewIsLeftAlone() throws InterruptedException {
 		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), creator.createPerson().toReference(), rdcf, c -> c.setEpidNumber("AAA-BBB-CCC-26-013"));
 		ImportSheet sheet = SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-013 | Anna |");
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		Thread.sleep(5);
 		PersonDto person = getPersonFacade().getByUuid(caze.getPerson().getUuid());
 		person.setLastName("Edited");
 		getPersonFacade().save(person);
 
-		ImportReportDto report = facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		ImportReportDto report = facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
 		assertEquals(BlockOutcome.CHANGED_SINCE_PREVIEW, report.getResults().get(0).getOutcome());
 		assertEquals(person.getFirstName(), getPersonFacade().getByUuid(person.getUuid()).getFirstName());
@@ -215,7 +215,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			.createUserRole("SampleOnly", JurisdictionLevel.NATION, UserRight.SAMPLE_CREATE, UserRight.SAMPLE_VIEW, UserRight.CASE_VIEW, UserRight.PERSON_VIEW);
 		loginWith(creator.createUser(rdcf, sampleOnly));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW));
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW));
 
 		assertTrue(messages(preview).contains(I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_IMPORT)));
 	}
@@ -224,7 +224,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	public void anUnknownIdWithCaseDataCreatesTheCaseWithThatId() {
 		ImportSheet sheet = SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW);
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 
 		assertEquals(List.of(), preview.allIssues());
 		assertEquals(MatchReason.NEW, preview.getBlocks().get(0).getOperations().get(0).getMatchReason());
@@ -244,7 +244,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		List<String> row = new ArrayList<>();
 		headers.forEach(header -> row.add(values.getOrDefault(header, "")));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, new ImportSheet(headers, List.of(new ImportSheetRow(5, row))));
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, new ImportSheet(headers, List.of(new ImportSheetRow(5, row))));
 
 		assertEquals(List.of(), preview.allIssues());
 		assertEquals(List.of(), preview.getIgnoredColumns());
@@ -262,7 +262,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			"| ALIAS-T | | S1 | 9/2/2026 | BLOOD | Central Lab |",
 			"| | AAA-BBB-CCC-26-020 | S2 | 9/2/2026 | BLOOD | Central Lab |");
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 
 		assertEquals(BlockStatus.READY, preview.getBlocks().get(0).getStatus());
 		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(1).getStatus());
@@ -275,7 +275,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test"));
 
 		ImportPreviewDto preview =
-			facade.dryRun(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-019 | Anna |"));
+			facade.checkImport(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-019 | Anna |"));
 
 		RecordOperationDto root = preview.getBlocks().get(0).getOperations().get(0);
 		assertEquals(OperationType.CREATE, root.getType());
@@ -292,7 +292,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		}
 
 		ImportPreviewDto preview =
-			facade.dryRun(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Sample.fieldSampleID | Sample.sampleMaterial |", "| AAA-BBB-CCC-26-014 | S1 | SERA |"));
+			facade.checkImport(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Sample.fieldSampleID | Sample.sampleMaterial |", "| AAA-BBB-CCC-26-014 | S1 | SERA |"));
 
 		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(0).getStatus());
 		assertEquals(CaseTemplateSchema.FIELD_SAMPLE_ID, preview.getBlocks().get(0).getIssues().get(0).getColumn());
@@ -312,7 +312,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION);
 		loginWith(creator.createUser(rdcf, noEdit));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-015 | Anna |"));
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-015 | Anna |"));
 
 		assertTrue(messages(preview).contains(I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_EDIT)));
 	}
@@ -334,7 +334,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION);
 		loginWith(creator.createUser(elsewhere, districtImporter));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-016 | Anna |"));
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-016 | Anna |"));
 
 		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(0).getStatus(), messages(preview).toString());
 		assertTrue(messages(preview).contains(I18nProperties.getValidationError(Validations.importHierarchicalCaseNotEditable, caze.getUuid())));
@@ -355,7 +355,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			UserRight.SAMPLE_CREATE);
 		loginWith(creator.createUser(rdcf, masked));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-017 | Anna |"));
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table("| CaseData.epidNumber | Person.person.firstName |", "| AAA-BBB-CCC-26-017 | Anna |"));
 
 		assertTrue(messages(preview).contains(I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord)), messages(preview).toString());
 	}
@@ -364,9 +364,9 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	public void aSampleDateTimeKeepsItsTime() {
 		ImportSheet sheet = SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW.replace("| S1 | 9/2/2026 |", "| S1 | 9/2/2026 14:30 |"));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		assertEquals(List.of(), preview.allIssues());
-		facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
 		Calendar sampleTime = Calendar.getInstance();
 		sampleTime.setTime(getSampleFacade().getByCaseUuids(List.of(onlyCase().getUuid())).get(0).getSampleDateTime());
@@ -395,7 +395,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			getBean(CaseImportFacadeEjbLocal.class).importCaseData(classicValues, entityClasses, entityProperties, entityPropertyPaths, false);
 		assertTrue(classic.isSuccess(), classic.getMessage());
 		ImportSheet sheet = SheetFixtures.table(header, caseRow);
-		facade.commit(CASE_TEMPLATE, sheet, facade.dryRun(CASE_TEMPLATE, sheet).readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, facade.checkImport(CASE_TEMPLATE, sheet).readyFingerprints());
 
 		CaseDataDto classicCase = getCaseFacade().getByUuid(caseWithEpidNumber("AAA-BBB-CCC-26-002").getUuid());
 		CaseDataDto nestedCase = getCaseFacade().getByUuid(caseWithEpidNumber("AAA-BBB-CCC-26-001").getUuid());
@@ -416,7 +416,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	@Test
 	public void aFileWithoutSymptomsColumnsCreatesACaseWithEmptySymptoms() {
 		ImportSheet sheet = SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW);
-		facade.commit(CASE_TEMPLATE, sheet, facade.dryRun(CASE_TEMPLATE, sheet).readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, facade.checkImport(CASE_TEMPLATE, sheet).readyFingerprints());
 
 		assertNotNull(onlyCase().getSymptoms());
 		assertNull(onlyCase().getSymptoms().getFever());
@@ -430,7 +430,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		});
 		ImportSheet sheet = SheetFixtures.table("| CaseData.epidNumber | CaseData.diseaseDetails | Sample.fieldSampleID |", "| AAA-BBB-CCC-26-018 | | S1 |");
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		assertEquals(OperationType.UNCHANGED, preview.getBlocks().get(0).getOperations().get(0).getType());
 
 		assertEquals("kept", getCaseFacade().getByUuid(caze.getUuid()).getDiseaseDetails());
@@ -442,10 +442,10 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			NEW_CASE_HEADER.replace("| CaseData.disease |", "| CaseData.externalID | CaseData.disease |"),
 			NEW_CASE_ROW.replace("| TUBERCULOSIS |", "| EXT-1 | TUBERCULOSIS |"));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 		assertEquals(List.of(), preview.allIssues());
 		assertEquals(List.of(), preview.getIgnoredColumns());
-		facade.commit(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+		facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
 		assertEquals("EXT-1", onlyCase().getExternalID());
 	}
@@ -456,7 +456,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			NEW_CASE_HEADER.replace("| CaseData.disease |", "| CaseData.colour | CaseData.disease |"),
 			NEW_CASE_ROW.replace("| TUBERCULOSIS |", "| blue | TUBERCULOSIS |"));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 
 		assertEquals(List.of("CaseData.colour"), preview.getIgnoredColumns());
 		assertTrue(preview.canImport());
@@ -468,7 +468,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			NEW_CASE_HEADER.replace("| CaseData.disease |", "| Vaccination.vaccineName | CaseData.disease |"),
 			NEW_CASE_ROW.replace("| TUBERCULOSIS |", "| COMIRNATY | TUBERCULOSIS |"));
 
-		ImportPreviewDto preview = facade.dryRun(CASE_TEMPLATE, sheet);
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 
 		assertEquals(1, preview.getFileIssues().size(), preview.getFileIssues().toString());
 		assertEquals(

@@ -27,13 +27,13 @@ public class HierarchicalImportFacadeEjb implements HierarchicalImportFacade {
 	private RequiresNewBlockRunner blockRunner;
 
 	@Override
-	public ImportPreviewDto dryRun(String definitionId, ImportSheet sheet) {
+	public ImportPreviewDto checkImport(String definitionId, ImportSheet sheet) {
 		ImportDefinition definition = definition(definitionId);
 		return PreviewMapper.toPreview(definition, new Planner().plan(definition, sheet, null));
 	}
 
 	@Override
-	public ImportReportDto commit(String definitionId, ImportSheet sheet, Map<Integer, String> blockFingerprints) {
+	public ImportReportDto saveImport(String definitionId, ImportSheet sheet, Map<Integer, String> blockFingerprints) {
 		return new ImportExecutor().commit(definition(definitionId), sheet, blockFingerprints, blockRunner);
 	}
 

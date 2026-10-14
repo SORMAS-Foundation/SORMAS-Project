@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public final class ImportPreviewDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
