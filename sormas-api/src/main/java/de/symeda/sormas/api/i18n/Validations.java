@@ -151,7 +151,6 @@ public interface Validations {
 	String importHierarchicalChangedSincePreview = "importHierarchicalChangedSincePreview";
 	String importHierarchicalDrugNotApplicable = "importHierarchicalDrugNotApplicable";
 	String importHierarchicalDuplicateColumn = "importHierarchicalDuplicateColumn";
-	String importHierarchicalDuplicateDrug = "importHierarchicalDuplicateDrug";
 	String importHierarchicalDuplicateKey = "importHierarchicalDuplicateKey";
 	String importHierarchicalMaskedRecord = "importHierarchicalMaskedRecord";
 	String importHierarchicalMissingRight = "importHierarchicalMissingRight";
@@ -159,7 +158,6 @@ public interface Validations {
 	String importHierarchicalOrphanRow = "importHierarchicalOrphanRow";
 	String importHierarchicalTooManyRows = "importHierarchicalTooManyRows";
 	String importHierarchicalUnknownColumn = "importHierarchicalUnknownColumn";
-	String importHierarchicalUnknownDrug = "importHierarchicalUnknownDrug";
 	String importHierarchicalUnsupportedColumn = "importHierarchicalUnsupportedColumn";
 	String importHierarchicalVaccinationNotNested = "importHierarchicalVaccinationNotNested";
 	String importIncompleteContent = "importIncompleteContent";

@@ -99,6 +99,7 @@ final class TestHandler implements LevelHandler {
 
 	@Override
 	public void complete(PlannedRecord record) {
+		DrugColumns.reportInapplicable(record);
 		if (record.isNew() && !currentUserService.hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.PATHOGEN_TEST_CREATE));
 		}
