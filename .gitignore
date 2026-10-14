@@ -7,11 +7,6 @@
 *.idea
 *.iml
 .vscode
-.idea/**
-.history/**
-docker/**
-*.gitignore
-old/**
 
 /sormas-backend/bin
 /sormas-rest/bin
