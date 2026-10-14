@@ -25,6 +25,22 @@ public final class PropertyPaths {
 		}
 	}
 
+	public static boolean resolves(Class<?> type, String[] path) {
+		Class<?> current = type;
+		for (int i = 0; i < path.length && current != null; i++) {
+			try {
+				PropertyDescriptor property = new PropertyDescriptor(path[i], current);
+				if (i == path.length - 1) {
+					return property.getWriteMethod() != null;
+				}
+				current = property.getPropertyType();
+			} catch (IntrospectionException e) {
+				return false;
+			}
+		}
+		return false;
+	}
+
 	private static Object walk(Object root, String[] path, int steps) {
 		Object current = root;
 		for (int i = 0; i < steps && current != null; i++) {

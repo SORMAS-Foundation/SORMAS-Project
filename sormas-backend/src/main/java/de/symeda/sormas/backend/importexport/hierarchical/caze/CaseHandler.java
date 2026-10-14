@@ -1,11 +1,8 @@
-package de.symeda.sormas.backend.importexport.hierarchical.lab;
+package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.CASE;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.CASE_EXTERNAL_ID;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.CASE_UUID;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.PERSON;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.CASE;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.PERSON;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -13,14 +10,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -42,12 +42,14 @@ final class CaseHandler implements LevelHandler {
 	private final PersonFacadeEjbLocal personFacade;
 	private final CaseService caseService;
 	private final CurrentUserService currentUserService;
+	private final CaseMatcher matcher;
 
 	CaseHandler(CaseFacadeEjbLocal caseFacade, PersonFacadeEjbLocal personFacade, CaseService caseService, CurrentUserService currentUserService) {
 		this.caseFacade = caseFacade;
 		this.personFacade = personFacade;
 		this.caseService = caseService;
 		this.currentUserService = currentUserService;
+		this.matcher = new CaseMatcher(caseService);
 	}
 
 	@Override
@@ -63,67 +65,32 @@ final class CaseHandler implements LevelHandler {
 
 	@Override
 	public Optional<String> key(PlannedRecord draft) {
-		String uuid = draft.node().cell(CASE_UUID);
-		if (!uuid.isEmpty()) {
-			return Optional.of(uuid);
-		}
-		return Optional.of(draft.node().cell(CASE_EXTERNAL_ID)).filter(externalId -> !externalId.isEmpty());
+		return CaseMatcher.ID_COLUMNS.keySet().stream().map(column -> draft.node().cell(column)).filter(value -> !value.isEmpty()).findFirst();
 	}
 
 	@Override
 	public Map<ImportNode, Match> match(List<PlannedRecord> drafts) {
-		Set<String> uuids = drafts.stream().map(draft -> draft.node().cell(CASE_UUID)).filter(uuid -> !uuid.isEmpty()).collect(Collectors.toSet());
-		Set<String> externalIds = drafts.stream()
-			.filter(draft -> draft.node().cell(CASE_UUID).isEmpty())
-			.map(draft -> draft.node().cell(CASE_EXTERNAL_ID))
-			.filter(externalId -> !externalId.isEmpty())
-			.collect(Collectors.toSet());
-		Map<String, Case> byUuid = uuids.isEmpty()
-			? Map.of()
-			: caseService.getByUuids(new ArrayList<>(uuids))
-				.stream()
-				.filter(caze -> !caze.isDeleted())
-				.collect(Collectors.toMap(Case::getUuid, Function.identity()));
-		Map<String, List<Case>> byExternalId = caseService.getByExternalIds(externalIds).stream().collect(Collectors.groupingBy(Case::getExternalID));
-
 		Map<ImportNode, Match> matches = new IdentityHashMap<>();
 		Map<ImportNode, Case> found = new IdentityHashMap<>();
-		for (PlannedRecord draft : drafts) {
-			ImportNode node = draft.node();
-			String uuid = node.cell(CASE_UUID);
-			if (!uuid.isEmpty()) {
-				Case caze = byUuid.get(uuid);
-				if (caze == null) {
-					matches.put(node, Match.error(CASE_UUID, I18nProperties.getValidationError(Validations.importHierarchicalCaseNotFound, uuid)));
-				} else {
-					found.put(node, caze);
-				}
-				continue;
+		matcher.byId(drafts).forEach((node, outcome) -> {
+			if (outcome instanceof Match) {
+				matches.put(node, (Match) outcome);
+			} else {
+				found.put(node, (Case) outcome);
 			}
-			String externalId = node.cell(CASE_EXTERNAL_ID);
-			List<Case> candidates = byExternalId.getOrDefault(externalId, List.of());
-			if (candidates.size() > 1) {
-				matches.put(
-					node,
-					Match.error(
-						CASE_EXTERNAL_ID,
-						I18nProperties.getValidationError(Validations.importHierarchicalExternalIdAmbiguous, externalId, candidates.size())));
-			} else if (candidates.size() == 1) {
-				found.put(node, candidates.get(0));
-			}
-		}
-		matches.putAll(existingMatches(found));
+		});
+		matches.putAll(existingMatches(found, MatchReason.BY_ID));
 		return matches;
 	}
 
-	private Map<ImportNode, Match> existingMatches(Map<ImportNode, Case> found) {
+	private Map<ImportNode, Match> existingMatches(Map<ImportNode, Case> found, MatchReason reason) {
 		Map<ImportNode, Match> matches = new IdentityHashMap<>();
 		Map<ImportNode, Case> editable = new IdentityHashMap<>();
 		found.forEach((node, caze) -> {
 			if (caseService.getEditPermissionType(caze) == EditPermissionType.ALLOWED) {
 				editable.put(node, caze);
 			} else {
-				matches.put(node, Match.error(CASE_UUID, I18nProperties.getValidationError(Validations.importHierarchicalCaseNotEditable, caze.getUuid())));
+				matches.put(node, Match.error(null, I18nProperties.getValidationError(Validations.importHierarchicalCaseNotEditable, caze.getUuid())));
 			}
 		});
 		if (editable.isEmpty()) {
@@ -142,7 +109,7 @@ final class CaseHandler implements LevelHandler {
 			Map<String, Object> targets = new HashMap<>();
 			targets.put(CASE, caze);
 			targets.put(PERSON, person);
-			matches.put(node, Match.existing(caze.getUuid(), targets, Arrays.asList(caze.getChangeDate(), person.getChangeDate())));
+			matches.put(node, Match.existing(caze.getUuid(), targets, Arrays.asList(caze.getChangeDate(), person.getChangeDate()), reason));
 		});
 		return matches;
 	}
@@ -152,12 +119,18 @@ final class CaseHandler implements LevelHandler {
 		PersonDto person = record.target(PERSON);
 		CaseDataDto caze = record.target(CASE);
 		String name = (Objects.toString(person.getFirstName(), "") + " " + Objects.toString(person.getLastName(), "")).strip();
-		String id = caze.getExternalID() != null ? caze.getExternalID() : DataHelper.getShortUuid(caze.getUuid());
+		String id = Stream.of(caze.getEpidNumber(), caze.getExternalToken()).filter(StringUtils::isNotBlank).findFirst().orElse(DataHelper.getShortUuid(caze.getUuid()));
 		return name.isEmpty() ? id : name + " (" + id + ")";
 	}
 
 	@Override
 	public void complete(PlannedRecord record) {
+		Optional<String> idColumn = record.isNew() ? CaseMatcher.onlyAnId(record) : Optional.empty();
+		if (idColumn.isPresent()) {
+			String value = record.node().cell(idColumn.get());
+			record.reportIssue(idColumn.get(), I18nProperties.getValidationError(Validations.importHierarchicalCaseIdNotFound, value, idColumn.get()));
+			return;
+		}
 		if (record.isNew() && !currentUserService.hasUserRight(UserRight.CASE_IMPORT)) {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_IMPORT));
 		}

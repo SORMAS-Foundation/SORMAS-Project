@@ -144,14 +144,15 @@ public interface Validations {
 	String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";
 	String importFacilityNotUniqueInDistrict = "importFacilityNotUniqueInDistrict";
 	String importHierarchicalAstNotForTestType = "importHierarchicalAstNotForTestType";
+	String importHierarchicalCaseIdAmbiguous = "importHierarchicalCaseIdAmbiguous";
+	String importHierarchicalCaseIdNotFound = "importHierarchicalCaseIdNotFound";
+	String importHierarchicalCaseIdsDisagree = "importHierarchicalCaseIdsDisagree";
 	String importHierarchicalCaseNotEditable = "importHierarchicalCaseNotEditable";
-	String importHierarchicalCaseNotFound = "importHierarchicalCaseNotFound";
 	String importHierarchicalChangedSincePreview = "importHierarchicalChangedSincePreview";
 	String importHierarchicalDrugNotApplicable = "importHierarchicalDrugNotApplicable";
 	String importHierarchicalDuplicateColumn = "importHierarchicalDuplicateColumn";
 	String importHierarchicalDuplicateDrug = "importHierarchicalDuplicateDrug";
 	String importHierarchicalDuplicateKey = "importHierarchicalDuplicateKey";
-	String importHierarchicalExternalIdAmbiguous = "importHierarchicalExternalIdAmbiguous";
 	String importHierarchicalMaskedRecord = "importHierarchicalMaskedRecord";
 	String importHierarchicalMissingRight = "importHierarchicalMissingRight";
 	String importHierarchicalNotUnique = "importHierarchicalNotUnique";
@@ -160,6 +161,7 @@ public interface Validations {
 	String importHierarchicalUnknownColumn = "importHierarchicalUnknownColumn";
 	String importHierarchicalUnknownDrug = "importHierarchicalUnknownDrug";
 	String importHierarchicalUnsupportedColumn = "importHierarchicalUnsupportedColumn";
+	String importHierarchicalVaccinationNotNested = "importHierarchicalVaccinationNotNested";
 	String importIncompleteContent = "importIncompleteContent";
 	String importInvalidDate = "importInvalidDate";
 	String importInvalidWaterUseValue = "importInvalidWaterUseValue";

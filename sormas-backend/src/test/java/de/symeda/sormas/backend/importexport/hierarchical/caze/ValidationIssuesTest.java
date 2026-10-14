@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.importexport.hierarchical.lab;
+package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -21,7 +21,7 @@ class ValidationIssuesTest {
 		errors.put(List.of("firstName"), "You have to specify a first name");
 		ImportNode node = node();
 
-		ValidationIssues.report(node, LabImportSchema.PERSON, new ValidationRuntimeException(errors));
+		ValidationIssues.report(node, CaseTemplateSchema.PERSON, new ValidationRuntimeException(errors));
 
 		assertEquals(2, node.issues().size());
 		assertEquals("person.firstName", node.issues().get(0).getColumn());
@@ -33,7 +33,7 @@ class ValidationIssuesTest {
 	void keepsAPlainMessageWithoutAColumn() {
 		ImportNode node = node();
 
-		ValidationIssues.report(node, LabImportSchema.CASE, new ValidationRuntimeException("You have to specify a valid disease"));
+		ValidationIssues.report(node, CaseTemplateSchema.CASE, new ValidationRuntimeException("You have to specify a valid disease"));
 
 		assertEquals(1, node.issues().size());
 		assertNull(node.issues().get(0).getColumn());
@@ -41,6 +41,6 @@ class ValidationIssuesTest {
 	}
 
 	private static ImportNode node() {
-		return new ImportNode(LabImportSchema.CASE_LEVEL, 2, Map.of(LabImportSchema.CASE_EXTERNAL_ID, "NI-001"));
+		return new ImportNode(CaseTemplateSchema.CASE_LEVEL, 2, Map.of(CaseTemplateSchema.EPID_NUMBER, "NI-001"));
 	}
 }

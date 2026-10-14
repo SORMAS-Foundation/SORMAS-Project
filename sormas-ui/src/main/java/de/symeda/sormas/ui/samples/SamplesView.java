@@ -30,7 +30,6 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
@@ -43,7 +42,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -53,7 +51,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.importer.hierarchical.HierarchicalImportLayout;
 import de.symeda.sormas.ui.samples.environmentsample.EnvironmentSampleGridComponent;
 import de.symeda.sormas.ui.samples.humansample.HumanSampleGrid;
 import de.symeda.sormas.ui.samples.humansample.HumanSampleGridComponent;
@@ -64,7 +61,6 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
@@ -99,16 +95,6 @@ public class SamplesView extends AbstractView implements HasName {
 
 		if (isHumanSampleView() && UiUtil.permitted(UserRight.SAMPLE_EXPORT)) {
 			addHumanSampleExportButton();
-		}
-
-		if (isHumanSampleView() && UiUtil.permitted(UserRight.SAMPLE_CREATE)) {
-			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
-				Window popupWindow =
-					VaadinUiUtil.showPopupWindow(new HierarchicalImportLayout(HierarchicalImportFacade.LAB_CASES_SAMPLES_TESTS));
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCasesSamplesTests));
-				popupWindow.addCloseListener(c -> sampleListComponent.getGrid().reload());
-			}, ValoTheme.BUTTON_PRIMARY);
-			addHeaderComponent(importButton);
 		}
 
 		if (isEnvironmentSampleView() && UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_EXPORT)) {

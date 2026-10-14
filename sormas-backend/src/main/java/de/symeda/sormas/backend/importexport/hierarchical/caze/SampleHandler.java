@@ -1,8 +1,8 @@
-package de.symeda.sormas.backend.importexport.hierarchical.lab;
+package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.CASE;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.SAMPLE;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.SAMPLE_FIELD_SAMPLE_ID;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.CASE;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.SAMPLE;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.FIELD_SAMPLE_ID;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,8 +80,8 @@ final class SampleHandler implements LevelHandler {
 				matches.put(
 					draft.node(),
 					Match.error(
-						SAMPLE_FIELD_SAMPLE_ID,
-						I18nProperties.getValidationError(Validations.importHierarchicalNotUnique, fieldSampleId.get(), SAMPLE_FIELD_SAMPLE_ID)));
+						FIELD_SAMPLE_ID,
+						I18nProperties.getValidationError(Validations.importHierarchicalNotUnique, fieldSampleId.get(), FIELD_SAMPLE_ID)));
 			} else if (candidates.size() == 1) {
 				SampleDto sample = candidates.get(0);
 				Map<String, Object> targets = new HashMap<>();

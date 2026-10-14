@@ -1,9 +1,9 @@
-package de.symeda.sormas.backend.importexport.hierarchical.lab;
+package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.CASE;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.PERSON;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.SAMPLE;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.TEST;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.CASE;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.PERSON;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.SAMPLE;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.TEST;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -26,7 +26,7 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 
 @Stateless
 @LocalBean
-public class LabBlockCommitter implements BlockCommitter {
+public class CaseTemplateBlockCommitter implements BlockCommitter {
 
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;

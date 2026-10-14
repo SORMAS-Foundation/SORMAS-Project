@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.importexport.hierarchical.lab;
+package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
 import java.util.Comparator;
 import java.util.List;

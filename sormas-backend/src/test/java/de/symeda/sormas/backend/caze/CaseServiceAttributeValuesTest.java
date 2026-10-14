@@ -9,22 +9,27 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
-public class CaseServiceExternalIdsTest extends AbstractBeanTest {
+public class CaseServiceAttributeValuesTest extends AbstractBeanTest {
 
 	@Test
-	public void findsEveryCaseForTheGivenExternalIds() {
+	public void findsEveryUndeletedCaseForTheGivenAttributeValues() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = useNationalAdminLogin().toReference();
 		creator.createCase(user, rdcf, c -> c.setExternalID("A"));
 		creator.createCase(user, rdcf, c -> c.setExternalID("A"));
 		creator.createCase(user, rdcf, c -> c.setExternalID("B"));
 		creator.createCase(user, rdcf, c -> c.setExternalID("C"));
+		CaseDataDto deleted = creator.createCase(user, rdcf, c -> c.setExternalID("B"));
+		getCaseFacade().delete(deleted.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test"));
 
-		Map<String, Long> counts = getBean(CaseService.class).getByExternalIds(List.of("A", "B", "MISSING"))
+		Map<String, Long> counts = getBean(CaseService.class).getUndeletedByAttributeValues(Case.EXTERNAL_ID, List.of("A", "B", "MISSING"))
 			.stream()
 			.collect(Collectors.groupingBy(Case::getExternalID, Collectors.counting()));
 
@@ -33,6 +38,6 @@ public class CaseServiceExternalIdsTest extends AbstractBeanTest {
 
 	@Test
 	public void returnsAnEmptyListForNoIds() {
-		assertTrue(getBean(CaseService.class).getByExternalIds(List.of()).isEmpty());
+		assertTrue(getBean(CaseService.class).getUndeletedByAttributeValues(Case.EPID_NUMBER, List.of()).isEmpty());
 	}
 }

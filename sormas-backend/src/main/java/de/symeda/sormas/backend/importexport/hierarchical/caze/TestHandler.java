@@ -1,8 +1,8 @@
-package de.symeda.sormas.backend.importexport.hierarchical.lab;
+package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.CASE;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.SAMPLE;
-import static de.symeda.sormas.backend.importexport.hierarchical.lab.LabImportSchema.TEST;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.CASE;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.SAMPLE;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.TEST;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,12 +32,10 @@ final class TestHandler implements LevelHandler {
 
 	private final PathogenTestFacadeEjbLocal pathogenTestFacade;
 	private final CurrentUserService currentUserService;
-	private final AstFolder astFolder;
 
-	TestHandler(PathogenTestFacadeEjbLocal pathogenTestFacade, CurrentUserService currentUserService, AstFolder astFolder) {
+	TestHandler(PathogenTestFacadeEjbLocal pathogenTestFacade, CurrentUserService currentUserService) {
 		this.pathogenTestFacade = pathogenTestFacade;
 		this.currentUserService = currentUserService;
-		this.astFolder = astFolder;
 	}
 
 	@Override
@@ -101,7 +99,6 @@ final class TestHandler implements LevelHandler {
 
 	@Override
 	public void complete(PlannedRecord record) {
-		astFolder.fold(record);
 		if (record.isNew() && !currentUserService.hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.PATHOGEN_TEST_CREATE));
 		}

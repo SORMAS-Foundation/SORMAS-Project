@@ -48,7 +48,6 @@ import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
-import de.symeda.sormas.api.importexport.hierarchical.ImportTemplateDto;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 import de.symeda.sormas.api.importexport.hierarchical.RecordOperationDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -67,7 +66,6 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private final HierarchicalImportFacade facade = FacadeProvider.getHierarchicalImportFacade();
 	private final ImportWizardModel model = new ImportWizardModel();
 	private final String definitionId;
-	private final ImportTemplateDto template;
 	private final UI ui = UI.getCurrent();
 	private final UserDto currentUser = UiUtil.getUser();
 
@@ -97,7 +95,6 @@ public class HierarchicalImportLayout extends VerticalLayout {
 
 	public HierarchicalImportLayout(String definitionId) {
 		this.definitionId = definitionId;
-		this.template = facade.getTemplate(definitionId);
 
 		separator.setItems(Arrays.asList(ValueSeparator.values()));
 		separator.setValue(ValueSeparator.DEFAULT);
@@ -141,7 +138,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		upload.addSucceededListener(receiver);
 
 		setupSection.setMargin(false);
-		setupSection.addComponents(templateButton(), separator);
+		setupSection.addComponents(separator);
 		HorizontalLayout uploadRow = new HorizontalLayout(fileName, upload);
 		uploadRow.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
 
@@ -159,17 +156,9 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		refresh();
 	}
 
-	private Button templateButton() {
-		Button button = ButtonHelper.createButton(Captions.hierarchicalImportDownloadTemplate, (Button.ClickListener) null);
-		new FileDownloader(new StreamResource(() -> csv(List.of(
-			template.getHeaders().toArray(new String[0]),
-			template.getCaptions().toArray(new String[0]))), "sormas_import_cases_samples_tests.csv")).extend(button);
-		return button;
-	}
-
 	private void onFileUploaded(File file, String uploadedName) {
 		try (InputStream input = Files.newInputStream(file.toPath())) {
-			ImportSheet sheet = SheetReader.read(input, uploadedName, csvSeparator(), template.captionsByHeader());
+			ImportSheet sheet = SheetReader.read(input, uploadedName, csvSeparator(), Map.of());
 			model.previewed(sheet, facade.dryRun(definitionId, sheet));
 			fileName.setValue(uploadedName);
 		} catch (IOException e) {
