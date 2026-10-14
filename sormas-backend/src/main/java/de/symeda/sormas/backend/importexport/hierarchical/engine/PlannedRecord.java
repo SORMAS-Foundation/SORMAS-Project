@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.SerializationUtils;
 
 import de.symeda.sormas.api.importexport.hierarchical.FieldChangeDto;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 
 public final class PlannedRecord {
@@ -23,6 +24,7 @@ public final class PlannedRecord {
 	private final List<Date> versions;
 	private final List<FieldChangeDto> changes = new ArrayList<>();
 	private final List<PlannedRecord> children = new ArrayList<>();
+	private MatchReason reason;
 
 	private PlannedRecord(
 		ImportNode node,
@@ -45,7 +47,21 @@ public final class PlannedRecord {
 
 	static PlannedRecord existing(ImportNode node, PlannedRecord parent, Match match) {
 		HashMap<String, Object> original = new HashMap<>(match.targets());
-		return new PlannedRecord(node, parent, SerializationUtils.clone(original), original, match.identity(), match.versions());
+		return new PlannedRecord(node, parent, SerializationUtils.clone(original), original, match.identity(), match.versions())
+			.withReason(match.reason());
+	}
+
+	static PlannedRecord createdWith(ImportNode node, PlannedRecord parent, Match match) {
+		return created(node, parent, match.targets()).withReason(match.reason());
+	}
+
+	PlannedRecord withReason(MatchReason reason) {
+		this.reason = reason;
+		return this;
+	}
+
+	public MatchReason reason() {
+		return reason;
 	}
 
 	public ImportNode node() {

@@ -21,6 +21,12 @@ class RecordBinderTest {
 		new ColumnSpec("owner.city", "City", "address", "city"));
 
 	@Test
+	void anExplicitTargetWinsOverTheHeaderPrefix() {
+		assertEquals("person", ColumnSpec.forTarget("Person.person.firstName", "First", "person", new String[] { "firstName" }).target());
+		assertEquals("item", new ColumnSpec("item.name", "Name", "name").target());
+	}
+
+	@Test
 	void writesFilledCellsOntoTheTargetNamedByThePrefix() {
 		Map<String, Object> targets = targets();
 

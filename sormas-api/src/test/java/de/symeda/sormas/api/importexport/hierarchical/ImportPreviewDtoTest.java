@@ -40,6 +40,16 @@ class ImportPreviewDtoTest {
 	}
 
 	@Test
+	void ignoredColumnsDoNotBlockTheImport() {
+		ImportPreviewDto preview =
+			new ImportPreviewDto(List.of(), List.of(), List.of(block(0, BlockStatus.READY, "fp0", List.of())), List.of("case.colour"));
+
+		assertTrue(preview.canImport());
+		assertEquals(List.of("case.colour"), preview.getIgnoredColumns());
+		assertEquals(List.of(), new ImportPreviewDto(List.of(), List.of(), List.of()).getIgnoredColumns());
+	}
+
+	@Test
 	void collectsAllIssues() {
 		ImportIssueDto orphan = new ImportIssueDto(ImportIssueKind.ROW, 2, null, "orphan");
 		BlockPreviewDto failed = new BlockPreviewDto(0, 4, 6, "A", BlockStatus.ERROR, "", List.of(), List.of(PROBLEM));

@@ -12,8 +12,10 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 
 class PlannerTest {
@@ -180,6 +182,57 @@ class PlannerTest {
 		assertEquals(1, plan.blocks().size());
 		assertEquals(1, plan.blocks().get(0).index());
 		assertEquals("P2", plan.blocks().get(0).root().cell("parent.key"));
+	}
+
+	@Test
+	void aCreateWithMatchBindsTheFileOntoTheGivenTargetsAndStaysNew() {
+		ImportPlan plan = new Planner().plan(new ToyDefinition(), SheetFixtures.table("| parent.key |", "| reuse-1 |"), null);
+
+		PlannedRecord root = plan.blocks().get(0).rootRecord();
+		assertTrue(root.isNew());
+		assertEquals(MatchReason.NEW_FOR_EXISTING_PERSON, root.reason());
+		ToyDefinition.ToyParent parent = root.target("parent");
+		assertEquals("kept", parent.getName());
+	}
+
+	@Test
+	void aDefinitionsOwnFileIssuesStopThePlan() {
+		ImportPlan plan = new Planner().plan(new ToyDefinition(), SheetFixtures.table("| parent.key | parent.forbidden |", "| P1 | x |"), null);
+
+		assertEquals(List.of("forbidden"), plan.fileIssues().stream().map(ImportIssueDto::getMessage).collect(Collectors.toList()));
+		assertEquals(List.of(), plan.blocks());
+	}
+
+	@Test
+	void anUnmatchedRootIsNewAndAMatchedRootIsById() {
+		ToyDefinition toy = new ToyDefinition().withParent("P1", "Alpha", V1);
+
+		ImportPlan plan = new Planner().plan(toy, SheetFixtures.table("| parent.key |", "| P1 |", "| P2 |"), null);
+
+		assertEquals(MatchReason.BY_ID, plan.blocks().get(0).rootRecord().reason());
+		assertEquals(MatchReason.NEW, plan.blocks().get(1).rootRecord().reason());
+	}
+
+	@Test
+	void aResolvableColumnOutsideTheListIsBound() {
+		ImportPlan plan = new Planner().plan(new ToyDefinition(), SheetFixtures.table("| parent.key | parent.alias |", "| P1 | Beta |"), null);
+
+		ToyDefinition.ToyParent parent = plan.blocks().get(0).rootRecord().target("parent");
+		assertEquals("Beta", parent.getName());
+		assertEquals(List.of(), plan.fileIssues());
+	}
+
+	@Test
+	void anUnknownColumnIsAFileIssueUnlessTheDefinitionIgnoresIt() {
+		ImportSheet sheet = SheetFixtures.table("| parent.key | parent.colour |", "| P1 | red |");
+
+		ImportPlan strict = new Planner().plan(new ToyDefinition(), sheet, null);
+		ImportPlan lenient = new Planner().plan(new ToyDefinition().lenient(), sheet, null);
+
+		assertEquals(1, strict.fileIssues().size());
+		assertEquals(List.of(), lenient.fileIssues());
+		assertEquals(List.of("parent.colour"), lenient.ignoredColumns());
+		assertEquals(1, lenient.blocks().size());
 	}
 
 	private static ImportPlan plan(ToyDefinition toy, String... rows) {

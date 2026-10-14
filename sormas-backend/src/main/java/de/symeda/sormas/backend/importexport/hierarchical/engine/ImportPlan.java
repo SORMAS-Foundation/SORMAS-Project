@@ -9,8 +9,14 @@ public final class ImportPlan {
 	private final List<ImportIssueDto> fileIssues;
 	private final List<ImportIssueDto> rowIssues;
 	private final List<PlannedBlock> blocks;
+	private final List<String> ignoredColumns;
 
 	public ImportPlan(List<ImportIssueDto> fileIssues, List<ImportIssueDto> rowIssues, List<PlannedBlock> blocks) {
+		this(fileIssues, rowIssues, blocks, List.of());
+	}
+
+	public ImportPlan(List<ImportIssueDto> fileIssues, List<ImportIssueDto> rowIssues, List<PlannedBlock> blocks, List<String> ignoredColumns) {
+		this.ignoredColumns = ignoredColumns;
 		this.fileIssues = fileIssues;
 		this.rowIssues = rowIssues;
 		this.blocks = blocks;
@@ -26,6 +32,10 @@ public final class ImportPlan {
 
 	public List<PlannedBlock> blocks() {
 		return blocks;
+	}
+
+	public List<String> ignoredColumns() {
+		return ignoredColumns;
 	}
 
 	public boolean hasFileIssues() {

@@ -15,18 +15,21 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 
 public final class Planner {
 
 	public ImportPlan plan(ImportDefinition definition, ImportSheet sheet, Set<Integer> selectedBlocks) {
-		List<ImportIssueDto> fileIssues = HeaderCheck.check(definition, sheet);
+		SheetColumns sheetColumns = SheetColumns.of(definition, sheet);
+		List<ImportIssueDto> fileIssues = new ArrayList<>(HeaderCheck.check(definition, sheet, sheetColumns));
+		fileIssues.addAll(definition.fileIssues(sheet));
 		if (!fileIssues.isEmpty()) {
-			return new ImportPlan(fileIssues, List.of(), List.of());
+			return new ImportPlan(fileIssues, List.of(), List.of(), sheetColumns.ignored());
 		}
 
 		GroupingResult grouping = new Grouper().group(sheet, definition.schema());
 		Map<Integer, ImportNode> roots = selectRoots(grouping.roots(), selectedBlocks);
-		List<ColumnSpec> columns = definition.columns();
+		List<ColumnSpec> columns = sheetColumns.columns();
 		RecordBinder binder = new RecordBinder(definition.cellWriter());
 		Map<ImportNode, PlannedRecord> records = new IdentityHashMap<>();
 		Map<String, ImportNode> rootsByIdentity = new HashMap<>();
@@ -49,7 +52,15 @@ public final class Planner {
 				if (draft.parent() == null && match.isExisting() && isRepeatedRoot(draft, match, rootsByIdentity)) {
 					continue;
 				}
-				PlannedRecord record = match.isExisting() ? rebind(draft, match, binder, columns) : draft;
+				PlannedRecord record;
+				if (match.isExisting()) {
+					record = rebind(draft, match, binder, columns);
+				} else if (match.isCreateWith()) {
+					record = PlannedRecord.createdWith(draft.node(), draft.parent(), match);
+					binder.bind(record.node(), columns, record.targets());
+				} else {
+					record = draft.parent() == null ? draft.withReason(MatchReason.NEW) : draft;
+				}
 				if (record.parent() != null) {
 					record.parent().children().add(record);
 				}
@@ -63,7 +74,7 @@ public final class Planner {
 			.stream()
 			.map(entry -> new PlannedBlock(entry.getKey(), entry.getValue(), records.get(entry.getValue())))
 			.collect(Collectors.toList());
-		return new ImportPlan(List.of(), grouping.issues(), blocks);
+		return new ImportPlan(List.of(), grouping.issues(), blocks, sheetColumns.ignored());
 	}
 
 	private static Map<Integer, ImportNode> selectRoots(List<ImportNode> roots, Set<Integer> selectedBlocks) {

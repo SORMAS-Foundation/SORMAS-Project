@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -17,17 +16,12 @@ final class HeaderCheck {
 	private HeaderCheck() {
 	}
 
-	static List<ImportIssueDto> check(ImportDefinition definition, ImportSheet sheet) {
-		Set<String> known = definition.columns().stream().map(ColumnSpec::header).collect(Collectors.toSet());
-		Set<String> seen = new HashSet<>();
+	static List<ImportIssueDto> check(ImportDefinition definition, ImportSheet sheet, SheetColumns sheetColumns) {
 		List<ImportIssueDto> issues = new ArrayList<>();
+		sheetColumns.unknown().forEach(header -> issues.add(fileIssue(header, Validations.importHierarchicalUnknownColumn, header)));
+		Set<String> seen = new HashSet<>();
 		for (String header : sheet.getHeaders()) {
-			if (header.isEmpty()) {
-				continue;
-			}
-			if (!known.contains(header)) {
-				issues.add(fileIssue(header, Validations.importHierarchicalUnknownColumn, header));
-			} else if (!seen.add(header)) {
+			if (!header.isEmpty() && !seen.add(header)) {
 				issues.add(fileIssue(header, Validations.importHierarchicalDuplicateColumn, header));
 			}
 		}

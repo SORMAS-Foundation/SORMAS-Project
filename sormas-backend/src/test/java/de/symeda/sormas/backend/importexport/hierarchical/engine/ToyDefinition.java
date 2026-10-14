@@ -14,6 +14,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.SerializationUtils;
 
 import de.symeda.sormas.api.importexport.hierarchical.FieldChangeDto;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
+import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 
 public final class ToyDefinition implements ImportDefinition {
 
@@ -28,6 +32,7 @@ public final class ToyDefinition implements ImportDefinition {
 	public final Map<String, Integer> lookups = new HashMap<>();
 	public final List<Integer> committed = new ArrayList<>();
 	private final int maxRows;
+	private boolean lenient;
 
 	public ToyDefinition() {
 		this(100);
@@ -43,6 +48,11 @@ public final class ToyDefinition implements ImportDefinition {
 		parent.setName(name);
 		parents.put(key, parent);
 		parentVersions.put(key, version);
+		return this;
+	}
+
+	public ToyDefinition lenient() {
+		this.lenient = true;
 		return this;
 	}
 
@@ -71,7 +81,25 @@ public final class ToyDefinition implements ImportDefinition {
 			new ColumnSpec("parent.name", "Name", "name"),
 			new ColumnSpec("child.code", "Code", "code"),
 			new ColumnSpec("child.amount", "Amount", "amount"),
-			new ColumnSpec("note.text", "Note"));
+			new ColumnSpec("note.text", "Note"),
+			new ColumnSpec("parent.forbidden", "Forbidden", "name"));
+	}
+
+	@Override
+	public Optional<ColumnSpec> resolveColumn(String header) {
+		return "parent.alias".equals(header) ? Optional.of(new ColumnSpec("parent.alias", "Alias", "name")) : Optional.empty();
+	}
+
+	@Override
+	public boolean ignoresUnknownColumns() {
+		return lenient;
+	}
+
+	@Override
+	public List<ImportIssueDto> fileIssues(ImportSheet sheet) {
+		return sheet.getHeaders().contains("parent.forbidden")
+			? List.of(new ImportIssueDto(ImportIssueKind.FILE, null, "parent.forbidden", "forbidden"))
+			: List.of();
 	}
 
 	@Override
@@ -131,7 +159,11 @@ public final class ToyDefinition implements ImportDefinition {
 				if (key.startsWith("~")) {
 					key = key.substring(1);
 				}
-				if (key.startsWith("!")) {
+				if (key.startsWith("reuse-")) {
+					ToyParent kept = new ToyParent();
+					kept.setName("kept");
+					matches.put(draft.node(), Match.createWith(Map.of("parent", kept), MatchReason.NEW_FOR_EXISTING_PERSON));
+				} else if (key.startsWith("!")) {
 					matches.put(draft.node(), Match.error("parent.key", "unknown parent " + key));
 				} else if (parents.containsKey(key)) {
 					matches.put(

@@ -14,8 +14,14 @@ public final class ImportPreviewDto implements Serializable {
 	private final List<ImportIssueDto> fileIssues;
 	private final List<ImportIssueDto> rowIssues;
 	private final List<BlockPreviewDto> blocks;
+	private final List<String> ignoredColumns;
 
 	public ImportPreviewDto(List<ImportIssueDto> fileIssues, List<ImportIssueDto> rowIssues, List<BlockPreviewDto> blocks) {
+		this(fileIssues, rowIssues, blocks, List.of());
+	}
+
+	public ImportPreviewDto(List<ImportIssueDto> fileIssues, List<ImportIssueDto> rowIssues, List<BlockPreviewDto> blocks, List<String> ignoredColumns) {
+		this.ignoredColumns = Collections.unmodifiableList(new ArrayList<>(ignoredColumns));
 		this.fileIssues = Collections.unmodifiableList(new ArrayList<>(fileIssues));
 		this.rowIssues = Collections.unmodifiableList(new ArrayList<>(rowIssues));
 		this.blocks = Collections.unmodifiableList(new ArrayList<>(blocks));
@@ -31,6 +37,10 @@ public final class ImportPreviewDto implements Serializable {
 
 	public List<BlockPreviewDto> getBlocks() {
 		return blocks;
+	}
+
+	public List<String> getIgnoredColumns() {
+		return ignoredColumns;
 	}
 
 	public boolean canImport() {
