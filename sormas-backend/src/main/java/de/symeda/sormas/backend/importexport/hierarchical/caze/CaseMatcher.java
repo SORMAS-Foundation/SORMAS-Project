@@ -1,8 +1,10 @@
 package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.CASE;
 import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.CASE_REFERENCE_NUMBER;
 import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.EPID_NUMBER;
 import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.EXTERNAL_TOKEN;
+import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.PERSON;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -13,23 +15,58 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.ImportNode;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.Match;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.PlannedRecord;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.PropertyPaths;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 
 final class CaseMatcher {
 
 	static final Map<String, String> ID_COLUMNS = idColumns();
 
 	private final CaseService caseService;
+	private final CaseFacadeEjbLocal caseFacade;
+	private final PersonFacadeEjbLocal personFacade;
 
-	CaseMatcher(CaseService caseService) {
+	CaseMatcher(CaseService caseService, CaseFacadeEjbLocal caseFacade, PersonFacadeEjbLocal personFacade) {
 		this.caseService = caseService;
+		this.caseFacade = caseFacade;
+		this.personFacade = personFacade;
+	}
+
+	Object bySimilarity(PlannedRecord draft) {
+		PersonDto person = draft.target(PERSON);
+		CaseDataDto caze = draft.target(CASE);
+		List<String> personUuids = personFacade.getSimilarPersonDtos(PersonSimilarityCriteria.forPerson(person))
+			.stream()
+			.map(SimilarPersonDto::getUuid)
+			.collect(Collectors.toList());
+		if (personUuids.isEmpty()) {
+			return null;
+		}
+		List<CaseSelectionDto> cases = caseFacade.getSimilarCases(CaseSimilarityCriteria.forCase(caze, personUuids));
+		if (cases.size() == 1) {
+			return caseService.getByUuid(cases.get(0).getUuid());
+		}
+		if (cases.size() > 1) {
+			return Match.error(null, I18nProperties.getValidationError(Validations.importHierarchicalSimilarCases, cases.size()));
+		}
+		if (personUuids.size() > 1) {
+			return Match.error(null, I18nProperties.getValidationError(Validations.importHierarchicalSimilarPersons, personUuids.size()));
+		}
+		return personFacade.getByUuid(personUuids.get(0));
 	}
 
 	static boolean hasId(PlannedRecord draft) {

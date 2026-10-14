@@ -49,7 +49,7 @@ final class CaseHandler implements LevelHandler {
 		this.personFacade = personFacade;
 		this.caseService = caseService;
 		this.currentUserService = currentUserService;
-		this.matcher = new CaseMatcher(caseService);
+		this.matcher = new CaseMatcher(caseService, caseFacade, personFacade);
 	}
 
 	@Override
@@ -71,16 +71,34 @@ final class CaseHandler implements LevelHandler {
 	@Override
 	public Map<ImportNode, Match> match(List<PlannedRecord> drafts) {
 		Map<ImportNode, Match> matches = new IdentityHashMap<>();
-		Map<ImportNode, Case> found = new IdentityHashMap<>();
-		matcher.byId(drafts).forEach((node, outcome) -> {
-			if (outcome instanceof Match) {
-				matches.put(node, (Match) outcome);
-			} else {
-				found.put(node, (Case) outcome);
-			}
-		});
-		matches.putAll(existingMatches(found, MatchReason.BY_ID));
+		Map<ImportNode, Case> foundById = new IdentityHashMap<>();
+		Map<ImportNode, Case> foundBySimilarity = new IdentityHashMap<>();
+		matcher.byId(drafts).forEach((node, outcome) -> sort(node, outcome, matches, foundById));
+		drafts.stream()
+			.filter(draft -> !CaseMatcher.hasId(draft))
+			.forEach(draft -> sort(draft.node(), matcher.bySimilarity(draft), matches, foundBySimilarity));
+		matches.putAll(existingMatches(foundById, MatchReason.BY_ID));
+		matches.putAll(existingMatches(foundBySimilarity, MatchReason.BY_SIMILARITY));
 		return matches;
+	}
+
+	private void sort(ImportNode node, Object outcome, Map<ImportNode, Match> matches, Map<ImportNode, Case> found) {
+		if (outcome instanceof Match) {
+			matches.put(node, (Match) outcome);
+		} else if (outcome instanceof Case) {
+			found.put(node, (Case) outcome);
+		} else if (outcome instanceof PersonDto) {
+			matches.put(node, newCaseFor((PersonDto) outcome));
+		}
+	}
+
+	private Match newCaseFor(PersonDto existingPerson) {
+		CaseDataDto newCase = CaseDataDto.build(existingPerson.toReference(), null);
+		newCase.setReportingUser(currentUserService.getCurrentUser().toReference());
+		Map<String, Object> targets = new HashMap<>();
+		targets.put(CASE, newCase);
+		targets.put(PERSON, existingPerson);
+		return Match.createWith(targets, MatchReason.NEW_FOR_EXISTING_PERSON);
 	}
 
 	private Map<ImportNode, Match> existingMatches(Map<ImportNode, Case> found, MatchReason reason) {
@@ -133,6 +151,9 @@ final class CaseHandler implements LevelHandler {
 		}
 		if (record.isNew() && !currentUserService.hasUserRight(UserRight.CASE_IMPORT)) {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_IMPORT));
+		}
+		if (record.reason() == MatchReason.NEW_FOR_EXISTING_PERSON && !currentUserService.hasUserRight(UserRight.PERSON_EDIT)) {
+			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.PERSON_EDIT));
 		}
 		if (record.operation() == OperationType.UPDATE && !currentUserService.hasUserRight(UserRight.CASE_EDIT)) {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_EDIT));

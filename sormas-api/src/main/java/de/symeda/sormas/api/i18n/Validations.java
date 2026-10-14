@@ -156,6 +156,8 @@ public interface Validations {
 	String importHierarchicalMissingRight = "importHierarchicalMissingRight";
 	String importHierarchicalNotUnique = "importHierarchicalNotUnique";
 	String importHierarchicalOrphanRow = "importHierarchicalOrphanRow";
+	String importHierarchicalSimilarCases = "importHierarchicalSimilarCases";
+	String importHierarchicalSimilarPersons = "importHierarchicalSimilarPersons";
 	String importHierarchicalTooManyRows = "importHierarchicalTooManyRows";
 	String importHierarchicalUnknownColumn = "importHierarchicalUnknownColumn";
 	String importHierarchicalUnsupportedColumn = "importHierarchicalUnsupportedColumn";
