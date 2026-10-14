@@ -6,9 +6,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.importexport.hierarchical.CaseTemplateLayout;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheetRow;
@@ -49,7 +51,12 @@ public final class ErrorFile {
 		}
 
 		List<String[]> rows = new ArrayList<>();
-		rows.add(withMessage(I18nProperties.getCaption(Captions.importErrorDescription), sheet.getHeaders()));
+		List<String> headers = sheet.getHeaders();
+		rows.add(withMessage("", headers.stream().map(CaseTemplateLayout::entityOf).collect(Collectors.toList())));
+		rows.add(
+			withMessage(
+				I18nProperties.getCaption(Captions.importErrorDescription),
+				headers.stream().map(CaseTemplateLayout::propertyOf).collect(Collectors.toList())));
 		for (ImportSheetRow row : sheet.getRows()) {
 			if (lines.contains(row.getLineNumber())) {
 				List<String> cells = new ArrayList<>();

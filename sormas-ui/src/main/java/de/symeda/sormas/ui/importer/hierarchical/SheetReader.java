@@ -4,34 +4,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.importexport.hierarchical.CaseTemplateLayout;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheetRow;
+import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 
 public final class SheetReader {
@@ -39,18 +27,25 @@ public final class SheetReader {
 	private SheetReader() {
 	}
 
-	public static ImportSheet read(InputStream input, String fileName, char csvSeparator, Map<String, String> captionsByHeader) throws IOException {
-		List<List<String>> table = fileName.toLowerCase(Locale.ROOT).endsWith(".xlsx") ? readXlsx(input) : readCsv(input, csvSeparator);
+	public static ImportSheet read(InputStream input, char csvSeparator) throws IOException {
+		List<List<String>> table = readCsv(input, csvSeparator);
 		dropTrailingBlankRows(table);
-		if (table.isEmpty()) {
+		if (table.size() < 2) {
 			return new ImportSheet(List.of(), List.of());
 		}
 		dropErrorColumn(table);
-		List<String> headers = table.get(0);
-		int firstDataRow = isCaptionRow(table, headers, captionsByHeader) ? 2 : 1;
+		List<String> entities = table.get(0);
+		List<String> properties = table.get(1);
+		List<String> headers = new ArrayList<>();
+		for (int i = 0; i < properties.size(); i++) {
+			String entity = i < entities.size() ? ImportSheetRow.normalize(entities.get(i)) : "";
+			headers.add(CaseTemplateLayout.join(entity, ImportSheetRow.normalize(properties.get(i))));
+		}
 		List<ImportSheetRow> rows = new ArrayList<>();
-		for (int i = firstDataRow; i < table.size(); i++) {
-			rows.add(new ImportSheetRow(i + 1, table.get(i)));
+		for (int i = 2; i < table.size(); i++) {
+			if (!isCommentRow(table.get(i))) {
+				rows.add(new ImportSheetRow(i + 1, table.get(i)));
+			}
 		}
 		return new ImportSheet(headers, rows);
 	}
@@ -69,43 +64,8 @@ public final class SheetReader {
 		}
 	}
 
-	private static List<List<String>> readXlsx(InputStream input) throws IOException {
-		try (Workbook workbook = new XSSFWorkbook(input)) {
-			Sheet sheet = workbook.getSheetAt(0);
-			DataFormatter formatter = new DataFormatter(Locale.ROOT);
-			FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-			Row headerRow = sheet.getRow(sheet.getFirstRowNum());
-			int width = headerRow == null ? 0 : headerRow.getLastCellNum();
-			List<List<String>> table = new ArrayList<>();
-			for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
-				Row row = sheet.getRow(r);
-				List<String> cells = new ArrayList<>();
-				for (int c = 0; c < width; c++) {
-					cells.add(row == null ? "" : cellText(row.getCell(c), formatter, evaluator));
-				}
-				table.add(cells);
-			}
-			return table;
-		}
-	}
-
-	private static String cellText(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator) {
-		if (cell == null) {
-			return "";
-		}
-		if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
-			Language language = I18nProperties.getUserLanguage();
-			boolean hasTime = cell.getNumericCellValue() % 1 != 0;
-			return new SimpleDateFormat(hasTime ? language.getDateTimeFormat() : language.getDateFormat()).format(cell.getDateCellValue());
-		}
-		if (cell.getCellType() == CellType.NUMERIC && isWholeNumber(cell.getNumericCellValue())) {
-			return BigDecimal.valueOf(cell.getNumericCellValue()).toBigInteger().toString();
-		}
-		return formatter.formatCellValue(cell, evaluator);
-	}
-
-	private static boolean isWholeNumber(double value) {
-		return !Double.isInfinite(value) && value == Math.rint(value);
+	private static boolean isCommentRow(List<String> row) {
+		return !row.isEmpty() && ImportSheetRow.normalize(row.get(0)).startsWith(CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX);
 	}
 
 	private static void dropTrailingBlankRows(List<List<String>> table) {
@@ -116,10 +76,10 @@ public final class SheetReader {
 
 	private static void dropErrorColumn(List<List<String>> table) {
 		String errorColumn = I18nProperties.getCaption(Captions.importErrorDescription);
+		List<String> properties = table.get(1);
 		int index = -1;
-		List<String> headers = table.get(0);
-		for (int i = 0; i < headers.size(); i++) {
-			if (ImportSheetRow.normalize(headers.get(i)).equals(errorColumn)) {
+		for (int i = 0; i < properties.size(); i++) {
+			if (ImportSheetRow.normalize(properties.get(i)).equals(errorColumn)) {
 				index = i;
 			}
 		}
@@ -131,25 +91,5 @@ public final class SheetReader {
 				row.remove(index);
 			}
 		}
-	}
-
-	private static boolean isCaptionRow(List<List<String>> table, List<String> headers, Map<String, String> captionsByHeader) {
-		if (table.size() < 2) {
-			return false;
-		}
-		ImportSheetRow second = new ImportSheetRow(0, table.get(1));
-		ImportSheetRow header = new ImportSheetRow(0, headers);
-		boolean anyFilled = false;
-		for (int i = 0; i < table.get(1).size(); i++) {
-			String value = second.cell(i);
-			if (value.isEmpty()) {
-				continue;
-			}
-			anyFilled = true;
-			if (!value.equals(captionsByHeader.get(header.cell(i)))) {
-				return false;
-			}
-		}
-		return anyFilled;
 	}
 }

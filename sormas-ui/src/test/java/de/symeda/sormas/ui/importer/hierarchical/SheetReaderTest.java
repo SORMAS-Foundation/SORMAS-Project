@@ -3,17 +3,10 @@ package de.symeda.sormas.ui.importer.hierarchical;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -22,91 +15,54 @@ import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
 
 class SheetReaderTest {
 
-	private static final Map<String, String> CAPTIONS = Map.of("case.uuid", "Case ID", "sample.fieldSampleID", "Field sample ID");
+	@Test
+	void joinsTheEntityAndPropertyRowsAndSkipsCommentRows() throws IOException {
+		ImportSheet sheet = read(
+			"﻿CaseData,Person,Sample,PathogenTest\r\n" + "disease,person.firstName,lab,lab\r\n" + "##Disease,First name,Laboratory,Laboratory\r\n"
+				+ "##Text,Text,Text,Text\r\n" + "TUBERCULOSIS,Jean,Lab A,Lab B\r\n" + ",,,Lab C\r\n",
+			',');
+
+		assertEquals(List.of("CaseData.disease", "Person.person.firstName", "Sample.lab", "PathogenTest.lab"), sheet.getHeaders());
+		assertEquals(2, sheet.getRows().size());
+		assertEquals(5, sheet.getRows().get(0).getLineNumber());
+		assertEquals(6, sheet.getRows().get(1).getLineNumber());
+		assertEquals("Lab C", sheet.getRows().get(1).cell(3));
+	}
 
 	@Test
-	void readsCsvWithItsSeparatorAndBom() throws IOException {
-		ImportSheet sheet = read("\uFEFFcase.uuid;sample.fieldSampleID\nABC;S1\n;S2\n", "upload.csv", ';');
+	void readsItsSeparator() throws IOException {
+		ImportSheet sheet = read("CaseData;Sample\nepidNumber;fieldSampleID\nABC;S1\n;S2\n", ';');
 
-		assertEquals(List.of("case.uuid", "sample.fieldSampleID"), sheet.getHeaders());
-		assertEquals(2, sheet.getRows().size());
-		assertEquals(2, sheet.getRows().get(0).getLineNumber());
+		assertEquals(List.of("CaseData.epidNumber", "Sample.fieldSampleID"), sheet.getHeaders());
 		assertEquals("S2", sheet.getRows().get(1).cell(1));
 	}
 
 	@Test
-	void skipsTheTemplateCaptionRow() throws IOException {
-		ImportSheet sheet = read("case.uuid,sample.fieldSampleID\nCase ID,Field sample ID\nABC,S1\n", "upload.csv", ',');
+	void dropsTrailingBlankRows() throws IOException {
+		ImportSheet sheet = read("CaseData,Sample\nepidNumber,fieldSampleID\nABC,S1\n,\n,\n", ',');
 
 		assertEquals(1, sheet.getRows().size());
-		assertEquals("ABC", sheet.getRows().get(0).cell(0));
+	}
+
+	@Test
+	void dropsTheErrorColumnOfAnErrorFile() throws IOException {
+		ImportSheet sheet = read(
+			",CaseData,Sample\n" + I18nProperties.getCaption(Captions.importErrorDescription) + ",disease,fieldSampleID\n" + "bad date,TUBERCULOSIS,S1\n",
+			',');
+
+		assertEquals(List.of("CaseData.disease", "Sample.fieldSampleID"), sheet.getHeaders());
+		assertEquals("TUBERCULOSIS", sheet.getRows().get(0).cell(0));
 		assertEquals(3, sheet.getRows().get(0).getLineNumber());
 	}
 
 	@Test
-	void dropsTrailingBlankRows() throws IOException {
-		ImportSheet sheet = read("case.uuid,sample.fieldSampleID\nABC,S1\n,\n,\n", "upload.csv", ',');
+	void aFileWithOnlyOneHeaderRowHasNoRows() throws IOException {
+		ImportSheet sheet = read("CaseData\n", ',');
 
-		assertEquals(1, sheet.getRows().size());
+		assertEquals(List.of(), sheet.getRows());
 	}
 
-	@Test
-	void dropsTheErrorDescriptionColumn() throws IOException {
-		String errorColumn = I18nProperties.getCaption(Captions.importErrorDescription);
-
-		ImportSheet sheet = read(errorColumn + ",case.uuid\nbad date,ABC\n", "errors.csv", ',');
-
-		assertEquals(List.of("case.uuid"), sheet.getHeaders());
-		assertEquals("ABC", sheet.getRows().get(0).cell(0));
-	}
-
-	@Test
-	void readsXlsxNumbersDatesAndMergedCells() throws IOException {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-			Sheet sheet = workbook.createSheet();
-			Row header = sheet.createRow(0);
-			header.createCell(0).setCellValue("case.externalID");
-			header.createCell(1).setCellValue("sample.fieldSampleID");
-			header.createCell(2).setCellValue("sample.sampleDateTime");
-			Row first = sheet.createRow(1);
-			first.createCell(0).setCellValue("A");
-			first.createCell(1).setCellValue(1201);
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("m/d/yy"));
-			first.createCell(2).setCellValue(java.sql.Date.valueOf("2026-09-02"));
-			first.getCell(2).setCellStyle(dateStyle);
-			Row second = sheet.createRow(2);
-			second.createCell(0).setCellValue("ignored by merge");
-			second.createCell(1).setCellValue("1202");
-			sheet.addMergedRegion(new CellRangeAddress(1, 2, 0, 0));
-			workbook.write(bytes);
-		}
-
-		ImportSheet sheet = SheetReader.read(new ByteArrayInputStream(bytes.toByteArray()), "upload.xlsx", ',', CAPTIONS);
-
-		assertEquals("A", sheet.getRows().get(0).cell(0));
-		assertEquals("1201", sheet.getRows().get(0).cell(1));
-		assertEquals("9/2/2026", sheet.getRows().get(0).cell(2));
-		assertEquals("ignored by merge", sheet.getRows().get(1).cell(0));
-	}
-
-	@Test
-	void keepsLongExcelNumbersExact() throws IOException {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-			Sheet sheet = workbook.createSheet();
-			sheet.createRow(0).createCell(0).setCellValue("person.nationalHealthId");
-			sheet.createRow(1).createCell(0).setCellValue(1234567890123d);
-			workbook.write(bytes);
-		}
-
-		ImportSheet sheet = SheetReader.read(new ByteArrayInputStream(bytes.toByteArray()), "upload.xlsx", ',', CAPTIONS);
-
-		assertEquals("1234567890123", sheet.getRows().get(0).cell(0));
-	}
-
-	private static ImportSheet read(String content, String fileName, char separator) throws IOException {
-		return SheetReader.read(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), fileName, separator, CAPTIONS);
+	private static ImportSheet read(String content, char separator) throws IOException {
+		return SheetReader.read(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), separator);
 	}
 }

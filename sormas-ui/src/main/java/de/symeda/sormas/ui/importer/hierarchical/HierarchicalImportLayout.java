@@ -158,7 +158,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 
 	private void onFileUploaded(File file, String uploadedName) {
 		try (InputStream input = Files.newInputStream(file.toPath())) {
-			ImportSheet sheet = SheetReader.read(input, uploadedName, csvSeparator(), Map.of());
+			ImportSheet sheet = SheetReader.read(input, csvSeparator());
 			model.previewed(sheet, facade.dryRun(definitionId, sheet));
 			fileName.setValue(uploadedName);
 		} catch (IOException e) {
