@@ -1617,6 +1617,7 @@ public interface Strings {
 	String messageGdprCheck = "messageGdprCheck";
 	String messageGeocodingInsufficientAddress = "messageGeocodingInsufficientAddress";
 	String messageGeocodingNoResult = "messageGeocodingNoResult";
+	String messageHierarchicalImportCancelled = "messageHierarchicalImportCancelled";
 	String messageHierarchicalImportCounts = "messageHierarchicalImportCounts";
 	String messageHierarchicalImportErrorCount = "messageHierarchicalImportErrorCount";
 	String messageHierarchicalImportFileErrors = "messageHierarchicalImportFileErrors";

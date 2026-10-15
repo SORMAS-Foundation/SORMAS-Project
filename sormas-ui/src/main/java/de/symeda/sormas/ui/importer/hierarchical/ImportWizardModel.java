@@ -49,6 +49,9 @@ public final class ImportWizardModel {
 
 	public void previewing() {
 		require(!isBusy());
+		sheet = null;
+		preview = null;
+		reports.clear();
 		step = Step.PREVIEWING;
 	}
 
@@ -109,6 +112,10 @@ public final class ImportWizardModel {
 	public void finished() {
 		require(step == Step.COMMITTING);
 		step = Step.DONE;
+	}
+
+	public long notImportedCount() {
+		return preview.readyFingerprints().size() - report().getResults().size();
 	}
 
 	public ImportReportDto report() {

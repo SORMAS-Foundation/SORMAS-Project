@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
@@ -158,11 +159,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 			try {
 				useUserLanguage();
 				ImportPreviewDto preview = facade.checkImport(definitionId, sheet);
-				ui.access(() -> {
-					model.previewed(sheet, preview);
-					ui.setPollInterval(-1);
-					refresh();
-				});
+				ui.access(() -> previewArrived(sheet, preview));
 			} catch (RuntimeException e) {
 				ui.access(() -> {
 					LOGGER.error("Nested import preview failed", e);
@@ -178,6 +175,16 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		}).start();
 	}
 
+	void previewArrived(ImportSheet sheet, ImportPreviewDto preview) {
+		model.previewed(sheet, preview);
+		ui.setPollInterval(-1);
+		refresh();
+	}
+
+	Resource errorFileResource() {
+		return errorFileDownloader.getFileDownloadResource();
+	}
+
 	private void useUserLanguage() {
 		I18nProperties.setUserLanguage(currentUser.getLanguage());
 		FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
@@ -185,6 +192,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 
 	private void startCommit() {
 		List<Map<Integer, String>> chunks = model.commitChunks(COMMIT_CHUNK_SIZE);
+		progress.setValue(0f);
 		ui.setPollInterval(500);
 		refresh();
 		new Thread(() -> {
@@ -246,7 +254,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		if (previewed) {
 			showPreview(preview, step);
 		}
-		recenterWindow();
+		updateWindow();
 	}
 
 	private void showPreview(ImportPreviewDto preview, ImportWizardModel.Step step) {
@@ -264,10 +272,12 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		showTab(changeGrid, Captions.hierarchicalImportChanges, presentation.changes());
 		showTab(newRecordGrid, Captions.hierarchicalImportNewRecords, presentation.newRecords());
 		resultTabs.setVisible(anyTabVisible());
-		selectFirstVisibleTab();
 
-		errorFileDownloader.setFileDownloadResource(
-			new StreamResource(() -> csv(ErrorFile.rows(model.sheet(), model.failedBlocks(), model.looseIssues())), "sormas_import_errors.csv"));
+		StreamResource errorFile =
+			new StreamResource(() -> csv(ErrorFile.rows(model.sheet(), model.failedBlocks(), model.looseIssues())), "sormas_import_errors.csv");
+		errorFile.setCacheTime(0);
+		errorFile.setMIMEType("text/csv");
+		errorFileDownloader.setFileDownloadResource(errorFile);
 	}
 
 	private <T> void showTab(Grid<T> grid, String captionKey, List<T> rows) {
@@ -287,21 +297,10 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		return false;
 	}
 
-	private void selectFirstVisibleTab() {
-		if (resultTabs.getTab(resultTabs.getSelectedTab()).isVisible()) {
-			return;
-		}
-		for (int i = 0; i < resultTabs.getComponentCount(); i++) {
-			if (resultTabs.getTab(i).isVisible()) {
-				resultTabs.setSelectedTab(i);
-				return;
-			}
-		}
-	}
-
-	private void recenterWindow() {
+	private void updateWindow() {
 		Window window = findAncestor(Window.class);
 		if (window != null) {
+			window.setClosable(!model.isBusy());
 			window.center();
 		}
 	}
@@ -314,14 +313,17 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		if (step == ImportWizardModel.Step.DONE) {
 			ImportReportDto report = model.report();
 			long failed = report.count(BlockOutcome.FAILED) + report.count(BlockOutcome.CHANGED_SINCE_PREVIEW);
-			showStatusMessage(
-				String.format(
-					I18nProperties.getString(Strings.messageHierarchicalImportReport),
-					report.count(BlockOutcome.COMMITTED),
-					report.count(BlockOutcome.UNCHANGED),
-					report.count(BlockOutcome.FAILED),
-					report.count(BlockOutcome.CHANGED_SINCE_PREVIEW)),
-				failed > 0);
+			long notImported = model.isCancelRequested() ? model.notImportedCount() : 0;
+			String summary = String.format(
+				I18nProperties.getString(Strings.messageHierarchicalImportReport),
+				report.count(BlockOutcome.COMMITTED),
+				report.count(BlockOutcome.UNCHANGED),
+				report.count(BlockOutcome.FAILED),
+				report.count(BlockOutcome.CHANGED_SINCE_PREVIEW));
+			if (notImported > 0) {
+				summary += ". " + String.format(I18nProperties.getString(Strings.messageHierarchicalImportCancelled), notImported);
+			}
+			showStatusMessage(summary, failed > 0 || notImported > 0);
 			return;
 		}
 		long errors = preview.countBlocks(BlockStatus.ERROR);

@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.importer.hierarchical;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -98,6 +99,31 @@ class ImportWizardModelTest {
 		model.previewed(SHEET, preview(1));
 
 		assertFalse(model.isCancelRequested());
+	}
+
+	@Test
+	void aNewPreviewForgetsThePreviousFile() {
+		ImportWizardModel model = new ImportWizardModel();
+		model.previewed(SHEET, preview(1));
+
+		model.previewing();
+
+		assertNull(model.preview());
+		assertNull(model.sheet());
+	}
+
+	@Test
+	void countsTheReadyBlocksACancelLeftOut() {
+		ImportWizardModel model = new ImportWizardModel();
+		model.previewed(SHEET, preview(5));
+		model.commitChunks(2);
+		model.chunkCommitted(
+			new ImportReportDto(
+				List.of(new BlockResultDto(0, BlockOutcome.COMMITTED, List.of()), new BlockResultDto(1, BlockOutcome.COMMITTED, List.of()))));
+		model.requestCancel();
+		model.finished();
+
+		assertEquals(3, model.notImportedCount());
 	}
 
 	@Test
