@@ -51,6 +51,14 @@ public class CaseImportLayout extends AbstractImportLayout {
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, importFacade.getCaseImportTemplateFilePath(), importFacade.getCaseImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_case_import_", file -> {
+			if (nestedPreview.isBusy()) {
+				new Notification(
+					I18nProperties.getString(Strings.headingImportFailed),
+					I18nProperties.getString(Strings.messageHierarchicalImportStillRunning),
+					Type.WARNING_MESSAGE,
+					false).show(Page.getCurrent());
+				return;
+			}
 			resetDownloadErrorReportButton();
 			removeComponent(nestedPreview);
 			char csvSeparator = ValueSeparator.getSeparator((ValueSeparator) separator.getValue(), FacadeProvider.getConfigFacade().getCsvSeparator());

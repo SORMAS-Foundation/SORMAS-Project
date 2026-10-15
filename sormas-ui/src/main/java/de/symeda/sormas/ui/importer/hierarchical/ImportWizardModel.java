@@ -21,6 +21,7 @@ public final class ImportWizardModel {
 
 	public enum Step {
 		WAITING_FOR_FILE,
+		PREVIEWING,
 		PREVIEWED,
 		COMMITTING,
 		DONE
@@ -44,6 +45,22 @@ public final class ImportWizardModel {
 
 	public ImportPreviewDto preview() {
 		return preview;
+	}
+
+	public void previewing() {
+		require(!isBusy());
+		step = Step.PREVIEWING;
+	}
+
+	public void previewFailed() {
+		require(step == Step.PREVIEWING);
+		sheet = null;
+		preview = null;
+		step = Step.WAITING_FOR_FILE;
+	}
+
+	public boolean isBusy() {
+		return step == Step.PREVIEWING || step == Step.COMMITTING;
 	}
 
 	public void previewed(ImportSheet sheet, ImportPreviewDto preview) {

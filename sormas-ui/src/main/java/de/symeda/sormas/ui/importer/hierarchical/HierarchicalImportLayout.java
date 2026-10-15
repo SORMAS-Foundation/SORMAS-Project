@@ -146,9 +146,41 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		this.csvSeparator = csvSeparator;
 	}
 
+	public boolean isBusy() {
+		return model.isBusy();
+	}
+
 	public void preview(ImportSheet sheet) {
-		model.previewed(sheet, facade.checkImport(definitionId, sheet));
+		model.previewing();
+		ui.setPollInterval(500);
 		refresh();
+		new Thread(() -> {
+			try {
+				useUserLanguage();
+				ImportPreviewDto preview = facade.checkImport(definitionId, sheet);
+				ui.access(() -> {
+					model.previewed(sheet, preview);
+					ui.setPollInterval(-1);
+					refresh();
+				});
+			} catch (RuntimeException e) {
+				ui.access(() -> {
+					LOGGER.error("Nested import preview failed", e);
+					model.previewFailed();
+					ui.setPollInterval(-1);
+					refresh();
+					Notification.show(
+						I18nProperties.getString(Strings.headingImportFailed),
+						I18nProperties.getString(Strings.messageImportFailedFull),
+						Notification.Type.ERROR_MESSAGE);
+				});
+			}
+		}).start();
+	}
+
+	private void useUserLanguage() {
+		I18nProperties.setUserLanguage(currentUser.getLanguage());
+		FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
 	}
 
 	private void startCommit() {
@@ -158,8 +190,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		new Thread(() -> {
 			Optional<RuntimeException> failure = Optional.empty();
 			try {
-				I18nProperties.setUserLanguage(currentUser.getLanguage());
-				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
+				useUserLanguage();
 				failure = ChunkedCommit.run(
 					chunks,
 					chunk -> facade.saveImport(definitionId, model.sheet(), new HashMap<>(chunk)),
@@ -203,7 +234,8 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		importButton.setVisible(step == ImportWizardModel.Step.PREVIEWED);
 		importButton.setEnabled(model.canCommit());
 		cancelButton.setVisible(step == ImportWizardModel.Step.COMMITTING);
-		progress.setVisible(step == ImportWizardModel.Step.COMMITTING || step == ImportWizardModel.Step.DONE);
+		progress.setVisible(step != ImportWizardModel.Step.WAITING_FOR_FILE && step != ImportWizardModel.Step.PREVIEWED);
+		progress.setIndeterminate(step == ImportWizardModel.Step.PREVIEWING);
 		errorFileButton.setVisible(previewed && (!model.failedBlocks().isEmpty() || !model.looseIssues().isEmpty()));
 
 		blockCounts.setVisible(false);

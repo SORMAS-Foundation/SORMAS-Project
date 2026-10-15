@@ -1625,6 +1625,7 @@ public interface Strings {
 	String messageHierarchicalImportNothingToReview = "messageHierarchicalImportNothingToReview";
 	String messageHierarchicalImportReadyCount = "messageHierarchicalImportReadyCount";
 	String messageHierarchicalImportReport = "messageHierarchicalImportReport";
+	String messageHierarchicalImportStillRunning = "messageHierarchicalImportStillRunning";
 	String messageHierarchicalImportUnchangedCount = "messageHierarchicalImportUnchangedCount";
 	String messageImmunizationArchived = "messageImmunizationArchived";
 	String messageImmunizationDearchived = "messageImmunizationDearchived";

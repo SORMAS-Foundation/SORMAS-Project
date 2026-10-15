@@ -33,6 +33,33 @@ class ImportWizardModelTest {
 	}
 
 	@Test
+	void isBusyOnlyWhileAPreviewOrCommitRuns() {
+		ImportWizardModel model = new ImportWizardModel();
+		assertFalse(model.isBusy());
+
+		model.previewing();
+		assertTrue(model.isBusy());
+		model.previewed(SHEET, preview(2));
+		assertFalse(model.isBusy());
+
+		model.commitChunks(1);
+		assertTrue(model.isBusy());
+		model.finished();
+		assertFalse(model.isBusy());
+	}
+
+	@Test
+	void aFailedPreviewReturnsToWaitingForAFile() {
+		ImportWizardModel model = new ImportWizardModel();
+		model.previewing();
+
+		model.previewFailed();
+
+		assertEquals(ImportWizardModel.Step.WAITING_FOR_FILE, model.step());
+		assertFalse(model.isBusy());
+	}
+
+	@Test
 	void splitsReadyBlocksIntoOrderedChunks() {
 		ImportWizardModel model = new ImportWizardModel();
 		model.previewed(SHEET, preview(5));
