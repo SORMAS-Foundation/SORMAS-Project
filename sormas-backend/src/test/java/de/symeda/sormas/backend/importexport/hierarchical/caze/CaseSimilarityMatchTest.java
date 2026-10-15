@@ -82,6 +82,22 @@ public class CaseSimilarityMatchTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void personCellsWrittenOntoAnExistingPersonAreShownBeforeSaving() {
+		PersonDto person = jeanMuller();
+		caseFor(person, Disease.MEASLES);
+		ImportSheet sheet = SheetFixtures.table(HEADER.replace("| Person.person.sex |", "| Person.person.sex | Person.person.nickname |"),
+			row("Jean", "Muller").replace("| MALE |", "| MALE | JJ |"));
+
+		RecordOperationDto root = root(facade.checkImport(CASE_TEMPLATE, sheet));
+
+		assertEquals(MatchReason.NEW_FOR_EXISTING_PERSON, root.getMatchReason());
+		assertEquals(1, root.getChanges().size(), root.getChanges().toString());
+		assertEquals("Person.person.nickname", root.getChanges().get(0).getField());
+		assertEquals("", root.getChanges().get(0).getOldValue());
+		assertEquals("JJ", root.getChanges().get(0).getNewValue());
+	}
+
+	@Test
 	public void twoSimilarPersonsFailTheBlock() {
 		caseFor(jeanMuller(), Disease.MEASLES);
 		caseFor(jeanMuller(), Disease.MEASLES);

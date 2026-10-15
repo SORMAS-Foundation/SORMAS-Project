@@ -9,7 +9,6 @@ final class MaskedRecords {
 	}
 
 	static boolean isMasked(PlannedRecord record) {
-		return record.original() != null
-			&& record.original().values().stream().anyMatch(target -> target instanceof Pseudonymizable && ((Pseudonymizable) target).isPseudonymized());
+		return record.baseline().values().stream().anyMatch(target -> target instanceof Pseudonymizable && ((Pseudonymizable) target).isPseudonymized());
 	}
 }

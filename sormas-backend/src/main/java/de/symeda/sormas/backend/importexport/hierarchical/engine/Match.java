@@ -17,6 +17,7 @@ public final class Match {
 	private final String errorMessage;
 	private final MatchReason reason;
 	private final boolean createWith;
+	private final Map<String, Object> storedTargets;
 
 	private Match(
 		String identity,
@@ -25,8 +26,10 @@ public final class Match {
 		String errorColumn,
 		String errorMessage,
 		MatchReason reason,
-		boolean createWith) {
+		boolean createWith,
+		Map<String, Object> storedTargets) {
 		this.identity = identity;
+		this.storedTargets = storedTargets;
 		this.reason = reason;
 		this.createWith = createWith;
 		this.targets = targets;
@@ -36,7 +39,7 @@ public final class Match {
 	}
 
 	public static Match create() {
-		return new Match(null, null, new ArrayList<>(), null, null, MatchReason.NEW, false);
+		return new Match(null, null, new ArrayList<>(), null, null, MatchReason.NEW, false, Map.of());
 	}
 
 	public static Match existing(String identity, Map<String, Object> targets, List<Date> versions) {
@@ -44,15 +47,23 @@ public final class Match {
 	}
 
 	public static Match existing(String identity, Map<String, Object> targets, List<Date> versions, MatchReason reason) {
-		return new Match(identity, new HashMap<>(targets), new ArrayList<>(versions), null, null, reason, false);
+		return new Match(identity, new HashMap<>(targets), new ArrayList<>(versions), null, null, reason, false, Map.of());
 	}
 
 	public static Match createWith(Map<String, Object> targets, MatchReason reason) {
-		return new Match(null, new HashMap<>(targets), new ArrayList<>(), null, null, reason, true);
+		return createWith(targets, Map.of(), reason);
+	}
+
+	public static Match createWith(Map<String, Object> targets, Map<String, Object> storedTargets, MatchReason reason) {
+		return new Match(null, new HashMap<>(targets), new ArrayList<>(), null, null, reason, true, new HashMap<>(storedTargets));
+	}
+
+	public Map<String, Object> storedTargets() {
+		return storedTargets;
 	}
 
 	public static Match error(String column, String message) {
-		return new Match(null, null, new ArrayList<>(), column, message, null, false);
+		return new Match(null, null, new ArrayList<>(), column, message, null, false, Map.of());
 	}
 
 	public boolean isExisting() {

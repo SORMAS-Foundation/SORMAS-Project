@@ -25,6 +25,7 @@ public final class PlannedRecord {
 	private final List<FieldChangeDto> changes = new ArrayList<>();
 	private final List<PlannedRecord> children = new ArrayList<>();
 	private MatchReason reason;
+	private Map<String, Object> baseline;
 
 	private PlannedRecord(
 		ImportNode node,
@@ -52,7 +53,16 @@ public final class PlannedRecord {
 	}
 
 	static PlannedRecord createdWith(ImportNode node, PlannedRecord parent, Match match) {
-		return created(node, parent, match.targets()).withReason(match.reason());
+		PlannedRecord record = created(node, parent, match.targets()).withReason(match.reason());
+		record.baseline = SerializationUtils.clone(new HashMap<>(match.storedTargets()));
+		return record;
+	}
+
+	public Map<String, Object> baseline() {
+		if (original != null) {
+			return original;
+		}
+		return baseline == null ? Map.of() : baseline;
 	}
 
 	PlannedRecord withReason(MatchReason reason) {

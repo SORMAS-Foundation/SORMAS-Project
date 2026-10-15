@@ -56,8 +56,12 @@ public final class Planner {
 				if (match.isExisting()) {
 					record = rebind(draft, match, binder, columns);
 				} else if (match.isCreateWith()) {
-					record = PlannedRecord.createdWith(draft.node(), draft.parent(), match);
-					binder.bind(record.node(), columns, record.targets());
+					PlannedRecord created = PlannedRecord.createdWith(draft.node(), draft.parent(), match);
+					binder.bind(created.node(), columns, created.targets());
+					List<ColumnSpec> storedColumns =
+						columns.stream().filter(column -> created.baseline().containsKey(column.target())).collect(Collectors.toList());
+					FieldDiff.diff(created.node(), storedColumns, created.baseline(), created.targets()).forEach(created::addChange);
+					record = created;
 				} else {
 					record = draft.parent() == null ? draft.withReason(MatchReason.NEW) : draft;
 				}

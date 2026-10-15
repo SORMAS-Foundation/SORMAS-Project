@@ -98,7 +98,7 @@ final class CaseHandler implements LevelHandler {
 		Map<String, Object> targets = new HashMap<>();
 		targets.put(CASE, newCase);
 		targets.put(PERSON, existingPerson);
-		return Match.createWith(targets, MatchReason.NEW_FOR_EXISTING_PERSON);
+		return Match.createWith(targets, Map.of(PERSON, existingPerson), MatchReason.NEW_FOR_EXISTING_PERSON);
 	}
 
 	private Map<ImportNode, Match> existingMatches(Map<ImportNode, Case> found, MatchReason reason) {
