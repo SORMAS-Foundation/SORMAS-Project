@@ -152,7 +152,6 @@ class SymptomGroupingMappingTest {
         KNOWN_ADDITIONAL_DISEASES.put(SymptomsDto.HEPATOMEGALY, EnumSet.of(Disease.CONGENITAL_RUBELLA));
         KNOWN_ADDITIONAL_DISEASES.put(SymptomsDto.HEPATOSPLENOMEGALY, EnumSet.of(Disease.CONGENITAL_RUBELLA));
         KNOWN_ADDITIONAL_DISEASES.put(SymptomsDto.LYMPHADENOPATHY_CERVICAL, EnumSet.of(Disease.RUBELLA));
-        KNOWN_ADDITIONAL_DISEASES.put(SymptomsDto.ONSET_DATE, EnumSet.of(Disease.GONOCOCCAL_INFECTION));
         KNOWN_ADDITIONAL_DISEASES.put(SymptomsDto.OTHER_CLINICAL_PRESENTATION, EnumSet.of(Disease.CONGENITAL_RUBELLA, Disease.GONOCOCCAL_INFECTION));
         KNOWN_ADDITIONAL_DISEASES
             .put(SymptomsDto.OTHER_CLINICAL_PRESENTATION_TEXT, EnumSet.of(Disease.CONGENITAL_RUBELLA, Disease.GONOCOCCAL_INFECTION));
@@ -174,15 +173,10 @@ class SymptomGroupingMappingTest {
      * Mapped symptoms that the DTO hides for diseases the mapping shows them for: either for some of the listed diseases, or,
      * for a symptom without a disease list ("N/A": shown for every disease), for some diseases at all.
      * <p>
-     * Example: the mapping lists {@code onsetSymptom} for Diphtheria, but the first symptom dropdown is disabled for
-     * Diphtheria, so the DTO hides it there.
+     * Example: the DTO hides {@code asymptomatic} for Tuberculosis ({@code @Diseases(value = TUBERCULOSIS, hide = true)}),
+     * although the mapping shows it there.
      */
-    private static final Map<String, Set<Disease>> KNOWN_HIDDEN_FOR_DISEASES = Map.of(
-        SymptomsDto.ASYMPTOMATIC,
-        EnumSet.of(Disease.TUBERCULOSIS),
-        // the first symptom dropdown is disabled for Diphtheria
-        SymptomsDto.ONSET_SYMPTOM,
-        EnumSet.of(Disease.DIPHTHERIA));
+    private static final Map<String, Set<Disease>> KNOWN_HIDDEN_FOR_DISEASES = Map.of(SymptomsDto.ASYMPTOMATIC, EnumSet.of(Disease.TUBERCULOSIS));
 
     /**
      * Dependent fields that the DTO shows for a disease although their {@link DependantOn} parent is hidden for it.
@@ -198,9 +192,51 @@ class SymptomGroupingMappingTest {
     private static final Set<String> KNOWN_UNMAPPED_FIELDS = Set.of();
 
     /**
-     * Diseases that no mapped symptom lists yet.
+     * Diseases that no mapped symptom lists explicitly yet. They only get the symptoms the mapping shows for every disease
+     * (empty disease list), e.g. {@code onsetDate}, {@code onsetSymptom}, {@code symptomsComments} and {@code offsetDate}
+     * since #14366, but no disease-specific symptom.
+     * <p>
+     * Example: before #14366 the mapping listed Pneumonia only for {@code onsetDate} and {@code onsetSymptom}; now that both
+     * are shown for every disease, no symptom names Pneumonia any more, so it is listed here.
      */
-    private static final Set<Disease> KNOWN_UNMAPPED_DISEASES = EnumSet.of(Disease.LATENT_TUBERCULOSIS);
+    private static final Set<Disease> KNOWN_UNMAPPED_DISEASES = EnumSet.of(
+        Disease.ACUTE_VIRAL_HEPATITIS,
+        Disease.ADENOVIRUS,
+        Disease.ARI,
+        Disease.BURULI_ULCER,
+        Disease.CHIKUNGUNYA,
+        Disease.C_PNEUMONIAE,
+        Disease.DIARRHEA_BLOOD,
+        Disease.DIARRHEA_DEHYDRATION,
+        Disease.ENTEROVIRUS,
+        Disease.FHA,
+        Disease.HIV,
+        Disease.H_METAPNEUMOVIRUS,
+        Disease.INFLUENZA,
+        Disease.INFLUENZA_A,
+        Disease.INFLUENZA_B,
+        Disease.LATENT_TUBERCULOSIS,
+        Disease.LEPROSY,
+        Disease.LYMPHATIC_FILARIASIS,
+        Disease.MATERNAL_DEATHS,
+        Disease.M_PNEUMONIAE,
+        Disease.NEONATAL_TETANUS,
+        Disease.NON_NEONATAL_TETANUS,
+        Disease.ONCHOCERCIASIS,
+        Disease.PARAINFLUENZA_1_4,
+        Disease.PERINATAL_DEATHS,
+        Disease.PNEUMONIA,
+        Disease.POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
+        Disease.POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
+        Disease.RHINOVIRUS,
+        Disease.SCHISTOSOMIASIS,
+        Disease.SNAKE_BITE,
+        Disease.SOIL_TRANSMITTED_HELMINTHS,
+        Disease.TRACHOMA,
+        Disease.TRYPANOSOMIASIS,
+        Disease.TYPHOID_FEVER,
+        Disease.WEST_NILE_FEVER,
+        Disease.YAWS_ENDEMIC_SYPHILIS);
 
     /**
      * #13399 - symptoms the mapping marks "Remove", by the symptom that replaces them. They are deprecated instead of deleted:
