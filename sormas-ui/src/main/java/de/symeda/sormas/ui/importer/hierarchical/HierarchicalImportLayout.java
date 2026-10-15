@@ -95,7 +95,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 			.setDescriptionGenerator(ImportIssueDto::getMessage);
 
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getRecord).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
-		changeGrid.addColumn(row -> PreviewPresentation.matchLabel(row.getMatchReason()))
+		changeGrid.addColumn(row -> PreviewPresentation.matchLabel(row.getMatchReason(), row.getLinkedLine()))
 			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportMatch));
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getField).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportField));
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getChange)
@@ -106,7 +106,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		newRecordGrid.addColumn(operation -> recordType(operation.getLevel()))
 			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecordType));
 		newRecordGrid.addColumn(RecordOperationDto::getLabel).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
-		newRecordGrid.addColumn(operation -> PreviewPresentation.matchLabel(operation.getMatchReason()))
+		newRecordGrid.addColumn(operation -> PreviewPresentation.matchLabel(operation.getMatchReason(), operation.getLinkedLine()))
 			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportMatch));
 
 		for (Grid<?> grid : List.of(issueGrid, changeGrid, newRecordGrid)) {

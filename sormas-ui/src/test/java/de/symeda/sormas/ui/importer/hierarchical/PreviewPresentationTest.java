@@ -85,13 +85,16 @@ class PreviewPresentationTest {
 
 	@Test
 	void labelsEachMatchReason() {
-		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportMatchedById), PreviewPresentation.matchLabel(MatchReason.BY_ID));
-		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportMatchedBySimilarity), PreviewPresentation.matchLabel(MatchReason.BY_SIMILARITY));
+		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportMatchedById), PreviewPresentation.matchLabel(MatchReason.BY_ID, null));
+		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportMatchedBySimilarity), PreviewPresentation.matchLabel(MatchReason.BY_SIMILARITY, null));
 		assertEquals(
 			I18nProperties.getCaption(Captions.hierarchicalImportNewForExistingPerson),
-			PreviewPresentation.matchLabel(MatchReason.NEW_FOR_EXISTING_PERSON));
-		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportNewCase), PreviewPresentation.matchLabel(MatchReason.NEW));
-		assertEquals("", PreviewPresentation.matchLabel(null));
+			PreviewPresentation.matchLabel(MatchReason.NEW_FOR_EXISTING_PERSON, null));
+		assertEquals(I18nProperties.getCaption(Captions.hierarchicalImportNewCase), PreviewPresentation.matchLabel(MatchReason.NEW, null));
+		assertEquals("", PreviewPresentation.matchLabel(null, null));
+		assertEquals(
+			String.format(I18nProperties.getCaption(Captions.hierarchicalImportNewForPersonInFile), 2),
+			PreviewPresentation.matchLabel(MatchReason.NEW_FOR_PERSON_IN_FILE, 2));
 	}
 
 	@Test

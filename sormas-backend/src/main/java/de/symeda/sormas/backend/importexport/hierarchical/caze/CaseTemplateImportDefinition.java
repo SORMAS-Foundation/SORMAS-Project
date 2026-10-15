@@ -16,6 +16,7 @@ import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.BlockCommitter;
@@ -54,6 +55,8 @@ public class CaseTemplateImportDefinition implements ImportDefinition {
 	private CaseService caseService;
 	@EJB
 	private CurrentUserService currentUserService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public String id() {
@@ -108,7 +111,7 @@ public class CaseTemplateImportDefinition implements ImportDefinition {
 	@Override
 	public LevelHandler handler(ImportLevel level) {
 		if (level == CaseTemplateSchema.CASE_LEVEL) {
-			return new CaseHandler(caseFacade, personFacade, caseService, currentUserService);
+			return new CaseHandler(caseFacade, personFacade, caseService, currentUserService, configFacade.getNameSimilarityThreshold());
 		}
 		if (level == CaseTemplateSchema.SAMPLE_LEVEL) {
 			return new SampleHandler(sampleFacade, currentUserService);

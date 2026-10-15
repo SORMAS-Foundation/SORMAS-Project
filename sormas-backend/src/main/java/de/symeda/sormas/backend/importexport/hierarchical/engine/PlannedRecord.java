@@ -26,6 +26,7 @@ public final class PlannedRecord {
 	private final List<PlannedRecord> children = new ArrayList<>();
 	private MatchReason reason;
 	private Map<String, Object> baseline;
+	private ImportNode linkedRoot;
 
 	private PlannedRecord(
 		ImportNode node,
@@ -56,6 +57,7 @@ public final class PlannedRecord {
 		PlannedRecord record =
 			new PlannedRecord(node, parent, new HashMap<>(match.targets()), null, match.identity(), match.versions()).withReason(match.reason());
 		record.baseline = SerializationUtils.clone(new HashMap<>(match.storedTargets()));
+		record.linkedRoot = match.linkedRoot();
 		return record;
 	}
 
@@ -69,6 +71,10 @@ public final class PlannedRecord {
 	PlannedRecord withReason(MatchReason reason) {
 		this.reason = reason;
 		return this;
+	}
+
+	public ImportNode linkedRoot() {
+		return linkedRoot;
 	}
 
 	public MatchReason reason() {

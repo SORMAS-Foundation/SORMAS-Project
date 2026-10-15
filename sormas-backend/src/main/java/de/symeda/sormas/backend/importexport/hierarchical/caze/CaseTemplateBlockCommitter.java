@@ -14,6 +14,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -46,10 +47,14 @@ public class CaseTemplateBlockCommitter implements BlockCommitter {
 		save(block.rootRecord());
 	}
 
+	private PersonDto savePerson(PlannedRecord caseRecord) {
+		PersonHelper.sanitizeNonHomeAddress(caseRecord.target(PERSON));
+		return personFacade.save(caseRecord.<PersonDto> target(PERSON));
+	}
+
 	private void save(PlannedRecord caseRecord) {
 		if (caseRecord.operation() != OperationType.UNCHANGED) {
-			PersonHelper.sanitizeNonHomeAddress(caseRecord.target(PERSON));
-			PersonDto person = personFacade.save(caseRecord.<PersonDto> target(PERSON));
+			PersonDto person = caseRecord.reason() == MatchReason.NEW_FOR_PERSON_IN_FILE ? caseRecord.target(PERSON) : savePerson(caseRecord);
 			CaseDataDto caze = caseRecord.target(CASE);
 			caze.setPerson(person.toReference());
 			// saving the person re-saves its cases, the fingerprint already guards drift

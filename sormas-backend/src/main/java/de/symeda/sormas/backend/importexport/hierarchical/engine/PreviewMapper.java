@@ -26,7 +26,8 @@ public final class PreviewMapper {
 					definition.handler(record.node().level()).label(record),
 					record.node().lineNumber(),
 					record.changes(),
-					record.parent() == null ? record.reason() : null))
+					record.parent() == null ? record.reason() : null,
+					record.linkedRoot() == null ? null : record.linkedRoot().lineNumber()))
 			.collect(Collectors.toList());
 		String label =
 			block.rootRecord() != null ? definition.handler(block.root().level()).label(block.rootRecord()) : block.root().label();

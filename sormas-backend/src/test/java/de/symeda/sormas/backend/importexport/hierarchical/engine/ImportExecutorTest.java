@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
@@ -58,6 +60,20 @@ class ImportExecutorTest {
 		assertEquals(BlockOutcome.FAILED, report.getResults().get(0).getOutcome());
 		assertEquals("exploded", report.getResults().get(0).getIssues().get(0).getMessage());
 		assertEquals(BlockOutcome.COMMITTED, report.getResults().get(1).getOutcome());
+	}
+
+	@Test
+	void aBlockSharingTheRecordOfAFailedBlockIsNotCommitted() {
+		ToyDefinition toy = new ToyDefinition();
+		ImportSheet sheet = sheet("| P1 | explode | | | |", "| with-P1 | Beta | | | |");
+
+		ImportReportDto report = new ImportExecutor().commit(toy, sheet, preview(toy, sheet).readyFingerprints(), countingRunner);
+
+		assertEquals(BlockOutcome.FAILED, report.getResults().get(1).getOutcome());
+		assertEquals(
+			I18nProperties.getValidationError(Validations.importHierarchicalLinkedPersonNotImported, 2),
+			report.getResults().get(1).getIssues().get(0).getMessage());
+		assertEquals(1, runs.get());
 	}
 
 	@Test

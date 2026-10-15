@@ -1,8 +1,10 @@
 package de.symeda.sormas.backend.importexport.hierarchical.engine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -27,10 +29,31 @@ public final class ImportExecutor {
 					.collect(Collectors.toList()));
 		}
 		List<BlockResultDto> results = new ArrayList<>();
+		Set<ImportNode> committedRoots = new HashSet<>();
 		for (PlannedBlock block : plan.blocks()) {
-			results.add(commitBlock(definition, block, previewedFingerprints.get(block.index()), runner));
+			BlockResultDto result = linkedRootMissing(block, committedRoots)
+				? linkedRootNotImported(block)
+				: commitBlock(definition, block, previewedFingerprints.get(block.index()), runner);
+			if (result.getOutcome() == BlockOutcome.COMMITTED) {
+				committedRoots.add(block.root());
+			}
+			results.add(result);
 		}
 		return new ImportReportDto(results);
+	}
+
+	private static boolean linkedRootMissing(PlannedBlock block, Set<ImportNode> committedRoots) {
+		PlannedRecord root = block.rootRecord();
+		return root != null && root.linkedRoot() != null && !committedRoots.contains(root.linkedRoot());
+	}
+
+	private static BlockResultDto linkedRootNotImported(PlannedBlock block) {
+		ImportIssueDto issue = new ImportIssueDto(
+			ImportIssueKind.COMMIT,
+			block.root().lineNumber(),
+			null,
+			I18nProperties.getValidationError(Validations.importHierarchicalLinkedPersonNotImported, block.rootRecord().linkedRoot().lineNumber()));
+		return new BlockResultDto(block.index(), BlockOutcome.FAILED, List.of(issue));
 	}
 
 	private static BlockResultDto commitBlock(ImportDefinition definition, PlannedBlock block, String previewedFingerprint, BlockRunner runner) {

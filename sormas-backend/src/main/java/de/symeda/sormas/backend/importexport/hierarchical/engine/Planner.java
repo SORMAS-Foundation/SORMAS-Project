@@ -74,12 +74,25 @@ public final class Planner {
 		}
 
 		records.values().forEach(record -> definition.handler(record.node().level()).complete(record));
+		rejectRecordsLinkedToFailedRoots(records);
 
 		List<PlannedBlock> blocks = roots.entrySet()
 			.stream()
 			.map(entry -> new PlannedBlock(entry.getKey(), entry.getValue(), records.get(entry.getValue())))
 			.collect(Collectors.toList());
 		return new ImportPlan(List.of(), grouping.issues(), blocks, sheetColumns.ignored());
+	}
+
+	private static void rejectRecordsLinkedToFailedRoots(Map<ImportNode, PlannedRecord> records) {
+		records.values().stream().filter(record -> record.linkedRoot() != null).forEach(record -> {
+			ImportNode linkedRoot = record.linkedRoot();
+			boolean linkedRootFails = !records.containsKey(linkedRoot) || linkedRoot.subtree().anyMatch(node -> !node.issues().isEmpty());
+			if (linkedRootFails) {
+				record.reportIssue(
+					null,
+					I18nProperties.getValidationError(Validations.importHierarchicalLinkedPersonNotImported, linkedRoot.lineNumber()));
+			}
+		});
 	}
 
 	private static Map<Integer, ImportNode> selectRoots(List<ImportNode> roots, Set<Integer> selectedBlocks) {

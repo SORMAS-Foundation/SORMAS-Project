@@ -159,7 +159,16 @@ public final class ToyDefinition implements ImportDefinition {
 				if (key.startsWith("~")) {
 					key = key.substring(1);
 				}
-				if (key.startsWith("reuse-")) {
+				if (key.startsWith("with-")) {
+					String earlierKey = key.substring("with-".length());
+					drafts.stream()
+						.filter(earlier -> earlier.node().cell("parent.key").equals(earlierKey))
+						.findFirst()
+						.ifPresent(
+							earlier -> matches.put(
+								draft.node(),
+								Match.sharing(earlier.node(), Map.of("parent", new ToyParent()), Map.of(), MatchReason.NEW_FOR_PERSON_IN_FILE)));
+				} else if (key.startsWith("reuse-")) {
 					ToyParent kept = new ToyParent();
 					kept.setName("kept");
 					matches.put(draft.node(), Match.createWith(Map.of("parent", kept), MatchReason.NEW_FOR_EXISTING_PERSON));

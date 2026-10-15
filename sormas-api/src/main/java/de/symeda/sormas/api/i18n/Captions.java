@@ -2334,6 +2334,7 @@ public interface Captions {
 	String hierarchicalImportMatchedBySimilarity = "hierarchicalImportMatchedBySimilarity";
 	String hierarchicalImportNewCase = "hierarchicalImportNewCase";
 	String hierarchicalImportNewForExistingPerson = "hierarchicalImportNewForExistingPerson";
+	String hierarchicalImportNewForPersonInFile = "hierarchicalImportNewForPersonInFile";
 	String hierarchicalImportNewRecords = "hierarchicalImportNewRecords";
 	String hierarchicalImportProblem = "hierarchicalImportProblem";
 	String hierarchicalImportProblems = "hierarchicalImportProblems";

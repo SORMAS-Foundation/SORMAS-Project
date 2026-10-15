@@ -19,6 +19,9 @@ import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
+import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
+import de.symeda.sormas.api.importexport.hierarchical.OperationType;
+import de.symeda.sormas.api.importexport.hierarchical.RecordOperationDto;
 
 class ImportWizardModelTest {
 
@@ -71,6 +74,26 @@ class ImportWizardModelTest {
 		assertEquals(3, chunks.size());
 		assertEquals(List.of(0, 1), new ArrayList<>(chunks.get(0).keySet()));
 		assertEquals(List.of(4), new ArrayList<>(chunks.get(2).keySet()));
+	}
+
+	@Test
+	void neverSplitsABlockFromTheBlockWhosePersonItShares() {
+		RecordOperationDto linked =
+			new RecordOperationDto("case", OperationType.CREATE, "Jean Muller", 3, List.of(), MatchReason.NEW_FOR_PERSON_IN_FILE, 2);
+		ImportPreviewDto preview = new ImportPreviewDto(
+			List.of(),
+			List.of(),
+			List.of(
+				new BlockPreviewDto(0, 2, 2, "a", BlockStatus.READY, "fp0", List.of(), List.of()),
+				new BlockPreviewDto(1, 3, 3, "b", BlockStatus.READY, "fp1", List.of(linked), List.of()),
+				new BlockPreviewDto(2, 4, 4, "c", BlockStatus.READY, "fp2", List.of(), List.of())));
+		ImportWizardModel model = new ImportWizardModel();
+		model.previewed(SHEET, preview);
+
+		List<Map<Integer, String>> chunks = model.commitChunks(1);
+
+		assertEquals(List.of(0, 1), new ArrayList<>(chunks.get(0).keySet()));
+		assertEquals(List.of(2), new ArrayList<>(chunks.get(1).keySet()));
 	}
 
 	@Test

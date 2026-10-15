@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.importexport.hierarchical.caze;
 import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.CASE;
 import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.PERSON;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -14,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -24,6 +26,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -44,9 +47,16 @@ final class CaseHandler implements LevelHandler {
 	private final CaseService caseService;
 	private final CurrentUserService currentUserService;
 	private final CaseMatcher matcher;
+	private final double nameSimilarityThreshold;
 
-	CaseHandler(CaseFacadeEjbLocal caseFacade, PersonFacadeEjbLocal personFacade, CaseService caseService, CurrentUserService currentUserService) {
+	CaseHandler(
+		CaseFacadeEjbLocal caseFacade,
+		PersonFacadeEjbLocal personFacade,
+		CaseService caseService,
+		CurrentUserService currentUserService,
+		double nameSimilarityThreshold) {
 		this.caseFacade = caseFacade;
+		this.nameSimilarityThreshold = nameSimilarityThreshold;
 		this.personFacade = personFacade;
 		this.caseService = caseService;
 		this.currentUserService = currentUserService;
@@ -80,7 +90,46 @@ final class CaseHandler implements LevelHandler {
 			.forEach(draft -> sort(draft.node(), matcher.bySimilarity(draft), matches, foundBySimilarity));
 		matches.putAll(existingMatches(foundById, MatchReason.BY_ID));
 		matches.putAll(existingMatches(foundBySimilarity, MatchReason.BY_SIMILARITY));
+		linkSamePersonsInFile(drafts, matches);
 		return matches;
+	}
+
+	private void linkSamePersonsInFile(List<PlannedRecord> drafts, Map<ImportNode, Match> matches) {
+		List<PlannedRecord> newPersons = new ArrayList<>();
+		drafts.stream().filter(draft -> !matches.containsKey(draft.node())).forEach(draft -> {
+			Optional<PlannedRecord> earlier = newPersons.stream().filter(candidate -> samePerson(candidate.target(PERSON), draft.target(PERSON))).findFirst();
+			if (earlier.isPresent()) {
+				matches.put(draft.node(), caseForPersonOf(earlier.get()));
+			} else {
+				newPersons.add(draft);
+			}
+		});
+	}
+
+	private Match caseForPersonOf(PlannedRecord earlier) {
+		PersonDto person = earlier.target(PERSON);
+		CaseDataDto newCase = CaseDataDto.build(person.toReference(), null);
+		newCase.setReportingUser(currentUserService.getCurrentUser().toReference());
+		Map<String, Object> targets = new HashMap<>();
+		targets.put(CASE, newCase);
+		targets.put(PERSON, SerializationUtils.clone(person));
+		return Match.sharing(earlier.node(), targets, Map.of(PERSON, person), MatchReason.NEW_FOR_PERSON_IN_FILE);
+	}
+
+	private boolean samePerson(PersonDto first, PersonDto second) {
+		if (StringUtils.isAnyBlank(first.getFirstName(), first.getLastName(), second.getFirstName(), second.getLastName())) {
+			return false;
+		}
+		return PersonHelper
+			.areNamesSimilar(first.getFirstName(), first.getLastName(), second.getFirstName(), second.getLastName(), nameSimilarityThreshold)
+			&& compatible(first.getSex(), second.getSex())
+			&& compatible(first.getBirthdateDD(), second.getBirthdateDD())
+			&& compatible(first.getBirthdateMM(), second.getBirthdateMM())
+			&& compatible(first.getBirthdateYYYY(), second.getBirthdateYYYY());
+	}
+
+	private static boolean compatible(Object first, Object second) {
+		return first == null || second == null || first.equals(second);
 	}
 
 	private void sort(ImportNode node, Object outcome, Map<ImportNode, Match> matches, Map<ImportNode, Case> found) {
@@ -171,6 +220,12 @@ final class CaseHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_EDIT));
 		}
 		if (record.operation() == OperationType.UNCHANGED) {
+			return;
+		}
+		if (record.reason() == MatchReason.NEW_FOR_PERSON_IN_FILE && !record.changes().isEmpty()) {
+			record.reportIssue(
+				null,
+				I18nProperties.getValidationError(Validations.importHierarchicalPersonDiffersInFile, record.linkedRoot().lineNumber()));
 			return;
 		}
 		if (MaskedRecords.isMasked(record)) {

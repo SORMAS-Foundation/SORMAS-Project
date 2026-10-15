@@ -18,6 +18,7 @@ public final class Match {
 	private final MatchReason reason;
 	private final boolean createWith;
 	private final Map<String, Object> storedTargets;
+	private ImportNode linkedRoot;
 
 	private Match(
 		String identity,
@@ -61,6 +62,16 @@ public final class Match {
 		List<Date> storedVersions,
 		MatchReason reason) {
 		return new Match(storedIdentity, new HashMap<>(targets), new ArrayList<>(storedVersions), null, null, reason, true, new HashMap<>(storedTargets));
+	}
+
+	public static Match sharing(ImportNode earlierRoot, Map<String, Object> targets, Map<String, Object> storedTargets, MatchReason reason) {
+		Match match = createWith("line:" + earlierRoot.lineNumber(), targets, storedTargets, List.of(), reason);
+		match.linkedRoot = earlierRoot;
+		return match;
+	}
+
+	public ImportNode linkedRoot() {
+		return linkedRoot;
 	}
 
 	public Map<String, Object> storedTargets() {

@@ -15,18 +15,31 @@ public final class RecordOperationDto implements Serializable {
 	private final int lineNumber;
 	private final List<FieldChangeDto> changes;
 	private final MatchReason matchReason;
+	private final Integer linkedLine;
 
 	public RecordOperationDto(String level, OperationType type, String label, int lineNumber, List<FieldChangeDto> changes) {
 		this(level, type, label, lineNumber, changes, null);
 	}
 
 	public RecordOperationDto(String level, OperationType type, String label, int lineNumber, List<FieldChangeDto> changes, MatchReason matchReason) {
+		this(level, type, label, lineNumber, changes, matchReason, null);
+	}
+
+	public RecordOperationDto(
+		String level,
+		OperationType type,
+		String label,
+		int lineNumber,
+		List<FieldChangeDto> changes,
+		MatchReason matchReason,
+		Integer linkedLine) {
 		this.level = level;
 		this.type = type;
 		this.label = label;
 		this.lineNumber = lineNumber;
 		this.changes = Collections.unmodifiableList(new ArrayList<>(changes));
 		this.matchReason = matchReason;
+		this.linkedLine = linkedLine;
 	}
 
 	public String getLevel() {
@@ -51,5 +64,9 @@ public final class RecordOperationDto implements Serializable {
 
 	public MatchReason getMatchReason() {
 		return matchReason;
+	}
+
+	public Integer getLinkedLine() {
+		return linkedLine;
 	}
 }

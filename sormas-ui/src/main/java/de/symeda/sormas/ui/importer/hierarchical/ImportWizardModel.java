@@ -1,11 +1,14 @@
 package de.symeda.sormas.ui.importer.hierarchical;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
@@ -16,6 +19,7 @@ import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
+import de.symeda.sormas.api.importexport.hierarchical.RecordOperationDto;
 
 public final class ImportWizardModel {
 
@@ -82,18 +86,39 @@ public final class ImportWizardModel {
 	public List<Map<Integer, String>> commitChunks(int chunkSize) {
 		require(canCommit());
 		step = Step.COMMITTING;
-		List<Map.Entry<Integer, String>> ready = preview.readyFingerprints()
-			.entrySet()
-			.stream()
-			.sorted(Comparator.comparing(Map.Entry::getKey))
-			.collect(Collectors.toList());
+		Map<Integer, String> ready = preview.readyFingerprints();
 		List<Map<Integer, String>> chunks = new ArrayList<>();
-		for (int start = 0; start < ready.size(); start += chunkSize) {
-			Map<Integer, String> chunk = new LinkedHashMap<>();
-			ready.subList(start, Math.min(start + chunkSize, ready.size())).forEach(entry -> chunk.put(entry.getKey(), entry.getValue()));
+		Map<Integer, String> chunk = new LinkedHashMap<>();
+		for (List<Integer> group : blocksCommittedTogether(ready.keySet())) {
+			group.forEach(index -> chunk.put(index, ready.get(index)));
+			if (chunk.size() >= chunkSize) {
+				chunks.add(new LinkedHashMap<>(chunk));
+				chunk.clear();
+			}
+		}
+		if (!chunk.isEmpty()) {
 			chunks.add(chunk);
 		}
 		return chunks;
+	}
+
+	private Collection<List<Integer>> blocksCommittedTogether(Set<Integer> readyBlocks) {
+		Map<Integer, Integer> blockByFirstLine =
+			preview.getBlocks().stream().collect(Collectors.toMap(BlockPreviewDto::getFirstLine, BlockPreviewDto::getBlockIndex, (first, second) -> first));
+		Map<Integer, List<Integer>> groups = new TreeMap<>();
+		preview.getBlocks()
+			.stream()
+			.filter(block -> readyBlocks.contains(block.getBlockIndex()))
+			.sorted(Comparator.comparing(BlockPreviewDto::getBlockIndex))
+			.forEach(block -> {
+				Integer sharedBlock = linkedLine(block).map(blockByFirstLine::get).filter(groups::containsKey).orElse(block.getBlockIndex());
+				groups.computeIfAbsent(sharedBlock, key -> new ArrayList<>()).add(block.getBlockIndex());
+			});
+		return groups.values();
+	}
+
+	private static Optional<Integer> linkedLine(BlockPreviewDto block) {
+		return block.getOperations().stream().findFirst().map(RecordOperationDto::getLinkedLine);
 	}
 
 	public void chunkCommitted(ImportReportDto report) {

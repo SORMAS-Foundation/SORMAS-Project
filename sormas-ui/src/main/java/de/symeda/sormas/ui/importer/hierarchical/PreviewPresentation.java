@@ -37,7 +37,8 @@ public final class PreviewPresentation {
 							operation.getLabel(),
 							change.getField(),
 							change.getOldValue() + " → " + change.getNewValue(),
-							operation.getMatchReason())))
+							operation.getMatchReason(),
+							operation.getLinkedLine())))
 			.collect(Collectors.toList());
 		this.newRecords = readyOperations(preview).filter(operation -> operation.getType() == OperationType.CREATE).collect(Collectors.toList());
 	}
@@ -62,7 +63,7 @@ public final class PreviewPresentation {
 		return problems.isEmpty() && changes.isEmpty();
 	}
 
-	public static String matchLabel(MatchReason reason) {
+	public static String matchLabel(MatchReason reason, Integer linkedLine) {
 		if (reason == null) {
 			return "";
 		}
@@ -73,6 +74,8 @@ public final class PreviewPresentation {
 			return I18nProperties.getCaption(Captions.hierarchicalImportMatchedBySimilarity);
 		case NEW_FOR_EXISTING_PERSON:
 			return I18nProperties.getCaption(Captions.hierarchicalImportNewForExistingPerson);
+		case NEW_FOR_PERSON_IN_FILE:
+			return String.format(I18nProperties.getCaption(Captions.hierarchicalImportNewForPersonInFile), linkedLine);
 		default:
 			return I18nProperties.getCaption(Captions.hierarchicalImportNewCase);
 		}
@@ -103,12 +106,18 @@ public final class PreviewPresentation {
 		private final String field;
 		private final String change;
 		private final MatchReason matchReason;
+		private final Integer linkedLine;
 
-		ChangeRow(String record, String field, String change, MatchReason matchReason) {
+		ChangeRow(String record, String field, String change, MatchReason matchReason, Integer linkedLine) {
 			this.record = record;
 			this.field = field;
 			this.change = change;
 			this.matchReason = matchReason;
+			this.linkedLine = linkedLine;
+		}
+
+		public Integer getLinkedLine() {
+			return linkedLine;
 		}
 
 		public MatchReason getMatchReason() {
