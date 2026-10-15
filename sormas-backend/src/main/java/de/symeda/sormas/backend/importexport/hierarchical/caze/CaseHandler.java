@@ -143,8 +143,12 @@ final class CaseHandler implements LevelHandler {
 		PersonDto person = record.target(PERSON);
 		CaseDataDto caze = record.target(CASE);
 		String name = (Objects.toString(person.getFirstName(), "") + " " + Objects.toString(person.getLastName(), "")).strip();
-		String id = Stream.of(caze.getEpidNumber(), caze.getExternalToken()).filter(StringUtils::isNotBlank).findFirst().orElse(DataHelper.getShortUuid(caze.getUuid()));
-		return name.isEmpty() ? id : name + " (" + id + ")";
+		String storedId = record.isNew() ? "" : DataHelper.getShortUuid(caze.getUuid());
+		String id = Stream.of(caze.getEpidNumber(), caze.getExternalToken()).filter(StringUtils::isNotBlank).findFirst().orElse(storedId);
+		if (name.isEmpty() || id.isEmpty()) {
+			return name + id;
+		}
+		return name + " (" + id + ")";
 	}
 
 	@Override

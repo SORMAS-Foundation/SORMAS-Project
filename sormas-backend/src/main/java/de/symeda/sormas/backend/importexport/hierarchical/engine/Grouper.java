@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -17,8 +18,12 @@ import de.symeda.sormas.api.importexport.hierarchical.ImportSheetRow;
 public final class Grouper {
 
 	public GroupingResult group(ImportSheet sheet, ImportSchema schema) {
+		return group(sheet, schema, Set.copyOf(sheet.getHeaders()));
+	}
+
+	public GroupingResult group(ImportSheet sheet, ImportSchema schema, Set<String> importableHeaders) {
 		List<ImportLevel> levels = schema.levels();
-		Map<ImportLevel, List<Integer>> columns = columnsByLevel(sheet.getHeaders(), schema);
+		Map<ImportLevel, List<Integer>> columns = columnsByLevel(sheet.getHeaders(), schema, importableHeaders);
 		ImportNode[] open = new ImportNode[levels.size()];
 		List<ImportNode> roots = new ArrayList<>();
 		List<ImportIssueDto> unattached = new ArrayList<>();
@@ -52,11 +57,14 @@ public final class Grouper {
 		return new GroupingResult(roots, unattached);
 	}
 
-	private static Map<ImportLevel, List<Integer>> columnsByLevel(List<String> headers, ImportSchema schema) {
+	private static Map<ImportLevel, List<Integer>> columnsByLevel(List<String> headers, ImportSchema schema, Set<String> importableHeaders) {
 		Map<ImportLevel, List<Integer>> columns = new HashMap<>();
 		schema.levels().forEach(level -> columns.put(level, new ArrayList<>()));
 		for (int i = 0; i < headers.size(); i++) {
 			int index = i;
+			if (!importableHeaders.contains(headers.get(i))) {
+				continue;
+			}
 			schema.levelOf(headers.get(i)).ifPresent(level -> columns.get(level).add(index));
 		}
 		return columns;

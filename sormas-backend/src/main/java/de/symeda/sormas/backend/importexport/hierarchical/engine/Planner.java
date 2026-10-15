@@ -27,7 +27,8 @@ public final class Planner {
 			return new ImportPlan(fileIssues, List.of(), List.of(), sheetColumns.ignored());
 		}
 
-		GroupingResult grouping = new Grouper().group(sheet, definition.schema());
+		Set<String> importableHeaders = sheetColumns.columns().stream().map(ColumnSpec::header).collect(Collectors.toSet());
+		GroupingResult grouping = new Grouper().group(sheet, definition.schema(), importableHeaders);
 		Map<Integer, ImportNode> roots = selectRoots(grouping.roots(), selectedBlocks);
 		List<ColumnSpec> columns = sheetColumns.columns();
 		RecordBinder binder = new RecordBinder(definition.cellWriter());
@@ -106,6 +107,7 @@ public final class Planner {
 			}
 			PlannedRecord draft = PlannedRecord.created(node, parent, handler.newTargets(node, parent));
 			binder.bind(node, columns, draft.targets());
+			node.describeAs(handler.label(draft));
 			drafts.add(draft);
 		});
 		return drafts;

@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.importexport.hierarchical;
 import java.util.Map;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
@@ -44,6 +45,7 @@ public class HierarchicalImportFacadeEjb implements HierarchicalImportFacade {
 		throw new IllegalArgumentException("Unknown import definition " + definitionId);
 	}
 
+	@LocalBean
 	@Stateless
 	public static class HierarchicalImportFacadeEjbLocal extends HierarchicalImportFacadeEjb {
 	}

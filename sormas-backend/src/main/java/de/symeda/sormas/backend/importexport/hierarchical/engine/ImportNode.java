@@ -21,6 +21,7 @@ public final class ImportNode {
 	private final List<ImportNode> children = new ArrayList<>();
 	private final List<ImportIssueDto> issues = new ArrayList<>();
 	private ImportNode parent;
+	private String description;
 
 	public ImportNode(ImportLevel level, int lineNumber, Map<String, String> cells) {
 		this.level = level;
@@ -54,7 +55,14 @@ public final class ImportNode {
 	}
 
 	public String label() {
+		if (description != null && !description.isBlank()) {
+			return description;
+		}
 		return cells.values().stream().findFirst().orElse("");
+	}
+
+	void describeAs(String description) {
+		this.description = description;
 	}
 
 	public ImportNode parent() {

@@ -272,19 +272,36 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 
 	@Test
 	public void aCaseReachedByTokenAndByEpidNumberInTwoBlocksFailsTheLaterBlock() {
-		creator.createCase(nationalAdmin.toReference(), rdcf, c -> {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), rdcf, c -> {
 			c.setExternalToken("ALIAS-T");
 			c.setEpidNumber("AAA-BBB-CCC-26-020");
 		});
+		String disease = caze.getDisease().name();
 		ImportSheet sheet = SheetFixtures.table(
-			"| CaseData.externalToken | CaseData.epidNumber | Sample.fieldSampleID | Sample.sampleDateTime | Sample.sampleMaterial | Sample.lab |",
-			"| ALIAS-T | | S1 | 9/2/2026 | BLOOD | Central Lab |",
-			"| | AAA-BBB-CCC-26-020 | S2 | 9/2/2026 | BLOOD | Central Lab |");
+			"| CaseData.disease | CaseData.externalToken | CaseData.epidNumber | Sample.fieldSampleID | Sample.sampleDateTime | Sample.sampleMaterial "
+				+ "| Sample.lab |",
+			"| " + disease + " | ALIAS-T | | S1 | 9/2/2026 | BLOOD | Central Lab |",
+			"| " + disease + " | | AAA-BBB-CCC-26-020 | S2 | 9/2/2026 | BLOOD | Central Lab |");
 
 		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
 
 		assertEquals(BlockStatus.READY, preview.getBlocks().get(0).getStatus());
 		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(1).getStatus());
+		String message = preview.getBlocks().get(1).getIssues().get(0).getMessage();
+		assertTrue(message.startsWith("AAA-BBB-CCC-26-020 "), message);
+	}
+
+	@Test
+	public void anIgnoredCaseColumnOnAContinuationRowKeepsTheRowUnderTheCaseAbove() {
+		ImportSheet sheet = SheetFixtures.table(
+			"| CaseData.colour " + NEW_CASE_HEADER,
+			"| " + NEW_CASE_ROW,
+			"| blue " + SECOND_TEST_ROW);
+
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
+
+		assertEquals(1, preview.getBlocks().size(), messages(preview).toString());
+		assertEquals(BlockStatus.READY, preview.getBlocks().get(0).getStatus(), messages(preview).toString());
 	}
 
 	@Test
