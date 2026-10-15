@@ -522,6 +522,23 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void aPreviewWritesNothing() {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), rdcf, c -> c.setEpidNumber("AAA-BBB-CCC-26-021"));
+		ImportSheet sheet = SheetFixtures.table(
+			"| CaseData.epidNumber | CaseData.additionalDetails | Sample.fieldSampleID | Sample.sampleDateTime | Sample.sampleMaterial | Sample.lab |",
+			"| AAA-BBB-CCC-26-021 | changed | S1 | 9/2/2026 | BLOOD | Central Lab |");
+
+		facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW));
+		facade.checkImport(CASE_TEMPLATE, sheet);
+
+		CaseDataDto stored = getCaseFacade().getByUuid(caze.getUuid());
+		assertNull(stored.getAdditionalDetails());
+		assertEquals(caze.getChangeDate(), stored.getChangeDate());
+		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
+		assertEquals(0, getSampleFacade().getByCaseUuids(List.of(caze.getUuid())).size());
+	}
+
+	@Test
 	public void aCaseStoredLongBeforeTheImportIsUpdatedByItsId() throws InterruptedException {
 		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), rdcf, c -> c.setEpidNumber("AAA-BBB-CCC-26-019"));
 		Thread.sleep(1100);

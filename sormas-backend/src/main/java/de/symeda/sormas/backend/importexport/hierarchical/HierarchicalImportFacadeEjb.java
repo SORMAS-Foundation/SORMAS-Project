@@ -5,6 +5,9 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
 
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
@@ -16,6 +19,7 @@ import de.symeda.sormas.backend.importexport.hierarchical.engine.ImportDefinitio
 import de.symeda.sormas.backend.importexport.hierarchical.engine.ImportExecutor;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.Planner;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.PreviewMapper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "HierarchicalImportFacade")
@@ -26,9 +30,12 @@ public class HierarchicalImportFacadeEjb implements HierarchicalImportFacade {
 	private CaseTemplateImportDefinition caseTemplateImportDefinition;
 	@EJB
 	private RequiresNewBlockRunner blockRunner;
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@Override
 	public ImportPreviewDto checkImport(String definitionId, ImportSheet sheet) {
+		em.setFlushMode(FlushModeType.COMMIT);
 		ImportDefinition definition = definition(definitionId);
 		return PreviewMapper.toPreview(definition, new Planner().plan(definition, sheet, null));
 	}
