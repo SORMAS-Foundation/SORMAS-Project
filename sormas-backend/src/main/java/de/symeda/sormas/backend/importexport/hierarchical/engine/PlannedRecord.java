@@ -53,7 +53,8 @@ public final class PlannedRecord {
 	}
 
 	static PlannedRecord createdWith(ImportNode node, PlannedRecord parent, Match match) {
-		PlannedRecord record = created(node, parent, match.targets()).withReason(match.reason());
+		PlannedRecord record =
+			new PlannedRecord(node, parent, new HashMap<>(match.targets()), null, match.identity(), match.versions()).withReason(match.reason());
 		record.baseline = SerializationUtils.clone(new HashMap<>(match.storedTargets()));
 		return record;
 	}

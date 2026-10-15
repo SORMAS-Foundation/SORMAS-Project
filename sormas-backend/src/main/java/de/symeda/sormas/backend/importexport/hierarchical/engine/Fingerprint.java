@@ -19,6 +19,8 @@ final class Fingerprint {
 				.append(record.operation())
 				.append('|')
 				.append(record.identity())
+				.append('|')
+				.append(record.reason())
 				.append('|');
 			record.versions().forEach(version -> canonical.append(version == null ? "-" : version.getTime()).append(','));
 			record.changes()

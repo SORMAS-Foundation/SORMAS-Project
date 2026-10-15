@@ -51,11 +51,16 @@ public final class Match {
 	}
 
 	public static Match createWith(Map<String, Object> targets, MatchReason reason) {
-		return createWith(targets, Map.of(), reason);
+		return createWith(null, targets, Map.of(), List.of(), reason);
 	}
 
-	public static Match createWith(Map<String, Object> targets, Map<String, Object> storedTargets, MatchReason reason) {
-		return new Match(null, new HashMap<>(targets), new ArrayList<>(), null, null, reason, true, new HashMap<>(storedTargets));
+	public static Match createWith(
+		String storedIdentity,
+		Map<String, Object> targets,
+		Map<String, Object> storedTargets,
+		List<Date> storedVersions,
+		MatchReason reason) {
+		return new Match(storedIdentity, new HashMap<>(targets), new ArrayList<>(storedVersions), null, null, reason, true, new HashMap<>(storedTargets));
 	}
 
 	public Map<String, Object> storedTargets() {

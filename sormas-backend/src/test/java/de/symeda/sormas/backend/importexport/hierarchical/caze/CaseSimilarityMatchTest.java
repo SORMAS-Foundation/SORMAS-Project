@@ -13,9 +13,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
+import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
 import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.RecordOperationDto;
@@ -95,6 +97,35 @@ public class CaseSimilarityMatchTest extends AbstractBeanTest {
 		assertEquals("Person.person.nickname", root.getChanges().get(0).getField());
 		assertEquals("", root.getChanges().get(0).getOldValue());
 		assertEquals("JJ", root.getChanges().get(0).getNewValue());
+	}
+
+	@Test
+	public void aPersonAppearingAfterThePreviewLeavesTheBlockAlone() {
+		ImportSheet sheet = SheetFixtures.table(HEADER, row("Jean", "Muller"));
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
+		assertEquals(MatchReason.NEW, root(preview).getMatchReason());
+		caseFor(jeanMuller(), Disease.MEASLES);
+
+		ImportReportDto report = facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+
+		assertEquals(BlockOutcome.CHANGED_SINCE_PREVIEW, report.getResults().get(0).getOutcome());
+	}
+
+	@Test
+	public void anExistingPersonEditedAfterThePreviewLeavesTheBlockAlone() throws InterruptedException {
+		PersonDto person = jeanMuller();
+		caseFor(person, Disease.MEASLES);
+		ImportSheet sheet = SheetFixtures.table(HEADER, row("Jean", "Muller"));
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
+		assertEquals(MatchReason.NEW_FOR_EXISTING_PERSON, root(preview).getMatchReason());
+		Thread.sleep(1);
+		PersonDto stored = getPersonFacade().getByUuid(person.getUuid());
+		stored.setNickname("JJ");
+		getPersonFacade().save(stored);
+
+		ImportReportDto report = facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+
+		assertEquals(BlockOutcome.CHANGED_SINCE_PREVIEW, report.getResults().get(0).getOutcome());
 	}
 
 	@Test
