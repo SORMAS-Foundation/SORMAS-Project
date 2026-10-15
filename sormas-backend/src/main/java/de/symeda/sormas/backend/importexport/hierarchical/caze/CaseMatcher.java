@@ -108,7 +108,7 @@ final class CaseMatcher {
 			if (value.isEmpty()) {
 				continue;
 			}
-			List<Case> candidates = found.get(column).getOrDefault(value, List.of());
+			List<Case> candidates = sameDisease(draft, column, found.get(column).getOrDefault(value, List.of()));
 			if (candidates.isEmpty()) {
 				continue;
 			}
@@ -122,6 +122,15 @@ final class CaseMatcher {
 			chosen = candidates.get(0);
 		}
 		return chosen;
+	}
+
+	// SORMAS keeps epid numbers unique per disease, not globally
+	private static List<Case> sameDisease(PlannedRecord draft, String column, List<Case> candidates) {
+		CaseDataDto caze = draft.target(CASE);
+		if (!EPID_NUMBER.equals(column) || caze.getDisease() == null) {
+			return candidates;
+		}
+		return candidates.stream().filter(candidate -> candidate.getDisease() == caze.getDisease()).collect(Collectors.toList());
 	}
 
 	private static Map<String, String> idColumns() {

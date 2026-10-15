@@ -15,6 +15,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.BlockCommitter;
@@ -46,6 +47,7 @@ public class CaseTemplateBlockCommitter implements BlockCommitter {
 
 	private void save(PlannedRecord caseRecord) {
 		if (caseRecord.operation() != OperationType.UNCHANGED) {
+			PersonHelper.sanitizeNonHomeAddress(caseRecord.target(PERSON));
 			PersonDto person = personFacade.save(caseRecord.<PersonDto> target(PERSON));
 			CaseDataDto caze = caseRecord.target(CASE);
 			caze.setPerson(person.toReference());

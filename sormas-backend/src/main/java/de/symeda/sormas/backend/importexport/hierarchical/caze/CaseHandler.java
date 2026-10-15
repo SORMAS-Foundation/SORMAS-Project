@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
 import de.symeda.sormas.api.importexport.hierarchical.OperationType;
@@ -167,6 +168,10 @@ final class CaseHandler implements LevelHandler {
 		}
 		if (RejectedRecords.alreadyRejected(record)) {
 			return;
+		}
+		CaseDataDto caze = record.target(CASE);
+		if (caze.getEpidNumber() != null && caseFacade.doesEpidNumberExist(caze.getEpidNumber(), caze.getUuid(), caze.getDisease())) {
+			record.reportIssue(CaseTemplateSchema.EPID_NUMBER, I18nProperties.getString(Strings.messageEpidNumberWarning));
 		}
 		try {
 			personFacade.validate(record.target(PERSON));

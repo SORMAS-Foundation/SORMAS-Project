@@ -16,12 +16,14 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportColumn;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
@@ -411,6 +413,49 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		assertEquals(
 			getPersonFacade().getByUuid(classicCase.getPerson().getUuid()).getSex(),
 			getPersonFacade().getByUuid(nestedCase.getPerson().getUuid()).getSex());
+	}
+
+	@Test
+	public void anEpidNumberOfAnotherDiseasesCaseIsNotMatched() {
+		CaseDataDto covid = creator.createCase(nationalAdmin.toReference(), rdcf, c -> {
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setEpidNumber("AAA-BBB-CCC-26-001");
+		});
+
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW));
+
+		assertEquals(List.of(), preview.allIssues());
+		assertEquals(MatchReason.NEW, preview.getBlocks().get(0).getOperations().get(0).getMatchReason());
+		assertEquals(Disease.CORONAVIRUS, getCaseFacade().getByUuid(covid.getUuid()).getDisease());
+	}
+
+	@Test
+	public void aNewCaseWithAnEpidNumberThatAlreadyExistsIsRejectedLikeTheClassicImport() {
+		creator.createCase(nationalAdmin.toReference(), rdcf, c -> {
+			c.setDisease(Disease.TUBERCULOSIS);
+			c.setEpidNumber("AAA-BBB-CCC-26-001");
+		});
+
+		ImportPreviewDto preview = facade
+			.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW.replace("| AAA-BBB-CCC-26-001 |", "| AAA-BBB-CCC-26-1 |")));
+
+		assertEquals(BlockStatus.ERROR, preview.getBlocks().get(0).getStatus());
+		assertEquals(CaseTemplateSchema.EPID_NUMBER, preview.getBlocks().get(0).getIssues().get(0).getColumn());
+		assertEquals(I18nProperties.getString(Strings.messageEpidNumberWarning), preview.getBlocks().get(0).getIssues().get(0).getMessage());
+	}
+
+	@Test
+	public void aNonHomeAddressIsMovedToTheOtherAddressesLikeTheClassicImport() {
+		ImportSheet sheet = SheetFixtures.table(
+			NEW_CASE_HEADER.replace("| Person.person.sex |", "| Person.person.sex | Location.person.address.addressType | Location.person.address.city |"),
+			NEW_CASE_ROW.replace("| MALE |", "| MALE | PLACE_OF_WORK | Esch |"));
+
+		facade.saveImport(CASE_TEMPLATE, sheet, facade.checkImport(CASE_TEMPLATE, sheet).readyFingerprints());
+
+		PersonDto person = getPersonFacade().getByUuid(onlyCase().getPerson().getUuid());
+		assertNull(person.getAddress().getCity());
+		assertEquals(1, person.getAddresses().size());
+		assertEquals("Esch", person.getAddresses().get(0).getCity());
 	}
 
 	@Test
