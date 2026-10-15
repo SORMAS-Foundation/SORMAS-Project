@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1822,6 +1823,26 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		return super.getEditPermissionType(caze);
+	}
+
+	public Map<Case, EditPermissionType> getEditPermissionTypes(List<Case> cases) {
+		Set<Long> inJurisdiction = new HashSet<>(getInJurisdictionIds(cases));
+		Set<Long> handedOver = sormasToSormasShareInfoService.getCaseIdsWithOwnershipHandedOver(cases);
+		Set<Long> receivedWithoutOwnership = new HashSet<>(
+			getIdList(
+				cases,
+				(cb, cq, root) -> cb.isFalse(root.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER))));
+		Map<Case, EditPermissionType> types = new HashMap<>();
+		for (Case caze : cases) {
+			if (!inJurisdiction.contains(caze.getId())) {
+				types.put(caze, EditPermissionType.OUTSIDE_JURISDICTION);
+			} else if (handedOver.contains(caze.getId()) || receivedWithoutOwnership.contains(caze.getId())) {
+				types.put(caze, EditPermissionType.WITHOUT_OWNERSHIP);
+			} else {
+				types.put(caze, super.getEditPermissionType(caze));
+			}
+		}
+		return types;
 	}
 
 	@Override

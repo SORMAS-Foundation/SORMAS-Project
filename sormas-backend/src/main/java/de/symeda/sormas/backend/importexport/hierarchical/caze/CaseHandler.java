@@ -159,8 +159,9 @@ final class CaseHandler implements LevelHandler {
 	private Map<ImportNode, Match> existingMatches(Map<ImportNode, Case> found, MatchReason reason) {
 		Map<ImportNode, Match> matches = new IdentityHashMap<>();
 		Map<ImportNode, Case> editable = new IdentityHashMap<>();
+		Map<Case, EditPermissionType> permissions = caseService.getEditPermissionTypes(found.values().stream().distinct().collect(Collectors.toList()));
 		found.forEach((node, caze) -> {
-			if (caseService.getEditPermissionType(caze) == EditPermissionType.ALLOWED) {
+			if (permissions.get(caze) == EditPermissionType.ALLOWED) {
 				editable.put(node, caze);
 			} else {
 				matches.put(node, Match.error(null, I18nProperties.getValidationError(Validations.importHierarchicalCaseNotEditable, caze.getUuid())));
