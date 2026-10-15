@@ -30,6 +30,23 @@ class ValidationIssuesTest {
 	}
 
 	@Test
+	void namesAFieldErrorByTheFileHeaderOfItsCell() {
+		ImportNode node = new ImportNode(
+			CaseTemplateSchema.CASE_LEVEL,
+			2,
+			Map.of("Person.person.firstName", "Jean", "Symptoms.symptoms.otherNonHemorrhagicSymptomsText", "cough"));
+
+		ValidationIssues.report(node, CaseTemplateSchema.PERSON, new ValidationRuntimeException(Map.of(List.of("firstName"), "too long")));
+		ValidationIssues.report(
+			node,
+			CaseTemplateSchema.CASE,
+			new ValidationRuntimeException(Map.of(List.of("symptoms", "otherNonHemorrhagicSymptomsText"), "too long")));
+
+		assertEquals("Person.person.firstName", node.issues().get(0).getColumn());
+		assertEquals("Symptoms.symptoms.otherNonHemorrhagicSymptomsText", node.issues().get(1).getColumn());
+	}
+
+	@Test
 	void keepsAPlainMessageWithoutAColumn() {
 		ImportNode node = node();
 
