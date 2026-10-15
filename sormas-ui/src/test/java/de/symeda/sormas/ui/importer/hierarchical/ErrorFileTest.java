@@ -3,10 +3,16 @@ package de.symeda.sormas.ui.importer.hierarchical;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import com.opencsv.CSVWriter;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -14,6 +20,8 @@ import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheetRow;
+import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.ui.caze.importer.ImportFormatDetector;
 
 class ErrorFileTest {
 
@@ -46,5 +54,24 @@ class ErrorFileTest {
 		List<String[]> rows = ErrorFile.rows(sheet, List.of(), List.of(orphan));
 
 		assertArrayEquals(new String[] { "orphan", "PCR" }, rows.get(2));
+	}
+
+	@Test
+	void aWrittenErrorFileReadsBackAsTheSameNestedSheet() throws IOException {
+		ImportSheet sheet = new ImportSheet(
+			List.of("CaseData.epidNumber", "Person.person.firstName", "Sample.fieldSampleID"),
+			List.of(new ImportSheetRow(2, List.of("A", "Jean; \"JJ\"", "S1")), new ImportSheetRow(3, List.of("", "", "S2"))));
+		ImportIssueDto issue = new ImportIssueDto(ImportIssueKind.BLOCK, 2, null, "bad; \"quoted\", sample");
+		StringWriter out = new StringWriter();
+		try (CSVWriter writer = CSVUtils.createCSVWriter(out, ';')) {
+			ErrorFile.rows(sheet, List.of(new ErrorFile.FailedBlock(2, 3, List.of(issue))), List.of()).forEach(writer::writeNext);
+		}
+
+		ImportSheet reread = SheetReader.read(new ByteArrayInputStream(out.toString().getBytes(StandardCharsets.UTF_8)), ';');
+
+		assertEquals(sheet.getHeaders(), reread.getHeaders());
+		assertEquals(sheet.getRows().get(0).getCells(), reread.getRows().get(0).getCells());
+		assertEquals(sheet.getRows().get(1).getCells(), reread.getRows().get(1).getCells());
+		assertEquals(ImportFormatDetector.ImportFormat.NESTED, ImportFormatDetector.detect(reread));
 	}
 }

@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.caze.importer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -56,6 +57,13 @@ class CaseImportRouterTest {
 		CaseImportRouter.route(file, ',', () -> classic.set(true), sheet -> fail());
 
 		assertTrue(classic.get());
+	}
+
+	@Test
+	void anUnreadableFileReachesNeitherImporter() {
+		File missing = folder.resolve("missing.csv").toFile();
+
+		assertThrows(IOException.class, () -> CaseImportRouter.route(missing, ',', () -> fail(), sheet -> fail()));
 	}
 
 	private File write(String csv) throws IOException {
