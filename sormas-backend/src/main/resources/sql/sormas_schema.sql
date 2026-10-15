@@ -17778,50 +17778,51 @@ INSERT INTO schema_version (version_number, comment) VALUES (676, '#14356 - Carr
 -- 2. Store symptom states by name instead of ordinal (0 = YES, 1 = NO, 2 = UNKNOWN)
 -- 3. Merge the deprecated duplicate symptoms into their replacing fields
 -- 4. Move patientIllLocation from symptoms to epidata
+-- IF NOT EXISTS: databases that already got some of these columns (e.g. from an earlier run of this branch) do not fail
 
 -- #14326 - Diphtheria clinical criteria
 ALTER TABLE symptoms
-    ADD COLUMN conjunctivalpresentation varchar(255),
-    ADD COLUMN cutaneouspresentation varchar(255),
-    ADD COLUMN genitalpresentation varchar(255),
-    ADD COLUMN nasaldischargecleartobloody varchar(255),
-    ADD COLUMN otherclinicalcriteria varchar(255),
-    ADD COLUMN otherclinicalcriteriatext varchar(512),
-    ADD COLUMN respiratoryandcutaneouspresentation varchar(255),
-    ADD COLUMN respiratorywithmembrane varchar(255),
-    ADD COLUMN respiratorywithoutmembrane varchar(255),
-    ADD COLUMN unknownclinicalcriteria varchar(255);
+    ADD COLUMN IF NOT EXISTS conjunctivalpresentation varchar(255),
+    ADD COLUMN IF NOT EXISTS cutaneouspresentation varchar(255),
+    ADD COLUMN IF NOT EXISTS genitalpresentation varchar(255),
+    ADD COLUMN IF NOT EXISTS nasaldischargecleartobloody varchar(255),
+    ADD COLUMN IF NOT EXISTS otherclinicalcriteria varchar(255),
+    ADD COLUMN IF NOT EXISTS otherclinicalcriteriatext varchar(512),
+    ADD COLUMN IF NOT EXISTS respiratoryandcutaneouspresentation varchar(255),
+    ADD COLUMN IF NOT EXISTS respiratorywithmembrane varchar(255),
+    ADD COLUMN IF NOT EXISTS respiratorywithoutmembrane varchar(255),
+    ADD COLUMN IF NOT EXISTS unknownclinicalcriteria varchar(255);
 
 ALTER TABLE symptoms_history
-    ADD COLUMN conjunctivalpresentation varchar(255),
-    ADD COLUMN cutaneouspresentation varchar(255),
-    ADD COLUMN genitalpresentation varchar(255),
-    ADD COLUMN nasaldischargecleartobloody varchar(255),
-    ADD COLUMN otherclinicalcriteria varchar(255),
-    ADD COLUMN otherclinicalcriteriatext varchar(512),
-    ADD COLUMN respiratoryandcutaneouspresentation varchar(255),
-    ADD COLUMN respiratorywithmembrane varchar(255),
-    ADD COLUMN respiratorywithoutmembrane varchar(255),
-    ADD COLUMN unknownclinicalcriteria varchar(255);
+    ADD COLUMN IF NOT EXISTS conjunctivalpresentation varchar(255),
+    ADD COLUMN IF NOT EXISTS cutaneouspresentation varchar(255),
+    ADD COLUMN IF NOT EXISTS genitalpresentation varchar(255),
+    ADD COLUMN IF NOT EXISTS nasaldischargecleartobloody varchar(255),
+    ADD COLUMN IF NOT EXISTS otherclinicalcriteria varchar(255),
+    ADD COLUMN IF NOT EXISTS otherclinicalcriteriatext varchar(512),
+    ADD COLUMN IF NOT EXISTS respiratoryandcutaneouspresentation varchar(255),
+    ADD COLUMN IF NOT EXISTS respiratorywithmembrane varchar(255),
+    ADD COLUMN IF NOT EXISTS respiratorywithoutmembrane varchar(255),
+    ADD COLUMN IF NOT EXISTS unknownclinicalcriteria varchar(255);
 
 -- #14326 - Diphtheria complication diagnosis
 ALTER TABLE symptoms
-    ADD COLUMN nocomplicationdiagnosis varchar(255),
-    ADD COLUMN cardiacdisorder varchar(255),
-    ADD COLUMN neurologicalcomplicationdiagnosis varchar(255),
-    ADD COLUMN neurologicalandcardiacdisorder varchar(255),
-    ADD COLUMN othercomplicationdiagnosis varchar(255),
-    ADD COLUMN othercomplicationdiagnosistext varchar(512),
-    ADD COLUMN unknowncomplicationdiagnosis varchar(255);
+    ADD COLUMN IF NOT EXISTS nocomplicationdiagnosis varchar(255),
+    ADD COLUMN IF NOT EXISTS cardiacdisorder varchar(255),
+    ADD COLUMN IF NOT EXISTS neurologicalcomplicationdiagnosis varchar(255),
+    ADD COLUMN IF NOT EXISTS neurologicalandcardiacdisorder varchar(255),
+    ADD COLUMN IF NOT EXISTS othercomplicationdiagnosis varchar(255),
+    ADD COLUMN IF NOT EXISTS othercomplicationdiagnosistext varchar(512),
+    ADD COLUMN IF NOT EXISTS unknowncomplicationdiagnosis varchar(255);
 
 ALTER TABLE symptoms_history
-    ADD COLUMN nocomplicationdiagnosis varchar(255),
-    ADD COLUMN cardiacdisorder varchar(255),
-    ADD COLUMN neurologicalcomplicationdiagnosis varchar(255),
-    ADD COLUMN neurologicalandcardiacdisorder varchar(255),
-    ADD COLUMN othercomplicationdiagnosis varchar(255),
-    ADD COLUMN othercomplicationdiagnosistext varchar(512),
-    ADD COLUMN unknowncomplicationdiagnosis varchar(255);
+    ADD COLUMN IF NOT EXISTS nocomplicationdiagnosis varchar(255),
+    ADD COLUMN IF NOT EXISTS cardiacdisorder varchar(255),
+    ADD COLUMN IF NOT EXISTS neurologicalcomplicationdiagnosis varchar(255),
+    ADD COLUMN IF NOT EXISTS neurologicalandcardiacdisorder varchar(255),
+    ADD COLUMN IF NOT EXISTS othercomplicationdiagnosis varchar(255),
+    ADD COLUMN IF NOT EXISTS othercomplicationdiagnosistext varchar(512),
+    ADD COLUMN IF NOT EXISTS unknowncomplicationdiagnosis varchar(255);
 
 -- #13399 - Store symptom states by name instead of ordinal
 CREATE OR REPLACE FUNCTION pg_temp.symptomstate_ordinal_to_name(val varchar) RETURNS varchar AS $$
@@ -17913,8 +17914,8 @@ ALTER TABLE symptoms ENABLE TRIGGER versioning_trigger;
 -- Only the case symptoms are copied: the field is hidden for visits and clinical visits,
 -- and a contact has no symptoms. An epidata value that is already set is not overwritten.
 -- The symptoms column is kept for older app versions and REST clients.
-ALTER TABLE epidata ADD COLUMN patientilllocation varchar(512);
-ALTER TABLE epidata_history ADD COLUMN patientilllocation varchar(512);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS patientilllocation varchar(512);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS patientilllocation varchar(512);
 
 ALTER TABLE epidata DISABLE TRIGGER versioning_trigger;
 
@@ -17929,6 +17930,18 @@ WHERE c.epidata_id = epidata.id
 
 ALTER TABLE epidata ENABLE TRIGGER versioning_trigger;
 
-INSERT INTO schema_version (version_number, comment) VALUES (677, '#13399, #14326 - Symptoms regrouping and Diphtheria symptoms');
+-- #14353 Add sexual exposure category for syphilis and gonococcal infection
+
+UPDATE diseaseconfiguration dc
+SET exposurecategories = (
+    SELECT string_agg(DISTINCT cat, ',')
+    FROM unnest(coalesce(string_to_array(dc.exposurecategories, ','), '{}') || ARRAY['SEXUAL']) AS cat
+),
+    changedate = now()
+WHERE dc.disease IN ('SYPHILIS', 'GONOCOCCAL_INFECTION')
+  AND (dc.exposurecategories IS NULL
+    OR NOT string_to_array(dc.exposurecategories, ',') @> ARRAY['SEXUAL']);
+
+INSERT INTO schema_version (version_number, comment) VALUES (677, '#13399, #14326, #14352 - Symptoms regrouping, Diphtheria symptoms and added the sexual exposure category for syphilis and gonococcal infection');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

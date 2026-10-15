@@ -67,16 +67,23 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 /**
- * Tests the symptom grouping of {@link SymptomsForm} (built by {@link SymptomGroupLayout}) and the Diphtheria specific
- * behaviour. A field counts as displayed only when it and all its parents up to the form are visible; a hidden dependent
- * is not hidden with setVisible(false), its slot is detached from the group instead.
+ * Tests the symptom grouping of {@link SymptomsForm} (built by
+ * {@link SymptomGroupLayout}) and the Diphtheria specific
+ * behaviour. A field counts as displayed only when it and all its parents up to
+ * the form are visible; a hidden dependent
+ * is not hidden with setVisible(false), its slot is detached from the group
+ * instead.
  */
 class SymptomsFormTest extends AbstractUiBeanTest {
 
-	// --- Diphtheria: Clinical presentation and System disorders ---------------------------------------------------------
+	// --- Diphtheria: Clinical presentation and System disorders
+	// ---------------------------------------------------------
+	// the Diphtheria fields are @HideForCountriesExcept(LUXEMBOURG), so these tests
+	// run for Luxembourg
 
 	@Test
 	void shouldDisplayClinicalPresentationSectionForDiphtheria() {
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.DIPHTHERIA);
 
 		assertTrue(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.CLINICAL_PRESENTATION)));
@@ -89,6 +96,7 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldDisplayComplicationDiagnosisFieldsForDiphtheria() {
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.DIPHTHERIA);
 
 		assertTrue(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.SYSTEM_DISORDER)));
@@ -103,7 +111,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 	void shouldNotOfferDiphtheriaFieldsForOtherDiseases() {
 		SymptomsForm form = createForm(Disease.PERTUSSIS);
 
-		// Clinical presentation is still shown for Pertussis because of asymptomatic, so only System disorders is Diphtheria specific
+		// Clinical presentation is still shown for Pertussis because of asymptomatic,
+		// so only System disorders is Diphtheria specific
 		assertFalse(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.SYSTEM_DISORDER)));
 		assertFalse(isDisplayed(form, form.getField(SymptomsDto.CONJUNCTIVAL_PRESENTATION)));
 		assertFalse(isDisplayed(form, form.getField(SymptomsDto.NO_COMPLICATION_DIAGNOSIS)));
@@ -111,17 +120,18 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldShowOtherClinicalCriteriaTextOnlyWhenOtherClinicalCriteriaIsYes() {
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.DIPHTHERIA);
 		NullableOptionGroup otherClinicalCriteria = form.getField(SymptomsDto.OTHER_CLINICAL_CRITERIA);
 		TextField otherClinicalCriteriaText = form.getField(SymptomsDto.OTHER_CLINICAL_CRITERIA_TEXT);
 
 		assertFalse(isDisplayed(form, otherClinicalCriteriaText));
 
-		otherClinicalCriteria.setNullableValue(YesNoUnknown.YES);
+		otherClinicalCriteria.setNullableValue(SymptomState.YES);
 		assertTrue(isDisplayed(form, otherClinicalCriteriaText));
 
 		otherClinicalCriteriaText.setValue("Swollen neck");
-		otherClinicalCriteria.setNullableValue(YesNoUnknown.NO);
+		otherClinicalCriteria.setNullableValue(SymptomState.NO);
 		assertFalse(isDisplayed(form, otherClinicalCriteriaText));
 		// a value the user can no longer see must not be saved
 		assertTrue(otherClinicalCriteriaText.isEmpty());
@@ -129,24 +139,26 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldShowOtherComplicationDiagnosisTextOnlyWhenOtherComplicationDiagnosisIsYes() {
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.DIPHTHERIA);
 		NullableOptionGroup otherComplicationDiagnosis = form.getField(SymptomsDto.OTHER_COMPLICATION_DIAGNOSIS);
 		Field<?> otherComplicationDiagnosisText = form.getField(SymptomsDto.OTHER_COMPLICATION_DIAGNOSIS_TEXT);
 
 		assertFalse(isDisplayed(form, otherComplicationDiagnosisText));
 
-		otherComplicationDiagnosis.setNullableValue(YesNoUnknown.YES);
+		otherComplicationDiagnosis.setNullableValue(SymptomState.YES);
 		assertTrue(isDisplayed(form, otherComplicationDiagnosisText));
 
-		otherComplicationDiagnosis.setNullableValue(YesNoUnknown.UNKNOWN);
+		otherComplicationDiagnosis.setNullableValue(SymptomState.UNKNOWN);
 		assertFalse(isDisplayed(form, otherComplicationDiagnosisText));
 	}
 
 	@Test
 	void shouldKeepSavedOtherClinicalCriteriaTextWhenLoadingExistingSymptoms() {
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.DIPHTHERIA);
 		SymptomsDto symptoms = SymptomsDto.build();
-		symptoms.setOtherClinicalCriteria(YesNoUnknown.YES);
+		symptoms.setOtherClinicalCriteria(SymptomState.YES);
 		symptoms.setOtherClinicalCriteriaText("Swollen neck");
 
 		assertDoesNotThrow(() -> form.setValue(symptoms));
@@ -156,7 +168,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertTrue("Swollen neck".equals(otherClinicalCriteriaText.getValue()));
 	}
 
-	// --- Diphtheria: Clinical measurements ------------------------------------------------------------------------------
+	// --- Diphtheria: Clinical measurements
+	// ------------------------------------------------------------------------------
 
 	@Test
 	void shouldHideClinicalMeasurementsButKeepHintAndButtonsForDiphtheria() {
@@ -172,7 +185,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertTrue(isButtonDisplayed(form, I18nProperties.getCaption(Captions.symptomsSetClearedToUnknown)));
 	}
 
-	// --- First symptom drop-down ----------------------------------------------------------------------------------------
+	// --- First symptom drop-down
+	// ----------------------------------------------------------------------------------------
 
 	@Test
 	void shouldNotOfferAsymptomaticAsFirstSymptom() {
@@ -189,11 +203,13 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertTrue(onsetSymptom.getItemIds().contains(fever.getCaption()));
 	}
 
-	// --- Parent/child layout --------------------------------------------------------------------------------------------
+	// --- Parent/child layout
+	// --------------------------------------------------------------------------------------------
 
 	@Test
 	void shouldShowCrossGroupDependentInItsOwnGroup() {
-		// jaundice is in GASTROINTESTINAL, its dependent jaundiceWithin24HoursOfBirth in METABOLIC
+		// jaundice is in GASTROINTESTINAL, its dependent jaundiceWithin24HoursOfBirth
+		// in METABOLIC
 		SymptomsForm form = createForm(Disease.CONGENITAL_RUBELLA);
 		NullableOptionGroup jaundice = form.getField(SymptomsDto.JAUNDICE);
 		Field<?> jaundiceWithin24HoursOfBirth = form.getField(SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH);
@@ -222,7 +238,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldShowNestedDependentOnlyWhileAllParentsAreYes() {
-		// unexplainedBleeding -> otherHemorrhagicSymptoms -> otherHemorrhagicSymptomsText
+		// unexplainedBleeding -> otherHemorrhagicSymptoms ->
+		// otherHemorrhagicSymptomsText
 		SymptomsForm form = createForm(Disease.EVD);
 		NullableOptionGroup unexplainedBleeding = form.getField(SymptomsDto.UNEXPLAINED_BLEEDING);
 		NullableOptionGroup otherHemorrhagicSymptoms = form.getField(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS);
@@ -246,23 +263,28 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldPlaceEveryVisibleDiphtheriaFieldInTheLayout() {
-		// fields hidden before SymptomGroupLayout.build() are never placed (see the jaundice bug),
-		// so every field that is visible and not a dependent must be reachable from the form
+		// fields hidden before SymptomGroupLayout.build() are never placed (see the
+		// jaundice bug),
+		// so every field that is visible and not a dependent must be reachable from the
+		// form
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.DIPHTHERIA);
 
 		for (String fieldId : new String[] {
-			SymptomsDto.CONJUNCTIVAL_PRESENTATION,
-			SymptomsDto.GENITAL_PRESENTATION,
-			SymptomsDto.NASAL_DISCHARGE_CLEAR_TO_BLOODY,
-			SymptomsDto.RESPIRATORY_AND_CUTANEOUS_PRESENTATION,
-			SymptomsDto.RESPIRATORY_WITHOUT_MEMBRANE,
-			SymptomsDto.NEUROLOGICAL_AND_CARDIAC_DISORDER }) {
+				SymptomsDto.CONJUNCTIVAL_PRESENTATION,
+				SymptomsDto.GENITAL_PRESENTATION,
+				SymptomsDto.NASAL_DISCHARGE_CLEAR_TO_BLOODY,
+				SymptomsDto.RESPIRATORY_AND_CUTANEOUS_PRESENTATION,
+				SymptomsDto.RESPIRATORY_WITHOUT_MEMBRANE,
+				SymptomsDto.NEUROLOGICAL_AND_CARDIAC_DISORDER }) {
 			assertTrue(isDisplayed(form, form.getField(fieldId)), fieldId + " is not displayed");
 		}
 	}
 
-	// --- Skin rash onset date (replaces the commented SKIN_RASH listener in SymptomsForm) --------------------------------
-	// skinRashOnsetDate: @Diseases(MEASLES), @HideForCountriesExcept(LUXEMBOURG), @DependantOn(SKIN_RASH), group SKIN
+	// --- Skin rash onset date (replaces the commented SKIN_RASH listener in
+	// SymptomsForm) --------------------------------
+	// skinRashOnsetDate: @Diseases(MEASLES), @HideForCountriesExcept(LUXEMBOURG),
+	// @DependantOn(SKIN_RASH), group SKIN
 
 	@Test
 	void shouldShowSkinRashOnsetDateOnlyWhileSkinRashIsYesForLuxembourgMeasles() {
@@ -316,7 +338,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldUseSkinRashOnsetDateCaptionOnTheFieldItself() {
-		// the removed code toggled a separate caption label; the field now carries the caption
+		// the removed code toggled a separate caption label; the field now carries the
+		// caption
 		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.MEASLES);
 		NullableOptionGroup skinRash = form.getField(SymptomsDto.SKIN_RASH);
@@ -348,15 +371,16 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertFalse(isDisplayed(form, form.getField(SymptomsDto.SKIN_RASH_ONSET_DATE)));
 	}
 
-	// --- Group headings (replaces the commented symptomGroupVisibility() in SymptomsForm) -------------------------------
+	// --- Group headings (replaces the commented symptomGroupVisibility() in
+	// SymptomsForm) -------------------------------
 
 	@Test
 	void shouldOnlyDisplayGroupHeadingsThatHaveADisplayedField() {
 		for (Disease disease : new Disease[] {
-			Disease.DIPHTHERIA,
-			Disease.MEASLES,
-			Disease.CONGENITAL_RUBELLA,
-			Disease.EVD }) {
+				Disease.DIPHTHERIA,
+				Disease.MEASLES,
+				Disease.CONGENITAL_RUBELLA,
+				Disease.EVD }) {
 			assertEveryDisplayedSectionHasADisplayedField(createForm(disease), disease.name());
 		}
 	}
@@ -370,7 +394,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldHideSectionHeadingAgainWhenItsOnlyDependentIsHidden() {
-		// Metabolic only holds jaundiceWithin24HoursOfBirth, a dependent of jaundice (Gastrointestinal)
+		// Metabolic only holds jaundiceWithin24HoursOfBirth, a dependent of jaundice
+		// (Gastrointestinal)
 		SymptomsForm form = createForm(Disease.CONGENITAL_RUBELLA);
 		NullableOptionGroup jaundice = form.getField(SymptomsDto.JAUNDICE);
 		String metabolic = I18nProperties.getEnumCaption(SymptomGroup.METABOLIC);
@@ -382,7 +407,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertFalse(isLabelDisplayed(form, metabolic));
 	}
 
-	// --- "Other" selected opens its text field --------------------------------------------------------------------------
+	// --- "Other" selected opens its text field
+	// --------------------------------------------------------------------------
 
 	@Test
 	void shouldOpenOtherClinicalPresentationTextWhenOtherClinicalPresentationIsYes() {
@@ -404,7 +430,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldAlwaysDisplayOtherClinicalPresentationTextForLuxembourgTuberculosis() {
-		// otherClinicalPresentation is not available for TB, so its text has no parent and is a standalone field
+		// otherClinicalPresentation is not available for TB, so its text has no parent
+		// and is a standalone field
 		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.TUBERCULOSIS);
 
@@ -414,22 +441,25 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldShowSpecifyOtherSymptomsUnderOtherGroupForLuxembourgTuberculosis() {
-		// "Specify other symptoms" (@SymptomGrouping(OTHER)) is shown in the Other section, not in Clinical presentation
+		// "Specify other symptoms" (@SymptomGrouping(OTHER)) is shown in the Other
+		// section, not in Clinical presentation
 		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.TUBERCULOSIS);
 		Field<?> specifyOtherSymptoms = form.getField(SymptomsDto.OTHER_CLINICAL_PRESENTATION_TEXT);
 
 		assertInSection(form, SymptomsDto.OTHER_CLINICAL_PRESENTATION_TEXT, SymptomGroup.OTHER);
 		assertTrue(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.OTHER)));
-		assertNotSame(sectionOf(form.getField(SymptomsDto.CLINICAL_PRESENTATION_STATUS)), sectionOf(specifyOtherSymptoms));
+		assertNotSame(sectionOf(form.getField(SymptomsDto.CLINICAL_PRESENTATION_STATUS)),
+				sectionOf(specifyOtherSymptoms));
 		assertEquals(
-			I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.OTHER_CLINICAL_PRESENTATION_TEXT),
-			specifyOtherSymptoms.getCaption());
+				I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.OTHER_CLINICAL_PRESENTATION_TEXT),
+				specifyOtherSymptoms.getCaption());
 	}
 
 	@Test
 	void shouldKeepSpecifyOtherSymptomsValueForLuxembourgTuberculosis() {
-		// without a parent, nothing hides or clears the text: an entered or saved value stays
+		// without a parent, nothing hides or clears the text: an entered or saved value
+		// stays
 		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		SymptomsForm form = createForm(Disease.TUBERCULOSIS);
 		SymptomsDto symptoms = SymptomsDto.build();
@@ -448,11 +478,16 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertEquals("Night sweats", specifyOtherSymptoms.getValue());
 	}
 
-	// --- Luxembourg Tuberculosis localisation (replaces the commented setVisibleWhen block after the layout build) --------
-	// MAJOR_SITE when DIAGNOSIS = EXTRAPULMONARY       -> @DependantOn(DIAGNOSIS) + customShowConditions
-	// OTHER_MAJOR_SITE_DETAILS when MAJOR_SITE = OTHER -> @DependantOn(MAJOR_SITE) + customShowConditions
-	// OTHER_MINOR_SITE_DETAILS when MINOR_SITE = OTHER -> @DependantOn(MINOR_SITE) + customShowConditions
-	// setVisibleWhen(..., true) also cleared the hidden field, so every test checks the value is cleared as well
+	// --- Luxembourg Tuberculosis localisation (replaces the commented
+	// setVisibleWhen block after the layout build) --------
+	// MAJOR_SITE when DIAGNOSIS = EXTRAPULMONARY -> @DependantOn(DIAGNOSIS) +
+	// customShowConditions
+	// OTHER_MAJOR_SITE_DETAILS when MAJOR_SITE = OTHER -> @DependantOn(MAJOR_SITE)
+	// + customShowConditions
+	// OTHER_MINOR_SITE_DETAILS when MINOR_SITE = OTHER -> @DependantOn(MINOR_SITE)
+	// + customShowConditions
+	// setVisibleWhen(..., true) also cleared the hidden field, so every test checks
+	// the value is cleared as well
 
 	@Test
 	void shouldOpenMajorSiteOnlyForExtrapulmonaryDiagnosisForLuxembourgTuberculosis() {
@@ -573,33 +608,38 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldNotOfferLocalisationOutsideLuxembourg() {
-		// the localisation fields are only added to the form for Luxembourg Tuberculosis
+		// the localisation fields are only added to the form for Luxembourg
+		// Tuberculosis
 		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_FRANCE);
 		SymptomsForm form = createForm(Disease.TUBERCULOSIS);
 
 		for (String fieldId : new String[] {
-			SymptomsDto.DIAGNOSIS,
-			SymptomsDto.MAJOR_SITE,
-			SymptomsDto.MINOR_SITE,
-			SymptomsDto.OTHER_MAJOR_SITE_DETAILS,
-			SymptomsDto.OTHER_MINOR_SITE_DETAILS }) {
+				SymptomsDto.DIAGNOSIS,
+				SymptomsDto.MAJOR_SITE,
+				SymptomsDto.MINOR_SITE,
+				SymptomsDto.OTHER_MAJOR_SITE_DETAILS,
+				SymptomsDto.OTHER_MINOR_SITE_DETAILS }) {
 			assertFalse(isDisplayed(form, form.getField(fieldId)), fieldId + " is displayed");
 		}
 		assertFalse(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.LOCALISATION)));
 	}
 
-	/** Any selectable site other than OTHER, taken from the drop-down itself, so the test follows InfectionSite.filter(). */
+	/**
+	 * Any selectable site other than OTHER, taken from the drop-down itself, so the
+	 * test follows InfectionSite.filter().
+	 */
 	private static InfectionSite anotherSiteThanOther(ComboBox siteField) {
 		return siteField.getItemIds()
-			.stream()
-			.map(InfectionSite.class::cast)
-			.filter(site -> site != InfectionSite.OTHER)
-			.findFirst()
-			.orElseThrow(() -> new AssertionError("no site other than OTHER in " + siteField.getId()));
+				.stream()
+				.map(InfectionSite.class::cast)
+				.filter(site -> site != InfectionSite.OTHER)
+				.findFirst()
+				.orElseThrow(() -> new AssertionError("no site other than OTHER in " + siteField.getId()));
 	}
 
 	private static void assertEveryDisplayedSectionHasADisplayedField(SymptomsForm form, String context) {
-		Set<String> groupTitles = Arrays.stream(SymptomGroup.values()).map(I18nProperties::getEnumCaption).collect(Collectors.toSet());
+		Set<String> groupTitles = Arrays.stream(SymptomGroup.values()).map(I18nProperties::getEnumCaption)
+				.collect(Collectors.toSet());
 		List<VerticalLayout> sections = new ArrayList<>();
 		collectSections(form, groupTitles, sections);
 
@@ -607,17 +647,21 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		for (VerticalLayout section : sections) {
 			String title = ((Label) section.getComponent(0)).getValue();
 			if (isDisplayed(form, section)) {
-				assertTrue(anyDisplayed(form, section, c -> c instanceof Field), context + ": section '" + title + "' is shown without a field");
+				assertTrue(anyDisplayed(form, section, c -> c instanceof Field),
+						context + ": section '" + title + "' is shown without a field");
 			}
 		}
 	}
 
-	/** A group section is a VerticalLayout whose first component is a Label with the caption of a SymptomGroup. */
+	/**
+	 * A group section is a VerticalLayout whose first component is a Label with the
+	 * caption of a SymptomGroup.
+	 */
 	private static void collectSections(Component root, Set<String> groupTitles, List<VerticalLayout> sections) {
 		if (root instanceof VerticalLayout
-			&& ((VerticalLayout) root).getComponentCount() > 0
-			&& ((VerticalLayout) root).getComponent(0) instanceof Label
-			&& groupTitles.contains(((Label) ((VerticalLayout) root).getComponent(0)).getValue())) {
+				&& ((VerticalLayout) root).getComponentCount() > 0
+				&& ((VerticalLayout) root).getComponent(0) instanceof Label
+				&& groupTitles.contains(((Label) ((VerticalLayout) root).getComponent(0)).getValue())) {
 			sections.add((VerticalLayout) root);
 		}
 		if (root instanceof HasComponents) {
@@ -628,10 +672,14 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	}
 
-	// --- Luxembourg Tuberculosis form (replaces the old commented TB block with its heading labels) ----------------------
-	// clinicalPresentationHeadingLabel / localisationHeadingLabel -> group sections of SymptomGroupLayout
-	// clinicalMeasurementsHeadingLabel, respiratory and complications headings -> no section without a displayed field
-	// symptomsHint and clear/set buttons -> hidden by the active isLuxTuberculosis code before the layout build
+	// --- Luxembourg Tuberculosis form (replaces the old commented TB block with
+	// its heading labels) ----------------------
+	// clinicalPresentationHeadingLabel / localisationHeadingLabel -> group sections
+	// of SymptomGroupLayout
+	// clinicalMeasurementsHeadingLabel, respiratory and complications headings ->
+	// no section without a displayed field
+	// symptomsHint and clear/set buttons -> hidden by the active isLuxTuberculosis
+	// code before the layout build
 	// diagnosis / major / minor site -> see the localisation tests above
 
 	@Test
@@ -709,13 +757,16 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		ComboBox clinicalPresentationStatus = form.getField(SymptomsDto.CLINICAL_PRESENTATION_STATUS);
 
 		assertEquals(
-			ClinicalPresentationStatus.COMPATIBLE.buildCaption(Disease.TUBERCULOSIS.toShortString()),
-			clinicalPresentationStatus.getItemCaption(ClinicalPresentationStatus.COMPATIBLE));
+				ClinicalPresentationStatus.COMPATIBLE.buildCaption(Disease.TUBERCULOSIS.toShortString()),
+				clinicalPresentationStatus.getItemCaption(ClinicalPresentationStatus.COMPATIBLE));
 	}
 
-	// --- Unexplained bleeding (replaces the commented unexpectedBleeding listener calling symptomGroupVisibility()) -----
-	// The dependents of unexplainedBleeding (HAEMATOLOGICAL) belong to several groups, e.g. for EVD:
-	// bleedingVagina -> GENITAL, bloodUrine -> URINARY, bloodyBlackStool -> GASTROINTESTINAL,
+	// --- Unexplained bleeding (replaces the commented unexpectedBleeding listener
+	// calling symptomGroupVisibility()) -----
+	// The dependents of unexplainedBleeding (HAEMATOLOGICAL) belong to several
+	// groups, e.g. for EVD:
+	// bleedingVagina -> GENITAL, bloodUrine -> URINARY, bloodyBlackStool ->
+	// GASTROINTESTINAL,
 	// otherHemorrhagicSymptoms -> HAEMATOLOGICAL (same group as the parent)
 
 	@Test
@@ -755,7 +806,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldUpdateGroupHeadingsWhenUnexplainedBleedingChanges() {
-		// what symptomGroupVisibility() was called for: after every change no heading is shown without a field,
+		// what symptomGroupVisibility() was called for: after every change no heading
+		// is shown without a field,
 		// and the group of a shown bleeding dependent has its heading
 		SymptomsForm form = createForm(Disease.EVD);
 		NullableOptionGroup unexplainedBleeding = form.getField(SymptomsDto.UNEXPLAINED_BLEEDING);
@@ -784,7 +836,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertDoesNotThrow(() -> form.setValue(symptoms));
 
 		assertInSection(form, SymptomsDto.BLEEDING_VAGINA, SymptomGroup.GENITAL);
-		assertEquals(SymptomState.YES, ((NullableOptionGroup) form.getField(SymptomsDto.BLEEDING_VAGINA)).getNullableValue());
+		assertEquals(SymptomState.YES,
+				((NullableOptionGroup) form.getField(SymptomsDto.BLEEDING_VAGINA)).getNullableValue());
 	}
 
 	@Test
@@ -809,18 +862,20 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertEquals(I18nProperties.getEnumCaption(group), ((Label) section.getComponent(0)).getValue(), fieldId);
 	}
 
-	// --- Lesions (replaces the commented lesions locations caption listener in SymptomsForm) ----------------------------
-	// all lesion fields are @DependantOn(LESIONS), group SKIN; Monkeypox has them all, plus the resemblance pictures
+	// --- Lesions (replaces the commented lesions locations caption listener in
+	// SymptomsForm) ----------------------------
+	// all lesion fields are @DependantOn(LESIONS), group SKIN; Monkeypox has them
+	// all, plus the resemblance pictures
 
 	private static final String[] LESIONS_LOCATION_FIELD_IDS = {
-		SymptomsDto.LESIONS_FACE,
-		SymptomsDto.LESIONS_LEGS,
-		SymptomsDto.LESIONS_SOLES_FEET,
-		SymptomsDto.LESIONS_PALMS_HANDS,
-		SymptomsDto.LESIONS_THORAX,
-		SymptomsDto.LESIONS_ARMS,
-		SymptomsDto.LESIONS_GENITALS,
-		SymptomsDto.LESIONS_ALL_OVER_BODY };
+			SymptomsDto.LESIONS_FACE,
+			SymptomsDto.LESIONS_LEGS,
+			SymptomsDto.LESIONS_SOLES_FEET,
+			SymptomsDto.LESIONS_PALMS_HANDS,
+			SymptomsDto.LESIONS_THORAX,
+			SymptomsDto.LESIONS_ARMS,
+			SymptomsDto.LESIONS_GENITALS,
+			SymptomsDto.LESIONS_ALL_OVER_BODY };
 
 	@Test
 	void shouldShowLesionsLocationsOnlyWhileLesionsIsYes() {
@@ -845,7 +900,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 	void shouldUncheckLesionsLocationsWhenLesionsIsNoLongerYes() {
 		SymptomsForm form = createForm(Disease.MONKEYPOX);
 		NullableOptionGroup lesions = form.getField(SymptomsDto.LESIONS);
-		// the location fields are NullableOptionGroups: their raw value is a Set such as [true]
+		// the location fields are NullableOptionGroups: their raw value is a Set such
+		// as [true]
 		NullableOptionGroup face = form.getField(SymptomsDto.LESIONS_FACE);
 		NullableOptionGroup arms = form.getField(SymptomsDto.LESIONS_ARMS);
 
@@ -873,7 +929,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertTrue(isDisplayed(form, form.getField(SymptomsDto.LESIONS_FACE)));
 		assertEquals(Boolean.TRUE, ((NullableOptionGroup) form.getField(SymptomsDto.LESIONS_FACE)).getNullableValue());
 		assertEquals(Boolean.TRUE, ((NullableOptionGroup) form.getField(SymptomsDto.LESIONS_LEGS)).getNullableValue());
-		assertFalse(Boolean.TRUE.equals(((NullableOptionGroup) form.getField(SymptomsDto.LESIONS_ARMS)).getNullableValue()));
+		assertFalse(Boolean.TRUE
+				.equals(((NullableOptionGroup) form.getField(SymptomsDto.LESIONS_ARMS)).getNullableValue()));
 	}
 
 	@Test
@@ -884,12 +941,12 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		lesions.setNullableValue(SymptomState.YES);
 
 		for (String fieldId : new String[] {
-			SymptomsDto.LESIONS_SAME_STATE,
-			SymptomsDto.LESIONS_SAME_SIZE,
-			SymptomsDto.LESIONS_DEEP_PROFOUND,
-			SymptomsDto.LESIONS_THAT_ITCH,
-			SymptomsDto.LESIONS_FACE,
-			SymptomsDto.LESIONS_ALL_OVER_BODY }) {
+				SymptomsDto.LESIONS_SAME_STATE,
+				SymptomsDto.LESIONS_SAME_SIZE,
+				SymptomsDto.LESIONS_DEEP_PROFOUND,
+				SymptomsDto.LESIONS_THAT_ITCH,
+				SymptomsDto.LESIONS_FACE,
+				SymptomsDto.LESIONS_ALL_OVER_BODY }) {
 			assertInSection(form, fieldId, SymptomGroup.SKIN);
 			assertSame(sectionOf(lesions), sectionOf(form.getField(fieldId)), fieldId);
 		}
@@ -903,10 +960,10 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		lesions.setNullableValue(SymptomState.YES);
 
 		for (String fieldId : new String[] {
-			SymptomsDto.LESIONS_RESEMBLE_IMG1,
-			SymptomsDto.LESIONS_RESEMBLE_IMG2,
-			SymptomsDto.LESIONS_RESEMBLE_IMG3,
-			SymptomsDto.LESIONS_RESEMBLE_IMG4 }) {
+				SymptomsDto.LESIONS_RESEMBLE_IMG1,
+				SymptomsDto.LESIONS_RESEMBLE_IMG2,
+				SymptomsDto.LESIONS_RESEMBLE_IMG3,
+				SymptomsDto.LESIONS_RESEMBLE_IMG4 }) {
 			Field<?> field = form.getField(fieldId);
 			assertTrue(isDisplayed(form, field), fieldId + " is not displayed");
 			HorizontalLayout row = (HorizontalLayout) field.getParent();
@@ -951,23 +1008,26 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		return null;
 	}
 
-	// --- Time off work (replaces the commented parentTimeOffWork listener in SymptomsForm) -------------------------------
-	// timeOffWorkDays: @DependantOn("parentTimeOffWork"), RSV / Giardiasis / Yersiniosis / Cryptosporidiosis,
+	// --- Time off work (replaces the commented parentTimeOffWork listener in
+	// SymptomsForm) -------------------------------
+	// timeOffWorkDays: @DependantOn("parentTimeOffWork"), RSV / Giardiasis /
+	// Yersiniosis / Cryptosporidiosis,
 	// both in CLINICAL_ASSESSMENT_AND_COURSE
 
 	@Test
 	void shouldShowTimeOffWorkDaysOnlyWhileParentTimeOffWorkIsYes() {
 		for (Disease disease : new Disease[] {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-			Disease.GIARDIASIS,
-			Disease.YERSINIOSIS,
-			Disease.CRYPTOSPORIDIOSIS }) {
+				Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+				Disease.GIARDIASIS,
+				Disease.YERSINIOSIS,
+				Disease.CRYPTOSPORIDIOSIS }) {
 			SymptomsForm form = createForm(disease);
 			NullableOptionGroup parentTimeOffWork = form.getField(SymptomsDto.PARENT_TIME_OFF_WORK);
 			Field<?> timeOffWorkDays = form.getField(SymptomsDto.TIME_OFF_WORK_DAYS);
 
 			assertTrue(isDisplayed(form, parentTimeOffWork), disease + ": parentTimeOffWork is not displayed");
-			assertFalse(isDisplayed(form, timeOffWorkDays), disease + ": timeOffWorkDays is displayed before an answer");
+			assertFalse(isDisplayed(form, timeOffWorkDays),
+					disease + ": timeOffWorkDays is displayed before an answer");
 
 			parentTimeOffWork.setNullableValue(YesNoUnknown.YES);
 			assertTrue(isDisplayed(form, timeOffWorkDays), disease + ": timeOffWorkDays is not displayed for Yes");
@@ -1042,30 +1102,31 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 		assertSame(sectionOf(parentTimeOffWork), sectionOf(timeOffWorkDays));
 		assertEquals(
-			I18nProperties.getEnumCaption(SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE),
-			((Label) sectionOf(timeOffWorkDays).getComponent(0)).getValue());
+				I18nProperties.getEnumCaption(SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE),
+				((Label) sectionOf(timeOffWorkDays).getComponent(0)).getValue());
 	}
 
 	@Test
 	void shouldUseTimeOffWorkOrSchoolCaptionsForGiardiasisCryptosporidiosisAndYersiniosis() {
 		for (Disease disease : new Disease[] {
-			Disease.GIARDIASIS,
-			Disease.CRYPTOSPORIDIOSIS,
-			Disease.YERSINIOSIS }) {
+				Disease.GIARDIASIS,
+				Disease.CRYPTOSPORIDIOSIS,
+				Disease.YERSINIOSIS }) {
 			SymptomsForm form = createForm(disease);
 
 			assertEquals(
-				I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool),
-				form.getField(SymptomsDto.PARENT_TIME_OFF_WORK).getCaption(),
-				disease.name());
+					I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool),
+					form.getField(SymptomsDto.PARENT_TIME_OFF_WORK).getCaption(),
+					disease.name());
 			assertEquals(
-				I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDaysDuration),
-				form.getField(SymptomsDto.TIME_OFF_WORK_DAYS).getCaption(),
-				disease.name());
+					I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDaysDuration),
+					form.getField(SymptomsDto.TIME_OFF_WORK_DAYS).getCaption(),
+					disease.name());
 		}
 	}
 
-	// --- @DependantOn rules (replace the commented setVisibleWhen calls in SymptomsForm) --------------------------------
+	// --- @DependantOn rules (replace the commented setVisibleWhen calls in
+	// SymptomsForm) --------------------------------
 
 	@Test
 	void shouldShowOtherNonHemorrhagicSymptomsTextOnlyWhileOtherNonHemorrhagicSymptomsIsYes() {
@@ -1122,7 +1183,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 
 	@Test
 	void shouldShowCongenitalHeartDiseaseDetailsOnlyForTypeOther() {
-		// congenitalHeartDisease -> congenitalHeartDiseaseType -> congenitalHeartDiseaseDetails (only for type OTHER)
+		// congenitalHeartDisease -> congenitalHeartDiseaseType ->
+		// congenitalHeartDiseaseDetails (only for type OTHER)
 		SymptomsForm form = createForm(Disease.CONGENITAL_RUBELLA);
 		NullableOptionGroup congenitalHeartDisease = form.getField(SymptomsDto.CONGENITAL_HEART_DISEASE);
 		ComboBox congenitalHeartDiseaseType = form.getField(SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE);
@@ -1154,11 +1216,11 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 	private static VerticalLayout sectionOf(Component component) {
 		for (Component current = component; current != null; current = current.getParent()) {
 			if (current instanceof VerticalLayout
-				&& ((VerticalLayout) current).getComponentCount() > 0
-				&& ((VerticalLayout) current).getComponent(0) instanceof Label
-				&& Arrays.stream(SymptomGroup.values())
-					.map(I18nProperties::getEnumCaption)
-					.anyMatch(((Label) ((VerticalLayout) current).getComponent(0)).getValue()::equals)) {
+					&& ((VerticalLayout) current).getComponentCount() > 0
+					&& ((VerticalLayout) current).getComponent(0) instanceof Label
+					&& Arrays.stream(SymptomGroup.values())
+							.map(I18nProperties::getEnumCaption)
+							.anyMatch(((Label) ((VerticalLayout) current).getComponent(0)).getValue()::equals)) {
 				return (VerticalLayout) current;
 			}
 		}
@@ -1166,15 +1228,18 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 	}
 
 	private static SymptomsForm createForm(Disease disease) {
-		SymptomsForm form = new SymptomsForm(null, disease, null, null, SymptomsContext.VISIT, ViewMode.NORMAL, UiFieldAccessCheckers.getNoop());
+		SymptomsForm form = new SymptomsForm(null, disease, null, null, SymptomsContext.VISIT, ViewMode.NORMAL,
+				UiFieldAccessCheckers.getNoop());
 		form.setValue(SymptomsDto.build());
 
 		return form;
 	}
 
 	/**
-	 * A component is displayed when it and every parent up to the form are visible. A dependent in a detached slot has no
-	 * path to the form, so it is not displayed even though its own visibility is true.
+	 * A component is displayed when it and every parent up to the form are visible.
+	 * A dependent in a detached slot has no
+	 * path to the form, so it is not displayed even though its own visibility is
+	 * true.
 	 */
 	private static boolean isDisplayed(SymptomsForm form, Component component) {
 		if (component == null) {
@@ -1200,7 +1265,8 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 	}
 
 	/**
-	 * Walks the whole component tree below {@code root}; AbstractForm.forEachComponent only visits the direct children.
+	 * Walks the whole component tree below {@code root};
+	 * AbstractForm.forEachComponent only visits the direct children.
 	 */
 	private static boolean anyDisplayed(SymptomsForm form, Component root, Predicate<Component> matcher) {
 		if (matcher.test(root) && isDisplayed(form, root)) {

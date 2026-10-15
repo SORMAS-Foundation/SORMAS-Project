@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -112,7 +111,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String COMPLICATIONS_HEADING = "complicationsHeading";
 	private static final String CLINICAL_MANIFESTATION_HEADING_LOC = "clinicalManifestationHeadingLoc";
 
-	// Fields only relevant for acquired syphilis, hidden when the case presentation is congenital syphilis
+	// Fields only relevant for acquired syphilis, hidden when the case presentation
+	// is congenital syphilis
 	private static final List<String> SYPHILIS_ACQUIRED_ONLY_FIELD_IDS = Collections.unmodifiableList(
 		Arrays.asList(
 			PATCHY_ALOPECIA,
@@ -134,7 +134,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MALAISE,
 			CLINICAL_CRITERIA_MET,
 			MUSCLE_PAIN));
-	// Fields only relevant for congenital syphilis, hidden when the case presentation is acquired syphilis
+	// Fields only relevant for congenital syphilis, hidden when the case
+	// presentation is acquired syphilis
 	private static final List<String> SYPHILIS_CONGENITAL_ONLY_FIELD_IDS = Collections.unmodifiableList(
 		Arrays.asList(
 			ANEMIA,
@@ -186,7 +187,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			UNKNOWN_COMPLICATION_DIAGNOSIS));
 	private static final List<String> COMBO_BOX_FIELDS = Collections.unmodifiableList(Arrays.asList(CLINICAL_MANIFESTATION));
 
-	//	public static final String SKIN_RASH_ONSET_DATE_LAYOUT = fluidRowLocs(6, "LBL_SKIN_RASH_ONSET_DATE", 1, "", 5, SKIN_RASH_ONSET_DATE);
+	// public static final String SKIN_RASH_ONSET_DATE_LAYOUT = fluidRowLocs(6,
+	// "LBL_SKIN_RASH_ONSET_DATE", 1, "", 5, SKIN_RASH_ONSET_DATE);
 	private static final List<Disease> CLINICAL_SIGNS_AND_SYMPTOMS_HIDE_DISEASES = Arrays.asList(
 		Disease.MALARIA,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -199,7 +201,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final List<String> OTHER_COMPLICATED_SYMPTOMS = Collections
 		.unmodifiableList(Arrays.asList(LESIONS_THAT_ITCH, OTHER_COMPLICATIONS_TEXT, UNKNOWN_COMPLICATIONS, OTHER_NEUROLOGICAL_SYMPTOMS_TEXT));
 
-	// for Mumps few symptoms should display as labels at clinical manifestation of the disease according to case definition section.
+	// for Mumps few symptoms should display as labels at clinical manifestation of
+	// the disease according to case definition section.
 	private static final List<String> MUMPS_REPORTING_SYMPTOMS =
 		Collections.unmodifiableList(Arrays.asList(OTHER_COMPLICATIONS_TEXT, MENINGITIS, SALIVARY_SWELLING, ORCHITIS));
 
@@ -227,7 +230,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private VerticalLayout clinicalManifestationLayout;
 	private Map<Field<?>, Label> symptomLabelMap = new HashMap<>();
 	private VerticalLayout mainLayout;
-	// components rendered in the same row as a dependent field, e.g. the monkeypox pictures
+	// components rendered in the same row as a dependent field, e.g. the monkeypox
+	// pictures
 	private final Map<String, Component> dependentCompanions = new HashMap<>();
 
 	public SymptomsForm(
@@ -292,7 +296,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);
 		if (symptomsContext == SymptomsContext.CASE) {
-			// If the symptom onset date is after the hospital admission date, show a warning but don't prevent the user from saving
+			// If the symptom onset date is after the hospital admission date, show a
+			// warning but don't prevent the user from saving
 			onsetDateField.addValueChangeListener(event -> {
 				if (caze.getHospitalization().getAdmissionDate() != null
 					&& DateComparator.getDateInstance().compare(caze.getHospitalization().getAdmissionDate(), onsetDateField.getValue()) < 0) {
@@ -494,7 +499,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			ASCENDING_FLACCID_PARALYSIS,
 			ERRATIC_BEHAVIOUR,
 			COMA,
-			// CONVULSION, // #13399 - deprecated, replaced by SEIZURES, which also took over its Dengue complication
+			// CONVULSION, // #13399 - deprecated, replaced by SEIZURES, which also took
+			// over its Dengue complication
 			FLUID_IN_LUNG_CAVITY_AUSCULTATION,
 			FLUID_IN_LUNG_CAVITY_XRAY,
 			ABNORMAL_LUNG_XRAY_FINDINGS,
@@ -550,7 +556,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			POLYDIPSIA,
 			SYNDROMIC_FLU,
 			ANEMIA,
-			// ALTERED_LEVEL_OF_CONSCIOUSNESS, // #13399 - deprecated, replaced by ALTERED_CONSCIOUSNESS
+			// ALTERED_LEVEL_OF_CONSCIOUSNESS, // #13399 - deprecated, replaced by
+			// ALTERED_CONSCIOUSNESS
 			SEVERE_ANEMIA,
 			ACUTE_KIDNEY_FAILURE,
 			METABOLIC_ACIDOSIS,
@@ -647,7 +654,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			OTHER_COMPLICATION_DIAGNOSIS_TEXT,
 			UNKNOWN_COMPLICATION_DIAGNOSIS);
 
-		// Comments can be long, so they are entered in a multi-line text area that gets a row of its own (see populateGroupLayout)
+		// Comments can be long, so they are entered in a multi-line text area that gets
+		// a row of its own (see populateGroupLayout)
 		TextArea symptomsComments = addField(SYMPTOMS_COMMENTS, TextArea.class);
 		symptomsComments.setRows(3);
 		symptomsComments.setDescription(
@@ -687,7 +695,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		addField(CLINICAL_MANIFESTATION);
 
 		// Asymptomatic excluded elements
-		// For Mumps, its possible to have a case with an asymptomatic symptoms along with no complicated symptoms
+		// For Mumps, its possible to have a case with an asymptomatic symptoms along
+		// with no complicated symptoms
 		List<String> nonAsymptomaticFields = Arrays.asList(ASYMPTOMATIC, NO_COMPLICATIONS);
 
 		// toggling the onset Symptom and date based on asymptomatic
@@ -699,9 +708,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					field.clear();
 				}
 				field.setEnabled(isSymptomatic);
-				onsetSymptom.setEnabled(isSymptomatic);
-				setOnsetDateEnabled(onsetDateField, isSymptomatic);
 			});
+			// The first symptom is only selectable if at least one symptom is Yes (its
+			// items are
+			// filled by addListenerForOnsetFields), e.g. Asymptomatic Yes -> No with no
+			// symptom
+			// set keeps it disabled, as on the initial form
+			onsetSymptom.setEnabled(isSymptomatic && !onsetSymptom.getItemIds().isEmpty() && isEditableAllowed(onsetSymptom));
+			// #14366 - the onset and offset dates are greyed out only while Asymptomatic is
+			// Yes; they are cleared by the loop above
+			updateOnsetDateEnabled(onsetDateField);
+			updateOffsetDateEnabled();
 		});
 
 		if (disease == Disease.GONOCOCCAL_INFECTION) {
@@ -746,7 +763,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		addField(DURATION_OF_SYMPTOMS, TextField.class);
 
 		if (isLux && disease == Disease.TUBERCULOSIS) {
-			// #14029: no first symptom for Luxembourg Tuberculosis; hidden before the layout is built so it is never placed
+			// #14029: no first symptom for Luxembourg Tuberculosis; hidden before the
+			// layout is built so it is never placed
 			onsetSymptom.setVisible(false);
 			addField(DIAGNOSIS, ComboBox.class);
 
@@ -793,7 +811,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		if (hideClinicalMeasurements) {
-			// Clinical measurements are not displayed for Syphilis and Diphtheria regardless of context
+			// Clinical measurements are not displayed for Syphilis and Diphtheria
+			// regardless of context
 			setVisible(
 				false,
 				TEMPERATURE,
@@ -935,7 +954,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			GREGGS_TRIAD,
 			PURPURIC_RASH,
 			PIGMENTARY_RETINOPATHY,
-			// CONVULSION, // #13399 - deprecated, replaced by SEIZURES, which also took over its Dengue complication
+			// CONVULSION, // #13399 - deprecated, replaced by SEIZURES, which also took
+			// over its Dengue complication
 			AEROPHOBIA,
 			AGITATION,
 			ANXIETY_STATES,
@@ -1024,7 +1044,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			POLYDIPSIA,
 			SYNDROMIC_FLU,
 			ANEMIA,
-			// ALTERED_LEVEL_OF_CONSCIOUSNESS, // #13399 - deprecated, replaced by ALTERED_CONSCIOUSNESS
+			// ALTERED_LEVEL_OF_CONSCIOUSNESS, // #13399 - deprecated, replaced by
+			// ALTERED_CONSCIOUSNESS
 			SEVERE_ANEMIA,
 			ACUTE_KIDNEY_FAILURE,
 			METABOLIC_ACIDOSIS,
@@ -1061,7 +1082,24 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			// MACULOPAPULAR_RASH, // #13399 - deprecated, replaced by SKIN_RASH
 			SALIVARY_SWELLING,
 			ORCHITIS,
-			PANCREATITIS);
+			PANCREATITIS,
+			// Diphtheria clinical criteria
+			CONJUNCTIVAL_PRESENTATION,
+			CUTANEOUS_PRESENTATION,
+			GENITAL_PRESENTATION,
+			NASAL_DISCHARGE_CLEAR_TO_BLOODY,
+			OTHER_CLINICAL_CRITERIA,
+			RESPIRATORY_AND_CUTANEOUS_PRESENTATION,
+			RESPIRATORY_WITH_MEMBRANE,
+			RESPIRATORY_WITHOUT_MEMBRANE,
+			UNKNOWN_CLINICAL_CRITERIA,
+			// Diphtheria complication diagnosis
+			NO_COMPLICATION_DIAGNOSIS,
+			CARDIAC_DISORDER,
+			NEUROLOGICAL_COMPLICATION_DIAGNOSIS,
+			NEUROLOGICAL_AND_CARDIAC_DISORDER,
+			OTHER_COMPLICATION_DIAGNOSIS,
+			UNKNOWN_COMPLICATION_DIAGNOSIS);
 
 		// Set visibilities
 
@@ -1090,7 +1128,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getFieldGroup().getField(PATIENT_ILL_LOCATION).setVisible(false);
 		}
 
-		//		symptomGroupVisibility();
+		// symptomGroupVisibility();
 
 		if (isSyphilis) {
 			setUpSyphilisVisibilities();
@@ -1138,9 +1176,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addListenerForOnsetFields(onsetSymptom, onsetDateField);
 		if (isLux && disease == Disease.TUBERCULOSIS) {
-			// #14029: enables the onset date when "Date of onset known" changes to Yes and clears it otherwise;
-			// the symptom listeners use setOnsetDateEnabled, so they don't enable it while it isn't Yes
+			// #14029: enables the onset date when "Date of onset known" changes to Yes and
+			// clears it otherwise;
+			// the symptom listeners use setOnsetDateEnabled, so they don't enable it while
+			// it isn't Yes
 			FieldHelper.setEnabledWhen(getFieldGroup(), DATE_OF_ONSET_KNOWN, YesNoUnknown.YES, ONSET_DATE, true);
+			// #14366 - registered after setEnabledWhen, so Asymptomatic Yes still greys out
+			// the onset date
+			Field<?> dateOfOnsetKnownField = getField(DATE_OF_ONSET_KNOWN);
+			if (dateOfOnsetKnownField != null) {
+				dateOfOnsetKnownField.addValueChangeListener(e -> updateOnsetDateEnabled(onsetDateField));
+			}
 		}
 
 		Button clearAllButton = ButtonHelper.createButton(Captions.actionClearAll, event -> {
@@ -1151,6 +1197,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			monkeypoxImageFieldIds.forEach(this::safeClearField);
 			YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS.forEach(this::safeClearField);
 			COMBO_BOX_FIELDS.forEach(this::safeClearField);
+			// #14366 - the symptom listeners no longer clear the onset date, so clear the
+			// onset and offset dates here; safeClearField skips missing or read-only fields
+			safeClearField(ONSET_DATE);
+			safeClearField(OFFSET_DATE);
+			// the syphilis stage and infectiousness are filled from the stage symptoms but
+			// are in none of the lists above; the stage is cleared first, its listener only
+			// fills an empty infectiousness from a non-null stage, so nothing is refilled
+			safeClearField(SYPHILIS_STAGE);
+			safeClearField(SYPHILIS_INFECTIOUSNESS);
 		}, ValoTheme.BUTTON_LINK);
 
 		Button setEmptyToNoButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToNo, SymptomState.NO);
@@ -1203,7 +1258,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDaysDuration));
 		}
 
-		// temperature and its source hide for LUX's Dengue, Tuberculosis (#14029), Syphilis and Diphtheria
+		// temperature and its source hide for LUX's Dengue, Tuberculosis (#14029),
+		// Syphilis and Diphtheria
 		boolean hideTemperature = isLuxDengue || disease == Disease.TUBERCULOSIS || hideClinicalMeasurements;
 		temperature.setVisible(!hideTemperature);
 		getField(TEMPERATURE_SOURCE).setVisible(!hideTemperature);
@@ -1223,15 +1279,18 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			isListenerAction = true;
 		});
 
-		// The symptoms hint and the clear/set buttons sit above all groups, so every disease shows them,
-		// even when Clinical measurements has no visible fields (e.g. Syphilis). If it has visible fields,
+		// The symptoms hint and the clear/set buttons sit above all groups, so every
+		// disease shows them,
+		// even when Clinical measurements has no visible fields (e.g. Syphilis). If it
+		// has visible fields,
 		// SymptomGroupLayout moves them below the Clinical measurements title.
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.addComponent(clearAllButton);
 		buttonLayout.addComponent(setEmptyToNoButton);
 		buttonLayout.addComponent(setEmptyToUnknownButton);
 		buttonLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-		// #14029: Luxembourg Tuberculosis only records the clinical presentation - no symptoms hint or clear/set buttons
+		// #14029: Luxembourg Tuberculosis only records the clinical presentation - no
+		// symptoms hint or clear/set buttons
 		boolean isLuxTuberculosis = isLux && disease == Disease.TUBERCULOSIS;
 		symptomsHint.setVisible(!isLuxTuberculosis);
 		buttonLayout.setVisible(!isLuxTuberculosis);
@@ -1239,10 +1298,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		// the clear/set links sit at the right edge, above the symptom groups
 		mainLayout.setComponentAlignment(buttonLayout, Alignment.TOP_RIGHT);
 
-		// The bleeding symptoms follow "Unexplained bleeding", not their own @Diseases: as before the regrouping
-		// (FieldHelper.setVisibleWhen(conditionalBleedingSymptomFieldIds, UNEXPLAINED_BLEEDING, YES)), all of them are
-		// offered for every disease that shows "Unexplained bleeding", e.g. Coronavirus or Plague. They must be visible
-		// here so that SymptomGroupLayout lays them out as dependents; it hides them until "Unexplained bleeding" is Yes.
+		// The bleeding symptoms follow "Unexplained bleeding", not their own @Diseases:
+		// as before the regrouping
+		// (FieldHelper.setVisibleWhen(conditionalBleedingSymptomFieldIds,
+		// UNEXPLAINED_BLEEDING, YES)), all of them are
+		// offered for every disease that shows "Unexplained bleeding", e.g. Coronavirus
+		// or Plague. They must be visible
+		// here so that SymptomGroupLayout lays them out as dependents; it hides them
+		// until "Unexplained bleeding" is Yes.
 		if (unexpectedBleeding != null && unexpectedBleeding.isVisible()) {
 			for (String bleedingSymptomFieldId : conditionalBleedingSymptomFieldIds) {
 				Field<?> bleedingSymptomField = getFieldGroup().getField(bleedingSymptomFieldId);
@@ -1254,7 +1317,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		new SymptomGroupLayout(mainLayout, getContent(), dependentCompanions).build(getFieldGroup().getFields(), symptomsHint, buttonLayout);
-		// Mumps: reported complications are displayed as labels in the clinical manifestation section
+		// Mumps: reported complications are displayed as labels in the clinical
+		// manifestation section
 		clinicalManifestationLayout = new VerticalLayout();
 		clinicalManifestationLayout.setSpacing(false);
 		clinicalManifestationLayout.setMargin(false);
@@ -1374,9 +1438,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	/**
-	 * Sets the fields defined by the ids contained in sourceValues to required when the person is symptomatic
-	 * and - if a visit is processed - cooperative. When this method is called from within a case, it needs to
-	 * be called with visitStatusField set to null in order to ignore the visit status requirement.
+	 * Sets the fields defined by the ids contained in sourceValues to required when
+	 * the person is symptomatic
+	 * and - if a visit is processed - cooperative. When this method is called from
+	 * within a case, it needs to
+	 * be called with visitStatusField set to null in order to ignore the visit
+	 * status requirement.
 	 */
 	@SuppressWarnings("rawtypes")
 	private void addSoftRequiredStyleWhenSymptomaticAndCooperative(
@@ -1401,7 +1468,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	/**
-	 * Returns true if if the value of any field associated with the sourcePropertyIds
+	 * Returns true if if the value of any field associated with the
+	 * sourcePropertyIds
 	 * is set to one of the values contained in sourceValues.
 	 *
 	 * @param fieldGroup
@@ -1415,7 +1483,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		for (Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
 			if (sourceField == null) {
-				// defensive - the field is not part of the form (e.g. a commented out REVIEW field)
+				// defensive - the field is not part of the form (e.g. a commented out REVIEW
+				// field)
 				continue;
 			}
 			if (sourceValues.contains(FieldHelper.getNullableSourceFieldValue(sourceField))) {
@@ -1433,82 +1502,161 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		allPropertyIds.addAll(OTHER_COMPLICATED_SYMPTOMS);
 		allPropertyIds.addAll(SYPHILIS_ACQUIRED_ONLY_FIELD_IDS);
 		allPropertyIds.addAll(SYPHILIS_CONGENITAL_ONLY_FIELD_IDS);
-		// Asymptomatic is not a symptom, so it must never be offered as the first symptom
+		// Asymptomatic is not a symptom, so it must never be offered as the first
+		// symptom
 		allPropertyIds.remove(ASYMPTOMATIC);
 		for (Object sourcePropertyId : allPropertyIds) {
 			Field sourceField = getFieldGroup().getField(sourcePropertyId);
 			if (sourceField == null) {
-				// defensive - the field is not part of the form (e.g. a commented out REVIEW field)
+				// defensive - the field is not part of the form (e.g. a commented out REVIEW
+				// field)
 				continue;
 			}
 			sourceField.addValueChangeListener(event -> {
+				// #14366 - the symptoms only fill the first symptom; they don't enable, disable
+				// or clear the onset date
+				// any more, it is editable unless Asymptomatic is Yes (see
+				// updateOnsetDateEnabled)
 				if (FieldHelper.getNullableSourceFieldValue(sourceField) == SymptomState.YES) {
 					onsetSymptom.addItem(sourceField.getCaption());
-					setOnsetDateEnabled(onsetDateField, true);
 				} else {
 					onsetSymptom.removeItem(sourceField.getCaption());
-					final Date onsetDate = getValue().getOnsetDate();
-					boolean isOnsetDateFieldEnabled = isAnySymptomSetToYes(getFieldGroup(), allPropertyIds, Arrays.asList(SymptomState.YES));
-					setOnsetDateEnabled(onsetDateField, isOnsetDateFieldEnabled || !onsetSymptom.isVisible());
-					if (onsetDate != null) {
-						onsetDateField.setValue(onsetDate);
-					} else if (!isOnsetDateFieldEnabled) {
-						onsetDateField.setValue(null);
-					}
 				}
 				onsetSymptom.setEnabled(!onsetSymptom.getItemIds().isEmpty());
 				onsetSymptom.setEnabled(!onsetSymptom.getItemIds().isEmpty());
-				// If the symptom status set to Yes, it should be updated in the complications section,
+				// If the symptom status set to Yes, it should be updated in the complications
+				// section,
 				// otherwise delete it from the complications section.
 				if (caseSymptomSideViewComponent != null) {
 					caseSymptomSideViewComponent.toggleComplicationSymptom(sourceField);
 					caseSymptomSideViewComponent.refreshLayout();
 				}
-				// If any one of the symptoms is set to yes, then the ClinicalManifestation field should be defaulting to "Disease with sign of severity (WHO definition)"
-				// and offset date should be enabled based on onset symptom visibility.
+				// #14366 - the symptoms don't enable, disable or clear the offset date either
+				// (see updateOffsetDateEnabled)
 				ComboBox cmCb = getField(CLINICAL_MANIFESTATION);
-				DateField offsetDate = getField(OFFSET_DATE);
 
 				// If the disease is Dengue and any of the symptoms is set to yes,
-				// then the ClinicalManifestation field should be defaulting to "Disease with sign of severity (WHO definition)" and offset date should be enabled based on onset symptom visibility.
-				boolean hasOnsetSymptoms = onsetSymptom.isEnabled() && Disease.DENGUE == disease;
-				offsetDate.setEnabled(hasOnsetSymptoms);
-				if (!hasOnsetSymptoms) {
-					offsetDate.clear();
-					cmCb.clear();
-				} else if (cmCb.getValue() == null) {
-					cmCb.setValue(ClinicalManifestation.SIGN_OF_SEVERITY);
+				// then the ClinicalManifestation field should be defaulting to "Disease with
+				// sign of severity (WHO definition)".
+				boolean isDengueWithOnsetSymptoms = onsetSymptom.isEnabled() && Disease.DENGUE == disease;
+				if (cmCb != null) {
+					if (!isDengueWithOnsetSymptoms) {
+						cmCb.clear();
+					} else if (cmCb.getValue() == null) {
+						cmCb.setValue(ClinicalManifestation.SIGN_OF_SEVERITY);
+					}
 				}
 
-				// if the disease is Mumps and  the symptom is in the listed reporting one, then it should display as label.
+				// if the disease is Mumps and the symptom is in the listed reporting one, then
+				// it should display as label.
 				boolean isMumpsReportedSymptom = Disease.MUMPS == disease && MUMPS_REPORTING_SYMPTOMS.contains(sourceField.getId());
 				if (isMumpsReportedSymptom) {
-					cmCb.setVisible(false);
+					if (cmCb != null) {
+						cmCb.setVisible(false);
+					}
 					toggleSymptomsInClinicalManifestationLayout(sourceField);
-				} else {
-					cmCb.setVisible(hasOnsetSymptoms);
+				} else if (cmCb != null) {
+					cmCb.setVisible(isDengueWithOnsetSymptoms);
 				}
 			});
 		}
 		onsetSymptom.setEnabled(false); // will be updated by listener if needed
 
-		// make onsetDate editable for diseases that have no symptoms (a.k. no first symptom)
-		setOnsetDateEnabled(onsetDateField, !onsetSymptom.isVisible());
+		// #14366 - the onset date is editable from the start for all diseases; only
+		// Asymptomatic Yes greys it out
+		updateOnsetDateEnabled(onsetDateField);
+		// #14366 - the offset date follows the same rule as the onset date
+		updateOffsetDateEnabled();
 	}
 
 	/**
-	 * Enables or disables the onset date. For Luxembourg Tuberculosis the onset date can only be edited while "Date of onset
-	 * known" is Yes, so it stays disabled there whatever the symptom listeners decide.
+	 * Enables the offset date unless the person is asymptomatic (see
+	 * {@link #isAsymptomatic()}), the same rule as for the onset
+	 * date, but without the Luxembourg Tuberculosis "Date of onset known"
+	 * condition, which only concerns the onset date. The
+	 * symptoms themselves don't change it. A field the user is not allowed to edit
+	 * stays disabled.
 	 * <p>
-	 * Example: Luxembourg TB has no first symptom, so a symptom listener asks to enable the onset date when the form is loaded;
-	 * while "Date of onset known" is empty or No, it stays disabled.
+	 * Examples:
+	 *
+	 * <pre>
+	 * Asymptomatic empty, No or Unknown -> offset date editable, also before any symptom is set
+	 * Asymptomatic Yes                  -> offset date greyed out (the asymptomatic listener has already cleared it)
+	 * Tuberculosis (no Asymptomatic field) -> offset date always editable
+	 * </pre>
+	 */
+	private void updateOffsetDateEnabled() {
+		Field<?> offsetDateField = getField(OFFSET_DATE);
+		if (offsetDateField == null) {
+			return;
+		}
+		offsetDateField.setEnabled(!isAsymptomatic() && isEditableAllowed(offsetDateField));
+	}
+
+	/**
+	 * Enables the onset date unless the person is asymptomatic (see
+	 * {@link #isAsymptomatic()}). The symptoms themselves don't
+	 * change it, so the onset date can be entered for every disease, in every
+	 * country, before any symptom is set.
+	 * <p>
+	 * Examples:
+	 *
+	 * <pre>
+	 * Asymptomatic empty, No or Unknown -> onset date editable
+	 * Asymptomatic Yes                  -> onset date greyed out (the asymptomatic listener has already cleared it)
+	 * Luxembourg TB (no Asymptomatic field), "Date of onset known" Yes -> editable, empty or No -> greyed out
+	 * </pre>
+	 *
+	 * @param onsetDateField
+	 *            the onset date field; {@code null} is ignored
+	 */
+	private void updateOnsetDateEnabled(DateField onsetDateField) {
+		setOnsetDateEnabled(onsetDateField, !isAsymptomatic());
+	}
+
+	/**
+	 * Returns true if the Asymptomatic field is shown and set to Yes. A disease
+	 * without the field (e.g. Tuberculosis) is never
+	 * asymptomatic here, so its onset date is not greyed out by it.
+	 * <p>
+	 * Example: Asymptomatic Yes -> {@code true}; No, Unknown or empty ->
+	 * {@code false}; field hidden -> {@code false}.
+	 *
+	 * @return true if the person is marked as asymptomatic
+	 */
+	private boolean isAsymptomatic() {
+		Field<?> asymptomaticField = getField(ASYMPTOMATIC);
+		if (asymptomaticField == null || !asymptomaticField.isVisible()) {
+			return false;
+		}
+		return SymptomState.YES.equals(FieldHelper.getNullableSourceFieldValue(asymptomaticField));
+	}
+
+	/**
+	 * Enables or disables the onset date. For Luxembourg Tuberculosis the onset
+	 * date can only be edited while "Date of onset
+	 * known" is Yes (#14029), so it stays disabled there whatever the caller
+	 * decides.
+	 * <p>
+	 * Example: for Luxembourg TB, {@code setOnsetDateEnabled(field, true)} enables
+	 * the onset date only while "Date of onset
+	 * known" is Yes; while it is empty or No, the field stays disabled.
+	 *
+	 * @param onsetDateField
+	 *            the onset date field; {@code null} is ignored
+	 * @param enabled
+	 *            true to enable the field
 	 */
 	private void setOnsetDateEnabled(DateField onsetDateField, boolean enabled) {
+		if (onsetDateField == null) {
+			return;
+		}
 		if (isLux && disease == Disease.TUBERCULOSIS) {
 			Field<?> dateOfOnsetKnown = getField(DATE_OF_ONSET_KNOWN);
 			enabled = enabled && dateOfOnsetKnown != null && YesNoUnknown.YES.equals(dateOfOnsetKnown.getValue());
 		}
-		onsetDateField.setEnabled(enabled);
+		// a field the user is not allowed to edit stays disabled
+		onsetDateField.setEnabled(enabled && isEditableAllowed(onsetDateField));
 	}
 
 	/**
@@ -1544,7 +1692,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				clinicalManifestationLayout.removeComponent(label);
 				symptomLabelMap.remove(symptomField);
 			} else {
-				// nothing needs to be done, the symptom is not in the clinical manifestation layout.
+				// nothing needs to be done, the symptom is not in the clinical manifestation
+				// layout.
 			}
 		}
 	}
@@ -1557,11 +1706,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		List<String> fieldIdsToHide = isCongenital ? SYPHILIS_ACQUIRED_ONLY_FIELD_IDS : SYPHILIS_CONGENITAL_ONLY_FIELD_IDS;
 		fieldIdsToHide.forEach(fieldId -> {
 			if (getFieldGroup().getField(fieldId) == null) {
-				// defensive - the field is not part of the form (e.g. a commented out REVIEW field)
+				// defensive - the field is not part of the form (e.g. a commented out REVIEW
+				// field)
 				return;
 			}
 			setVisible(false, fieldId);
-			// hide the dependents too, otherwise they are laid out as standalone fields because their parent is hidden (e.g. weightLossAmount)
+			// hide the dependents too, otherwise they are laid out as standalone fields
+			// because their parent is hidden (e.g. weightLossAmount)
 			List<String> dependentIds = DependantOn.DependencyConfiguration.getChildren(SymptomsDto.class, fieldId);
 			if (dependentIds != null) {
 				dependentIds.stream()
@@ -1593,7 +1744,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			SYPHILIS_STAGE_SYMPTOMS_DICTIONARY.forEach((syphilisStage, fields) -> fields.forEach(fieldId -> {
 				Field<?> stageSymptomField = getFieldGroup().getField(fieldId);
 				if (stageSymptomField == null) {
-					// defensive - the field is not part of the form (e.g. a commented out REVIEW field)
+					// defensive - the field is not part of the form (e.g. a commented out REVIEW
+					// field)
 					return;
 				}
 				stageSymptomField.addValueChangeListener(e -> {
@@ -1634,7 +1786,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private void setUpMonkeypoxVisibilities() {
 
-		// The picture resemblance fields are @DependantOn(LESIONS); each picture renders in the same row as its field
+		// The picture resemblance fields are @DependantOn(LESIONS); each picture
+		// renders in the same row as its field
 		for (int i = 0; i < monkeypoxImageFieldIds.size(); i++) {
 			Image lesionsImage = new Image(null, new ThemeResource("img/monkeypox-lesions-" + (i + 1) + ".png"));
 			CssStyles.style(lesionsImage, VSPACE_3);
@@ -1704,7 +1857,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	/**
-	 * Sets the given state on a symptom state field that is visible, editable, offers the state and has no value yet.
+	 * Sets the given state on a symptom state field that is visible, editable,
+	 * offers the state and has no value yet.
 	 *
 	 * @param symptomId
 	 *            the property id of the symptom field
@@ -1718,7 +1872,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		if (field == null || !field.isVisible() || field.isReadOnly()) {
 			return;
 		}
-		// only symptom state selections can take the state; text, date and other fields in the lists are skipped
+		// only symptom state selections can take the state; text, date and other fields
+		// in the lists are skipped
 		if (!(field instanceof AbstractSelect) || !((AbstractSelect) field).containsId(symptomState)) {
 			return;
 		}

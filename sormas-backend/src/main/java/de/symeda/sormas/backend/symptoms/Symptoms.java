@@ -293,7 +293,8 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherMinorSiteDetails;
 	private YesNoUnknown dateOfOnsetKnown;
 	private ClinicalPresentationStatus clinicalPresentationStatus;
-	// Added in case, enrolling person is not known about the symptoms, but sure of the case.
+	// Added in case, enrolling person is not known about the symptoms, but sure of
+	// the case.
 	private SymptomState unknownSymptom;
 	// #13399 - deprecated, replaced by encephalitis
 	@Deprecated
@@ -364,25 +365,25 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherGeneralSymptomsText;
 
 	// Diphtheria clinical criteria
-	private YesNoUnknown conjunctivalPresentation;
-	private YesNoUnknown cutaneousPresentation;
-	private YesNoUnknown genitalPresentation;
-	private YesNoUnknown nasalDischargeClearToBloody;
-	private YesNoUnknown otherClinicalCriteria;
+	private SymptomState conjunctivalPresentation;
+	private SymptomState cutaneousPresentation;
+	private SymptomState genitalPresentation;
+	private SymptomState nasalDischargeClearToBloody;
+	private SymptomState otherClinicalCriteria;
 	private String otherClinicalCriteriaText;
-	private YesNoUnknown respiratoryAndCutaneousPresentation;
-	private YesNoUnknown respiratoryWithMembrane;
-	private YesNoUnknown respiratoryWithoutMembrane;
-	private YesNoUnknown unknownClinicalCriteria;
+	private SymptomState respiratoryAndCutaneousPresentation;
+	private SymptomState respiratoryWithMembrane;
+	private SymptomState respiratoryWithoutMembrane;
+	private SymptomState unknownClinicalCriteria;
 
 	// Diphtheria complication diagnosis
-	private YesNoUnknown noComplicationDiagnosis;
-	private YesNoUnknown cardiacDisorder;
-	private YesNoUnknown neurologicalComplicationDiagnosis;
-	private YesNoUnknown neurologicalAndCardiacDisorder;
-	private YesNoUnknown otherComplicationDiagnosis;
+	private SymptomState noComplicationDiagnosis;
+	private SymptomState cardiacDisorder;
+	private SymptomState neurologicalComplicationDiagnosis;
+	private SymptomState neurologicalAndCardiacDisorder;
+	private SymptomState otherComplicationDiagnosis;
 	private String otherComplicationDiagnosisText;
-	private YesNoUnknown unknownComplicationDiagnosis;
+	private SymptomState unknownComplicationDiagnosis;
 
 	// Syphilis-specific symptoms
 	private SymptomState patchyAlopecia;
@@ -3149,47 +3150,47 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getConjunctivalPresentation() {
+	public SymptomState getConjunctivalPresentation() {
 		return conjunctivalPresentation;
 	}
 
-	public void setConjunctivalPresentation(YesNoUnknown conjunctivalPresentation) {
+	public void setConjunctivalPresentation(SymptomState conjunctivalPresentation) {
 		this.conjunctivalPresentation = conjunctivalPresentation;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getCutaneousPresentation() {
+	public SymptomState getCutaneousPresentation() {
 		return cutaneousPresentation;
 	}
 
-	public void setCutaneousPresentation(YesNoUnknown cutaneousPresentation) {
+	public void setCutaneousPresentation(SymptomState cutaneousPresentation) {
 		this.cutaneousPresentation = cutaneousPresentation;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getGenitalPresentation() {
+	public SymptomState getGenitalPresentation() {
 		return genitalPresentation;
 	}
 
-	public void setGenitalPresentation(YesNoUnknown genitalPresentation) {
+	public void setGenitalPresentation(SymptomState genitalPresentation) {
 		this.genitalPresentation = genitalPresentation;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getNasalDischargeClearToBloody() {
+	public SymptomState getNasalDischargeClearToBloody() {
 		return nasalDischargeClearToBloody;
 	}
 
-	public void setNasalDischargeClearToBloody(YesNoUnknown nasalDischargeClearToBloody) {
+	public void setNasalDischargeClearToBloody(SymptomState nasalDischargeClearToBloody) {
 		this.nasalDischargeClearToBloody = nasalDischargeClearToBloody;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getOtherClinicalCriteria() {
+	public SymptomState getOtherClinicalCriteria() {
 		return otherClinicalCriteria;
 	}
 
-	public void setOtherClinicalCriteria(YesNoUnknown otherClinicalCriteria) {
+	public void setOtherClinicalCriteria(SymptomState otherClinicalCriteria) {
 		this.otherClinicalCriteria = otherClinicalCriteria;
 	}
 
@@ -3203,83 +3204,83 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getRespiratoryAndCutaneousPresentation() {
+	public SymptomState getRespiratoryAndCutaneousPresentation() {
 		return respiratoryAndCutaneousPresentation;
 	}
 
-	public void setRespiratoryAndCutaneousPresentation(YesNoUnknown respiratoryAndCutaneousPresentation) {
+	public void setRespiratoryAndCutaneousPresentation(SymptomState respiratoryAndCutaneousPresentation) {
 		this.respiratoryAndCutaneousPresentation = respiratoryAndCutaneousPresentation;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getRespiratoryWithMembrane() {
+	public SymptomState getRespiratoryWithMembrane() {
 		return respiratoryWithMembrane;
 	}
 
-	public void setRespiratoryWithMembrane(YesNoUnknown respiratoryWithMembrane) {
+	public void setRespiratoryWithMembrane(SymptomState respiratoryWithMembrane) {
 		this.respiratoryWithMembrane = respiratoryWithMembrane;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getRespiratoryWithoutMembrane() {
+	public SymptomState getRespiratoryWithoutMembrane() {
 		return respiratoryWithoutMembrane;
 	}
 
-	public void setRespiratoryWithoutMembrane(YesNoUnknown respiratoryWithoutMembrane) {
+	public void setRespiratoryWithoutMembrane(SymptomState respiratoryWithoutMembrane) {
 		this.respiratoryWithoutMembrane = respiratoryWithoutMembrane;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getUnknownClinicalCriteria() {
+	public SymptomState getUnknownClinicalCriteria() {
 		return unknownClinicalCriteria;
 	}
 
-	public void setUnknownClinicalCriteria(YesNoUnknown unknownClinicalCriteria) {
+	public void setUnknownClinicalCriteria(SymptomState unknownClinicalCriteria) {
 		this.unknownClinicalCriteria = unknownClinicalCriteria;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getNoComplicationDiagnosis() {
+	public SymptomState getNoComplicationDiagnosis() {
 		return noComplicationDiagnosis;
 	}
 
-	public void setNoComplicationDiagnosis(YesNoUnknown noComplicationDiagnosis) {
+	public void setNoComplicationDiagnosis(SymptomState noComplicationDiagnosis) {
 		this.noComplicationDiagnosis = noComplicationDiagnosis;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getCardiacDisorder() {
+	public SymptomState getCardiacDisorder() {
 		return cardiacDisorder;
 	}
 
-	public void setCardiacDisorder(YesNoUnknown cardiacDisorder) {
+	public void setCardiacDisorder(SymptomState cardiacDisorder) {
 		this.cardiacDisorder = cardiacDisorder;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getNeurologicalComplicationDiagnosis() {
+	public SymptomState getNeurologicalComplicationDiagnosis() {
 		return neurologicalComplicationDiagnosis;
 	}
 
-	public void setNeurologicalComplicationDiagnosis(YesNoUnknown neurologicalComplicationDiagnosis) {
+	public void setNeurologicalComplicationDiagnosis(SymptomState neurologicalComplicationDiagnosis) {
 		this.neurologicalComplicationDiagnosis = neurologicalComplicationDiagnosis;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getNeurologicalAndCardiacDisorder() {
+	public SymptomState getNeurologicalAndCardiacDisorder() {
 		return neurologicalAndCardiacDisorder;
 	}
 
-	public void setNeurologicalAndCardiacDisorder(YesNoUnknown neurologicalAndCardiacDisorder) {
+	public void setNeurologicalAndCardiacDisorder(SymptomState neurologicalAndCardiacDisorder) {
 		this.neurologicalAndCardiacDisorder = neurologicalAndCardiacDisorder;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getOtherComplicationDiagnosis() {
+	public SymptomState getOtherComplicationDiagnosis() {
 		return otherComplicationDiagnosis;
 	}
 
-	public void setOtherComplicationDiagnosis(YesNoUnknown otherComplicationDiagnosis) {
+	public void setOtherComplicationDiagnosis(SymptomState otherComplicationDiagnosis) {
 		this.otherComplicationDiagnosis = otherComplicationDiagnosis;
 	}
 
@@ -3293,11 +3294,11 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getUnknownComplicationDiagnosis() {
+	public SymptomState getUnknownComplicationDiagnosis() {
 		return unknownComplicationDiagnosis;
 	}
 
-	public void setUnknownComplicationDiagnosis(YesNoUnknown unknownComplicationDiagnosis) {
+	public void setUnknownComplicationDiagnosis(SymptomState unknownComplicationDiagnosis) {
 		this.unknownComplicationDiagnosis = unknownComplicationDiagnosis;
 	}
 

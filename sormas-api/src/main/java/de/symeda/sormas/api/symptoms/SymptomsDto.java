@@ -792,7 +792,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState coughWithSputum;
 
-	// #13399 - deprecated, replaced by coughingBlood. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by coughingBlood. Hidden for every disease, but
+	// still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -1144,7 +1145,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(JAUNDICE)
 	private YesNoUnknown jaundiceWithin24HoursOfBirth;
 
-	// #13399 - deprecated, replaced by arthralgia. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by arthralgia. Hidden for every disease, but
+	// still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -1584,148 +1586,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
 	private SymptomState oedemaLowerExtremity;
 
-	@Diseases({
-		AFP,
-		CHOLERA,
-		CONGENITAL_RUBELLA,
-		CSM,
-		DENGUE,
-		EVD,
-		GUINEA_WORM,
-		LASSA,
-		MEASLES,
-		MONKEYPOX,
-		NEW_INFLUENZA,
-		PLAGUE,
-		POLIO,
-		UNSPECIFIED_VHF,
-		WEST_NILE_FEVER,
-		YELLOW_FEVER,
-		RABIES,
-		ANTHRAX,
-		CORONAVIRUS,
-		PNEUMONIA,
-		MALARIA,
-		TYPHOID_FEVER,
-		ACUTE_VIRAL_HEPATITIS,
-		NON_NEONATAL_TETANUS,
-		HIV,
-		SCHISTOSOMIASIS,
-		SOIL_TRANSMITTED_HELMINTHS,
-		TRYPANOSOMIASIS,
-		DIARRHEA_DEHYDRATION,
-		DIARRHEA_BLOOD,
-		SNAKE_BITE,
-		RUBELLA,
-		TUBERCULOSIS,
-		LEPROSY,
-		LYMPHATIC_FILARIASIS,
-		BURULI_ULCER,
-		NEONATAL_TETANUS,
-		ONCHOCERCIASIS,
-		OTHER,
-		DIPHTHERIA,
-		TRACHOMA,
-		YAWS_ENDEMIC_SYPHILIS,
-		MATERNAL_DEATHS,
-		PERINATAL_DEATHS,
-		INFLUENZA,
-		INFLUENZA_A,
-		INFLUENZA_B,
-		H_METAPNEUMOVIRUS,
-		RESPIRATORY_SYNCYTIAL_VIRUS,
-		PARAINFLUENZA_1_4,
-		ADENOVIRUS,
-		RHINOVIRUS,
-		ENTEROVIRUS,
-		M_PNEUMONIAE,
-		C_PNEUMONIAE,
-		ARI,
-		CHIKUNGUNYA,
-		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
-		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
-		FHA,
-		INVASIVE_MENINGOCOCCAL_INFECTION,
-		INVASIVE_PNEUMOCOCCAL_INFECTION,
-		PERTUSSIS,
-		GIARDIASIS,
-		CRYPTOSPORIDIOSIS,
-		SALMONELLOSIS,
-		SYPHILIS,
-		SHIGELLOSIS,
-		YERSINIOSIS,
-		GONOCOCCAL_INFECTION,
-		MUMPS })
+	// #14366 - shown for all diseases
 	@HideForCountries
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE)
 	private Date onsetDate;
 
-	@Diseases({
-		AFP,
-		CHOLERA,
-		CONGENITAL_RUBELLA,
-		CSM,
-		DENGUE,
-		EVD,
-		GUINEA_WORM,
-		LASSA,
-		MEASLES,
-		MONKEYPOX,
-		NEW_INFLUENZA,
-		PLAGUE,
-		POLIO,
-		UNSPECIFIED_VHF,
-		WEST_NILE_FEVER,
-		YELLOW_FEVER,
-		RABIES,
-		ANTHRAX,
-		CORONAVIRUS,
-		PNEUMONIA,
-		MALARIA,
-		TYPHOID_FEVER,
-		ACUTE_VIRAL_HEPATITIS,
-		NON_NEONATAL_TETANUS,
-		HIV,
-		SCHISTOSOMIASIS,
-		SOIL_TRANSMITTED_HELMINTHS,
-		TRYPANOSOMIASIS,
-		DIARRHEA_DEHYDRATION,
-		DIARRHEA_BLOOD,
-		SNAKE_BITE,
-		RUBELLA,
-		TUBERCULOSIS,
-		LEPROSY,
-		LYMPHATIC_FILARIASIS,
-		BURULI_ULCER,
-		NEONATAL_TETANUS,
-		ONCHOCERCIASIS,
-		OTHER,
-		TRACHOMA,
-		YAWS_ENDEMIC_SYPHILIS,
-		MATERNAL_DEATHS,
-		PERINATAL_DEATHS,
-		INFLUENZA,
-		H_METAPNEUMOVIRUS,
-		PARAINFLUENZA_1_4,
-		ADENOVIRUS,
-		RHINOVIRUS,
-		ENTEROVIRUS,
-		M_PNEUMONIAE,
-		C_PNEUMONIAE,
-		ARI,
-		CHIKUNGUNYA,
-		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
-		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
-		INVASIVE_MENINGOCOCCAL_INFECTION,
-		INVASIVE_PNEUMOCOCCAL_INFECTION,
-		FHA,
-		PERTUSSIS,
-		SALMONELLOSIS,
-		SYPHILIS,
-		SHIGELLOSIS,
-		YERSINIOSIS,
-		MUMPS })
+	// #14366 - shown for all diseases
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@SymptomGrouping(SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE)
@@ -1861,19 +1728,22 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState painfulLymphadenitis;
 
-	// #13399 - deprecated, replaced by hepatomegaly. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by hepatomegaly. Hidden for every disease, but
+	// still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
 	private SymptomState palpableLiver;
 
-	// #13399 - deprecated, replaced by splenomegaly. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by splenomegaly. Hidden for every disease, but
+	// still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
 	private SymptomState palpableSpleen;
 
-	// #13399 - deprecated, moved to EpiDataDto.patientIllLocation. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, moved to EpiDataDto.patientIllLocation. Hidden for every
+	// disease, but still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -2089,32 +1959,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
 	private Boolean symptomatic;
 
-	@Diseases({
-		AFP,
-		EVD,
-		GUINEA_WORM,
-		LASSA,
-		NEW_INFLUENZA,
-		CSM,
-		CHOLERA,
-		MEASLES,
-		DENGUE,
-		MONKEYPOX,
-		PLAGUE,
-		POLIO,
-		UNSPECIFIED_VHF,
-		CONGENITAL_RUBELLA,
-		CORONAVIRUS,
-		GIARDIASIS,
-		CRYPTOSPORIDIOSIS,
-		MALARIA,
-		SALMONELLOSIS,
-		SHIGELLOSIS,
-		DIPHTHERIA,
-		YERSINIOSIS,
-		MUMPS,
-		UNDEFINED,
-		OTHER })
+	// #14366 - shown for all diseases
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@SymptomGrouping(SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE)
@@ -2520,7 +2365,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState coma;
 
-	// #13399 - deprecated, replaced by seizures. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by seizures. Hidden for every disease, but
+	// still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -2562,7 +2408,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState abnormalLungXrayFindings;
 
-	// #13399 - deprecated, replaced by conjunctivitis. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by conjunctivitis. Hidden for every disease,
+	// but still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -2679,7 +2526,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState respiratoryDiseaseVentilation;
 
-	// #13399 - deprecated, replaced by malaise. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by malaise. Hidden for every disease, but still
+	// mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -3077,7 +2925,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	// Hiding the asymptomatic symptom for all countries of TUBERCULOSIS.
 	// For now TB has been implemented for LUX only,
-	// When we implement it for other countries, we should consider it, based on symptoms requirements.
+	// When we implement it for other countries, we should consider it, based on
+	// symptoms requirements.
 	@Diseases(value = {
 		TUBERCULOSIS }, hide = true)
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
@@ -3188,7 +3037,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE)
 	private Float timeOffWorkDays;
 
-	// #13399 - deprecated, replaced by encephalitis. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by encephalitis. Hidden for every disease, but
+	// still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -3314,7 +3164,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE })
 	private SymptomState lethargy;
 
-	// #13399 - deprecated, replaced by confusedDisoriented. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by confusedDisoriented. Hidden for every
+	// disease, but still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -3386,7 +3237,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.HAEMATOLOGICAL)
 	private SymptomState anemia;
 
-	// #13399 - deprecated, replaced by alteredConsciousness. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by alteredConsciousness. Hidden for every
+	// disease, but still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -3394,7 +3246,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		MALARIA })
 	@SymptomGrouping(SymptomGroup.HAEMATOLOGICAL)
-	//Severe anaemia, leading to pale skin and weakness
+	// Severe anaemia, leading to pale skin and weakness
 	@Complication({
 		MALARIA })
 	private SymptomState severeAnemia;
@@ -3416,18 +3268,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		MALARIA })
 	@SymptomGrouping(SymptomGroup.HAEMATOLOGICAL)
-	//Disseminated intravascular coagulation (DIC)
+	// Disseminated intravascular coagulation (DIC)
 	@Complication({
 		MALARIA })
 	private SymptomState disseminatedIntraVascularCoagulation;
 
-	@Diseases({
-		MALARIA,
-		DENGUE,
-		SHIGELLOSIS })
+	// #14366 - shown for all diseases and countries
 	@Outbreaks
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SymptomGrouping(SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE)
 	private Date offsetDate;
 
@@ -3484,7 +3331,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		DENGUE })
 	@SymptomGrouping(SymptomGroup.GENERAL)
-	// mCComplicationsPotentiellementMortelles to map the life threatening complications of dengue
+	// mCComplicationsPotentiellementMortelles to map the life threatening
+	// complications of dengue
 	// but not required to show in the warning signs/complications
 	private SymptomState fatalRisk;
 
@@ -3646,7 +3494,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState mucocutaneousLesion;
 
-	// #13399 - deprecated, replaced by skinRash. Hidden for every disease, but still mapped so that
+	// #13399 - deprecated, replaced by skinRash. Hidden for every disease, but
+	// still mapped so that
 	// older app versions and REST clients keep working.
 	@Deprecated
 	@Diseases({})
@@ -3847,92 +3696,126 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown conjunctivalPresentation;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState conjunctivalPresentation;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown cutaneousPresentation;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState cutaneousPresentation;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown genitalPresentation;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState genitalPresentation;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown nasalDischargeClearToBloody;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState nasalDischargeClearToBloody;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown otherClinicalCriteria;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState otherClinicalCriteria;
 
 	@Diseases({
 		DIPHTHERIA })
 	@DependantOn(OTHER_CLINICAL_CRITERIA)
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private String otherClinicalCriteriaText;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown respiratoryAndCutaneousPresentation;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState respiratoryAndCutaneousPresentation;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown respiratoryWithMembrane;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState respiratoryWithMembrane;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown respiratoryWithoutMembrane;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState respiratoryWithoutMembrane;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
-	private YesNoUnknown unknownClinicalCriteria;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState unknownClinicalCriteria;
 
 	// Diphtheria complication diagnosis
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.SYSTEM_DISORDER)
-	private YesNoUnknown noComplicationDiagnosis;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState noComplicationDiagnosis;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.SYSTEM_DISORDER)
-	private YesNoUnknown cardiacDisorder;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState cardiacDisorder;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.SYSTEM_DISORDER)
-	private YesNoUnknown neurologicalComplicationDiagnosis;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState neurologicalComplicationDiagnosis;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.SYSTEM_DISORDER)
-	private YesNoUnknown neurologicalAndCardiacDisorder;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState neurologicalAndCardiacDisorder;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.SYSTEM_DISORDER)
-	private YesNoUnknown otherComplicationDiagnosis;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState otherComplicationDiagnosis;
 
 	@Diseases({
 		DIPHTHERIA })
 	@DependantOn(OTHER_COMPLICATION_DIAGNOSIS)
 	@SymptomGrouping(SymptomGroup.SYSTEM_DISORDER)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private String otherComplicationDiagnosisText;
 
 	@Diseases({
 		DIPHTHERIA })
 	@SymptomGrouping(SymptomGroup.SYSTEM_DISORDER)
-	private YesNoUnknown unknownComplicationDiagnosis;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	private SymptomState unknownComplicationDiagnosis;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -6916,83 +6799,83 @@ public class SymptomsDto extends PseudonymizableDto {
 	}
 
 	@Order(516)
-	public YesNoUnknown getConjunctivalPresentation() {
+	public SymptomState getConjunctivalPresentation() {
 		return conjunctivalPresentation;
 	}
 
-	public void setConjunctivalPresentation(YesNoUnknown conjunctivalPresentation) {
+	public void setConjunctivalPresentation(SymptomState conjunctivalPresentation) {
 		this.conjunctivalPresentation = conjunctivalPresentation;
 	}
 
 	@Order(517)
-	public YesNoUnknown getCutaneousPresentation() {
+	public SymptomState getCutaneousPresentation() {
 		return cutaneousPresentation;
 	}
 
-	public void setCutaneousPresentation(YesNoUnknown cutaneousPresentation) {
+	public void setCutaneousPresentation(SymptomState cutaneousPresentation) {
 		this.cutaneousPresentation = cutaneousPresentation;
 	}
 
 	@Order(518)
-	public YesNoUnknown getGenitalPresentation() {
+	public SymptomState getGenitalPresentation() {
 		return genitalPresentation;
 	}
 
-	public void setGenitalPresentation(YesNoUnknown genitalPresentation) {
+	public void setGenitalPresentation(SymptomState genitalPresentation) {
 		this.genitalPresentation = genitalPresentation;
 	}
 
 	@Order(519)
-	public YesNoUnknown getNasalDischargeClearToBloody() {
+	public SymptomState getNasalDischargeClearToBloody() {
 		return nasalDischargeClearToBloody;
 	}
 
-	public void setNasalDischargeClearToBloody(YesNoUnknown nasalDischargeClearToBloody) {
+	public void setNasalDischargeClearToBloody(SymptomState nasalDischargeClearToBloody) {
 		this.nasalDischargeClearToBloody = nasalDischargeClearToBloody;
 	}
 
 	@Order(520)
-	public YesNoUnknown getOtherClinicalCriteria() {
+	public SymptomState getOtherClinicalCriteria() {
 		return otherClinicalCriteria;
 	}
 
-	public void setOtherClinicalCriteria(YesNoUnknown otherClinicalCriteria) {
+	public void setOtherClinicalCriteria(SymptomState otherClinicalCriteria) {
 		this.otherClinicalCriteria = otherClinicalCriteria;
 	}
 
 	@Order(521)
-	public YesNoUnknown getUnknownClinicalCriteria() {
+	public SymptomState getUnknownClinicalCriteria() {
 		return unknownClinicalCriteria;
 	}
 
-	public void setUnknownClinicalCriteria(YesNoUnknown unknownClinicalCriteria) {
+	public void setUnknownClinicalCriteria(SymptomState unknownClinicalCriteria) {
 		this.unknownClinicalCriteria = unknownClinicalCriteria;
 	}
 
 	@Order(522)
-	public YesNoUnknown getRespiratoryAndCutaneousPresentation() {
+	public SymptomState getRespiratoryAndCutaneousPresentation() {
 		return respiratoryAndCutaneousPresentation;
 	}
 
-	public void setRespiratoryAndCutaneousPresentation(YesNoUnknown respiratoryAndCutaneousPresentation) {
+	public void setRespiratoryAndCutaneousPresentation(SymptomState respiratoryAndCutaneousPresentation) {
 		this.respiratoryAndCutaneousPresentation = respiratoryAndCutaneousPresentation;
 	}
 
 	@Order(523)
-	public YesNoUnknown getRespiratoryWithMembrane() {
+	public SymptomState getRespiratoryWithMembrane() {
 		return respiratoryWithMembrane;
 	}
 
-	public void setRespiratoryWithMembrane(YesNoUnknown respiratoryWithMembrane) {
+	public void setRespiratoryWithMembrane(SymptomState respiratoryWithMembrane) {
 		this.respiratoryWithMembrane = respiratoryWithMembrane;
 	}
 
 	@Order(524)
-	public YesNoUnknown getRespiratoryWithoutMembrane() {
+	public SymptomState getRespiratoryWithoutMembrane() {
 		return respiratoryWithoutMembrane;
 	}
 
-	public void setRespiratoryWithoutMembrane(YesNoUnknown respiratoryWithoutMembrane) {
+	public void setRespiratoryWithoutMembrane(SymptomState respiratoryWithoutMembrane) {
 		this.respiratoryWithoutMembrane = respiratoryWithoutMembrane;
 	}
 
@@ -7006,47 +6889,47 @@ public class SymptomsDto extends PseudonymizableDto {
 	}
 
 	@Order(526)
-	public YesNoUnknown getNoComplicationDiagnosis() {
+	public SymptomState getNoComplicationDiagnosis() {
 		return noComplicationDiagnosis;
 	}
 
-	public void setNoComplicationDiagnosis(YesNoUnknown noComplicationDiagnosis) {
+	public void setNoComplicationDiagnosis(SymptomState noComplicationDiagnosis) {
 		this.noComplicationDiagnosis = noComplicationDiagnosis;
 	}
 
 	@Order(527)
-	public YesNoUnknown getCardiacDisorder() {
+	public SymptomState getCardiacDisorder() {
 		return cardiacDisorder;
 	}
 
-	public void setCardiacDisorder(YesNoUnknown cardiacDisorder) {
+	public void setCardiacDisorder(SymptomState cardiacDisorder) {
 		this.cardiacDisorder = cardiacDisorder;
 	}
 
 	@Order(528)
-	public YesNoUnknown getNeurologicalComplicationDiagnosis() {
+	public SymptomState getNeurologicalComplicationDiagnosis() {
 		return neurologicalComplicationDiagnosis;
 	}
 
-	public void setNeurologicalComplicationDiagnosis(YesNoUnknown neurologicalComplicationDiagnosis) {
+	public void setNeurologicalComplicationDiagnosis(SymptomState neurologicalComplicationDiagnosis) {
 		this.neurologicalComplicationDiagnosis = neurologicalComplicationDiagnosis;
 	}
 
 	@Order(529)
-	public YesNoUnknown getNeurologicalAndCardiacDisorder() {
+	public SymptomState getNeurologicalAndCardiacDisorder() {
 		return neurologicalAndCardiacDisorder;
 	}
 
-	public void setNeurologicalAndCardiacDisorder(YesNoUnknown neurologicalAndCardiacDisorder) {
+	public void setNeurologicalAndCardiacDisorder(SymptomState neurologicalAndCardiacDisorder) {
 		this.neurologicalAndCardiacDisorder = neurologicalAndCardiacDisorder;
 	}
 
 	@Order(530)
-	public YesNoUnknown getOtherComplicationDiagnosis() {
+	public SymptomState getOtherComplicationDiagnosis() {
 		return otherComplicationDiagnosis;
 	}
 
-	public void setOtherComplicationDiagnosis(YesNoUnknown otherComplicationDiagnosis) {
+	public void setOtherComplicationDiagnosis(SymptomState otherComplicationDiagnosis) {
 		this.otherComplicationDiagnosis = otherComplicationDiagnosis;
 	}
 
@@ -7060,11 +6943,11 @@ public class SymptomsDto extends PseudonymizableDto {
 	}
 
 	@Order(532)
-	public YesNoUnknown getUnknownComplicationDiagnosis() {
+	public SymptomState getUnknownComplicationDiagnosis() {
 		return unknownComplicationDiagnosis;
 	}
 
-	public void setUnknownComplicationDiagnosis(YesNoUnknown unknownComplicationDiagnosis) {
+	public void setUnknownComplicationDiagnosis(SymptomState unknownComplicationDiagnosis) {
 		this.unknownComplicationDiagnosis = unknownComplicationDiagnosis;
 	}
 
