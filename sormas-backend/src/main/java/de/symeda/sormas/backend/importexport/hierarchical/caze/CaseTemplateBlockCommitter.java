@@ -11,7 +11,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -44,7 +43,7 @@ public class CaseTemplateBlockCommitter implements BlockCommitter {
 
 	@Override
 	public void commit(PlannedBlock block) {
-		RequestContextHolder.runInImportContext(() -> save(block.rootRecord()));
+		save(block.rootRecord());
 	}
 
 	private void save(PlannedRecord caseRecord) {

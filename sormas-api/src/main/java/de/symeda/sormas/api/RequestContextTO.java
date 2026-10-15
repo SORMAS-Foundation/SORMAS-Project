@@ -26,16 +26,8 @@ public class RequestContextTO implements Serializable {
 	@AuditIncludeProperty
 	private boolean isMobileSync;
 
-	@AuditIncludeProperty
-	private boolean isImport;
-
 	public RequestContextTO(boolean isMobileSync) {
 		this.isMobileSync = isMobileSync;
-	}
-
-	public RequestContextTO(boolean isMobileSync, boolean isImport) {
-		this.isMobileSync = isMobileSync;
-		this.isImport = isImport;
 	}
 
 	public boolean isMobileSync() {
@@ -44,13 +36,5 @@ public class RequestContextTO implements Serializable {
 
 	public void setMobileSync(boolean mobileSync) {
 		isMobileSync = mobileSync;
-	}
-
-	public boolean isImport() {
-		return isImport;
-	}
-
-	public void setImport(boolean isImport) {
-		this.isImport = isImport;
 	}
 }

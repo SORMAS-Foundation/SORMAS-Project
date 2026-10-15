@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.NotificationType;
@@ -71,25 +70,6 @@ public class NotificationServiceTest extends AbstractBeanTest {
 
 		Mockito.verify(messagingService, Mockito.times(1)).sendEmail(any(), any(), any());
 		Mockito.verify(messagingService, Mockito.times(1)).sendSms(any(), any(), any());
-	}
-
-	@Test
-	public void testSendNotificationsSkippedDuringImport() {
-
-		RequestContextHolder.runInImportContext(() -> {
-			try {
-				notificationService.sendNotifications(
-					NotificationType.CASE_LAB_RESULT_ARRIVED,
-					null,
-					null,
-					MessageSubject.CASE_CLASSIFICATION_CHANGED,
-					"Test message");
-			} catch (NotificationDeliveryFailedException e) {
-				throw new IllegalStateException(e);
-			}
-		});
-
-		Mockito.verifyNoInteractions(messagingService);
 	}
 
 	@Test
