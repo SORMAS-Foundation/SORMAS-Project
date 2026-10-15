@@ -473,12 +473,33 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 			c.setEpidNumber("AAA-BBB-CCC-26-018");
 			c.setDiseaseDetails("kept");
 		});
-		ImportSheet sheet = SheetFixtures.table("| CaseData.epidNumber | CaseData.diseaseDetails | Sample.fieldSampleID |", "| AAA-BBB-CCC-26-018 | | S1 |");
+		ImportSheet sheet = SheetFixtures.table(
+			"| CaseData.epidNumber | CaseData.diseaseDetails | CaseData.additionalDetails |",
+			"| AAA-BBB-CCC-26-018 | | changed |");
 
 		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
-		assertEquals(OperationType.UNCHANGED, preview.getBlocks().get(0).getOperations().get(0).getType());
+		assertEquals(OperationType.UPDATE, preview.getBlocks().get(0).getOperations().get(0).getType(), preview.allIssues().toString());
+		ImportReportDto report = facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
 
-		assertEquals("kept", getCaseFacade().getByUuid(caze.getUuid()).getDiseaseDetails());
+		assertEquals(BlockOutcome.COMMITTED, report.getResults().get(0).getOutcome(), report.getResults().get(0).getIssues().toString());
+		CaseDataDto stored = getCaseFacade().getByUuid(caze.getUuid());
+		assertEquals("changed", stored.getAdditionalDetails());
+		assertEquals("kept", stored.getDiseaseDetails());
+	}
+
+	@Test
+	public void aCaseStoredLongBeforeTheImportIsUpdatedByItsId() throws InterruptedException {
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), rdcf, c -> c.setEpidNumber("AAA-BBB-CCC-26-019"));
+		Thread.sleep(1100);
+		ImportSheet sheet =
+			SheetFixtures.table("| CaseData.epidNumber | CaseData.additionalDetails | Person.person.nickname |", "| AAA-BBB-CCC-26-019 | changed | JJ |");
+
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, sheet);
+		ImportReportDto report = facade.saveImport(CASE_TEMPLATE, sheet, preview.readyFingerprints());
+
+		assertEquals(BlockOutcome.COMMITTED, report.getResults().get(0).getOutcome(), report.getResults().get(0).getIssues().toString());
+		assertEquals("changed", getCaseFacade().getByUuid(caze.getUuid()).getAdditionalDetails());
+		assertEquals("JJ", getPersonFacade().getByUuid(caze.getPerson().getUuid()).getNickname());
 	}
 
 	@Test

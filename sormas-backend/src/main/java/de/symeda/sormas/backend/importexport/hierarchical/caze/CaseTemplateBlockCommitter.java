@@ -5,6 +5,8 @@ import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTempla
 import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.SAMPLE;
 import static de.symeda.sormas.backend.importexport.hierarchical.caze.CaseTemplateSchema.TEST;
 
+import java.util.Date;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -51,6 +53,8 @@ public class CaseTemplateBlockCommitter implements BlockCommitter {
 			PersonDto person = personFacade.save(caseRecord.<PersonDto> target(PERSON));
 			CaseDataDto caze = caseRecord.target(CASE);
 			caze.setPerson(person.toReference());
+			// saving the person re-saves its cases, the fingerprint already guards drift
+			caze.setChangeDate(new Date());
 			if (caze.getFollowUpStatus() == null && featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 				caze.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 			}
