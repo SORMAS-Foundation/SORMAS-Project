@@ -155,8 +155,10 @@ final class CaseHandler implements LevelHandler {
 			record.reportIssue(idColumn.get(), I18nProperties.getValidationError(Validations.importHierarchicalCaseIdNotFound, value, idColumn.get()));
 			return;
 		}
-		if (record.isNew() && !currentUserService.hasUserRight(UserRight.CASE_IMPORT)) {
-			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_IMPORT));
+		if (record.isNew()) {
+			Stream.of(UserRight.CASE_IMPORT, UserRight.CASE_CREATE)
+				.filter(right -> !currentUserService.hasUserRight(right))
+				.forEach(right -> record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, right)));
 		}
 		if (record.reason() == MatchReason.NEW_FOR_EXISTING_PERSON && !currentUserService.hasUserRight(UserRight.PERSON_EDIT)) {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.PERSON_EDIT));

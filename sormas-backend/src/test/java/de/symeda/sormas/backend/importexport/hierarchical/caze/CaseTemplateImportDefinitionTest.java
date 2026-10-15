@@ -223,6 +223,23 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void anImporterWithoutTheCaseCreateRightSeesItBeforeSaving() {
+		UserRoleReferenceDto importOnly = creator.createUserRole(
+			"ImportOnly",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_IMPORT,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.SAMPLE_VIEW,
+			UserRight.SAMPLE_CREATE);
+		loginWith(creator.createUser(rdcf, importOnly));
+
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW));
+
+		assertTrue(messages(preview).contains(I18nProperties.getValidationError(Validations.importHierarchicalMissingRight, UserRight.CASE_CREATE)));
+	}
+
+	@Test
 	public void anUnknownIdWithCaseDataCreatesTheCaseWithThatId() {
 		ImportSheet sheet = SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW);
 
