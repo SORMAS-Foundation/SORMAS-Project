@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze.importer;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -31,16 +30,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.importexport.ValueSeparator;
-import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
-import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
-import de.symeda.sormas.ui.importer.hierarchical.HierarchicalImportLayout;
 
 @SuppressWarnings("serial")
 public class CaseImportLayout extends AbstractImportLayout {
-
-	private final HierarchicalImportLayout nestedPreview = new HierarchicalImportLayout(HierarchicalImportFacade.CASE_TEMPLATE);
 
 	public CaseImportLayout() {
 
@@ -51,46 +45,19 @@ public class CaseImportLayout extends AbstractImportLayout {
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, importFacade.getCaseImportTemplateFilePath(), importFacade.getCaseImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_case_import_", file -> {
-			if (nestedPreview.isBusy()) {
+			resetDownloadErrorReportButton();
+
+			try {
+				CaseImporter importer = new CaseImporter(file, true, currentUser, (ValueSeparator) separator.getValue());
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),
-					I18nProperties.getString(Strings.messageHierarchicalImportStillRunning),
-					Type.WARNING_MESSAGE,
+					I18nProperties.getString(Strings.messageImportFailed),
+					Type.ERROR_MESSAGE,
 					false).show(Page.getCurrent());
-				return;
-			}
-			resetDownloadErrorReportButton();
-			removeComponent(nestedPreview);
-			char csvSeparator = ValueSeparator.getSeparator((ValueSeparator) separator.getValue(), FacadeProvider.getConfigFacade().getCsvSeparator());
-			try {
-				CaseImportRouter.route(file, csvSeparator, () -> startClassicImport(file), sheet -> showNestedPreview(sheet, csvSeparator));
-			} catch (IOException e) {
-				showImportFailed();
 			}
 		}));
 		addDownloadErrorReportComponent(4);
-	}
-
-	private void startClassicImport(File file) {
-		try {
-			CaseImporter importer = new CaseImporter(file, true, currentUser, (ValueSeparator) separator.getValue());
-			importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
-		} catch (IOException | CsvValidationException e) {
-			showImportFailed();
-		}
-	}
-
-	private void showNestedPreview(ImportSheet sheet, char csvSeparator) {
-		nestedPreview.separator(csvSeparator);
-		addComponent(nestedPreview);
-		nestedPreview.preview(sheet);
-	}
-
-	private static void showImportFailed() {
-		new Notification(
-			I18nProperties.getString(Strings.headingImportFailed),
-			I18nProperties.getString(Strings.messageImportFailed),
-			Type.ERROR_MESSAGE,
-			false).show(Page.getCurrent());
 	}
 }

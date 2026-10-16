@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1825,26 +1824,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return super.getEditPermissionType(caze);
 	}
 
-	public Map<Case, EditPermissionType> getEditPermissionTypes(List<Case> cases) {
-		Set<Long> inJurisdiction = new HashSet<>(getInJurisdictionIds(cases));
-		Set<Long> handedOver = sormasToSormasShareInfoService.getCaseIdsWithOwnershipHandedOver(cases);
-		Set<Long> receivedWithoutOwnership = new HashSet<>(
-			getIdList(
-				cases,
-				(cb, cq, root) -> cb.isFalse(root.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO).get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER))));
-		Map<Case, EditPermissionType> types = new HashMap<>();
-		for (Case caze : cases) {
-			if (!inJurisdiction.contains(caze.getId())) {
-				types.put(caze, EditPermissionType.OUTSIDE_JURISDICTION);
-			} else if (handedOver.contains(caze.getId()) || receivedWithoutOwnership.contains(caze.getId())) {
-				types.put(caze, EditPermissionType.WITHOUT_OWNERSHIP);
-			} else {
-				types.put(caze, super.getEditPermissionType(caze));
-			}
-		}
-		return types;
-	}
-
 	@Override
 	public EditPermissionType getEditPermissionType(Case caze) {
 
@@ -1913,23 +1892,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Case.DELETED), Boolean.FALSE));
 
 		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Case> getUndeletedByAttributeValues(String attribute, Collection<String> values) {
-
-		if (values.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		List<Case> cases = new ArrayList<>();
-		IterableHelper.executeBatched(new ArrayList<>(values), ModelConstants.PARAMETER_LIMIT, batch -> {
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Case> cq = cb.createQuery(Case.class);
-			Root<Case> caseRoot = cq.from(Case.class);
-			cq.where(caseRoot.get(attribute).in(batch), cb.equal(caseRoot.get(Case.DELETED), Boolean.FALSE));
-			cases.addAll(em.createQuery(cq).getResultList());
-		});
-		return cases;
 	}
 
 	public List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria) {

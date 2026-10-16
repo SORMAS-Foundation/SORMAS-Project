@@ -232,10 +232,6 @@ public class ImportFacadeEjb implements ImportFacade {
 	public void generateCaseImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
 
 		createExportDirectoryIfNecessary();
-		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), caseImportColumns(featureConfigurations), true);
-	}
-
-	public List<ImportColumn> caseImportColumns(List<FeatureConfigurationDto> featureConfigurations) {
 
 		char separator = configFacade.getCsvSeparator();
 
@@ -247,7 +243,9 @@ public class ImportFacadeEjb implements ImportFacade {
 			appendListOfFields(importColumns, VaccinationDto.class, "", separator, featureConfigurations);
 		}
 
-		return importColumns.stream().filter(column -> keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
+		importColumns = importColumns.stream().filter(column -> keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
+
+		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
 	}
 
 	private void addPrimaryPhoneAndEmail(char separator, List<ImportColumn> importColumns) {

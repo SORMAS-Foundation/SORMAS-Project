@@ -50,16 +50,6 @@
         } 
       }
       
-      &.v-tabsheet-tabitemcell-critical .v-tabsheet-tabitem {
-        .v-caption {
-          color: $s-critical-color;
-        }
-
-        &.selected .v-caption {
-          border-top-color: $s-critical-color;
-        }
-      }
-
       &:first-child {
         margin-left: 20px;
       }
