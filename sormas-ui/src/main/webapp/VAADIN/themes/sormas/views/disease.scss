@@ -698,4 +698,24 @@
       fill: #07098e;
     }
   }
+
+  .background-disease-gonococcal-disease {
+    background-color: #d81b60;
+    fill: #d81b60;
+
+    &.background-darker {
+      background-color: #ad1457;
+      fill: #ad1457;
+    }
+  }
+
+  .background-disease-syphilis {
+    background-color: #1e8449;
+    fill: #1e8449;
+
+    &.background-darker {
+      background-color: #145a32;
+      fill: #145a32;
+    }
+  }
 }

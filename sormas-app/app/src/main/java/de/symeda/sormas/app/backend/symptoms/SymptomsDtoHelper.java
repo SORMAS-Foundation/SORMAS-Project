@@ -79,7 +79,8 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setHearingloss(source.getHearingloss());
 		target.setHiccups(source.getHiccups());
 		target.setInjectionSiteBleeding(source.getInjectionSiteBleeding());
-		target.setJointPain(source.getJointPain());
+		target.setJointPain(source.getJointPain()); // deprecated (#13399), replaced by arthralgia; still synced so that the stored value is kept
+		target.setArthralgia(source.getArthralgia()); // #13399 - replaces jointPain
 		target.setKopliksSpots(source.getKopliksSpots());
 		target.setMusclePain(source.getMusclePain());
 		target.setNausea(source.getNausea());
@@ -152,8 +153,9 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setOedemaFaceNeck(source.getOedemaFaceNeck());
 		target.setOedemaLowerExtremity(source.getOedemaLowerExtremity());
 		target.setLossSkinTurgor(source.getLossSkinTurgor());
-		target.setPalpableLiver(source.getPalpableLiver());
-		target.setPalpableSpleen(source.getPalpableSpleen());
+		target.setPalpableLiver(source.getPalpableLiver()); // deprecated (#13399), replaced by hepatomegaly; still synced so that the stored value is kept
+		target.setHepatomegaly(source.getHepatomegaly()); // #13399 - replaces palpableLiver
+		target.setPalpableSpleen(source.getPalpableSpleen()); // deprecated (#13399), replaced by splenomegaly; still synced so that the stored value is kept
 		target.setMalaise(source.getMalaise());
 		target.setSunkenEyesFontanelle(source.getSunkenEyesFontanelle());
 		target.setSidePain(source.getSidePain());
@@ -200,17 +202,17 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setAscendingFlaccidParalysis(source.getAscendingFlaccidParalysis());
 		target.setErraticBehaviour(source.getErraticBehaviour());
 		target.setComa(source.getComa());
-		target.setConvulsion(source.getConvulsion());
+		target.setConvulsion(source.getConvulsion()); // deprecated (#13399), replaced by seizures; still synced so that the stored value is kept
 		target.setFluidInLungCavityAuscultation(source.getFluidInLungCavityAuscultation());
 		target.setFluidInLungCavityXray(source.getFluidInLungCavityXray());
 		target.setAbnormalLungXrayFindings(source.getAbnormalLungXrayFindings());
-		target.setConjunctivalInjection(source.getConjunctivalInjection());
+		target.setConjunctivalInjection(source.getConjunctivalInjection()); // deprecated (#13399), replaced by conjunctivitis; still synced so that the stored value is kept
 		target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
 		target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
 		target.setLossOfSmell(source.getLossOfSmell());
 		target.setLossOfTaste(source.getLossOfTaste());
 		target.setCoughWithSputum(source.getCoughWithSputum());
-		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
+		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis()); // deprecated (#13399), replaced by coughingBlood; still synced so that the stored value is kept
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
 		target.setSkinUlcers(source.getSkinUlcers());
@@ -219,7 +221,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
 		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
-		target.setFeelingIll(source.getFeelingIll());
+		target.setFeelingIll(source.getFeelingIll()); // deprecated (#13399), replaced by malaise; still synced so that the stored value is kept
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
 		target.setFeverishFeeling(source.getFeverishFeeling());
@@ -235,7 +237,8 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
 		target.setShivering(source.getShivering());
-        target.setAcuteEncephalitis(source.getAcuteEncephalitis());
+        target.setAcuteEncephalitis(source.getAcuteEncephalitis()); // deprecated (#13399), replaced by encephalitis; still synced so that the stored value is kept
+        target.setEncephalitis(source.getEncephalitis()); // #13399 - replaces acuteEncephalitis
         target.setEggyBurps(source.getEggyBurps());
         target.setWeightLoss(source.getWeightLoss());
         target.setWeightLossAmount(source.getWeightLossAmount());
@@ -282,7 +285,8 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setHearingloss(source.getHearingloss());
 		target.setHiccups(source.getHiccups());
 		target.setInjectionSiteBleeding(source.getInjectionSiteBleeding());
-		target.setJointPain(source.getJointPain());
+		target.setJointPain(source.getJointPain()); // deprecated (#13399), replaced by arthralgia; still synced so that the stored value is kept
+		target.setArthralgia(source.getArthralgia()); // #13399 - replaces jointPain
 		target.setKopliksSpots(source.getKopliksSpots());
 		target.setMusclePain(source.getMusclePain());
 		target.setNausea(source.getNausea());
@@ -355,8 +359,9 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setOedemaFaceNeck(source.getOedemaFaceNeck());
 		target.setOedemaLowerExtremity(source.getOedemaLowerExtremity());
 		target.setLossSkinTurgor(source.getLossSkinTurgor());
-		target.setPalpableLiver(source.getPalpableLiver());
-		target.setPalpableSpleen(source.getPalpableSpleen());
+		target.setPalpableLiver(source.getPalpableLiver()); // deprecated (#13399), replaced by hepatomegaly; still synced so that the stored value is kept
+		target.setHepatomegaly(source.getHepatomegaly()); // #13399 - replaces palpableLiver
+		target.setPalpableSpleen(source.getPalpableSpleen()); // deprecated (#13399), replaced by splenomegaly; still synced so that the stored value is kept
 		target.setMalaise(source.getMalaise());
 		target.setSunkenEyesFontanelle(source.getSunkenEyesFontanelle());
 		target.setSidePain(source.getSidePain());
@@ -403,17 +408,17 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setAscendingFlaccidParalysis(source.getAscendingFlaccidParalysis());
 		target.setErraticBehaviour(source.getErraticBehaviour());
 		target.setComa(source.getComa());
-		target.setConvulsion(source.getConvulsion());
+		target.setConvulsion(source.getConvulsion()); // deprecated (#13399), replaced by seizures; still synced so that the stored value is kept
 		target.setFluidInLungCavityAuscultation(source.getFluidInLungCavityAuscultation());
 		target.setFluidInLungCavityXray(source.getFluidInLungCavityXray());
 		target.setAbnormalLungXrayFindings(source.getAbnormalLungXrayFindings());
-		target.setConjunctivalInjection(source.getConjunctivalInjection());
+		target.setConjunctivalInjection(source.getConjunctivalInjection()); // deprecated (#13399), replaced by conjunctivitis; still synced so that the stored value is kept
 		target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
 		target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
 		target.setLossOfSmell(source.getLossOfSmell());
 		target.setLossOfTaste(source.getLossOfTaste());
 		target.setCoughWithSputum(source.getCoughWithSputum());
-		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
+		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis()); // deprecated (#13399), replaced by coughingBlood; still synced so that the stored value is kept
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
 		target.setSkinUlcers(source.getSkinUlcers());
@@ -422,7 +427,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
 		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
-		target.setFeelingIll(source.getFeelingIll());
+		target.setFeelingIll(source.getFeelingIll()); // deprecated (#13399), replaced by malaise; still synced so that the stored value is kept
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
 		target.setFeverishFeeling(source.getFeverishFeeling());
@@ -438,7 +443,8 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
 		target.setShivering(source.getShivering());
-        target.setAcuteEncephalitis(source.getAcuteEncephalitis());
+        target.setAcuteEncephalitis(source.getAcuteEncephalitis()); // deprecated (#13399), replaced by encephalitis; still synced so that the stored value is kept
+        target.setEncephalitis(source.getEncephalitis()); // #13399 - replaces acuteEncephalitis
         target.setEggyBurps(source.getEggyBurps());
         target.setWeightLoss(source.getWeightLoss());
         target.setWeightLossAmount(source.getWeightLossAmount());

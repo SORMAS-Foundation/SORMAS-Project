@@ -59,6 +59,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setHearingloss(source.getHearingloss());
 		target.setHiccups(source.getHiccups());
 		target.setInjectionSiteBleeding(source.getInjectionSiteBleeding());
+		// #13399 - deprecated, replaced by arthralgia
 		target.setJointPain(source.getJointPain());
 		target.setKopliksSpots(source.getKopliksSpots());
 		target.setMusclePain(source.getMusclePain());
@@ -147,7 +148,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOedemaFaceNeck(source.getOedemaFaceNeck());
 		target.setOedemaLowerExtremity(source.getOedemaLowerExtremity());
 		target.setLossSkinTurgor(source.getLossSkinTurgor());
+		// #13399 - deprecated, replaced by hepatomegaly
 		target.setPalpableLiver(source.getPalpableLiver());
+		// #13399 - deprecated, replaced by splenomegaly
 		target.setPalpableSpleen(source.getPalpableSpleen());
 		target.setMalaise(source.getMalaise());
 		target.setSunkenEyesFontanelle(source.getSunkenEyesFontanelle());
@@ -195,16 +198,19 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setAscendingFlaccidParalysis(source.getAscendingFlaccidParalysis());
 		target.setErraticBehaviour(source.getErraticBehaviour());
 		target.setComa(source.getComa());
+		// #13399 - deprecated, replaced by seizures
 		target.setConvulsion(source.getConvulsion());
 		target.setFluidInLungCavityAuscultation(source.getFluidInLungCavityAuscultation());
 		target.setFluidInLungCavityXray(source.getFluidInLungCavityXray());
 		target.setAbnormalLungXrayFindings(source.getAbnormalLungXrayFindings());
+		// #13399 - deprecated, replaced by conjunctivitis
 		target.setConjunctivalInjection(source.getConjunctivalInjection());
 		target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
 		target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
 		target.setLossOfTaste(source.getLossOfTaste());
 		target.setLossOfSmell(source.getLossOfSmell());
 		target.setCoughWithSputum(source.getCoughWithSputum());
+		// #13399 - deprecated, replaced by coughingBlood
 		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
@@ -215,6 +221,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
 		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
+		// #13399 - deprecated, replaced by malaise
 		target.setFeelingIll(source.getFeelingIll());
 		target.setShivering(source.getShivering());
 		target.setFastHeartRate(source.getFastHeartRate());
@@ -253,6 +260,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setTimeOffWorkDays(source.getTimeOffWorkDays());
 		target.setNocturnalCough(source.getNocturnalCough());
 		target.setSkinRashOnsetDate(source.getSkinRashOnsetDate());
+		// #13399 - deprecated, replaced by encephalitis
 		target.setAcuteEncephalitis(source.getAcuteEncephalitis());
 		target.setEggyBurps(source.getEggyBurps());
 		target.setSymptomCurrentStatus(source.getSymptomCurrentStatus());
@@ -267,6 +275,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setEncephalitis(source.getEncephalitis());
 		target.setGuillainBarreSyndrome(source.getGuillainBarreSyndrome());
 		target.setLethargy(source.getLethargy());
+		// #13399 - deprecated, replaced by confusedDisoriented
 		target.setConfusion(source.getConfusion());
 		target.setPersistentVomiting(source.getPersistentVomiting());
 		target.setRestlessness(source.getRestlessness());
@@ -276,6 +285,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setPolydipsia(source.getPolydipsia());
 		target.setSyndromicFlu(source.getSyndromicFlu());
 		target.setAnemia(source.getAnemia());
+		// #13399 - deprecated, replaced by alteredConsciousness
 		target.setAlteredLevelOfConsciousness(source.getAlteredLevelOfConsciousness());
 		target.setSevereAnemia(source.getSevereAnemia());
 		target.setMetabolicAcidosis(source.getMetabolicAcidosis());
@@ -318,6 +328,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setHepatosplenomegaly(source.getHepatosplenomegaly());
 		target.setLowGradeFever(source.getLowGradeFever());
 		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
+		// #13399 - deprecated, replaced by skinRash
 		target.setMaculopapularRash(source.getMaculopapularRash());
 		target.setCervicitis(source.getCervicitis());
 		target.setNewbornConjunctivitis(source.getNewbornConjunctivitis());
@@ -359,6 +370,23 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setUnknownComplications(source.getUnknownComplications());
 		target.setOtherGeneralSymptoms(source.getOtherGeneralSymptoms());
 		target.setOtherGeneralSymptomsText(source.getOtherGeneralSymptomsText());
+		target.setConjunctivalPresentation(source.getConjunctivalPresentation());
+		target.setCutaneousPresentation(source.getCutaneousPresentation());
+		target.setGenitalPresentation(source.getGenitalPresentation());
+		target.setNasalDischargeClearToBloody(source.getNasalDischargeClearToBloody());
+		target.setOtherClinicalCriteria(source.getOtherClinicalCriteria());
+		target.setOtherClinicalCriteriaText(source.getOtherClinicalCriteriaText());
+		target.setRespiratoryAndCutaneousPresentation(source.getRespiratoryAndCutaneousPresentation());
+		target.setRespiratoryWithMembrane(source.getRespiratoryWithMembrane());
+		target.setRespiratoryWithoutMembrane(source.getRespiratoryWithoutMembrane());
+		target.setUnknownClinicalCriteria(source.getUnknownClinicalCriteria());
+		target.setNoComplicationDiagnosis(source.getNoComplicationDiagnosis());
+		target.setCardiacDisorder(source.getCardiacDisorder());
+		target.setNeurologicalComplicationDiagnosis(source.getNeurologicalComplicationDiagnosis());
+		target.setNeurologicalAndCardiacDisorder(source.getNeurologicalAndCardiacDisorder());
+		target.setOtherComplicationDiagnosis(source.getOtherComplicationDiagnosis());
+		target.setOtherComplicationDiagnosisText(source.getOtherComplicationDiagnosisText());
+		target.setUnknownComplicationDiagnosis(source.getUnknownComplicationDiagnosis());
 		return target;
 	}
 
@@ -400,6 +428,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setHearingloss(source.getHearingloss());
 		target.setHiccups(source.getHiccups());
 		target.setInjectionSiteBleeding(source.getInjectionSiteBleeding());
+		// #13399 - deprecated, replaced by arthralgia
 		target.setJointPain(source.getJointPain());
 		target.setKopliksSpots(source.getKopliksSpots());
 		target.setMusclePain(source.getMusclePain());
@@ -488,7 +517,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOedemaFaceNeck(source.getOedemaFaceNeck());
 		target.setOedemaLowerExtremity(source.getOedemaLowerExtremity());
 		target.setLossSkinTurgor(source.getLossSkinTurgor());
+		// #13399 - deprecated, replaced by hepatomegaly
 		target.setPalpableLiver(source.getPalpableLiver());
+		// #13399 - deprecated, replaced by splenomegaly
 		target.setPalpableSpleen(source.getPalpableSpleen());
 		target.setMalaise(source.getMalaise());
 		target.setSunkenEyesFontanelle(source.getSunkenEyesFontanelle());
@@ -536,16 +567,19 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setAscendingFlaccidParalysis(source.getAscendingFlaccidParalysis());
 		target.setErraticBehaviour(source.getErraticBehaviour());
 		target.setComa(source.getComa());
+		// #13399 - deprecated, replaced by seizures
 		target.setConvulsion(source.getConvulsion());
 		target.setFluidInLungCavityAuscultation(source.getFluidInLungCavityAuscultation());
 		target.setFluidInLungCavityXray(source.getFluidInLungCavityXray());
 		target.setAbnormalLungXrayFindings(source.getAbnormalLungXrayFindings());
+		// #13399 - deprecated, replaced by conjunctivitis
 		target.setConjunctivalInjection(source.getConjunctivalInjection());
 		target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
 		target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
 		target.setLossOfTaste(source.getLossOfTaste());
 		target.setLossOfSmell(source.getLossOfSmell());
 		target.setCoughWithSputum(source.getCoughWithSputum());
+		// #13399 - deprecated, replaced by coughingBlood
 		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
@@ -556,6 +590,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
 		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
+		// #13399 - deprecated, replaced by malaise
 		target.setFeelingIll(source.getFeelingIll());
 		target.setShivering(source.getShivering());
 		target.setFastHeartRate(source.getFastHeartRate());
@@ -595,6 +630,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 
 		target.setNocturnalCough(source.getNocturnalCough());
 		target.setSkinRashOnsetDate(source.getSkinRashOnsetDate());
+		// #13399 - deprecated, replaced by encephalitis
 		target.setAcuteEncephalitis(source.getAcuteEncephalitis());
 		target.setEggyBurps(source.getEggyBurps());
 		target.setReoccurrence(source.getReoccurrence());
@@ -609,6 +645,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setEncephalitis(source.getEncephalitis());
 		target.setGuillainBarreSyndrome(source.getGuillainBarreSyndrome());
 		target.setLethargy(source.getLethargy());
+		// #13399 - deprecated, replaced by confusedDisoriented
 		target.setConfusion(source.getConfusion());
 		target.setPersistentVomiting(source.getPersistentVomiting());
 		target.setRestlessness(source.getRestlessness());
@@ -618,6 +655,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setPolydipsia(source.getPolydipsia());
 		target.setSyndromicFlu(source.getSyndromicFlu());
 		target.setAnemia(source.getAnemia());
+		// #13399 - deprecated, replaced by alteredConsciousness
 		target.setAlteredLevelOfConsciousness(source.getAlteredLevelOfConsciousness());
 		target.setSevereAnemia(source.getSevereAnemia());
 		target.setMetabolicAcidosis(source.getMetabolicAcidosis());
@@ -660,6 +698,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setHepatosplenomegaly(source.getHepatosplenomegaly());
 		target.setLowGradeFever(source.getLowGradeFever());
 		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
+		// #13399 - deprecated, replaced by skinRash
 		target.setMaculopapularRash(source.getMaculopapularRash());
 		target.setCervicitis(source.getCervicitis());
 		target.setNewbornConjunctivitis(source.getNewbornConjunctivitis());
@@ -701,6 +740,23 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setUnknownComplications(source.getUnknownComplications());
 		target.setOtherGeneralSymptoms(source.getOtherGeneralSymptoms());
 		target.setOtherGeneralSymptomsText(source.getOtherGeneralSymptomsText());
+		target.setConjunctivalPresentation(source.getConjunctivalPresentation());
+		target.setCutaneousPresentation(source.getCutaneousPresentation());
+		target.setGenitalPresentation(source.getGenitalPresentation());
+		target.setNasalDischargeClearToBloody(source.getNasalDischargeClearToBloody());
+		target.setOtherClinicalCriteria(source.getOtherClinicalCriteria());
+		target.setOtherClinicalCriteriaText(source.getOtherClinicalCriteriaText());
+		target.setRespiratoryAndCutaneousPresentation(source.getRespiratoryAndCutaneousPresentation());
+		target.setRespiratoryWithMembrane(source.getRespiratoryWithMembrane());
+		target.setRespiratoryWithoutMembrane(source.getRespiratoryWithoutMembrane());
+		target.setUnknownClinicalCriteria(source.getUnknownClinicalCriteria());
+		target.setNoComplicationDiagnosis(source.getNoComplicationDiagnosis());
+		target.setCardiacDisorder(source.getCardiacDisorder());
+		target.setNeurologicalComplicationDiagnosis(source.getNeurologicalComplicationDiagnosis());
+		target.setNeurologicalAndCardiacDisorder(source.getNeurologicalAndCardiacDisorder());
+		target.setOtherComplicationDiagnosis(source.getOtherComplicationDiagnosis());
+		target.setOtherComplicationDiagnosisText(source.getOtherComplicationDiagnosisText());
+		target.setUnknownComplicationDiagnosis(source.getUnknownComplicationDiagnosis());
 		return target;
 	}
 

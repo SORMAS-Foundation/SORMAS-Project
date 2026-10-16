@@ -1693,6 +1693,7 @@ public interface Captions {
 	String EpiData_motherCitizenship = "EpiData.motherCitizenship";
 	String EpiData_motherCountryOfBirth = "EpiData.motherCountryOfBirth";
 	String EpiData_otherDetails = "EpiData.otherDetails";
+	String EpiData_patientIllLocation = "EpiData.patientIllLocation";
 	String EpiData_placeOfInfection = "EpiData.placeOfInfection";
 	String EpiData_probableRouteOfTransmission = "EpiData.probableRouteOfTransmission";
 	String EpiData_residenceAtOnset = "EpiData.residenceAtOnset";
@@ -3297,6 +3298,7 @@ public interface Captions {
 	String Symptoms_bronchitis = "Symptoms.bronchitis";
 	String Symptoms_buboesGroinArmpitNeck = "Symptoms.buboesGroinArmpitNeck";
 	String Symptoms_bulgingFontanelle = "Symptoms.bulgingFontanelle";
+	String Symptoms_cardiacDisorder = "Symptoms.cardiacDisorder";
 	String Symptoms_centralNervousSystemDamage = "Symptoms.centralNervousSystemDamage";
 	String Symptoms_cerebralMalaria = "Symptoms.cerebralMalaria";
 	String Symptoms_cervicitis = "Symptoms.cervicitis";
@@ -3332,6 +3334,7 @@ public interface Captions {
 	String Symptoms_congenitalHeartDiseaseDetails = "Symptoms.congenitalHeartDiseaseDetails";
 	String Symptoms_congenitalHeartDiseaseType = "Symptoms.congenitalHeartDiseaseType";
 	String Symptoms_conjunctivalInjection = "Symptoms.conjunctivalInjection";
+	String Symptoms_conjunctivalPresentation = "Symptoms.conjunctivalPresentation";
 	String Symptoms_conjunctivitis = "Symptoms.conjunctivitis";
 	String Symptoms_constipation = "Symptoms.constipation";
 	String Symptoms_convulsion = "Symptoms.convulsion";
@@ -3343,6 +3346,7 @@ public interface Captions {
 	String Symptoms_coughWithHeamoptysis = "Symptoms.coughWithHeamoptysis";
 	String Symptoms_coughWithoutSputum = "Symptoms.coughWithoutSputum";
 	String Symptoms_coughWithSputum = "Symptoms.coughWithSputum";
+	String Symptoms_cutaneousPresentation = "Symptoms.cutaneousPresentation";
 	String Symptoms_darkUrine = "Symptoms.darkUrine";
 	String Symptoms_dateOfOnsetKnown = "Symptoms.dateOfOnsetKnown";
 	String Symptoms_dehydration = "Symptoms.dehydration";
@@ -3380,6 +3384,7 @@ public interface Captions {
 	String Symptoms_fluidInLungCavityAuscultation = "Symptoms.fluidInLungCavityAuscultation";
 	String Symptoms_fluidInLungCavityXray = "Symptoms.fluidInLungCavityXray";
 	String Symptoms_generalizedLymphadenopathy = "Symptoms.generalizedLymphadenopathy";
+	String Symptoms_genitalPresentation = "Symptoms.genitalPresentation";
 	String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
 	String Symptoms_gonococcalInfectionSiteAnorectal = "Symptoms.gonococcalInfectionSiteAnorectal";
 	String Symptoms_gonococcalInfectionSiteBlood = "Symptoms.gonococcalInfectionSiteBlood";
@@ -3468,13 +3473,17 @@ public interface Captions {
 	String Symptoms_mucousPatches = "Symptoms.mucousPatches";
 	String Symptoms_musclePain = "Symptoms.musclePain";
 	String Symptoms_myocarditis = "Symptoms.myocarditis";
+	String Symptoms_nasalDischargeClearToBloody = "Symptoms.nasalDischargeClearToBloody";
 	String Symptoms_nausea = "Symptoms.nausea";
 	String Symptoms_neckStiffness = "Symptoms.neckStiffness";
 	String Symptoms_necrotizingEnterocolitis = "Symptoms.necrotizingEnterocolitis";
 	String Symptoms_nephroticSyndrome = "Symptoms.nephroticSyndrome";
+	String Symptoms_neurologicalAndCardiacDisorder = "Symptoms.neurologicalAndCardiacDisorder";
+	String Symptoms_neurologicalComplicationDiagnosis = "Symptoms.neurologicalComplicationDiagnosis";
 	String Symptoms_neurologicalComplications = "Symptoms.neurologicalComplications";
 	String Symptoms_neurologicalManifestations = "Symptoms.neurologicalManifestations";
 	String Symptoms_newbornConjunctivitis = "Symptoms.newbornConjunctivitis";
+	String Symptoms_noComplicationDiagnosis = "Symptoms.noComplicationDiagnosis";
 	String Symptoms_noComplications = "Symptoms.noComplications";
 	String Symptoms_noConcurrentSti = "Symptoms.noConcurrentSti";
 	String Symptoms_nocturnalCough = "Symptoms.nocturnalCough";
@@ -3488,8 +3497,12 @@ public interface Captions {
 	String Symptoms_opisthotonus = "Symptoms.opisthotonus";
 	String Symptoms_oralUlcers = "Symptoms.oralUlcers";
 	String Symptoms_orchitis = "Symptoms.orchitis";
+	String Symptoms_otherClinicalCriteria = "Symptoms.otherClinicalCriteria";
+	String Symptoms_otherClinicalCriteriaText = "Symptoms.otherClinicalCriteriaText";
 	String Symptoms_otherClinicalPresentation = "Symptoms.otherClinicalPresentation";
 	String Symptoms_otherClinicalPresentationText = "Symptoms.otherClinicalPresentationText";
+	String Symptoms_otherComplicationDiagnosis = "Symptoms.otherComplicationDiagnosis";
+	String Symptoms_otherComplicationDiagnosisText = "Symptoms.otherComplicationDiagnosisText";
 	String Symptoms_otherComplications = "Symptoms.otherComplications";
 	String Symptoms_otherComplications_CryptoGiardia = "Symptoms.otherComplications.CryptoGiardia";
 	String Symptoms_otherComplicationsText = "Symptoms.otherComplicationsText";
@@ -3539,9 +3552,12 @@ public interface Captions {
 	String Symptoms_refractoryRhinitis = "Symptoms.refractoryRhinitis";
 	String Symptoms_refusalFeedorDrink = "Symptoms.refusalFeedorDrink";
 	String Symptoms_reoccurrence = "Symptoms.reoccurrence";
+	String Symptoms_respiratoryAndCutaneousPresentation = "Symptoms.respiratoryAndCutaneousPresentation";
 	String Symptoms_respiratoryDiseaseVentilation = "Symptoms.respiratoryDiseaseVentilation";
 	String Symptoms_respiratoryFatigue = "Symptoms.respiratoryFatigue";
 	String Symptoms_respiratoryRate = "Symptoms.respiratoryRate";
+	String Symptoms_respiratoryWithMembrane = "Symptoms.respiratoryWithMembrane";
+	String Symptoms_respiratoryWithoutMembrane = "Symptoms.respiratoryWithoutMembrane";
 	String Symptoms_restlessness = "Symptoms.restlessness";
 	String Symptoms_rubellaArthritis = "Symptoms.rubellaArthritis";
 	String Symptoms_runnyNose = "Symptoms.runnyNose";
@@ -3592,7 +3608,9 @@ public interface Captions {
 	String Symptoms_tremor = "Symptoms.tremor";
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";
+	String Symptoms_unknownClinicalCriteria = "Symptoms.unknownClinicalCriteria";
 	String Symptoms_unknownClinicalPresentation = "Symptoms.unknownClinicalPresentation";
+	String Symptoms_unknownComplicationDiagnosis = "Symptoms.unknownComplicationDiagnosis";
 	String Symptoms_unknownComplications = "Symptoms.unknownComplications";
 	String Symptoms_unknownSymptom = "Symptoms.unknownSymptom";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
