@@ -81,6 +81,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private final ProgressBar progress = new ProgressBar(0f);
 	private final Button importButton = ButtonHelper.createButton(Captions.actionImport, e -> startCommit(), ValoTheme.BUTTON_PRIMARY);
 	private final Button cancelButton = ButtonHelper.createButton(Captions.actionCancel, e -> model.requestCancel());
+	private final Button closeButton = ButtonHelper.createButton(Captions.actionClose, e -> closeWindow(), ValoTheme.BUTTON_PRIMARY);
 	private final Button errorFileButton = ButtonHelper.createButton(Captions.hierarchicalImportDownloadErrors, (Button.ClickListener) null);
 	private final FileDownloader errorFileDownloader = new FileDownloader(new StreamResource(() -> null, "errors.csv"));
 	private char csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
@@ -138,7 +139,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 			readyPanel,
 			resultTabs,
 			progress,
-			new HorizontalLayout(errorFileButton, cancelButton, importButton));
+			new HorizontalLayout(errorFileButton, cancelButton, importButton, closeButton));
 		setWidth(100, Unit.PERCENTAGE);
 		refresh();
 	}
@@ -211,12 +212,12 @@ public class HierarchicalImportLayout extends VerticalLayout {
 				failure = Optional.of(e);
 			} finally {
 				Optional<RuntimeException> outcome = failure;
-				ui.access(() -> finishCommit(outcome));
+				ui.access(() -> commitFinished(outcome));
 			}
 		}).start();
 	}
 
-	private void finishCommit(Optional<RuntimeException> failure) {
+	void commitFinished(Optional<RuntimeException> failure) {
 		model.finished();
 		ui.setPollInterval(-1);
 		refresh();
@@ -242,7 +243,8 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		importButton.setVisible(step == ImportWizardModel.Step.PREVIEWED);
 		importButton.setEnabled(model.canCommit());
 		cancelButton.setVisible(step == ImportWizardModel.Step.COMMITTING);
-		progress.setVisible(step != ImportWizardModel.Step.WAITING_FOR_FILE && step != ImportWizardModel.Step.PREVIEWED);
+		closeButton.setVisible(step == ImportWizardModel.Step.DONE);
+		progress.setVisible(model.isBusy());
 		progress.setIndeterminate(step == ImportWizardModel.Step.PREVIEWING);
 		errorFileButton.setVisible(previewed && (!model.failedBlocks().isEmpty() || !model.looseIssues().isEmpty()));
 
@@ -295,6 +297,13 @@ public class HierarchicalImportLayout extends VerticalLayout {
 			}
 		}
 		return false;
+	}
+
+	private void closeWindow() {
+		Window window = findAncestor(Window.class);
+		if (window != null) {
+			window.close();
+		}
 	}
 
 	private void updateWindow() {
