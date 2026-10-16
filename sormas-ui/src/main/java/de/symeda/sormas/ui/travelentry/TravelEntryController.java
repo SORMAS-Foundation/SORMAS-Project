@@ -52,6 +52,9 @@ public class TravelEntryController {
 		navigator.addView(TravelEntriesView.VIEW_NAME, TravelEntriesView.class);
 		navigator.addView(TravelEntryDataView.VIEW_NAME, TravelEntryDataView.class);
 		navigator.addView(TravelEntryPersonView.VIEW_NAME, TravelEntryPersonView.class);
+		if (UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)) {
+			navigator.addView(TravelEntryExternalPersonDataView.VIEW_NAME, TravelEntryExternalPersonDataView.class);
+		}
 	}
 
 	public void create() {

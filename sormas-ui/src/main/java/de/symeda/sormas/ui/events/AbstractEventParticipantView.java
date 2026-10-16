@@ -14,6 +14,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
+import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 
 public abstract class AbstractEventParticipantView extends AbstractEditAllowedDetailView<EventParticipantReferenceDto> {
@@ -61,6 +62,10 @@ public abstract class AbstractEventParticipantView extends AbstractEditAllowedDe
 			EventParticipantPersonView.VIEW_NAME,
 			I18nProperties.getPrefixCaption(EventParticipantDto.I18N_PREFIX, EventParticipantDto.PERSON),
 			params);
+
+		if (ExternalPersonDataComponent.isAvailable()) {
+			menu.addView(EventParticipantExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
+		}
 
 		setMainHeaderComponent(ControllerProvider.getEventParticipantController().getEventParticipantViewTitleLayout(eventParticipantDto));
 	}
