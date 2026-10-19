@@ -19,6 +19,52 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>github-packages</id>
+			<properties>
+				<github.packages.repository>https://maven.pkg.github.com/sormas-foundation/SORMAS-Project
+				</github.packages.repository>
+			</properties>
+			<distributionManagement>
+				<repository>
+					<id>github</id>
+					<url>${github.packages.repository}</url>
+				</repository>
+			</distributionManagement>
+			<build>
+				<plugins>
+					<!-- Publish a standalone POM so consumers do not need sormas-base. -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>flatten-maven-plugin</artifactId>
+						<version>1.8.0</version>
+						<configuration>
+							<flattenDependencyMode>inherited</flattenDependencyMode>
+							<updatePomFile>true</updatePomFile>
+						</configuration>
+						<executions>
+							<execution>
+								<id>flatten</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>flatten</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>flatten-clean</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>clean</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<dependencies>
 
 		<!-- *** Payara modules *** -->
