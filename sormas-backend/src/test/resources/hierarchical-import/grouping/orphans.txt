@@ -1,0 +1,13 @@
+| case | sample | test | ast |
+|      |        | T0   |     |
+| A    | S1     | T1   |     |
+| B    |        | T9   |     |
+|      |        |      | Rif |
+===
+A@3
+  S1@3
+    T1@3
+B@4
+! unattached@2
+! B@4
+! B@5

@@ -62,8 +62,10 @@ public class SampleMaterialTest {
 				SampleMaterial.CEREBROSPINAL_FLUID,
 				SampleMaterial.CLINICAL_SAMPLE,
 				SampleMaterial.OTHER,
+				SampleMaterial.PUS,
 				SampleMaterial.RECTAL_SWAB,
 				SampleMaterial.STOOL,
+				SampleMaterial.UNKNOWN,
 				SampleMaterial.URINE));
 	}
 

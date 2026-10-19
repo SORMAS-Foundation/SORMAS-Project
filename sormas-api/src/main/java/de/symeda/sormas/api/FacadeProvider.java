@@ -74,6 +74,7 @@ import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.info.InfoFacade;
 import de.symeda.sormas.api.infrastructure.ClientInfraSyncFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
@@ -184,6 +185,10 @@ public class FacadeProvider {
 
 	public static CaseImportFacade getCaseImportFacade() {
 		return get().lookupEjbRemote(CaseImportFacade.class);
+	}
+
+	public static HierarchicalImportFacade getHierarchicalImportFacade() {
+		return get().lookupEjbRemote(HierarchicalImportFacade.class);
 	}
 
 	public static TravelEntryImportFacade getTravelEntryImportFacade() {

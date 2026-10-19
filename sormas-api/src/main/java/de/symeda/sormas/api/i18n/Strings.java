@@ -740,6 +740,7 @@ public interface Strings {
 	String headingGenerateContacts = "headingGenerateContacts";
 	String headingGisDashboardMap = "headingGisDashboardMap";
 	String headingHealthConditions = "headingHealthConditions";
+	String headingHierarchicalImportReady = "headingHierarchicalImportReady";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
 	String headingHowToMergeContacts = "headingHowToMergeContacts";
@@ -1616,6 +1617,17 @@ public interface Strings {
 	String messageGdprCheck = "messageGdprCheck";
 	String messageGeocodingInsufficientAddress = "messageGeocodingInsufficientAddress";
 	String messageGeocodingNoResult = "messageGeocodingNoResult";
+	String messageHierarchicalImportCancelled = "messageHierarchicalImportCancelled";
+	String messageHierarchicalImportCounts = "messageHierarchicalImportCounts";
+	String messageHierarchicalImportErrorCount = "messageHierarchicalImportErrorCount";
+	String messageHierarchicalImportFileErrors = "messageHierarchicalImportFileErrors";
+	String messageHierarchicalImportIgnoredColumns = "messageHierarchicalImportIgnoredColumns";
+	String messageHierarchicalImportNestedRows = "messageHierarchicalImportNestedRows";
+	String messageHierarchicalImportNothingToReview = "messageHierarchicalImportNothingToReview";
+	String messageHierarchicalImportReadyCount = "messageHierarchicalImportReadyCount";
+	String messageHierarchicalImportReport = "messageHierarchicalImportReport";
+	String messageHierarchicalImportStillRunning = "messageHierarchicalImportStillRunning";
+	String messageHierarchicalImportUnchangedCount = "messageHierarchicalImportUnchangedCount";
 	String messageImmunizationArchived = "messageImmunizationArchived";
 	String messageImmunizationDearchived = "messageImmunizationDearchived";
 	String messageImmunizationOutsideJurisdictionDeletionDenied = "messageImmunizationOutsideJurisdictionDeletionDenied";
