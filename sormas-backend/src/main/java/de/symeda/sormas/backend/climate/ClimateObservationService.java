@@ -59,19 +59,20 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 	 * those rows describe the district rather than the old point. A row is copied when the target has no row that day, or
 	 * only one of a lower-ranked source; the target's own data is never overwritten by something it outranks. The rows of
 	 * {@code from} stay, so anything still sharing the old cell keeps them. OPENWEATHER rows are not copied: the new point
-	 * gets its own.
+	 * gets its own. On a tie (IMPORT onto IMPORT, MANUAL onto MANUAL) the target's row stays and the day is counted as
+	 * skipped.
 	 *
-	 * @return the number of rows created or replaced on {@code to}
+	 * @return how many rows were created or replaced on {@code to}, and how many days were skipped
 	 */
-	public int copyExternalRows(ClimateLocation from, ClimateLocation to) {
+	public ClimateRowCopyResult copyExternalRows(ClimateLocation from, ClimateLocation to) {
 
 		if (from == null || to == null || from.getId() == null || from.getId().equals(to.getId())) {
-			return 0;
+			return ClimateRowCopyResult.NOTHING;
 		}
 
 		List<ClimateObservation> sourceRows = getByLocation(from, ClimateDataSource.IMPORT, ClimateDataSource.MANUAL);
 		if (sourceRows.isEmpty()) {
-			return 0;
+			return ClimateRowCopyResult.NOTHING;
 		}
 
 		Map<Long, ClimateObservation> targetRowsByDay = new HashMap<>();
@@ -79,7 +80,7 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 			targetRowsByDay.put(targetRow.getObservationDate().getTime(), targetRow);
 		}
 
-		int copied = 0;
+		ClimateRowCopyResult result = new ClimateRowCopyResult();
 		for (ClimateObservation sourceRow : sourceRows) {
 			ClimateObservation targetRow = targetRowsByDay.get(sourceRow.getObservationDate().getTime());
 			if (targetRow == null) {
@@ -88,15 +89,16 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 				targetRow.setObservationDate(sourceRow.getObservationDate());
 				targetRow.copyValuesFrom(sourceRow);
 				persist(targetRow);
+				result.addCopied();
 			} else if (sourceRow.getSource().outranks(targetRow.getSource())) {
 				// managed entity: the change is written with the flush below
 				targetRow.copyValuesFrom(sourceRow);
+				result.addCopied();
 			} else {
-				continue;
+				result.addSkipped(sourceRow.getObservationDate());
 			}
-			copied++;
 		}
 		doFlush();
-		return copied;
+		return result;
 	}
 }

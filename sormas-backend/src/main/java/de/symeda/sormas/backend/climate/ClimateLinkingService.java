@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.climate;
 
+import java.text.SimpleDateFormat;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -27,6 +29,7 @@ import de.symeda.sormas.api.climate.ClimateGrid;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.EnvironmentService;
@@ -103,6 +106,14 @@ public class ClimateLinkingService {
 	 * @return true when the district's location changed, or its location without coordinates was given a cell
 	 */
 	public boolean linkDistrict(District district) {
+		return relinkDistrict(district) != null;
+	}
+
+	/**
+	 * @return null when the district stays on its location; otherwise what was copied to the new location (empty when
+	 *         nothing was copied or the location was given a cell in place)
+	 */
+	private ClimateRowCopyResult relinkDistrict(District district) {
 
 		ClimateLocation current = district.getClimateLocation();
 		GeoLatLon point = resolveDistrictPoint(district);
@@ -115,7 +126,7 @@ public class ClimateLinkingService {
 
 			if (cellLocation == null && current != null && !current.hasCoordinates()) {
 				climateLocationService.assignCell(current, point.getLat(), point.getLon(), gridSize);
-				return true;
+				return ClimateRowCopyResult.NOTHING;
 			}
 			target = cellLocation != null ? cellLocation : climateLocationService.getOrCreate(point.getLat(), point.getLon(), gridSize);
 		} else if (current != null && !current.hasCoordinates()) {
@@ -125,16 +136,43 @@ public class ClimateLinkingService {
 		}
 
 		if (current != null && current.getId().equals(target.getId())) {
-			return false;
+			return null;
 		}
 
-		int copied = climateObservationService.copyExternalRows(current, target);
-		if (copied > 0) {
-			logger.info("Copied {} imported or manual climate rows for district {} to its new climate location", copied, district.getUuid());
+		ClimateRowCopyResult copyResult = climateObservationService.copyExternalRows(current, target);
+		if (!copyResult.isEmpty()) {
+			logMove(district, target, copyResult);
 		}
 		district.setClimateLocation(target);
 		districtService.ensurePersisted(district);
-		return true;
+		return copyResult;
+	}
+
+	/**
+	 * One line per district move, never one per row. The skipped days stay on the old location, so nothing is lost.
+	 */
+	private void logMove(District district, ClimateLocation target, ClimateRowCopyResult copyResult) {
+
+		if (copyResult.getSkipped() == 0) {
+			logger.info(
+				"District {} ({}) moved to climate location {}: {} imported/manual rows copied",
+				district.getName(),
+				district.getUuid(),
+				target.getId(),
+				copyResult.getCopied());
+		} else {
+			// SimpleDateFormat is not thread-safe, so one per call
+			SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
+			logger.warn(
+				"District {} ({}) moved to climate location {}: {} imported/manual rows copied, {} skipped because the cell already had equal or better data ({} to {})",
+				district.getName(),
+				district.getUuid(),
+				target.getId(),
+				copyResult.getCopied(),
+				copyResult.getSkipped(),
+				DateHelper.formatLocalDate(copyResult.getFirstSkippedDay(), dayFormat),
+				DateHelper.formatLocalDate(copyResult.getLastSkippedDay(), dayFormat));
+		}
 	}
 
 	/**
@@ -161,15 +199,34 @@ public class ClimateLinkingService {
 	}
 
 	/**
+	 * Links every district and logs one summary line when any of them moved.
+	 *
 	 * @return the number of districts whose location changed
 	 */
 	public int linkAllDistricts() {
 
 		int changed = 0;
+		int withRowsCopied = 0;
+		int withDaysSkipped = 0;
 		for (District district : districtService.getAll()) {
-			if (linkDistrict(district)) {
+			ClimateRowCopyResult result = relinkDistrict(district);
+			if (result != null) {
 				changed++;
+				if (result.getCopied() > 0) {
+					withRowsCopied++;
+				}
+				if (result.getSkipped() > 0) {
+					withDaysSkipped++;
+				}
 			}
+		}
+
+		if (changed > 0) {
+			logger.info(
+				"Relinked {} districts to climate locations: {} had imported/manual rows copied, {} had days skipped",
+				changed,
+				withRowsCopied,
+				withDaysSkipped);
 		}
 		return changed;
 	}

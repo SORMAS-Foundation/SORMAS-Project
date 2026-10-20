@@ -265,6 +265,42 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void testCopyCountsCopiedAndSkippedDays() {
+
+		ClimateLocationService locationService = getBean(ClimateLocationService.class);
+		ClimateLocation from = locationService.getOrCreate(6.60, 3.35, 0.05);
+		ClimateLocation to = locationService.getOrCreate(7.50, 3.35, 0.05);
+
+		Date day1 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 4));
+		Date day2 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 3));
+		Date day3 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 2));
+		Date day4 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1));
+		createObservation(from, day1, ClimateDataSource.IMPORT, 1.0);
+		createObservation(from, day2, ClimateDataSource.MANUAL, 2.0);
+		createObservation(from, day3, ClimateDataSource.IMPORT, 3.0);
+		createObservation(from, day4, ClimateDataSource.OPENWEATHER, 4.0);
+		// ties: the target's own rows stay
+		createObservation(to, day2, ClimateDataSource.MANUAL, 20.0);
+		createObservation(to, day3, ClimateDataSource.IMPORT, 30.0);
+
+		ClimateRowCopyResult result = executeInTransaction(em -> {
+			return getBean(ClimateObservationService.class)
+				.copyExternalRows(em.find(ClimateLocation.class, from.getId()), em.find(ClimateLocation.class, to.getId()));
+		});
+
+		assertEquals(1, result.getCopied());
+		assertEquals(2, result.getSkipped());
+		assertEquals(day2.getTime(), result.getFirstSkippedDay().getTime());
+		assertEquals(day3.getTime(), result.getLastSkippedDay().getTime());
+
+		Map<Long, ClimateObservation> targetRows = getObservationsByDay(to);
+		assertEquals(1.0, targetRows.get(day1.getTime()).getRainfall());
+		assertEquals(20.0, targetRows.get(day2.getTime()).getRainfall());
+		assertEquals(30.0, targetRows.get(day3.getTime()).getRainfall());
+		assertNull(targetRows.get(day4.getTime()));
+	}
+
+	@Test
 	void testDistrictClimatePointValidation() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
