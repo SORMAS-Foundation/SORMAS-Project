@@ -48,7 +48,6 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 
 	private static final long serialVersionUID = -1L;
 	private HorizontalLayout topLayout = new HorizontalLayout();
-	private final Label noComplicationsLabel;
 	private VerticalLayout layout = new VerticalLayout();
 	private Map<String, Component> componentMap = new LinkedHashMap<>();
 	private final List<String> complicatedSymptoms;
@@ -60,11 +59,11 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 		topLayout.setMargin(false);
 		topLayout.setSpacing(false);
 		addComponent(topLayout);
-		noComplicationsLabel =
-			new Label(I18nProperties.getCaption(Disease.DENGUE == disease ? Captions.titleNoComplications_DENG : Captions.titleNoComplications));
-		topLayout.addComponents(noComplicationsLabel, layout);
+		topLayout.addComponent(layout);
 		complicatedSymptoms = AnnotationFieldHelper.getComplicatedSymptomsWithDiseases(SymptomsDto.class, disease);
 		this.disease = disease;
+		// hidden until the first complication is selected, see refreshLayout()
+		setVisible(false);
 	}
 
 	/**
@@ -157,10 +156,7 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 			comp.addStyleNames(CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
 			layout.addComponent(comp);
 		});
-		if (componentMap.isEmpty()) {
-			noComplicationsLabel.setVisible(true);
-		} else {
-			noComplicationsLabel.setVisible(false);
-		}
+		// the side panel is only shown while at least one complication is selected
+		setVisible(!componentMap.isEmpty());
 	}
 }
