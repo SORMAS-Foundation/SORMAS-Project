@@ -1,5 +1,9 @@
 package de.symeda.sormas.patch;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +23,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import de.symeda.sormas.api.Disease;
@@ -52,6 +57,7 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
@@ -84,6 +90,7 @@ import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.CollectionPatchMapper;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
+import de.symeda.sormas.backend.util.InstanceProvider;
 
 class DataPatcherImplTest extends AbstractBeanTest {
 
@@ -502,6 +509,53 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(
 				new CountryReferenceDto(germanyReferenceDto.getUuid(), germanyReferenceDto.getIsoCode()),
 				actualPerson.getBirthCountry()));
+	}
+
+	@Test
+	void patch_referenceData_country_external_id() {
+		// PREPARE
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+
+		String germanyCountryUuid = "ABCD-1234-EFGH-5678-IJKL-MNOP";
+		CountryDto dto = new CountryDto();
+		dto.setIsoCode("DEU");
+		dto.setUuid(germanyCountryUuid);
+		dto.setExternalId("DE");
+		dto.setDefaultName("Germany");
+		CountryDto germanyReferenceDto = getCountryFacade().save(dto);
+
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		// must be able to ignore accents - whitespaces - case
+		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", "DE");
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(List.of(Language.DE, Language.EN, Language.FR));
+
+		CountryFacade mockFacade = mock(CountryFacade.class);
+
+		CountryReferenceDto germany = new CountryReferenceDto(germanyCountryUuid, "Germany", "DEU");
+		germany.setExternalId("DE");
+		when(mockFacade.getAllActiveAsReference()).thenReturn(List.of(germany));
+
+		try (MockedStatic<InstanceProvider> mockedStatic = mockStatic(InstanceProvider.class)) {
+			mockedStatic.when(() -> InstanceProvider.getInstanceFor(CountryFacade.class)).thenReturn(mockFacade);
+
+			// EXECUTE
+			DataPatchResponse response = victim().patch(request);
+
+			PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+			// CHECK
+			Assertions.assertAll(
+				() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+
+				() -> Assertions.assertEquals(
+					new CountryReferenceDto(germanyReferenceDto.getUuid(), germanyReferenceDto.getIsoCode()),
+					actualPerson.getBirthCountry()));
+		}
+
 	}
 
 	@Test
