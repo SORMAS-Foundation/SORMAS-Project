@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.climate.ClimateDataSource;
@@ -146,6 +148,47 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 		// linking again keeps the same location
 		assertEquals(0, getBean(ClimateLinkingService.class).linkAllDistricts());
 		assertEquals(location.getId(), getDistrictClimateLocation(rdcf.district.getUuid()).getId());
+	}
+
+	@Test
+	void testDistrictWithoutPointReusesItsLocationWhenTheCellIsFree() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		getDistrictFacade().save(getDistrictFacade().getByUuid(rdcf.district.getUuid()));
+		ClimateLocation withoutCoordinates = getDistrictClimateLocation(rdcf.district.getUuid());
+		assertFalse(withoutCoordinates.hasCoordinates());
+		createObservation(withoutCoordinates, DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1)), ClimateDataSource.IMPORT, 12.0);
+
+		saveDistrictClimatePoint(rdcf.district.getUuid(), 6.60, 3.35);
+
+		ClimateLocation reused = getDistrictClimateLocation(rdcf.district.getUuid());
+		assertEquals(withoutCoordinates.getId(), reused.getId(), "the same location is given the cell, no new one is created");
+		assertTrue(reused.hasCoordinates());
+		assertEquals(132, reused.getLatIndex());
+		assertEquals(67, reused.getLonIndex());
+		assertEquals(1, getObservationsByDay(reused).size(), "imported rows stay where they are");
+	}
+
+	@Test
+	void testDistrictWithoutPointJoinsACellThatAlreadyHasALocation() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		EnvironmentDto environment = createEnvironment(rdcf, user, 6.60, 3.35);
+		ClimateLocation environmentLocation = getEnvironmentClimateLocation(environment.getUuid());
+
+		getDistrictFacade().save(getDistrictFacade().getByUuid(rdcf.district.getUuid()));
+		ClimateLocation withoutCoordinates = getDistrictClimateLocation(rdcf.district.getUuid());
+		Date day = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1));
+		createObservation(withoutCoordinates, day, ClimateDataSource.IMPORT, 12.0);
+
+		saveDistrictClimatePoint(rdcf.district.getUuid(), 6.61, 3.34);
+
+		assertEquals(environmentLocation.getId(), getDistrictClimateLocation(rdcf.district.getUuid()).getId(), "the district joins the cell's location");
+		assertEquals(12.0, getObservationsByDay(environmentLocation).get(day.getTime()).getRainfall(), "imported rows are copied across");
+		assertFalse(getLocation(withoutCoordinates.getId()).hasCoordinates(), "the old location is left unchanged");
 	}
 
 	@Test
@@ -266,6 +309,10 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 			ClimateLocation location = district.getClimateLocation();
 			return location != null ? em.find(ClimateLocation.class, location.getId()) : null;
 		});
+	}
+
+	private ClimateLocation getLocation(Long id) {
+		return executeInTransaction((EntityManager em) -> em.find(ClimateLocation.class, id));
 	}
 
 	private void createObservation(ClimateLocation location, Date day, ClimateDataSource source, double rainfall) {

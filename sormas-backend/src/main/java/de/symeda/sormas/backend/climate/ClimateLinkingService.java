@@ -93,10 +93,14 @@ public class ClimateLinkingService {
 	}
 
 	/**
-	 * Links the district to the location for its point, or to a location without coordinates when it has none. When the
-	 * location changes, the district's IMPORT and MANUAL rows are copied to the new location.
+	 * Links the district to the location for its point, or to a location without coordinates when it has none.
+	 * <p>
+	 * When a district whose location has no coordinates gets a point and nothing else is in that point's cell yet, the same
+	 * location is given the cell, so its imported and manual rows stay where they are and no empty location is left
+	 * behind. (A location without coordinates belongs to this district alone.) Otherwise, when the location changes, the
+	 * district's IMPORT and MANUAL rows are copied to the new location.
 	 *
-	 * @return true when the district's location changed
+	 * @return true when the district's location changed, or its location without coordinates was given a cell
 	 */
 	public boolean linkDistrict(District district) {
 
@@ -105,7 +109,15 @@ public class ClimateLinkingService {
 
 		ClimateLocation target;
 		if (point != null) {
-			target = climateLocationService.getOrCreate(point.getLat(), point.getLon(), getGridSize());
+			double gridSize = getGridSize();
+			ClimateLocation cellLocation = climateLocationService
+				.getByCell(gridSize, ClimateGrid.cellIndex(point.getLat(), gridSize), ClimateGrid.cellIndex(point.getLon(), gridSize));
+
+			if (cellLocation == null && current != null && !current.hasCoordinates()) {
+				climateLocationService.assignCell(current, point.getLat(), point.getLon(), gridSize);
+				return true;
+			}
+			target = cellLocation != null ? cellLocation : climateLocationService.getOrCreate(point.getLat(), point.getLon(), gridSize);
 		} else if (current != null && !current.hasCoordinates()) {
 			target = current;
 		} else {

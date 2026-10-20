@@ -62,14 +62,26 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 		ClimateLocation location = getByCell(gridSize, latIndex, lonIndex);
 		if (location == null) {
 			location = new ClimateLocation();
-			location.setGridSize(gridSize);
-			location.setLatIndex(latIndex);
-			location.setLonIndex(lonIndex);
-			location.setLatitude(ClimateGrid.cellCentre(latIndex, gridSize));
-			location.setLongitude(ClimateGrid.cellCentre(lonIndex, gridSize));
-			ensurePersisted(location);
+			assignCell(location, latitude, longitude, gridSize);
 		}
 		return location;
+	}
+
+	/**
+	 * Gives a location the grid cell of a point, for a new location or one without coordinates. The caller makes sure the
+	 * cell has no location yet: a cell has at most one location per grid size.
+	 */
+	public void assignCell(ClimateLocation location, double latitude, double longitude, double gridSize) {
+
+		int latIndex = ClimateGrid.cellIndex(latitude, gridSize);
+		int lonIndex = ClimateGrid.cellIndex(longitude, gridSize);
+
+		location.setGridSize(gridSize);
+		location.setLatIndex(latIndex);
+		location.setLonIndex(lonIndex);
+		location.setLatitude(ClimateGrid.cellCentre(latIndex, gridSize));
+		location.setLongitude(ClimateGrid.cellCentre(lonIndex, gridSize));
+		ensurePersisted(location);
 	}
 
 	/**
