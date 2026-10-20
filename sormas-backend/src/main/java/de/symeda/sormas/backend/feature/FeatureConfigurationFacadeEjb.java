@@ -115,7 +115,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacadeEjb;
 
 	@Inject
-	private Event<FeatureEnabledEvent> featureEnabledEvent;
+	private Event<ServerFeatureChangedEvent> serverFeatureChangedEvent;
 
 	@Override
 	@PermitAll
@@ -379,8 +379,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			}
 		}
 
-		if (enabled && !wasEnabled) {
-			featureEnabledEvent.fire(new FeatureEnabledEvent(featureType));
+		if (enabled != wasEnabled) {
+			serverFeatureChangedEvent.fire(new ServerFeatureChangedEvent(featureType, enabled));
 		}
 	}
 

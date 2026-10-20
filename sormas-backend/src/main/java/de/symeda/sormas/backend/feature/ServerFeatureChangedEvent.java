@@ -18,17 +18,24 @@ package de.symeda.sormas.backend.feature;
 import de.symeda.sormas.api.feature.FeatureType;
 
 /**
- * Fired when a server feature changes from off to on, so other parts of the backend can prepare for it.
+ * Fired when a server feature is switched on or off (only when its value actually changes), so other parts of the backend
+ * can react, for example by preparing data or regenerating files that depend on the active features.
  */
-public class FeatureEnabledEvent {
+public class ServerFeatureChangedEvent {
 
 	private final FeatureType featureType;
+	private final boolean enabled;
 
-	public FeatureEnabledEvent(FeatureType featureType) {
+	public ServerFeatureChangedEvent(FeatureType featureType, boolean enabled) {
 		this.featureType = featureType;
+		this.enabled = enabled;
 	}
 
 	public FeatureType getFeatureType() {
 		return featureType;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
 	}
 }

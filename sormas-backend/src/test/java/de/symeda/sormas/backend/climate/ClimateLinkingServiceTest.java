@@ -23,6 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -169,6 +173,18 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 
 		assertNotNull(getDistrictClimateLocation(rdcf.district.getUuid()));
 		assertNotNull(getEnvironmentClimateLocation(environment.getUuid()));
+	}
+
+	@Test
+	void testDistrictImportTemplateFollowsTheFeatureSwitch() throws IOException {
+
+		Path template = Paths.get(getImportFacade().getDistrictImportTemplateFilePath());
+
+		getFeatureConfigurationFacade().setServerFeatureEnabled(FeatureType.CLIMATE_MANAGEMENT, true);
+		assertTrue(Files.readString(template).contains(DistrictDto.CLIMATE_LATITUDE), "climate columns appear when the feature is switched on");
+
+		getFeatureConfigurationFacade().setServerFeatureEnabled(FeatureType.CLIMATE_MANAGEMENT, false);
+		assertFalse(Files.readString(template).contains(DistrictDto.CLIMATE_LATITUDE), "climate columns disappear when it is switched off");
 	}
 
 	@Test

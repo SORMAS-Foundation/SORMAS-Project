@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.climate;
 
+import java.io.IOException;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -27,12 +29,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.feature.FeatureEnabledEvent;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.ServerFeatureChangedEvent;
+import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 
 /**
- * Links all districts and environments to climate locations as soon as the climate feature is switched on, so the climate
- * screens show them at once. If this fails the feature stays on and the error is logged; the nightly fetch links them
- * again before it runs, so nothing is lost.
+ * Reacts to the climate feature being switched on or off:
+ * <ul>
+ * <li>On: links all districts and environments to climate locations, so the climate screens show them at once. If this
+ * fails the feature stays on and the error is logged; the nightly fetch links them again before it runs.</li>
+ * <li>On and off: regenerates the district import template, whose climate point columns depend on the feature. Import
+ * templates are otherwise only generated at server start.</li>
+ * </ul>
  */
 @Stateless
 @LocalBean
@@ -42,11 +50,25 @@ public class ClimateFeatureObserver {
 
 	@EJB
 	private ClimateLinkingService climateLinkingService;
+	@EJB
+	private ImportFacadeEjbLocal importFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void onFeatureEnabled(@Observes(during = TransactionPhase.AFTER_SUCCESS) FeatureEnabledEvent event) {
+	public void onServerFeatureChanged(@Observes(during = TransactionPhase.AFTER_SUCCESS) ServerFeatureChangedEvent event) {
 
 		if (event.getFeatureType() != FeatureType.CLIMATE_MANAGEMENT) {
+			return;
+		}
+
+		try {
+			importFacade.generateDistrictImportTemplateFile(featureConfigurationFacade.getActiveServerFeatureConfigurations());
+		} catch (IOException | RuntimeException e) {
+			logger.error("Could not regenerate the district import template after switching climate data {}", event.isEnabled() ? "on" : "off", e);
+		}
+
+		if (!event.isEnabled()) {
 			return;
 		}
 
