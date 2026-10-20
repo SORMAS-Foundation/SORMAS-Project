@@ -34,6 +34,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -111,6 +113,9 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 	@EJB
 	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacadeEjb;
+
+	@Inject
+	private Event<FeatureEnabledEvent> featureEnabledEvent;
 
 	@Override
 	@PermitAll
@@ -362,6 +367,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 
 		List<FeatureConfiguration> configurations = service.getServerFeatureConfigurationsByType(featureType);
+		boolean wasEnabled = configurations.stream().anyMatch(FeatureConfiguration::isEnabled);
 		if (configurations.isEmpty()) {
 			FeatureConfiguration configuration = FeatureConfiguration.build(featureType, enabled);
 			configuration.setProperties(featureType.getSupportedPropertyDefaults());
@@ -371,6 +377,10 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				configuration.setEnabled(enabled);
 				service.ensurePersisted(configuration);
 			}
+		}
+
+		if (enabled && !wasEnabled) {
+			featureEnabledEvent.fire(new FeatureEnabledEvent(featureType));
 		}
 	}
 

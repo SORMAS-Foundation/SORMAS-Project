@@ -1519,6 +1519,7 @@ public interface Captions {
 	String DiseaseConfiguration_automaticSampleAssignmentThreshold = "DiseaseConfiguration.automaticSampleAssignmentThreshold";
 	String DiseaseConfiguration_caseFollowUpDuration = "DiseaseConfiguration.caseFollowUpDuration";
 	String DiseaseConfiguration_caseSurveillanceEnabled = "DiseaseConfiguration.caseSurveillanceEnabled";
+	String DiseaseConfiguration_climateSensitive = "DiseaseConfiguration.climateSensitive";
 	String DiseaseConfiguration_disease = "DiseaseConfiguration.disease";
 	String DiseaseConfiguration_eventParticipantFollowUpDuration = "DiseaseConfiguration.eventParticipantFollowUpDuration";
 	String DiseaseConfiguration_exposureCategories = "DiseaseConfiguration.exposureCategories";
@@ -1534,10 +1535,13 @@ public interface Captions {
 	String DiseaseConfiguration_minContagiousPeriod = "DiseaseConfiguration.minContagiousPeriod";
 	String DiseaseConfiguration_minIncubationPeriod = "DiseaseConfiguration.minIncubationPeriod";
 	String DiseaseConfiguration_primaryDisease = "DiseaseConfiguration.primaryDisease";
+	String DiseaseConfiguration_usualRangeExcludedYears = "DiseaseConfiguration.usualRangeExcludedYears";
 	String diseaseConfigurationReportingTypeFilter = "diseaseConfigurationReportingTypeFilter";
 	String diseaseVariantDetails = "diseaseVariantDetails";
 	String District = "District";
 	String District_archived = "District.archived";
+	String District_climateLatitude = "District.climateLatitude";
+	String District_climateLongitude = "District.climateLongitude";
 	String District_defaultInfrastructure = "District.defaultInfrastructure";
 	String District_epidCode = "District.epidCode";
 	String District_externalID = "District.externalID";
@@ -3647,6 +3651,7 @@ public interface Captions {
 	String syncUsers = "syncUsers";
 	String system = "system";
 	String SystemConfigurationValue_category = "SystemConfigurationValue.category";
+	String SystemConfigurationValue_categoryClimate = "SystemConfigurationValue.categoryClimate";
 	String SystemConfigurationValue_categoryName = "SystemConfigurationValue.categoryName";
 	String SystemConfigurationValue_encrytp = "SystemConfigurationValue.encrytp";
 	String SystemConfigurationValue_General = "SystemConfigurationValue.General";
@@ -3764,6 +3769,7 @@ public interface Captions {
 	String titleComplications_DENG = "titleComplications.DENG";
 	String titleDiseaseConfigurationAgeGroup = "titleDiseaseConfigurationAgeGroup";
 	String titleDiseaseConfigurationCaseDefinition = "titleDiseaseConfigurationCaseDefinition";
+	String titleDiseaseConfigurationClimate = "titleDiseaseConfigurationClimate";
 	String titleDiseaseConfigurationGeneral = "titleDiseaseConfigurationGeneral";
 	String titleExposureActivitySection = "titleExposureActivitySection";
 	String titleExposureLocationSection = "titleExposureLocationSection";

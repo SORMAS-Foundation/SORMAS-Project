@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -39,13 +41,17 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.climate.ClimateConfiguration;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.FormSectionAccordion;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -60,6 +66,12 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	public static final String CASE_DEFINITION_HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.CASE_DEFINITION_TEXT);
 
 	public static final String AGE_GROUP_HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.AGE_GROUPS);
+
+	private static final String LOC_USUAL_RANGE_INFO = "locUsualRangeInfo";
+
+	public static final String CLIMATE_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.CLIMATE_SENSITIVE)
+			+ fluidRowLocs(DiseaseConfigurationDto.USUAL_RANGE_EXCLUDED_YEARS)
+			+ loc(LOC_USUAL_RANGE_INFO);
 
 	public static final String GENERAL_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.UUID)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.ACTIVE, DiseaseConfigurationDto.PRIMARY_DISEASE, DiseaseConfigurationDto.AGGREGATE_REPORTING_ENABLED)
@@ -94,6 +106,8 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	private TextField tfMaxContagiousPeriod;
 
 	private CheckboxSet<ExposureCategory> exposureCategoriesField;
+	private CheckboxSet<Integer> usualRangeExcludedYearsField;
+	private Label usualRangeInfoLabel;
 	private Label deprecatedValuesWarningLabel;
 	private boolean updatingExposureCategoryItems;
 	private boolean settingFormValue;
@@ -180,6 +194,14 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationCaseDefinition), false, caseDefinitionLayout);
 		accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationAgeGroup), false, ageGroupLayout);
 
+		CustomLayout climateLayout = new CustomLayout();
+		climateLayout.setTemplateContents(CLIMATE_HTML_LAYOUT);
+		addField(climateLayout, DiseaseConfigurationDto.CLIMATE_SENSITIVE, CheckBox.class);
+		addUsualRangeExcludedYearsField(climateLayout);
+		if (UiUtil.enabled(FeatureType.CLIMATE_MANAGEMENT)) {
+			accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationClimate), false, climateLayout);
+		}
+
 		getContent().addComponent(accordion, MAIN_ACCORDION_LOC);
 
 		setReadOnly(true, DiseaseConfigurationDto.DISEASE, DiseaseConfigurationDto.UUID);
@@ -225,8 +247,75 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			super.setValue(newFieldValue);
 			updateExposureCategoryItems(selectedExposureCategories);
 			ageGroupsComponent.setValue(ageGroups);
+			updateUsualRangeInfo();
 		} finally {
 			settingFormValue = false;
+		}
+	}
+
+	/**
+	 * Checkboxes for the last {@link ClimateConfiguration#EXCLUDABLE_YEARS} complete years; older years have no effect on the
+	 * usual range, so they are not offered.
+	 */
+	@SuppressWarnings("unchecked")
+	private void addUsualRangeExcludedYearsField(CustomLayout climateLayout) {
+
+		usualRangeExcludedYearsField = addField(climateLayout, DiseaseConfigurationDto.USUAL_RANGE_EXCLUDED_YEARS, CheckboxSet.class);
+		usualRangeExcludedYearsField.setColumnCount(5);
+
+		int currentYear = LocalDate.now().getYear();
+		List<Integer> years = IntStream.range(currentYear - ClimateConfiguration.EXCLUDABLE_YEARS, currentYear).boxed().collect(Collectors.toList());
+		usualRangeExcludedYearsField.setItems(years, null, null, String::valueOf, null);
+
+		usualRangeInfoLabel = new Label();
+		CssStyles.style(usualRangeInfoLabel, CssStyles.LABEL_WHITE_SPACE_NORMAL, CssStyles.VSPACE_TOP_4);
+		climateLayout.addComponent(usualRangeInfoLabel, LOC_USUAL_RANGE_INFO);
+
+		usualRangeExcludedYearsField.addValueChangeListener(e -> updateUsualRangeInfo());
+	}
+
+	/**
+	 * Shows how many of the reference years remain for the case usual range after the ticked years are left out.
+	 */
+	@SuppressWarnings("unchecked")
+	private void updateUsualRangeInfo() {
+
+		if (usualRangeInfoLabel == null) {
+			return;
+		}
+
+		int historyYears = getClimateSetting(ClimateConfiguration.HISTORY_YEARS, ClimateConfiguration.DEFAULT_HISTORY_YEARS);
+		int minimumYears = getClimateSetting(ClimateConfiguration.CASE_MIN_HISTORY_YEARS, 3);
+		int lastYear = LocalDate.now().getYear() - 1;
+		int firstYear = lastYear - historyYears + 1;
+
+		Set<Integer> ticked = usualRangeExcludedYearsField.getValue() != null ? (Set<Integer>) usualRangeExcludedYearsField.getValue() : Collections.emptySet();
+		List<Integer> excluded = ticked.stream().filter(year -> year >= firstYear && year <= lastYear).sorted().collect(Collectors.toList());
+		int remaining = historyYears - excluded.size();
+		String period = firstYear == lastYear ? String.valueOf(lastYear) : firstYear + "–" + lastYear;
+
+		if (remaining < minimumYears) {
+			usualRangeInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeNotShown), remaining, historyYears, minimumYears));
+		} else if (excluded.isEmpty()) {
+			usualRangeInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeYears), remaining, historyYears, period));
+		} else {
+			usualRangeInfoLabel.setValue(
+				String.format(
+					I18nProperties.getString(Strings.infoClimateUsualRangeYearsExcluded),
+					remaining,
+					historyYears,
+					period,
+					excluded.stream().map(String::valueOf).collect(Collectors.joining(", "))));
+		}
+	}
+
+	private static int getClimateSetting(String key, int defaultValue) {
+
+		try {
+			int value = Integer.parseInt(FacadeProvider.getSystemConfigurationValueFacade().getValue(key).trim());
+			return value > 0 ? value : defaultValue;
+		} catch (NumberFormatException | NullPointerException e) {
+			return defaultValue;
 		}
 	}
 

@@ -1,0 +1,273 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.backend.climate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Test;
+
+import de.symeda.sormas.api.climate.ClimateDataSource;
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.infrastructure.district.District;
+
+class ClimateLinkingServiceTest extends AbstractBeanTest {
+
+	@Test
+	void testEnvironmentLinkedToItsGridCellOnSave() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		EnvironmentDto environment = createEnvironment(rdcf, user, 6.60, 3.35);
+
+		ClimateLocation location = getEnvironmentClimateLocation(environment.getUuid());
+		assertNotNull(location);
+		assertEquals(0.05, location.getGridSize());
+		assertEquals(132, location.getLatIndex());
+		assertEquals(67, location.getLonIndex());
+		assertEquals(6.6, location.getLatitude());
+		assertEquals(3.35, location.getLongitude());
+	}
+
+	@Test
+	void testEnvironmentsInTheSameCellShareOneLocation() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		EnvironmentDto first = createEnvironment(rdcf, user, 6.601, 3.351);
+		EnvironmentDto second = createEnvironment(rdcf, user, 6.61, 3.34);
+		EnvironmentDto farAway = createEnvironment(rdcf, user, 6.70, 3.35);
+
+		Long firstLocation = getEnvironmentClimateLocation(first.getUuid()).getId();
+		assertEquals(firstLocation, getEnvironmentClimateLocation(second.getUuid()).getId());
+		assertNotEquals(firstLocation, getEnvironmentClimateLocation(farAway.getUuid()).getId());
+	}
+
+	@Test
+	void testEnvironmentNotLinkedWhileFeatureIsOff() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		EnvironmentDto environment = createEnvironment(rdcf, user, 6.60, 3.35);
+
+		assertNull(getEnvironmentClimateLocation(environment.getUuid()));
+	}
+
+	@Test
+	void testEnvironmentRelinkedWhenGpsMovesAndUnlinkedWhenGpsUnusable() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		EnvironmentDto environment = createEnvironment(rdcf, user, 6.60, 3.35);
+		Long originalLocation = getEnvironmentClimateLocation(environment.getUuid()).getId();
+
+		environment = getEnvironmentFacade().getEnvironmentByUuid(environment.getUuid());
+		environment.getLocation().setLatitude(7.50);
+		environment = getEnvironmentFacade().save(environment);
+		ClimateLocation moved = getEnvironmentClimateLocation(environment.getUuid());
+		assertNotEquals(originalLocation, moved.getId());
+		assertEquals(150, moved.getLatIndex());
+
+		environment.getLocation().setLatitude(0.0);
+		environment.getLocation().setLongitude(0.0);
+		getEnvironmentFacade().save(environment);
+		assertNull(getEnvironmentClimateLocation(environment.getUuid()));
+	}
+
+	@Test
+	void testDistrictWithClimatePointLinkedToItsCell() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		saveDistrictClimatePoint(rdcf.district.getUuid(), 6.60, 3.35);
+
+		ClimateLocation location = getDistrictClimateLocation(rdcf.district.getUuid());
+		assertTrue(location.hasCoordinates());
+		assertEquals(132, location.getLatIndex());
+		assertEquals(67, location.getLonIndex());
+	}
+
+	@Test
+	void testDistrictWithoutPointGetsOwnLocationWithoutCoordinates() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		// no shapefiles are loaded in tests, so a district without a climate point has no point at all
+		getDistrictFacade().save(getDistrictFacade().getByUuid(rdcf.district.getUuid()));
+		ClimateLocation location = getDistrictClimateLocation(rdcf.district.getUuid());
+		assertNotNull(location);
+		assertFalse(location.hasCoordinates());
+
+		// linking again keeps the same location
+		assertEquals(0, getBean(ClimateLinkingService.class).linkAllDistricts());
+		assertEquals(location.getId(), getDistrictClimateLocation(rdcf.district.getUuid()).getId());
+	}
+
+	@Test
+	void testLinkAllDistrictsLinksDistrictsCreatedWhileFeatureWasOff() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		assertNull(getDistrictClimateLocation(rdcf.district.getUuid()));
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		assertTrue(getBean(ClimateLinkingService.class).linkAllDistricts() >= 1);
+
+		assertNotNull(getDistrictClimateLocation(rdcf.district.getUuid()));
+	}
+
+	@Test
+	void testSwitchingTheFeatureOnLinksExistingDistrictsAndEnvironments() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		EnvironmentDto environment = createEnvironment(rdcf, user, 6.60, 3.35);
+		assertNull(getDistrictClimateLocation(rdcf.district.getUuid()));
+		assertNull(getEnvironmentClimateLocation(environment.getUuid()));
+
+		getFeatureConfigurationFacade().setServerFeatureEnabled(FeatureType.CLIMATE_MANAGEMENT, true);
+
+		assertNotNull(getDistrictClimateLocation(rdcf.district.getUuid()));
+		assertNotNull(getEnvironmentClimateLocation(environment.getUuid()));
+	}
+
+	@Test
+	void testDistrictPointChangeCopiesImportedAndManualRows() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		saveDistrictClimatePoint(rdcf.district.getUuid(), 6.60, 3.35);
+		ClimateLocation oldLocation = getDistrictClimateLocation(rdcf.district.getUuid());
+
+		Date day1 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 3));
+		Date day2 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 2));
+		Date day3 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1));
+		createObservation(oldLocation, day1, ClimateDataSource.IMPORT, 10.0);
+		createObservation(oldLocation, day2, ClimateDataSource.MANUAL, 20.0);
+		createObservation(oldLocation, day3, ClimateDataSource.OPENWEATHER, 30.0);
+
+		// the new cell already has rows of its own: an API row the import outranks, and a manual row that must stay
+		ClimateLocation newLocation = getBean(ClimateLocationService.class).getOrCreate(7.50, 3.35, 0.05);
+		createObservation(newLocation, day1, ClimateDataSource.OPENWEATHER, 99.0);
+		createObservation(newLocation, day2, ClimateDataSource.MANUAL, 88.0);
+
+		saveDistrictClimatePoint(rdcf.district.getUuid(), 7.50, 3.35);
+
+		assertEquals(newLocation.getId(), getDistrictClimateLocation(rdcf.district.getUuid()).getId());
+
+		Map<Long, ClimateObservation> newRows = getObservationsByDay(newLocation);
+		assertEquals(2, newRows.size());
+		assertEquals(ClimateDataSource.IMPORT, newRows.get(day1.getTime()).getSource());
+		assertEquals(10.0, newRows.get(day1.getTime()).getRainfall());
+		assertEquals(88.0, newRows.get(day2.getTime()).getRainfall());
+		assertNull(newRows.get(day3.getTime()), "OpenWeather rows belong to the old point and are not copied");
+
+		assertEquals(3, getObservationsByDay(oldLocation).size(), "the old location keeps its rows");
+	}
+
+	@Test
+	void testDistrictClimatePointValidation() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		DistrictDto onlyLatitude = getDistrictFacade().getByUuid(rdcf.district.getUuid());
+		onlyLatitude.setClimateLatitude(6.6);
+		assertThrows(ValidationRuntimeException.class, () -> getDistrictFacade().save(onlyLatitude));
+
+		DistrictDto zeroPoint = getDistrictFacade().getByUuid(rdcf.district.getUuid());
+		zeroPoint.setClimateLatitude(0.0);
+		zeroPoint.setClimateLongitude(0.0);
+		assertThrows(ValidationRuntimeException.class, () -> getDistrictFacade().save(zeroPoint));
+	}
+
+	private EnvironmentDto createEnvironment(TestDataCreator.RDCF rdcf, UserDto user, double latitude, double longitude) {
+
+		return creator.createEnvironment("Environment " + latitude, EnvironmentMedia.WATER, user.toReference(), rdcf, e -> {
+			e.getLocation().setLatitude(latitude);
+			e.getLocation().setLongitude(longitude);
+		});
+	}
+
+	private void saveDistrictClimatePoint(String districtUuid, double latitude, double longitude) {
+
+		DistrictDto district = getDistrictFacade().getByUuid(districtUuid);
+		district.setClimateLatitude(latitude);
+		district.setClimateLongitude(longitude);
+		getDistrictFacade().save(district);
+	}
+
+	private ClimateLocation getEnvironmentClimateLocation(String environmentUuid) {
+		return executeInTransaction(em -> {
+			Environment environment = getEnvironmentService().getByUuid(environmentUuid);
+			ClimateLocation location = environment.getClimateLocation();
+			return location != null ? em.find(ClimateLocation.class, location.getId()) : null;
+		});
+	}
+
+	private ClimateLocation getDistrictClimateLocation(String districtUuid) {
+		return executeInTransaction(em -> {
+			District district = getDistrictService().getByUuid(districtUuid);
+			ClimateLocation location = district.getClimateLocation();
+			return location != null ? em.find(ClimateLocation.class, location.getId()) : null;
+		});
+	}
+
+	private void createObservation(ClimateLocation location, Date day, ClimateDataSource source, double rainfall) {
+		executeInTransaction(em -> {
+			ClimateObservation observation = new ClimateObservation();
+			observation.setClimateLocation(em.find(ClimateLocation.class, location.getId()));
+			observation.setObservationDate(day);
+			observation.setSource(source);
+			observation.setRainfall(rainfall);
+			em.persist(observation);
+		});
+	}
+
+	private Map<Long, ClimateObservation> getObservationsByDay(ClimateLocation location) {
+		return executeInTransaction(em -> {
+			List<ClimateObservation> rows =
+				getBean(ClimateObservationService.class).getByLocation(em.find(ClimateLocation.class, location.getId()));
+			return rows.stream().collect(Collectors.toMap(o -> o.getObservationDate().getTime(), o -> o));
+		});
+	}
+}

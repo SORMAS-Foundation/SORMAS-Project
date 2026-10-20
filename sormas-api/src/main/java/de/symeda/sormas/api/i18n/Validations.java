@@ -47,6 +47,11 @@ public interface Validations {
 	String captionNotUnique = "captionNotUnique";
 	String caseClassificationInvalid = "caseClassificationInvalid";
 	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";
+	String climateSettingCatchupDays = "climateSettingCatchupDays";
+	String climateSettingDecimal = "climateSettingDecimal";
+	String climateSettingOption = "climateSettingOption";
+	String climateSettingWholeNumber = "climateSettingWholeNumber";
+	String climateSettingYears = "climateSettingYears";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactFollowUpUntilDateSoftValidation = "contactFollowUpUntilDateSoftValidation";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
@@ -64,6 +69,8 @@ public interface Validations {
 	String diseaseConfigurationInvalidEndAge = "diseaseConfigurationInvalidEndAge";
 	String diseaseConfigurationInvalidOpenEndedAgeGroup = "diseaseConfigurationInvalidOpenEndedAgeGroup";
 	String diseaseConfigurationInvalidStartAge = "diseaseConfigurationInvalidStartAge";
+	String districtClimatePointIncomplete = "districtClimatePointIncomplete";
+	String districtClimatePointZero = "districtClimatePointZero";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emailTemplateSubjectInvalid = "emailTemplateSubjectInvalid";

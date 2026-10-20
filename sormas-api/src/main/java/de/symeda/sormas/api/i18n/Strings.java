@@ -54,6 +54,7 @@ public interface Strings {
 	String classificationSymptomsAnyOf = "classificationSymptomsAnyOf";
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
+	String climateGridSizeOption = "climateGridSizeOption";
 	String close = "close";
 	String comparedTo = "comparedTo";
 	String confirmationAlsoAdjustQuarantine = "confirmationAlsoAdjustQuarantine";
@@ -164,8 +165,10 @@ public interface Strings {
 	String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
 	String confirmationDisableAllLineListingRegion = "confirmationDisableAllLineListingRegion";
 	String confirmationDisableUsers = "confirmationDisableUsers";
+	String confirmationDistrictClimatePointChanged = "confirmationDistrictClimatePointChanged";
 	String confirmationEnableUsers = "confirmationEnableUsers";
 	String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
+	String confirmationEnvironmentClimateLocationChanged = "confirmationEnvironmentClimateLocationChanged";
 	String confirmationExtendFollowUp = "confirmationExtendFollowUp";
 	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
 	String confirmationExternalMessageCorrection = "confirmationExternalMessageCorrection";
@@ -630,6 +633,7 @@ public interface Strings {
 	String headingDiagnosisCriteria = "headingDiagnosisCriteria";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
+	String headingDistrictClimatePointChanged = "headingDistrictClimatePointChanged";
 	String headingDocumentCreated = "headingDocumentCreated";
 	String headingDoseCount = "headingDoseCount";
 	String headingDownloadDocumentTemplateGuide = "headingDownloadDocumentTemplateGuide";
@@ -668,6 +672,7 @@ public interface Strings {
 	String headingEntitiesNotEdited = "headingEntitiesNotEdited";
 	String headingEntitiesNotSent = "headingEntitiesNotSent";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
+	String headingEnvironmentClimateLocationChanged = "headingEnvironmentClimateLocationChanged";
 	String headingEnvironmentJurisdictionUpdated = "headingEnvironmentJurisdictionUpdated";
 	String headingEnvironmentSampleLocation = "headingEnvironmentSampleLocation";
 	String headingEnvironmentSampleManagement = "headingEnvironmentSampleManagement";
@@ -1037,6 +1042,10 @@ public interface Strings {
 	String infoCaseManagementExport = "infoCaseManagementExport";
 	String infoCaseMap = "infoCaseMap";
 	String infoCheckProbableInfectionEnvironment = "infoCheckProbableInfectionEnvironment";
+	String infoClimateHistorySourceCostWarning = "infoClimateHistorySourceCostWarning";
+	String infoClimateUsualRangeNotShown = "infoClimateUsualRangeNotShown";
+	String infoClimateUsualRangeYears = "infoClimateUsualRangeYears";
+	String infoClimateUsualRangeYearsExcluded = "infoClimateUsualRangeYearsExcluded";
 	String infoCompletenessMerge = "infoCompletenessMerge";
 	String infoContactAlreadyConvertedToCase = "infoContactAlreadyConvertedToCase";
 	String infoContactCalculateCompleteness = "infoContactCalculateCompleteness";
@@ -1079,6 +1088,7 @@ public interface Strings {
 	String infoDeveloperOptionsContactGeneration = "infoDeveloperOptionsContactGeneration";
 	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
+	String infoDistrictClimatePoint = "infoDistrictClimatePoint";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
 	String infoDocumentAlreadyExistsCannotUploadAnotherOne = "infoDocumentAlreadyExistsCannotUploadAnotherOne";
 	String infoDocumentOverride = "infoDocumentOverride";
@@ -1255,6 +1265,16 @@ public interface Strings {
 	String infoSurveyResponseNotReceived = "infoSurveyResponseNotReceived";
 	String infoSurveyResponseReceived = "infoSurveyResponseReceived";
 	String infoSyncUsers = "infoSyncUsers";
+	String infoSystemConfigurationValueDescriptionClimateCaseMinHistoryYears = "infoSystemConfigurationValueDescriptionClimateCaseMinHistoryYears";
+	String infoSystemConfigurationValueDescriptionClimateCaseMinWeeklyCases = "infoSystemConfigurationValueDescriptionClimateCaseMinWeeklyCases";
+	String infoSystemConfigurationValueDescriptionClimateDailySource = "infoSystemConfigurationValueDescriptionClimateDailySource";
+	String infoSystemConfigurationValueDescriptionClimateFetchCatchupDays = "infoSystemConfigurationValueDescriptionClimateFetchCatchupDays";
+	String infoSystemConfigurationValueDescriptionClimateGridSize = "infoSystemConfigurationValueDescriptionClimateGridSize";
+	String infoSystemConfigurationValueDescriptionClimateHistorySource = "infoSystemConfigurationValueDescriptionClimateHistorySource";
+	String infoSystemConfigurationValueDescriptionClimateHistoryYears = "infoSystemConfigurationValueDescriptionClimateHistoryYears";
+	String infoSystemConfigurationValueDescriptionClimateMinHistoryYears = "infoSystemConfigurationValueDescriptionClimateMinHistoryYears";
+	String infoSystemConfigurationValueDescriptionClimateOpenWeatherApiKey = "infoSystemConfigurationValueDescriptionClimateOpenWeatherApiKey";
+	String infoSystemConfigurationValueDescriptionClimateRainfallMinMm = "infoSystemConfigurationValueDescriptionClimateRainfallMinMm";
 	String infoSystemConfigurationValueDescriptionCronArchiveCases = "infoSystemConfigurationValueDescriptionCronArchiveCases";
 	String infoSystemConfigurationValueDescriptionCronArchiveContacts = "infoSystemConfigurationValueDescriptionCronArchiveContacts";
 	String infoSystemConfigurationValueDescriptionCronArchiveEventParticipants = "infoSystemConfigurationValueDescriptionCronArchiveEventParticipants";

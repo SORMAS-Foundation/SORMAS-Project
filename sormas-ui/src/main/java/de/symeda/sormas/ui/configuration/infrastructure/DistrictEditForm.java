@@ -25,11 +25,18 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 
 public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
@@ -38,13 +45,20 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE)
 		+ fluidRowLocs(DistrictDto.REGION)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID, RegionDto.NUTS_CODE)
+		+ fluidRowLocs(DistrictDto.CLIMATE_LATITUDE, DistrictDto.CLIMATE_LONGITUDE)
 		+ fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE); // ,DistrictDto.GROWTH_RATE);
 
 	private final boolean create;
 
 	public DistrictEditForm(boolean create) {
 
-		super(DistrictDto.class, DistrictDto.I18N_PREFIX, false);
+		// the climate point fields are hidden while the climate feature is off
+		super(
+			DistrictDto.class,
+			DistrictDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
+			UiFieldAccessCheckers.getNoop());
 		this.create = create;
 
 		setWidth(540, Unit.PIXELS);
@@ -64,6 +78,15 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 		addField(RegionDto.NUTS_CODE, TextField.class);
 
+		AccessibleTextField climateLatitude = addField(DistrictDto.CLIMATE_LATITUDE, AccessibleTextField.class);
+		climateLatitude.setConverter(new StringToAngularLocationConverter());
+		climateLatitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, climateLatitude.getCaption()));
+		climateLatitude.setDescription(I18nProperties.getString(Strings.infoDistrictClimatePoint));
+		AccessibleTextField climateLongitude = addField(DistrictDto.CLIMATE_LONGITUDE, AccessibleTextField.class);
+		climateLongitude.setConverter(new StringToAngularLocationConverter());
+		climateLongitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, climateLongitude.getCaption()));
+		climateLongitude.setDescription(I18nProperties.getString(Strings.infoDistrictClimatePoint));
+
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
 		}
@@ -80,6 +103,8 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		if (!create) {
 			region.setEnabled(false);
 		}
+
+		initializeVisibilitiesAndAllowedVisibilities();
 	}
 
 	@Override

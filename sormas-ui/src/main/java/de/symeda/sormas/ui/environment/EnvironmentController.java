@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.environment;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -30,6 +31,7 @@ import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -190,6 +192,34 @@ public class EnvironmentController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
+	private static void confirmJurisdictionAndSave(EnvironmentDto dto) {
+
+		final UserDto user = UiUtil.getUser();
+		final RegionReferenceDto userRegion = user.getRegion();
+		final DistrictReferenceDto userDistrict = user.getDistrict();
+		final RegionReferenceDto environmentRegion = dto.getLocation().getRegion();
+		final DistrictReferenceDto environmentDistrict = dto.getLocation().getDistrict();
+		final boolean outsideJurisdiction = (!DataHelper.isSame(dto.getReportingUser(), user)
+			&& (userRegion != null && !DataHelper.isSame(userRegion, environmentRegion)
+				|| userDistrict != null && !DataHelper.isSame(userDistrict, environmentDistrict)));
+
+		if (outsideJurisdiction) {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingEnvironmentJurisdictionUpdated),
+				new Label(I18nProperties.getString(Strings.messageEnvironmentJurisdictionUpdated)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				500,
+				confirmed -> {
+					if (Boolean.TRUE.equals(confirmed)) {
+						saveEnvironment(dto);
+					}
+				});
+		} else {
+			saveEnvironment(dto);
+		}
+	}
+
 	private static void saveEnvironment(EnvironmentDto environment) {
 		FacadeProvider.getEnvironmentFacade().save(environment);
 
@@ -215,35 +245,33 @@ public class EnvironmentController {
 		CommitDiscardWrapperComponent<EnvironmentDataForm> editComponent =
 			new CommitDiscardWrapperComponent<>(environmentDataForm, true, environmentDataForm.getFieldGroup());
 
+		final Double originalLatitude = environmentDto.getLocation().getLatitude();
+		final Double originalLongitude = environmentDto.getLocation().getLongitude();
+
 		editComponent.addCommitListener(() -> {
 			if (!environmentDataForm.getFieldGroup().isModified()) {
 				EnvironmentDto dto = environmentDataForm.getValue();
 
-				final UserDto user = UiUtil.getUser();
-				final RegionReferenceDto userRegion = user.getRegion();
-				final DistrictReferenceDto userDistrict = user.getDistrict();
-				final RegionReferenceDto environmentRegion = dto.getLocation().getRegion();
-				final DistrictReferenceDto environmentDistrict = dto.getLocation().getDistrict();
-				final boolean outsideJurisdiction = (!DataHelper.isSame(dto.getReportingUser(), user)
-					&& (userRegion != null && !DataHelper.isSame(userRegion, environmentRegion)
-						|| userDistrict != null && !DataHelper.isSame(userDistrict, environmentDistrict)));
+				// moving the GPS moves the site to another climate record, so ask first
+				final boolean climateLocationChanged = UiUtil.enabled(FeatureType.CLIMATE_MANAGEMENT)
+					&& (!Objects.equals(originalLatitude, dto.getLocation().getLatitude())
+						|| !Objects.equals(originalLongitude, dto.getLocation().getLongitude()));
 
-				if (outsideJurisdiction) {
+				if (climateLocationChanged) {
 					VaadinUiUtil.showConfirmationPopup(
-						I18nProperties.getString(Strings.headingEnvironmentJurisdictionUpdated),
-						new Label(I18nProperties.getString(Strings.messageEnvironmentJurisdictionUpdated)),
+						I18nProperties.getString(Strings.headingEnvironmentClimateLocationChanged),
+						new Label(I18nProperties.getString(Strings.confirmationEnvironmentClimateLocationChanged)),
 						I18nProperties.getString(Strings.yes),
 						I18nProperties.getString(Strings.no),
 						500,
 						confirmed -> {
 							if (Boolean.TRUE.equals(confirmed)) {
-								saveEnvironment(dto);
+								confirmJurisdictionAndSave(dto);
 							}
 						});
 				} else {
-					saveEnvironment(dto);
+					confirmJurisdictionAndSave(dto);
 				}
-
 			}
 		});
 
