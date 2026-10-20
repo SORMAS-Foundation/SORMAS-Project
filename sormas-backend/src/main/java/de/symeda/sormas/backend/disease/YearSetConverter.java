@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.disease;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -37,10 +38,14 @@ public class YearSetConverter implements AttributeConverter<Set<Integer>, String
 		return new TreeSet<>(years).stream().map(String::valueOf).collect(Collectors.joining(","));
 	}
 
+	/**
+	 * Returns a HashSet: the disease dialog binds this value to a CheckboxSet, whose value type is HashSet, and Vaadin
+	 * cannot convert a TreeSet to it.
+	 */
 	@Override
 	public Set<Integer> convertToEntityAttribute(String yearsString) {
 
-		Set<Integer> years = new TreeSet<>();
+		Set<Integer> years = new HashSet<>();
 		if (yearsString == null || yearsString.isBlank()) {
 			return years;
 		}

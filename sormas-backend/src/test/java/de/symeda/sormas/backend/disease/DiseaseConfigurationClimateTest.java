@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -68,5 +69,7 @@ class DiseaseConfigurationClimateTest extends AbstractBeanTest {
 		assertNull(converter.convertToDatabaseColumn(Set.of()));
 		assertEquals(Set.of(2019, 2024), converter.convertToEntityAttribute(" 2024, 2019 ,x, 20l9"));
 		assertTrue(converter.convertToEntityAttribute(null).isEmpty());
+		// the disease dialog's CheckboxSet only accepts a HashSet
+		assertEquals(HashSet.class, converter.convertToEntityAttribute("2024").getClass());
 	}
 }
