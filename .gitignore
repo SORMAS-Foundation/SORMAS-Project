@@ -7,6 +7,8 @@
 *.idea
 *.iml
 .vscode
+*.docker
+*.claude
 
 /sormas-backend/bin
 /sormas-rest/bin
@@ -17,6 +19,8 @@ deploy
 /sormas-base/dev.env
 /sormas-base/bin
 /sormas-ui/bin
+/docker/
+/old/
 
 /sormas-ui/src/main/webapp/VAADIN/themes/sormas/addons.scss
 /sormas-ui/src/main/webapp/VAADIN/themes/sormas/styles.css
