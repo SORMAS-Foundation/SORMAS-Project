@@ -38,6 +38,7 @@ import de.symeda.sormas.ui.security.config.DefaultOpenIdAuthenticationDefinition
 import de.symeda.sormas.ui.utils.ConsoleLogUtils;
 import fish.payara.security.openid.OpenIdAuthenticationMechanism;
 import fish.payara.security.openid.api.AccessToken;
+import fish.payara.security.openid.api.RefreshToken;
 import fish.payara.security.openid.domain.OpenIdContextImpl;
 
 /**
@@ -117,8 +118,14 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 				if (accessToken != null) {
 
+//					FacadeProvider.getFrontendLoggerFacade()
+//						.error(String.format("AccessToken value MultiAuthentificationMechanism: [%s]", accessToken.getToken()));
+
 					FacadeProvider.getFrontendLoggerFacade()
-						.error(String.format("AccessToken value MultiAuthentificationMechanism: [%s]", accessToken.getToken()));
+						.error(
+							String.format(
+								"Refreshtoken value MultiAuthentificationMechanism: [%s]",
+								openIdContext.getRefreshToken().map(RefreshToken::getToken).orElse(null)));
 
 					authenticationStatus = httpMessageContext.notifyContainerAboutLogin(
 						new OidcCallerPrincipal(openIdContext.getCallerName(), accessToken.getToken()),
