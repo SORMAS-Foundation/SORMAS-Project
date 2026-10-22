@@ -133,16 +133,7 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 			last = day.getDate().isAfter(last) ? day.getDate() : last;
 		}
 
-		Map<LocalDate, ClimateObservation> rowsByDay = new HashMap<>();
-		em.createQuery(
-			"SELECT o FROM " + ClimateObservation.TABLE_NAME + " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + " = :location AND o."
-				+ ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to",
-			ClimateObservation.class)
-			.setParameter("location", location)
-			.setParameter("from", ClimateCalendar.toDate(first))
-			.setParameter("to", ClimateCalendar.toDate(last))
-			.getResultList()
-			.forEach(row -> rowsByDay.put(ClimateCalendar.toLocalDate(row.getObservationDate()), row));
+		Map<LocalDate, ClimateObservation> rowsByDay = getByLocationAndPeriod(location, first, last);
 
 		for (ClimateDay day : days) {
 			ClimateObservation row = rowsByDay.get(day.getDate());
@@ -166,6 +157,24 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 		}
 		doFlush();
 		return count;
+	}
+
+	/**
+	 * @return the location's rows between {@code from} and {@code to} (inclusive), by day
+	 */
+	public Map<LocalDate, ClimateObservation> getByLocationAndPeriod(ClimateLocation location, LocalDate from, LocalDate to) {
+
+		Map<LocalDate, ClimateObservation> rowsByDay = new HashMap<>();
+		em.createQuery(
+			"SELECT o FROM " + ClimateObservation.TABLE_NAME + " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + " = :location AND o."
+				+ ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to",
+			ClimateObservation.class)
+			.setParameter("location", location)
+			.setParameter("from", ClimateCalendar.toDate(from))
+			.setParameter("to", ClimateCalendar.toDate(to))
+			.getResultList()
+			.forEach(row -> rowsByDay.put(ClimateCalendar.toLocalDate(row.getObservationDate()), row));
+		return rowsByDay;
 	}
 
 	private static void setFetchedValues(ClimateObservation row, ClimateDay day, ClimateDataSource source) {

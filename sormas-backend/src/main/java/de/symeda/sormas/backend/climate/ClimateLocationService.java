@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.backend.climate;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -147,6 +151,26 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 				.setMaxResults(1)
 				.getResultList()
 				.isEmpty();
+	}
+
+	/**
+	 * @return the names of the districts (not archived) that link to each of the locations; a location shared by two or
+	 *         more districts has as many names
+	 */
+	public Map<Long, List<String>> getDistrictNamesByLocation(Collection<Long> locationIds) {
+
+		Map<Long, List<String>> names = new HashMap<>();
+		if (locationIds.isEmpty()) {
+			return names;
+		}
+		em.createQuery(
+			"SELECT d." + District.CLIMATE_LOCATION + ".id, d." + District.NAME + " FROM District d WHERE d." + District.CLIMATE_LOCATION
+				+ ".id IN :ids AND d." + District.ARCHIVED + " = false ORDER BY d." + District.NAME,
+			Object[].class)
+			.setParameter("ids", locationIds)
+			.getResultList()
+			.forEach(row -> names.computeIfAbsent((Long) row[0], id -> new ArrayList<>()).add((String) row[1]));
+		return names;
 	}
 
 	private static TypedQuery<Long> withScope(TypedQuery<Long> query, Long regionId, Long districtId) {

@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
 import de.symeda.sormas.api.climate.ClimateJobFacade;
+import de.symeda.sormas.api.climate.ClimateObservationFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
@@ -617,6 +618,10 @@ public class FacadeProvider {
 
 	public static ClimateJobFacade getClimateJobFacade() {
 		return get().lookupEjbRemote(ClimateJobFacade.class);
+	}
+
+	public static ClimateObservationFacade getClimateObservationFacade() {
+		return get().lookupEjbRemote(ClimateObservationFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")
