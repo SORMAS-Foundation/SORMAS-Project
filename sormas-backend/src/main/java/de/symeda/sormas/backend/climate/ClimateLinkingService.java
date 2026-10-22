@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.climate;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -131,6 +132,7 @@ public class ClimateLinkingService {
 
 			if (cellLocation == null && current != null && !current.hasCoordinates()) {
 				climateLocationService.assignCell(current, point.getLat(), point.getLon(), gridSize);
+				climateJobService.queueTopUp(current, LocalDate.now());
 				return ClimateRowCopyResult.NOTHING;
 			}
 			target = cellLocation != null ? cellLocation : climateLocationService.getOrCreate(point.getLat(), point.getLon(), gridSize);
@@ -151,7 +153,19 @@ public class ClimateLinkingService {
 		}
 		district.setClimateLocation(target);
 		districtService.ensurePersisted(district);
+		if (!isGridSizeChange(current)) {
+			climateJobService.queueTopUp(target, LocalDate.now());
+		}
 		return copyResult;
+	}
+
+	/**
+	 * A move away from a location made with another grid size is part of relinking everything after a grid size change.
+	 * Such moves get no automatic top-up: refilling every location is a deployment-wide backfill, which an admin starts
+	 * after confirming the calls.
+	 */
+	private boolean isGridSizeChange(ClimateLocation current) {
+		return current != null && current.hasCoordinates() && Double.compare(current.getGridSize(), getGridSize()) != 0;
 	}
 
 	/**
@@ -201,6 +215,9 @@ public class ClimateLinkingService {
 
 		environment.setClimateLocation(target);
 		environmentService.ensurePersisted(environment);
+		if (!isGridSizeChange(current)) {
+			climateJobService.queueTopUp(target, LocalDate.now());
+		}
 		return true;
 	}
 

@@ -47,6 +47,13 @@ public interface Validations {
 	String captionNotUnique = "captionNotUnique";
 	String caseClassificationInvalid = "caseClassificationInvalid";
 	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";
+	String climateBackfillOff = "climateBackfillOff";
+	String climateBackfillYears = "climateBackfillYears";
+	String climateFeatureOff = "climateFeatureOff";
+	String climateFetchOff = "climateFetchOff";
+	String climateFetchPeriod = "climateFetchPeriod";
+	String climateJobNotChangeable = "climateJobNotChangeable";
+	String climateNoApiKey = "climateNoApiKey";
 	String climateSettingCatchupDays = "climateSettingCatchupDays";
 	String climateSettingDecimal = "climateSettingDecimal";
 	String climateSettingOption = "climateSettingOption";

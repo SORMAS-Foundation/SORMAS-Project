@@ -38,6 +38,7 @@ import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateJobFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -533,6 +534,11 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testNotifierEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(NotifierEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testClimateJobFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ClimateJobFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

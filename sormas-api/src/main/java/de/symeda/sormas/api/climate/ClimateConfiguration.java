@@ -42,6 +42,9 @@ public final class ClimateConfiguration {
 	/** Default for CLIMATE_HISTORY_YEARS: reference years for normal ranges, and the most years offered for exclusion. */
 	public static final int DEFAULT_HISTORY_YEARS = 5;
 
+	/** Largest value of CLIMATE_HISTORY_YEARS, and the most years a backfill goes back. */
+	public static final int MAX_HISTORY_YEARS = 10;
+
 	/** How many complete years the disease configuration offers as excluded years for the case usual range. */
 	public static final int EXCLUDABLE_YEARS = 10;
 
