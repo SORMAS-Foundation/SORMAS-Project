@@ -35,7 +35,7 @@ public interface ClimateJobFacade {
 	 * @return the calls a backfill of {@code years} years would make: from 1 January of the year that many years back to
 	 *         yesterday, skipping the days already held from any source
 	 */
-	long estimateBackfillCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years);
+	long calculateBackfillCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years);
 
 	/**
 	 * Queues a backfill. Needs OpenWeather as the climate history source and an API key.
@@ -49,7 +49,7 @@ public interface ClimateJobFacade {
 	/**
 	 * @return the calls fetching the period again would make (one per 10 days per location)
 	 */
-	long estimateFetchCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, Date from, Date to);
+	long calculateFetchCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, Date from, Date to);
 
 	/**
 	 * Queues a fetch of the period ("fetch now"), which runs at once and updates OpenWeather rows whose values changed.
@@ -68,5 +68,5 @@ public interface ClimateJobFacade {
 	 * Queues a paused, failed or cancelled backfill, top-up or fetch again; it carries on where it stopped and skips the
 	 * days already held.
 	 */
-	void resume(String jobUuid);
+	void startAgain(String jobUuid);
 }

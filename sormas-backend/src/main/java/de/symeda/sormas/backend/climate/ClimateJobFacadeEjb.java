@@ -63,7 +63,7 @@ public class ClimateJobFacadeEjb implements ClimateJobFacade {
 	private UserService userService;
 
 	@Override
-	public long estimateBackfillCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years) {
+	public long calculateBackfillCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years) {
 
 		LocalDate from = backfillStart(years);
 		LocalDate to = LocalDate.now().minusDays(1);
@@ -89,7 +89,7 @@ public class ClimateJobFacadeEjb implements ClimateJobFacade {
 	}
 
 	@Override
-	public long estimateFetchCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, Date from, Date to) {
+	public long calculateFetchCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, Date from, Date to) {
 
 		LocalDate first = ClimateCalendar.toLocalDate(from);
 		LocalDate last = ClimateCalendar.toLocalDate(to);
@@ -126,7 +126,7 @@ public class ClimateJobFacadeEjb implements ClimateJobFacade {
 	}
 
 	@Override
-	public void resume(String jobUuid) {
+	public void startAgain(String jobUuid) {
 
 		ClimateJob job = climateJobService.getByUuid(jobUuid);
 		boolean resumable = job != null

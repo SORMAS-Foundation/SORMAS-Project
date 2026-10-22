@@ -234,7 +234,7 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		}
 
 		ClimateJobFacadeEjbLocal facade = getBean(ClimateJobFacadeEjbLocal.class);
-		long estimate = facade.estimateBackfillCalls(null, rdcf.district, false, 1);
+		long estimate = facade.calculateBackfillCalls(null, rdcf.district, false, 1);
 		String uuid = facade.startBackfill(null, rdcf.district, false, 1, estimate);
 
 		getBean(ClimateJobProcessor.class).processJobs();
@@ -353,7 +353,7 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		LocalDate from = LocalDate.now().minusDays(30);
 		LocalDate to = from.plusDays(2);
 		ClimateJobFacadeEjbLocal facade = getBean(ClimateJobFacadeEjbLocal.class);
-		assertEquals(1, facade.estimateFetchCalls(null, null, false, ClimateCalendar.toDate(from), ClimateCalendar.toDate(to)));
+		assertEquals(1, facade.calculateFetchCalls(null, null, false, ClimateCalendar.toDate(from), ClimateCalendar.toDate(to)));
 
 		facade.fetchNow(null, null, false, ClimateCalendar.toDate(from), ClimateCalendar.toDate(to));
 		getBean(ClimateJobProcessor.class).processJobs();
@@ -392,7 +392,7 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		assertEquals(ClimateJobStatus.CANCELLED, getJob(uuid).getStatus());
 		assertThrows(ValidationRuntimeException.class, () -> facade.cancel(uuid));
 
-		facade.resume(uuid);
+		facade.startAgain(uuid);
 		assertEquals(ClimateJobStatus.QUEUED, getJob(uuid).getStatus());
 	}
 
