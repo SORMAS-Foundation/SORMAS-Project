@@ -37,6 +37,8 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.climate.ClimateDataSource;
+import de.symeda.sormas.api.climate.ClimateJobStatus;
+import de.symeda.sormas.api.climate.ClimateJobType;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -168,6 +170,7 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 		assertEquals(132, reused.getLatIndex());
 		assertEquals(67, reused.getLonIndex());
 		assertEquals(1, getObservationsByDay(reused).size(), "imported rows stay where they are");
+		assertTrue(getRelinkJobs().isEmpty(), "nothing moved, so no relink entry");
 	}
 
 	@Test
@@ -262,6 +265,37 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 		assertNull(newRows.get(day3.getTime()), "OpenWeather rows belong to the old point and are not copied");
 
 		assertEquals(3, getObservationsByDay(oldLocation).size(), "the old location keeps its rows");
+
+		List<ClimateJob> relinks = getRelinkJobs();
+		assertEquals(1, relinks.size(), "the move is stored once");
+		ClimateJob relink = relinks.get(0);
+		assertEquals(ClimateJobStatus.DONE, relink.getStatus());
+		assertEquals(rdcf.district.getUuid(), relink.getDistrict().getUuid());
+		assertEquals(oldLocation.getId(), relink.getFromClimateLocation().getId());
+		assertEquals(newLocation.getId(), relink.getClimateLocation().getId());
+		assertEquals(1, relink.getRowsAdded());
+		assertEquals(1, relink.getRowsSkipped());
+		assertEquals(day2.getTime(), relink.getFromDate().getTime());
+		assertEquals(day2.getTime(), relink.getToDate().getTime());
+		assertEquals(getCurrentUserService().getCurrentUser().getUuid(), relink.getStartedBy().getUuid());
+		assertNotNull(relink.getStartedAt());
+	}
+
+	@Test
+	void testMovesWithNothingCopiedAreNotStored() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		saveDistrictClimatePoint(rdcf.district.getUuid(), 6.60, 3.35);
+		createObservation(
+			getDistrictClimateLocation(rdcf.district.getUuid()),
+			DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1)),
+			ClimateDataSource.OPENWEATHER,
+			5.0);
+
+		saveDistrictClimatePoint(rdcf.district.getUuid(), 7.50, 3.35);
+
+		assertTrue(getRelinkJobs().isEmpty(), "OpenWeather rows are not copied, so the move is only logged by its link");
 	}
 
 	@Test
@@ -359,6 +393,24 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 			observation.setSource(source);
 			observation.setRainfall(rainfall);
 			em.persist(observation);
+		});
+	}
+
+	private List<ClimateJob> getRelinkJobs() {
+		return executeInTransaction(em -> {
+			List<ClimateJob> jobs = em.createQuery("SELECT j FROM climatejob j WHERE j.jobType = :type", ClimateJob.class)
+				.setParameter("type", ClimateJobType.RELINK)
+				.getResultList();
+			// touch the lazy links while the transaction is open
+			jobs.forEach(j -> {
+				j.getDistrict().getUuid();
+				j.getFromClimateLocation().getId();
+				j.getClimateLocation().getId();
+				if (j.getStartedBy() != null) {
+					j.getStartedBy().getUuid();
+				}
+			});
+			return jobs;
 		});
 	}
 

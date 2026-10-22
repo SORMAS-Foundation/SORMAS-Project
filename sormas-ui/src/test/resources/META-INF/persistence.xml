@@ -90,6 +90,7 @@
 		<class>de.symeda.sormas.backend.environment.Environment</class>
 		<class>de.symeda.sormas.backend.climate.ClimateLocation</class>
 		<class>de.symeda.sormas.backend.climate.ClimateObservation</class>
+		<class>de.symeda.sormas.backend.climate.ClimateJob</class>
 		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
 		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
 		<class>de.symeda.sormas.backend.selfreport.SelfReport</class>

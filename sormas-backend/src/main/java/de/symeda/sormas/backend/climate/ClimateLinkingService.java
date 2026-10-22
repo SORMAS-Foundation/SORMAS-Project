@@ -39,6 +39,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.user.UserService;
 
 /**
  * Links districts and environments to the climate location their climate data is stored on. Linking is idempotent: a
@@ -56,6 +57,8 @@ public class ClimateLinkingService {
 	@EJB
 	private ClimateObservationService climateObservationService;
 	@EJB
+	private ClimateJobService climateJobService;
+	@EJB
 	private DistrictService districtService;
 	@EJB
 	private EnvironmentService environmentService;
@@ -65,6 +68,8 @@ public class ClimateLinkingService {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
+	@EJB
+	private UserService userService;
 
 	public boolean isClimateEnabled() {
 		return featureConfigurationFacade.isFeatureEnabled(FeatureType.CLIMATE_MANAGEMENT);
@@ -142,6 +147,7 @@ public class ClimateLinkingService {
 		ClimateRowCopyResult copyResult = climateObservationService.copyExternalRows(current, target);
 		if (!copyResult.isEmpty()) {
 			logMove(district, target, copyResult);
+			climateJobService.recordRelink(district, current, target, copyResult, userService.getCurrentUser());
 		}
 		district.setClimateLocation(target);
 		districtService.ensurePersisted(district);
