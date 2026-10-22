@@ -15,8 +15,10 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -149,6 +151,22 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJ
 
 	public boolean isImmunizationsOwnershipHandedOver(Immunization immunization) {
 		return isOwnerShipHandedOver(SormasToSormasShareInfo.IMMUNIZATION, immunization);
+	}
+
+	public Set<Long> getCaseIdsWithOwnershipHandedOver(List<Case> cases) {
+		Set<Long> handedOver = new HashSet<>();
+		IterableHelper.executeBatched(cases, ModelConstants.PARAMETER_LIMIT, batch -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+			Root<SormasToSormasShareInfo> root = cq.from(SormasToSormasShareInfo.class);
+			Join<SormasToSormasShareInfo, Case> caze = root.join(SormasToSormasShareInfo.CAZE);
+			cq.select(caze.get(Case.ID)).distinct(true);
+			cq.where(
+				caze.get(Case.ID).in(batch.stream().map(Case::getId).collect(Collectors.toList())),
+				getOwnershipHandedOverFilter(cq, cb, root, ShareRequestStatus.ACCEPTED));
+			handedOver.addAll(em.createQuery(cq).getResultList());
+		});
+		return handedOver;
 	}
 
 	private boolean isOwnerShipHandedOver(String associatedObjectField, AbstractDomainObject associatedObject) {

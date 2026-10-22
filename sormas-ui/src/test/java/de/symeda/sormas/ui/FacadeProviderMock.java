@@ -23,6 +23,7 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
+import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
@@ -71,6 +72,7 @@ import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.hierarchical.HierarchicalImportFacadeEjb.HierarchicalImportFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -201,6 +203,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal.class);
 		} else if (CaseImportFacade.class == clazz) {
 			return (P) beanTest.getBean(CaseImportFacadeEjbLocal.class);
+		} else if (HierarchicalImportFacade.class == clazz) {
+			return (P) beanTest.getBean(HierarchicalImportFacadeEjbLocal.class);
 		} else if (EventImportFacade.class == clazz) {
 			return (P) beanTest.getBean(EventImportFacadeEjbLocal.class);
 		} else if (DocumentFacade.class == clazz) {

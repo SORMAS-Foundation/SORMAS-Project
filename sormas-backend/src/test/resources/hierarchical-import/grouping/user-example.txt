@@ -1,0 +1,17 @@
+| case | sample | test | ast |
+| A    | S1     | T1   |     |
+|      |        | T2   |     |
+|      | S2     | T1S2 |     |
+|      |        | T2S2 |     |
+| B    | BS1    | BT1  |     |
+===
+A@2
+  S1@2
+    T1@2
+    T2@3
+  S2@4
+    T1S2@4
+    T2S2@5
+B@6
+  BS1@6
+    BT1@6

@@ -357,6 +357,59 @@
 <!--					</execution>-->
 <!--				</executions>-->
 <!--			</plugin>-->
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!--
+						Exclude tests tagged "postgres" they need Docker and can consume resources and time.
+                        The normal build skips them.
+						Opt in with -Ppostgres-tests (see the profile below).
+					-->
+					<excludedGroups>postgres</excludedGroups>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<!--
+                Run the CDI stack against an PostgreSQL instance in a Testcontainers container, built from sormas_schema.sql.
+				Runs ONLY the PostgreSQL-backed tests, example run:
+                mvn test -Ppostgres-tests
+			-->
+			<id>postgres-tests</id>
+			<properties>
+				<!-- override with -Ddocker.api.version=... / -Ddocker.host=... if a different engine needs it -->
+				<docker.api.version>1.44</docker.api.version>
+				<docker.host>unix:///var/run/docker.sock</docker.host>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration combine.self="override">
+							<groups>postgres</groups>
+							<systemPropertyVariables>
+								<sormas.test.pu>beanTestPgPU</sormas.test.pu>
+								<!--
+									~/.testcontainers.properties can pin UnixSocketClientProviderStrategy, which
+									talks a hardcoded old Docker API version and fails against newer engines with
+									"client version 1.32 is too old". Forcing this strategy plus an explicit
+									api.version makes the resolution independent of that file.
+								-->
+								<docker.client.strategy>org.testcontainers.dockerclient.EnvironmentAndSystemPropertyClientProviderStrategy</docker.client.strategy>
+								<api.version>${docker.api.version}</api.version>
+							</systemPropertyVariables>
+							<environmentVariables>
+								<DOCKER_HOST>${docker.host}</DOCKER_HOST>
+							</environmentVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>

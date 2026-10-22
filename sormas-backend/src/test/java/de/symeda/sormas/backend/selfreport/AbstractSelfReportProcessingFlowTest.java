@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.selfreport;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static wiremock.org.hamcrest.MatcherAssert.assertThat;
 import static wiremock.org.hamcrest.Matchers.hasSize;
 import static wiremock.org.hamcrest.Matchers.is;
@@ -108,8 +109,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateContactResult.setNewContact(true);
 		doAnswer(answerPickOrCreateCase(pickOrCreateContactResult)).when(handlePickOrCreateContact).handle(any(), any());
 		doAnswer(answerCreateContact()).when(handleCreateContact).handle(any(), any());
-
-		doAnswer((i) -> CompletableFuture.completedFuture(true)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
+		doReturn(CompletableFuture.completedFuture(true)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
 	}
 
 	@Test
@@ -414,7 +414,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		SelfReportDto caseReport = createSelfReport(SelfReportType.CASE);
 		SelfReportDto contactReport = createSelfReport(SelfReportType.CONTACT);
 
-		doAnswer((i) -> CompletableFuture.completedFuture(false)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
+		doReturn(CompletableFuture.completedFuture(false)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
 		ProcessingResult<SelfReportProcessingResult> result = runContactFlow(contactReport);
 
 		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
@@ -432,7 +432,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		SelfReportDto caseReport = createSelfReport(SelfReportType.CASE);
 		SelfReportDto contactReport = createSelfReport(SelfReportType.CONTACT);
 
-		doAnswer((i) -> CompletableFuture.completedFuture(true)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
+		doReturn(CompletableFuture.completedFuture(true)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
 		ProcessingResult<SelfReportProcessingResult> result = runContactFlow(contactReport);
 
 		assertProcessed(result, contactReport);
