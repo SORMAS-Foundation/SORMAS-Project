@@ -716,7 +716,8 @@ public enum SampleMaterial {
 	@Diseases({
 		Disease.SHIGELLOSIS,
 		Disease.TUBERCULOSIS,
-		Disease.YERSINIOSIS, })
+		Disease.YERSINIOSIS,
+		Disease.SALMONELLOSIS })
 	PUS,
 
 	@Diseases({
