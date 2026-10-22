@@ -1043,6 +1043,7 @@ public interface Strings {
 	String infoCaseMap = "infoCaseMap";
 	String infoCheckProbableInfectionEnvironment = "infoCheckProbableInfectionEnvironment";
 	String infoClimateHistorySourceCostWarning = "infoClimateHistorySourceCostWarning";
+	String infoClimateImport = "infoClimateImport";
 	String infoClimateUsualRangeNotShown = "infoClimateUsualRangeNotShown";
 	String infoClimateUsualRangeYears = "infoClimateUsualRangeYears";
 	String infoClimateUsualRangeYearsExcluded = "infoClimateUsualRangeYearsExcluded";

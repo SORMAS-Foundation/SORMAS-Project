@@ -988,6 +988,17 @@ public interface Captions {
 	String changeDate = "changeDate";
 	String changeUserEmail = "changeUserEmail";
 	String city = "city";
+	String ClimateObservationEntry_date = "ClimateObservationEntry.date";
+	String ClimateObservationEntry_district = "ClimateObservationEntry.district";
+	String ClimateObservationEntry_districtExternalId = "ClimateObservationEntry.districtExternalId";
+	String ClimateObservationEntry_humidityMeasure = "ClimateObservationEntry.humidityMeasure";
+	String ClimateObservationEntry_rainfall = "ClimateObservationEntry.rainfall";
+	String ClimateObservationEntry_region = "ClimateObservationEntry.region";
+	String ClimateObservationEntry_relativeHumidity = "ClimateObservationEntry.relativeHumidity";
+	String ClimateObservationEntry_sourceDetail = "ClimateObservationEntry.sourceDetail";
+	String ClimateObservationEntry_temperatureMax = "ClimateObservationEntry.temperatureMax";
+	String ClimateObservationEntry_temperatureMean = "ClimateObservationEntry.temperatureMean";
+	String ClimateObservationEntry_temperatureMin = "ClimateObservationEntry.temperatureMin";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
 	String ClinicalVisit_heartRate = "ClinicalVisit.heartRate";

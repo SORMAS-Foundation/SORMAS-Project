@@ -93,6 +93,8 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.climate.ClimateObservationEntryDto;
+import de.symeda.sormas.api.climate.HumidityMeasure;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -102,6 +104,7 @@ import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportColumn;
 import de.symeda.sormas.api.importexport.ImportErrorException;
@@ -208,6 +211,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = "import_line_listing_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = "import_point_of_entry_template.csv";
 	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = "import_population_data_template.csv";
+	private static final String CLIMATE_OBSERVATION_IMPORT_TEMPLATE_FILE_NAME = "import_climate_observations_template.csv";
 	private static final String CONTINENT_IMPORT_TEMPLATE_FILE_NAME = "import_continent_template.csv";
 	private static final String SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME = "import_subcontinent_template.csv";
 	private static final String AREA_IMPORT_TEMPLATE_FILE_NAME = "import_area_template.csv";
@@ -455,6 +459,44 @@ public class ImportFacadeEjb implements ImportFacade {
 		writeTemplate(Paths.get(getPopulationDataImportTemplateFilePath()), importColumns, false);
 	}
 
+	/**
+	 * One row per district and day; the district by region and name, or by external ID. The date is written yyyy-mm-dd,
+	 * whatever the user's language, so no locale or time zone can shift it.
+	 */
+	@Override
+	public void generateClimateObservationImportTemplateFile() throws IOException {
+
+		createExportDirectoryIfNecessary();
+
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		importColumns
+			.add(ImportColumn.from(ClimateObservationEntryDto.class, ClimateObservationEntryDto.REGION, RegionReferenceDto.class, separator));
+		importColumns
+			.add(ImportColumn.from(ClimateObservationEntryDto.class, ClimateObservationEntryDto.DISTRICT, DistrictReferenceDto.class, separator));
+		importColumns
+			.add(ImportColumn.from(ClimateObservationEntryDto.class, ClimateObservationEntryDto.DISTRICT_EXTERNAL_ID, String.class, separator));
+		importColumns.add(
+			new ImportColumn(
+				ClimateObservationEntryDto.DATE,
+				I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.DATE),
+				I18nProperties.getString(Strings.date) + ": yyyy-MM-dd"));
+		for (String value : new String[] {
+			ClimateObservationEntryDto.TEMPERATURE_MIN,
+			ClimateObservationEntryDto.TEMPERATURE_MAX,
+			ClimateObservationEntryDto.TEMPERATURE_MEAN,
+			ClimateObservationEntryDto.RAINFALL,
+			ClimateObservationEntryDto.RELATIVE_HUMIDITY }) {
+			importColumns.add(ImportColumn.from(ClimateObservationEntryDto.class, value, Double.class, separator));
+		}
+		importColumns
+			.add(ImportColumn.from(ClimateObservationEntryDto.class, ClimateObservationEntryDto.HUMIDITY_MEASURE, HumidityMeasure.class, separator));
+		importColumns.add(ImportColumn.from(ClimateObservationEntryDto.class, ClimateObservationEntryDto.SOURCE_DETAIL, String.class, separator));
+
+		writeTemplate(Paths.get(getClimateObservationImportTemplateFilePath()), importColumns, false);
+	}
+
 	private void createExportDirectoryIfNecessary() throws IOException {
 
 		try {
@@ -688,6 +730,16 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Override
 	public String getPopulationDataImportTemplateFilePath() {
 		return getImportTemplateFilePath(POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getClimateObservationImportTemplateFileName() {
+		return getImportTemplateFileName(CLIMATE_OBSERVATION_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getClimateObservationImportTemplateFilePath() {
+		return getImportTemplateFilePath(CLIMATE_OBSERVATION_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override

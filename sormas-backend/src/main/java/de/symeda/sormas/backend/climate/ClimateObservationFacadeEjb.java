@@ -132,7 +132,8 @@ public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
 				|| (row != null
 					&& row.getSource() == ClimateDataSource.IMPORT
 					&& row.getChangeDate() != null
-					&& row.getChangeDate().getTime() >= runStart);
+					// strictly after: a row an earlier import wrote in the same millisecond is not this import's
+					&& row.getChangeDate().getTime() > runStart);
 
 			if (row != null && row.getSource() == ClimateDataSource.MANUAL) {
 				results[i] = new ClimateImportRowResult(Status.SKIPPED, I18nProperties.getValidationError(Validations.climateEntryManualKept));

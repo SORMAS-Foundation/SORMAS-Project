@@ -962,6 +962,12 @@ public class StartupShutdownService {
 		}
 
 		try {
+			importFacade.generateClimateObservationImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create climate observation import template .csv file.");
+		}
+
+		try {
 			importFacade.generateAreaImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create area import template .csv file.");
