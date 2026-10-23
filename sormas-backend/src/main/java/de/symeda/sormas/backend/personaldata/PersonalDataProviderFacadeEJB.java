@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.personaldata;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.validation.constraints.NotEmpty;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +53,13 @@ public class PersonalDataProviderFacadeEJB implements PersonalDataProviderFacade
 	public @Nullable PersonalDataSummaryDto findDataByNationalHealthId(String nationalHealthId) {
 		auditLogger.logExternalSystemCall(buildAuditRequestWithNationalHealthId("findDataByNationalHealthId", nationalHealthId));
 		return getPersonalDataProvider().findDataByNationalHealthId(nationalHealthId);
+	}
+
+	@Override
+	public Map<String, PersonalDataSummaryDto> findSummariesByNationalHealthIds(List<@NotEmpty String> nationalHealthId) {
+		auditLogger
+			.logExternalSystemCall(buildAuditRequestWithNationalHealthId("findSummariesByNationalHealthIds", String.join(",", nationalHealthId)));
+		return getPersonalDataProvider().findSummariesByNationalHealthIds(nationalHealthId);
 	}
 
 	private static @NotNull ExternalSystemCallAuditRequest buildAuditRequestWithNationalHealthId(String actionType, String nationalHealthId) {

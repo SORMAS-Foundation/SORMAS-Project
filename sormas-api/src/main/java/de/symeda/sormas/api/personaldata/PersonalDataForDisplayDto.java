@@ -1,9 +1,12 @@
 package de.symeda.sormas.api.personaldata;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class PersonalDataForDisplayDto {
+public class PersonalDataForDisplayDto implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String html;
 	private PersonalDataSummaryDto personalDataSummary;

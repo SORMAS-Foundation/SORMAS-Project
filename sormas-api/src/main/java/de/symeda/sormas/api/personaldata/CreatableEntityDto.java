@@ -1,10 +1,13 @@
 package de.symeda.sormas.api.personaldata;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import de.symeda.sormas.api.EntityDto;
 
-public class CreatableEntityDto {
+public class CreatableEntityDto implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Class<? extends EntityDto> clazz;
 	private String i18nName;

@@ -1,12 +1,15 @@
 package de.symeda.sormas.api.personaldata;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 
-public class PersonalDataAddressRequestDto {
+public class PersonalDataAddressRequestDto implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private CaseDataDto caseData;
 	private PersonDto person;

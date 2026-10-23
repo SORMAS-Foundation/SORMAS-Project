@@ -1,12 +1,15 @@
 package de.symeda.sormas.api.personaldata;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
 import de.symeda.sormas.api.person.LivingStatus;
 import de.symeda.sormas.api.person.Sex;
 
-public class PersonalDataIndexDto {
+public class PersonalDataIndexDto implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String nationalHealthId;
 	private String lastName;

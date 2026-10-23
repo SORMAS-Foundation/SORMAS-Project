@@ -1,6 +1,10 @@
 package de.symeda.sormas.api.personaldata;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Nullable;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EntityDto;
@@ -12,6 +16,9 @@ public interface PersonalDataProviderFacade {
 
 	@Nullable
 	PersonalDataSummaryDto findDataByNationalHealthId(@NotNull String nationalHealthId);
+
+	@NotNull
+	Map<String, PersonalDataSummaryDto> findSummariesByNationalHealthIds(@NotEmpty List<@NotEmpty String> nationalHealthId);
 
 	// TODO: might extend this to use: getCreatableEntityDtos() results
 	@Nullable

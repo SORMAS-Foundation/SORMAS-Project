@@ -1,10 +1,13 @@
 package de.symeda.sormas.api.personaldata;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
-public class PersonalDataSummaryDto {
+public class PersonalDataSummaryDto implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String firstName;
 	private String lastName;
