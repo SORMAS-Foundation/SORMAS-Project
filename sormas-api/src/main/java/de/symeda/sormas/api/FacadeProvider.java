@@ -91,6 +91,7 @@ import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.notifier.NotifierFacade;
+import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -612,6 +613,10 @@ public class FacadeProvider {
 
 	public static EpipulseExportFacade getEpipulseExportFacade() {
 		return get().lookupEjbRemote(EpipulseExportFacade.class);
+	}
+
+	public static PersonalDataProviderFacade getPersonalDataProviderFacade() {
+		return get().lookupEjbRemote(PersonalDataProviderFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

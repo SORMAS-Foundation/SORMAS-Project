@@ -16,6 +16,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
@@ -54,6 +55,10 @@ public abstract class AbstractTravelEntryView extends AbstractEditAllowedDetailV
 		menu.addView(TravelEntriesView.VIEW_NAME, I18nProperties.getCaption(Captions.travelEntryTravelEntriesList));
 		menu.addView(TravelEntryDataView.VIEW_NAME, I18nProperties.getCaption(TravelEntryDto.I18N_PREFIX), params);
 		menu.addView(TravelEntryPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(TravelEntryDto.I18N_PREFIX, TravelEntryDto.PERSON), params);
+
+		if (ExternalPersonDataComponent.isAvailable()) {
+			menu.addView(TravelEntryExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
+		}
 
 		setMainHeaderComponent(ControllerProvider.getTravelEntryController().getTravelEntryViewTitleLayout(getReference().getUuid()));
 	}

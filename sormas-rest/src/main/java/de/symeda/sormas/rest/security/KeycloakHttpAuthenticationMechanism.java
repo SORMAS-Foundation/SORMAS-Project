@@ -16,7 +16,6 @@
 package de.symeda.sormas.rest.security;
 
 import java.lang.annotation.Annotation;
-import org.keycloak.adapters.spi.KeycloakAccount;
 
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.CDI;
@@ -32,6 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.spi.KeycloakAccount;
+
+import de.symeda.sormas.api.user.OidcCallerPrincipal;
 
 /**
  * @author Alex Vidrean
@@ -57,6 +59,9 @@ public class KeycloakHttpAuthenticationMechanism implements HttpAuthenticationMe
 			KeycloakAccount keycloakAccount = (KeycloakAccount) request.getAttribute(KeycloakAccount.class.getName());
 			keycloakAccount.getRoles().addAll(result.getCallerGroups());
 
+			result = new CredentialValidationResult(
+				new OidcCallerPrincipal(result.getCallerPrincipal().getName(), keycloakContext.getTokenString()),
+				result.getCallerGroups());
 			httpMessageContext.setRegisterSession(result.getCallerPrincipal().getName(), result.getCallerGroups());
 		}
 
