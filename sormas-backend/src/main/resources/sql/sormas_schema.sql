@@ -17944,4 +17944,13 @@ WHERE dc.disease IN ('SYPHILIS', 'GONOCOCCAL_INFECTION')
 
 INSERT INTO schema_version (version_number, comment) VALUES (677, '#13399, #14326, #14352 - Symptoms regrouping, Diphtheria symptoms and added the sexual exposure category for syphilis and gonococcal infection');
 
+-- 2026-10-15 Diphtheria lab message process - infection source (suspected vehicle) #14342
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS infectionsource varchar(1024);
+ALTER TABLE externalmessage         ADD COLUMN IF NOT EXISTS infectionsourcetext varchar(255);
+
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS infectionsource varchar(1024);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS infectionsourcetext varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (678, '#14342 - Diphtheria lab message process: infection source on external messages');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

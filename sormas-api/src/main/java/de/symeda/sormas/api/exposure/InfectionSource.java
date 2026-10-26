@@ -192,6 +192,7 @@ public enum InfectionSource {
 		Disease.DIPHTHERIA })
 	UNKNOWN,
 
+	NOT_UND_SURV,
 	NOT_APPLICABLE,
 	OTHER;
 
