@@ -190,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 363;
+	public static final int DATABASE_VERSION = 364;
 
 	private static DatabaseHelper instance = null;
 
@@ -3225,9 +3225,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 362:
 			case 363:
-				currentVersion = 363;
+			case 364:
+				currentVersion = 364;
 				// The switch matches newVersion, so only the newest case ever runs. Everything below must stay
-				// self-sufficient and idempotent: it also serves devices coming from 360/361/362.
+				// self-sufficient and idempotent: it also serves devices coming from 360/361/362/363.
 				// The switch matches newVersion, so case 361 can never be selected again. A device coming from 360
 				// still needs its migration, and re-running it on a device from 361 is a no-op.
 				migrateContactProximities();
@@ -3279,6 +3280,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				// Mirrors server schema migration 669 (#14325): Disease.DIPHTERIA was renamed to DIPHTHERIA.
 				renameDiphtheriaDisease();
+
+				// #13399 - mirrors server schema migration 678: acuteEncephalitis, jointPain and palpableLiver are deprecated
+				// and merged on the server into encephalitis, arthralgia and hepatomegaly, which the app did not have yet.
+				// Each column is only added when missing, so this block stays idempotent.
+				boolean replacingSymptomsAdded = false;
+				for (String column : Arrays.asList("encephalitis", "arthralgia", "hepatomegaly")) {
+					if (columnDoesNotExist(Symptoms.TABLE_NAME, column)) {
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN " + column + " varchar(255);");
+						replacingSymptomsAdded = true;
+					}
+				}
+				if (replacingSymptomsAdded) {
+					// The new columns are empty on the device. Pull cases, visits and clinical visits again, so their symptoms
+					// get the merged server values; otherwise the next sync would send the empty values back and overwrite
+					// them. Only done when the columns were just added, so later upgrades do not repeat the full pull.
+					getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Visit.class).executeRaw("UPDATE visits SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(ClinicalVisit.class).executeRaw("UPDATE clinicalVisit SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Symptoms.class).executeRaw("UPDATE symptoms SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				}
 
 				// ATTENTION: break should only be done after last version
 				break;

@@ -1,0 +1,3802 @@
+[
+  {
+    "symptom": "abdominalPain",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CHOLERA",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "PLAGUE",
+      "POLIO",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "UNSPECIFIED_VHF",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "SALMONELLOSIS",
+      "YERSINIOSIS",
+      "UNDEFINED",
+      "SHIGELLOSIS",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "abnormalLungXrayFindings",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "acuteBleeding",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "acuteEncephalitis",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "MEASLES"
+    ]
+  },
+  {
+    "symptom": "hearingloss",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "CONGENITAL_RUBELLA",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "acuteKidneyFailure",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Urinary / Renal",
+    "diseases": [
+      "MALARIA"
+    ]
+  },
+  {
+    "symptom": "acuteRespiratoryDistressSyndrome",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "MALARIA",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "agitation",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES",
+      "MALARIA",
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "lesionsAllOverBody",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lesionsSameState",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lesionsSameSize",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "alteredConsciousness",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "anemia",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "MALARIA",
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "anorexiaAppetiteLoss",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "CSM",
+      "CHOLERA",
+      "POLIO",
+      "YELLOW_FEVER",
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "UNSPECIFIED_VHF",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MALARIA",
+      "SALMONELLOSIS",
+      "YERSINIOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "anxietyStates",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "apnoea",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "PERTUSSIS"
+    ]
+  },
+  {
+    "symptom": "lesionsArms",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "ANTHRAX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "arthralgia",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Musculoskeletal",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "ascendingFlaccidParalysis",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "asymptomatic",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": []
+  },
+  {
+    "symptom": "backache",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "POLIO",
+      "YELLOW_FEVER",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "bilateralCataracts",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "blackeningDeathOfTissue",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "PLAGUE",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "injectionSiteBleeding",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "eyesBleeding",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "POLIO",
+      "YELLOW_FEVER",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "stomachBleeding",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "POLIO",
+      "YELLOW_FEVER",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "bleedingVagina",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Reproductive / Genital",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "unexplainedBleeding",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "PLAGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "POLIO",
+      "OTHER",
+      "CORONAVIRUS"
+    ]
+  },
+  {
+    "symptom": "bloating",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "YERSINIOSIS",
+      "GIARDIASIS"
+    ]
+  },
+  {
+    "symptom": "bloodInStool",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "CHOLERA",
+      "GUINEA_WORM",
+      "POLIO",
+      "YELLOW_FEVER",
+      "ANTHRAX",
+      "DENGUE",
+      "UNSPECIFIED_VHF",
+      "SALMONELLOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "bloodUrine",
+    "oldSymptomGroup": "Urinary",
+    "proposedSymptomGroup": "Urinary / Renal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "DENGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "bloodPressureDiastolic",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": []
+  },
+  {
+    "symptom": "bloodPressureSystolic",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": []
+  },
+  {
+    "symptom": "highOrLowBloodPressure",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "bloodyDiarrhea",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "SHIGELLOSIS",
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "bloodyBlackStool",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "DENGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "blueLips",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "bonyAbnormalities",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Musculoskeletal",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "breathlessness",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "skinBruising",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "DENGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "buboesGroinArmpitNeck",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "PLAGUE",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "bulgingFontanelle",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "AFP",
+      "CSM",
+      "GUINEA_WORM",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "centralNervousSystemDamage",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "cerebralMalaria",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "MALARIA"
+    ]
+  },
+  {
+    "symptom": "chancre",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "chestPain",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "PLAGUE",
+      "POLIO",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "chillsSweats",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "PLAGUE",
+      "ANTHRAX",
+      "POLIO",
+      "CORONAVIRUS",
+      "MALARIA",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "clammySkin",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "clinicalCriteriaMet",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "clinicalManifestation",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "DENGUE",
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "coldSkin",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "coma",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES",
+      "CORONAVIRUS"
+    ]
+  },
+  {
+    "symptom": "symptomsComments",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": []
+  },
+  {
+    "symptom": "condylomaLata",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "condylomaVenereum",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "confusedDisoriented",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "CORONAVIRUS",
+      "DENGUE",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "confusion",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "N/A",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "congenitalGlaucoma",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "congenitalHeartDisease",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "conjunctivalInjection",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "N/A",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "conjunctivitis",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "MEASLES",
+      "MONKEYPOX",
+      "POLIO",
+      "DENGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "constipation",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "SALMONELLOSIS"
+    ]
+  },
+  {
+    "symptom": "convulsion",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "ANTHRAX",
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "seizures",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "CORONAVIRUS",
+      "MALARIA",
+      "SHIGELLOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "cough",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "MEASLES",
+      "MONKEYPOX",
+      "PLAGUE",
+      "POLIO",
+      "ANTHRAX",
+      "UNSPECIFIED_VHF",
+      "CORONAVIRUS",
+      "PERTUSSIS",
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "coughWithHeamoptysis",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS"
+    ]
+  },
+  {
+    "symptom": "coughWithSputum",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS"
+    ]
+  },
+  {
+    "symptom": "coughingBouts",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "PERTUSSIS"
+    ]
+  },
+  {
+    "symptom": "coughingBlood",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "coughsProvokeVomiting",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "PERTUSSIS"
+    ]
+  },
+  {
+    "symptom": "temperature",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "UNSPECIFIED_VHF",
+      "CONGENITAL_RUBELLA",
+      "POLIO",
+      "RABIES",
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "darkUrine",
+    "oldSymptomGroup": "Urinary",
+    "proposedSymptomGroup": "Urinary / Renal",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "POLIO",
+      "YELLOW_FEVER",
+      "MALARIA",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "dateOfOnsetKnown",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": []
+  },
+  {
+    "symptom": "lesionsOnsetDate",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "MONKEYPOX",
+      "ANTHRAX"
+    ]
+  },
+  {
+    "symptom": "onsetDate",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": []
+  },
+  {
+    "symptom": "symptomEndDate",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "YERSINIOSIS",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS"
+    ]
+  },
+  {
+    "symptom": "timeOffWorkDays",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "GIARDIASIS",
+      "YERSINIOSIS",
+      "CRYPTOSPORIDIOSIS"
+    ]
+  },
+  {
+    "symptom": "dehydration",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "CHOLERA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "SALMONELLOSIS",
+      "SHIGELLOSIS",
+      "YERSINIOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "delirium",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "developmentalDelay",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "diagnosis",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Localisation",
+    "diseases": []
+  },
+  {
+    "symptom": "diarrhea",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "PLAGUE",
+      "POLIO",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "UNSPECIFIED_VHF",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MALARIA",
+      "SALMONELLOSIS",
+      "SHIGELLOSIS",
+      "YERSINIOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "difficultyBreathingDuringMeals",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "RESPIRATORY_SYNCYTIAL_VIRUS"
+    ]
+  },
+  {
+    "symptom": "difficultyBreathing",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "MEASLES",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "dysphagia",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "digestedBloodVomit",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "disseminatedIntraVascularCoagulation",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "MALARIA"
+    ]
+  },
+  {
+    "symptom": "dizzinessStandingUp",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lesionsResembleImg1",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "MONKEYPOX"
+    ]
+  },
+  {
+    "symptom": "lesionsResembleImg2",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "MONKEYPOX"
+    ]
+  },
+  {
+    "symptom": "lesionsResembleImg3",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "MONKEYPOX"
+    ]
+  },
+  {
+    "symptom": "lesionsResembleImg4",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "MONKEYPOX"
+    ]
+  },
+  {
+    "symptom": "coughWithoutSputum",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "durationOfSymptoms",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MALARIA",
+      "YERSINIOSIS",
+      "DENGUE",
+      "SHIGELLOSIS"
+    ]
+  },
+  {
+    "symptom": "dysuria",
+    "oldSymptomGroup": "Urinary",
+    "proposedSymptomGroup": "Urinary / Renal",
+    "diseases": [
+      "SALMONELLOSIS"
+    ]
+  },
+  {
+    "symptom": "eggyBurps",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "GIARDIASIS"
+    ]
+  },
+  {
+    "symptom": "encephalitis",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "DENGUE",
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "offsetDate",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": []
+  },
+  {
+    "symptom": "lymphadenopathy",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "MEASLES",
+      "DENGUE",
+      "SYPHILIS",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lymphadenopathyAxillary",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lymphadenopathyCervical",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lymphadenopathyInguinal",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "erraticBehaviour",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "erythemaNodosum",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "excessSalivation",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "excitation",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "eyeIrritation",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "SALMONELLOSIS"
+    ]
+  },
+  {
+    "symptom": "lesionsFace",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "fastHeartRate",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "CORONAVIRUS",
+      "DENGUE",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "fatalRisk",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "fatigueWeakness",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "YERSINIOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "aerophobia",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "feelingIll",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "fever",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "UNDEFINED",
+      "PERTUSSIS",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MALARIA",
+      "SALMONELLOSIS",
+      "SHIGELLOSIS",
+      "SYPHILIS",
+      "YERSINIOSIS",
+      "MUMPS",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "feverishFeeling",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "onsetSymptom",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": []
+  },
+  {
+    "symptom": "fluidInLungCavityXray",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "fluidInLungCavityAuscultation",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "fluidInLungCavity",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "syndromicFlu",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "MALARIA"
+    ]
+  },
+  {
+    "symptom": "redBloodVomit",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "DENGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "bloodCirculationProblems",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "weakness",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "CORONAVIRUS",
+      "DENGUE",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "generalizedLymphadenopathy",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "lesionsGenitals",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "glasgowComaScale",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": []
+  },
+  {
+    "symptom": "guillainBarreSyndrome",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "gumsBleeding",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "haemolyticUremicSyndrome",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Urinary / Renal",
+    "diseases": [
+      "SHIGELLOSIS"
+    ]
+  },
+  {
+    "symptom": "headache",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "MALARIA",
+      "SALMONELLOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "congenitalHeartDiseaseType",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "heartRate",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": []
+  },
+  {
+    "symptom": "height",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": []
+  },
+  {
+    "symptom": "hemorrhagicRash",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "INVASIVE_MENINGOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "hemorrhagicSyndrome",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "PLAGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "hepatomegaly",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "hepatosplenomegaly",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "hiccups",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "hydrophobia",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "hyperactivity",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "hyperglycemia",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Metabolic",
+    "diseases": [
+      "AFP",
+      "CSM",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "hypoglycemia",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Metabolic",
+    "diseases": [
+      "AFP",
+      "CSM",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "MALARIA",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "alteredLevelOfConsciousness",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "MALARIA"
+    ]
+  },
+  {
+    "symptom": "inabilityToWalk",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Musculoskeletal",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "fatigue",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "CORONAVIRUS",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MALARIA",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "inDrawingOfChestWall",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "syphilisInfectionSite",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "syphilisInfectiousness",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Stage",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "bedridden",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "jaundice",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "YELLOW_FEVER",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "CONGENITAL_RUBELLA",
+      "MALARIA",
+      "DENGUE",
+      "SYPHILIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "jaundiceWithin24HoursOfBirth",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Metabolic",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "jointPain",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "NEW_INFLUENZA",
+      "CSM",
+      "MEASLES",
+      "DENGUE",
+      "CORONAVIRUS",
+      "UNSPECIFIED_VHF",
+      "MALARIA",
+      "SALMONELLOSIS",
+      "YERSINIOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "kopliksSpots",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MEASLES",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lesionsLegs",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lethargy",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "patientIllLocation",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "move to epidata ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lossSkinTurgor",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lowGradeFever",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "maculopapularRash",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "skinRash",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "MEASLES",
+      "DENGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "SALMONELLOSIS",
+      "UNDEFINED",
+      "OTHER",
+      "CORONAVIRUS"
+    ]
+  },
+  {
+    "symptom": "skinRashOnsetDate",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "MEASLES"
+    ]
+  },
+  {
+    "symptom": "majorSite",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Localisation",
+    "diseases": []
+  },
+  {
+    "symptom": "malaise",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "SYPHILIS",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "malnutrition",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Metabolic",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "meningealSigns",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "AFP",
+      "CSM",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "INVASIVE_MENINGOCOCCAL_INFECTION",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "meningitis",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "INVASIVE_PNEUMOCOCCAL_INFECTION",
+      "DENGUE",
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "meningoencephalitis",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "metabolicAcidosis",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Metabolic",
+    "diseases": [
+      "MALARIA"
+    ]
+  },
+  {
+    "symptom": "microcephaly",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "otitisMedia",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "NEW_INFLUENZA",
+      "MEASLES",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "midUpperArmCircumference",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": []
+  },
+  {
+    "symptom": "minorSite",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Localisation",
+    "diseases": []
+  },
+  {
+    "symptom": "mucocutaneousLesion",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "mucousPatches",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "musclePain",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "POLIO",
+      "CORONAVIRUS",
+      "UNSPECIFIED_VHF",
+      "MALARIA",
+      "SALMONELLOSIS",
+      "UNDEFINED",
+      "SYPHILIS",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "nausea",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "UNSPECIFIED_VHF",
+      "POLIO",
+      "RABIES",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "CRYPTOSPORIDIOSIS",
+      "GIARDIASIS",
+      "MALARIA",
+      "SALMONELLOSIS",
+      "YERSINIOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "necrotizingEnterocolitis",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "nephroticSyndrome",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Urinary / Renal",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "neurologicalManifestations",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "lossOfSmell",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lossOfTaste",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "noComplications",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "nocturnalCough",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "PERTUSSIS"
+    ]
+  },
+  {
+    "symptom": "noseBleeding",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "ocularManifestations",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "oedemaFaceNeck",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "oedemaLowerExtremity",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "opisthotonus",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "oralUlcers",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "orchitis",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Reproductive / Genital",
+    "diseases": [
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "otherComplications",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MALARIA",
+      "PLAGUE",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MUMPS",
+      "UNDEFINED",
+      "OTHER",
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "otherGeneralSymptoms",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "otherHemorrhagicSymptoms",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "otherMajorSiteDetails",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Localisation",
+    "diseases": []
+  },
+  {
+    "symptom": "scantHemorrhage",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "otherMinorSiteDetails",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Localisation",
+    "diseases": []
+  },
+  {
+    "symptom": "otherNeurologicalSymptoms",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "otherNonHemorrhagicSymptoms",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "UNSPECIFIED_VHF",
+      "CONGENITAL_RUBELLA",
+      "CRYPTOSPORIDIOSIS",
+      "GIARDIASIS",
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "POLIO",
+      "RABIES",
+      "CORONAVIRUS",
+      "PERTUSSIS",
+      "SALMONELLOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "otherClinicalPresentation",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "INVASIVE_PNEUMOCOCCAL_INFECTION",
+      "INVASIVE_MENINGOCOCCAL_INFECTION",
+      "MEASLES",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MALARIA",
+      "DENGUE",
+      "SYPHILIS",
+      "SHIGELLOSIS"
+    ]
+  },
+  {
+    "symptom": "overnightStayRequired",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "GIARDIASIS",
+      "YERSINIOSIS",
+      "CRYPTOSPORIDIOSIS"
+    ]
+  },
+  {
+    "symptom": "oxygenSaturationLower94",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "eyePainLightSensitive",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "MEASLES",
+      "DENGUE",
+      "MONKEYPOX",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "painfulLymphadenitis",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "PLAGUE",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lesionsPalmsHands",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "palpableLiver",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "DENGUE",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "palpableSpleen",
+    "oldSymptomGroup": "Remove",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "MALARIA",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "palpitations",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "pancreatitis",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "paradoxicalBreathing",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "RESPIRATORY_SYNCYTIAL_VIRUS"
+    ]
+  },
+  {
+    "symptom": "paralysis",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES",
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "parentTimeOffWork",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "GIARDIASIS",
+      "YERSINIOSIS",
+      "CRYPTOSPORIDIOSIS"
+    ]
+  },
+  {
+    "symptom": "paresis",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "paresthesiaAroundWound",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "patchyAlopecia",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "persistentVomiting",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "pharyngealErythema",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "pharyngealExudate",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "pigmentaryRetinopathy",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "plasmaLeakageSign",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "pneumoniaClinicalOrRadiologic",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "INVASIVE_MENINGOCOCCAL_INFECTION",
+      "INVASIVE_PNEUMOCOCCAL_INFECTION",
+      "MEASLES",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "polydipsia",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Metabolic",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "chestPressure",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "pseudoAppendicularSyndrome",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "pseudoparalysis",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "purpuricRash",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "radiolucentBoneDisease",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Musculoskeletal",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "rapidBreathing",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "AFP",
+      "CORONAVIRUS",
+      "DENGUE",
+      "GUINEA_WORM",
+      "POLIO",
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "MALARIA",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lesionsDeepProfound",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "ANTHRAX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lesionsThatItch",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "reactiveArthritis",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Musculoskeletal",
+    "diseases": [
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "refractoryRhinitis",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "refusalFeedorDrink",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "CSM",
+      "CHOLERA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "reoccurrence",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS"
+    ]
+  },
+  {
+    "symptom": "respiratoryDiseaseVentilation",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "respiratoryFatigue",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "RESPIRATORY_SYNCYTIAL_VIRUS"
+    ]
+  },
+  {
+    "symptom": "respiratoryRate",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": []
+  },
+  {
+    "symptom": "restlessness",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "runnyNose",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "NEW_INFLUENZA",
+      "MEASLES",
+      "POLIO",
+      "CORONAVIRUS",
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "sepsis",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "POLIO",
+      "SHIGELLOSIS",
+      "UNSPECIFIED_VHF",
+      "YERSINIOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "arthritis",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Musculoskeletal",
+    "diseases": [
+      "INVASIVE_MENINGOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "septicaemia",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "INVASIVE_PNEUMOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "severeAnemia",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "MALARIA"
+    ]
+  },
+  {
+    "symptom": "severeOrganImpairment",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "shivering",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "shock",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "PLAGUE",
+      "ANTHRAX",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "INVASIVE_MENINGOCOCCAL_INFECTION",
+      "MALARIA",
+      "DENGUE",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "sidePain",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "clinicalPresentationStatus",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "TUBERCULOSIS"
+    ]
+  },
+  {
+    "symptom": "skinUlcers",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "insomnia",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "lesionsSolesFeet",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "soreThroat",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "MEASLES",
+      "MONKEYPOX",
+      "ANTHRAX",
+      "POLIO",
+      "CORONAVIRUS",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "SYPHILIS",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "temperatureSource",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "UNSPECIFIED_VHF",
+      "CONGENITAL_RUBELLA",
+      "POLIO",
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "congenitalHeartDiseaseDetails",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "clinicalManifestationText",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "otherNeurologicalSymptomsText",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "DENGUE"
+    ]
+  },
+  {
+    "symptom": "otherComplicationsText",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "RABIES",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MALARIA",
+      "PLAGUE",
+      "ANTHRAX",
+      "CORONAVIRUS",
+      "CRYPTOSPORIDIOSIS",
+      "GIARDIASIS",
+      "MUMPS",
+      "UNDEFINED",
+      "OTHER",
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "otherGeneralSymptomsText",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General",
+    "diseases": [
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "otherHemorrhagicSymptomsText",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "otherNonHemorrhagicSymptomsText",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "CONGENITAL_RUBELLA",
+      "CORONAVIRUS",
+      "PERTUSSIS",
+      "SALMONELLOSIS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "otherClinicalPresentationText",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "INVASIVE_PNEUMOCOCCAL_INFECTION",
+      "INVASIVE_MENINGOCOCCAL_INFECTION",
+      "MEASLES",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MALARIA",
+      "DENGUE",
+      "SYPHILIS",
+      "SHIGELLOSIS",
+      "TUBERCULOSIS"
+    ]
+  },
+  {
+    "symptom": "splenomegaly",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "syphilisStage",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Stage",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "neckStiffness",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "AFP",
+      "CSM",
+      "GUINEA_WORM",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "sunkenEyesFontanelle",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "General ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "swollenGlands",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "symptomCurrentStatus",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical assessment and course",
+    "diseases": [
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "MALARIA",
+      "DENGUE",
+      "SHIGELLOSIS",
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "symptomatic",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": []
+  },
+  {
+    "symptom": "tenesmus",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "SHIGELLOSIS"
+    ]
+  },
+  {
+    "symptom": "lesionsThorax",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "throbocytopenia",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "tremor",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "LASSA",
+      "POLIO",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "unilateralCataracts",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "salivarySwelling",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Ear, Nose and Throat",
+    "diseases": [
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "unknownSymptom",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "PERTUSSIS",
+      "INVASIVE_PNEUMOCOCCAL_INFECTION",
+      "INVASIVE_MENINGOCOCCAL_INFECTION",
+      "MEASLES",
+      "DENGUE",
+      "SYPHILIS",
+      "MUMPS",
+      "MALARIA"
+    ]
+  },
+  {
+    "symptom": "unknownComplications",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "MUMPS"
+    ]
+  },
+  {
+    "symptom": "uproariousness",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "RABIES"
+    ]
+  },
+  {
+    "symptom": "urinaryRetention",
+    "oldSymptomGroup": "Urinary",
+    "proposedSymptomGroup": "Urinary / Renal",
+    "diseases": [
+      "CORONAVIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "lesions",
+    "oldSymptomGroup": "Skin",
+    "proposedSymptomGroup": "Skin ",
+    "diseases": [
+      "AFP",
+      "GUINEA_WORM",
+      "MONKEYPOX",
+      "ANTHRAX",
+      "POLIO",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "vomiting",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "AFP",
+      "EVD",
+      "GUINEA_WORM",
+      "LASSA",
+      "NEW_INFLUENZA",
+      "CSM",
+      "CHOLERA",
+      "MEASLES",
+      "YELLOW_FEVER",
+      "DENGUE",
+      "MONKEYPOX",
+      "PLAGUE",
+      "ANTHRAX",
+      "UNSPECIFIED_VHF",
+      "UNDEFINED",
+      "POLIO",
+      "CORONAVIRUS",
+      "CRYPTOSPORIDIOSIS",
+      "GIARDIASIS",
+      "MALARIA",
+      "SALMONELLOSIS",
+      "YERSINIOSIS",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "wateryDiarrhea",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "CHOLERA",
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "SALMONELLOSIS",
+      "SHIGELLOSIS"
+    ]
+  },
+  {
+    "symptom": "weight",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical measurements",
+    "diseases": []
+  },
+  {
+    "symptom": "weightLoss",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General",
+    "diseases": [
+      "GIARDIASIS",
+      "CRYPTOSPORIDIOSIS",
+      "SYPHILIS",
+      "YERSINIOSIS"
+    ]
+  },
+  {
+    "symptom": "weightLossAmount",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General",
+    "diseases": [
+      "GIARDIASIS",
+      "YERSINIOSIS",
+      "CRYPTOSPORIDIOSIS"
+    ]
+  },
+  {
+    "symptom": "wheezing",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "CORONAVIRUS",
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "UNDEFINED",
+      "OTHER"
+    ]
+  },
+  {
+    "symptom": "whoopSound",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "PERTUSSIS"
+    ]
+  },
+  {
+    "symptom": "bronchitis",
+    "oldSymptomGroup": "Respiratory",
+    "proposedSymptomGroup": "Respiratory",
+    "diseases": [
+      "RUBELLA"
+    ]
+  },
+  {
+    "symptom": "myocarditis",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "RUBELLA",
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "pericarditis",
+    "oldSymptomGroup": "Cardiovascular",
+    "proposedSymptomGroup": "Cardiovascular",
+    "diseases": [
+      "RUBELLA"
+    ]
+  },
+  {
+    "symptom": "thrombocytopenia",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Haemorrhagic / Haematological",
+    "diseases": [
+      "RUBELLA"
+    ]
+  },
+  {
+    "symptom": "lymphadenopathySuboccipital",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "RUBELLA"
+    ]
+  },
+  {
+    "symptom": "lymphadenopathyRetroauricular",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "RUBELLA"
+    ]
+  },
+  {
+    "symptom": "stillbornInfant",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Other",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "unknownClinicalPresentation",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "CONGENITAL_RUBELLA",
+      "RUBELLA"
+    ]
+  },
+  {
+    "symptom": "neurologicalComplications",
+    "oldSymptomGroup": "Nervous system",
+    "proposedSymptomGroup": "Nervous system",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "lowBirthWeight",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "General",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "hepatitis",
+    "oldSymptomGroup": "Gastrointestinal",
+    "proposedSymptomGroup": "Gastrointestinal",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "thrombocytopenicPurpura",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "rubellaArthritis",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Musculoskeletal",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "greggsTriad",
+    "oldSymptomGroup": "Other",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "CONGENITAL_RUBELLA"
+    ]
+  },
+  {
+    "symptom": "cervicitis",
+    "oldSymptomGroup": "Reproductive / Genital",
+    "proposedSymptomGroup": "Reproductive / Genital",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "newbornConjunctivitis",
+    "oldSymptomGroup": "General",
+    "proposedSymptomGroup": "Eye",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "epididymitis",
+    "oldSymptomGroup": "Reproductive / Genital",
+    "proposedSymptomGroup": "Reproductive / Genital",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "pelvicInflammatoryDisease",
+    "oldSymptomGroup": "Reproductive / Genital",
+    "proposedSymptomGroup": "Reproductive / Genital",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "proctitis",
+    "oldSymptomGroup": "Reproductive / Genital",
+    "proposedSymptomGroup": "Reproductive / Genital",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "acuteSalpingitis",
+    "oldSymptomGroup": "Reproductive / Genital",
+    "proposedSymptomGroup": "Reproductive / Genital",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "urethritis",
+    "oldSymptomGroup": "Reproductive / Genital",
+    "proposedSymptomGroup": "Reproductive / Genital",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteAnorectal",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteBlood",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteCerebrospinalFluid",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteEye",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteGenital",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteJointFluid",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSitePharyngeal",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteUnknown",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteOther",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "gonococcalInfectionSiteOtherText",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Site of infection",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "noConcurrentSti",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiChlamydia",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiGenitalHerpes",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiLgv",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiMycoplasmaGenitalium",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiInfectiousSyphilis",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiTrichomonasVaginalis",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiGenitalWarts",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiOther",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiOtherText",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "concurrentStiUnknown",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Concurrent sexually transmitted infection at time of diagnosis",
+    "diseases": [
+      "GONOCOCCAL_INFECTION"
+    ]
+  },
+  {
+    "symptom": "conjunctivalPresentation",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "cutaneousPresentation",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "genitalPresentation",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "nasalDischargeClearToBloody",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "otherClinicalCriteria",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "otherClinicalCriteriaText",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "respiratoryAndCutaneousPresentation",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "respiratoryWithMembrane",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "respiratoryWithoutMembrane",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "unknownClinicalCriteria",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Clinical presentation",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "noComplicationDiagnosis",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "system disorders",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "cardiacDisorder",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "system disorders",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "neurologicalComplicationDiagnosis",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "system disorders",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "neurologicalAndCardiacDisorder",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "system disorders",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "otherComplicationDiagnosis",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "system disorders",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "otherComplicationDiagnosisText",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "system disorders",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  },
+  {
+    "symptom": "unknownComplicationDiagnosis",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "system disorders",
+    "diseases": [
+      "DIPHTHERIA"
+    ]
+  }
+]

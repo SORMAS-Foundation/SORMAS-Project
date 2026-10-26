@@ -42,6 +42,7 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -84,6 +85,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String SEX_WORKER = "sexWorker";
 	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
 	public static final String TYPE_OF_CLINICAL_SERVICE = "typeOfClinicalService";
+	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -218,6 +220,23 @@ public class EpiDataDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Size(max = 255, message = Validations.textTooLong)
 	private String residenceAtOnset;
+
+	/**
+	 * #13399 - the place where the patient became ill, moved here from {@code SymptomsDto.patientIllLocation}. Free text,
+	 * shown for cases only (the epi data form hides it for contacts).
+	 * <p>
+	 * Example: an AFP case with "Village school, Kano" keeps this value in its epi data instead of its symptoms.
+	 */
+	@Diseases({
+		Disease.AFP,
+		Disease.GUINEA_WORM,
+		Disease.MONKEYPOX,
+		Disease.POLIO,
+		Disease.UNDEFINED,
+		Disease.OTHER })
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String patientIllLocation;
 
 	@Diseases({
 		Disease.SYPHILIS,
@@ -436,6 +455,14 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setResidenceAtOnset(String residenceAtOnset) {
 		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	public String getPatientIllLocation() {
+		return patientIllLocation;
+	}
+
+	public void setPatientIllLocation(String patientIllLocation) {
+		this.patientIllLocation = patientIllLocation;
 	}
 
 	public TypeOfClinicalService getTypeOfClinicalService() {

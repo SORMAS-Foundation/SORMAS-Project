@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
@@ -157,6 +158,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			fluidRowLocs(6, EpiDataDto.PATIENT_ILL_LOCATION, 6, "") +
 			loc(LOC_CLUSTER_TYPE_HEADING)+
 			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
 			fluidRowLocs(8, EpiDataDto.CLUSTER_IDENTIFIER,4,null) +
@@ -299,6 +301,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
+		addField(EpiDataDto.PATIENT_ILL_LOCATION, TextField.class);
 		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class);
 		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, ComboBox.class);
 		ComboBox motherCountryOfBirth = addInfrastructureField(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH);
@@ -372,6 +375,20 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
+		// #13399 - the location where the patient became ill is only recorded for cases, e.g. it is hidden in the epi data
+		// of an AFP contact
+		Field<?> patientIllLocationField = getField(EpiDataDto.PATIENT_ILL_LOCATION);
+		if (parentClass != CaseDataDto.class && patientIllLocationField != null) {
+			patientIllLocationField.setVisible(false);
+		}
+
+		// #13399 - the patient ill location is part of the conclusion section, so the conclusion heading is also shown
+		// when only this field is visible, e.g. for an AFP case, whose disease is not in CONCLUSION_ALLOWED_DISEASES
+		Component conclusionHeading = getContent().getComponent(LOC_CONCLUSION_HEADING);
+		if (conclusionHeading != null && patientIllLocationField != null && patientIllLocationField.isVisible()) {
+			conclusionHeading.setVisible(true);
+		}
+
 		exposuresField.addValueChangeListener(e -> ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue())));
 
 		// Salmonellosis: when a Travel exposure carries a country in its location, propose it as the
@@ -440,7 +457,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	/**
 	 * Create a read-only date field with the given value.
-	 * 
+	 *
 	 * @param value
 	 * @return dateField
 	 */
@@ -453,7 +470,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	/**
 	 * Displays prophylaxis adherence information in the form layout.
-	 * 
+	 *
 	 * @param value
 	 * @param hideProphylaxisComponent
 	 */
@@ -551,7 +568,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	/**
 	 * Create a label with HTML content mode.
-	 * 
+	 *
 	 * @param value
 	 * @return label
 	 */
