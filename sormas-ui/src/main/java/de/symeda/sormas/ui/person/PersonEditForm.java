@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -412,16 +413,28 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			occupationTypeField,
 			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, disease));
 		occupationTypeField.addValueChangeListener(e -> {
-			OccupationType occupationType = (OccupationType) e.getProperty().getValue();
-			occupationTypeDetailsField.setVisible(occupationType != null && occupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
+			Object selectedValue = e.getProperty().getValue();
+			OccupationType occupationType = selectedValue instanceof OccupationType ? (OccupationType) selectedValue : null;
+			occupationTypeDetailsField.setVisible(hasOccupationDetails(occupationTypeField, occupationType));
+			// Clear the details whenever the user selects a different occupation type, whether the new type has details or not, e.g.
+			// "OTHER" -> "FARMER", "OTHER" -> "STUDENT", or back to the stored type. A selection by the user marks the buffered field as
+			// modified before this listener runs. Binding the person (setValue) and discarding the form fire this listener too, but they
+			// reset the modified state first and select the stored type, so stored details are never cleared by opening or discarding.
+			PersonDto person = getValue();
+			OccupationType storedOccupationType = person != null ? person.getOccupationType() : null;
+			boolean changedByUser = occupationTypeField.isModified() || !Objects.equals(occupationType, storedOccupationType);
+			if (changedByUser && !occupationTypeDetailsField.isReadOnly()) {
+				occupationTypeDetailsField.clear();
+			}
+
 			boolean isStudent = occupationType != null && "STUDENT".equals(occupationType.getValue());
 			boolean useSchoolCaption = Disease.YERSINIOSIS.equals(disease) && isStudent && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 			occupationTypeDetailsField
 				.setCaption(useSchoolCaption ? I18nProperties.getCaption(Captions.Person_schoolNurseryName) : defaultOccupationDetailsCaption);
 		});
-		OccupationType initialOccupationType = (OccupationType) occupationTypeField.getValue();
-		occupationTypeDetailsField
-			.setVisible(initialOccupationType != null && initialOccupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
+		Object initialValue = occupationTypeField.getValue();
+		OccupationType initialOccupationType = initialValue instanceof OccupationType ? (OccupationType) initialValue : null;
+		occupationTypeDetailsField.setVisible(hasOccupationDetails(occupationTypeField, initialOccupationType));
 		boolean isStudent = initialOccupationType != null && "STUDENT".equals(initialOccupationType.getValue());
 		boolean useSchoolCaption = Disease.YERSINIOSIS.equals(disease) && isStudent && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		occupationTypeDetailsField
@@ -717,6 +730,46 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		if (disease != null && !PERINATAL_DISEASES.contains(disease)) {
 			perinatalDetailsHeader.setVisible(false);
 		}
+	}
+
+	/**
+	 * Checks whether the occupation details field has to be shown for the given occupation type.
+	 * <p>
+	 * The {@code hasDetails} property is read from the matching item of the occupation type field, because these items are loaded with
+	 * the disease of this form, just like when the user selects a value. The occupation type stored in the loaded {@link PersonDto} is
+	 * converted without a disease in the backend, so its properties can be missing, e.g. for a value that is only configured for a
+	 * specific disease. The details field is shown if either the item or the passed occupation type has {@code hasDetails = true}; if no
+	 * matching item exists, only the passed occupation type is checked.
+	 * <p>
+	 * Example: a person with the occupation type {@code "OTHER"} is opened. The occupation type in the loaded {@link PersonDto} has
+	 * {@code hasDetails = false} because its properties are missing, but the item {@code "OTHER"} of the field has
+	 * {@code hasDetails = true}, so this method returns {@code true} and the occupation details field is shown.
+	 *
+	 * @param occupationTypeField
+	 *            the occupation type field whose items are checked; may be {@code null}
+	 * @param occupationType
+	 *            the current value of the occupation type field; may be {@code null}
+	 * @return {@code true} if the occupation details field has to be shown, {@code false} if not or if {@code occupationType} is
+	 *         {@code null}
+	 */
+	private static boolean hasOccupationDetails(ComboBox occupationTypeField, OccupationType occupationType) {
+
+		if (occupationType == null) {
+			return false;
+		}
+
+		boolean hasDetails = occupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true);
+		if (hasDetails || occupationTypeField == null || occupationTypeField.getItemIds() == null) {
+			return hasDetails;
+		}
+
+		for (Object itemId : occupationTypeField.getItemIds()) {
+			if (itemId instanceof OccupationType && itemId.equals(occupationType)) {
+				return ((OccupationType) itemId).matchPropertyValue(OccupationType.HAS_DETAILS, true);
+			}
+		}
+
+		return false;
 	}
 
 	private int getApproximateAgeInYears() {

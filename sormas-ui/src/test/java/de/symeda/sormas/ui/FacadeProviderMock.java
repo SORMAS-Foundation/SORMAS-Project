@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externalemail.ExternalEmailFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
@@ -76,6 +78,7 @@ import de.symeda.sormas.backend.importexport.hierarchical.HierarchicalImportFaca
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
 import de.symeda.sormas.backend.dashboard.sample.SampleDashboardFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
@@ -88,6 +91,7 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb.EventImportFacadeEjbLocal;
 import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.geo.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
 import de.symeda.sormas.backend.geocoding.GeocodingFacadeEjb;
@@ -239,6 +243,10 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal.class);
 		} else if (SelfReportImportFacade.class == clazz) {
 			return (P) beanTest.getBean(SelfReportImportFacadeEjb.SelfReportImportFacadeEjbLocal.class);
+		} else if (CustomizableEnumFacade.class == clazz) {
+			return (P) beanTest.getBean(CustomizableEnumFacadeEjbLocal.class);
+		} else if (ExternalSurveillanceToolFacade.class == clazz) {
+			return (P) beanTest.getBean(ExternalSurveillanceToolGatewayFacadeEjbLocal.class);
 		}
 
 		return null;
