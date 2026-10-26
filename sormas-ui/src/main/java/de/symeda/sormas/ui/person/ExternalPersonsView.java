@@ -1,8 +1,12 @@
 package de.symeda.sormas.ui.person;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +24,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -32,7 +37,9 @@ import de.symeda.sormas.api.personaldata.PersonalDataSearchRequest;
 import de.symeda.sormas.api.personaldata.PersonalDataSearchResponse;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ExternalPersonsView extends AbstractView {
 
@@ -45,12 +52,24 @@ public class ExternalPersonsView extends AbstractView {
 	private final GridLayout filters = new GridLayout(4, 4);
 	private final Grid<PersonalDataIndexDto> grid = new Grid<>();
 	private final Label message = new Label();
+	private SearchState state;
+
+	public static class SearchState implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+		private PersonalDataSearchRequest id = new PersonalDataSearchRequest();
+		private PersonalDataSearchRequest criteria = new PersonalDataSearchRequest();
+		private boolean expanded;
+		private List<PersonalDataIndexDto> results = Collections.emptyList();
+		private String message;
+	}
 
 	public ExternalPersonsView() {
 		super(VIEW_NAME);
 		if (!ExternalPersonDataComponent.isAvailable()) {
 			return;
 		}
+		state = ViewModelProviders.of(ExternalPersonsView.class).get(SearchState.class);
 		idBinder.forField(nationalHealthId)
 			.withValidator(
 				value -> StringUtils.isBlank(value) || !LuxembourgNationalHealthIdValidator.isValidWithCause(value.trim()).isPresent(),
@@ -78,35 +97,65 @@ public class ExternalPersonsView extends AbstractView {
 		alive.setItemCaptionGenerator(value -> I18nProperties.getString(value ? Strings.yes : Strings.no));
 		filtersBinder.bind(alive, "alive");
 		filters.addComponent(alive);
-		filters.setVisible(false);
+		filters.setVisible(state.expanded);
+		nationalHealthId.setVisible(!state.expanded);
 		filters.setSpacing(true);
-		Button toggle = new Button(I18nProperties.getCaption("externalPersonsShowMoreFilters"));
+		Button toggle = new Button(I18nProperties.getCaption(state.expanded ? "externalPersonsSearchByHealthId" : "externalPersonsShowMoreFilters"));
 		toggle.addClickListener(event -> {
 			filters.setVisible(!filters.isVisible());
 			nationalHealthId.setVisible(!filters.isVisible());
 			toggle.setCaption(I18nProperties.getCaption(filters.isVisible() ? "externalPersonsSearchByHealthId" : "externalPersonsShowMoreFilters"));
+			state.expanded = filters.isVisible();
 			clearResults();
 		});
 		Button search = new Button(I18nProperties.getCaption(Captions.actionSearch), event -> search());
 		Button reset = new Button(I18nProperties.getCaption(Captions.actionResetFilters), event -> {
-			idBinder.readBean(new PersonalDataSearchRequest());
-			filtersBinder.readBean(new PersonalDataSearchRequest());
+			state.id = new PersonalDataSearchRequest();
+			state.criteria = new PersonalDataSearchRequest();
+			idBinder.setBean(state.id);
+			filtersBinder.setBean(state.criteria);
 			clearResults();
 		});
-		grid.addColumn(PersonalDataIndexDto::getNationalHealthId).setCaption(caption("nationalHealthId"));
-		grid.addColumn(PersonalDataIndexDto::getLastName).setCaption(caption("lastName"));
-		grid.addColumn(PersonalDataIndexDto::getFirstName).setCaption(caption("firstName"));
-		grid.addColumn(PersonalDataIndexDto::getSex).setCaption(caption("sex"));
-		grid.addColumn(PersonalDataIndexDto::getBirthDate).setCaption(caption("birthDate"));
-		grid.addColumn(PersonalDataIndexDto::getMunicipality).setCaption(caption("municipalityOfResidence"));
-		grid.addColumn(PersonalDataIndexDto::getLivingStatus).setCaption(caption("livingStatus"));
-		grid.addItemClickListener(event -> open(event.getItem()));
+		addLinkColumn(PersonalDataIndexDto::getNationalHealthId).setCaption(caption("nationalHealthId"));
+		addLinkColumn(PersonalDataIndexDto::getLastName).setCaption(caption("lastName"));
+		addLinkColumn(PersonalDataIndexDto::getFirstName).setCaption(caption("firstName"));
+		addLinkColumn(PersonalDataIndexDto::getSex).setCaption(caption("sex"));
+		addLinkColumn(PersonalDataIndexDto::getBirthDate).setCaption(caption("birthDate"));
+		addLinkColumn(PersonalDataIndexDto::getMunicipality).setCaption(caption("municipalityOfResidence"));
+		addLinkColumn(PersonalDataIndexDto::getLivingStatus).setCaption(caption("livingStatus"));
+		grid.setSelectionMode(Grid.SelectionMode.NONE);
+		grid.addStyleName("external-persons-grid");
 		grid.setSizeFull();
 		VerticalLayout content = new VerticalLayout(nationalHealthId, toggle, filters, new HorizontalLayout(search, reset), message, grid);
 		content.setSizeFull();
 		content.setExpandRatio(grid, 1);
 		addComponent(content);
-		clearResults();
+		idBinder.setBean(state.id);
+		filtersBinder.setBean(state.criteria);
+		grid.setItems(state.results);
+		setMessage(state.message == null ? I18nProperties.getString("externalPersonsEnterCriteria") : state.message);
+	}
+
+	private Grid.Column<PersonalDataIndexDto, String> addLinkColumn(Function<PersonalDataIndexDto, ?> valueProvider) {
+		return grid.addColumn(person -> {
+			Object value = valueProvider.apply(person);
+			String text = StringEscapeUtils.escapeHtml4(value == null ? "" : value.toString());
+			if (StringUtils.isBlank(person.getNationalHealthId())) {
+				return text;
+			}
+			String route = ExternalPersonView.VIEW_NAME + "/" + person.getNationalHealthId();
+			return "<a href=\"#!" + StringEscapeUtils.escapeHtml4(route) + "\">" + (text.isEmpty() ? "&nbsp;" : text) + "</a>";
+		}, new HtmlRenderer());
+	}
+
+	private void setMessage(String value) {
+		state.message = value;
+		message.setValue(value);
+		if (I18nProperties.getString(Strings.errorExternalPersonDataLoad).equals(value)) {
+			message.addStyleName(CssStyles.ERROR_COLOR_PRIMARY);
+		} else {
+			message.removeStyleName(CssStyles.ERROR_COLOR_PRIMARY);
+		}
 	}
 
 	private static String caption(String property) {
@@ -130,8 +179,9 @@ public class ExternalPersonsView extends AbstractView {
 	}
 
 	private void clearResults() {
-		grid.setItems(Collections.emptyList());
-		message.setValue(I18nProperties.getString("externalPersonsEnterCriteria"));
+		state.results = Collections.emptyList();
+		grid.setItems(state.results);
+		setMessage(I18nProperties.getString("externalPersonsEnterCriteria"));
 	}
 
 	private void search() {
@@ -144,7 +194,6 @@ public class ExternalPersonsView extends AbstractView {
 			return;
 		}
 		if (request.equals(new PersonalDataSearchRequest())) {
-			clearResults();
 			return;
 		}
 		if (!validRange(request.getBirthYearFrom(), request.getBirthYearTo()) || !validRange(request.getAgeFrom(), request.getAgeTo())) {
@@ -154,11 +203,12 @@ public class ExternalPersonsView extends AbstractView {
 		try {
 			PersonalDataSearchResponse response = FacadeProvider.getPersonalDataProviderFacade().search(request);
 			List<PersonalDataIndexDto> results = response.getResults() == null ? Collections.emptyList() : response.getResults();
-			grid.setItems(results.subList(0, Math.min(100, results.size())));
-			message.setValue(results.isEmpty() ? I18nProperties.getString(Strings.infoNoExternalPersonData) : "");
+			state.results = new ArrayList<>(results.subList(0, Math.min(100, results.size())));
+			grid.setItems(state.results);
+			setMessage(results.isEmpty() ? I18nProperties.getString(Strings.infoNoExternalPersonData) : "");
 			boolean truncated = results.size() > 100 || response.getTotalCount() != null && response.getTotalCount() > 100;
 			if (truncated) {
-				message.setValue(I18nProperties.getString("externalPersonsFirst100Results"));
+				setMessage(I18nProperties.getString("externalPersonsFirst100Results"));
 				Notification.show(message.getValue(), Notification.Type.WARNING_MESSAGE);
 			}
 			if (results.size() == 1 && (response.getTotalCount() == null || response.getTotalCount() == 1)) {
@@ -166,8 +216,7 @@ public class ExternalPersonsView extends AbstractView {
 			}
 		} catch (RuntimeException e) {
 			logger.error("Could not search external persons", e);
-			grid.setItems(Collections.emptyList());
-			message.setValue(I18nProperties.getString(Strings.errorExternalPersonDataLoad));
+			setMessage(I18nProperties.getString(Strings.errorExternalPersonDataLoad));
 		}
 	}
 

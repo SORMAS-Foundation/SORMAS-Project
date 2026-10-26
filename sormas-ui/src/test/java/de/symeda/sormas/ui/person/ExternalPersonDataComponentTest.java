@@ -68,6 +68,33 @@ class ExternalPersonDataComponentTest {
 	}
 
 	@Test
+	void directoryRetainsFiltersAndResultsUntilReset() {
+		try (Context context = new Context(true, "true")) {
+			de.symeda.sormas.api.personaldata.PersonalDataIndexDto person = new de.symeda.sormas.api.personaldata.PersonalDataIndexDto();
+			person.setNationalHealthId("123");
+			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
+				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			response.setResults(java.util.Collections.singletonList(person));
+			response.setTotalCount(2);
+			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
+			ExternalPersonsView view = new ExternalPersonsView();
+			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) view.getComponent(1);
+			((com.vaadin.ui.Button) content.getComponent(1)).click();
+			((com.vaadin.ui.TextField) ((com.vaadin.ui.GridLayout) content.getComponent(2)).getComponent(0, 0)).setValue("Doe");
+			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(3)).getComponent(0)).click();
+			com.vaadin.ui.VerticalLayout restored = (com.vaadin.ui.VerticalLayout) new ExternalPersonsView().getComponent(1);
+			org.junit.jupiter.api.Assertions.assertTrue(restored.getComponent(2).isVisible());
+			assertEquals("Doe", ((com.vaadin.ui.TextField) ((com.vaadin.ui.GridLayout) restored.getComponent(2)).getComponent(0, 0)).getValue());
+			com.vaadin.ui.Grid<?> grid = (com.vaadin.ui.Grid<?>) restored.getComponent(5);
+			assertEquals(1, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
+			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) restored.getComponent(3)).getComponent(1)).click();
+			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
+			com.vaadin.ui.VerticalLayout reset = (com.vaadin.ui.VerticalLayout) new ExternalPersonsView().getComponent(1);
+			assertEquals("", ((com.vaadin.ui.TextField) ((com.vaadin.ui.GridLayout) reset.getComponent(2)).getComponent(0, 0)).getValue());
+		}
+	}
+
+	@Test
 	void doesNotLoadPersonOrExternalDataWithoutPermission() {
 		try (Context context = new Context(false, "true")) {
 			assertEquals(0, context.create().getComponentCount());
@@ -143,6 +170,8 @@ class ExternalPersonDataComponentTest {
 
 	private static class Context implements AutoCloseable {
 
+		private final MockedStatic<de.symeda.sormas.ui.ViewModelProviders> viewModels = mockStatic(de.symeda.sormas.ui.ViewModelProviders.class);
+
 		private final MockedStatic<FacadeProvider> facades = mockStatic(FacadeProvider.class);
 		private final MockedStatic<UiUtil> ui = mockStatic(UiUtil.class);
 		private final MockedStatic<I18nProperties> i18n = mockStatic(I18nProperties.class, invocation -> {
@@ -156,6 +185,8 @@ class ExternalPersonDataComponentTest {
 		private final PersonDto person = new PersonDto();
 
 		private Context(boolean permitted, String enabled) {
+			viewModels.when(() -> de.symeda.sormas.ui.ViewModelProviders.of(ExternalPersonsView.class))
+				.thenReturn(new de.symeda.sormas.ui.ViewModelProvider());
 			i18n.when(() -> I18nProperties.getValidationError(de.symeda.sormas.api.i18n.Validations.invalidNationalHealthId))
 				.thenReturn("Invalid national health ID");
 			i18n.when(() -> I18nProperties.getString("externalPersonsInvalidRange")).thenReturn("Invalid range");
@@ -178,6 +209,7 @@ class ExternalPersonDataComponentTest {
 
 		@Override
 		public void close() {
+			viewModels.close();
 			i18n.close();
 			ui.close();
 			facades.close();
