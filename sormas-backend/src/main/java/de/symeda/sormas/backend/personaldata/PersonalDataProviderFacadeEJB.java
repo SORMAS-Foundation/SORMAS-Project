@@ -35,7 +35,7 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
 
-@Stateless(name = "ExternalMessageFacade")
+@Stateless(name = "PersonalDataProviderFacade")
 public class PersonalDataProviderFacadeEJB implements PersonalDataProviderFacade {
 
 	private static final Logger logger = LoggerFactory.getLogger(PersonalDataProviderFacadeEJB.class);

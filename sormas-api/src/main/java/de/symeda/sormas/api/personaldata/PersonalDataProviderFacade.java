@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.ejb.Remote;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.LocationDto;
 
+@Remote
 public interface PersonalDataProviderFacade {
 
 	String EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED = "EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED";
