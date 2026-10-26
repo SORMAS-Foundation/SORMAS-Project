@@ -275,7 +275,7 @@ public class MainScreen extends HorizontalLayout {
 				ExternalPersonsView.class,
 				ExternalPersonsView.VIEW_NAME,
 				I18nProperties.getCaption("mainMenuExternalPersons"),
-				VaadinIcons.USER_CARD);
+				VaadinIcons.USER_HEART);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);

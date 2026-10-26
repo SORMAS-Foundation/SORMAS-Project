@@ -1,10 +1,9 @@
 package de.symeda.sormas.ui.person;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractView;
 
 public class ExternalPersonView extends AbstractView {
@@ -15,10 +14,10 @@ public class ExternalPersonView extends AbstractView {
 
 	public ExternalPersonView() {
 		super(VIEW_NAME);
-		addHeaderComponent(
-			new Button(
-				I18nProperties.getCaption("mainMenuExternalPersons"),
-				event -> SormasUI.get().getNavigator().navigateTo(ExternalPersonsView.VIEW_NAME)));
+		SubMenu menu = new SubMenu();
+		menu.addView(ExternalPersonsView.VIEW_NAME, I18nProperties.getCaption("mainMenuExternalPersons"));
+		addComponent(menu);
+		setExpandRatio(menu, 0);
 	}
 
 	@Override
