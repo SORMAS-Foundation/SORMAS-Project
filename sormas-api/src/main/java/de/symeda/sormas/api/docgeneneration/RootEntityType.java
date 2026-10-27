@@ -29,6 +29,7 @@ public enum RootEntityType {
 	ROOT_EVENT_PARTICIPANTS("eventParticipants"),
 	ROOT_TRAVEL_ENTRY("travelEntry"),
 	ROOT_VACCINATION("vaccination"),
+	ROOT_EXTERNAL_PERSON("externalPerson"),
 	ROOT_GENERAL("general");
 
 	private final String entityName;
