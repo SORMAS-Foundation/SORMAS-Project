@@ -47,6 +47,7 @@ import de.symeda.sormas.api.climate.ClimateObservationExportDto;
 import de.symeda.sormas.api.climate.ClimateObservationFacade;
 import de.symeda.sormas.api.climate.ClimateObservationIndexDto;
 import de.symeda.sormas.api.climate.ClimateObservationValidation;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -327,6 +328,17 @@ public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
 			coverage.add(district);
 		}
 		return coverage;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public List<EnvironmentReferenceDto> getEnvironmentsWithClimateLocation(RegionReferenceDto region, DistrictReferenceDto district) {
+
+		List<EnvironmentReferenceDto> environments = new ArrayList<>();
+		climateLocationService
+			.getEnvironmentsWithLocation(region != null ? region.getUuid() : null, district != null ? district.getUuid() : null)
+			.forEach(row -> environments.add(new EnvironmentReferenceDto((String) row[0], (String) row[1])));
+		return environments;
 	}
 
 	private static RegionReferenceDto regionReference(Object[] row) {

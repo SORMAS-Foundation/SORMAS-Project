@@ -54,7 +54,14 @@ public interface Strings {
 	String classificationSymptomsAnyOf = "classificationSymptomsAnyOf";
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
+	String climateDistrictsWithoutPoint = "climateDistrictsWithoutPoint";
+	String climateDistrictWithoutPoint = "climateDistrictWithoutPoint";
 	String climateGridSizeOption = "climateGridSizeOption";
+	String climatePlaceEnvironment = "climatePlaceEnvironment";
+	String climatePlaceNotLinked = "climatePlaceNotLinked";
+	String climatePlaceNotLinkedNoPoint = "climatePlaceNotLinkedNoPoint";
+	String climatePlaceShared = "climatePlaceShared";
+	String climateSharedBy = "climateSharedBy";
 	String climateSummaryApiKeyMissing = "climateSummaryApiKeyMissing";
 	String climateSummaryApiKeySet = "climateSummaryApiKeySet";
 	String climateSummaryCallsPerNight = "climateSummaryCallsPerNight";
@@ -111,6 +118,7 @@ public interface Strings {
 	String confirmationCancelExternalFollowUpPopup = "confirmationCancelExternalFollowUpPopup";
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
+	String confirmationClimateDeleteObservation = "confirmationClimateDeleteObservation";
 	String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
 	String confirmationCronJobRunNow = "confirmationCronJobRunNow";
 	String confirmationDearchiveAdverseEvent = "confirmationDearchiveAdverseEvent";
@@ -262,6 +270,7 @@ public interface Strings {
 	String entityCaseManagement = "entityCaseManagement";
 	String entityCases = "entityCases";
 	String entityCaseVisits = "entityCaseVisits";
+	String entityClimateObservations = "entityClimateObservations";
 	String entityClinicalVisit = "entityClinicalVisit";
 	String entityClinicalVisits = "entityClinicalVisits";
 	String entityCommunities = "entityCommunities";
@@ -533,6 +542,10 @@ public interface Strings {
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
+	String headingClimateDistrictsWithoutPoint = "headingClimateDistrictsWithoutPoint";
+	String headingClimateImport = "headingClimateImport";
+	String headingClimateNewObservation = "headingClimateNewObservation";
+	String headingClimateObservation = "headingClimateObservation";
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
 	String headingClinicalPresentation = "headingClinicalPresentation";
 	String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
@@ -1051,8 +1064,11 @@ public interface Strings {
 	String infoCaseManagementExport = "infoCaseManagementExport";
 	String infoCaseMap = "infoCaseMap";
 	String infoCheckProbableInfectionEnvironment = "infoCheckProbableInfectionEnvironment";
+	String infoClimateDistrictsWithoutPoint = "infoClimateDistrictsWithoutPoint";
 	String infoClimateHistorySourceCostWarning = "infoClimateHistorySourceCostWarning";
 	String infoClimateImport = "infoClimateImport";
+	String infoClimateObservationMean = "infoClimateObservationMean";
+	String infoClimateObservationReplaces = "infoClimateObservationReplaces";
 	String infoClimateUsualRangeNotShown = "infoClimateUsualRangeNotShown";
 	String infoClimateUsualRangeYears = "infoClimateUsualRangeYears";
 	String infoClimateUsualRangeYearsExcluded = "infoClimateUsualRangeYearsExcluded";
@@ -1329,6 +1345,7 @@ public interface Strings {
 	String labelNoVaccinationDate = "labelNoVaccinationDate";
 	String labelNoVaccineName = "labelNoVaccineName";
 	String labelNumberOfAreas = "labelNumberOfAreas";
+	String labelNumberOfClimateObservations = "labelNumberOfClimateObservations";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
 	String labelNumberOfContinents = "labelNumberOfContinents";
 	String labelNumberOfCountries = "labelNumberOfCountries";
@@ -1427,6 +1444,10 @@ public interface Strings {
 	String messageChangingCaseOutcome = "messageChangingCaseOutcome";
 	String messageChangingPersonPresentCondition = "messageChangingPersonPresentCondition";
 	String messageCheckInputData = "messageCheckInputData";
+	String messageClimateChoosePlaceAndDate = "messageClimateChoosePlaceAndDate";
+	String messageClimateEnterNumber = "messageClimateEnterNumber";
+	String messageClimateObservationDeleted = "messageClimateObservationDeleted";
+	String messageClimateObservationSaved = "messageClimateObservationSaved";
 	String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	String messageClinicalVisitCreated = "messageClinicalVisitCreated";
 	String messageClinicalVisitSaved = "messageClinicalVisitSaved";

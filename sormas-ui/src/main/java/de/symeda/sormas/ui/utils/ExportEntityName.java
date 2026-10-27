@@ -16,6 +16,7 @@ public enum ExportEntityName {
 	CASES("entityCases", "cases"),
 	CASE_MANAGEMENT("entityCaseManagement", "case management"),
 	CASE_VISITS("entityCaseVisits", "case visits"),
+	CLIMATE_OBSERVATIONS("entityClimateObservations", "climate observations"),
 	CLINICAL_VISITS("entityClinicalVisits", "clinical assessments"),
 	COMMUNITIES("entityCommunities", "communities"),
 	CONTACTS("entityContacts", "contacts"),

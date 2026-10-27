@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -100,4 +102,10 @@ public interface ClimateObservationFacade {
 	 *         region and district name
 	 */
 	List<ClimateHistoryCoverageDto> getHistoryCoverage(RegionReferenceDto region);
+
+	/**
+	 * @return the environments (not deleted) of the district, or else the region, or else all, that have a climate record of
+	 *         their own because their GPS is usable, sorted by name
+	 */
+	List<EnvironmentReferenceDto> getEnvironmentsWithClimateLocation(RegionReferenceDto region, DistrictReferenceDto district);
 }

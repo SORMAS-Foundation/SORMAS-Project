@@ -248,6 +248,22 @@ class ClimateObservationListTest extends AbstractBeanTest {
 		assertEquals(0, emptyDistrict.getDaysHeld());
 	}
 
+	@Test
+	void testEnvironmentsWithAClimateLocation() {
+
+		createEnvironment("Well B", 6.60, 3.35);
+		createEnvironment("No GPS", 0.0, 0.0);
+		createEnvironment("Well A", 6.80, 3.50);
+
+		assertEquals(
+			Arrays.asList("Well A", "Well B"),
+			facade.getEnvironmentsWithClimateLocation(null, rdcf.district).stream().map(e -> e.getCaption()).collect(Collectors.toList()),
+			"only environments with usable GPS have a climate record of their own");
+		assertEquals(2, facade.getEnvironmentsWithClimateLocation(rdcf.region, null).size());
+		District other = creator.createDistrict("Other district", getRegionService().getByUuid(rdcf.region.getUuid()));
+		assertTrue(facade.getEnvironmentsWithClimateLocation(null, getDistrictFacade().getReferenceByUuid(other.getUuid())).isEmpty());
+	}
+
 	private List<Double> rainfall(ClimateObservationCriteria criteria) {
 		return facade.getIndexList(criteria, 0, 100, null).stream().map(ClimateObservationIndexDto::getRainfall).collect(Collectors.toList());
 	}

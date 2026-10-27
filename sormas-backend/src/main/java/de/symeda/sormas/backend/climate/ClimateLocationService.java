@@ -220,6 +220,25 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 	}
 
 	/**
+	 * @return uuid and name of the environments (not deleted) of the district, or else the region, or else all, that have a
+	 *         climate location of their own (usable GPS), sorted by name
+	 */
+	public List<Object[]> getEnvironmentsWithLocation(String regionUuid, String districtUuid) {
+
+		String scope = districtUuid != null
+			? " AND e." + Environment.LOCATION + "." + Location.DISTRICT + ".uuid = :scope"
+			: regionUuid != null ? " AND e." + Environment.LOCATION + "." + Location.REGION + ".uuid = :scope" : "";
+		TypedQuery<Object[]> query = em.createQuery(
+			"SELECT e." + Environment.UUID + ", e." + Environment.ENVIRONMENT_NAME + " FROM environments e WHERE e." + Environment.DELETED
+				+ " = false AND e." + Environment.CLIMATE_LOCATION + " IS NOT NULL" + scope + " ORDER BY e." + Environment.ENVIRONMENT_NAME,
+			Object[].class);
+		if (districtUuid != null || regionUuid != null) {
+			query.setParameter("scope", districtUuid != null ? districtUuid : regionUuid);
+		}
+		return query.getResultList();
+	}
+
+	/**
 	 * The names of the places that use one climate location.
 	 */
 	public static class PlaceNames {
