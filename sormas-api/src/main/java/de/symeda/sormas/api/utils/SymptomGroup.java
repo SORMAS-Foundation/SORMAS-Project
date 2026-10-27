@@ -27,6 +27,7 @@ public enum SymptomGroup {
 	SITE_OF_INFECTION, // Gonococcal infection
 	CONCURRENT_STI; // Gonococcal infection
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -310,6 +310,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setClusterType(source.getClusterType());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.getClusterRelated());
+		target.setInfectionSource(source.getInfectionSource());
+		target.setInfectionSourceText(source.getInfectionSourceText());
 
 		ExternalSurveyResponseData surveyResponseData = source.getSurveyResponseData();
 
@@ -650,6 +652,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setClusterType(source.getClusterType());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.getClusterRelated());
+		target.setInfectionSource(source.getInfectionSource());
+		target.setInfectionSourceText(source.getInfectionSourceText());
 		target.setHivStatus(source.getHivStatus());
 		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
 		target.setContactWithSexWorker(source.getContactWithSexWorker());

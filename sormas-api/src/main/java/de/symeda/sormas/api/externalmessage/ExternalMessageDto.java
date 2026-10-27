@@ -18,6 +18,7 @@ package de.symeda.sormas.api.externalmessage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
+import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
@@ -320,6 +322,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String clusterTypeText;
 	private Boolean clusterRelated;
+
+	// Diphtheria changes - suspected vehicle of infection
+	private Set<InfectionSource> infectionSource;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String infectionSourceText;
 
 	private HivStatus hivStatus;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
@@ -1211,6 +1218,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setClusterRelated(Boolean clusterRelated) {
 		this.clusterRelated = clusterRelated;
+	}
+
+	public Set<InfectionSource> getInfectionSource() {
+		return infectionSource;
+	}
+
+	public void setInfectionSource(Set<InfectionSource> infectionSource) {
+		this.infectionSource = infectionSource;
+	}
+
+	public String getInfectionSourceText() {
+		return infectionSourceText;
+	}
+
+	public void setInfectionSourceText(String infectionSourceText) {
+		this.infectionSourceText = infectionSourceText;
 	}
 
 }

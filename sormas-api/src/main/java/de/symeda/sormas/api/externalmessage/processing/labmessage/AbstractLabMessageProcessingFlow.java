@@ -17,8 +17,10 @@ package de.symeda.sormas.api.externalmessage.processing.labmessage;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,6 +38,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
@@ -255,6 +258,17 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 					|| externalMessageDto.getClusterType() != null
 					|| externalMessageDto.getClusterIdentifier() != null
 					|| externalMessageDto.getClusterTypeText() != null);
+		}
+
+		// infection sources from the message are added to the ones already present on the case
+		if (externalMessageDto.getInfectionSource() != null && !externalMessageDto.getInfectionSource().isEmpty()) {
+			Set<InfectionSource> infectionSources =
+				epiDataDto.getInfectionSource() != null ? new HashSet<>(epiDataDto.getInfectionSource()) : new HashSet<>();
+			infectionSources.addAll(externalMessageDto.getInfectionSource());
+			epiDataDto.setInfectionSource(infectionSources);
+		}
+		if (externalMessageDto.getInfectionSourceText() != null) {
+			epiDataDto.setInfectionSourceText(externalMessageDto.getInfectionSourceText());
 		}
 
 		caseDto.setCaseClassification(caseClassification);
