@@ -55,6 +55,15 @@ public interface Strings {
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String climateGridSizeOption = "climateGridSizeOption";
+	String climateSummaryApiKeyMissing = "climateSummaryApiKeyMissing";
+	String climateSummaryApiKeySet = "climateSummaryApiKeySet";
+	String climateSummaryCallsPerNight = "climateSummaryCallsPerNight";
+	String climateSummaryLastNight = "climateSummaryLastNight";
+	String climateSummaryNoNightlyFetch = "climateSummaryNoNightlyFetch";
+	String climateSummarySources = "climateSummarySources";
+	String climateWarningLastNightFailed = "climateWarningLastNightFailed";
+	String climateWarningLimitReached = "climateWarningLimitReached";
+	String climateWarningNoApiKey = "climateWarningNoApiKey";
 	String close = "close";
 	String comparedTo = "comparedTo";
 	String confirmationAlsoAdjustQuarantine = "confirmationAlsoAdjustQuarantine";

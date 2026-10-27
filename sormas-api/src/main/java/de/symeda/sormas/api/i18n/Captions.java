@@ -991,6 +991,7 @@ public interface Captions {
 	String ClimateDistrict_district = "ClimateDistrict.district";
 	String ClimateDistrict_region = "ClimateDistrict.region";
 	String ClimateEarlierValue_changeDate = "ClimateEarlierValue.changeDate";
+	String climateEditSettings = "climateEditSettings";
 	String ClimateHistoryCoverage_completeness = "ClimateHistoryCoverage.completeness";
 	String ClimateHistoryCoverage_daysHeld = "ClimateHistoryCoverage.daysHeld";
 	String ClimateHistoryCoverage_hasPoint = "ClimateHistoryCoverage.hasPoint";
@@ -1027,6 +1028,8 @@ public interface Captions {
 	String ClimateObservationExport_regions = "ClimateObservationExport.regions";
 	String ClimateObservationExport_reportingUser = "ClimateObservationExport.reportingUser";
 	String ClimateObservationExport_uuid = "ClimateObservationExport.uuid";
+	String climateTabBackfill = "climateTabBackfill";
+	String climateTabObservations = "climateTabObservations";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
 	String ClinicalVisit_heartRate = "ClinicalVisit.heartRate";
@@ -4005,6 +4008,10 @@ public interface Captions {
 	String View_cases_visits = "View.cases.visits";
 	String View_configuration_areas = "View.configuration.areas";
 	String View_configuration_areas_short = "View.configuration.areas.short";
+	String View_configuration_climate = "View.configuration.climate";
+	String View_configuration_climate_short = "View.configuration.climate.short";
+	String View_configuration_climateBackfill = "View.configuration.climateBackfill";
+	String View_configuration_climateBackfill_short = "View.configuration.climateBackfill.short";
 	String View_configuration_communities = "View.configuration.communities";
 	String View_configuration_communities_short = "View.configuration.communities.short";
 	String View_configuration_continents = "View.configuration.continents";
