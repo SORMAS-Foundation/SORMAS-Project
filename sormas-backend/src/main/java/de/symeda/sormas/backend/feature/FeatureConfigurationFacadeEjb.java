@@ -18,9 +18,12 @@ package de.symeda.sormas.backend.feature;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,6 +50,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
@@ -85,6 +91,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @AuditIgnore(retainWrites = true)
 @Stateless(name = "FeatureConfigurationFacade")
 public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -364,6 +372,158 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				service.ensurePersisted(configuration);
 			}
 		}
+	}
+
+	@Override
+	public Map<FeatureTypeProperty, Object> getServerFeatureProperties(FeatureType featureType, DeletableEntityType entityType) {
+
+		Map<FeatureTypeProperty, Object> result = new HashMap<>();
+		if (!isValidServerFeatureScope(featureType, entityType)) {
+			return result;
+		}
+
+		Map<FeatureTypeProperty, Object> supportedDefaults = featureType.getSupportedPropertyDefaults();
+		if (MapUtils.isEmpty(supportedDefaults)) {
+			return result;
+		}
+
+		supportedDefaults.forEach((property, defaultValue) -> {
+			if (property != null) {
+				result.put(property, defaultValue);
+			}
+		});
+
+		FeatureConfiguration configuration = getServerFeatureConfigurations(featureType, entityType).stream().findFirst().orElse(null);
+		if (configuration == null || configuration.getProperties() == null) {
+			return result;
+		}
+
+		configuration.getProperties().forEach((property, storedValue) -> {
+			if (property == null || !result.containsKey(property)) {
+				return;
+			}
+
+			Object value = toPropertyValue(property, storedValue);
+			if (value != null) {
+				result.put(property, value);
+			}
+		});
+
+		return result;
+	}
+
+	@Override
+	public void setServerFeatureProperties(FeatureType featureType, DeletableEntityType entityType, Map<FeatureTypeProperty, Object> properties) {
+
+		if (!isValidServerFeatureScope(featureType, entityType) || MapUtils.isEmpty(properties)) {
+			return;
+		}
+
+		Map<FeatureTypeProperty, Object> supportedDefaults = featureType.getSupportedPropertyDefaults();
+		if (MapUtils.isEmpty(supportedDefaults)) {
+			logger.warn("Feature type {} supports no properties, nothing is stored", featureType);
+			return;
+		}
+
+		List<FeatureConfiguration> configurations = getServerFeatureConfigurations(featureType, entityType);
+		if (configurations.isEmpty()) {
+			FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
+			configuration.setEntityType(entityType);
+			configurations = Collections.singletonList(configuration);
+		}
+
+		for (FeatureConfiguration configuration : configurations) {
+			// work on a copy: the stored map may be the immutable defaults map, and a new instance marks the JSON column as dirty
+			Map<FeatureTypeProperty, Object> merged = new HashMap<>(supportedDefaults);
+			if (configuration.getProperties() != null) {
+				merged.putAll(configuration.getProperties());
+			}
+
+			properties.forEach((property, newValue) -> {
+				if (property == null || !supportedDefaults.containsKey(property)) {
+					logger.warn("Feature type {} does not support property {}, value is skipped", featureType, property);
+					return;
+				}
+
+				Object value = toPropertyValue(property, newValue);
+				if (value == null) {
+					logger.warn(
+						"Value {} does not match the type of property {} of feature type {}, value is skipped",
+						newValue,
+						property,
+						featureType);
+					return;
+				}
+
+				merged.put(property, value);
+			});
+
+			configuration.setProperties(merged);
+			service.ensurePersisted(configuration);
+		}
+	}
+
+	/**
+	 * Checks that the feature is a server feature and that the entity type fits it: one of {@link FeatureType#getEntityTypes()}
+	 * when the feature declares entity types, otherwise {@code null}.
+	 * <p>
+	 * Example: {@code (AUTOMATIC_ARCHIVING, CASE)} and {@code (TASK_MANAGEMENT, null)} are valid;
+	 * {@code (AUTOMATIC_ARCHIVING, null)}, {@code (TASK_MANAGEMENT, CASE)} and {@code (LINE_LISTING, null)} are not.
+	 */
+	private boolean isValidServerFeatureScope(FeatureType featureType, DeletableEntityType entityType) {
+
+		if (featureType == null || !featureType.isServerFeature()) {
+			logger.warn("Feature type {} is not a server feature, its properties are not handled here", featureType);
+			return false;
+		}
+
+		List<DeletableEntityType> entityTypes = featureType.getEntityTypes();
+		boolean valid = CollectionUtils.isEmpty(entityTypes) ? entityType == null : entityType != null && entityTypes.contains(entityType);
+		if (!valid) {
+			logger.warn("Entity type {} does not fit feature type {}", entityType, featureType);
+		}
+
+		return valid;
+	}
+
+	/**
+	 * Returns the server configurations of the feature that belong to the entity type ({@code null} matches rows without
+	 * entity type).
+	 */
+	private List<FeatureConfiguration> getServerFeatureConfigurations(FeatureType featureType, DeletableEntityType entityType) {
+
+		return service.getServerFeatureConfigurationsByType(featureType)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(configuration -> Objects.equals(configuration.getEntityType(), entityType))
+			.collect(Collectors.toList());
+	}
+
+	/**
+	 * Converts a value to the return type of the property, or returns {@code null} if that is not possible.
+	 * <p>
+	 * Example: {@code (THRESHOLD_IN_DAYS, 90L)} gives {@code 90} as {@link Integer} (numbers may come back from the JSON
+	 * column as another {@link Number} type); {@code (ALLOW_FREE_EDITING, true)} gives {@code true};
+	 * {@code (ALLOW_FREE_EDITING, "yes")} and {@code (THRESHOLD_IN_DAYS, 3_000_000_000L)} give {@code null}.
+	 */
+	private static Object toPropertyValue(FeatureTypeProperty property, Object value) {
+
+		if (property == null || value == null || property.getReturnType() == null) {
+			return null;
+		}
+
+		if (property.getReturnType().isInstance(value)) {
+			return value;
+		}
+
+		if (Integer.class.equals(property.getReturnType()) && value instanceof Number) {
+			long longValue = ((Number) value).longValue();
+			if (longValue >= Integer.MIN_VALUE && longValue <= Integer.MAX_VALUE && longValue == ((Number) value).doubleValue()) {
+				return (int) longValue;
+			}
+		}
+
+		return null;
 	}
 
 	@Override

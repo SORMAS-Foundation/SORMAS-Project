@@ -2261,9 +2261,16 @@ public interface Captions {
 	String facilityType = "facilityType";
 	String facilityTypeGroup = "facilityTypeGroup";
 	String featureConfiguration = "featureConfiguration";
+	String FeatureConfiguration_currentProperties = "FeatureConfiguration.currentProperties";
+	String FeatureConfiguration_dependentFeatures = "FeatureConfiguration.dependentFeatures";
 	String FeatureConfiguration_districtName = "FeatureConfiguration.districtName";
 	String FeatureConfiguration_enabled = "FeatureConfiguration.enabled";
+	String FeatureConfiguration_enabledDefault = "FeatureConfiguration.enabledDefault";
 	String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
+	String FeatureConfiguration_entityTypes = "FeatureConfiguration.entityTypes";
+	String FeatureConfiguration_featureType = "FeatureConfiguration.featureType";
+	String FeatureConfiguration_serverEnabled = "FeatureConfiguration.serverEnabled";
+	String FeatureConfiguration_supportedPropertyDefaults = "FeatureConfiguration.supportedPropertyDefaults";
 	String firstName = "firstName";
 	String FollowUp_followUpUntil = "FollowUp.followUpUntil";
 	String FollowUp_person = "FollowUp.person";
