@@ -23,9 +23,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -34,25 +36,39 @@ import javax.ejb.Stateless;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.climate.ClimateDataSource;
+import de.symeda.sormas.api.climate.ClimateDistrictDto;
+import de.symeda.sormas.api.climate.ClimateEarlierValueDto;
+import de.symeda.sormas.api.climate.ClimateHistoryCoverageDto;
 import de.symeda.sormas.api.climate.ClimateImportRowResult;
 import de.symeda.sormas.api.climate.ClimateImportRowResult.Status;
+import de.symeda.sormas.api.climate.ClimateObservationCriteria;
 import de.symeda.sormas.api.climate.ClimateObservationEntryDto;
+import de.symeda.sormas.api.climate.ClimateObservationExportDto;
 import de.symeda.sormas.api.climate.ClimateObservationFacade;
+import de.symeda.sormas.api.climate.ClimateObservationIndexDto;
 import de.symeda.sormas.api.climate.ClimateObservationValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.climate.ClimateLocationService.PlaceNames;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.EnvironmentService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ClimateObservationFacade")
 public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
+
+	/** The most earlier values {@link #getEarlierValues} returns. */
+	private static final int MAX_EARLIER_VALUES = 20;
 
 	@EJB
 	private ClimateSettings climateSettings;
@@ -64,6 +80,8 @@ public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
 	private ClimateLinkingService climateLinkingService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private RegionService regionService;
 	@EJB
 	private EnvironmentService environmentService;
 	@EJB
@@ -184,6 +202,174 @@ public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
 		}
 		setEntryValues(row, entry, ClimateDataSource.MANUAL, userService.getCurrentUser());
 		climateObservationService.ensurePersisted(row);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public List<ClimateObservationIndexDto> getIndexList(
+		ClimateObservationCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+
+		List<ClimateObservation> rows = climateObservationService.getPage(criteria, first, max, sortProperties, false);
+		Map<Long, PlaceNames> names = getPlaceNames(rows);
+		List<ClimateObservationIndexDto> result = new ArrayList<>(rows.size());
+		rows.forEach(row -> result.add(toIndexDto(row, row.getClimateLocation(), names.get(row.getClimateLocation().getId()))));
+		return result;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public long count(ClimateObservationCriteria criteria) {
+		return climateObservationService.count(criteria);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_EXPORT)
+	public List<ClimateObservationExportDto> getExportList(ClimateObservationCriteria criteria, Integer first, Integer max) {
+
+		List<ClimateObservation> rows = climateObservationService.getPage(criteria, first, max, null, true);
+		Map<Long, PlaceNames> names = getPlaceNames(rows);
+		List<ClimateObservationExportDto> result = new ArrayList<>(rows.size());
+		for (ClimateObservation row : rows) {
+			ClimateLocation location = row.getClimateLocation();
+			PlaceNames places = names.getOrDefault(location.getId(), PlaceNames.NONE);
+			ClimateObservationExportDto export = new ClimateObservationExportDto();
+			export.setUuid(row.getUuid());
+			export.setObservationDate(row.getObservationDate());
+			export.setRegions(String.join(", ", places.getRegions()));
+			export.setDistricts(String.join(", ", places.getDistricts()));
+			export.setEnvironments(String.join(", ", places.getEnvironments()));
+			export.setLatitude(location.getLatitude());
+			export.setLongitude(location.getLongitude());
+			export.setTemperatureMin(row.getTemperatureMin());
+			export.setTemperatureMean(row.getTemperatureMean());
+			export.setTemperatureMax(row.getTemperatureMax());
+			export.setRainfall(row.getRainfall());
+			export.setRelativeHumidity(row.getRelativeHumidity());
+			export.setHumidityMeasure(row.getHumidityMeasure());
+			export.setSource(row.getSource());
+			export.setSourceDetail(row.getSourceDetail());
+			export.setReportingUser(row.getReportingUser() != null ? row.getReportingUser().getUserName() : null);
+			export.setChangeDate(row.getChangeDate());
+			result.add(export);
+		}
+		return result;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public ClimateObservationIndexDto getObservation(ClimateObservationEntryDto key) {
+
+		LocalDate day = ClimateObservationValidation.parseDate(key.getDate());
+		if (day == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.climateEntryDate));
+		}
+		ClimateLocation location = new PlaceResolver().resolve(key).location;
+		ClimateObservation row = climateObservationService.getByLocationAndPeriod(location, day, day).get(day);
+		ClimateObservationIndexDto observation =
+			toIndexDto(row, location, climateLocationService.getPlaceNames(Collections.singleton(location.getId())).get(location.getId()));
+		observation.setObservationDate(ClimateCalendar.toDate(day));
+		return observation;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public List<ClimateEarlierValueDto> getEarlierValues(String observationUuid) {
+		return climateObservationService.getEarlierValues(observationUuid, MAX_EARLIER_VALUES);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_EDIT)
+	public void deleteObservation(String observationUuid) {
+
+		checkClimateEnabled();
+		ClimateObservation row = climateObservationService.getByUuid(observationUuid);
+		if (row == null || row.getSource() == ClimateDataSource.OPENWEATHER) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.climateObservationNotDeletable));
+		}
+		climateObservationService.deletePermanent(row);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public List<ClimateDistrictDto> getDistrictsWithoutPoint() {
+
+		List<ClimateDistrictDto> districts = new ArrayList<>();
+		for (Object[] row : climateLocationService.getDistrictsWithLocation(null)) {
+			if (row[5] == null) {
+				districts.add(new ClimateDistrictDto(regionReference(row), districtReference(row)));
+			}
+		}
+		return districts;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public List<ClimateHistoryCoverageDto> getHistoryCoverage(RegionReferenceDto region) {
+
+		Long regionId = region != null ? regionService.getByReferenceDto(region).getId() : null;
+		Map<Long, List<Object[]>> daysByLocation = new HashMap<>();
+		for (Object[] row : climateObservationService.getDaysByYearAndSource(regionId)) {
+			daysByLocation.computeIfAbsent((Long) row[0], id -> new ArrayList<>()).add(row);
+		}
+		List<ClimateHistoryCoverageDto> coverage = new ArrayList<>();
+		for (Object[] row : climateLocationService.getDistrictsWithLocation(regionId)) {
+			ClimateHistoryCoverageDto district = new ClimateHistoryCoverageDto(regionReference(row), districtReference(row), row[5] != null);
+			for (Object[] days : daysByLocation.getOrDefault((Long) row[4], Collections.emptyList())) {
+				district.addDays(
+					((Number) days[1]).intValue(),
+					(ClimateDataSource) days[2],
+					((Number) days[3]).intValue(),
+					ClimateCalendar.toLocalDate((Date) days[4]));
+			}
+			coverage.add(district);
+		}
+		return coverage;
+	}
+
+	private static RegionReferenceDto regionReference(Object[] row) {
+		return new RegionReferenceDto((String) row[0], (String) row[1], null);
+	}
+
+	private static DistrictReferenceDto districtReference(Object[] row) {
+		return new DistrictReferenceDto((String) row[2], (String) row[3], null);
+	}
+
+	private Map<Long, PlaceNames> getPlaceNames(List<ClimateObservation> rows) {
+		Set<Long> locationIds = new HashSet<>();
+		rows.forEach(row -> locationIds.add(row.getClimateLocation().getId()));
+		return climateLocationService.getPlaceNames(locationIds);
+	}
+
+	/**
+	 * @param row
+	 *            the observation, or null for a location and day without a row
+	 */
+	private static ClimateObservationIndexDto toIndexDto(ClimateObservation row, ClimateLocation location, PlaceNames places) {
+
+		ClimateObservationIndexDto dto = new ClimateObservationIndexDto();
+		dto.setClimateLocationUuid(location.getUuid());
+		dto.setLatitude(location.getLatitude());
+		dto.setLongitude(location.getLongitude());
+		if (places != null) {
+			dto.setDistrictNames(new ArrayList<>(places.getDistricts()));
+			dto.setEnvironmentNames(new ArrayList<>(places.getEnvironments()));
+		}
+		if (row != null) {
+			dto.setUuid(row.getUuid());
+			dto.setObservationDate(row.getObservationDate());
+			dto.setTemperatureMin(row.getTemperatureMin());
+			dto.setTemperatureMean(row.getTemperatureMean());
+			dto.setTemperatureMax(row.getTemperatureMax());
+			dto.setRainfall(row.getRainfall());
+			dto.setRelativeHumidity(row.getRelativeHumidity());
+			dto.setHumidityMeasure(row.getHumidityMeasure());
+			dto.setSource(row.getSource());
+			dto.setSourceDetail(row.getSourceDetail());
+		}
+		return dto;
 	}
 
 	private void checkClimateEnabled() {

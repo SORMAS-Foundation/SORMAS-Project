@@ -72,6 +72,7 @@ public interface Validations {
 	String climateFetchPeriod = "climateFetchPeriod";
 	String climateJobNotChangeable = "climateJobNotChangeable";
 	String climateNoApiKey = "climateNoApiKey";
+	String climateObservationNotDeletable = "climateObservationNotDeletable";
 	String climateSettingCatchupDays = "climateSettingCatchupDays";
 	String climateSettingDecimal = "climateSettingDecimal";
 	String climateSettingOption = "climateSettingOption";

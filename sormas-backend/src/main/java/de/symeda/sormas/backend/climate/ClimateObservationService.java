@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.climate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,14 +28,31 @@ import java.util.Set;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.climate.ClimateDataSource;
+import de.symeda.sormas.api.climate.ClimateEarlierValueDto;
+import de.symeda.sormas.api.climate.ClimateObservationCriteria;
+import de.symeda.sormas.api.climate.ClimatePlaceType;
+import de.symeda.sormas.api.climate.HumidityMeasure;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -244,5 +262,201 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 		}
 		doFlush();
 		return result;
+	}
+
+	/**
+	 * @return a page of the observations matching the criteria, with their locations (and reporting users, for exports)
+	 *         fetched. Sorted by the given properties, then newest day first and by location.
+	 */
+	public List<ClimateObservation> getPage(
+		ClimateObservationCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties,
+		boolean withReportingUser) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ClimateObservation> cq = cb.createQuery(ClimateObservation.class);
+		Root<ClimateObservation> root = cq.from(ClimateObservation.class);
+		root.fetch(ClimateObservation.CLIMATE_LOCATION);
+		if (withReportingUser) {
+			root.fetch(ClimateObservation.REPORTING_USER, JoinType.LEFT);
+		}
+		Predicate filter = buildCriteriaFilter(criteria, cb, cq, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<Order> order = new ArrayList<>();
+		if (sortProperties != null) {
+			for (SortProperty sortProperty : sortProperties) {
+				if (SORTABLE.contains(sortProperty.propertyName)) {
+					Expression<?> property = root.get(sortProperty.propertyName);
+					order.add(sortProperty.ascending ? cb.asc(property) : cb.desc(property));
+				}
+			}
+		}
+		order.add(cb.desc(root.get(ClimateObservation.OBSERVATION_DATE)));
+		order.add(cb.asc(root.get(ClimateObservation.CLIMATE_LOCATION).get(ClimateLocation.ID)));
+		cq.orderBy(order);
+
+		return QueryHelper.getResultList(em, cq, first, max);
+	}
+
+	public long count(ClimateObservationCriteria criteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ClimateObservation> root = cq.from(ClimateObservation.class);
+		cq.select(cb.count(root));
+		Predicate filter = buildCriteriaFilter(criteria, cb, cq, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	private static final Set<String> SORTABLE = new HashSet<>(
+		Arrays.asList(
+			ClimateObservation.OBSERVATION_DATE,
+			ClimateObservation.TEMPERATURE_MIN,
+			ClimateObservation.TEMPERATURE_MEAN,
+			ClimateObservation.TEMPERATURE_MAX,
+			ClimateObservation.RAINFALL,
+			ClimateObservation.RELATIVE_HUMIDITY,
+			ClimateObservation.HUMIDITY_MEASURE,
+			ClimateObservation.SOURCE,
+			ClimateObservation.SOURCE_DETAIL));
+
+	/**
+	 * Region and district select the locations of their districts (archived ones too), of their environments (not
+	 * deleted), or both; an environment selects its own location. All places without a region or district selects every
+	 * location, including those nothing links to any more.
+	 */
+	private Predicate buildCriteriaFilter(ClimateObservationCriteria criteria, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<ClimateObservation> root) {
+
+		Predicate filter = null;
+		Path<Long> locationId = root.get(ClimateObservation.CLIMATE_LOCATION).get(ClimateLocation.ID);
+
+		if (criteria.getEnvironment() != null) {
+			Subquery<Long> environmentLocation = cq.subquery(Long.class);
+			Root<Environment> environment = environmentLocation.from(Environment.class);
+			environmentLocation.select(environment.get(Environment.CLIMATE_LOCATION).get(ClimateLocation.ID))
+				.where(cb.equal(environment.get(Environment.UUID), criteria.getEnvironment().getUuid()));
+			filter = locationId.in(environmentLocation);
+		} else {
+			ClimatePlaceType placeType = criteria.getPlaceType() != null ? criteria.getPlaceType() : ClimatePlaceType.ALL;
+			boolean scoped = criteria.getRegion() != null || criteria.getDistrict() != null;
+			if (placeType == ClimatePlaceType.DISTRICTS) {
+				filter = locationId.in(districtLocations(criteria, cb, cq));
+			} else if (placeType == ClimatePlaceType.ENVIRONMENTS) {
+				filter = locationId.in(environmentLocations(criteria, cb, cq));
+			} else if (scoped) {
+				filter = cb.or(locationId.in(districtLocations(criteria, cb, cq)), locationId.in(environmentLocations(criteria, cb, cq)));
+			}
+		}
+
+		if (criteria.getDateFrom() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(root.get(ClimateObservation.OBSERVATION_DATE), startOfDay(criteria.getDateFrom())));
+		}
+		if (criteria.getDateTo() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.lessThanOrEqualTo(root.get(ClimateObservation.OBSERVATION_DATE), startOfDay(criteria.getDateTo())));
+		}
+		if (criteria.getSource() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(ClimateObservation.SOURCE), criteria.getSource()));
+		}
+		return filter;
+	}
+
+	private static Subquery<Long> districtLocations(ClimateObservationCriteria criteria, CriteriaBuilder cb, CriteriaQuery<?> cq) {
+
+		Subquery<Long> subquery = cq.subquery(Long.class);
+		Root<District> district = subquery.from(District.class);
+		subquery.select(district.get(District.CLIMATE_LOCATION).get(ClimateLocation.ID));
+		if (criteria.getDistrict() != null) {
+			subquery.where(cb.equal(district.get(District.UUID), criteria.getDistrict().getUuid()));
+		} else if (criteria.getRegion() != null) {
+			subquery.where(cb.equal(district.get(District.REGION).get(Region.UUID), criteria.getRegion().getUuid()));
+		}
+		return subquery;
+	}
+
+	private static Subquery<Long> environmentLocations(ClimateObservationCriteria criteria, CriteriaBuilder cb, CriteriaQuery<?> cq) {
+
+		Subquery<Long> subquery = cq.subquery(Long.class);
+		Root<Environment> environment = subquery.from(Environment.class);
+		subquery.select(environment.get(Environment.CLIMATE_LOCATION).get(ClimateLocation.ID));
+		Predicate filter = cb.isFalse(environment.get(Environment.DELETED));
+		Join<Environment, Location> location = environment.join(Environment.LOCATION);
+		if (criteria.getDistrict() != null) {
+			filter = cb.and(filter, cb.equal(location.get(Location.DISTRICT).get(District.UUID), criteria.getDistrict().getUuid()));
+		} else if (criteria.getRegion() != null) {
+			filter = cb.and(filter, cb.equal(location.get(Location.REGION).get(Region.UUID), criteria.getRegion().getUuid()));
+		}
+		subquery.where(filter);
+		return subquery;
+	}
+
+	private static Date startOfDay(Date date) {
+		return ClimateCalendar.toDate(ClimateCalendar.toLocalDate(date));
+	}
+
+	/**
+	 * @return the values the observation held before later saves replaced them, newest first, from the change history
+	 *         that the database's versioning trigger keeps (PostgreSQL only)
+	 */
+	public List<ClimateEarlierValueDto> getEarlierValues(String uuid, int max) {
+
+		@SuppressWarnings("unchecked")
+		List<Object[]> rows = em
+			.createNativeQuery(
+				"SELECT changedate, temperaturemin, temperaturemean, temperaturemax, rainfall, relativehumidity, humiditymeasure, source, sourcedetail"
+					+ " FROM " + ClimateObservation.TABLE_NAME + "_history WHERE uuid = :uuid ORDER BY changedate DESC")
+			.setParameter("uuid", uuid)
+			.setMaxResults(max)
+			.getResultList();
+		List<ClimateEarlierValueDto> values = new ArrayList<>(rows.size());
+		for (Object[] row : rows) {
+			ClimateEarlierValueDto value = new ClimateEarlierValueDto();
+			value.setChangeDate((Date) row[0]);
+			value.setTemperatureMin(toDouble(row[1]));
+			value.setTemperatureMean(toDouble(row[2]));
+			value.setTemperatureMax(toDouble(row[3]));
+			value.setRainfall(toDouble(row[4]));
+			value.setRelativeHumidity(toDouble(row[5]));
+			value.setHumidityMeasure(row[6] != null ? HumidityMeasure.valueOf((String) row[6]) : null);
+			value.setSource(row[7] != null ? ClimateDataSource.valueOf((String) row[7]) : null);
+			value.setSourceDetail((String) row[8]);
+			values.add(value);
+		}
+		return values;
+	}
+
+	private static Double toDouble(Object value) {
+		return value != null ? ((Number) value).doubleValue() : null;
+	}
+
+	/**
+	 * @return per location of a district that is not archived (in the region, or all), year and source: the location id,
+	 *         the year, the source, the days held and the earliest of them
+	 */
+	public List<Object[]> getDaysByYearAndSource(Long regionId) {
+
+		String region = regionId != null ? " AND d." + District.REGION + ".id = :region" : "";
+		TypedQuery<Object[]> query = em.createQuery(
+			"SELECT o." + ClimateObservation.CLIMATE_LOCATION + ".id, YEAR(o." + ClimateObservation.OBSERVATION_DATE + "), o."
+				+ ClimateObservation.SOURCE + ", COUNT(o), MIN(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME
+				+ " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + ".id IN (SELECT d." + District.CLIMATE_LOCATION + ".id FROM District d WHERE d."
+				+ District.ARCHIVED + " = false" + region + ") GROUP BY o." + ClimateObservation.CLIMATE_LOCATION + ".id, YEAR(o."
+				+ ClimateObservation.OBSERVATION_DATE + "), o." + ClimateObservation.SOURCE,
+			Object[].class);
+		if (regionId != null) {
+			query.setParameter("region", regionId);
+		}
+		return query.getResultList();
 	}
 }

@@ -15,9 +15,12 @@
 
 package de.symeda.sormas.api.climate;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +58,14 @@ public final class ClimateObservationValidation {
 		} catch (DateTimeParseException e) {
 			return null;
 		}
+	}
+
+	/**
+	 * @return the calendar day of {@code date} in the server's time zone, written {@code yyyy-mm-dd}
+	 */
+	public static String formatDate(Date date) {
+		// not date.toInstant(): a java.sql.Date from the database does not support it
+		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
 	}
 
 	/**

@@ -20,6 +20,9 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
+
 /**
  * Daily climate values from met agencies and data managers. The source order is applied when a row is written: a manual
  * value always wins; an import replaces OpenWeather values, and earlier imports only when asked to; a manual value is never
@@ -50,4 +53,51 @@ public interface ClimateObservationFacade {
 	 *             when the entry is invalid or its place is unknown
 	 */
 	void saveManualEntry(ClimateObservationEntryDto entry);
+
+	/**
+	 * @return a page of observations matching the criteria, by default newest day first
+	 */
+	List<ClimateObservationIndexDto> getIndexList(ClimateObservationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	long count(ClimateObservationCriteria criteria);
+
+	/**
+	 * @return a page of the export rows of the observations matching the criteria, newest day first
+	 */
+	List<ClimateObservationExportDto> getExportList(ClimateObservationCriteria criteria, Integer first, Integer max);
+
+	/**
+	 * @param key
+	 *            a place (district, environment or climate location) and a date, as for {@link #saveManualEntry}
+	 * @return the place's location and day with its current values, if any, and the places that share the location
+	 * @throws de.symeda.sormas.api.utils.ValidationRuntimeException
+	 *             when the place is unknown or the date is not a date
+	 */
+	ClimateObservationIndexDto getObservation(ClimateObservationEntryDto key);
+
+	/**
+	 * @return the values the observation held before later saves replaced them, newest first (at most 20)
+	 */
+	List<ClimateEarlierValueDto> getEarlierValues(String observationUuid);
+
+	/**
+	 * Deletes a manual or imported value; the row stays in the change history. OpenWeather rows cannot be deleted: the
+	 * nightly fetch would bring recent days back, and older days are filled again by fetch now.
+	 *
+	 * @throws de.symeda.sormas.api.utils.ValidationRuntimeException
+	 *             when the row is unknown or came from OpenWeather
+	 */
+	void deleteObservation(String observationUuid);
+
+	/**
+	 * @return the districts that are not archived and whose climate location has no coordinates, so no API data is fetched
+	 *         for them, sorted by region and district name
+	 */
+	List<ClimateDistrictDto> getDistrictsWithoutPoint();
+
+	/**
+	 * @return per district that is not archived (of the region, or all), the history its climate location holds, sorted by
+	 *         region and district name
+	 */
+	List<ClimateHistoryCoverageDto> getHistoryCoverage(RegionReferenceDto region);
 }

@@ -37,6 +37,7 @@ import de.symeda.sormas.api.climate.ClimateGrid;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 
 @Stateless
@@ -171,6 +172,85 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 			.getResultList()
 			.forEach(row -> names.computeIfAbsent((Long) row[0], id -> new ArrayList<>()).add((String) row[1]));
 		return names;
+	}
+
+	/**
+	 * @return for each of the locations that something links to, the districts (archived ones too) with their regions, and
+	 *         the environments (not deleted), each sorted by name. Used to label rows on screen and in exports.
+	 */
+	public Map<Long, PlaceNames> getPlaceNames(Collection<Long> locationIds) {
+
+		Map<Long, PlaceNames> names = new HashMap<>();
+		if (locationIds.isEmpty()) {
+			return names;
+		}
+		em.createQuery(
+			"SELECT d." + District.CLIMATE_LOCATION + ".id, d." + District.NAME + ", r." + Region.NAME + " FROM District d JOIN d." + District.REGION
+				+ " r WHERE d." + District.CLIMATE_LOCATION + ".id IN :ids ORDER BY d." + District.NAME,
+			Object[].class)
+			.setParameter("ids", locationIds)
+			.getResultList()
+			.forEach(row -> names.computeIfAbsent((Long) row[0], id -> new PlaceNames()).addDistrict((String) row[1], (String) row[2]));
+		em.createQuery(
+			"SELECT e." + Environment.CLIMATE_LOCATION + ".id, e." + Environment.ENVIRONMENT_NAME + " FROM environments e WHERE e."
+				+ Environment.CLIMATE_LOCATION + ".id IN :ids AND e." + Environment.DELETED + " = false ORDER BY e." + Environment.ENVIRONMENT_NAME,
+			Object[].class)
+			.setParameter("ids", locationIds)
+			.getResultList()
+			.forEach(row -> names.computeIfAbsent((Long) row[0], id -> new PlaceNames()).environments.add((String) row[1]));
+		return names;
+	}
+
+	/**
+	 * @return the districts that are not archived (of the region, or all), sorted by region and district name, each as
+	 *         region uuid, region name, district uuid, district name, location id (null when not linked yet) and the
+	 *         location's latitude (null when it has no coordinates, so no API data is fetched for the district)
+	 */
+	public List<Object[]> getDistrictsWithLocation(Long regionId) {
+
+		TypedQuery<Object[]> query = em.createQuery(
+			"SELECT r." + Region.UUID + ", r." + Region.NAME + ", d." + District.UUID + ", d." + District.NAME + ", l.id, l." + ClimateLocation.LATITUDE
+				+ " FROM District d JOIN d." + District.REGION + " r LEFT JOIN d." + District.CLIMATE_LOCATION + " l WHERE d." + District.ARCHIVED
+				+ " = false" + (regionId != null ? " AND r.id = :region" : "") + " ORDER BY r." + Region.NAME + ", d." + District.NAME,
+			Object[].class);
+		if (regionId != null) {
+			query.setParameter("region", regionId);
+		}
+		return query.getResultList();
+	}
+
+	/**
+	 * The names of the places that use one climate location.
+	 */
+	public static class PlaceNames {
+
+		static final PlaceNames NONE = new PlaceNames();
+
+		private final List<String> districts = new ArrayList<>();
+		private final List<String> regions = new ArrayList<>();
+		private final List<String> environments = new ArrayList<>();
+
+		private void addDistrict(String district, String region) {
+			districts.add(district);
+			if (!regions.contains(region)) {
+				regions.add(region);
+			}
+		}
+
+		public List<String> getDistricts() {
+			return districts;
+		}
+
+		/**
+		 * @return the regions of the districts, each once
+		 */
+		public List<String> getRegions() {
+			return regions;
+		}
+
+		public List<String> getEnvironments() {
+			return environments;
+		}
 	}
 
 	private static TypedQuery<Long> withScope(TypedQuery<Long> query, Long regionId, Long districtId) {
