@@ -17,25 +17,37 @@ package de.symeda.sormas.backend.climate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.climate.ClimateCallEstimateDto;
 import de.symeda.sormas.api.climate.ClimateConfiguration;
 import de.symeda.sormas.api.climate.ClimateCosts;
+import de.symeda.sormas.api.climate.ClimateDataSource;
+import de.symeda.sormas.api.climate.ClimateJobCriteria;
 import de.symeda.sormas.api.climate.ClimateJobFacade;
+import de.symeda.sormas.api.climate.ClimateJobIndexDto;
 import de.symeda.sormas.api.climate.ClimateJobStatus;
 import de.symeda.sormas.api.climate.ClimateJobType;
+import de.symeda.sormas.api.climate.ClimateRelinkDayDto;
+import de.symeda.sormas.api.climate.ClimateSummaryDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.climate.ClimateLocationService.PlaceNames;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -63,17 +75,24 @@ public class ClimateJobFacadeEjb implements ClimateJobFacade {
 	private UserService userService;
 
 	@Override
-	public long calculateBackfillCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years) {
+	public ClimateCallEstimateDto calculateBackfillCalls(
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		boolean includeEnvironments,
+		int years) {
 
 		LocalDate from = backfillStart(years);
 		LocalDate to = LocalDate.now().minusDays(1);
+		long periodDays = to.toEpochDay() - from.toEpochDay() + 1;
+		List<Long> locations = getScopeLocations(region, district, includeEnvironments);
+		long days = 0;
 		long calls = 0;
-		for (Long locationId : getScopeLocations(region, district, includeEnvironments)) {
-			calls += ClimateCalendar
-				.windowStarts(from, to, climateObservationService.getHeldDays(locationId, from, to), ClimateCosts.OPENWEATHER_DAYS_PER_CALL)
-				.size();
+		for (Long locationId : locations) {
+			Set<LocalDate> held = climateObservationService.getHeldDays(locationId, from, to);
+			days += periodDays - held.size();
+			calls += ClimateCalendar.windowStarts(from, to, held, ClimateCosts.OPENWEATHER_DAYS_PER_CALL).size();
 		}
-		return calls;
+		return new ClimateCallEstimateDto(locations.size(), days, calls);
 	}
 
 	@Override
@@ -89,13 +108,19 @@ public class ClimateJobFacadeEjb implements ClimateJobFacade {
 	}
 
 	@Override
-	public long calculateFetchCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, Date from, Date to) {
+	public ClimateCallEstimateDto calculateFetchCalls(
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		boolean includeEnvironments,
+		Date from,
+		Date to) {
 
 		LocalDate first = ClimateCalendar.toLocalDate(from);
 		LocalDate last = ClimateCalendar.toLocalDate(to);
 		checkFetchPeriod(first, last);
 		long days = last.toEpochDay() - first.toEpochDay() + 1;
-		return getScopeLocations(region, district, includeEnvironments).size() * ClimateCosts.callsPerLocation(days);
+		int locations = getScopeLocations(region, district, includeEnvironments).size();
+		return new ClimateCallEstimateDto(locations, locations * days, locations * ClimateCosts.callsPerLocation(days));
 	}
 
 	@Override
@@ -141,6 +166,130 @@ public class ClimateJobFacadeEjb implements ClimateJobFacade {
 		job.setPausedAt(null);
 		job.setFinishedAt(null);
 		climateJobService.ensurePersisted(job);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public List<ClimateJobIndexDto> getIndexList(ClimateJobCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		List<ClimateJob> jobs = climateJobService.getPage(criteria, first, max);
+		Set<Long> locationIds = new HashSet<>();
+		jobs.stream().filter(job -> job.getClimateLocation() != null).forEach(job -> locationIds.add(job.getClimateLocation().getId()));
+		Map<Long, PlaceNames> names = climateLocationService.getPlaceNames(locationIds);
+		List<ClimateJobIndexDto> result = new ArrayList<>(jobs.size());
+		jobs.forEach(job -> result.add(toIndexDto(job, names)));
+		return result;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public long count(ClimateJobCriteria criteria) {
+		return climateJobService.count(criteria);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public ClimateSummaryDto getSummary() {
+
+		ClimateSummaryDto summary = new ClimateSummaryDto();
+		summary.setDailySource(climateSettings.getDailySource());
+		summary.setHistorySource(climateSettings.getHistorySource());
+		summary.setApiKeySet(climateSettings.getApiKey() != null);
+		summary.setNightlyFetchActive(climateSettings.isNightlyFetchActive());
+		summary.setHistoryYears(climateSettings.getHistoryYears());
+		summary.setMinHistoryYears(climateSettings.getMinHistoryYears());
+
+		Set<Long> districtLocations = new HashSet<>(climateLocationService.getDistrictLocationIds(null, null));
+		summary.setDistrictLocations(districtLocations.size());
+		summary.setEnvironmentOnlyLocations(
+			(int) climateLocationService.getEnvironmentLocationIds(null, null).stream().filter(id -> !districtLocations.contains(id)).count());
+		summary.setDistrictsWithoutPoint((int) climateLocationService.getDistrictsWithLocation(null).stream().filter(row -> row[5] == null).count());
+
+		ClimateJob lastNightlyFetch = climateJobService.getLatestDailyFetch();
+		if (lastNightlyFetch != null) {
+			summary.setLastNightlyFetch(toIndexDto(lastNightlyFetch, Collections.emptyMap()));
+		}
+		return summary;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public List<ClimateRelinkDayDto> getRelinkDays(String jobUuid) {
+
+		ClimateJob job = climateJobService.getByUuid(jobUuid);
+		if (job == null
+			|| job.getJobType() != ClimateJobType.RELINK
+			|| job.getFromClimateLocation() == null
+			|| job.getClimateLocation() == null
+			|| job.getFromDate() == null
+			|| job.getToDate() == null) {
+			return Collections.emptyList();
+		}
+
+		ClimateLocation from = job.getFromClimateLocation();
+		ClimateLocation to = job.getClimateLocation();
+		LocalDate first = ClimateCalendar.toLocalDate(job.getFromDate());
+		LocalDate last = ClimateCalendar.toLocalDate(job.getToDate());
+		Map<LocalDate, ClimateObservation> districtRows = climateObservationService.getByLocationAndPeriod(from, first, last);
+		Map<LocalDate, ClimateObservation> keptRows = climateObservationService.getByLocationAndPeriod(to, first, last);
+		Map<Long, PlaceNames> names = climateLocationService.getPlaceNames(Arrays.asList(from.getId(), to.getId()));
+
+		List<ClimateRelinkDayDto> days = new ArrayList<>();
+		districtRows.keySet().stream().sorted().forEach(day -> {
+			ClimateObservation districtRow = districtRows.get(day);
+			ClimateObservation keptRow = keptRows.get(day);
+			// an external row that the new location's row of equal or higher rank kept out
+			if (keptRow == null || districtRow.getSource() == ClimateDataSource.OPENWEATHER || districtRow.getSource().outranks(keptRow.getSource())) {
+				return;
+			}
+			ClimateRelinkDayDto relinkDay = new ClimateRelinkDayDto(
+				districtRow.getObservationDate(),
+				ClimateObservationFacadeEjb.toIndexDto(districtRow, from, names.get(from.getId())),
+				ClimateObservationFacadeEjb.toIndexDto(keptRow, to, names.get(to.getId())));
+			// a day the relink copied holds the same values, saved no later than the move; a day corrected since was saved later
+			if (!relinkDay.isSameValues() || keptRow.getChangeDate().after(job.getStartedAt())) {
+				days.add(relinkDay);
+			}
+		});
+		return days;
+	}
+
+	private static ClimateJobIndexDto toIndexDto(ClimateJob job, Map<Long, PlaceNames> names) {
+
+		ClimateJobIndexDto dto = new ClimateJobIndexDto();
+		dto.setUuid(job.getUuid());
+		dto.setJobType(job.getJobType());
+		dto.setStatus(job.getStatus());
+		dto.setRegionName(job.getRegion() != null ? job.getRegion().getName() : null);
+		dto.setDistrictName(job.getDistrict() != null ? job.getDistrict().getName() : null);
+		if (job.getClimateLocation() != null) {
+			ClimateLocation location = job.getClimateLocation();
+			dto.setLatitude(location.getLatitude());
+			dto.setLongitude(location.getLongitude());
+			PlaceNames places = names.get(location.getId());
+			if (places != null) {
+				List<String> placeNames = new ArrayList<>(places.getDistricts());
+				placeNames.addAll(places.getEnvironments());
+				dto.setPlaceNames(placeNames);
+			}
+		}
+		dto.setIncludeEnvironments(job.isIncludeEnvironments());
+		dto.setFromDate(job.getFromDate());
+		dto.setToDate(job.getToDate());
+		dto.setLocationsTotal(job.getLocationsTotal());
+		dto.setLocationsDone(job.getLocationsDone());
+		dto.setLocationsFailed(job.getLocationsFailed());
+		dto.setEstimatedCalls(job.getEstimatedCalls());
+		dto.setCallsMade(job.getCallsMade());
+		dto.setRowsAdded(job.getRowsAdded());
+		dto.setRowsUpdated(job.getRowsUpdated());
+		dto.setRowsSkipped(job.getRowsSkipped());
+		dto.setLastError(job.getLastError());
+		dto.setStartedBy(job.getStartedBy() != null ? job.getStartedBy().getUserName() : null);
+		dto.setCreationDate(job.getCreationDate());
+		dto.setStartedAt(job.getStartedAt());
+		dto.setFinishedAt(job.getFinishedAt());
+		return dto;
 	}
 
 	private void checkAvailable(boolean sourceIsOpenWeather, String offMessage) {

@@ -26,13 +26,21 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.climate.ClimateDataSource;
+import de.symeda.sormas.api.climate.ClimateJobCriteria;
 import de.symeda.sormas.api.climate.ClimateJobStatus;
 import de.symeda.sormas.api.climate.ClimateJobType;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 /**
  * Climate job rows. The methods that record a job's progress run in their own transaction, so that what a batch has done
@@ -205,6 +213,66 @@ public class ClimateJobService extends BaseAdoService<ClimateJob> {
 				.thenComparing(ClimateJob::getCreationDate)
 				.thenComparing(ClimateJob::getId));
 		return jobs;
+	}
+
+	/**
+	 * @return a page of the jobs matching the criteria, newest first, with their scope and starting user fetched
+	 */
+	public List<ClimateJob> getPage(ClimateJobCriteria criteria, Integer first, Integer max) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ClimateJob> cq = cb.createQuery(ClimateJob.class);
+		Root<ClimateJob> root = cq.from(ClimateJob.class);
+		root.fetch(ClimateJob.REGION, JoinType.LEFT);
+		root.fetch(ClimateJob.DISTRICT, JoinType.LEFT);
+		root.fetch(ClimateJob.CLIMATE_LOCATION, JoinType.LEFT);
+		root.fetch(ClimateJob.STARTED_BY, JoinType.LEFT);
+		Predicate filter = buildCriteriaFilter(criteria, cb, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(root.get(ClimateJob.CREATION_DATE)), cb.desc(root.get(ClimateJob.ID)));
+		return QueryHelper.getResultList(em, cq, first, max);
+	}
+
+	public long count(ClimateJobCriteria criteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ClimateJob> root = cq.from(ClimateJob.class);
+		cq.select(cb.count(root));
+		Predicate filter = buildCriteriaFilter(criteria, cb, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	private static Predicate buildCriteriaFilter(ClimateJobCriteria criteria, CriteriaBuilder cb, Root<ClimateJob> root) {
+
+		Predicate filter = null;
+		if (criteria.getJobType() != null) {
+			filter = cb.equal(root.get(ClimateJob.JOB_TYPE), criteria.getJobType());
+		}
+		if (criteria.getStatus() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(ClimateJob.STATUS), criteria.getStatus()));
+		}
+		if (Boolean.TRUE.equals(criteria.getOnlyRelinksWithSkippedDays())) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(root.get(ClimateJob.JOB_TYPE), ClimateJobType.RELINK),
+				cb.greaterThan(root.get(ClimateJob.ROWS_SKIPPED), 0));
+		}
+		if (criteria.getCreatedFrom() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.greaterThanOrEqualTo(root.get(ClimateJob.CREATION_DATE), criteria.getCreatedFrom()),
+					root.get(ClimateJob.STATUS).in(ClimateJobStatus.QUEUED, ClimateJobStatus.RUNNING, ClimateJobStatus.PAUSED_AT_LIMIT)));
+		}
+		return filter;
 	}
 
 	/**

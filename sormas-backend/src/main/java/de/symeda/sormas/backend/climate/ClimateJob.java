@@ -56,6 +56,8 @@ public class ClimateJob extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String CLIMATE_LOCATION = "climateLocation";
 	public static final String FROM_CLIMATE_LOCATION = "fromClimateLocation";
+	public static final String ROWS_SKIPPED = "rowsSkipped";
+	public static final String STARTED_BY = "startedBy";
 	public static final String FINISHED_AT = "finishedAt";
 
 	private ClimateJobType jobType;

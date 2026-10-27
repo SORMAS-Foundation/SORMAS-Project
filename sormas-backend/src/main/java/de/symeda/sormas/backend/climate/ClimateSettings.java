@@ -40,6 +40,8 @@ public class ClimateSettings {
 
 	/** Default and largest value of CLIMATE_FETCH_CATCHUP_DAYS: one call returns 10 days, yesterday included. */
 	public static final int MAX_CATCHUP_DAYS = 9;
+	/** Default of CLIMATE_MIN_HISTORY_YEARS. */
+	public static final int DEFAULT_MIN_HISTORY_YEARS = 3;
 
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
@@ -89,6 +91,19 @@ public class ClimateSettings {
 			return years >= 1 && years <= ClimateConfiguration.MAX_HISTORY_YEARS ? years : ClimateConfiguration.DEFAULT_HISTORY_YEARS;
 		} catch (NumberFormatException e) {
 			return ClimateConfiguration.DEFAULT_HISTORY_YEARS;
+		}
+	}
+
+	/**
+	 * @return the years of history a location needs before normal ranges appear, at most {@link #getHistoryYears()}
+	 */
+	public int getMinHistoryYears() {
+		int historyYears = getHistoryYears();
+		try {
+			int years = Integer.parseInt(StringUtils.trimToEmpty(systemConfigurationValueFacade.getValue(ClimateConfiguration.MIN_HISTORY_YEARS)));
+			return years >= 1 && years <= historyYears ? years : Math.min(DEFAULT_MIN_HISTORY_YEARS, historyYears);
+		} catch (NumberFormatException e) {
+			return Math.min(DEFAULT_MIN_HISTORY_YEARS, historyYears);
 		}
 	}
 

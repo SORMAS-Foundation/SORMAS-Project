@@ -539,7 +539,12 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testClimateJobFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(ClimateJobFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
+		// managing sources at class level; the read methods the screen needs only CLIMATE_VIEW
+		assertFacadeEjbAnnotated(
+			ClimateJobFacadeEjb.class,
+			AuthMode.CLASS_ONLY,
+			Arrays.asList("getIndexList", "count", "getSummary", "getRelinkDays"),
+			classes);
 	}
 
 	@ArchTest

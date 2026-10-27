@@ -16,11 +16,13 @@
 package de.symeda.sormas.api.climate;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 /**
  * Starts and controls climate jobs that call OpenWeather. The scope is all districts (no region and no district), one
@@ -32,10 +34,10 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 public interface ClimateJobFacade {
 
 	/**
-	 * @return the calls a backfill of {@code years} years would make: from 1 January of the year that many years back to
-	 *         yesterday, skipping the days already held from any source
+	 * @return the locations, days and calls a backfill of {@code years} years would make: from 1 January of the year that
+	 *         many years back to yesterday, skipping the days already held from any source
 	 */
-	long calculateBackfillCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years);
+	ClimateCallEstimateDto calculateBackfillCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years);
 
 	/**
 	 * Queues a backfill. Needs OpenWeather as the climate history source and an API key.
@@ -47,9 +49,9 @@ public interface ClimateJobFacade {
 	String startBackfill(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years, long confirmedCalls);
 
 	/**
-	 * @return the calls fetching the period again would make (one per 10 days per location)
+	 * @return the locations, days and calls fetching the period again would make (one call per 10 days per location)
 	 */
-	long calculateFetchCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, Date from, Date to);
+	ClimateCallEstimateDto calculateFetchCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, Date from, Date to);
 
 	/**
 	 * Queues a fetch of the period ("fetch now"), which runs at once and updates OpenWeather rows whose values changed.
@@ -69,4 +71,22 @@ public interface ClimateJobFacade {
 	 * days already held.
 	 */
 	void startAgain(String jobUuid);
+
+	/**
+	 * @return a page of the jobs matching the criteria, newest first; open jobs are always listed
+	 */
+	List<ClimateJobIndexDto> getIndexList(ClimateJobCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	long count(ClimateJobCriteria criteria);
+
+	/**
+	 * @return the settings and call figures shown at the top of the Climate data screen
+	 */
+	ClimateSummaryDto getSummary();
+
+	/**
+	 * @return for a district relink, the days it did not copy, with the district's value beside the value the new location
+	 *         kept, worked out from the rows as they are now (so a corrected day shows the same values on both sides)
+	 */
+	List<ClimateRelinkDayDto> getRelinkDays(String jobUuid);
 }

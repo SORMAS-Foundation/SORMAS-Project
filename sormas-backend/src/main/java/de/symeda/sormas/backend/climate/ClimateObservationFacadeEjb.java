@@ -347,7 +347,7 @@ public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
 	 * @param row
 	 *            the observation, or null for a location and day without a row
 	 */
-	private static ClimateObservationIndexDto toIndexDto(ClimateObservation row, ClimateLocation location, PlaceNames places) {
+	static ClimateObservationIndexDto toIndexDto(ClimateObservation row, ClimateLocation location, PlaceNames places) {
 
 		ClimateObservationIndexDto dto = new ClimateObservationIndexDto();
 		dto.setClimateLocationUuid(location.getUuid());

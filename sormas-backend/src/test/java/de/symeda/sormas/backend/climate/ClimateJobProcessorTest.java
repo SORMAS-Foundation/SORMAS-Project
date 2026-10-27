@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.climate.ClimateCallEstimateDto;
 import de.symeda.sormas.api.climate.ClimateConfiguration;
 import de.symeda.sormas.api.climate.ClimateDataSource;
 import de.symeda.sormas.api.climate.ClimateJobStatus;
@@ -234,7 +236,13 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		}
 
 		ClimateJobFacadeEjbLocal facade = getBean(ClimateJobFacadeEjbLocal.class);
-		long estimate = facade.calculateBackfillCalls(null, rdcf.district, false, 1);
+		ClimateCallEstimateDto backfillEstimate = facade.calculateBackfillCalls(null, rdcf.district, false, 1);
+		long estimate = backfillEstimate.getCalls();
+		assertEquals(1, backfillEstimate.getLocations());
+		assertEquals(
+			ChronoUnit.DAYS.between(firstDay, LocalDate.now()) - 10,
+			backfillEstimate.getDays(),
+			"the days from 1 January last year to yesterday, less the 10 imported");
 		String uuid = facade.startBackfill(null, rdcf.district, false, 1, estimate);
 
 		getBean(ClimateJobProcessor.class).processJobs();
@@ -353,7 +361,9 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		LocalDate from = LocalDate.now().minusDays(30);
 		LocalDate to = from.plusDays(2);
 		ClimateJobFacadeEjbLocal facade = getBean(ClimateJobFacadeEjbLocal.class);
-		assertEquals(1, facade.calculateFetchCalls(null, null, false, ClimateCalendar.toDate(from), ClimateCalendar.toDate(to)));
+		ClimateCallEstimateDto fetchEstimate = facade.calculateFetchCalls(null, null, false, ClimateCalendar.toDate(from), ClimateCalendar.toDate(to));
+		assertEquals(1, fetchEstimate.getCalls());
+		assertEquals(3, fetchEstimate.getDays());
 
 		facade.fetchNow(null, null, false, ClimateCalendar.toDate(from), ClimateCalendar.toDate(to));
 		getBean(ClimateJobProcessor.class).processJobs();
