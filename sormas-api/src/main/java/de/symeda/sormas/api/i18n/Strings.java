@@ -54,8 +54,11 @@ public interface Strings {
 	String classificationSymptomsAnyOf = "classificationSymptomsAnyOf";
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
+	String climateBackfillNoApiKey = "climateBackfillNoApiKey";
+	String climateCallEstimate = "climateCallEstimate";
 	String climateDistrictsWithoutPoint = "climateDistrictsWithoutPoint";
 	String climateDistrictWithoutPoint = "climateDistrictWithoutPoint";
+	String climateFetchNowNoApiKey = "climateFetchNowNoApiKey";
 	String climateGridSizeOption = "climateGridSizeOption";
 	String climatePlaceEnvironment = "climatePlaceEnvironment";
 	String climatePlaceNotLinked = "climatePlaceNotLinked";
@@ -543,7 +546,9 @@ public interface Strings {
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
 	String headingClimateDistrictsWithoutPoint = "headingClimateDistrictsWithoutPoint";
+	String headingClimateFetchNow = "headingClimateFetchNow";
 	String headingClimateImport = "headingClimateImport";
+	String headingClimateNewBackfill = "headingClimateNewBackfill";
 	String headingClimateNewObservation = "headingClimateNewObservation";
 	String headingClimateObservation = "headingClimateObservation";
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
@@ -1064,9 +1069,12 @@ public interface Strings {
 	String infoCaseManagementExport = "infoCaseManagementExport";
 	String infoCaseMap = "infoCaseMap";
 	String infoCheckProbableInfectionEnvironment = "infoCheckProbableInfectionEnvironment";
+	String infoClimateBackfillCalls = "infoClimateBackfillCalls";
 	String infoClimateDistrictsWithoutPoint = "infoClimateDistrictsWithoutPoint";
+	String infoClimateFetchNowCalls = "infoClimateFetchNowCalls";
 	String infoClimateHistorySourceCostWarning = "infoClimateHistorySourceCostWarning";
 	String infoClimateImport = "infoClimateImport";
+	String infoClimateJobScope = "infoClimateJobScope";
 	String infoClimateObservationMean = "infoClimateObservationMean";
 	String infoClimateObservationReplaces = "infoClimateObservationReplaces";
 	String infoClimateUsualRangeNotShown = "infoClimateUsualRangeNotShown";
@@ -1444,8 +1452,11 @@ public interface Strings {
 	String messageChangingCaseOutcome = "messageChangingCaseOutcome";
 	String messageChangingPersonPresentCondition = "messageChangingPersonPresentCondition";
 	String messageCheckInputData = "messageCheckInputData";
+	String messageClimateBackfillQueued = "messageClimateBackfillQueued";
 	String messageClimateChoosePlaceAndDate = "messageClimateChoosePlaceAndDate";
 	String messageClimateEnterNumber = "messageClimateEnterNumber";
+	String messageClimateFetchQueued = "messageClimateFetchQueued";
+	String messageClimateNothingToFetch = "messageClimateNothingToFetch";
 	String messageClimateObservationDeleted = "messageClimateObservationDeleted";
 	String messageClimateObservationSaved = "messageClimateObservationSaved";
 	String messageClinicalCourseSaved = "messageClinicalCourseSaved";

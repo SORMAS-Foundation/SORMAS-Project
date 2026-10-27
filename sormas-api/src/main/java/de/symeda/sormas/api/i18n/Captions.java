@@ -988,11 +988,15 @@ public interface Captions {
 	String changeDate = "changeDate";
 	String changeUserEmail = "changeUserEmail";
 	String city = "city";
+	String climateBackfillYears = "climateBackfillYears";
+	String climateCheckCalls = "climateCheckCalls";
+	String climateConfirmCalls = "climateConfirmCalls";
 	String ClimateDistrict_district = "ClimateDistrict.district";
 	String ClimateDistrict_region = "ClimateDistrict.region";
 	String ClimateEarlierValue_changeDate = "ClimateEarlierValue.changeDate";
 	String climateEarlierValues = "climateEarlierValues";
 	String climateEditSettings = "climateEditSettings";
+	String climateFetchNow = "climateFetchNow";
 	String climateFilterDateFrom = "climateFilterDateFrom";
 	String climateFilterDateTo = "climateFilterDateTo";
 	String ClimateHistoryCoverage_completeness = "ClimateHistoryCoverage.completeness";
@@ -1001,6 +1005,8 @@ public interface Captions {
 	String ClimateHistoryCoverage_historyFrom = "ClimateHistoryCoverage.historyFrom";
 	String ClimateHistoryCoverage_sources = "ClimateHistoryCoverage.sources";
 	String ClimateHistoryCoverage_status = "ClimateHistoryCoverage.status";
+	String climateIncludeEnvironments = "climateIncludeEnvironments";
+	String climateNewBackfill = "climateNewBackfill";
 	String climateNewObservation = "climateNewObservation";
 	String ClimateObservation_humidityMeasure = "ClimateObservation.humidityMeasure";
 	String ClimateObservation_observationDate = "ClimateObservation.observationDate";
@@ -1036,6 +1042,8 @@ public interface Captions {
 	String climatePlaceKind = "climatePlaceKind";
 	String climatePlaceKindDistrict = "climatePlaceKindDistrict";
 	String climatePlaceKindEnvironment = "climatePlaceKindEnvironment";
+	String climatePricePage = "climatePricePage";
+	String climateStart = "climateStart";
 	String climateTabBackfill = "climateTabBackfill";
 	String climateTabObservations = "climateTabObservations";
 	String ClinicalVisit = "ClinicalVisit";

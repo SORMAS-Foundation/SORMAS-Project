@@ -82,6 +82,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 	private final ClimateObservationCriteria criteria;
 	private final ClimateObservationsGrid grid;
 	private final Button districtsWithoutPoint;
+	private Button fetchNowButton;
 
 	private ComboBox<RegionReferenceDto> regionFilter;
 	private ComboBox<DistrictReferenceDto> districtFilter;
@@ -131,6 +132,14 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 				null);
 			new IgnoreCancelDownloader(export).extend(exportButton);
 			actions.addComponent(exportButton);
+		}
+		if (UiUtil.permitted(UserRight.CLIMATE_MANAGE_SOURCES)) {
+			fetchNowButton = ButtonHelper.createIconButton(
+				Captions.climateFetchNow,
+				VaadinIcons.CLOUD_DOWNLOAD,
+				e -> ClimateFetchNowDialog.open(this::refreshSummary),
+				ValoTheme.BUTTON_PRIMARY);
+			actions.addComponent(fetchNowButton);
 		}
 		addHeaderComponent(actions);
 
@@ -245,6 +254,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 		updateDistrictsWithoutPoint();
+		updateFetchNowButton();
 		grid.reload();
 	}
 
@@ -267,6 +277,19 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 					? I18nProperties.getString(Strings.climateDistrictWithoutPoint)
 					: String.format(I18nProperties.getString(Strings.climateDistrictsWithoutPoint), ClimateSummaryStrip.formatCount(count)));
 		}
+	}
+
+	/**
+	 * Fetch now calls OpenWeather for daily data: hidden when daily data comes from elsewhere, disabled without a key.
+	 */
+	private void updateFetchNowButton() {
+
+		if (fetchNowButton == null) {
+			return;
+		}
+		fetchNowButton.setVisible(getSummary().getDailySource() == ClimateDailySource.OPENWEATHER);
+		fetchNowButton.setEnabled(getSummary().isApiKeySet());
+		fetchNowButton.setDescription(getSummary().isApiKeySet() ? null : I18nProperties.getString(Strings.climateFetchNowNoApiKey));
 	}
 
 	private static void showDistrictsWithoutPoint() {
