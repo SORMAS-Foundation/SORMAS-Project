@@ -47,8 +47,6 @@ public class PersonalDataProviderFacadeEJB implements PersonalDataProviderFacade
 	@EJB
 	private AuditLoggerFacade auditLogger;
 
-	private static final String PERSONAL_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY = "PERSONAL_DATA_PROVIDER_ADAPTER";
-
 	@Override
 	public @Nullable PersonalDataSummaryDto findDataByNationalHealthId(String nationalHealthId) {
 		auditLogger.logExternalSystemCall(buildAuditRequestWithNationalHealthId("findDataByNationalHealthId", nationalHealthId));

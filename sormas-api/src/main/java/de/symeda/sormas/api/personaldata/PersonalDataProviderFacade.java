@@ -15,6 +15,7 @@ import de.symeda.sormas.api.location.LocationDto;
 public interface PersonalDataProviderFacade {
 
 	String EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED = "EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED";
+	String PERSONAL_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY = "PERSONAL_DATA_PROVIDER_ADAPTER";
 
 	@Nullable
 	PersonalDataSummaryDto findDataByNationalHealthId(@NotNull String nationalHealthId);
