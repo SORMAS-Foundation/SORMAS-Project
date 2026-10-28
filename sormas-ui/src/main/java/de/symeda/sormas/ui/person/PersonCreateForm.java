@@ -209,7 +209,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 					return;
 				}
 				Window window = VaadinUiUtil.createPopupWindow();
-				window.setCaption(I18nProperties.getCaption(Captions.externalPersonData));
+				window.setCaption(I18nProperties.getCaption(Captions.integrateExternalPersonData));
 				window.setContent(
 					new ExternalPersonDataLookup(
 						nationalHealthIdField.getValue(),
