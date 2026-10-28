@@ -1145,6 +1145,7 @@ public interface Strings {
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
 	String infoFeatureConfiguration = "infoFeatureConfiguration";
+	String infoFeatureConfigurationEditProperties = "infoFeatureConfigurationEditProperties";
 	String infoHeadingAefiDashboardMap = "infoHeadingAefiDashboardMap";
 	String infoHeadingEnvironmentSampleDashboardMap = "infoHeadingEnvironmentSampleDashboardMap";
 	String infoHeadingSampleDashboardMap = "infoHeadingSampleDashboardMap";
