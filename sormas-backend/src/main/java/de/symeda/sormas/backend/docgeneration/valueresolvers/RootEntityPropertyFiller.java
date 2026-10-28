@@ -2,6 +2,8 @@ package de.symeda.sormas.backend.docgeneration.valueresolvers;
 
 import java.util.Properties;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Allows for some "indirect" (not directly within SORMAS - entity model) entities to resolve properties for document generation.
  * Naming inspired from {@link de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver}.
@@ -16,6 +18,6 @@ public interface RootEntityPropertyFiller {
 	 * @param properties
 	 *            will be mutated with property
 	 */
-	void fillValueInto(String propertyKey, Properties properties);
+	void fillValueInto(@NotNull String propertyKey, @NotNull Properties properties);
 
 }

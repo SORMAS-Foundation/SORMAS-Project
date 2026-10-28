@@ -25,7 +25,7 @@ public abstract class AbstractRootValuePropertyFiller implements RootEntityPrope
 	}
 
 	@Override
-	public void fillValueInto(@NotNull String propertyKey, @NotNull Properties properties) {
+	public void fillValueInto(String propertyKey, Properties properties) {
 		String propertySeparator = propertyKey.contains("_") ? "_" : ".";
 
 		String variableBaseName = getVariableBaseName(propertyKey);
