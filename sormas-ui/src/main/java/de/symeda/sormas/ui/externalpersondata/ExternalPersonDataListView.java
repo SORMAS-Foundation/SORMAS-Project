@@ -7,12 +7,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -47,6 +49,7 @@ public class ExternalPersonDataListView extends AbstractView {
 
 	public static final String VIEW_NAME = "externalPersons";
 	private static final long serialVersionUID = 1L;
+	private static final int PAGE_SIZE = 50;
 	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataListView.class);
 	private final Binder<ExternalPersonDataSearchRequest> idBinder = new Binder<>(ExternalPersonDataSearchRequest.class);
 	private final Binder<ExternalPersonDataSearchRequest> filtersBinder = new Binder<>(ExternalPersonDataSearchRequest.class);
@@ -56,7 +59,6 @@ public class ExternalPersonDataListView extends AbstractView {
 	private final Label message = new Label();
 	private SearchState state;
 	private final Consumer<ExternalPersonDataIndexDto> selectedExternalPersonData;
-	private final boolean singlePersonMode;
 
 	public static class SearchState implements Serializable {
 
@@ -65,6 +67,8 @@ public class ExternalPersonDataListView extends AbstractView {
 		private ExternalPersonDataSearchRequest criteria = new ExternalPersonDataSearchRequest();
 		private boolean expanded;
 		private List<ExternalPersonDataIndexDto> results = Collections.emptyList();
+		private ExternalPersonDataSearchRequest searchRequest;
+		private int totalCount;
 		private String message;
 	}
 
@@ -76,7 +80,7 @@ public class ExternalPersonDataListView extends AbstractView {
 		super(VIEW_NAME);
 		this.selectedExternalPersonData = selectedExternalPersonDataConsumer;
 
-		this.singlePersonMode = selectedExternalPersonDataConsumer != null && person != null;
+		boolean singlePersonMode = selectedExternalPersonDataConsumer != null && person != null;
 		setViewHeaderVisible(!singlePersonMode);
 
 		if (!ExternalPersonDataComponent.isAvailable()) {
@@ -106,10 +110,10 @@ public class ExternalPersonDataListView extends AbstractView {
 		textFilter(ExternalPersonDataSearchRequest.COUNTRY_OF_RESIDENCE, Captions.ExternalPersons_countryOfResidence);
 		textFilter(ExternalPersonDataSearchRequest.LOCALITY_OF_RESIDENCE, Captions.ExternalPersons_localityOfResidence);
 		textFilter(ExternalPersonDataSearchRequest.MUNICIPALITY_OF_RESIDENCE, Captions.ExternalPersons_municipalityOfResidence);
-		integerFilter("birthYearFrom", Captions.ExternalPersons_birthYearFrom);
-		integerFilter("birthYearTo", Captions.ExternalPersons_birthYearTo);
-		integerFilter("ageFrom", Captions.ExternalPersons_ageFrom);
-		integerFilter("ageTo", Captions.ExternalPersons_ageTo);
+		integerFilter(ExternalPersonDataSearchRequest.BIRTH_YEAR_FROM, Captions.ExternalPersons_birthYearFrom);
+		integerFilter(ExternalPersonDataSearchRequest.BIRTH_YEAR_TO, Captions.ExternalPersons_birthYearTo);
+		integerFilter(ExternalPersonDataSearchRequest.AGE_FROM, Captions.ExternalPersons_ageFrom);
+		integerFilter(ExternalPersonDataSearchRequest.AGE_TO, Captions.ExternalPersons_ageTo);
 		ComboBox<Boolean> alive = new ComboBox<>(I18nProperties.getCaption(Captions.ExternalPersons_alive));
 		alive.setItems(Boolean.TRUE, Boolean.FALSE);
 		alive.setItemCaptionGenerator(value -> I18nProperties.getString(value ? Strings.yes : Strings.no));
@@ -162,7 +166,7 @@ public class ExternalPersonDataListView extends AbstractView {
 		addComponent(content);
 		idBinder.setBean(state.id);
 		filtersBinder.setBean(state.criteria);
-		grid.setItems(state.results);
+		updateDataProvider();
 		setMessage(state.message == null ? I18nProperties.getString(Strings.externalPersonsEnterCriteria) : state.message);
 	}
 
@@ -240,7 +244,9 @@ public class ExternalPersonDataListView extends AbstractView {
 
 	private void clearResults() {
 		state.results = Collections.emptyList();
-		grid.setItems(state.results);
+		state.searchRequest = null;
+		state.totalCount = 0;
+		updateDataProvider();
 		setMessage(I18nProperties.getString(Strings.externalPersonsEnterCriteria));
 	}
 
@@ -261,22 +267,49 @@ public class ExternalPersonDataListView extends AbstractView {
 			return;
 		}
 		try {
+			request.setOffset(0);
+			request.setLimit(PAGE_SIZE);
 			ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().search(request);
 			List<ExternalPersonDataIndexDto> results = response.getResults() == null ? Collections.emptyList() : response.getResults();
-			state.results = new ArrayList<>(results.subList(0, Math.min(100, results.size())));
-			grid.setItems(state.results);
+			state.results = new ArrayList<>(results);
+			state.searchRequest = request;
+			state.totalCount = response.getTotalCount() == null ? results.size() : response.getTotalCount();
+			updateDataProvider();
+			grid.scrollToStart();
 			setMessage(results.isEmpty() ? I18nProperties.getString(Strings.infoNoExternalPersonData) : "");
-			boolean truncated = results.size() > 100 || response.getTotalCount() != null && response.getTotalCount() > 100;
-			if (truncated) {
-				setMessage(I18nProperties.getString(Strings.externalPersonsFirst100Results));
-				Notification.show(message.getValue(), Notification.Type.WARNING_MESSAGE);
-			}
-			if (results.size() == 1 && (response.getTotalCount() == null || response.getTotalCount() == 1)) {
+			if (results.size() == 1 && response.getTotalCount() != null && response.getTotalCount() == 1) {
 				open(results.get(0));
 			}
 		} catch (RuntimeException e) {
 			logger.error("Could not search external persons", e);
+			clearResults();
 			setMessage(I18nProperties.getString(Strings.errorExternalPersonDataLoad));
+		}
+	}
+
+	private void updateDataProvider() {
+		grid.setDataProvider(
+			DataProvider.fromCallbacks(query -> fetchResults(query.getOffset(), query.getLimit()).stream(), query -> state.totalCount));
+	}
+
+	private List<ExternalPersonDataIndexDto> fetchResults(int offset, int limit) {
+		if (state.searchRequest == null || offset >= state.totalCount) {
+			return Collections.emptyList();
+		}
+		int end = offset + Math.min(limit, state.totalCount - offset);
+		if (end <= state.results.size()) {
+			return state.results.subList(offset, end);
+		}
+		ExternalPersonDataSearchRequest request = SerializationUtils.clone(state.searchRequest);
+		request.setOffset(offset);
+		request.setLimit(limit);
+		try {
+			ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().search(request);
+			return response.getResults() == null ? Collections.emptyList() : response.getResults();
+		} catch (RuntimeException e) {
+			logger.error("Could not load external persons page", e);
+			setMessage(I18nProperties.getString(Strings.errorExternalPersonDataLoad));
+			return Collections.emptyList();
 		}
 	}
 

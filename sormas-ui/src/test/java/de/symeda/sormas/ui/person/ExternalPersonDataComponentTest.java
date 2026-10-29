@@ -73,6 +73,63 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 	}
 
 	@Test
+	void loadsRequestedRangesBeyondOneHundredUsingSubmittedCriteria() {
+		try (Context context = new Context(true, "true")) {
+			// PREPARE
+			context.person.setNationalHealthId(null);
+			java.util.List<ExternalPersonDataIndexDto> people = java.util.stream.IntStream.range(0, 125).mapToObj(index -> {
+				ExternalPersonDataIndexDto person = new ExternalPersonDataIndexDto();
+				person.setNationalHealthId("person-" + index);
+				return person;
+			}).collect(java.util.stream.Collectors.toList());
+			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenAnswer(invocation -> {
+				de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest request = invocation.getArgument(0);
+				de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
+					new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
+				response.setTotalCount(people.size());
+				response.setResults(people.subList(request.getOffset(), Math.min(request.getOffset() + request.getLimit(), people.size())));
+				return response;
+			});
+			victim = context.create();
+			com.vaadin.ui.VerticalLayout content =
+				(com.vaadin.ui.VerticalLayout) ((ExternalPersonDataListView) victim.getComponent(0)).getComponent(1);
+			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(3);
+			com.vaadin.ui.TextField lastName = (com.vaadin.ui.TextField) filters.getComponent(0, 0);
+			lastName.setValue("Doe");
+			com.vaadin.ui.HorizontalLayout actions = (com.vaadin.ui.HorizontalLayout) content.getComponent(4);
+			com.vaadin.ui.Grid<?> grid = (com.vaadin.ui.Grid<?>) content.getComponent(6);
+
+			// EXECUTE
+			((com.vaadin.ui.Button) actions.getComponent(0)).click();
+			lastName.setValue("Unsubmitted edit");
+			java.util.List<?> firstPage = grid.getDataProvider()
+				.fetch(new com.vaadin.data.provider.Query<>(0, 50, java.util.Collections.emptyList(), null, null))
+				.collect(java.util.stream.Collectors.toList());
+			java.util.List<?> lastPage = grid.getDataProvider()
+				.fetch(new com.vaadin.data.provider.Query<>(100, 50, java.util.Collections.emptyList(), null, null))
+				.collect(java.util.stream.Collectors.toList());
+			java.util.List<?> lastResult = grid.getDataProvider()
+				.fetch(new com.vaadin.data.provider.Query<>(124, 50, java.util.Collections.emptyList(), null, null))
+				.collect(java.util.stream.Collectors.toList());
+
+			// CHECK
+			assertEquals(125, grid.getDataProvider().size(new com.vaadin.data.provider.Query<>()));
+			assertEquals(people.subList(0, 50), firstPage);
+			assertEquals(people.subList(100, 125), lastPage);
+			assertEquals(people.subList(124, 125), lastResult);
+			org.mockito.ArgumentCaptor<de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest> requests =
+				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest.class);
+			verify(context.provider, org.mockito.Mockito.times(3)).search(requests.capture());
+			assertEquals(0, requests.getAllValues().get(0).getOffset());
+			assertEquals(100, requests.getAllValues().get(1).getOffset());
+			assertEquals(50, requests.getAllValues().get(1).getLimit());
+			assertEquals("Doe", requests.getAllValues().get(1).getLastName());
+			org.mockito.Mockito.verify(context.provider, org.mockito.Mockito.never())
+				.findDisplayDataByNationalHealthId(org.mockito.ArgumentMatchers.any());
+		}
+	}
+
+	@Test
 	void directoryRetainsFiltersAndResultsUntilReset() {
 		try (Context context = new Context(true, "true")) {
 			ExternalPersonDataIndexDto person = new ExternalPersonDataIndexDto();
@@ -91,9 +148,9 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			org.junit.jupiter.api.Assertions.assertTrue(restored.getComponent(2).isVisible());
 			assertEquals("Doe", ((com.vaadin.ui.TextField) ((com.vaadin.ui.GridLayout) restored.getComponent(2)).getComponent(0, 0)).getValue());
 			com.vaadin.ui.Grid<?> grid = (com.vaadin.ui.Grid<?>) restored.getComponent(5);
-			assertEquals(1, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
+			assertEquals(2, grid.getDataProvider().size(new com.vaadin.data.provider.Query<>()));
 			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) restored.getComponent(3)).getComponent(1)).click();
-			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
+			assertEquals(0, grid.getDataProvider().size(new com.vaadin.data.provider.Query<>()));
 			com.vaadin.ui.VerticalLayout reset = (com.vaadin.ui.VerticalLayout) new ExternalPersonDataListView().getComponent(1);
 			assertEquals("", ((com.vaadin.ui.TextField) ((com.vaadin.ui.GridLayout) reset.getComponent(2)).getComponent(0, 0)).getValue());
 		}
@@ -160,6 +217,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
 				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 			response.setResults(java.util.Collections.singletonList(external));
+			response.setTotalCount(1);
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
 			// EXECUTE
 			victim = context.create();
@@ -246,13 +304,15 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			assertEquals("externalPersonsLinkSearchExplanation", ((Label) presets.getComponent(0)).getValue());
 			org.junit.jupiter.api.Assertions.assertTrue(filters.isVisible());
 			assertEquals("", ((com.vaadin.ui.TextField) content.getComponent(0)).getValue());
-			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
+			assertEquals(0, grid.getDataProvider().size(new com.vaadin.data.provider.Query<>()));
 			search.click();
 			org.mockito.ArgumentCaptor<de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest> request =
 				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest.class);
 			verify(context.provider).search(request.capture());
 			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest expected =
 				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest();
+			expected.setOffset(0);
+			expected.setLimit(50);
 			expected.setFirstName("Jane");
 			expected.setLastName("Doe");
 			if (birthDateParts == 2) {
@@ -277,7 +337,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			grid.setItems(new ExternalPersonDataIndexDto());
 			((com.vaadin.ui.Button) buttons.getComponent(0)).click();
 			verifyNoInteractions(context.provider);
-			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
+			assertEquals(0, grid.getDataProvider().size(new com.vaadin.data.provider.Query<>()));
 			search.click();
 			verify(context.provider).search(request.capture());
 			expected.setSex(null);
@@ -315,6 +375,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
 				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 			response.setResults(java.util.Collections.singletonList(external));
+			response.setTotalCount(1);
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
 			PersonEditForm form = mock(PersonEditForm.class);
 			com.vaadin.v7.ui.TextField id = new com.vaadin.v7.ui.TextField();

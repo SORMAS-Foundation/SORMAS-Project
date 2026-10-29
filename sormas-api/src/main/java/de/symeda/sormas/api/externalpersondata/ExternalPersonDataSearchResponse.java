@@ -8,10 +8,16 @@ public class ExternalPersonDataSearchResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String RESULTS = "results";
+	public static final String TOTAL_COUNT = "totalCount";
+
 	private List<ExternalPersonDataIndexDto> results;
 
 	private Integer totalCount;
 
+	/**
+	 * Results for the requested offset and limit, in a stable order across pages.
+	 */
 	public List<ExternalPersonDataIndexDto> getResults() {
 		return results;
 	}
@@ -20,6 +26,9 @@ public class ExternalPersonDataSearchResponse implements Serializable {
 		this.results = results;
 	}
 
+	/**
+	 * Total number of matching results before pagination. Providers must supply this for paginated requests.
+	 */
 	public Integer getTotalCount() {
 		return totalCount;
 	}

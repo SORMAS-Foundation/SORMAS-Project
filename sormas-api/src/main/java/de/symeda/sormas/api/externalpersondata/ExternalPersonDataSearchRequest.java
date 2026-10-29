@@ -23,6 +23,8 @@ public class ExternalPersonDataSearchRequest implements Serializable {
 	public static final String AGE_FROM = "ageFrom";
 	public static final String AGE_TO = "ageTo";
 	public static final String ALIVE = "alive";
+	public static final String OFFSET = "offset";
+	public static final String LIMIT = "limit";
 
 	private String nationalHealthId;
 	private String lastName;
@@ -37,6 +39,30 @@ public class ExternalPersonDataSearchRequest implements Serializable {
 	private Integer ageFrom;
 	private Integer ageTo;
 	private Boolean alive;
+	private Integer offset;
+	private Integer limit;
+
+	/**
+	 * Zero-based index of the first result to return; null starts at the first result.
+	 */
+	public Integer getOffset() {
+		return offset;
+	}
+
+	public void setOffset(Integer offset) {
+		this.offset = offset;
+	}
+
+	/**
+	 * Maximum number of results to return; null leaves the result limit to the provider.
+	 */
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
+	}
 
 	public String getNationalHealthId() {
 		return nationalHealthId;
@@ -159,7 +185,9 @@ public class ExternalPersonDataSearchRequest implements Serializable {
 			&& Objects.equals(birthYearTo, that.birthYearTo)
 			&& Objects.equals(ageFrom, that.ageFrom)
 			&& Objects.equals(ageTo, that.ageTo)
-			&& Objects.equals(alive, that.alive);
+			&& Objects.equals(alive, that.alive)
+			&& Objects.equals(offset, that.offset)
+			&& Objects.equals(limit, that.limit);
 	}
 
 	@Override
@@ -177,6 +205,8 @@ public class ExternalPersonDataSearchRequest implements Serializable {
 			birthYearTo,
 			ageFrom,
 			ageTo,
-			alive);
+			alive,
+			offset,
+			limit);
 	}
 }
