@@ -203,7 +203,7 @@ public class CaseController {
 		}
 
 		navigator.addView(CaseExternalDataView.VIEW_NAME, CaseExternalDataView.class);
-		if (UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)) {
 			navigator.addView(CaseExternalPersonDataView.VIEW_NAME, CaseExternalPersonDataView.class);
 		}
 	}

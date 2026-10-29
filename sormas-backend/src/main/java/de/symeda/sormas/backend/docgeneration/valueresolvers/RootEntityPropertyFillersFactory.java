@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
-import de.symeda.sormas.backend.personaldata.PersonalDataProviderFacadeEJB;
+import de.symeda.sormas.backend.externalpersondata.ExternalPersonDataProviderFacadeEJB;
 
 /**
  * {@link RootEntityPropertyFiller} must not be used directly but through this factory.
@@ -17,7 +17,7 @@ import de.symeda.sormas.backend.personaldata.PersonalDataProviderFacadeEJB;
 public class RootEntityPropertyFillersFactory {
 
 	@EJB
-	private PersonalDataProviderFacadeEJB.PersonalDataProviderFacadeEJBLocal personalDataProviderFacadeEJB;
+	private ExternalPersonDataProviderFacadeEJB.ExternalPersonDataProviderFacadeEJBLocal externalPersonDataProviderFacadeEJB;
 
 	public RootEntityPropertyFiller createPropertyFiller(
 		@NotNull RootEntityType entityType,
@@ -27,8 +27,8 @@ public class RootEntityPropertyFillersFactory {
 			throw new IllegalStateException(String.format("Only 'non-data-model' RootEntityType are supported, was: [%s]", entityType));
 		}
 
-		if (entityType == RootEntityType.ROOT_EXTERNAL_PERSON) {
-			return new ExternalPersonPropertyFiller(referenceDtoResolver, entities, personalDataProviderFacadeEJB);
+		if (entityType == RootEntityType.ROOT_EXTERNAL_PERSON_DATA) {
+			return new ExternalPersonPropertyFiller(referenceDtoResolver, entities, externalPersonDataProviderFacadeEJB);
 		}
 		throw new IllegalStateException(String.format("RootEntityType: [%s] is not supported", entityType));
 	}

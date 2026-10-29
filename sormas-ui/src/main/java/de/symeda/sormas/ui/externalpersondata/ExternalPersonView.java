@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.externalperson;
+package de.symeda.sormas.ui.externalpersondata;
 
 import com.vaadin.navigator.ViewChangeListener;
 

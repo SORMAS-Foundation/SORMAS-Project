@@ -1,11 +1,11 @@
-package de.symeda.sormas.api.personaldata;
+package de.symeda.sormas.api.externalpersondata;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
-public class PersonalDataSummaryDto implements Serializable {
+public class ExternalPersonDataSummaryDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -50,7 +50,7 @@ public class PersonalDataSummaryDto implements Serializable {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
-		PersonalDataSummaryDto that = (PersonalDataSummaryDto) o;
+		ExternalPersonDataSummaryDto that = (ExternalPersonDataSummaryDto) o;
 		return Objects.equals(firstName, that.firstName)
 			&& Objects.equals(lastName, that.lastName)
 			&& Objects.equals(birthDate, that.birthDate)

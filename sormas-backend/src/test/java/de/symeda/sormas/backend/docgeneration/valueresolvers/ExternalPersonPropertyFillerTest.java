@@ -18,16 +18,16 @@ import org.mockito.Mock;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataAddressRequestDto;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.personaldata.PersonalDataAddressRequestDto;
-import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.backend.AbstractUnitTest;
 
 class ExternalPersonPropertyFillerTest extends AbstractUnitTest {
 
 	@Mock
-	private PersonalDataProviderFacade provider;
+	private ExternalPersonDataProviderFacade provider;
 
 	private final DocumentTemplateEntities entities = new DocumentTemplateEntities();
 	private final CaseDataDto caseData = new CaseDataDto();
@@ -48,10 +48,10 @@ class ExternalPersonPropertyFillerTest extends AbstractUnitTest {
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(address);
 		Properties properties = new Properties();
 
-		filler.fillValueInto("externalPerson.city", properties);
+		filler.fillValueInto("externalPersonData.city", properties);
 
-		assertEquals("Paris", properties.getProperty("externalPerson.city"));
-		ArgumentCaptor<PersonalDataAddressRequestDto> request = ArgumentCaptor.forClass(PersonalDataAddressRequestDto.class);
+		assertEquals("Paris", properties.getProperty("externalPersonData.city"));
+		ArgumentCaptor<ExternalPersonDataAddressRequestDto> request = ArgumentCaptor.forClass(ExternalPersonDataAddressRequestDto.class);
 		verify(provider).findAppropriateDocumentAddressFor(request.capture());
 		assertSame(caseData, request.getValue().getCaseData());
 		assertSame(person, request.getValue().getPerson());
@@ -62,9 +62,9 @@ class ExternalPersonPropertyFillerTest extends AbstractUnitTest {
 		when(provider.findAppropriateDocumentAddressFor(any())).thenThrow(new IllegalStateException());
 		Properties properties = new Properties();
 
-		filler.fillValueInto("externalPerson.city", properties);
+		filler.fillValueInto("externalPersonData.city", properties);
 
-		assertEquals("*** Error for property: [externalPerson.city] ***", properties.getProperty("externalPerson.city"));
+		assertEquals("*** Error for property: [externalPersonData.city] ***", properties.getProperty("externalPersonData.city"));
 		verify(provider).findAppropriateDocumentAddressFor(any());
 	}
 
@@ -76,12 +76,12 @@ class ExternalPersonPropertyFillerTest extends AbstractUnitTest {
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(address);
 		Properties properties = new Properties();
 
-		filler.fillValueInto("externalPerson.city", properties);
-		filler.fillValueInto("externalPerson.street", properties);
-		filler.fillValueInto("externalPerson.city", properties);
+		filler.fillValueInto("externalPersonData.city", properties);
+		filler.fillValueInto("externalPersonData.street", properties);
+		filler.fillValueInto("externalPersonData.city", properties);
 
-		assertEquals("Paris", properties.getProperty("externalPerson.city"));
-		assertEquals("Main Street", properties.getProperty("externalPerson.street"));
+		assertEquals("Paris", properties.getProperty("externalPersonData.city"));
+		assertEquals("Main Street", properties.getProperty("externalPersonData.street"));
 		verify(provider).findAppropriateDocumentAddressFor(any());
 		verifyNoMoreInteractions(provider);
 	}

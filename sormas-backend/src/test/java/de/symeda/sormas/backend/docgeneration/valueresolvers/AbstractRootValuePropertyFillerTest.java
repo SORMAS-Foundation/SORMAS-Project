@@ -26,9 +26,9 @@ class AbstractRootValuePropertyFillerTest extends AbstractUnitTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-		"externalPerson.city",
+		"externalPersonData.city",
 		"externalPerson_city",
-		"EXTERNALPERSON.city" })
+		"externalPersonData.city" })
 	void supportsBothSeparatorsAndCaseInsensitiveRoot(String key) {
 		LocationDto address = new LocationDto();
 		address.setCity("Paris");
@@ -41,7 +41,7 @@ class AbstractRootValuePropertyFillerTest extends AbstractUnitTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-		"externalPerson.region.epidCode",
+		"externalPersonData.region.epidCode",
 		"externalPerson_region_epidCode" })
 	void resolvesNestedReferences(String key) {
 		LocationDto address = new LocationDto();
@@ -61,15 +61,15 @@ class AbstractRootValuePropertyFillerTest extends AbstractUnitTest {
 	@Test
 	void leavesMissingValuesUnset() {
 		Properties properties = new Properties();
-		filler(new LocationDto()).fillValueInto("externalPerson.city", properties);
-		assertFalse(properties.containsKey("externalPerson.city"));
+		filler(new LocationDto()).fillValueInto("externalPersonData.city", properties);
+		assertFalse(properties.containsKey("externalPersonData.city"));
 	}
 
 	@Test
 	void leavesNullEntityUnset() {
 		Properties properties = new Properties();
-		filler(null).fillValueInto("externalPerson.city", properties);
-		assertFalse(properties.containsKey("externalPerson.city"));
+		filler(null).fillValueInto("externalPersonData.city", properties);
+		assertFalse(properties.containsKey("externalPersonData.city"));
 	}
 
 	@Test
@@ -77,9 +77,11 @@ class AbstractRootValuePropertyFillerTest extends AbstractUnitTest {
 		Properties properties = new Properties();
 		properties.setProperty("existing", "preserved");
 
-		filler(new LocationDto()).fillValueInto("externalPerson.unknownProperty", properties);
+		filler(new LocationDto()).fillValueInto("externalPersonData.unknownProperty", properties);
 
-		assertEquals("*** Error for property: [externalPerson.unknownProperty] ***", properties.getProperty("externalPerson.unknownProperty"));
+		assertEquals(
+			"*** Error for property: [externalPersonData.unknownProperty] ***",
+			properties.getProperty("externalPersonData.unknownProperty"));
 		assertEquals("preserved", properties.getProperty("existing"));
 	}
 

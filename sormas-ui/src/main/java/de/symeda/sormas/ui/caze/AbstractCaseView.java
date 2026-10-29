@@ -49,7 +49,7 @@ import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
-import de.symeda.sormas.ui.externalperson.ExternalPersonDataComponent;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;

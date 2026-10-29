@@ -24,15 +24,15 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSummaryDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
-import de.symeda.sormas.api.personaldata.PersonalDataSummaryDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.externalperson.ExternalPersonDataLookup;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataLookup;
 
 class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest {
 
@@ -159,18 +159,19 @@ class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest 
 	@Test
 	void requiresConfiguredAdapterAndPermission() {
 		try (Context context = new Context()) {
-			context.ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)).thenReturn(true);
+			context.ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)).thenReturn(true);
 			for (String missing : new String[] {
 				null,
 				"",
 				" " }) {
-				when(context.configuration.getValue(PersonalDataProviderFacade.PERSONAL_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY)).thenReturn(missing);
+				when(context.configuration.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY))
+					.thenReturn(missing);
 				assertFalse(ExternalPersonDataLookup.isAvailable());
 			}
-			when(context.configuration.getValue(PersonalDataProviderFacade.PERSONAL_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY))
+			when(context.configuration.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY))
 				.thenReturn("adapter-jndi");
 			assertTrue(ExternalPersonDataLookup.isAvailable());
-			context.ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)).thenReturn(false);
+			context.ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)).thenReturn(false);
 			assertFalse(ExternalPersonDataLookup.isAvailable());
 			verifyNoInteractions(context.provider);
 		}
@@ -288,9 +289,9 @@ class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest 
 			}
 			return org.mockito.Answers.RETURNS_DEFAULTS.answer(invocation);
 		});
-		private final PersonalDataProviderFacade provider = mock(PersonalDataProviderFacade.class);
+		private final ExternalPersonDataProviderFacade provider = mock(ExternalPersonDataProviderFacade.class);
 		private final SystemConfigurationValueFacade configuration = mock(SystemConfigurationValueFacade.class);
-		private final PersonalDataSummaryDto summary = new PersonalDataSummaryDto();
+		private final ExternalPersonDataSummaryDto summary = new ExternalPersonDataSummaryDto();
 		private final TextField first = new TextField();
 		private final TextField last = new TextField();
 		private final ComboBox year = new ComboBox();
@@ -298,7 +299,7 @@ class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest 
 		private final ComboBox day = new ComboBox();
 
 		private Context() {
-			facades.when(FacadeProvider::getPersonalDataProviderFacade).thenReturn(provider);
+			facades.when(FacadeProvider::getExternalPersonDataProviderFacade).thenReturn(provider);
 			facades.when(FacadeProvider::getSystemConfigurationValueFacade).thenReturn(configuration);
 			i18n.when(I18nProperties::getUserLanguage).thenReturn(de.symeda.sormas.api.Language.EN);
 			first.setValue("Current first");

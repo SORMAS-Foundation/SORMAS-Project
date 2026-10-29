@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.externalperson;
+package de.symeda.sormas.ui.externalpersondata;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,13 +15,13 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataForDisplayDto;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.personaldata.PersonalDataForDisplayDto;
-import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonEditForm;
@@ -35,9 +35,9 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataComponent.class);
 
 	public static boolean isAvailable() {
-		return UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)
+		return UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)
 			&& Boolean.parseBoolean(
-				FacadeProvider.getSystemConfigurationValueFacade().getValue(PersonalDataProviderFacade.EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED));
+				FacadeProvider.getSystemConfigurationValueFacade().getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED));
 	}
 
 	public ExternalPersonDataComponent(PersonReferenceDto personReference) {
@@ -95,9 +95,9 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 			return;
 		}
 
-		PersonalDataForDisplayDto displayData;
+		ExternalPersonDataForDisplayDto displayData;
 		try {
-			displayData = FacadeProvider.getPersonalDataProviderFacade().findDisplayDataByNationalHealthId(nationalHealthId);
+			displayData = FacadeProvider.getExternalPersonDataProviderFacade().findDisplayDataByNationalHealthId(nationalHealthId);
 		} catch (RuntimeException e) {
 			logger.error("Could not load external person data", e);
 			showError(Strings.errorExternalPersonDataLoad);

@@ -24,8 +24,8 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.backend.AbstractUnitTest;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.valueresolvers.ExternalPersonPropertyFiller;
@@ -38,7 +38,7 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 	@Mock
 	private RootEntityPropertyFillersFactory propertyFillersFactory;
 	@Mock
-	private PersonalDataProviderFacade provider;
+	private ExternalPersonDataProviderFacade provider;
 	@Mock
 	private DocumentWorkflow workflow;
 	@InjectMocks
@@ -48,7 +48,7 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 
 	@BeforeEach
 	void setUp() {
-		when(workflow.getRootEntityTypes()).thenReturn(Set.of(RootEntityType.ROOT_EXTERNAL_PERSON));
+		when(workflow.getRootEntityTypes()).thenReturn(Set.of(RootEntityType.ROOT_EXTERNAL_PERSON_DATA));
 		when(configFacade.getDocgenerationNullReplacement()).thenReturn("missing");
 	}
 
@@ -59,9 +59,9 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 		address.setCity("Paris");
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(address);
 
-		Properties properties = prepareProperties(true, "externalPerson.city");
+		Properties properties = prepareProperties(true, "externalPersonData.city");
 
-		assertEquals("Paris", properties.getProperty("externalPerson.city"));
+		assertEquals("Paris", properties.getProperty("externalPersonData.city"));
 	}
 
 	@Test
@@ -69,9 +69,9 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 		enableExternalPersonFiller();
 		when(provider.findAppropriateDocumentAddressFor(any())).thenThrow(new IllegalStateException());
 
-		Properties properties = prepareProperties(true, "externalPerson.city");
+		Properties properties = prepareProperties(true, "externalPersonData.city");
 
-		assertEquals("*** Error for property: [externalPerson.city] ***", properties.getProperty("externalPerson.city"));
+		assertEquals("*** Error for property: [externalPersonData.city] ***", properties.getProperty("externalPersonData.city"));
 	}
 
 	@Test
@@ -86,7 +86,7 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 
 		assertEquals("Paris", properties.getProperty("externalPerson_city"));
 		assertEquals("Main Street", properties.getProperty("externalPerson_street"));
-		verify(propertyFillersFactory).createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON), eq(entities), any());
+		verify(propertyFillersFactory).createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON_DATA), eq(entities), any());
 		verify(provider).findAppropriateDocumentAddressFor(any());
 	}
 
@@ -99,9 +99,9 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 		second.setCity("Lyon");
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(first, second);
 
-		assertEquals("Paris", prepareProperties(true, "externalPerson.city").getProperty("externalPerson.city"));
-		assertEquals("Lyon", prepareProperties(true, "externalPerson.city").getProperty("externalPerson.city"));
-		verify(propertyFillersFactory, times(2)).createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON), eq(entities), any());
+		assertEquals("Paris", prepareProperties(true, "externalPersonData.city").getProperty("externalPersonData.city"));
+		assertEquals("Lyon", prepareProperties(true, "externalPersonData.city").getProperty("externalPersonData.city"));
+		verify(propertyFillersFactory, times(2)).createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON_DATA), eq(entities), any());
 		verify(provider, times(2)).findAppropriateDocumentAddressFor(any());
 	}
 
@@ -109,12 +109,12 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 	void skipsExternalPersonWhenWorkflowDoesNotAllowIt() throws Exception {
 		when(workflow.getRootEntityTypes()).thenReturn(Set.of(RootEntityType.ROOT_CASE));
 
-		assertEquals("missing", prepareProperties(true, "externalPerson.city").getProperty("externalPerson.city"));
+		assertEquals("missing", prepareProperties(true, "externalPersonData.city").getProperty("externalPersonData.city"));
 		verifyNoInteractions(propertyFillersFactory, provider);
 	}
 
 	private void enableExternalPersonFiller() {
-		when(propertyFillersFactory.createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON), eq(entities), any()))
+		when(propertyFillersFactory.createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON_DATA), eq(entities), any()))
 			.thenAnswer(invocation -> new ExternalPersonPropertyFiller(invocation.getArgument(2), entities, provider));
 	}
 

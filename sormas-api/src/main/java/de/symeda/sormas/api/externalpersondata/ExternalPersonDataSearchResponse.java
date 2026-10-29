@@ -1,22 +1,22 @@
-package de.symeda.sormas.api.personaldata;
+package de.symeda.sormas.api.externalpersondata;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class PersonalDataSearchResponse implements Serializable {
+public class ExternalPersonDataSearchResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<PersonalDataIndexDto> results;
+	private List<ExternalPersonDataIndexDto> results;
 
 	private Integer totalCount;
 
-	public List<PersonalDataIndexDto> getResults() {
+	public List<ExternalPersonDataIndexDto> getResults() {
 		return results;
 	}
 
-	public void setResults(List<PersonalDataIndexDto> results) {
+	public void setResults(List<ExternalPersonDataIndexDto> results) {
 		this.results = results;
 	}
 
@@ -32,7 +32,7 @@ public class PersonalDataSearchResponse implements Serializable {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
-		PersonalDataSearchResponse that = (PersonalDataSearchResponse) o;
+		ExternalPersonDataSearchResponse that = (ExternalPersonDataSearchResponse) o;
 		return Objects.equals(results, that.results) && Objects.equals(totalCount, that.totalCount);
 	}
 

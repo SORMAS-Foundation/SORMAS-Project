@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.externalperson;
+package de.symeda.sormas.ui.externalpersondata;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -27,6 +27,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataIndexDto;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -36,9 +39,6 @@ import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.personaldata.PersonalDataIndexDto;
-import de.symeda.sormas.api.personaldata.PersonalDataSearchRequest;
-import de.symeda.sormas.api.personaldata.PersonalDataSearchResponse;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -50,23 +50,23 @@ public class ExternalPersonsView extends AbstractView {
 	public static final String VIEW_NAME = "externalPersons";
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonsView.class);
-	private final Binder<PersonalDataSearchRequest> idBinder = new Binder<>(PersonalDataSearchRequest.class);
-	private final Binder<PersonalDataSearchRequest> filtersBinder = new Binder<>(PersonalDataSearchRequest.class);
+	private final Binder<ExternalPersonDataSearchRequest> idBinder = new Binder<>(ExternalPersonDataSearchRequest.class);
+	private final Binder<ExternalPersonDataSearchRequest> filtersBinder = new Binder<>(ExternalPersonDataSearchRequest.class);
 	private final TextField nationalHealthId = new TextField(caption("nationalHealthId"));
 	private final GridLayout filters = new GridLayout(4, 4);
-	private final Grid<PersonalDataIndexDto> grid = new Grid<>();
+	private final Grid<ExternalPersonDataIndexDto> grid = new Grid<>();
 	private final Label message = new Label();
 	private SearchState state;
-	private final Consumer<PersonalDataIndexDto> selectedExternalPersonData;
+	private final Consumer<ExternalPersonDataIndexDto> selectedExternalPersonData;
 	private final boolean singlePersonMode;
 
 	public static class SearchState implements Serializable {
 
 		private static final long serialVersionUID = 1L;
-		private PersonalDataSearchRequest id = new PersonalDataSearchRequest();
-		private PersonalDataSearchRequest criteria = new PersonalDataSearchRequest();
+		private ExternalPersonDataSearchRequest id = new ExternalPersonDataSearchRequest();
+		private ExternalPersonDataSearchRequest criteria = new ExternalPersonDataSearchRequest();
 		private boolean expanded;
-		private List<PersonalDataIndexDto> results = Collections.emptyList();
+		private List<ExternalPersonDataIndexDto> results = Collections.emptyList();
 		private String message;
 	}
 
@@ -74,7 +74,7 @@ public class ExternalPersonsView extends AbstractView {
 		this(null, null);
 	}
 
-	public ExternalPersonsView(PersonDto person, Consumer<PersonalDataIndexDto> selectedExternalPersonDataConsumer) {
+	public ExternalPersonsView(PersonDto person, Consumer<ExternalPersonDataIndexDto> selectedExternalPersonDataConsumer) {
 		super(VIEW_NAME);
 		this.selectedExternalPersonData = selectedExternalPersonDataConsumer;
 
@@ -137,19 +137,19 @@ public class ExternalPersonsView extends AbstractView {
 		}
 		Button search = new Button(I18nProperties.getCaption(Captions.actionSearch), event -> search());
 		Button reset = new Button(I18nProperties.getCaption(Captions.actionResetFilters), event -> {
-			state.id = new PersonalDataSearchRequest();
-			state.criteria = new PersonalDataSearchRequest();
+			state.id = new ExternalPersonDataSearchRequest();
+			state.criteria = new ExternalPersonDataSearchRequest();
 			idBinder.setBean(state.id);
 			filtersBinder.setBean(state.criteria);
 			clearResults();
 		});
-		addColumn(PersonalDataIndexDto::getNationalHealthId).setCaption(caption("nationalHealthId"));
-		addColumn(PersonalDataIndexDto::getLastName).setCaption(caption("lastName"));
-		addColumn(PersonalDataIndexDto::getFirstName).setCaption(caption("firstName"));
-		addColumn(PersonalDataIndexDto::getSex).setCaption(caption("sex"));
-		addColumn(PersonalDataIndexDto::getBirthDate).setCaption(caption("birthDate"));
-		addColumn(PersonalDataIndexDto::getMunicipality).setCaption(caption("municipalityOfResidence"));
-		addColumn(PersonalDataIndexDto::getLivingStatus).setCaption(caption("livingStatus"));
+		addColumn(ExternalPersonDataIndexDto::getNationalHealthId).setCaption(caption("nationalHealthId"));
+		addColumn(ExternalPersonDataIndexDto::getLastName).setCaption(caption("lastName"));
+		addColumn(ExternalPersonDataIndexDto::getFirstName).setCaption(caption("firstName"));
+		addColumn(ExternalPersonDataIndexDto::getSex).setCaption(caption("sex"));
+		addColumn(ExternalPersonDataIndexDto::getBirthDate).setCaption(caption("birthDate"));
+		addColumn(ExternalPersonDataIndexDto::getMunicipality).setCaption(caption("municipalityOfResidence"));
+		addColumn(ExternalPersonDataIndexDto::getLivingStatus).setCaption(caption("livingStatus"));
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
 		grid.addItemClickListener(event -> open(event.getItem()));
 		grid.addStyleName("external-persons-grid");
@@ -180,7 +180,7 @@ public class ExternalPersonsView extends AbstractView {
 	}
 
 	private void resetPersonCriteria(PersonDto person, boolean maximal) {
-		state.id = new PersonalDataSearchRequest();
+		state.id = new ExternalPersonDataSearchRequest();
 		state.criteria = personCriteria(person, maximal);
 		idBinder.setBean(state.id);
 		filtersBinder.setBean(state.criteria);
@@ -190,8 +190,8 @@ public class ExternalPersonsView extends AbstractView {
 		clearResults();
 	}
 
-	private static PersonalDataSearchRequest personCriteria(PersonDto person, boolean maximal) {
-		PersonalDataSearchRequest criteria = new PersonalDataSearchRequest();
+	private static ExternalPersonDataSearchRequest personCriteria(PersonDto person, boolean maximal) {
+		ExternalPersonDataSearchRequest criteria = new ExternalPersonDataSearchRequest();
 		criteria.setFirstName(person.getFirstName());
 		criteria.setLastName(person.getLastName());
 		if (person.getBirthdateYYYY() != null) {
@@ -225,7 +225,7 @@ public class ExternalPersonsView extends AbstractView {
 		return criteria;
 	}
 
-	private Grid.Column<PersonalDataIndexDto, ?> addColumn(Function<PersonalDataIndexDto, ?> valueProvider) {
+	private Grid.Column<ExternalPersonDataIndexDto, ?> addColumn(Function<ExternalPersonDataIndexDto, ?> valueProvider) {
 		return grid.addColumn(person -> {
 			Object value = valueProvider.apply(person);
 			return value == null ? "" : value.toString();
@@ -273,11 +273,11 @@ public class ExternalPersonsView extends AbstractView {
 			clearResults();
 			return;
 		}
-		PersonalDataSearchRequest request = new PersonalDataSearchRequest();
+		ExternalPersonDataSearchRequest request = new ExternalPersonDataSearchRequest();
 		if (!(filters.isVisible() ? filtersBinder : idBinder).writeBeanIfValid(request)) {
 			return;
 		}
-		if (request.equals(new PersonalDataSearchRequest())) {
+		if (request.equals(new ExternalPersonDataSearchRequest())) {
 			return;
 		}
 		if (!validRange(request.getBirthYearFrom(), request.getBirthYearTo()) || !validRange(request.getAgeFrom(), request.getAgeTo())) {
@@ -285,8 +285,8 @@ public class ExternalPersonsView extends AbstractView {
 			return;
 		}
 		try {
-			PersonalDataSearchResponse response = FacadeProvider.getPersonalDataProviderFacade().search(request);
-			List<PersonalDataIndexDto> results = response.getResults() == null ? Collections.emptyList() : response.getResults();
+			ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().search(request);
+			List<ExternalPersonDataIndexDto> results = response.getResults() == null ? Collections.emptyList() : response.getResults();
 			state.results = new ArrayList<>(results.subList(0, Math.min(100, results.size())));
 			grid.setItems(state.results);
 			setMessage(results.isEmpty() ? I18nProperties.getString(Strings.infoNoExternalPersonData) : "");
@@ -308,7 +308,7 @@ public class ExternalPersonsView extends AbstractView {
 		return from == null || to == null || from <= to;
 	}
 
-	private void open(PersonalDataIndexDto person) {
+	private void open(ExternalPersonDataIndexDto person) {
 		if (StringUtils.isNotBlank(person.getNationalHealthId())) {
 			if (selectedExternalPersonData != null) {
 				selectedExternalPersonData.accept(person);

@@ -15,18 +15,19 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataForDisplayDto;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataIndexDto;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.personaldata.PersonalDataForDisplayDto;
-import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.externalperson.ExternalPersonDataComponent;
-import de.symeda.sormas.ui.externalperson.ExternalPersonsView;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonsView;
 
 class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTest {
 
@@ -44,8 +45,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 	@Test
 	void searchUsesOnlyVisibleCriteriaAndDoesNotSearchOnArrival() {
 		try (Context context = new Context(true, "true")) {
-			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
-				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
+				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 			response.setResults(java.util.Collections.emptyList());
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
 			ExternalPersonsView view = new ExternalPersonsView();
@@ -63,8 +64,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(2);
 			((com.vaadin.ui.TextField) filters.getComponent(0, 0)).setValue("Doe");
 			search.click();
-			org.mockito.ArgumentCaptor<de.symeda.sormas.api.personaldata.PersonalDataSearchRequest> request =
-				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.personaldata.PersonalDataSearchRequest.class);
+			org.mockito.ArgumentCaptor<de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest> request =
+				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest.class);
 			verify(context.provider).search(request.capture());
 			assertEquals("Doe", request.getValue().getLastName());
 			assertEquals(null, request.getValue().getNationalHealthId());
@@ -74,10 +75,10 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 	@Test
 	void directoryRetainsFiltersAndResultsUntilReset() {
 		try (Context context = new Context(true, "true")) {
-			de.symeda.sormas.api.personaldata.PersonalDataIndexDto person = new de.symeda.sormas.api.personaldata.PersonalDataIndexDto();
+			ExternalPersonDataIndexDto person = new ExternalPersonDataIndexDto();
 			person.setNationalHealthId("123");
-			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
-				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
+				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 			response.setResults(java.util.Collections.singletonList(person));
 			response.setTotalCount(2);
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
@@ -153,10 +154,10 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			context.person.setNationalHealthId(null);
 			context.person.setBirthdateYYYY(1980);
 			context.person.setBirthdateMM(5);
-			de.symeda.sormas.api.personaldata.PersonalDataIndexDto external = new de.symeda.sormas.api.personaldata.PersonalDataIndexDto();
+			ExternalPersonDataIndexDto external = new ExternalPersonDataIndexDto();
 			external.setNationalHealthId("external-id");
-			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
-				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
+				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 			response.setResults(java.util.Collections.singletonList(external));
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
 			// EXECUTE
@@ -164,8 +165,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
 			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(0)).click();
 			// CHECK
-			org.mockito.ArgumentCaptor<de.symeda.sormas.api.personaldata.PersonalDataSearchRequest> request =
-				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.personaldata.PersonalDataSearchRequest.class);
+			org.mockito.ArgumentCaptor<de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest> request =
+				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest.class);
 			verify(context.provider).search(request.capture());
 			assertEquals(1980, request.getValue().getBirthYearFrom());
 			assertEquals(1980, request.getValue().getBirthYearTo());
@@ -179,7 +180,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 	@Test
 	void rendersHtmlForTheSuppliedPerson() {
 		try (Context context = new Context(true, "true")) {
-			PersonalDataForDisplayDto display = new PersonalDataForDisplayDto();
+			ExternalPersonDataForDisplayDto display = new ExternalPersonDataForDisplayDto();
 			display.setHtml("<p>External person</p>");
 			when(context.provider.findDisplayDataByNationalHealthId("health-id")).thenReturn(display);
 			Panel panel = (Panel) context.create().getComponent(0);
@@ -219,8 +220,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			address.setCity("Locality");
 			address.setCommunity(new de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto("community", "Municipality", null));
 			context.person.setAddress(address);
-			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
-				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
+				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 			response.setResults(java.util.Collections.emptyList());
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
 			victim = context.create();
@@ -229,13 +230,12 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			com.vaadin.ui.HorizontalLayout buttons = (com.vaadin.ui.HorizontalLayout) presets.getComponent(1);
 			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(3);
 			com.vaadin.ui.Button search = (com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(0);
-			com.vaadin.ui.Grid<de.symeda.sormas.api.personaldata.PersonalDataIndexDto> grid =
-				(com.vaadin.ui.Grid<de.symeda.sormas.api.personaldata.PersonalDataIndexDto>) content.getComponent(6);
-			grid.setItems(new de.symeda.sormas.api.personaldata.PersonalDataIndexDto());
+			com.vaadin.ui.Grid<ExternalPersonDataIndexDto> grid = (com.vaadin.ui.Grid<ExternalPersonDataIndexDto>) content.getComponent(6);
+			grid.setItems(new ExternalPersonDataIndexDto());
 			((com.vaadin.ui.TextField) filters.getComponent(0, 0)).setValue("Edited name");
 			((com.vaadin.ui.Button) content.getComponent(1)).click();
 			((com.vaadin.ui.TextField) content.getComponent(0)).setValue("stale-id");
-			grid.setItems(new de.symeda.sormas.api.personaldata.PersonalDataIndexDto());
+			grid.setItems(new ExternalPersonDataIndexDto());
 			// EXECUTE
 			((com.vaadin.ui.Button) buttons.getComponent(1)).click();
 			// CHECK
@@ -245,10 +245,11 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			assertEquals("", ((com.vaadin.ui.TextField) content.getComponent(0)).getValue());
 			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
 			search.click();
-			org.mockito.ArgumentCaptor<de.symeda.sormas.api.personaldata.PersonalDataSearchRequest> request =
-				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.personaldata.PersonalDataSearchRequest.class);
+			org.mockito.ArgumentCaptor<de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest> request =
+				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest.class);
 			verify(context.provider).search(request.capture());
-			de.symeda.sormas.api.personaldata.PersonalDataSearchRequest expected = new de.symeda.sormas.api.personaldata.PersonalDataSearchRequest();
+			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest expected =
+				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest();
 			expected.setFirstName("Jane");
 			expected.setLastName("Doe");
 			if (birthDateParts == 2) {
@@ -270,7 +271,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 					: condition == de.symeda.sormas.api.person.PresentCondition.ALIVE);
 			assertEquals(expected, request.getValue());
 			org.mockito.Mockito.clearInvocations(context.provider);
-			grid.setItems(new de.symeda.sormas.api.personaldata.PersonalDataIndexDto());
+			grid.setItems(new ExternalPersonDataIndexDto());
 			((com.vaadin.ui.Button) buttons.getComponent(0)).click();
 			verifyNoInteractions(context.provider);
 			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
@@ -306,10 +307,10 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			context.person.setFirstName("Jane");
 			context.ui.when(() -> UiUtil.permitted(UserRight.PERSON_EDIT)).thenReturn(true);
 			when(context.personFacade.isEditAllowed("person-uuid")).thenReturn(true);
-			de.symeda.sormas.api.personaldata.PersonalDataIndexDto external = new de.symeda.sormas.api.personaldata.PersonalDataIndexDto();
+			ExternalPersonDataIndexDto external = new ExternalPersonDataIndexDto();
 			external.setNationalHealthId("external-id");
-			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
-				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
+				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 			response.setResults(java.util.Collections.singletonList(external));
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
 			PersonEditForm form = mock(PersonEditForm.class);
@@ -354,7 +355,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 	@Test
 	void blankExternalHtmlShowsLocalizedMessage() {
 		try (Context context = new Context(true, "true")) {
-			PersonalDataForDisplayDto display = new PersonalDataForDisplayDto();
+			ExternalPersonDataForDisplayDto display = new ExternalPersonDataForDisplayDto();
 			display.setHtml(" ");
 			when(context.provider.findDisplayDataByNationalHealthId("health-id")).thenReturn(display);
 			assertEquals(Strings.infoNoExternalPersonData, ((Label) context.create().getComponent(0)).getValue());
@@ -383,7 +384,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			return org.mockito.Answers.RETURNS_DEFAULTS.answer(invocation);
 		});
 		private final PersonFacade personFacade = mock(PersonFacade.class);
-		private final PersonalDataProviderFacade provider = mock(PersonalDataProviderFacade.class);
+		private final ExternalPersonDataProviderFacade provider = mock(ExternalPersonDataProviderFacade.class);
 		private final PersonDto person = new PersonDto();
 
 		private Context(boolean permitted, String enabled) {
@@ -395,10 +396,10 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			SystemConfigurationValueFacade configuration = mock(SystemConfigurationValueFacade.class);
 			facades.when(FacadeProvider::getSystemConfigurationValueFacade).thenReturn(configuration);
 			facades.when(FacadeProvider::getPersonFacade).thenReturn(personFacade);
-			facades.when(FacadeProvider::getPersonalDataProviderFacade).thenReturn(provider);
-			ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)).thenReturn(permitted);
+			facades.when(FacadeProvider::getExternalPersonDataProviderFacade).thenReturn(provider);
+			ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)).thenReturn(permitted);
 			org.mockito.Mockito.lenient()
-				.when(configuration.getValue(PersonalDataProviderFacade.EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED))
+				.when(configuration.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED))
 				.thenReturn(enabled);
 			person.setNationalHealthId("health-id");
 			org.mockito.Mockito.lenient().when(personFacade.getByUuid("person-uuid")).thenReturn(person);

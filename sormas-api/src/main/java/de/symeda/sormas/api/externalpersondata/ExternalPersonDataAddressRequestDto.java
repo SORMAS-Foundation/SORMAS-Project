@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.personaldata;
+package de.symeda.sormas.api.externalpersondata;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -7,7 +7,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 
-public class PersonalDataAddressRequestDto implements Serializable {
+public class ExternalPersonDataAddressRequestDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -43,7 +43,7 @@ public class PersonalDataAddressRequestDto implements Serializable {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
-		PersonalDataAddressRequestDto that = (PersonalDataAddressRequestDto) o;
+		ExternalPersonDataAddressRequestDto that = (ExternalPersonDataAddressRequestDto) o;
 		return Objects.equals(caseData, that.caseData) && Objects.equals(person, that.person) && Objects.equals(contact, that.contact);
 	}
 

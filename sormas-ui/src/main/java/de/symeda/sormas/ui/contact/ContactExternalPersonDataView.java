@@ -3,7 +3,7 @@ package de.symeda.sormas.ui.contact;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.ui.externalperson.ExternalPersonDataComponent;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
 
 public class ContactExternalPersonDataView extends AbstractContactView {
 

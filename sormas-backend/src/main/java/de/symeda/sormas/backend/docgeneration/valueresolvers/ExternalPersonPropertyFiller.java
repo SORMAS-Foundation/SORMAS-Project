@@ -6,10 +6,10 @@ import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataAddressRequestDto;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.personaldata.PersonalDataAddressRequestDto;
-import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 /**
@@ -26,15 +26,15 @@ public class ExternalPersonPropertyFiller extends AbstractRootValuePropertyFille
 
 	private final DocumentTemplateEntities entities;
 
-	private final PersonalDataProviderFacade personalDataProviderFacade;
+	private final ExternalPersonDataProviderFacade externalPersonDataProviderFacade;
 
 	public ExternalPersonPropertyFiller(
 		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver,
 		DocumentTemplateEntities entities,
-		PersonalDataProviderFacade personalDataProviderFacade) {
+		ExternalPersonDataProviderFacade externalPersonDataProviderFacade) {
 		super(referenceDtoResolver);
 		this.entities = entities;
-		this.personalDataProviderFacade = personalDataProviderFacade;
+		this.externalPersonDataProviderFacade = externalPersonDataProviderFacade;
 	}
 
 	private LocationDto getAddress() {
@@ -42,10 +42,10 @@ public class ExternalPersonPropertyFiller extends AbstractRootValuePropertyFille
 			return address;
 		}
 
-		PersonalDataAddressRequestDto request = new PersonalDataAddressRequestDto();
+		ExternalPersonDataAddressRequestDto request = new ExternalPersonDataAddressRequestDto();
 		request.setCaseData((CaseDataDto) entities.getEntity(RootEntityType.ROOT_CASE));
 		request.setPerson((PersonDto) entities.getEntity(RootEntityType.ROOT_PERSON));
-		address = personalDataProviderFacade.findAppropriateDocumentAddressFor(request);
+		address = externalPersonDataProviderFacade.findAppropriateDocumentAddressFor(request);
 
 		return address;
 	}

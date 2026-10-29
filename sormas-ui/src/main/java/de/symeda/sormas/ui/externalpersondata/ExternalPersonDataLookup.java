@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.externalperson;
+package de.symeda.sormas.ui.externalpersondata;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,12 +21,12 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSummaryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
-import de.symeda.sormas.api.personaldata.PersonalDataSummaryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -46,10 +46,10 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 	private boolean automaticallyApplied;
 
 	public static boolean isAvailable() {
-		return UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)
+		return UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)
 			&& StringUtils.isNotBlank(
 				FacadeProvider.getSystemConfigurationValueFacade()
-					.getValue(PersonalDataProviderFacade.PERSONAL_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY));
+					.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY));
 	}
 
 	public ExternalPersonDataLookup(
@@ -61,7 +61,7 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 		ComboBox birthDay) {
 
 		setWidth(800, Unit.PIXELS);
-		PersonalDataSummaryDto summary = load(nationalHealthId);
+		ExternalPersonDataSummaryDto summary = load(nationalHealthId);
 		if (summary == null) {
 			return;
 		}
@@ -149,13 +149,13 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 		return selections.stream().anyMatch(CheckBox::isEnabled) && selections.stream().filter(CheckBox::isEnabled).allMatch(CheckBox::getValue);
 	}
 
-	private PersonalDataSummaryDto load(String nationalHealthId) {
+	private ExternalPersonDataSummaryDto load(String nationalHealthId) {
 		if (StringUtils.isBlank(nationalHealthId)) {
 			addComponent(new Label(I18nProperties.getString(Strings.errorNoNationalHealthIdInContext)));
 			return null;
 		}
 		try {
-			PersonalDataSummaryDto summary = FacadeProvider.getPersonalDataProviderFacade().findDataByNationalHealthId(nationalHealthId);
+			ExternalPersonDataSummaryDto summary = FacadeProvider.getExternalPersonDataProviderFacade().findDataByNationalHealthId(nationalHealthId);
 			if (summary == null) {
 				addComponent(new Label(I18nProperties.getString(Strings.infoNoExternalPersonData)));
 			}

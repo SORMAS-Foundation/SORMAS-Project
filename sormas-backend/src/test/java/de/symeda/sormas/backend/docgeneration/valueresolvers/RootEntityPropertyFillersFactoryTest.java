@@ -18,12 +18,12 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.backend.AbstractUnitTest;
-import de.symeda.sormas.backend.personaldata.PersonalDataProviderFacadeEJB.PersonalDataProviderFacadeEJBLocal;
+import de.symeda.sormas.backend.externalpersondata.ExternalPersonDataProviderFacadeEJB.ExternalPersonDataProviderFacadeEJBLocal;
 
 class RootEntityPropertyFillersFactoryTest extends AbstractUnitTest {
 
 	@Mock
-	private PersonalDataProviderFacadeEJBLocal provider;
+	private ExternalPersonDataProviderFacadeEJBLocal provider;
 
 	@InjectMocks
 	private RootEntityPropertyFillersFactory factory;
@@ -36,19 +36,19 @@ class RootEntityPropertyFillersFactoryTest extends AbstractUnitTest {
 		secondAddress.setCity("Lyon");
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(firstAddress, secondAddress);
 		RootEntityPropertyFiller first =
-			factory.createPropertyFiller(RootEntityType.ROOT_EXTERNAL_PERSON, new DocumentTemplateEntities(), reference -> null);
+			factory.createPropertyFiller(RootEntityType.ROOT_EXTERNAL_PERSON_DATA, new DocumentTemplateEntities(), reference -> null);
 		RootEntityPropertyFiller second =
-			factory.createPropertyFiller(RootEntityType.ROOT_EXTERNAL_PERSON, new DocumentTemplateEntities(), reference -> null);
+			factory.createPropertyFiller(RootEntityType.ROOT_EXTERNAL_PERSON_DATA, new DocumentTemplateEntities(), reference -> null);
 		Properties firstProperties = new Properties();
 		Properties secondProperties = new Properties();
 
-		first.fillValueInto("externalPerson.city", firstProperties);
-		second.fillValueInto("externalPerson.city", secondProperties);
-		first.fillValueInto("externalPerson.city", firstProperties);
+		first.fillValueInto("externalPersonData.city", firstProperties);
+		second.fillValueInto("externalPersonData.city", secondProperties);
+		first.fillValueInto("externalPersonData.city", firstProperties);
 
 		assertNotSame(first, second);
-		assertEquals("Paris", firstProperties.getProperty("externalPerson.city"));
-		assertEquals("Lyon", secondProperties.getProperty("externalPerson.city"));
+		assertEquals("Paris", firstProperties.getProperty("externalPersonData.city"));
+		assertEquals("Lyon", secondProperties.getProperty("externalPersonData.city"));
 		verify(provider, times(2)).findAppropriateDocumentAddressFor(any());
 	}
 

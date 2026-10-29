@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.personaldata;
+package de.symeda.sormas.api.externalpersondata;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.person.Sex;
 
-public class PersonalDataSearchRequest implements Serializable {
+public class ExternalPersonDataSearchRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -132,7 +132,7 @@ public class PersonalDataSearchRequest implements Serializable {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
-		PersonalDataSearchRequest that = (PersonalDataSearchRequest) o;
+		ExternalPersonDataSearchRequest that = (ExternalPersonDataSearchRequest) o;
 		return Objects.equals(nationalHealthId, that.nationalHealthId)
 			&& Objects.equals(lastName, that.lastName)
 			&& Objects.equals(firstName, that.firstName)

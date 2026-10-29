@@ -129,7 +129,7 @@ public class ContactController {
 		}
 		navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
 		navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
-		if (UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)) {
 			navigator.addView(ContactExternalPersonDataView.VIEW_NAME, ContactExternalPersonDataView.class);
 		}
 		navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);

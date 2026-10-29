@@ -17966,4 +17966,30 @@ WHERE name = 'GENERAL_CATEGORY';
 
 INSERT INTO schema_version (version_number, comment) VALUES (679, 'Add external personal data provider configuration');
 
+-- Rename the external person data provider settings and access right while retaining configured values and grants.
+UPDATE systemconfigurationvalue
+SET config_key = CASE config_key
+        WHEN 'EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED' THEN 'EXTERNAL_PERSON_DATA_PROVIDER_ENABLED'
+        WHEN 'PERSONAL_DATA_PROVIDER_ADAPTER' THEN 'EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER'
+    END,
+    changedate = now()
+WHERE config_key IN ('EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED', 'PERSONAL_DATA_PROVIDER_ADAPTER');
+
+UPDATE systemconfigurationvalue_history
+SET config_key = CASE config_key
+        WHEN 'EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED' THEN 'EXTERNAL_PERSON_DATA_PROVIDER_ENABLED'
+        WHEN 'PERSONAL_DATA_PROVIDER_ADAPTER' THEN 'EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER'
+    END
+WHERE config_key IN ('EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED', 'PERSONAL_DATA_PROVIDER_ADAPTER');
+
+UPDATE userroles_userrights
+SET userright = 'EXTERNAL_PERSON_DATA_PROVIDER_ACCESS'
+WHERE userright = 'EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS';
+
+UPDATE userroles_userrights_history
+SET userright = 'EXTERNAL_PERSON_DATA_PROVIDER_ACCESS'
+WHERE userright = 'EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS';
+
+INSERT INTO schema_version (version_number, comment) VALUES (680, 'Rename external person data provider settings and access right');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

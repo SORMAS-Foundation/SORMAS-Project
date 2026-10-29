@@ -42,7 +42,7 @@ import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
-import de.symeda.sormas.ui.externalperson.ExternalPersonDataComponent;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;

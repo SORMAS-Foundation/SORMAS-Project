@@ -30,7 +30,7 @@ public enum RootEntityType {
 	ROOT_TRAVEL_ENTRY("travelEntry"),
 	ROOT_VACCINATION("vaccination"),
 
-	ROOT_EXTERNAL_PERSON("externalPerson", false),
+	ROOT_EXTERNAL_PERSON_DATA("externalPersonData", false),
 	ROOT_GENERAL("general", false);
 
 	private final String entityName;

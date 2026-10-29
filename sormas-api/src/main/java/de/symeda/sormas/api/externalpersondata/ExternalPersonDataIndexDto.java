@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.personaldata;
+package de.symeda.sormas.api.externalpersondata;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -7,7 +7,7 @@ import java.util.Objects;
 import de.symeda.sormas.api.person.LivingStatus;
 import de.symeda.sormas.api.person.Sex;
 
-public class PersonalDataIndexDto implements Serializable {
+public class ExternalPersonDataIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -81,7 +81,7 @@ public class PersonalDataIndexDto implements Serializable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		PersonalDataIndexDto that = (PersonalDataIndexDto) o;
+		ExternalPersonDataIndexDto that = (ExternalPersonDataIndexDto) o;
 		return Objects.equals(nationalHealthId, that.nationalHealthId)
 			&& Objects.equals(lastName, that.lastName)
 			&& Objects.equals(firstName, that.firstName)
