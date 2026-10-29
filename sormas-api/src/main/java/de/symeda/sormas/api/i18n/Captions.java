@@ -2239,6 +2239,7 @@ public interface Captions {
 	String externalPersonData = "externalPersonData";
 	String externalPersonDataCurrentValue = "externalPersonDataCurrentValue";
 	String externalPersonDataProviderValue = "externalPersonDataProviderValue";
+	String externalPersonLinkNationalHealthId = "externalPersonLinkNationalHealthId";
 	String ExternalPersons_ageFrom = "ExternalPersons.ageFrom";
 	String ExternalPersons_ageTo = "ExternalPersons.ageTo";
 	String ExternalPersons_alive = "ExternalPersons.alive";
@@ -2253,6 +2254,8 @@ public interface Captions {
 	String ExternalPersons_municipalityOfResidence = "ExternalPersons.municipalityOfResidence";
 	String ExternalPersons_nationalHealthId = "ExternalPersons.nationalHealthId";
 	String ExternalPersons_sex = "ExternalPersons.sex";
+	String externalPersonsResetMaximalCriteria = "externalPersonsResetMaximalCriteria";
+	String externalPersonsResetMinimalCriteria = "externalPersonsResetMinimalCriteria";
 	String externalPersonsSearchByHealthId = "externalPersonsSearchByHealthId";
 	String externalPersonsShowMoreFilters = "externalPersonsShowMoreFilters";
 	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";

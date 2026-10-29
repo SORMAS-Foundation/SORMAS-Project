@@ -1,9 +1,11 @@
-package de.symeda.sormas.ui.person;
+package de.symeda.sormas.ui.externalperson;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -31,6 +33,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.personaldata.PersonalDataIndexDto;
 import de.symeda.sormas.api.personaldata.PersonalDataSearchRequest;
@@ -38,6 +44,7 @@ import de.symeda.sormas.api.personaldata.PersonalDataSearchResponse;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -53,6 +60,7 @@ public class ExternalPersonsView extends AbstractView {
 	private final Grid<PersonalDataIndexDto> grid = new Grid<>();
 	private final Label message = new Label();
 	private SearchState state;
+	private final Consumer<PersonalDataIndexDto> selection;
 
 	public static class SearchState implements Serializable {
 
@@ -65,11 +73,20 @@ public class ExternalPersonsView extends AbstractView {
 	}
 
 	public ExternalPersonsView() {
+		this(null, null);
+	}
+
+	public ExternalPersonsView(PersonDto person, Consumer<PersonalDataIndexDto> selection) {
 		super(VIEW_NAME);
+		this.selection = selection;
 		if (!ExternalPersonDataComponent.isAvailable()) {
 			return;
 		}
-		state = ViewModelProviders.of(ExternalPersonsView.class).get(SearchState.class);
+		state = person == null ? ViewModelProviders.of(ExternalPersonsView.class).get(SearchState.class) : new SearchState();
+		if (person != null) {
+			state.expanded = true;
+			state.criteria = personCriteria(person, false);
+		}
 		idBinder.forField(nationalHealthId)
 			.withValidator(
 				value -> StringUtils.isBlank(value) || !LuxembourgNationalHealthIdValidator.isValidWithCause(value.trim()).isPresent(),
@@ -127,6 +144,21 @@ public class ExternalPersonsView extends AbstractView {
 		grid.addStyleName("external-persons-grid");
 		grid.setSizeFull();
 		VerticalLayout content = new VerticalLayout(nationalHealthId, toggle, filters, new HorizontalLayout(search, reset), message, grid);
+		if (person != null && selection != null) {
+			Label explanation = new Label(I18nProperties.getString("externalPersonsLinkSearchExplanation"));
+			explanation.setWidth(100, Unit.PERCENTAGE);
+			Button minimal = new Button(I18nProperties.getCaption("externalPersonsResetMinimalCriteria"), event -> {
+				resetPersonCriteria(person, false);
+				toggle.setCaption(I18nProperties.getCaption("externalPersonsSearchByHealthId"));
+			});
+			Button maximal = new Button(I18nProperties.getCaption("externalPersonsResetMaximalCriteria"), event -> {
+				resetPersonCriteria(person, true);
+				toggle.setCaption(I18nProperties.getCaption("externalPersonsSearchByHealthId"));
+			});
+			VerticalLayout presets = new VerticalLayout(explanation, new HorizontalLayout(minimal, maximal));
+			presets.setMargin(false);
+			content.addComponent(presets, 2);
+		}
 		content.setSizeFull();
 		content.setExpandRatio(grid, 1);
 		addComponent(content);
@@ -136,7 +168,62 @@ public class ExternalPersonsView extends AbstractView {
 		setMessage(state.message == null ? I18nProperties.getString("externalPersonsEnterCriteria") : state.message);
 	}
 
-	private Grid.Column<PersonalDataIndexDto, String> addLinkColumn(Function<PersonalDataIndexDto, ?> valueProvider) {
+	private void resetPersonCriteria(PersonDto person, boolean maximal) {
+		state.id = new PersonalDataSearchRequest();
+		state.criteria = personCriteria(person, maximal);
+		idBinder.setBean(state.id);
+		filtersBinder.setBean(state.criteria);
+		state.expanded = true;
+		filters.setVisible(true);
+		nationalHealthId.setVisible(false);
+		clearResults();
+	}
+
+	private static PersonalDataSearchRequest personCriteria(PersonDto person, boolean maximal) {
+		PersonalDataSearchRequest criteria = new PersonalDataSearchRequest();
+		criteria.setFirstName(person.getFirstName());
+		criteria.setLastName(person.getLastName());
+		if (person.getBirthdateYYYY() != null) {
+			if (person.getBirthdateMM() != null && person.getBirthdateDD() != null) {
+				criteria.setBirthDate(LocalDate.of(person.getBirthdateYYYY(), person.getBirthdateMM(), person.getBirthdateDD()));
+			} else {
+				criteria.setBirthYearFrom(person.getBirthdateYYYY());
+				criteria.setBirthYearTo(person.getBirthdateYYYY());
+			}
+		}
+		if (maximal) {
+			criteria.setSex(person.getSex());
+			PresentCondition condition = person.getPresentCondition();
+			if (condition == PresentCondition.ALIVE) {
+				criteria.setAlive(true);
+			} else if (condition != null && condition.isDeceased()) {
+				criteria.setAlive(false);
+			}
+			if (person.getBirthdateYYYY() == null) {
+				Integer age = ApproximateAgeHelper.getAgeYears(person.getApproximateAge(), person.getApproximateAgeType());
+				criteria.setAgeFrom(age);
+				criteria.setAgeTo(age);
+			}
+			LocationDto address = person.getAddress();
+			if (address != null) {
+				criteria.setCountryOfResidence(address.getCountry() == null ? null : address.getCountry().getIsoCode());
+				criteria.setLocalityOfResidence(address.getCity());
+				criteria.setMunicipalityOfResidence(address.getCommunity() == null ? null : address.getCommunity().getCaption());
+			}
+		}
+		return criteria;
+	}
+
+	private Grid.Column<PersonalDataIndexDto, ?> addLinkColumn(Function<PersonalDataIndexDto, ?> valueProvider) {
+		if (selection != null) {
+			return grid.addComponentColumn(person -> {
+				Object value = valueProvider.apply(person);
+				Button button = new Button(value == null ? "" : value.toString(), event -> open(person));
+				button.addStyleName(com.vaadin.ui.themes.ValoTheme.BUTTON_LINK);
+				button.setEnabled(StringUtils.isNotBlank(person.getNationalHealthId()));
+				return button;
+			});
+		}
 		return grid.addColumn(person -> {
 			Object value = valueProvider.apply(person);
 			String text = StringEscapeUtils.escapeHtml4(value == null ? "" : value.toString());
@@ -226,7 +313,11 @@ public class ExternalPersonsView extends AbstractView {
 
 	private void open(PersonalDataIndexDto person) {
 		if (StringUtils.isNotBlank(person.getNationalHealthId())) {
-			SormasUI.get().getNavigator().navigateTo(ExternalPersonView.VIEW_NAME + "/" + person.getNationalHealthId());
+			if (selection != null) {
+				selection.accept(person);
+			} else {
+				SormasUI.get().getNavigator().navigateTo(ExternalPersonView.VIEW_NAME + "/" + person.getNationalHealthId());
+			}
 		}
 	}
 

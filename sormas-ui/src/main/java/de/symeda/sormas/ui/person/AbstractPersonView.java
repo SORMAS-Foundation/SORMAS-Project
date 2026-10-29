@@ -10,6 +10,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.externalperson.ExternalPersonDataView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 
 public abstract class AbstractPersonView extends AbstractEditAllowedDetailView<PersonReferenceDto> {
@@ -45,7 +46,7 @@ public abstract class AbstractPersonView extends AbstractEditAllowedDetailView<P
 		menu.addView(PersonDataView.VIEW_NAME, I18nProperties.getCaption(PersonDto.I18N_PREFIX), params);
 
 		if (ExternalPersonDataComponent.isAvailable()) {
-			menu.addView(PersonExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
+			menu.addView(ExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
 		}
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(getReference().getUuid());

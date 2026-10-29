@@ -25,8 +25,11 @@ import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.externalperson.ExternalPersonsView;
 
-class ExternalPersonDataComponentTest {
+class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTest {
+
+	private ExternalPersonDataComponent victim;
 
 	@Test
 	void loadsExternalDataByHealthIdWithoutLoadingLocalPerson() {
@@ -119,12 +122,56 @@ class ExternalPersonDataComponentTest {
 	}
 
 	@Test
-	void missingHealthIdShowsErrorWithoutCallingAdapter() {
+	void missingHealthIdPrefillsCriteriaWithoutCallingAdapter() {
 		try (Context context = new Context(true, "true")) {
+			// PREPARE
 			context.person.setNationalHealthId(" ");
-			Label message = (Label) context.create().getComponent(0);
-			assertEquals(Strings.errorNoNationalHealthIdInContext, message.getValue());
+			context.person.setFirstName("Jane");
+			context.person.setLastName("Doe");
+			context.person.setBirthdateYYYY(1980);
+			context.person.setBirthdateMM(5);
+			context.person.setBirthdateDD(12);
+			// EXECUTE
+			victim = context.create();
+			// CHECK
+			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
+			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(3);
+			org.junit.jupiter.api.Assertions.assertTrue(filters.isVisible());
+			org.junit.jupiter.api.Assertions.assertFalse(content.getComponent(0).isVisible());
+			assertEquals("Doe", ((com.vaadin.ui.TextField) filters.getComponent(0, 0)).getValue());
+			assertEquals("Jane", ((com.vaadin.ui.TextField) filters.getComponent(1, 0)).getValue());
+			assertEquals(java.time.LocalDate.of(1980, 5, 12), ((com.vaadin.ui.DateField) filters.getComponent(3, 0)).getValue());
 			verifyNoInteractions(context.provider);
+		}
+	}
+
+	@Test
+	void partialBirthdateUsesYearRangeAndSingleResultOpensWithoutSaving() {
+		try (Context context = new Context(true, "true")) {
+			// PREPARE
+			context.person.setNationalHealthId(null);
+			context.person.setBirthdateYYYY(1980);
+			context.person.setBirthdateMM(5);
+			de.symeda.sormas.api.personaldata.PersonalDataIndexDto external = new de.symeda.sormas.api.personaldata.PersonalDataIndexDto();
+			external.setNationalHealthId("external-id");
+			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
+				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			response.setResults(java.util.Collections.singletonList(external));
+			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
+			// EXECUTE
+			victim = context.create();
+			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
+			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(0)).click();
+			// CHECK
+			org.mockito.ArgumentCaptor<de.symeda.sormas.api.personaldata.PersonalDataSearchRequest> request =
+				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.personaldata.PersonalDataSearchRequest.class);
+			verify(context.provider).search(request.capture());
+			assertEquals(1980, request.getValue().getBirthYearFrom());
+			assertEquals(1980, request.getValue().getBirthYearTo());
+			assertEquals(null, request.getValue().getBirthDate());
+			verify(context.provider).findDisplayDataByNationalHealthId("external-id");
+			org.mockito.Mockito.verify(context.personFacade, org.mockito.Mockito.never()).save(org.mockito.ArgumentMatchers.any());
+			org.junit.jupiter.api.Assertions.assertInstanceOf(com.vaadin.ui.Button.class, victim.getComponent(0));
 		}
 	}
 
@@ -140,6 +187,159 @@ class ExternalPersonDataComponentTest {
 			assertEquals(ContentMode.HTML, html.getContentMode());
 			verify(context.personFacade).getByUuid("person-uuid");
 			verify(context.provider).findDisplayDataByNationalHealthId("health-id");
+		}
+	}
+
+	@org.junit.jupiter.params.ParameterizedTest
+	@org.junit.jupiter.params.provider.CsvSource({
+		"2, ALIVE",
+		"1, DEAD",
+		"0, BURIED",
+		"0, UNKNOWN" })
+	void criteriaPresetsReplaceFieldsWithoutSearching(int birthDateParts, de.symeda.sormas.api.person.PresentCondition condition) {
+		try (Context context = new Context(true, "true")) {
+			// PREPARE
+			context.person.setNationalHealthId(null);
+			context.person.setFirstName("Jane");
+			context.person.setLastName("Doe");
+			context.person.setSex(de.symeda.sormas.api.person.Sex.FEMALE);
+			context.person.setPresentCondition(condition);
+			context.person.setApproximateAge(42);
+			context.person.setApproximateAgeType(de.symeda.sormas.api.person.ApproximateAgeType.MONTHS);
+			if (birthDateParts > 0) {
+				context.person.setBirthdateYYYY(1980);
+			}
+			if (birthDateParts == 2) {
+				context.person.setBirthdateMM(5);
+				context.person.setBirthdateDD(12);
+			}
+			de.symeda.sormas.api.location.LocationDto address = new de.symeda.sormas.api.location.LocationDto();
+			address.setCountry(new de.symeda.sormas.api.infrastructure.country.CountryReferenceDto("country", "Luxembourg", "LU"));
+			address.setCity("Locality");
+			address.setCommunity(new de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto("community", "Municipality", null));
+			context.person.setAddress(address);
+			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
+				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			response.setResults(java.util.Collections.emptyList());
+			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
+			victim = context.create();
+			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
+			com.vaadin.ui.VerticalLayout presets = (com.vaadin.ui.VerticalLayout) content.getComponent(2);
+			com.vaadin.ui.HorizontalLayout buttons = (com.vaadin.ui.HorizontalLayout) presets.getComponent(1);
+			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(3);
+			com.vaadin.ui.Button search = (com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(0);
+			com.vaadin.ui.Grid<de.symeda.sormas.api.personaldata.PersonalDataIndexDto> grid =
+				(com.vaadin.ui.Grid<de.symeda.sormas.api.personaldata.PersonalDataIndexDto>) content.getComponent(6);
+			grid.setItems(new de.symeda.sormas.api.personaldata.PersonalDataIndexDto());
+			((com.vaadin.ui.TextField) filters.getComponent(0, 0)).setValue("Edited name");
+			((com.vaadin.ui.Button) content.getComponent(1)).click();
+			((com.vaadin.ui.TextField) content.getComponent(0)).setValue("stale-id");
+			grid.setItems(new de.symeda.sormas.api.personaldata.PersonalDataIndexDto());
+			// EXECUTE
+			((com.vaadin.ui.Button) buttons.getComponent(1)).click();
+			// CHECK
+			verifyNoInteractions(context.provider);
+			assertEquals("externalPersonsLinkSearchExplanation", ((Label) presets.getComponent(0)).getValue());
+			org.junit.jupiter.api.Assertions.assertTrue(filters.isVisible());
+			assertEquals("", ((com.vaadin.ui.TextField) content.getComponent(0)).getValue());
+			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
+			search.click();
+			org.mockito.ArgumentCaptor<de.symeda.sormas.api.personaldata.PersonalDataSearchRequest> request =
+				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.personaldata.PersonalDataSearchRequest.class);
+			verify(context.provider).search(request.capture());
+			de.symeda.sormas.api.personaldata.PersonalDataSearchRequest expected = new de.symeda.sormas.api.personaldata.PersonalDataSearchRequest();
+			expected.setFirstName("Jane");
+			expected.setLastName("Doe");
+			if (birthDateParts == 2) {
+				expected.setBirthDate(java.time.LocalDate.of(1980, 5, 12));
+			} else if (birthDateParts == 1) {
+				expected.setBirthYearFrom(1980);
+				expected.setBirthYearTo(1980);
+			} else {
+				expected.setAgeFrom(3);
+				expected.setAgeTo(3);
+			}
+			expected.setSex(de.symeda.sormas.api.person.Sex.FEMALE);
+			expected.setCountryOfResidence("LU");
+			expected.setLocalityOfResidence("Locality");
+			expected.setMunicipalityOfResidence("Municipality");
+			expected.setAlive(
+				condition == de.symeda.sormas.api.person.PresentCondition.UNKNOWN
+					? null
+					: condition == de.symeda.sormas.api.person.PresentCondition.ALIVE);
+			assertEquals(expected, request.getValue());
+			org.mockito.Mockito.clearInvocations(context.provider);
+			grid.setItems(new de.symeda.sormas.api.personaldata.PersonalDataIndexDto());
+			((com.vaadin.ui.Button) buttons.getComponent(0)).click();
+			verifyNoInteractions(context.provider);
+			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
+			search.click();
+			verify(context.provider).search(request.capture());
+			expected.setSex(null);
+			expected.setCountryOfResidence(null);
+			expected.setLocalityOfResidence(null);
+			expected.setMunicipalityOfResidence(null);
+			expected.setAlive(null);
+			expected.setAgeFrom(null);
+			expected.setAgeTo(null);
+			assertEquals(expected, request.getValue());
+			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(1)).click();
+			assertEquals("", ((com.vaadin.ui.TextField) filters.getComponent(0, 0)).getValue());
+		}
+	}
+
+	@org.junit.jupiter.params.ParameterizedTest
+	@org.junit.jupiter.params.provider.CsvSource({
+		"persons/externalPersonData/person-uuid, persons/data/person-uuid",
+		"cases/externalPersonData/case-uuid, cases/person/case-uuid",
+		"contacts/externalPersonData/contact-uuid, contacts/person/contact-uuid",
+		"events/eventparticipants/externalPersonData/participant-uuid, events/eventparticipants/person/participant-uuid",
+		"immunizations/externalPersonData/immunization-uuid, immunizations/person/immunization-uuid",
+		"travelEntries/externalPersonData/entry-uuid, travelEntries/person/entry-uuid" })
+	void linkingReturnsToPersonFormAndLeavesIdUnsaved(String source, String target) {
+		com.vaadin.ui.UI previous = com.vaadin.ui.UI.getCurrent();
+		try (Context context = new Context(true, "true")) {
+			// PREPARE
+			context.person.setUuid("person-uuid");
+			context.person.setNationalHealthId(null);
+			context.person.setFirstName("Jane");
+			context.ui.when(() -> UiUtil.permitted(UserRight.PERSON_EDIT)).thenReturn(true);
+			when(context.personFacade.isEditAllowed("person-uuid")).thenReturn(true);
+			de.symeda.sormas.api.personaldata.PersonalDataIndexDto external = new de.symeda.sormas.api.personaldata.PersonalDataIndexDto();
+			external.setNationalHealthId("external-id");
+			de.symeda.sormas.api.personaldata.PersonalDataSearchResponse response =
+				new de.symeda.sormas.api.personaldata.PersonalDataSearchResponse();
+			response.setResults(java.util.Collections.singletonList(external));
+			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
+			PersonEditForm form = mock(PersonEditForm.class);
+			com.vaadin.v7.ui.TextField id = new com.vaadin.v7.ui.TextField();
+			when(form.getField(PersonDto.NATIONAL_HEALTH_ID)).thenReturn(id);
+			when(form.getValue()).thenReturn(context.person);
+			com.vaadin.ui.UI ui = mock(com.vaadin.ui.UI.class);
+			com.vaadin.navigator.Navigator navigator = mock(com.vaadin.navigator.Navigator.class);
+			when(ui.getNavigator()).thenReturn(navigator);
+			when(navigator.getState()).thenReturn(source);
+			TestPersonView targetView = new TestPersonView(form);
+			when(navigator.getCurrentView()).thenReturn(targetView);
+			com.vaadin.ui.UI.setCurrent(ui);
+			// EXECUTE
+			victim = context.create();
+			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
+			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(0)).click();
+			((com.vaadin.ui.Button) victim.getComponent(0)).click();
+			// CHECK
+			verify(navigator).navigateTo(target);
+			assertEquals("external-id", id.getValue());
+			org.mockito.Mockito.verify(context.personFacade, org.mockito.Mockito.never()).save(org.mockito.ArgumentMatchers.any());
+		} finally {
+			com.vaadin.ui.UI.setCurrent(previous);
+		}
+	}
+
+	private static class TestPersonView extends com.vaadin.ui.VerticalLayout implements com.vaadin.navigator.View {
+
+		private TestPersonView(PersonEditForm form) {
+			addComponent(form);
 		}
 	}
 
@@ -176,7 +376,8 @@ class ExternalPersonDataComponentTest {
 		private final MockedStatic<UiUtil> ui = mockStatic(UiUtil.class);
 		private final MockedStatic<I18nProperties> i18n = mockStatic(I18nProperties.class, invocation -> {
 			if (invocation.getMethod().getReturnType() == String.class && invocation.getArguments().length > 0) {
-				return invocation.getArgument(0);
+				Object value = invocation.getArgument(0);
+				return value instanceof Enum<?> ? ((Enum<?>) value).name() : value;
 			}
 			return org.mockito.Answers.RETURNS_DEFAULTS.answer(invocation);
 		});
@@ -195,9 +396,11 @@ class ExternalPersonDataComponentTest {
 			facades.when(FacadeProvider::getPersonFacade).thenReturn(personFacade);
 			facades.when(FacadeProvider::getPersonalDataProviderFacade).thenReturn(provider);
 			ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)).thenReturn(permitted);
-			when(configuration.getValue(PersonalDataProviderFacade.EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED)).thenReturn(enabled);
+			org.mockito.Mockito.lenient()
+				.when(configuration.getValue(PersonalDataProviderFacade.EXTERNAL_PERSONAL_DATA_PROVIDER_ENABLED))
+				.thenReturn(enabled);
 			person.setNationalHealthId("health-id");
-			when(personFacade.getByUuid("person-uuid")).thenReturn(person);
+			org.mockito.Mockito.lenient().when(personFacade.getByUuid("person-uuid")).thenReturn(person);
 			i18n.when(() -> I18nProperties.getString(Strings.errorNoNationalHealthIdInContext)).thenReturn(Strings.errorNoNationalHealthIdInContext);
 			i18n.when(() -> I18nProperties.getString(Strings.errorExternalPersonDataLoad)).thenReturn(Strings.errorExternalPersonDataLoad);
 			i18n.when(() -> I18nProperties.getString(Strings.infoNoExternalPersonData)).thenReturn(Strings.infoNoExternalPersonData);

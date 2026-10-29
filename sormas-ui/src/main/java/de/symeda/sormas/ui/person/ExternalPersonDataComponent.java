@@ -5,10 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -17,6 +24,7 @@ import de.symeda.sormas.api.personaldata.PersonalDataForDisplayDto;
 import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.externalperson.ExternalPersonsView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
@@ -39,7 +47,33 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 		}
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
-		load(person.getNationalHealthId());
+		if (StringUtils.isBlank(person.getNationalHealthId())) {
+			ExternalPersonsView search = new ExternalPersonsView(person, external -> {
+				Component searchComponent = getComponent(0);
+				removeAllComponents();
+				load(external.getNationalHealthId());
+				Button link = new Button(I18nProperties.getCaption("externalPersonLinkNationalHealthId"), event -> {
+					String state = UI.getCurrent().getNavigator().getState();
+					String target = state.replace("/externalPersonData/", state.startsWith(PersonsView.VIEW_NAME + "/") ? "/data/" : "/person/");
+					UI.getCurrent().getNavigator().navigateTo(target);
+					applyNationalHealthId(
+						(Component) UI.getCurrent().getNavigator().getCurrentView(),
+						person.getUuid(),
+						external.getNationalHealthId());
+				});
+				link.setVisible(UiUtil.permitted(UserRight.PERSON_EDIT) && FacadeProvider.getPersonFacade().isEditAllowed(person.getUuid()));
+				addComponent(link, 0);
+				addComponent(new Button(I18nProperties.getCaption(Captions.actionBack), event -> {
+					removeAllComponents();
+					addComponent(searchComponent);
+					setExpandRatio(searchComponent, 1);
+				}), 1);
+			});
+			addComponent(search);
+			setExpandRatio(search, 1);
+		} else {
+			load(person.getNationalHealthId());
+		}
 	}
 
 	public ExternalPersonDataComponent(String nationalHealthId) {
@@ -76,6 +110,20 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 		panel.setSizeFull();
 		addComponent(panel);
 		setExpandRatio(panel, 1);
+	}
+
+	private static void applyNationalHealthId(Component component, String personUuid, String nationalHealthId) {
+		if (component instanceof PersonEditForm) {
+			PersonEditForm form = (PersonEditForm) component;
+			Field<?> field = form.getField(PersonDto.NATIONAL_HEALTH_ID);
+			if (personUuid.equals(form.getValue().getUuid()) && field.isEnabled() && !field.isReadOnly() && field.isVisible()) {
+				((TextField) field).setValue(nationalHealthId);
+			}
+		} else if (component instanceof HasComponents) {
+			for (Component child : (HasComponents) component) {
+				applyNationalHealthId(child, personUuid, nationalHealthId);
+			}
+		}
 	}
 
 	private void showError(String messageKey) {

@@ -1,14 +1,18 @@
-package de.symeda.sormas.ui.person;
+package de.symeda.sormas.ui.externalperson;
 
 import com.vaadin.ui.UI;
+import de.symeda.sormas.ui.person.AbstractPersonView;
+import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
+import de.symeda.sormas.ui.person.PersonDataView;
+import de.symeda.sormas.ui.person.PersonsView;
 
-public class PersonExternalPersonDataView extends AbstractPersonView {
+public class ExternalPersonDataView extends AbstractPersonView {
 
 	private static final long serialVersionUID = 1L;
 
 	public static final String VIEW_NAME = PersonsView.VIEW_NAME + "/externalPersonData";
 
-	public PersonExternalPersonDataView() {
+	public ExternalPersonDataView() {
 		super(VIEW_NAME);
 	}
 

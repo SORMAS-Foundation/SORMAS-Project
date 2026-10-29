@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.person;
+package de.symeda.sormas.ui.externalperson;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 	private final List<CheckBox> selections = new ArrayList<>();
 	private final Button apply = ButtonHelper.createButton(Captions.actionApply);
 
-	static boolean isAvailable() {
+	public static boolean isAvailable() {
 		return UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)
 			&& StringUtils.isNotBlank(
 				FacadeProvider.getSystemConfigurationValueFacade()

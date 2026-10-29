@@ -80,6 +80,7 @@ import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.events.eventParticipantMerge.PickLeadEventParticipant;
+import de.symeda.sormas.ui.externalperson.ExternalPersonDataView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -102,7 +103,7 @@ public class PersonController {
 		navigator.addView(PersonsView.VIEW_NAME, PersonsView.class);
 		navigator.addView(PersonDataView.VIEW_NAME, PersonDataView.class);
 		if (UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)) {
-			navigator.addView(PersonExternalPersonDataView.VIEW_NAME, PersonExternalPersonDataView.class);
+			navigator.addView(ExternalPersonDataView.VIEW_NAME, ExternalPersonDataView.class);
 		}
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 	}
