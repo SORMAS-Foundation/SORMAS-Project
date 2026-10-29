@@ -2254,6 +2254,7 @@ public interface Captions {
 	String ExternalPersons_municipalityOfResidence = "ExternalPersons.municipalityOfResidence";
 	String ExternalPersons_nationalHealthId = "ExternalPersons.nationalHealthId";
 	String ExternalPersons_sex = "ExternalPersons.sex";
+	String externalPersonsGoBackToList = "externalPersonsGoBackToList";
 	String externalPersonsResetMaximalCriteria = "externalPersonsResetMaximalCriteria";
 	String externalPersonsResetMinimalCriteria = "externalPersonsResetMinimalCriteria";
 	String externalPersonsSearchByHealthId = "externalPersonsSearchByHealthId";

@@ -42,6 +42,8 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 	private final List<Runnable> selectedChanges = new ArrayList<>();
 	private final List<CheckBox> selections = new ArrayList<>();
 	private final Button apply = ButtonHelper.createButton(Captions.actionApply);
+	private final Button selectAll = ButtonHelper.createButton(Captions.actionSelectAll);
+	private boolean automaticallyApplied;
 
 	public static boolean isAvailable() {
 		return UiUtil.permitted(UserRight.EXTERNAL_PERSONAL_DATA_PROVIDER_ACCESS)
@@ -63,6 +65,11 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 		if (summary == null) {
 			return;
 		}
+		boolean fillEmptyForm = StringUtils.isBlank(firstName.getValue())
+			&& StringUtils.isBlank(lastName.getValue())
+			&& birthYear.getValue() == null
+			&& birthMonth.getValue() == null
+			&& birthDay.getValue() == null;
 
 		GridLayout comparison = new GridLayout(4, 1);
 		comparison.setSpacing(true);
@@ -78,6 +85,7 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 			PersonDto.FIRST_NAME,
 			firstName.getValue(),
 			summary.getFirstName(),
+			fillEmptyForm,
 			() -> isEditable(firstName),
 			() -> firstName.setValue(summary.getFirstName()));
 		addComparison(
@@ -85,6 +93,7 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 			PersonDto.LAST_NAME,
 			lastName.getValue(),
 			summary.getLastName(),
+			fillEmptyForm,
 			() -> isEditable(lastName),
 			() -> lastName.setValue(summary.getLastName()));
 
@@ -98,6 +107,7 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 			PersonDto.BIRTH_DATE,
 			currentBirthDate,
 			externalBirthDate,
+			fillEmptyForm,
 			() -> isEditable(birthYear) && isEditable(birthMonth) && isEditable(birthDay),
 			() -> {
 				// Year and month listeners rebuild the day list, so set the day last.
@@ -123,7 +133,20 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 			close();
 		});
 		Button cancel = ButtonHelper.createButton(Captions.actionCancel, event -> close());
-		addComponent(new HorizontalLayout(apply, cancel));
+		selectAll.addClickListener(event -> {
+			boolean select = !allSelected();
+			selections.stream().filter(CheckBox::isEnabled).forEach(selection -> selection.setValue(select));
+		});
+		selectAll.setEnabled(selections.stream().anyMatch(CheckBox::isEnabled));
+		addComponent(new HorizontalLayout(apply, cancel, selectAll));
+	}
+
+	public boolean isAutomaticallyApplied() {
+		return automaticallyApplied;
+	}
+
+	private boolean allSelected() {
+		return selections.stream().anyMatch(CheckBox::isEnabled) && selections.stream().filter(CheckBox::isEnabled).allMatch(CheckBox::getValue);
 	}
 
 	private PersonalDataSummaryDto load(String nationalHealthId) {
@@ -146,15 +169,32 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 		}
 	}
 
-	private void addComparison(GridLayout comparison, String property, String current, String external, BooleanSupplier editable, Runnable change) {
+	private void addComparison(
+		GridLayout comparison,
+		String property,
+		String current,
+		String external,
+		boolean fillEmptyForm,
+		BooleanSupplier editable,
+		Runnable change) {
+
+		boolean canOverwrite = StringUtils.isNotBlank(external) && editable.getAsBoolean();
+		if (fillEmptyForm && canOverwrite) {
+			change.run();
+			automaticallyApplied = true;
+			current = external;
+		}
 
 		comparison.addComponent(new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, property)));
 		comparison.addComponent(new Label(StringUtils.defaultString(current)));
 		comparison.addComponent(new Label(StringUtils.defaultString(external)));
 		CheckBox overwrite = new CheckBox();
-		overwrite.setEnabled(StringUtils.isNotBlank(external) && editable.getAsBoolean());
+		overwrite.setEnabled(canOverwrite);
 		overwrite.setDescription(I18nProperties.getCaption(Captions.actionOverwrite));
-		overwrite.addValueChangeListener(event -> apply.setEnabled(selections.stream().anyMatch(CheckBox::getValue)));
+		overwrite.addValueChangeListener(event -> {
+			apply.setEnabled(selections.stream().anyMatch(CheckBox::getValue));
+			selectAll.setCaption(I18nProperties.getCaption(allSelected() ? Captions.actionDeselectAll : Captions.actionSelectAll));
+		});
 		selections.add(overwrite);
 		selectedChanges.add(() -> {
 			if (overwrite.isEnabled() && overwrite.getValue() && editable.getAsBoolean()) {

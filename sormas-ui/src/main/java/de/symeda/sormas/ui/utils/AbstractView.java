@@ -98,6 +98,10 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		viewHeader.setComponentAlignment(c, Alignment.MIDDLE_RIGHT);
 	}
 
+	protected void setViewHeaderVisible(boolean visible) {
+		viewHeader.setVisible(visible);
+	}
+
 	protected void setMainHeaderComponent(Component c) {
 		viewHeader.removeComponent(viewTitleLayout);
 		viewHeader.addComponent(c, 0);
@@ -175,13 +179,12 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			newState = newState.substring(0, paramsIndex);
 		}
 
-		if (criteriaList != null)
-		{
+		if (criteriaList != null) {
 			String urlParams = Arrays.stream(criteriaList)
-					.filter(Objects::nonNull)
-					.map(BaseCriteria::toUrlParams)
-					.filter(params -> !DataHelper.isNullOrEmpty(params))
-					.collect(Collectors.joining("&"));
+				.filter(Objects::nonNull)
+				.map(BaseCriteria::toUrlParams)
+				.filter(params -> !DataHelper.isNullOrEmpty(params))
+				.collect(Collectors.joining("&"));
 
 			if (urlParams.length() > 0) {
 				if (newState.charAt(newState.length() - 1) != '/') {

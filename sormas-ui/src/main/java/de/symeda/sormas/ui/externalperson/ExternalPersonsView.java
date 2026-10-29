@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -44,7 +42,6 @@ import de.symeda.sormas.api.personaldata.PersonalDataSearchResponse;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -60,7 +57,7 @@ public class ExternalPersonsView extends AbstractView {
 	private final Grid<PersonalDataIndexDto> grid = new Grid<>();
 	private final Label message = new Label();
 	private SearchState state;
-	private final Consumer<PersonalDataIndexDto> selection;
+	private final Consumer<PersonalDataIndexDto> selectedExternalPersonData;
 	private final boolean singlePersonMode;
 
 	public static class SearchState implements Serializable {
@@ -77,11 +74,12 @@ public class ExternalPersonsView extends AbstractView {
 		this(null, null);
 	}
 
-	public ExternalPersonsView(PersonDto person, Consumer<PersonalDataIndexDto> selection) {
+	public ExternalPersonsView(PersonDto person, Consumer<PersonalDataIndexDto> selectedExternalPersonDataConsumer) {
 		super(VIEW_NAME);
-		this.selection = selection;
+		this.selectedExternalPersonData = selectedExternalPersonDataConsumer;
 
-		this.singlePersonMode = selection != null && person != null;
+		this.singlePersonMode = selectedExternalPersonDataConsumer != null && person != null;
+		setViewHeaderVisible(!singlePersonMode);
 
 		if (!ExternalPersonDataComponent.isAvailable()) {
 			return;
@@ -134,6 +132,7 @@ public class ExternalPersonsView extends AbstractView {
 		});
 
 		if (singlePersonMode) {
+			// No need to toggle in that mode: if known NationalHealthId can be set directly in person view.
 			searchModeToggle.setVisible(false);
 		}
 		Button search = new Button(I18nProperties.getCaption(Captions.actionSearch), event -> search());
@@ -144,27 +143,28 @@ public class ExternalPersonsView extends AbstractView {
 			filtersBinder.setBean(state.criteria);
 			clearResults();
 		});
-		addLinkColumn(PersonalDataIndexDto::getNationalHealthId).setCaption(caption("nationalHealthId"));
-		addLinkColumn(PersonalDataIndexDto::getLastName).setCaption(caption("lastName"));
-		addLinkColumn(PersonalDataIndexDto::getFirstName).setCaption(caption("firstName"));
-		addLinkColumn(PersonalDataIndexDto::getSex).setCaption(caption("sex"));
-		addLinkColumn(PersonalDataIndexDto::getBirthDate).setCaption(caption("birthDate"));
-		addLinkColumn(PersonalDataIndexDto::getMunicipality).setCaption(caption("municipalityOfResidence"));
-		addLinkColumn(PersonalDataIndexDto::getLivingStatus).setCaption(caption("livingStatus"));
+		addColumn(PersonalDataIndexDto::getNationalHealthId).setCaption(caption("nationalHealthId"));
+		addColumn(PersonalDataIndexDto::getLastName).setCaption(caption("lastName"));
+		addColumn(PersonalDataIndexDto::getFirstName).setCaption(caption("firstName"));
+		addColumn(PersonalDataIndexDto::getSex).setCaption(caption("sex"));
+		addColumn(PersonalDataIndexDto::getBirthDate).setCaption(caption("birthDate"));
+		addColumn(PersonalDataIndexDto::getMunicipality).setCaption(caption("municipalityOfResidence"));
+		addColumn(PersonalDataIndexDto::getLivingStatus).setCaption(caption("livingStatus"));
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
+		grid.addItemClickListener(event -> open(event.getItem()));
 		grid.addStyleName("external-persons-grid");
 		grid.setSizeFull();
 		VerticalLayout content = new VerticalLayout(nationalHealthId, searchModeToggle, filters, new HorizontalLayout(search, reset), message, grid);
 		if (singlePersonMode) {
-			Label explanation = new Label(I18nProperties.getString("externalPersonsLinkSearchExplanation"));
+			Label explanation = new Label(I18nProperties.getString(Strings.externalPersonsLinkSearchExplanation));
 			explanation.setWidth(100, Unit.PERCENTAGE);
-			Button minimal = new Button(I18nProperties.getCaption("externalPersonsResetMinimalCriteria"), event -> {
+			Button minimal = new Button(I18nProperties.getCaption(Captions.externalPersonsResetMinimalCriteria), event -> {
 				resetPersonCriteria(person, false);
-				searchModeToggle.setCaption(I18nProperties.getCaption("externalPersonsSearchByHealthId"));
+				searchModeToggle.setCaption(I18nProperties.getCaption(Captions.externalPersonsSearchByHealthId));
 			});
-			Button maximal = new Button(I18nProperties.getCaption("externalPersonsResetMaximalCriteria"), event -> {
+			Button maximal = new Button(I18nProperties.getCaption(Captions.externalPersonsResetMaximalCriteria), event -> {
 				resetPersonCriteria(person, true);
-				searchModeToggle.setCaption(I18nProperties.getCaption("externalPersonsSearchByHealthId"));
+				searchModeToggle.setCaption(I18nProperties.getCaption(Captions.externalPersonsSearchByHealthId));
 			});
 			VerticalLayout presets = new VerticalLayout(explanation, new HorizontalLayout(minimal, maximal));
 			presets.setMargin(true);
@@ -176,7 +176,7 @@ public class ExternalPersonsView extends AbstractView {
 		idBinder.setBean(state.id);
 		filtersBinder.setBean(state.criteria);
 		grid.setItems(state.results);
-		setMessage(state.message == null ? I18nProperties.getString("externalPersonsEnterCriteria") : state.message);
+		setMessage(state.message == null ? I18nProperties.getString(Strings.externalPersonsEnterCriteria) : state.message);
 	}
 
 	private void resetPersonCriteria(PersonDto person, boolean maximal) {
@@ -225,25 +225,11 @@ public class ExternalPersonsView extends AbstractView {
 		return criteria;
 	}
 
-	private Grid.Column<PersonalDataIndexDto, ?> addLinkColumn(Function<PersonalDataIndexDto, ?> valueProvider) {
-		if (selection != null) {
-			return grid.addComponentColumn(person -> {
-				Object value = valueProvider.apply(person);
-				Button button = new Button(value == null ? "" : value.toString(), event -> open(person));
-				button.addStyleName(com.vaadin.ui.themes.ValoTheme.BUTTON_LINK);
-				button.setEnabled(StringUtils.isNotBlank(person.getNationalHealthId()));
-				return button;
-			});
-		}
+	private Grid.Column<PersonalDataIndexDto, ?> addColumn(Function<PersonalDataIndexDto, ?> valueProvider) {
 		return grid.addColumn(person -> {
 			Object value = valueProvider.apply(person);
-			String text = StringEscapeUtils.escapeHtml4(value == null ? "" : value.toString());
-			if (StringUtils.isBlank(person.getNationalHealthId())) {
-				return text;
-			}
-			String route = ExternalPersonView.VIEW_NAME + "/" + person.getNationalHealthId();
-			return "<a href=\"#!" + StringEscapeUtils.escapeHtml4(route) + "\">" + (text.isEmpty() ? "&nbsp;" : text) + "</a>";
-		}, new HtmlRenderer());
+			return value == null ? "" : value.toString();
+		});
 	}
 
 	private void setMessage(String value) {
@@ -324,8 +310,8 @@ public class ExternalPersonsView extends AbstractView {
 
 	private void open(PersonalDataIndexDto person) {
 		if (StringUtils.isNotBlank(person.getNationalHealthId())) {
-			if (selection != null) {
-				selection.accept(person);
+			if (selectedExternalPersonData != null) {
+				selectedExternalPersonData.accept(person);
 			} else {
 				SormasUI.get().getNavigator().navigateTo(ExternalPersonView.VIEW_NAME + "/" + person.getNationalHealthId());
 			}

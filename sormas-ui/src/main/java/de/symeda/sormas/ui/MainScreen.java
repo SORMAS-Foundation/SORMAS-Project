@@ -80,10 +80,10 @@ import de.symeda.sormas.ui.environment.EnvironmentsView;
 import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
+import de.symeda.sormas.ui.externalperson.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.externalperson.ExternalPersonView;
 import de.symeda.sormas.ui.externalperson.ExternalPersonsView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
-import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AbstractAggregateReportsView;
@@ -274,7 +274,7 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(
 				ExternalPersonsView.class,
 				ExternalPersonsView.VIEW_NAME,
-				I18nProperties.getCaption("mainMenuExternalPersons"),
+				I18nProperties.getCaption(Captions.mainMenuExternalPersons),
 				VaadinIcons.USER_HEART);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {

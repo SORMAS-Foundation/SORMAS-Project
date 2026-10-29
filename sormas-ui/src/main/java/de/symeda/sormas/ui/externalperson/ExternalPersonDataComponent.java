@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.person;
+package de.symeda.sormas.ui.externalperson;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,7 +24,8 @@ import de.symeda.sormas.api.personaldata.PersonalDataForDisplayDto;
 import de.symeda.sormas.api.personaldata.PersonalDataProviderFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.externalperson.ExternalPersonsView;
+import de.symeda.sormas.ui.person.PersonEditForm;
+import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
@@ -52,7 +53,14 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 				Component searchComponent = getComponent(0);
 				removeAllComponents();
 				load(external.getNationalHealthId());
-				Button link = new Button(I18nProperties.getCaption("externalPersonLinkNationalHealthId"), event -> {
+
+				addComponentAsFirst(new Button(I18nProperties.getCaption(Captions.externalPersonsGoBackToList), event -> {
+					removeAllComponents();
+					addComponent(searchComponent);
+					setExpandRatio(searchComponent, 1);
+				}));
+
+				Button link = new Button(I18nProperties.getCaption(Captions.externalPersonLinkNationalHealthId), event -> {
 					String state = UI.getCurrent().getNavigator().getState();
 					String target = state.replace("/externalPersonData/", state.startsWith(PersonsView.VIEW_NAME + "/") ? "/data/" : "/person/");
 					UI.getCurrent().getNavigator().navigateTo(target);
@@ -62,15 +70,12 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 						external.getNationalHealthId());
 				});
 				link.setVisible(UiUtil.permitted(UserRight.PERSON_EDIT) && FacadeProvider.getPersonFacade().isEditAllowed(person.getUuid()));
-				addComponent(link, 0);
-				addComponent(new Button(I18nProperties.getCaption(Captions.actionBack), event -> {
-					removeAllComponents();
-					addComponent(searchComponent);
-					setExpandRatio(searchComponent, 1);
-				}), 1);
+				addComponent(link, 2);
 			});
+
 			addComponent(search);
 			setExpandRatio(search, 1);
+
 		} else {
 			load(person.getNationalHealthId());
 		}

@@ -3,7 +3,7 @@ package de.symeda.sormas.ui.travelentry;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
+import de.symeda.sormas.ui.externalperson.ExternalPersonDataComponent;
 
 public class TravelEntryExternalPersonDataView extends AbstractTravelEntryView {
 

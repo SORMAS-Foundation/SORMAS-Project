@@ -209,16 +209,19 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 				if (!ExternalPersonDataLookup.isAvailable() || !nationalHealthIdField.isEnabled() || nationalHealthIdField.isReadOnly()) {
 					return;
 				}
+				ExternalPersonDataLookup lookup = new ExternalPersonDataLookup(
+					nationalHealthIdField.getValue(),
+					getField(PersonDto.FIRST_NAME),
+					getField(PersonDto.LAST_NAME),
+					birthDateYear,
+					birthDateMonth,
+					birthDateDay);
+				if (lookup.isAutomaticallyApplied()) {
+					return;
+				}
 				Window window = VaadinUiUtil.createPopupWindow();
 				window.setCaption(I18nProperties.getCaption(Captions.integrateExternalPersonData));
-				window.setContent(
-					new ExternalPersonDataLookup(
-						nationalHealthIdField.getValue(),
-						getField(PersonDto.FIRST_NAME),
-						getField(PersonDto.LAST_NAME),
-						birthDateYear,
-						birthDateMonth,
-						birthDateDay));
+				window.setContent(lookup);
 				UI.getCurrent().addWindow(window);
 			}, CssStyles.FORCE_CAPTION);
 		externalPersonLookupButton.setDescription(I18nProperties.getCaption(Captions.externalPersonData));

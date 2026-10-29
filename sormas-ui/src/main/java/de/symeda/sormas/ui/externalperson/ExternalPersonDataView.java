@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.externalperson;
 
 import com.vaadin.ui.UI;
 import de.symeda.sormas.ui.person.AbstractPersonView;
-import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.person.PersonDataView;
 import de.symeda.sormas.ui.person.PersonsView;
 

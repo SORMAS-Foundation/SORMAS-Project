@@ -34,7 +34,127 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.externalperson.ExternalPersonDataLookup;
 
-class ExternalPersonDataLookupTest {
+class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest {
+
+	private ExternalPersonDataLookup victim;
+
+	@Test
+	void automaticallyFillsOnlyWhenAllComparedFieldsAreEmpty() {
+		try (Context context = new Context()) {
+			// PREPARE
+			context.first.setValue(" ");
+			context.last.setValue("");
+			context.year.setValue(null);
+			context.month.setValue(null);
+			context.day.setValue(null);
+			// EXECUTE
+			victim = context.create();
+			// CHECK
+			assertEquals("External first", context.first.getValue());
+			assertEquals("External last", context.last.getValue());
+			assertEquals(2000, context.year.getValue());
+			assertTrue(victim.isAutomaticallyApplied());
+			assertEquals(2, context.month.getValue());
+			assertEquals(29, context.day.getValue());
+			assertEquals("External first", ((Label) ((GridLayout) victim.getComponent(0)).getComponent(1, 1)).getValue());
+		}
+	}
+
+	@Test
+	void partialBirthdatePreventsAutomaticReplacement() {
+		try (Context context = new Context()) {
+			// PREPARE
+			context.first.setValue("");
+			context.last.setValue("");
+			context.month.setValue(null);
+			context.day.setValue(null);
+			// EXECUTE
+			victim = context.create();
+			// CHECK
+			assertEquals("", context.first.getValue());
+			assertEquals("", context.last.getValue());
+			assertEquals(1999, context.year.getValue());
+			assertFalse(victim.isAutomaticallyApplied());
+			assertEquals(null, context.month.getValue());
+			assertEquals(null, context.day.getValue());
+		}
+	}
+
+	@Test
+	void selectAllChecksAvailableReplacementsAndWaitsForApply() {
+		try (Context context = new Context()) {
+			// PREPARE
+			victim = context.create();
+			// EXECUTE
+			((Button) ((HorizontalLayout) victim.getComponent(1)).getComponent(2)).click();
+			// CHECK
+			for (int row = 1; row <= 3; row++) {
+				assertTrue(context.select(victim, row).getValue());
+			}
+			assertEquals("Current first", context.first.getValue());
+			assertEquals("Current last", context.last.getValue());
+			assertTrue(context.apply(victim).isEnabled());
+			context.apply(victim).click();
+			assertEquals("External first", context.first.getValue());
+			assertEquals("External last", context.last.getValue());
+			assertEquals(29, context.day.getValue());
+		}
+	}
+
+	@Test
+	void selectAllTogglesAndTracksManualSelection() {
+		try (Context context = new Context()) {
+			// PREPARE
+			context.first.setReadOnly(true);
+			victim = context.create();
+			Button toggle = (Button) ((HorizontalLayout) victim.getComponent(1)).getComponent(2);
+			// EXECUTE
+			toggle.click();
+			// CHECK
+			assertFalse(context.select(victim, 1).getValue());
+			assertTrue(context.select(victim, 2).getValue());
+			assertTrue(context.select(victim, 3).getValue());
+			assertEquals(de.symeda.sormas.api.i18n.Captions.actionDeselectAll, toggle.getCaption());
+			toggle.click();
+			assertFalse(context.select(victim, 2).getValue());
+			assertFalse(context.select(victim, 3).getValue());
+			assertFalse(context.apply(victim).isEnabled());
+			assertEquals(de.symeda.sormas.api.i18n.Captions.actionSelectAll, toggle.getCaption());
+			context.select(victim, 2).setValue(true);
+			context.select(victim, 3).setValue(true);
+			assertEquals(de.symeda.sormas.api.i18n.Captions.actionDeselectAll, toggle.getCaption());
+			context.select(victim, 3).setValue(false);
+			assertEquals(de.symeda.sormas.api.i18n.Captions.actionSelectAll, toggle.getCaption());
+			assertEquals("Current last", context.last.getValue());
+		}
+	}
+
+	@Test
+	void automaticFillAndSelectAllRespectUnavailableAndReadOnlyValues() {
+		try (Context context = new Context()) {
+			// PREPARE
+			context.first.setValue("");
+			context.last.setValue("");
+			context.year.setValue(null);
+			context.month.setValue(null);
+			context.day.setValue(null);
+			context.first.setReadOnly(true);
+			context.summary.setLastName(null);
+			context.day.setEnabled(false);
+			// EXECUTE
+			victim = context.create();
+			// CHECK
+			assertEquals("", context.first.getValue());
+			assertEquals("", context.last.getValue());
+			assertEquals(null, context.year.getValue());
+			assertFalse(victim.isAutomaticallyApplied());
+			for (int row = 1; row <= 3; row++) {
+				assertFalse(context.select(victim, row).isEnabled());
+				assertFalse(context.select(victim, row).getValue());
+			}
+			assertFalse(((Button) ((HorizontalLayout) victim.getComponent(1)).getComponent(2)).isEnabled());
+		}
+	}
 
 	@Test
 	void requiresConfiguredAdapterAndPermission() {
@@ -195,7 +315,7 @@ class ExternalPersonDataLookupTest {
 			summary.setFirstName("External first");
 			summary.setLastName("External last");
 			summary.setBirthDate(LocalDate.of(2000, 2, 29));
-			when(provider.findDataByNationalHealthId("health-id")).thenReturn(summary);
+			org.mockito.Mockito.lenient().when(provider.findDataByNationalHealthId("health-id")).thenReturn(summary);
 		}
 
 		private void updateDays() {

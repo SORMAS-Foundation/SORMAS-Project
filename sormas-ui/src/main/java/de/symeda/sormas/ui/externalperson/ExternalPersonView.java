@@ -2,9 +2,9 @@ package de.symeda.sormas.ui.externalperson;
 
 import com.vaadin.navigator.ViewChangeListener;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.person.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.utils.AbstractView;
 
 public class ExternalPersonView extends AbstractView {
@@ -16,7 +16,7 @@ public class ExternalPersonView extends AbstractView {
 	public ExternalPersonView() {
 		super(VIEW_NAME);
 		SubMenu menu = new SubMenu();
-		menu.addView(ExternalPersonsView.VIEW_NAME, I18nProperties.getCaption("mainMenuExternalPersons"));
+		menu.addView(ExternalPersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuExternalPersons));
 		addComponent(menu);
 		setExpandRatio(menu, 0);
 	}

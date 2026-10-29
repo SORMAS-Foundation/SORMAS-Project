@@ -10,6 +10,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.externalperson.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.externalperson.ExternalPersonDataView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 
