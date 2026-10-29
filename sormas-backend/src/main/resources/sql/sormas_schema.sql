@@ -18058,4 +18058,69 @@ ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS avidityinterpretation 
 
 INSERT INTO schema_version (version_number, comment) VALUES (683, '#14288 - Add IgG avidity to pathogen tests');
 
+-- Climate feature phase 1, item 2: climate jobs (fetch, backfill, top-up, relink) and their schedules
+CREATE TABLE IF NOT EXISTS climatejob (
+    id bigint NOT NULL,
+    uuid varchar(36) NOT NULL UNIQUE,
+    changedate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationdate timestamp(3) NOT NULL DEFAULT NOW(),
+    change_user_id bigint,
+    jobtype varchar(255) NOT NULL,
+    status varchar(255) NOT NULL,
+    region_id bigint,
+    district_id bigint,
+    climatelocation_id bigint,
+    fromclimatelocation_id bigint,
+    includeenvironments boolean NOT NULL DEFAULT false,
+    fromdate date,
+    todate date,
+    locationstotal integer NOT NULL DEFAULT 0,
+    locationsdone integer NOT NULL DEFAULT 0,
+    locationsfailed integer NOT NULL DEFAULT 0,
+    estimatedcalls integer,
+    callsmade integer NOT NULL DEFAULT 0,
+    rowsadded integer NOT NULL DEFAULT 0,
+    rowsupdated integer NOT NULL DEFAULT 0,
+    rowsskipped integer NOT NULL DEFAULT 0,
+    cursorgroup varchar(255),
+    cursorlocationid bigint,
+    cursordate date,
+    rotationstartlocationid bigint,
+    lasterror text,
+    startedby_id bigint,
+    startedat timestamp(3),
+    pausedat timestamp(3),
+    finishedat timestamp(3),
+    PRIMARY KEY (id)
+);
+ALTER TABLE climatejob ADD CONSTRAINT fk_climatejob_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE climatejob ADD CONSTRAINT fk_climatejob_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE climatejob ADD CONSTRAINT fk_climatejob_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+ALTER TABLE climatejob ADD CONSTRAINT fk_climatejob_climatelocation_id FOREIGN KEY (climatelocation_id) REFERENCES climatelocation (id);
+ALTER TABLE climatejob ADD CONSTRAINT fk_climatejob_fromclimatelocation_id FOREIGN KEY (fromclimatelocation_id) REFERENCES climatelocation (id);
+ALTER TABLE climatejob ADD CONSTRAINT fk_climatejob_startedby_id FOREIGN KEY (startedby_id) REFERENCES users (id);
+CREATE INDEX IF NOT EXISTS idx_climatejob_status ON climatejob (status);
+CREATE INDEX IF NOT EXISTS idx_climatejob_jobtype_creationdate ON climatejob (jobtype, creationdate);
+CREATE INDEX IF NOT EXISTS idx_climatejob_climatelocation_id ON climatejob (climatelocation_id);
+CREATE INDEX IF NOT EXISTS idx_climatejob_fromclimatelocation_id ON climatejob (fromclimatelocation_id);
+ALTER TABLE climatejob OWNER TO sormas_user;
+-- no climatejob_history: a job row is a progress log that changes once per location (like systemevent, see 452)
+
+-- climate job schedules (CRON category, same pattern and message as the other scheduled jobs)
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional,
+                                     value_pattern, value_encrypt, data_provider, validation_message,
+                                     changedate, creationdate, id, uuid)
+SELECT job.config_key, job.default_expression, job.description, cron.category_id, true,
+       cron.value_pattern, false, null, cron.validation_message,
+       now(), now(), nextval('entity_seq'), generate_base32_uuid()
+FROM (VALUES
+         ('CRON.FETCH_CLIMATE_DATA',   '0 30 3 * * *',  'i18n/infoSystemConfigurationValueDescriptionCronFetchClimateData'),
+         ('CRON.PROCESS_CLIMATE_JOBS', '0 */5 * * * *', 'i18n/infoSystemConfigurationValueDescriptionCronProcessClimateJobs')
+     ) AS job(config_key, default_expression, description),
+     (SELECT category_id, value_pattern, validation_message FROM systemconfigurationvalue
+      WHERE config_key = 'CRON.SEND_NEW_AND_DUE_TASK_MESSAGES') AS cron
+ON CONFLICT (config_key) DO NOTHING;
+
+INSERT INTO schema_version (version_number, comment) VALUES (678, 'Climate feature: climate jobs and their schedules');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
