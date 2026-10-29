@@ -61,6 +61,7 @@ public class ExternalPersonsView extends AbstractView {
 	private final Label message = new Label();
 	private SearchState state;
 	private final Consumer<PersonalDataIndexDto> selection;
+	private final boolean singlePersonMode;
 
 	public static class SearchState implements Serializable {
 
@@ -79,6 +80,9 @@ public class ExternalPersonsView extends AbstractView {
 	public ExternalPersonsView(PersonDto person, Consumer<PersonalDataIndexDto> selection) {
 		super(VIEW_NAME);
 		this.selection = selection;
+
+		this.singlePersonMode = selection != null && person != null;
+
 		if (!ExternalPersonDataComponent.isAvailable()) {
 			return;
 		}
@@ -87,6 +91,7 @@ public class ExternalPersonsView extends AbstractView {
 			state.expanded = true;
 			state.criteria = personCriteria(person, false);
 		}
+
 		idBinder.forField(nationalHealthId)
 			.withValidator(
 				value -> StringUtils.isBlank(value) || !LuxembourgNationalHealthIdValidator.isValidWithCause(value.trim()).isPresent(),
@@ -117,14 +122,20 @@ public class ExternalPersonsView extends AbstractView {
 		filters.setVisible(state.expanded);
 		nationalHealthId.setVisible(!state.expanded);
 		filters.setSpacing(true);
-		Button toggle = new Button(I18nProperties.getCaption(state.expanded ? "externalPersonsSearchByHealthId" : "externalPersonsShowMoreFilters"));
-		toggle.addClickListener(event -> {
+		Button searchModeToggle =
+			new Button(I18nProperties.getCaption(state.expanded ? "externalPersonsSearchByHealthId" : "externalPersonsShowMoreFilters"));
+		searchModeToggle.addClickListener(event -> {
 			filters.setVisible(!filters.isVisible());
 			nationalHealthId.setVisible(!filters.isVisible());
-			toggle.setCaption(I18nProperties.getCaption(filters.isVisible() ? "externalPersonsSearchByHealthId" : "externalPersonsShowMoreFilters"));
+			searchModeToggle
+				.setCaption(I18nProperties.getCaption(filters.isVisible() ? "externalPersonsSearchByHealthId" : "externalPersonsShowMoreFilters"));
 			state.expanded = filters.isVisible();
 			clearResults();
 		});
+
+		if (singlePersonMode) {
+			searchModeToggle.setVisible(false);
+		}
 		Button search = new Button(I18nProperties.getCaption(Captions.actionSearch), event -> search());
 		Button reset = new Button(I18nProperties.getCaption(Captions.actionResetFilters), event -> {
 			state.id = new PersonalDataSearchRequest();
@@ -143,20 +154,20 @@ public class ExternalPersonsView extends AbstractView {
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
 		grid.addStyleName("external-persons-grid");
 		grid.setSizeFull();
-		VerticalLayout content = new VerticalLayout(nationalHealthId, toggle, filters, new HorizontalLayout(search, reset), message, grid);
-		if (person != null && selection != null) {
+		VerticalLayout content = new VerticalLayout(nationalHealthId, searchModeToggle, filters, new HorizontalLayout(search, reset), message, grid);
+		if (singlePersonMode) {
 			Label explanation = new Label(I18nProperties.getString("externalPersonsLinkSearchExplanation"));
 			explanation.setWidth(100, Unit.PERCENTAGE);
 			Button minimal = new Button(I18nProperties.getCaption("externalPersonsResetMinimalCriteria"), event -> {
 				resetPersonCriteria(person, false);
-				toggle.setCaption(I18nProperties.getCaption("externalPersonsSearchByHealthId"));
+				searchModeToggle.setCaption(I18nProperties.getCaption("externalPersonsSearchByHealthId"));
 			});
 			Button maximal = new Button(I18nProperties.getCaption("externalPersonsResetMaximalCriteria"), event -> {
 				resetPersonCriteria(person, true);
-				toggle.setCaption(I18nProperties.getCaption("externalPersonsSearchByHealthId"));
+				searchModeToggle.setCaption(I18nProperties.getCaption("externalPersonsSearchByHealthId"));
 			});
 			VerticalLayout presets = new VerticalLayout(explanation, new HorizontalLayout(minimal, maximal));
-			presets.setMargin(false);
+			presets.setMargin(true);
 			content.addComponent(presets, 2);
 		}
 		content.setSizeFull();
