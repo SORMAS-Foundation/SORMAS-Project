@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -20,11 +22,34 @@ import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 
 class CollectionPatchMapperTest extends AbstractUnitTest {
 
+	@InjectMocks
+	private CollectionPatchMapper victim;
+
 	@Mock
 	private ValueMapperRegistry valueMapperRegistry;
 
-	@InjectMocks
-	private CollectionPatchMapper victim;
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"C#A#B#C",
+		"C;A;B;C",
+		"C,A;B#C" })
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes" })
+	void map_alternativeSeparators_collectsIntoListAndSet(String value) {
+		// PREPARE
+		when(valueMapperRegistry.map(any(ValuePatchRequest.class)))
+			.thenAnswer(invocation -> ValueMappingResult.withData(((ValuePatchRequest) invocation.getArgument(0)).getValue()));
+		ValuePatchRequest request = new ValuePatchRequest().setValue(value).setTargetType(List.class).setCollectionSubType(String.class);
+
+		// EXECUTE
+		ValueMappingResult<List> listResult = victim.map(request);
+		ValueMappingResult<Set> setResult = victim.map(request.setTargetType(Set.class));
+
+		// CHECK
+		assertEquals(List.of("C", "A", "B", "C"), listResult.getData());
+		assertEquals(Set.of("C", "A", "B"), setResult.getData());
+	}
 
 	/**
 	 * Makes sure no type is forgotten, to be able to collect the values to the appropriate type.

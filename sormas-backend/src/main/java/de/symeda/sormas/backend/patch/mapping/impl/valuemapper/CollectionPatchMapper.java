@@ -30,7 +30,9 @@ public class CollectionPatchMapper implements ValuePatchMapper {
 
 	private static final Logger logger = LoggerFactory.getLogger(CollectionPatchMapper.class);
 
-	public static final String SEPARATOR = ",";
+	public static final String MAIN_SEPARATOR = ",";
+
+	public static final Set<String> ALTERNATIVE_SEPARATORS = Set.of("#", ";");
 
 	public static final Set<Class<?>> SUPPORTED_TYPES = Set.of(Set.class, List.class);
 
@@ -60,7 +62,7 @@ public class CollectionPatchMapper implements ValuePatchMapper {
 			return ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE);
 		}
 
-		List<ValueMappingResult<?>> mappingResults = Arrays.stream(((String) groupedValue).split(SEPARATOR))
+		List<ValueMappingResult<?>> mappingResults = Arrays.stream(replaceGroupedValues((String) groupedValue).split(MAIN_SEPARATOR))
 			.filter(StringUtils::isNotBlank)
 			.map(String::trim)
 			.map(singleValue -> getValueMapperRegistry().map(buildRequestFrom(request, singleValue)))
@@ -77,6 +79,10 @@ public class CollectionPatchMapper implements ValuePatchMapper {
 		return failureOpt.<ValueMappingResult<T>> map(result -> ValueMappingResult.withCause(result.getDataPatchFailureCause()))
 			.orElseGet(() -> ValueMappingResult.withData((T) mappingResults.stream().map(ValueMappingResult::getData).collect(appropriateCollector)));
 
+	}
+
+	private static String replaceGroupedValues(String groupedValue) {
+		return ALTERNATIVE_SEPARATORS.stream().reduce(groupedValue, (first, second) -> first.replaceAll(second, MAIN_SEPARATOR));
 	}
 
 	private static ValuePatchRequest<?> buildRequestFrom(ValuePatchRequest<?> request, String singleValue) {
