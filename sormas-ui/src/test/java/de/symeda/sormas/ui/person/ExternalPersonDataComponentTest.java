@@ -464,7 +464,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			facades.when(FacadeProvider::getExternalPersonDataProviderFacade).thenReturn(provider);
 			ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)).thenReturn(permitted);
 			org.mockito.Mockito.lenient()
-				.when(configuration.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED))
+				.when(configuration.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED_KEY))
 				.thenReturn(enabled);
 			person.setNationalHealthId("health-id");
 			org.mockito.Mockito.lenient().when(personFacade.getByUuid("person-uuid")).thenReturn(person);

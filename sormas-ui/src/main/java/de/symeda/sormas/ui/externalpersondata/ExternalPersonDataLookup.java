@@ -50,7 +50,8 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 	public static boolean isAvailable() {
 		return UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)
 			&& Boolean.parseBoolean(
-				FacadeProvider.getSystemConfigurationValueFacade().getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED));
+				FacadeProvider.getSystemConfigurationValueFacade()
+					.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED_KEY));
 	}
 
 	public ExternalPersonDataLookup(

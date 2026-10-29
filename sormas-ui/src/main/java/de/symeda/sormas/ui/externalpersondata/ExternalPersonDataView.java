@@ -5,6 +5,9 @@ import de.symeda.sormas.ui.person.AbstractPersonView;
 import de.symeda.sormas.ui.person.PersonDataView;
 import de.symeda.sormas.ui.person.PersonsView;
 
+/**
+ * Used as wrapper to add to all Person contexts
+ */
 public class ExternalPersonDataView extends AbstractPersonView {
 
 	private static final long serialVersionUID = 1L;

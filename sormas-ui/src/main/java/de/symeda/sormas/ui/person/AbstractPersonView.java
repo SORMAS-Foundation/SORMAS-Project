@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY;
+
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.EditPermissionFacade;
@@ -47,7 +49,11 @@ public abstract class AbstractPersonView extends AbstractEditAllowedDetailView<P
 		menu.addView(PersonDataView.VIEW_NAME, I18nProperties.getCaption(PersonDto.I18N_PREFIX), params);
 
 		if (ExternalPersonDataComponent.isAvailable()) {
-			menu.addView(ExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
+			menu.addView(
+				ExternalPersonDataView.VIEW_NAME,
+				FacadeProvider.getSystemConfigurationValueFacade()
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY, () -> I18nProperties.getCaption(Captions.externalPersonData)),
+				params);
 		}
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(getReference().getUuid());

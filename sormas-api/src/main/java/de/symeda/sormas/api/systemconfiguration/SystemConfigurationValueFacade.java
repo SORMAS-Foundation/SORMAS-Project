@@ -17,8 +17,11 @@ package de.symeda.sormas.api.systemconfiguration;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.ejb.Remote;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.BaseFacade;
 
@@ -28,44 +31,57 @@ import de.symeda.sormas.api.BaseFacade;
  */
 @Remote
 public interface SystemConfigurationValueFacade
-    extends
-    BaseFacade<SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueCriteria>,
-    Serializable {
+	extends
+	BaseFacade<SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueCriteria>,
+	Serializable {
 
-    /**
-     * Retrieves system configuration values by their UUIDs.
-     *
-     * @param uuids the list of UUIDs
-     * @return the list of matching system configuration value DTOs
-     */
-    List<SystemConfigurationValueDto> getByUuids(List<String> uuids);
+	/**
+	 * Retrieves system configuration values by their UUIDs.
+	 *
+	 * @param uuids
+	 *            the list of UUIDs
+	 * @return the list of matching system configuration value DTOs
+	 */
+	List<SystemConfigurationValueDto> getByUuids(List<String> uuids);
 
-    /**
-     * Retrieves all UUIDs of system configuration values.
-     *
-     * @return the list of all UUIDs
-     */
-    List<String> getAllUuids();
+	/**
+	 * Retrieves all UUIDs of system configuration values.
+	 *
+	 * @return the list of all UUIDs
+	 */
+	List<String> getAllUuids();
 
-    /**
-     * Retrieves a configuration value associated with the given key.
-     * The implementors should assure that proper caching is used.
-     *
-     * @param key The key of the configuration value to retrieve.
-     * @return the value of the configuration.
-     */
-    String getValue(String key);
+	/**
+	 * Retrieves a configuration value associated with the given key.
+	 * The implementors should assure that proper caching is used.
+	 *
+	 * @param key
+	 *            The key of the configuration value to retrieve.
+	 * @return the value of the configuration.
+	 */
+	String getValue(String key);
 
-    /**
-     * Checks if a configuration value exists for the given key.
-     *
-     * @param key The key to check.
-     * @return true if the configuration value exists, false otherwise.
-     */
-    boolean exists(String key);
+	default String getValueOrDefaultTo(String key, String defaultValue) {
+		String value = getValue(key);
+		return StringUtils.isNotBlank(value) ? value : defaultValue;
+	}
 
-    /**
-     * Clears the caches and reloads the system configuration values from the database.
-     */
-    void loadData();
+	default String getValueOrDefaultTo(String key, Supplier<String> defaultValueProvider) {
+		String value = getValue(key);
+		return StringUtils.isNotBlank(value) ? value : defaultValueProvider.get();
+	}
+
+	/**
+	 * Checks if a configuration value exists for the given key.
+	 *
+	 * @param key
+	 *            The key to check.
+	 * @return true if the configuration value exists, false otherwise.
+	 */
+	boolean exists(String key);
+
+	/**
+	 * Clears the caches and reloads the system configuration values from the database.
+	 */
+	void loadData();
 }
