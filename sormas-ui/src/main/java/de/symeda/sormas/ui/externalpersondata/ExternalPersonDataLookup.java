@@ -33,7 +33,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
-/** Compares provider data with the fields of the current, unsaved creation form. */
+/**
+ * Compares provider data with the fields of the current, unsaved creation form.
+ */
 public class ExternalPersonDataLookup extends VerticalLayout {
 
 	private static final long serialVersionUID = 1L;
@@ -47,9 +49,8 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 
 	public static boolean isAvailable() {
 		return UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)
-			&& StringUtils.isNotBlank(
-				FacadeProvider.getSystemConfigurationValueFacade()
-					.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY));
+			&& Boolean.parseBoolean(
+				FacadeProvider.getSystemConfigurationValueFacade().getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED));
 	}
 
 	public ExternalPersonDataLookup(

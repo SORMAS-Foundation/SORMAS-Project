@@ -8,7 +8,7 @@ public class ExternalPersonDataForDisplayDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String html;
-	private ExternalPersonDataSummaryDto externalPersonDataSummary;
+	private ExternalPersonDataSummaryDto summary;
 
 	public String getHtml() {
 		return html;
@@ -18,12 +18,12 @@ public class ExternalPersonDataForDisplayDto implements Serializable {
 		this.html = html;
 	}
 
-	public ExternalPersonDataSummaryDto getExternalPersonDataSummary() {
-		return externalPersonDataSummary;
+	public ExternalPersonDataSummaryDto getSummary() {
+		return summary;
 	}
 
-	public void setExternalPersonDataSummary(ExternalPersonDataSummaryDto externalPersonDataSummary) {
-		this.externalPersonDataSummary = externalPersonDataSummary;
+	public void setSummary(ExternalPersonDataSummaryDto summary) {
+		this.summary = summary;
 	}
 
 	@Override
@@ -31,11 +31,11 @@ public class ExternalPersonDataForDisplayDto implements Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ExternalPersonDataForDisplayDto that = (ExternalPersonDataForDisplayDto) o;
-		return Objects.equals(html, that.html) && Objects.equals(externalPersonDataSummary, that.externalPersonDataSummary);
+		return Objects.equals(html, that.html) && Objects.equals(summary, that.summary);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(html, externalPersonDataSummary);
+		return Objects.hash(html, summary);
 	}
 }

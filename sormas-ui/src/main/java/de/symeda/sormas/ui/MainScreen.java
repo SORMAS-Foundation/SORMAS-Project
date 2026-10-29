@@ -81,8 +81,8 @@ import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
-import de.symeda.sormas.ui.externalpersondata.ExternalPersonView;
-import de.symeda.sormas.ui.externalpersondata.ExternalPersonsView;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataContainerView;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataListView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
@@ -270,10 +270,10 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
 		}
 		if (ExternalPersonDataComponent.isAvailable()) {
-			navigator.addView(ExternalPersonView.VIEW_NAME, ExternalPersonView.class);
+			navigator.addView(ExternalPersonDataContainerView.VIEW_NAME, ExternalPersonDataContainerView.class);
 			menu.addView(
-				ExternalPersonsView.class,
-				ExternalPersonsView.VIEW_NAME,
+				ExternalPersonDataListView.class,
+				ExternalPersonDataListView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuExternalPersons),
 				VaadinIcons.USER_HEART);
 		}
@@ -517,8 +517,8 @@ public class MainScreen extends HorizontalLayout {
 				ReportsView.VIEW_NAME,
 				StatisticsView.VIEW_NAME,
 				PersonsView.VIEW_NAME,
-				ExternalPersonsView.VIEW_NAME,
-				ExternalPersonView.VIEW_NAME,
+				ExternalPersonDataListView.VIEW_NAME,
+				ExternalPersonDataContainerView.VIEW_NAME,
 				UsersView.VIEW_NAME,
 				UserRolesView.VIEW_NAME,
 				OutbreaksView.VIEW_NAME,

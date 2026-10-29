@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -18,7 +17,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -45,16 +43,16 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class ExternalPersonsView extends AbstractView {
+public class ExternalPersonDataListView extends AbstractView {
 
 	public static final String VIEW_NAME = "externalPersons";
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonsView.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataListView.class);
 	private final Binder<ExternalPersonDataSearchRequest> idBinder = new Binder<>(ExternalPersonDataSearchRequest.class);
 	private final Binder<ExternalPersonDataSearchRequest> filtersBinder = new Binder<>(ExternalPersonDataSearchRequest.class);
-	private final TextField nationalHealthId = new TextField(caption("nationalHealthId"));
+	private final TextField nationalHealthId = new TextField(I18nProperties.getCaption(Captions.ExternalPersons_nationalHealthId));
 	private final GridLayout filters = new GridLayout(4, 4);
-	private final Grid<ExternalPersonDataIndexDto> grid = new Grid<>();
+	private final ExternalPersonDataGrid grid = new ExternalPersonDataGrid(this::open);
 	private final Label message = new Label();
 	private SearchState state;
 	private final Consumer<ExternalPersonDataIndexDto> selectedExternalPersonData;
@@ -70,11 +68,11 @@ public class ExternalPersonsView extends AbstractView {
 		private String message;
 	}
 
-	public ExternalPersonsView() {
+	public ExternalPersonDataListView() {
 		this(null, null);
 	}
 
-	public ExternalPersonsView(PersonDto person, Consumer<ExternalPersonDataIndexDto> selectedExternalPersonDataConsumer) {
+	public ExternalPersonDataListView(PersonDto person, Consumer<ExternalPersonDataIndexDto> selectedExternalPersonDataConsumer) {
 		super(VIEW_NAME);
 		this.selectedExternalPersonData = selectedExternalPersonDataConsumer;
 
@@ -84,7 +82,7 @@ public class ExternalPersonsView extends AbstractView {
 		if (!ExternalPersonDataComponent.isAvailable()) {
 			return;
 		}
-		state = person == null ? ViewModelProviders.of(ExternalPersonsView.class).get(SearchState.class) : new SearchState();
+		state = person == null ? ViewModelProviders.of(ExternalPersonDataListView.class).get(SearchState.class) : new SearchState();
 		if (person != null) {
 			state.expanded = true;
 			state.criteria = personCriteria(person, false);
@@ -96,23 +94,23 @@ public class ExternalPersonsView extends AbstractView {
 				I18nProperties.getValidationError(Validations.invalidNationalHealthId))
 			.withConverter(StringUtils::trimToNull, value -> value == null ? "" : value)
 			.bind("nationalHealthId");
-		textFilter("lastName");
-		textFilter("firstName");
-		ComboBox<Sex> sex = new ComboBox<>(caption("sex"));
+		textFilter(ExternalPersonDataSearchRequest.LAST_NAME, Captions.ExternalPersons_lastName);
+		textFilter(ExternalPersonDataSearchRequest.FIRST_NAME, Captions.ExternalPersons_firstName);
+		ComboBox<Sex> sex = new ComboBox<>(I18nProperties.getCaption(Captions.ExternalPersons_sex));
 		sex.setItems(Sex.values());
 		filtersBinder.bind(sex, "sex");
 		filters.addComponent(sex);
-		DateField birthDate = new DateField(caption("birthDate"));
+		DateField birthDate = new DateField(I18nProperties.getCaption(Captions.ExternalPersons_birthDate));
 		filtersBinder.bind(birthDate, "birthDate");
 		filters.addComponent(birthDate);
-		textFilter("countryOfResidence");
-		textFilter("localityOfResidence");
-		textFilter("municipalityOfResidence");
-		integerFilter("birthYearFrom");
-		integerFilter("birthYearTo");
-		integerFilter("ageFrom");
-		integerFilter("ageTo");
-		ComboBox<Boolean> alive = new ComboBox<>(caption("alive"));
+		textFilter(ExternalPersonDataSearchRequest.COUNTRY_OF_RESIDENCE, Captions.ExternalPersons_countryOfResidence);
+		textFilter(ExternalPersonDataSearchRequest.LOCALITY_OF_RESIDENCE, Captions.ExternalPersons_localityOfResidence);
+		textFilter(ExternalPersonDataSearchRequest.MUNICIPALITY_OF_RESIDENCE, Captions.ExternalPersons_municipalityOfResidence);
+		integerFilter("birthYearFrom", Captions.ExternalPersons_birthYearFrom);
+		integerFilter("birthYearTo", Captions.ExternalPersons_birthYearTo);
+		integerFilter("ageFrom", Captions.ExternalPersons_ageFrom);
+		integerFilter("ageTo", Captions.ExternalPersons_ageTo);
+		ComboBox<Boolean> alive = new ComboBox<>(I18nProperties.getCaption(Captions.ExternalPersons_alive));
 		alive.setItems(Boolean.TRUE, Boolean.FALSE);
 		alive.setItemCaptionGenerator(value -> I18nProperties.getString(value ? Strings.yes : Strings.no));
 		filtersBinder.bind(alive, "alive");
@@ -120,13 +118,13 @@ public class ExternalPersonsView extends AbstractView {
 		filters.setVisible(state.expanded);
 		nationalHealthId.setVisible(!state.expanded);
 		filters.setSpacing(true);
-		Button searchModeToggle =
-			new Button(I18nProperties.getCaption(state.expanded ? "externalPersonsSearchByHealthId" : "externalPersonsShowMoreFilters"));
+		Button searchModeToggle = new Button(
+			I18nProperties.getCaption(state.expanded ? Captions.externalPersonsSearchByHealthId : Captions.externalPersonsShowMoreFilters));
 		searchModeToggle.addClickListener(event -> {
 			filters.setVisible(!filters.isVisible());
 			nationalHealthId.setVisible(!filters.isVisible());
-			searchModeToggle
-				.setCaption(I18nProperties.getCaption(filters.isVisible() ? "externalPersonsSearchByHealthId" : "externalPersonsShowMoreFilters"));
+			searchModeToggle.setCaption(
+				I18nProperties.getCaption(filters.isVisible() ? Captions.externalPersonsSearchByHealthId : Captions.externalPersonsShowMoreFilters));
 			state.expanded = filters.isVisible();
 			clearResults();
 		});
@@ -143,17 +141,6 @@ public class ExternalPersonsView extends AbstractView {
 			filtersBinder.setBean(state.criteria);
 			clearResults();
 		});
-		addColumn(ExternalPersonDataIndexDto::getNationalHealthId).setCaption(caption("nationalHealthId"));
-		addColumn(ExternalPersonDataIndexDto::getLastName).setCaption(caption("lastName"));
-		addColumn(ExternalPersonDataIndexDto::getFirstName).setCaption(caption("firstName"));
-		addColumn(ExternalPersonDataIndexDto::getSex).setCaption(caption("sex"));
-		addColumn(ExternalPersonDataIndexDto::getBirthDate).setCaption(caption("birthDate"));
-		addColumn(ExternalPersonDataIndexDto::getMunicipality).setCaption(caption("municipalityOfResidence"));
-		addColumn(ExternalPersonDataIndexDto::getLivingStatus).setCaption(caption("livingStatus"));
-		grid.setSelectionMode(Grid.SelectionMode.NONE);
-		grid.addItemClickListener(event -> open(event.getItem()));
-		grid.addStyleName("external-persons-grid");
-		grid.setSizeFull();
 		VerticalLayout content = new VerticalLayout(nationalHealthId, searchModeToggle, filters, new HorizontalLayout(search, reset), message, grid);
 		if (singlePersonMode) {
 			Label explanation = new Label(I18nProperties.getString(Strings.externalPersonsLinkSearchExplanation));
@@ -225,13 +212,6 @@ public class ExternalPersonsView extends AbstractView {
 		return criteria;
 	}
 
-	private Grid.Column<ExternalPersonDataIndexDto, ?> addColumn(Function<ExternalPersonDataIndexDto, ?> valueProvider) {
-		return grid.addColumn(person -> {
-			Object value = valueProvider.apply(person);
-			return value == null ? "" : value.toString();
-		});
-	}
-
 	private void setMessage(String value) {
 		state.message = value;
 		message.setValue(value);
@@ -242,22 +222,18 @@ public class ExternalPersonsView extends AbstractView {
 		}
 	}
 
-	private static String caption(String property) {
-		return I18nProperties.getPrefixCaption("ExternalPersons", property);
-	}
-
-	private void textFilter(String property) {
-		TextField field = new TextField(caption(property));
+	private void textFilter(String property, String captionKey) {
+		TextField field = new TextField(I18nProperties.getCaption(captionKey));
 		filtersBinder.forField(field).withConverter(StringUtils::trimToNull, value -> value == null ? "" : value).bind(property);
 		filters.addComponent(field);
 	}
 
-	private void integerFilter(String property) {
-		TextField field = new TextField(caption(property));
+	private void integerFilter(String property, String captionKey) {
+		TextField field = new TextField(I18nProperties.getCaption(captionKey));
 		filtersBinder.forField(field)
 			.withNullRepresentation("")
-			.withConverter(new StringToIntegerConverter(I18nProperties.getString("externalPersonsInvalidRange")))
-			.withValidator(value -> value == null || value >= 0, I18nProperties.getString("externalPersonsInvalidRange"))
+			.withConverter(new StringToIntegerConverter(I18nProperties.getString(Strings.externalPersonsInvalidRange)))
+			.withValidator(value -> value == null || value >= 0, I18nProperties.getString(Strings.externalPersonsInvalidRange))
 			.bind(property);
 		filters.addComponent(field);
 	}
@@ -265,7 +241,7 @@ public class ExternalPersonsView extends AbstractView {
 	private void clearResults() {
 		state.results = Collections.emptyList();
 		grid.setItems(state.results);
-		setMessage(I18nProperties.getString("externalPersonsEnterCriteria"));
+		setMessage(I18nProperties.getString(Strings.externalPersonsEnterCriteria));
 	}
 
 	private void search() {
@@ -281,7 +257,7 @@ public class ExternalPersonsView extends AbstractView {
 			return;
 		}
 		if (!validRange(request.getBirthYearFrom(), request.getBirthYearTo()) || !validRange(request.getAgeFrom(), request.getAgeTo())) {
-			Notification.show(I18nProperties.getString("externalPersonsInvalidRange"), Notification.Type.WARNING_MESSAGE);
+			Notification.show(I18nProperties.getString(Strings.externalPersonsInvalidRange), Notification.Type.WARNING_MESSAGE);
 			return;
 		}
 		try {
@@ -292,7 +268,7 @@ public class ExternalPersonsView extends AbstractView {
 			setMessage(results.isEmpty() ? I18nProperties.getString(Strings.infoNoExternalPersonData) : "");
 			boolean truncated = results.size() > 100 || response.getTotalCount() != null && response.getTotalCount() > 100;
 			if (truncated) {
-				setMessage(I18nProperties.getString("externalPersonsFirst100Results"));
+				setMessage(I18nProperties.getString(Strings.externalPersonsFirst100Results));
 				Notification.show(message.getValue(), Notification.Type.WARNING_MESSAGE);
 			}
 			if (results.size() == 1 && (response.getTotalCount() == null || response.getTotalCount() == 1)) {
@@ -313,7 +289,7 @@ public class ExternalPersonsView extends AbstractView {
 			if (selectedExternalPersonData != null) {
 				selectedExternalPersonData.accept(person);
 			} else {
-				SormasUI.get().getNavigator().navigateTo(ExternalPersonView.VIEW_NAME + "/" + person.getNationalHealthId());
+				SormasUI.get().getNavigator().navigateTo(ExternalPersonDataContainerView.VIEW_NAME + "/" + person.getNationalHealthId());
 			}
 		}
 	}

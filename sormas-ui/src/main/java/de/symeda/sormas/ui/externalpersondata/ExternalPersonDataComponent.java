@@ -49,7 +49,7 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
 		if (StringUtils.isBlank(person.getNationalHealthId())) {
-			ExternalPersonsView search = new ExternalPersonsView(person, external -> {
+			ExternalPersonDataListView search = new ExternalPersonDataListView(person, external -> {
 				Component searchComponent = getComponent(0);
 				removeAllComponents();
 				load(external.getNationalHealthId());

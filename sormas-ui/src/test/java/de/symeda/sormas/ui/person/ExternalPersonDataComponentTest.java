@@ -27,7 +27,7 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
-import de.symeda.sormas.ui.externalpersondata.ExternalPersonsView;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataListView;
 
 class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTest {
 
@@ -49,7 +49,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 			response.setResults(java.util.Collections.emptyList());
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
-			ExternalPersonsView view = new ExternalPersonsView();
+			ExternalPersonDataListView view = new ExternalPersonDataListView();
 			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) view.getComponent(1);
 			com.vaadin.ui.HorizontalLayout actions = (com.vaadin.ui.HorizontalLayout) content.getComponent(3);
 			com.vaadin.ui.Button search = (com.vaadin.ui.Button) actions.getComponent(0);
@@ -82,19 +82,19 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			response.setResults(java.util.Collections.singletonList(person));
 			response.setTotalCount(2);
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
-			ExternalPersonsView view = new ExternalPersonsView();
+			ExternalPersonDataListView view = new ExternalPersonDataListView();
 			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) view.getComponent(1);
 			((com.vaadin.ui.Button) content.getComponent(1)).click();
 			((com.vaadin.ui.TextField) ((com.vaadin.ui.GridLayout) content.getComponent(2)).getComponent(0, 0)).setValue("Doe");
 			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(3)).getComponent(0)).click();
-			com.vaadin.ui.VerticalLayout restored = (com.vaadin.ui.VerticalLayout) new ExternalPersonsView().getComponent(1);
+			com.vaadin.ui.VerticalLayout restored = (com.vaadin.ui.VerticalLayout) new ExternalPersonDataListView().getComponent(1);
 			org.junit.jupiter.api.Assertions.assertTrue(restored.getComponent(2).isVisible());
 			assertEquals("Doe", ((com.vaadin.ui.TextField) ((com.vaadin.ui.GridLayout) restored.getComponent(2)).getComponent(0, 0)).getValue());
 			com.vaadin.ui.Grid<?> grid = (com.vaadin.ui.Grid<?>) restored.getComponent(5);
 			assertEquals(1, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
 			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) restored.getComponent(3)).getComponent(1)).click();
 			assertEquals(0, ((com.vaadin.data.provider.ListDataProvider<?>) grid.getDataProvider()).getItems().size());
-			com.vaadin.ui.VerticalLayout reset = (com.vaadin.ui.VerticalLayout) new ExternalPersonsView().getComponent(1);
+			com.vaadin.ui.VerticalLayout reset = (com.vaadin.ui.VerticalLayout) new ExternalPersonDataListView().getComponent(1);
 			assertEquals("", ((com.vaadin.ui.TextField) ((com.vaadin.ui.GridLayout) reset.getComponent(2)).getComponent(0, 0)).getValue());
 		}
 	}
@@ -136,7 +136,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			// EXECUTE
 			victim = context.create();
 			// CHECK
-			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
+			com.vaadin.ui.VerticalLayout content =
+				(com.vaadin.ui.VerticalLayout) ((ExternalPersonDataListView) victim.getComponent(0)).getComponent(1);
 			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(3);
 			org.junit.jupiter.api.Assertions.assertTrue(filters.isVisible());
 			org.junit.jupiter.api.Assertions.assertFalse(content.getComponent(0).isVisible());
@@ -162,7 +163,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
 			// EXECUTE
 			victim = context.create();
-			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
+			com.vaadin.ui.VerticalLayout content =
+				(com.vaadin.ui.VerticalLayout) ((ExternalPersonDataListView) victim.getComponent(0)).getComponent(1);
 			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(0)).click();
 			// CHECK
 			org.mockito.ArgumentCaptor<de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest> request =
@@ -225,7 +227,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			response.setResults(java.util.Collections.emptyList());
 			when(context.provider.search(org.mockito.ArgumentMatchers.any())).thenReturn(response);
 			victim = context.create();
-			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
+			com.vaadin.ui.VerticalLayout content =
+				(com.vaadin.ui.VerticalLayout) ((ExternalPersonDataListView) victim.getComponent(0)).getComponent(1);
 			com.vaadin.ui.VerticalLayout presets = (com.vaadin.ui.VerticalLayout) content.getComponent(2);
 			com.vaadin.ui.HorizontalLayout buttons = (com.vaadin.ui.HorizontalLayout) presets.getComponent(1);
 			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(3);
@@ -326,7 +329,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			com.vaadin.ui.UI.setCurrent(ui);
 			// EXECUTE
 			victim = context.create();
-			com.vaadin.ui.VerticalLayout content = (com.vaadin.ui.VerticalLayout) ((ExternalPersonsView) victim.getComponent(0)).getComponent(1);
+			com.vaadin.ui.VerticalLayout content =
+				(com.vaadin.ui.VerticalLayout) ((ExternalPersonDataListView) victim.getComponent(0)).getComponent(1);
 			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(0)).click();
 			((com.vaadin.ui.Button) victim.getComponent(0)).click();
 			// CHECK
@@ -388,7 +392,7 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 		private final PersonDto person = new PersonDto();
 
 		private Context(boolean permitted, String enabled) {
-			viewModels.when(() -> de.symeda.sormas.ui.ViewModelProviders.of(ExternalPersonsView.class))
+			viewModels.when(() -> de.symeda.sormas.ui.ViewModelProviders.of(ExternalPersonDataListView.class))
 				.thenReturn(new de.symeda.sormas.ui.ViewModelProvider());
 			i18n.when(() -> I18nProperties.getValidationError(de.symeda.sormas.api.i18n.Validations.invalidNationalHealthId))
 				.thenReturn("Invalid national health ID");

@@ -10,6 +10,20 @@ public class ExternalPersonDataSearchRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
+	public static final String LAST_NAME = "lastName";
+	public static final String FIRST_NAME = "firstName";
+	public static final String SEX = "sex";
+	public static final String BIRTH_DATE = "birthDate";
+	public static final String COUNTRY_OF_RESIDENCE = "countryOfResidence";
+	public static final String LOCALITY_OF_RESIDENCE = "localityOfResidence";
+	public static final String MUNICIPALITY_OF_RESIDENCE = "municipalityOfResidence";
+	public static final String BIRTH_YEAR_FROM = "birthYearFrom";
+	public static final String BIRTH_YEAR_TO = "birthYearTo";
+	public static final String AGE_FROM = "ageFrom";
+	public static final String AGE_TO = "ageTo";
+	public static final String ALIVE = "alive";
+
 	private String nationalHealthId;
 	private String lastName;
 	private String firstName;

@@ -20,7 +20,7 @@ class ExternalPersonDataForDisplayDtoTest extends AbstractUnitTest {
 		// PREPARE
 		ExternalPersonDataSummaryDto summary = new ExternalPersonDataSummaryDto();
 		summary.setFirstName("Jane");
-		victim.setExternalPersonDataSummary(summary);
+		victim.setSummary(summary);
 		victim.setHtml("<p>Jane</p>");
 		ObjectMapper mapper = new ObjectMapper();
 

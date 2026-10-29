@@ -7,16 +7,16 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractView;
 
-public class ExternalPersonView extends AbstractView {
+public class ExternalPersonDataContainerView extends AbstractView {
 
-	public static final String VIEW_NAME = ExternalPersonsView.VIEW_NAME + "/data";
+	public static final String VIEW_NAME = ExternalPersonDataListView.VIEW_NAME + "/data";
 	private static final long serialVersionUID = 1L;
 	private ExternalPersonDataComponent data;
 
-	public ExternalPersonView() {
+	public ExternalPersonDataContainerView() {
 		super(VIEW_NAME);
 		SubMenu menu = new SubMenu();
-		menu.addView(ExternalPersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuExternalPersons));
+		menu.addView(ExternalPersonDataListView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuExternalPersons));
 		addComponent(menu);
 		setExpandRatio(menu, 0);
 	}
