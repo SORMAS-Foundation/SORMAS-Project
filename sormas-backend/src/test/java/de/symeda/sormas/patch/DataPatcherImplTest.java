@@ -462,23 +462,23 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void patch_referenceData_country() {
+	void patch_referenceData_countryByExternalId() {
 		// PREPARE
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
 
 		CountryDto dto = new CountryDto();
 		dto.setIsoCode("DEU");
+		dto.setExternalId("DE");
 		dto.setDefaultName("Germany");
 		CountryDto germanyReferenceDto = getCountryFacade().save(dto);
 
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
 
-		// must be able to ignore accents - whitespaces - case
-		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", " Deutschländ    ");
+		// External IDs are matched ignoring whitespace and case.
+		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", " de    ");
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(patchDictionary)
-			.setInputLanguages(List.of(Language.DE, Language.EN, Language.FR));
+			.setPatchDictionary(patchDictionary);
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);

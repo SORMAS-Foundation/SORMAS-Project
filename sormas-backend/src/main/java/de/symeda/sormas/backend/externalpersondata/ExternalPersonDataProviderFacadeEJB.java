@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.ExternalSystemCallAuditRequest;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataAddressRequestDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataForDisplayDto;
@@ -32,6 +31,7 @@ import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSummaryDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.utils.Tuple;
+import de.symeda.sormas.backend.audit.AuditLoggerEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
 
 @Stateless(name = "ExternalPersonDataProviderFacade")
@@ -44,7 +44,7 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
 
 	@EJB
-	private AuditLoggerFacade auditLogger;
+	private AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 
 	@Override
 	public @Nullable ExternalPersonDataSummaryDto findDataByNationalHealthId(String nationalHealthId) {

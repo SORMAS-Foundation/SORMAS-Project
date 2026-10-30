@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -87,6 +88,11 @@ class AbstractRootValuePropertyFillerTest extends AbstractUnitTest {
 
 	private AbstractRootValuePropertyFiller filler(HasUuid entity) {
 		return new AbstractRootValuePropertyFiller(resolver) {
+
+			@Override
+			public RootEntityType supportedType() {
+				return RootEntityType.ROOT_EVENT;
+			}
 
 			@Override
 			protected HasUuid getEntity() {
