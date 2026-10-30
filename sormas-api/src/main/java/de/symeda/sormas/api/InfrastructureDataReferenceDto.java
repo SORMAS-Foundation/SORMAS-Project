@@ -32,6 +32,10 @@ public abstract class InfrastructureDataReferenceDto extends ReferenceDto implem
 		this.externalId = externalId;
 	}
 
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
 	public String getExternalId() {
 		return externalId;
 	}

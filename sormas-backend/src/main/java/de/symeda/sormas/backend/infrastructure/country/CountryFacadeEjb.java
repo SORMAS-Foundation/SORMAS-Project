@@ -202,20 +202,28 @@ public class CountryFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		return new CountryReferenceDto(
+		CountryReferenceDto dto = new CountryReferenceDto(
 			entity.getUuid(),
 			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
 			entity.getIsoCode());
+
+		dto.setExternalId(entity.getExternalId());
+
+		return dto;
 	}
 
 	public static CountryReferenceDto toReferenceDto(CountryDto entity) {
 		if (entity == null) {
 			return null;
 		}
-		return new CountryReferenceDto(
+		CountryReferenceDto dto = new CountryReferenceDto(
 			entity.getUuid(),
 			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
 			entity.getIsoCode());
+
+		dto.setExternalId(entity.getExternalId());
+
+		return dto;
 	}
 
 	@Override
