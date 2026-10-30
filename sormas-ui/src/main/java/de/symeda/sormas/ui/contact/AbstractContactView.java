@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -42,6 +44,7 @@ import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
@@ -91,8 +94,17 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 		if (UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA)) {
 			menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
 		}
-		if (!List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.MEASLES).contains(contact.getDisease()) && UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
+		if (!List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.MEASLES).contains(contact.getDisease())
+			&& UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
 			menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
+		}
+
+		if (ExternalPersonDataComponent.isAvailable()) {
+			menu.addView(
+				ContactExternalPersonDataView.VIEW_NAME,
+				FacadeProvider.getSystemConfigurationValueFacade()
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY, I18nProperties.getCaption(Captions.externalPersonData)),
+				params);
 		}
 
 		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));

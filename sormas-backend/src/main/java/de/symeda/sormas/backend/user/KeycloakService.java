@@ -46,6 +46,7 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.admin.client.token.TokenManager;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -468,6 +469,10 @@ public class KeycloakService {
 
 	private Optional<Keycloak> getKeycloakInstance() {
 		return Optional.ofNullable(keycloakInstance);
+	}
+
+	public String getSecurityToken() {
+		return getKeycloakInstance().map(Keycloak::tokenManager).map(TokenManager::getAccessTokenString).orElse(null);
 	}
 
 }

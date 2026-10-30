@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_MENU_NAME_KEY;
 import static de.symeda.sormas.ui.UiUtil.permitted;
 import static java.util.Objects.nonNull;
 
@@ -80,6 +81,9 @@ import de.symeda.sormas.ui.environment.EnvironmentsView;
 import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataContainerView;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataListView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
@@ -265,6 +269,15 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW)) {
 			ControllerProvider.getPersonController().registerViews(navigator);
 			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
+		}
+		if (ExternalPersonDataComponent.isAvailable()) {
+			navigator.addView(ExternalPersonDataContainerView.VIEW_NAME, ExternalPersonDataContainerView.class);
+			menu.addView(
+				ExternalPersonDataListView.class,
+				ExternalPersonDataListView.VIEW_NAME,
+				FacadeProvider.getSystemConfigurationValueFacade()
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_MENU_NAME_KEY, I18nProperties.getCaption(Captions.mainMenuExternalPersons)),
+				VaadinIcons.GROUP);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
@@ -506,6 +519,8 @@ public class MainScreen extends HorizontalLayout {
 				ReportsView.VIEW_NAME,
 				StatisticsView.VIEW_NAME,
 				PersonsView.VIEW_NAME,
+				ExternalPersonDataListView.VIEW_NAME,
+				ExternalPersonDataContainerView.VIEW_NAME,
 				UsersView.VIEW_NAME,
 				UserRolesView.VIEW_NAME,
 				OutbreaksView.VIEW_NAME,

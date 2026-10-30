@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -49,6 +51,7 @@ import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
@@ -257,6 +260,14 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 
 		if (caze.getExternalData() != null && !caze.getExternalData().isEmpty()) {
 			menu.addView(CaseExternalDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_DATA), params);
+		}
+
+		if (ExternalPersonDataComponent.isAvailable()) {
+			menu.addView(
+				CaseExternalPersonDataView.VIEW_NAME,
+				FacadeProvider.getSystemConfigurationValueFacade()
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY, I18nProperties.getCaption(Captions.externalPersonData)),
+				params);
 		}
 
 		setMainHeaderComponent(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));

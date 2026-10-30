@@ -29,16 +29,33 @@ public enum RootEntityType {
 	ROOT_EVENT_PARTICIPANTS("eventParticipants"),
 	ROOT_TRAVEL_ENTRY("travelEntry"),
 	ROOT_VACCINATION("vaccination"),
-	ROOT_GENERAL("general");
+
+	ROOT_EXTERNAL_PERSON_DATA("externalPersonData", false),
+	ROOT_GENERAL("general", false);
 
 	private final String entityName;
+	private final boolean dataModelEntity;
 
 	RootEntityType(String entityName) {
+		this(entityName, true);
+	}
+
+	RootEntityType(String entityName, boolean dataModelEntity) {
 		this.entityName = entityName;
+		this.dataModelEntity = dataModelEntity;
 	}
 
 	public String getEntityName() {
 		return entityName;
+	}
+
+	/**
+	 * Retrieval of the data and therefore properties will be a bit different for those types.
+	 * 
+	 * @return true if belongs to the sormas "physical" data model, otherwise if "simulated" entity will be false.
+	 */
+	public boolean isDataModelEntity() {
+		return dataModelEntity;
 	}
 
 	public static RootEntityType ofEntityName(String name) {
@@ -50,4 +67,5 @@ public enum RootEntityType {
 
 		return null;
 	}
+
 }

@@ -30,15 +30,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vaadin.shared.ui.ErrorLevel;
-import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
-import de.symeda.sormas.ui.utils.ValidationUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -48,6 +46,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -63,7 +62,9 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataLookup;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -72,6 +73,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.components.SormasTextField;
 
 public class PersonCreateForm extends AbstractEditForm<PersonDto> {
@@ -79,6 +81,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private static final long serialVersionUID = 639431574534995815L;
 
 	private static final String PERSON_SEARCH_LOC = "personSearchLoc";
+	private static final String EXTERNAL_PERSON_LOOKUP_LOC = "externalPersonLookupLoc";
 	private static final String ENTER_HOME_ADDRESS_NOW = "enterHomeAddressNow";
 	private static final String HOME_ADDRESS_HEADER = "addressHeader";
 	private static final String HOME_ADDRESS_LOC = "homeAddressLoc";
@@ -87,6 +90,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private CheckBox enterHomeAddressNow;
 	private LocationEditForm homeAddressForm;
 	private Button searchPersonButton;
+	private Button externalPersonLookupButton;
 
 	private PersonDto person;
 
@@ -99,10 +103,10 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 	private static final String HTML_LAYOUT =
 		"%s" + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
-			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-            + fluidRowLocs(NATIONAL_HEALTH_ID_WARNING_LABEL, "")
-			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE) + fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
-			+ fluidRowLocs(ENTER_HOME_ADDRESS_NOW) + loc(HOME_ADDRESS_HEADER) + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
+			+ fluidRow(fluidRowLocs(10, PersonDto.NATIONAL_HEALTH_ID, 2, EXTERNAL_PERSON_LOOKUP_LOC), fluidRowLocs(PersonDto.PASSPORT_NUMBER))
+			+ fluidRowLocs(NATIONAL_HEALTH_ID_WARNING_LABEL, "") + fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
+			+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) + fluidRowLocs(ENTER_HOME_ADDRESS_NOW) + loc(HOME_ADDRESS_HEADER)
+			+ divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
 
 	private static final String NAME_ROW_WITH_PERSON_SEARCH = fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC);
 	private static final String NAME_ROW_WITHOUT_PERSON_SEARCH = fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
@@ -200,6 +204,29 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
+		externalPersonLookupButton =
+			ButtonHelper.createIconButtonWithCaption(EXTERNAL_PERSON_LOOKUP_LOC, StringUtils.EMPTY, VaadinIcons.SEARCH, event -> {
+				if (!ExternalPersonDataLookup.isAvailable() || !nationalHealthIdField.isEnabled() || nationalHealthIdField.isReadOnly()) {
+					return;
+				}
+				ExternalPersonDataLookup lookup = new ExternalPersonDataLookup(
+					nationalHealthIdField.getValue(),
+					getField(PersonDto.FIRST_NAME),
+					getField(PersonDto.LAST_NAME),
+					birthDateYear,
+					birthDateMonth,
+					birthDateDay);
+				if (lookup.isAutomaticallyApplied()) {
+					return;
+				}
+				Window window = VaadinUiUtil.createPopupWindow();
+				window.setCaption(I18nProperties.getCaption(Captions.integrateExternalPersonData));
+				window.setContent(lookup);
+				UI.getCurrent().addWindow(window);
+			}, CssStyles.FORCE_CAPTION);
+		externalPersonLookupButton.setDescription(I18nProperties.getCaption(Captions.externalPersonData));
+		externalPersonLookupButton.setEnabled(ExternalPersonDataLookup.isAvailable());
+		getContent().addComponent(externalPersonLookupButton, EXTERNAL_PERSON_LOOKUP_LOC);
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
 		nationalHealthIdWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		nationalHealthIdWarningLabel.setVisible(false);
@@ -208,16 +235,16 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		addValueChangeListener(e -> {
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				ValidationUtils.initComponentErrorValidator(
-						nationalHealthIdField,
-						nationalHealthIdField.getValue(),
-						Validations.invalidNationalHealthId,
-						nationalHealthIdWarningLabel,
-						nationalHealthId -> !LuxembourgNationalHealthIdValidator.isValid(
-								nationalHealthId,
-								(Integer) birthDateYear.getValue(),
-								(Integer) birthDateMonth.getValue(),
-								(Integer) birthDateDay.getValue()),
-						ErrorLevel.WARNING);
+					nationalHealthIdField,
+					nationalHealthIdField.getValue(),
+					Validations.invalidNationalHealthId,
+					nationalHealthIdWarningLabel,
+					nationalHealthId -> !LuxembourgNationalHealthIdValidator.isValid(
+						nationalHealthId,
+						(Integer) birthDateYear.getValue(),
+						(Integer) birthDateMonth.getValue(),
+						(Integer) birthDateDay.getValue()),
+					ErrorLevel.WARNING);
 			}
 		});
 
@@ -246,6 +273,9 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+		externalPersonLookupButton.setVisible(nationalHealthIdField.isVisible());
+		externalPersonLookupButton
+			.setEnabled(nationalHealthIdField.isEnabled() && !nationalHealthIdField.isReadOnly() && ExternalPersonDataLookup.isAvailable());
 		hideValidationUntilNextCommit();
 		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 	}
@@ -434,6 +464,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enabled);
 		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enabled);
 		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enabled);
+		externalPersonLookupButton.setEnabled(enabled && ExternalPersonDataLookup.isAvailable());
 		if (homeAddressForm != null) {
 			homeAddressForm.setEnabled(enabled || alwaysEnableAddressFields);
 		}
@@ -461,6 +492,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	}
 
 	public void setPersonDetailsReadOnly() {
+		externalPersonLookupButton.setEnabled(false);
 
 		setEnabled(
 			false,

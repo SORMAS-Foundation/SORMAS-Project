@@ -33,8 +33,10 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.user.OidcCallerPrincipal;
 import de.symeda.sormas.ui.security.config.DefaultOpenIdAuthenticationDefinition;
 import fish.payara.security.openid.OpenIdAuthenticationMechanism;
+import fish.payara.security.openid.domain.OpenIdContextImpl;
 
 /**
  * Mechanism which allows configuration of multiple providers trough a system property.
@@ -66,6 +68,9 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	private final static Logger logger = LoggerFactory.getLogger(MultiAuthenticationMechanism.class);
 	private final ExtractCallerFromRequest extractor;
 	private final HttpAuthenticationMechanism authenticationMechanism;
+
+	@Inject
+	private OpenIdContextImpl openIdContext;
 
 	@Inject
 	public MultiAuthenticationMechanism(
@@ -100,6 +105,16 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext)
 		throws AuthenticationException {
 		AuthenticationStatus authenticationStatus = authenticationMechanism.validateRequest(request, response, httpMessageContext);
+
+		if (authenticationMechanism instanceof OpenIdAuthenticationMechanism
+			&& authenticationStatus == AuthenticationStatus.SUCCESS
+			&& openIdContext.getAccessToken() != null) {
+			// Session restoration may supply an older principal after token refresh. Use the current OIDC context
+			// on each successful request without registering (and potentially invalidating) the session again.
+			authenticationStatus = httpMessageContext.notifyContainerAboutLogin(
+				new OidcCallerPrincipal(openIdContext.getCallerName(), openIdContext.getAccessToken().getToken()),
+				openIdContext.getCallerGroups());
+		}
 
 		if (authenticationStatus.equals(AuthenticationStatus.SEND_FAILURE)) {
 			FacadeProvider.getAuditLoggerFacade().logFailedUiLogin(extractor.extract(request), request.getMethod(), request.getRequestURI());

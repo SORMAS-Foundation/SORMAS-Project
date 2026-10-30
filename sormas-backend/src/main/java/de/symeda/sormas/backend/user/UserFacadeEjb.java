@@ -1102,6 +1102,11 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	public String getCurrentAccessToken() {
+		return currentUserService.getCurrentAccessToken().orElse(null);
+	}
+
+	@Override
 	// TODO - default password change only for ADMIN??
 	@PermitAll
 	public List<UserDto> getUsersWithDefaultPassword() {
