@@ -16,7 +16,7 @@ import de.symeda.sormas.api.uuid.HasUuid;
  * The call to the external person system might be expensive, allows caching and a single entry point to get those values.
  * Will use the {@link RootEntityType#name()} as trigger to be initialized / reused.
  */
-public class ExternalPersonPropertyFiller extends AbstractRootValuePropertyFiller {
+public class ExternalPersonDataPropertyFiller extends AbstractRootValuePropertyFiller {
 
 	/**
 	 * Lazy-loaded
@@ -28,7 +28,7 @@ public class ExternalPersonPropertyFiller extends AbstractRootValuePropertyFille
 
 	private final ExternalPersonDataProviderFacade externalPersonDataProviderFacade;
 
-	public ExternalPersonPropertyFiller(
+	public ExternalPersonDataPropertyFiller(
 		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver,
 		DocumentTemplateEntities entities,
 		ExternalPersonDataProviderFacade externalPersonDataProviderFacade) {
@@ -55,4 +55,8 @@ public class ExternalPersonPropertyFiller extends AbstractRootValuePropertyFille
 		return getAddress();
 	}
 
+	@Override
+	public RootEntityType supportedType() {
+		return RootEntityType.ROOT_EXTERNAL_PERSON_DATA;
+	}
 }

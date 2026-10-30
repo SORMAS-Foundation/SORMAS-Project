@@ -28,7 +28,7 @@ import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.backend.AbstractUnitTest;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.docgeneration.valueresolvers.ExternalPersonPropertyFiller;
+import de.symeda.sormas.backend.docgeneration.valueresolvers.ExternalPersonDataPropertyFiller;
 import de.symeda.sormas.backend.docgeneration.valueresolvers.RootEntityPropertyFillersFactory;
 
 class DocumentTemplatePropertiesTest extends AbstractUnitTest {
@@ -115,7 +115,7 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 
 	private void enableExternalPersonFiller() {
 		when(propertyFillersFactory.createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON_DATA), eq(entities), any()))
-			.thenAnswer(invocation -> new ExternalPersonPropertyFiller(invocation.getArgument(2), entities, provider));
+			.thenAnswer(invocation -> new ExternalPersonDataPropertyFiller(invocation.getArgument(2), entities, provider));
 	}
 
 	private Properties prepareProperties(boolean docx, String... keys) throws Exception {

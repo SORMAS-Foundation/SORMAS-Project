@@ -276,9 +276,7 @@ public class MainScreen extends HorizontalLayout {
 				ExternalPersonDataListView.class,
 				ExternalPersonDataListView.VIEW_NAME,
 				FacadeProvider.getSystemConfigurationValueFacade()
-					.getValueOrDefaultTo(
-						EXTERNAL_PERSON_DATA_PROVIDER_MENU_NAME_KEY,
-						() -> I18nProperties.getCaption(Captions.mainMenuExternalPersons)),
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_MENU_NAME_KEY, I18nProperties.getCaption(Captions.mainMenuExternalPersons)),
 				VaadinIcons.GROUP);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {

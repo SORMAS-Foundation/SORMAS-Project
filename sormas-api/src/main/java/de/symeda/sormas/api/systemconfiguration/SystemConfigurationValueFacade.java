@@ -17,7 +17,6 @@ package de.symeda.sormas.api.systemconfiguration;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.function.Supplier;
 
 import javax.ejb.Remote;
 
@@ -64,11 +63,6 @@ public interface SystemConfigurationValueFacade
 	default String getValueOrDefaultTo(String key, String defaultValue) {
 		String value = getValue(key);
 		return StringUtils.isNotBlank(value) ? value : defaultValue;
-	}
-
-	default String getValueOrDefaultTo(String key, Supplier<String> defaultValueProvider) {
-		String value = getValue(key);
-		return StringUtils.isNotBlank(value) ? value : defaultValueProvider.get();
 	}
 
 	/**

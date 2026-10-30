@@ -4,6 +4,8 @@ import java.util.Properties;
 
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
+
 /**
  * Allows for some "indirect" (not directly within SORMAS - entity model) entities to resolve properties for document generation.
  * Naming inspired from {@link de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver}.
@@ -20,4 +22,5 @@ public interface RootEntityPropertyFiller {
 	 */
 	void fillValueInto(@NotNull String propertyKey, @NotNull Properties properties);
 
+	RootEntityType supportedType();
 }

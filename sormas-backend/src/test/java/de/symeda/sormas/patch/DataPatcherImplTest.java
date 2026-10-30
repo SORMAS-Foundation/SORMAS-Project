@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -80,18 +79,10 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
 import de.symeda.sormas.backend.patch.EqualValueOverrideHelper;
-import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
-import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.CollectionPatchMapper;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
 
 class DataPatcherImplTest extends AbstractBeanTest {
-
-	@BeforeEach
-	void setUp() {
-		// CDI look-up not easily achievable within this therefore setting the singleton before each test "in-case".
-		getBean(CollectionPatchMapper.class).setValueMapperRegistry(getBean(ValueMapperRegistry.class));
-	}
 
 	@Test
 	void patch_aliasUsage() {

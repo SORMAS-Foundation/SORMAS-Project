@@ -9,6 +9,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,7 +21,6 @@ import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
-import de.symeda.sormas.backend.util.InstanceProvider;
 
 /**
  * Edge-case handling: field which is a collection of a singular values: Set/List.
@@ -40,9 +41,10 @@ public class CollectionPatchMapper implements ValuePatchMapper {
 		Map.of(Set.class, Collectors.toSet(), List.class, Collectors.toList());
 
 	/**
-	 * Not injected through CDI, but lazily to avoid cycle: Registry <-> CollectionPatchMapper
+	 * Resolved lazily through CDI to avoid cycle: Registry <-> CollectionPatchMapper
 	 */
-	private ValueMapperRegistry valueMapperRegistry;
+	@Inject
+	private Instance<ValueMapperRegistry> valueMapperRegistry;
 
 	@Override
 	public <T> ValueMappingResult<T> map(ValuePatchRequest<T> request) {
@@ -93,15 +95,7 @@ public class CollectionPatchMapper implements ValuePatchMapper {
 	}
 
 	private ValueMapperRegistry getValueMapperRegistry() {
-		if (valueMapperRegistry == null) {
-			valueMapperRegistry = InstanceProvider.getInstanceFor(ValueMapperRegistry.class);
-		}
-
-		return valueMapperRegistry;
-	}
-
-	public void setValueMapperRegistry(ValueMapperRegistry valueMapperRegistry) {
-		this.valueMapperRegistry = valueMapperRegistry;
+		return valueMapperRegistry.get();
 	}
 
 	@Override

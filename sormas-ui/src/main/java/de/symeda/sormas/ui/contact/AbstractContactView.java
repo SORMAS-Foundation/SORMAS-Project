@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -98,7 +100,11 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 		}
 
 		if (ExternalPersonDataComponent.isAvailable()) {
-			menu.addView(ContactExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
+			menu.addView(
+				ContactExternalPersonDataView.VIEW_NAME,
+				FacadeProvider.getSystemConfigurationValueFacade()
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY, I18nProperties.getCaption(Captions.externalPersonData)),
+				params);
 		}
 
 		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));

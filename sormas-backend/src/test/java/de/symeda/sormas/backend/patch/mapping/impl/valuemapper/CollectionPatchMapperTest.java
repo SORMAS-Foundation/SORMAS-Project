@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.inject.Instance;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,6 +30,9 @@ class CollectionPatchMapperTest extends AbstractUnitTest {
 	@Mock
 	private ValueMapperRegistry valueMapperRegistry;
 
+	@Mock
+	private Instance<ValueMapperRegistry> valueMapperRegistryInstance;
+
 	@ParameterizedTest
 	@ValueSource(strings = {
 		"C#A#B#C",
@@ -38,6 +43,7 @@ class CollectionPatchMapperTest extends AbstractUnitTest {
 		"rawtypes" })
 	void map_alternativeSeparators_collectsIntoListAndSet(String value) {
 		// PREPARE
+		when(valueMapperRegistryInstance.get()).thenReturn(valueMapperRegistry);
 		when(valueMapperRegistry.map(any(ValuePatchRequest.class)))
 			.thenAnswer(invocation -> ValueMappingResult.withData(((ValuePatchRequest) invocation.getArgument(0)).getValue()));
 		ValuePatchRequest request = new ValuePatchRequest().setValue(value).setTargetType(List.class).setCollectionSubType(String.class);
@@ -69,6 +75,7 @@ class CollectionPatchMapperTest extends AbstractUnitTest {
 		"rawtypes" })
 	void map_setTarget_splitsCommaSeparatedValueAndCollectsIntoSet() {
 		// PREPARE — registry echoes back whatever single value it was asked to map
+		when(valueMapperRegistryInstance.get()).thenReturn(valueMapperRegistry);
 		when(valueMapperRegistry.map(any(ValuePatchRequest.class)))
 			.thenAnswer(invocation -> ValueMappingResult.withData(((ValuePatchRequest) invocation.getArgument(0)).getValue()));
 
@@ -87,6 +94,7 @@ class CollectionPatchMapperTest extends AbstractUnitTest {
 		"rawtypes" })
 	void map_listTarget_splitsCommaSeparatedValueAndCollectsIntoListPreservingOrder() {
 		// PREPARE
+		when(valueMapperRegistryInstance.get()).thenReturn(valueMapperRegistry);
 		when(valueMapperRegistry.map(any(ValuePatchRequest.class)))
 			.thenAnswer(invocation -> ValueMappingResult.withData(((ValuePatchRequest) invocation.getArgument(0)).getValue()));
 
@@ -105,6 +113,7 @@ class CollectionPatchMapperTest extends AbstractUnitTest {
 		"rawtypes" })
 	void map_delegatesEachSplitValueToRegistryWithCollectionSubTypeAsTargetType() {
 		// PREPARE
+		when(valueMapperRegistryInstance.get()).thenReturn(valueMapperRegistry);
 		when(valueMapperRegistry.map(any(ValuePatchRequest.class)))
 			.thenAnswer(invocation -> ValueMappingResult.withData(((ValuePatchRequest) invocation.getArgument(0)).getTargetType()));
 
@@ -149,6 +158,7 @@ class CollectionPatchMapperTest extends AbstractUnitTest {
 		"rawtypes" })
 	void map_oneElementFailsToMap_propagatesFailureCause() {
 		// PREPARE — "B" is rejected by the (mocked) downstream mapper
+		when(valueMapperRegistryInstance.get()).thenReturn(valueMapperRegistry);
 		when(valueMapperRegistry.map(any(ValuePatchRequest.class))).thenAnswer(invocation -> {
 			Object value = ((ValuePatchRequest) invocation.getArgument(0)).getValue();
 			if ("B".equals(value)) {

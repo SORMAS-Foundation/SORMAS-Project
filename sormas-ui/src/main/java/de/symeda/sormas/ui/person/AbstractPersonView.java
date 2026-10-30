@@ -52,7 +52,7 @@ public abstract class AbstractPersonView extends AbstractEditAllowedDetailView<P
 			menu.addView(
 				ExternalPersonDataView.VIEW_NAME,
 				FacadeProvider.getSystemConfigurationValueFacade()
-					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY, () -> I18nProperties.getCaption(Captions.externalPersonData)),
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY, I18nProperties.getCaption(Captions.externalPersonData)),
 				params);
 		}
 

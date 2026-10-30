@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -261,7 +263,11 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 		}
 
 		if (ExternalPersonDataComponent.isAvailable()) {
-			menu.addView(CaseExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
+			menu.addView(
+				CaseExternalPersonDataView.VIEW_NAME,
+				FacadeProvider.getSystemConfigurationValueFacade()
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY, I18nProperties.getCaption(Captions.externalPersonData)),
+				params);
 		}
 
 		setMainHeaderComponent(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));

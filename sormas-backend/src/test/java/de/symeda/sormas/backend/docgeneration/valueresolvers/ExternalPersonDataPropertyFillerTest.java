@@ -24,7 +24,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.AbstractUnitTest;
 
-class ExternalPersonPropertyFillerTest extends AbstractUnitTest {
+class ExternalPersonDataPropertyFillerTest extends AbstractUnitTest {
 
 	@Mock
 	private ExternalPersonDataProviderFacade provider;
@@ -32,13 +32,13 @@ class ExternalPersonPropertyFillerTest extends AbstractUnitTest {
 	private final DocumentTemplateEntities entities = new DocumentTemplateEntities();
 	private final CaseDataDto caseData = new CaseDataDto();
 	private final PersonDto person = new PersonDto();
-	private ExternalPersonPropertyFiller filler;
+	private ExternalPersonDataPropertyFiller filler;
 
 	@BeforeEach
 	void setUp() {
 		entities.addEntity(RootEntityType.ROOT_CASE, caseData);
 		entities.addEntity(RootEntityType.ROOT_PERSON, person);
-		filler = new ExternalPersonPropertyFiller(null, entities, provider);
+		filler = new ExternalPersonDataPropertyFiller(null, entities, provider);
 	}
 
 	@Test

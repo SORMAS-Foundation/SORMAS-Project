@@ -28,7 +28,7 @@ public class RootEntityPropertyFillersFactory {
 		}
 
 		if (entityType == RootEntityType.ROOT_EXTERNAL_PERSON_DATA) {
-			return new ExternalPersonPropertyFiller(referenceDtoResolver, entities, externalPersonDataProviderFacadeEJB);
+			return new ExternalPersonDataPropertyFiller(referenceDtoResolver, entities, externalPersonDataProviderFacadeEJB);
 		}
 		throw new IllegalStateException(String.format("RootEntityType: [%s] is not supported", entityType));
 	}
