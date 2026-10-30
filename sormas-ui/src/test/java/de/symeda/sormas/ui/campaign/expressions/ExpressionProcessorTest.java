@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.campaign.expressions;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -11,6 +26,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,18 +48,40 @@ import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormBuilder;
 
 public class ExpressionProcessorTest {
 
+	// static mocks are registered per thread; they must be closed after the class, otherwise every later test class on the
+	// same thread that mocks UI or Page fails with "static mocking is already registered in the current thread"
+	private static MockedStatic<UI> uiMockedStatic;
+	private static MockedStatic<Page> pageMockedStatic;
+
 	private ExpressionProcessor expressionProcessor;
 	private CampaignFormBuilder campaignFormBuilder;
 
 	@BeforeAll
 	public static void setupClass() {
 		UI ui = new SormasUI();
-		final MockedStatic<UI> uiMockedStatic = Mockito.mockStatic(UI.class);
+		uiMockedStatic = Mockito.mockStatic(UI.class);
 		uiMockedStatic.when(UI::getCurrent).thenReturn(ui);
 
 		Page page = new Page(UI.getCurrent(), new PageState());
-		MockedStatic<Page> pageMockedStatic = Mockito.mockStatic(Page.class);
+		pageMockedStatic = Mockito.mockStatic(Page.class);
 		pageMockedStatic.when(Page::getCurrent).thenReturn(page);
+	}
+
+	@AfterAll
+	public static void tearDownClass() {
+
+		// close both, even if one of them was never created or closing the first one fails
+		try {
+			if (pageMockedStatic != null) {
+				pageMockedStatic.close();
+			}
+		} finally {
+			pageMockedStatic = null;
+			if (uiMockedStatic != null) {
+				uiMockedStatic.close();
+			}
+			uiMockedStatic = null;
+		}
 	}
 
 	@BeforeEach

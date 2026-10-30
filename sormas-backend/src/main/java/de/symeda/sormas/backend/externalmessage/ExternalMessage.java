@@ -16,14 +16,17 @@
 package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_MEDIUM;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -53,6 +56,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
+import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
@@ -63,6 +67,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.epidata.InfectionSourceSetConverter;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -268,6 +273,10 @@ public class ExternalMessage extends AbstractDomainObject {
 	private ClusterType clusterType;
 	private String clusterTypeText;
 	private Boolean clusterRelated;
+
+	// Diphtheria changes - suspected vehicle of infection
+	private Set<InfectionSource> infectionSource;
+	private String infectionSourceText;
 
 	private HivStatus hivStatus;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
@@ -1174,6 +1183,25 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setClusterRelated(Boolean clusterRelated) {
 		this.clusterRelated = clusterRelated;
+	}
+
+	@Column(length = CHARACTER_LIMIT_MEDIUM)
+	@Convert(converter = InfectionSourceSetConverter.class)
+	public Set<InfectionSource> getInfectionSource() {
+		return infectionSource;
+	}
+
+	public void setInfectionSource(Set<InfectionSource> infectionSource) {
+		this.infectionSource = infectionSource;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getInfectionSourceText() {
+		return infectionSourceText;
+	}
+
+	public void setInfectionSourceText(String infectionSourceText) {
+		this.infectionSourceText = infectionSourceText;
 	}
 
 	@Enumerated(EnumType.STRING)

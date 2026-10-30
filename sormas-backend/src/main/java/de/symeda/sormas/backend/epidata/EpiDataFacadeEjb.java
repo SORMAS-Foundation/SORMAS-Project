@@ -167,6 +167,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setPlaceOfInfection(source.getPlaceOfInfection());
 		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setPatientIllLocation(source.getPatientIllLocation());
 		target.setTypeOfClinicalService(source.getTypeOfClinicalService());
 		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
 		target.setMotherCountryOfBirth(countryService.getByReferenceDto(source.getMotherCountryOfBirth()));
@@ -367,6 +368,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setPlaceOfInfection(source.getPlaceOfInfection());
 		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setPatientIllLocation(source.getPatientIllLocation());
 		target.setTypeOfClinicalService(source.getTypeOfClinicalService());
 		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
 		target.setMotherCountryOfBirth(CountryFacadeEjb.toReferenceDto(source.getMotherCountryOfBirth()));

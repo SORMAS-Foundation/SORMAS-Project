@@ -17779,7 +17779,7 @@
             "type" : "array",
             "items" : {
               "type" : "string",
-              "enum" : [ "FOOD", "ANIMAL", "BAKERY_PRODUCTS", "BATS_CONTACT", "BOVINE_MEAT_PRODUCTS", "BROILER_MEAT_PRODUCTS", "CANNED_FOOD_PRODUCTS", "CATS_CONTACT", "CEREAL_PRODUCTS", "CHEESE", "NON_CHEESES_DAIRY_PRODUCTS", "DOGS_CONTACT", "DRINKS_BOTTLED_WATER", "EGG_PRODUCTS", "EXOTIC_PET_CONTACT", "DOMESTIC_PET_CONTACT", "FARM_ANIMAL_CONTACT", "OTHER_ANIMAL_CONTACT", "RAW_MILK_PRODUCTS", "FISH_PRODUCTS", "FOX_CONTACT", "FRUITS_AND_JUICES", "GAME_MEAT_NOT_WILD_BOAR", "HERBS_AND_SPICES", "MILK", "BUFFET_MEALS", "MIXED_MEAT_PRODUCTS", "OTHER_FOODS", "OTHER_MEAT_PRODUCTS", "OTHER_PET_CONTACT", "UNSPECIFIED_POULTRY", "OTHER_WILD_ANIMAL_CONTACT", "PORK_PRODUCTS", "SHEEP_MEAT_PRODUCTS", "SHELLFISH_PRODUCTS", "Sprouts", "confectionery", "TAP_AND_WELL_WATER", "TURKEY_MEAT_PRODUCTS", "JUICE_AND_VEGETABLE_PRODUCTS", "WILD_BOAR_MEAT_PRODUCTS", "UNKNOWN", "NOT_APPLICABLE", "OTHER" ]
+              "enum" : [ "FOOD", "ANIMAL", "BAKERY_PRODUCTS", "BATS_CONTACT", "BOVINE_MEAT_PRODUCTS", "BROILER_MEAT_PRODUCTS", "CANNED_FOOD_PRODUCTS", "CATS_CONTACT", "CEREAL_PRODUCTS", "CHEESE", "NON_CHEESES_DAIRY_PRODUCTS", "DOGS_CONTACT", "DRINKS_BOTTLED_WATER", "EGG_PRODUCTS", "EXOTIC_PET_CONTACT", "DOMESTIC_PET_CONTACT", "FARM_ANIMAL_CONTACT", "OTHER_ANIMAL_CONTACT", "RAW_MILK_PRODUCTS", "FISH_PRODUCTS", "FOX_CONTACT", "FRUITS_AND_JUICES", "GAME_MEAT_NOT_WILD_BOAR", "HERBS_AND_SPICES", "MILK", "BUFFET_MEALS", "MIXED_MEAT_PRODUCTS", "OTHER_FOODS", "OTHER_MEAT_PRODUCTS", "OTHER_PET_CONTACT", "UNSPECIFIED_POULTRY", "OTHER_WILD_ANIMAL_CONTACT", "PORK_PRODUCTS", "SHEEP_MEAT_PRODUCTS", "SHELLFISH_PRODUCTS", "Sprouts", "confectionery", "TAP_AND_WELL_WATER", "TURKEY_MEAT_PRODUCTS", "JUICE_AND_VEGETABLE_PRODUCTS", "WILD_BOAR_MEAT_PRODUCTS", "UNKNOWN", "NOT_UND_SURV", "NOT_APPLICABLE", "OTHER" ]
             },
             "uniqueItems" : true
           },
@@ -17807,6 +17807,11 @@
           },
           "otherDetails" : {
             "type" : "string"
+          },
+          "patientIllLocation" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
           },
           "placeOfInfection" : {
             "type" : "string",
@@ -19624,6 +19629,19 @@
           },
           "inJurisdiction" : {
             "type" : "boolean"
+          },
+          "infectionSource" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "FOOD", "ANIMAL", "BAKERY_PRODUCTS", "BATS_CONTACT", "BOVINE_MEAT_PRODUCTS", "BROILER_MEAT_PRODUCTS", "CANNED_FOOD_PRODUCTS", "CATS_CONTACT", "CEREAL_PRODUCTS", "CHEESE", "NON_CHEESES_DAIRY_PRODUCTS", "DOGS_CONTACT", "DRINKS_BOTTLED_WATER", "EGG_PRODUCTS", "EXOTIC_PET_CONTACT", "DOMESTIC_PET_CONTACT", "FARM_ANIMAL_CONTACT", "OTHER_ANIMAL_CONTACT", "RAW_MILK_PRODUCTS", "FISH_PRODUCTS", "FOX_CONTACT", "FRUITS_AND_JUICES", "GAME_MEAT_NOT_WILD_BOAR", "HERBS_AND_SPICES", "MILK", "BUFFET_MEALS", "MIXED_MEAT_PRODUCTS", "OTHER_FOODS", "OTHER_MEAT_PRODUCTS", "OTHER_PET_CONTACT", "UNSPECIFIED_POULTRY", "OTHER_WILD_ANIMAL_CONTACT", "PORK_PRODUCTS", "SHEEP_MEAT_PRODUCTS", "SHELLFISH_PRODUCTS", "Sprouts", "confectionery", "TAP_AND_WELL_WATER", "TURKEY_MEAT_PRODUCTS", "JUICE_AND_VEGETABLE_PRODUCTS", "WILD_BOAR_MEAT_PRODUCTS", "UNKNOWN", "NOT_UND_SURV", "NOT_APPLICABLE", "OTHER" ]
+            },
+            "uniqueItems" : true
+          },
+          "infectionSourceText" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
           },
           "malaria" : {
             "type" : "string",
@@ -25950,6 +25968,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "cardiacDisorder" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "centralNervousSystemDamage" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26085,6 +26107,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "conjunctivalPresentation" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "conjunctivitis" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26128,6 +26154,10 @@
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "cutaneousPresentation" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "darkUrine" : {
             "type" : "string",
@@ -26270,6 +26300,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "generalizedLymphadenopathy" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "genitalPresentation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26599,6 +26633,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "nasalDischargeClearToBloody" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "nausea" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26615,6 +26653,14 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "neurologicalAndCardiacDisorder" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "neurologicalComplicationDiagnosis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "neurologicalComplications" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26624,6 +26670,10 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "newbornConjunctivitis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "noComplicationDiagnosis" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
@@ -26680,12 +26730,30 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "otherClinicalCriteria" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "otherClinicalCriteriaText" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
           "otherClinicalPresentation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "otherClinicalPresentationText" : {
             "type" : "string"
+          },
+          "otherComplicationDiagnosis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "otherComplicationDiagnosisText" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
           },
           "otherComplications" : {
             "type" : "string",
@@ -26880,6 +26948,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "respiratoryAndCutaneousPresentation" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "respiratoryDiseaseVentilation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26891,6 +26963,14 @@
           "respiratoryRate" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "respiratoryWithMembrane" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "respiratoryWithoutMembrane" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "restlessness" : {
             "type" : "string",
@@ -27056,7 +27136,15 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "unknownClinicalCriteria" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "unknownClinicalPresentation" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "unknownComplicationDiagnosis" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },

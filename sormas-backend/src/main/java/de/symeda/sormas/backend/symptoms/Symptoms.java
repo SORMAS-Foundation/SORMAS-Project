@@ -101,6 +101,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState apnoea;
 	private SymptomState cough;
 	private SymptomState coughWithSputum;
+	// #13399 - deprecated, replaced by coughingBlood
+	@Deprecated
 	private SymptomState coughWithHeamoptysis;
 	private SymptomState coughingBouts;
 	private SymptomState coughsProvokeVomiting;
@@ -116,6 +118,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState dehydration;
 	private SymptomState anorexiaAppetiteLoss;
 	private SymptomState refusalFeedorDrink;
+	// #13399 - deprecated, replaced by arthralgia
+	@Deprecated
 	private SymptomState jointPain;
 	private SymptomState hiccups;
 	private SymptomState otherNonHemorrhagicSymptoms;
@@ -175,7 +179,11 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState oedemaFaceNeck;
 	private SymptomState oedemaLowerExtremity;
 	private SymptomState lossSkinTurgor;
+	// #13399 - deprecated, replaced by hepatomegaly
+	@Deprecated
 	private SymptomState palpableLiver;
+	// #13399 - deprecated, replaced by splenomegaly
+	@Deprecated
 	private SymptomState palpableSpleen;
 	private SymptomState malaise;
 	private SymptomState sunkenEyesFontanelle;
@@ -215,6 +223,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState coma;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
+	// #13399 - deprecated, replaced by seizures
+	@Deprecated
 	private SymptomState convulsion;
 	private SymptomState lossOfTaste;
 	private SymptomState lossOfSmell;
@@ -224,6 +234,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState inabilityToWalk;
 	private SymptomState inDrawingOfChestWall;
 	private SymptomState respiratoryDiseaseVentilation;
+	// #13399 - deprecated, replaced by malaise
+	@Deprecated
 	private SymptomState feelingIll;
 	private SymptomState shivering;
 	private SymptomState fastHeartRate;
@@ -256,6 +268,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState fluidInLungCavityAuscultation;
 	private SymptomState fluidInLungCavityXray;
 	private SymptomState abnormalLungXrayFindings;
+	// #13399 - deprecated, replaced by conjunctivitis
+	@Deprecated
 	private SymptomState conjunctivalInjection;
 	private SymptomState acuteRespiratoryDistressSyndrome;
 	private SymptomState pneumoniaClinicalOrRadiologic;
@@ -279,8 +293,11 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherMinorSiteDetails;
 	private YesNoUnknown dateOfOnsetKnown;
 	private ClinicalPresentationStatus clinicalPresentationStatus;
-	// Added in case, enrolling person is not known about the symptoms, but sure of the case.
+	// Added in case, enrolling person is not known about the symptoms, but sure of
+	// the case.
 	private SymptomState unknownSymptom;
+	// #13399 - deprecated, replaced by encephalitis
+	@Deprecated
 	private SymptomState acuteEncephalitis;
 
 	// RSV-specific symptoms
@@ -305,6 +322,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState encephalitis;
 	private SymptomState guillainBarreSyndrome;
 	private SymptomState lethargy;
+	// #13399 - deprecated, replaced by confusedDisoriented
+	@Deprecated
 	private SymptomState confusion;
 	private SymptomState persistentVomiting;
 	private SymptomState restlessness;
@@ -314,6 +333,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState polydipsia;
 	private SymptomState syndromicFlu;
 	private SymptomState anemia;
+	// #13399 - deprecated, replaced by alteredConsciousness
+	@Deprecated
 	private SymptomState alteredLevelOfConsciousness;
 	private SymptomState severeAnemia;
 	private SymptomState metabolicAcidosis;
@@ -343,6 +364,27 @@ public class Symptoms extends AbstractDomainObject {
 	private YesNoUnknown otherGeneralSymptoms;
 	private String otherGeneralSymptomsText;
 
+	// Diphtheria clinical criteria
+	private SymptomState conjunctivalPresentation;
+	private SymptomState cutaneousPresentation;
+	private SymptomState genitalPresentation;
+	private SymptomState nasalDischargeClearToBloody;
+	private SymptomState otherClinicalCriteria;
+	private String otherClinicalCriteriaText;
+	private SymptomState respiratoryAndCutaneousPresentation;
+	private SymptomState respiratoryWithMembrane;
+	private SymptomState respiratoryWithoutMembrane;
+	private SymptomState unknownClinicalCriteria;
+
+	// Diphtheria complication diagnosis
+	private SymptomState noComplicationDiagnosis;
+	private SymptomState cardiacDisorder;
+	private SymptomState neurologicalComplicationDiagnosis;
+	private SymptomState neurologicalAndCardiacDisorder;
+	private SymptomState otherComplicationDiagnosis;
+	private String otherComplicationDiagnosisText;
+	private SymptomState unknownComplicationDiagnosis;
+
 	// Syphilis-specific symptoms
 	private SymptomState patchyAlopecia;
 	private SymptomState chancre;
@@ -363,6 +405,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState hepatosplenomegaly;
 	private SymptomState lowGradeFever;
 	private SymptomState mucocutaneousLesion;
+	// #13399 - deprecated, replaced by skinRash
+	@Deprecated
 	private SymptomState maculopapularRash;
 	private SyphilisInfectionSite syphilisInfectionSite;
 	private SyphilisStage syphilisStage;
@@ -529,11 +573,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.musclePain = musclePain;
 	}
 
+	// #13399 - deprecated, replaced by arthralgia
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getJointPain() {
 		return jointPain;
 	}
 
+	@Deprecated
 	public void setJointPain(SymptomState jointPain) {
 		this.jointPain = jointPain;
 	}
@@ -1397,20 +1444,26 @@ public class Symptoms extends AbstractDomainObject {
 		this.lossSkinTurgor = lossSkinTurgor;
 	}
 
+	// #13399 - deprecated, replaced by hepatomegaly
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getPalpableLiver() {
 		return palpableLiver;
 	}
 
+	@Deprecated
 	public void setPalpableLiver(SymptomState palpableLiver) {
 		this.palpableLiver = palpableLiver;
 	}
 
+	// #13399 - deprecated, replaced by splenomegaly
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getPalpableSpleen() {
 		return palpableSpleen;
 	}
 
+	@Deprecated
 	public void setPalpableSpleen(SymptomState palpableSpleen) {
 		this.palpableSpleen = palpableSpleen;
 	}
@@ -1468,10 +1521,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.midUpperArmCircumference = midUpperArmCircumference;
 	}
 
+	// #13399 - deprecated, replaced by seizures
+	@Deprecated
+	@Enumerated(EnumType.STRING)
 	public SymptomState getConvulsion() {
 		return convulsion;
 	}
 
+	@Deprecated
 	public void setConvulsion(SymptomState convulsion) {
 		this.convulsion = convulsion;
 	}
@@ -1859,11 +1916,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.abnormalLungXrayFindings = abnormalLungXrayFindings;
 	}
 
+	// #13399 - deprecated, replaced by conjunctivitis
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getConjunctivalInjection() {
 		return conjunctivalInjection;
 	}
 
+	@Deprecated
 	public void setConjunctivalInjection(SymptomState conjunctivalInjection) {
 		this.conjunctivalInjection = conjunctivalInjection;
 	}
@@ -1963,11 +2023,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.coughWithSputum = coughWithSputum;
 	}
 
+	// #13399 - deprecated, replaced by coughingBlood
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getCoughWithHeamoptysis() {
 		return coughWithHeamoptysis;
 	}
 
+	@Deprecated
 	public void setCoughWithHeamoptysis(SymptomState coughWithHeamoptysis) {
 		this.coughWithHeamoptysis = coughWithHeamoptysis;
 	}
@@ -1981,11 +2044,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.respiratoryDiseaseVentilation = respiratoryDiseaseVentilation;
 	}
 
+	// #13399 - deprecated, replaced by malaise
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getFeelingIll() {
 		return feelingIll;
 	}
 
+	@Deprecated
 	public void setFeelingIll(SymptomState feelingIll) {
 		this.feelingIll = feelingIll;
 	}
@@ -2125,7 +2191,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.urinaryRetention = urinaryRetention;
 	}
 
-	@Enumerated
+	@Enumerated(EnumType.STRING)
 	public SymptomState getOtherComplications() {
 		return otherComplications;
 	}
@@ -2143,6 +2209,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.otherComplicationsText = otherComplicationsText;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getAsymptomatic() {
 		return asymptomatic;
 	}
@@ -2151,6 +2218,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.asymptomatic = asymptomatic;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getHemorrhagicRash() {
 		return hemorrhagicRash;
 	}
@@ -2159,6 +2227,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.hemorrhagicRash = hemorrhagicRash;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getArthritis() {
 		return arthritis;
 	}
@@ -2167,6 +2236,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.arthritis = arthritis;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getMeningitis() {
 		return meningitis;
 	}
@@ -2175,6 +2245,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.meningitis = meningitis;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getOtherClinicalPresentation() {
 		return otherClinicalPresentation;
 	}
@@ -2191,6 +2262,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.otherClinicalPresentationText = otherClinicalPresentationText;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getSepticaemia() {
 		return septicaemia;
 	}
@@ -2305,6 +2377,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.nocturnalCough = nocturnalCough;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getUnknownSymptom() {
 		return unknownSymptom;
 	}
@@ -2365,11 +2438,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.skinRashOnsetDate = skinRashOnsetDate;
 	}
 
+	// #13399 - deprecated, replaced by encephalitis
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getAcuteEncephalitis() {
 		return acuteEncephalitis;
 	}
 
+	@Deprecated
 	public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
 		this.acuteEncephalitis = acuteEncephalitis;
 	}
@@ -2489,11 +2565,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.lethargy = lethargy;
 	}
 
+	// #13399 - deprecated, replaced by confusedDisoriented
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getConfusion() {
 		return confusion;
 	}
 
+	@Deprecated
 	public void setConfusion(SymptomState confusion) {
 		this.confusion = confusion;
 	}
@@ -2570,11 +2649,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.anemia = anemia;
 	}
 
+	// #13399 - deprecated, replaced by alteredConsciousness
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getAlteredLevelOfConsciousness() {
 		return alteredLevelOfConsciousness;
 	}
 
+	@Deprecated
 	public void setAlteredLevelOfConsciousness(SymptomState alteredLevelOfConsciousness) {
 		this.alteredLevelOfConsciousness = alteredLevelOfConsciousness;
 	}
@@ -2911,11 +2993,14 @@ public class Symptoms extends AbstractDomainObject {
 		this.mucocutaneousLesion = mucocutaneousLesion;
 	}
 
+	// #13399 - deprecated, replaced by skinRash
+	@Deprecated
 	@Enumerated(EnumType.STRING)
 	public SymptomState getMaculopapularRash() {
 		return maculopapularRash;
 	}
 
+	@Deprecated
 	public void setMaculopapularRash(SymptomState maculopapularRash) {
 		this.maculopapularRash = maculopapularRash;
 	}
@@ -3062,6 +3147,159 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOtherGeneralSymptomsText(String otherGeneralSymptomsText) {
 		this.otherGeneralSymptomsText = otherGeneralSymptomsText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConjunctivalPresentation() {
+		return conjunctivalPresentation;
+	}
+
+	public void setConjunctivalPresentation(SymptomState conjunctivalPresentation) {
+		this.conjunctivalPresentation = conjunctivalPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCutaneousPresentation() {
+		return cutaneousPresentation;
+	}
+
+	public void setCutaneousPresentation(SymptomState cutaneousPresentation) {
+		this.cutaneousPresentation = cutaneousPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGenitalPresentation() {
+		return genitalPresentation;
+	}
+
+	public void setGenitalPresentation(SymptomState genitalPresentation) {
+		this.genitalPresentation = genitalPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNasalDischargeClearToBloody() {
+		return nasalDischargeClearToBloody;
+	}
+
+	public void setNasalDischargeClearToBloody(SymptomState nasalDischargeClearToBloody) {
+		this.nasalDischargeClearToBloody = nasalDischargeClearToBloody;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOtherClinicalCriteria() {
+		return otherClinicalCriteria;
+	}
+
+	public void setOtherClinicalCriteria(SymptomState otherClinicalCriteria) {
+		this.otherClinicalCriteria = otherClinicalCriteria;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getOtherClinicalCriteriaText() {
+		return otherClinicalCriteriaText;
+	}
+
+	public void setOtherClinicalCriteriaText(String otherClinicalCriteriaText) {
+		this.otherClinicalCriteriaText = otherClinicalCriteriaText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRespiratoryAndCutaneousPresentation() {
+		return respiratoryAndCutaneousPresentation;
+	}
+
+	public void setRespiratoryAndCutaneousPresentation(SymptomState respiratoryAndCutaneousPresentation) {
+		this.respiratoryAndCutaneousPresentation = respiratoryAndCutaneousPresentation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRespiratoryWithMembrane() {
+		return respiratoryWithMembrane;
+	}
+
+	public void setRespiratoryWithMembrane(SymptomState respiratoryWithMembrane) {
+		this.respiratoryWithMembrane = respiratoryWithMembrane;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRespiratoryWithoutMembrane() {
+		return respiratoryWithoutMembrane;
+	}
+
+	public void setRespiratoryWithoutMembrane(SymptomState respiratoryWithoutMembrane) {
+		this.respiratoryWithoutMembrane = respiratoryWithoutMembrane;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getUnknownClinicalCriteria() {
+		return unknownClinicalCriteria;
+	}
+
+	public void setUnknownClinicalCriteria(SymptomState unknownClinicalCriteria) {
+		this.unknownClinicalCriteria = unknownClinicalCriteria;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNoComplicationDiagnosis() {
+		return noComplicationDiagnosis;
+	}
+
+	public void setNoComplicationDiagnosis(SymptomState noComplicationDiagnosis) {
+		this.noComplicationDiagnosis = noComplicationDiagnosis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCardiacDisorder() {
+		return cardiacDisorder;
+	}
+
+	public void setCardiacDisorder(SymptomState cardiacDisorder) {
+		this.cardiacDisorder = cardiacDisorder;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNeurologicalComplicationDiagnosis() {
+		return neurologicalComplicationDiagnosis;
+	}
+
+	public void setNeurologicalComplicationDiagnosis(SymptomState neurologicalComplicationDiagnosis) {
+		this.neurologicalComplicationDiagnosis = neurologicalComplicationDiagnosis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNeurologicalAndCardiacDisorder() {
+		return neurologicalAndCardiacDisorder;
+	}
+
+	public void setNeurologicalAndCardiacDisorder(SymptomState neurologicalAndCardiacDisorder) {
+		this.neurologicalAndCardiacDisorder = neurologicalAndCardiacDisorder;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOtherComplicationDiagnosis() {
+		return otherComplicationDiagnosis;
+	}
+
+	public void setOtherComplicationDiagnosis(SymptomState otherComplicationDiagnosis) {
+		this.otherComplicationDiagnosis = otherComplicationDiagnosis;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getOtherComplicationDiagnosisText() {
+		return otherComplicationDiagnosisText;
+	}
+
+	public void setOtherComplicationDiagnosisText(String otherComplicationDiagnosisText) {
+		this.otherComplicationDiagnosisText = otherComplicationDiagnosisText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getUnknownComplicationDiagnosis() {
+		return unknownComplicationDiagnosis;
+	}
+
+	public void setUnknownComplicationDiagnosis(SymptomState unknownComplicationDiagnosis) {
+		this.unknownComplicationDiagnosis = unknownComplicationDiagnosis;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -605,11 +605,13 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void patch_notSupportedForDisease_symptoms_offset() {
+	void patch_notSupportedForDisease_symptoms() {
 		// PREPARE
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.GIARDIASIS);
 
-		Map<String, Object> patchDictionary = Map.of("CaseData.symptoms.offsetDate", new java.util.Date());
+		// #14366 - offsetDate is shown for every disease now, so a symptom restricted to another disease only
+		// (@Diseases(GONOCOCCAL_INFECTION), no country restriction) is used
+		Map<String, Object> patchDictionary = Map.of("CaseData.symptoms.gonococcalInfectionSiteOther", SymptomState.YES.name());
 
 		// EXECUTE
 		DataPatchResponse response =
