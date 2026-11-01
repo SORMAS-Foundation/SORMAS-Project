@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Fetch now: fetches the chosen period again from OpenWeather for all districts, a region or a district, and updates
@@ -65,6 +66,7 @@ public class ClimateFetchNowDialog extends AbstractClimateCallDialog {
 			to }) {
 			field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 			field.setRangeEnd(yesterday);
+			field.addStyleName(CssStyles.VSPACE_NONE);
 			field.addValueChangeListener(e -> scopeChanged());
 		}
 		HorizontalLayout period = new HorizontalLayout(from, to);

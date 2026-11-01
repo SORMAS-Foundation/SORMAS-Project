@@ -104,6 +104,8 @@ public abstract class AbstractClimateCallDialog extends VerticalLayout {
 		startButton.setEnabled(false);
 		HorizontalLayout buttons = new HorizontalLayout(cancel, startButton);
 
+		// the theme gives fields a bottom margin; the layout's spacing is enough here
+		CssStyles.style(CssStyles.VSPACE_NONE, region, district);
 		HorizontalLayout scope = new HorizontalLayout(region, district);
 		scope.setMargin(false);
 		addComponents(scope, scopeInfo);

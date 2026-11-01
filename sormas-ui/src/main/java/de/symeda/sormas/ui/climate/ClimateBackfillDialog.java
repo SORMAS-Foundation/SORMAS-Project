@@ -28,6 +28,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * A new backfill from OpenWeather for all districts, a region or a district, going back a number of years. The calls are
@@ -61,6 +62,7 @@ public class ClimateBackfillDialog extends AbstractClimateCallDialog {
 			IntStream.rangeClosed(1, ClimateConfiguration.MAX_HISTORY_YEARS).boxed().collect(Collectors.toList()));
 		years.setEmptySelectionAllowed(false);
 		years.setWidth(100, Unit.PIXELS);
+		years.addStyleName(CssStyles.VSPACE_NONE);
 		years.addValueChangeListener(e -> scopeChanged());
 		addComponent(years);
 	}
