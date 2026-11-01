@@ -53,11 +53,11 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 	/**
 	 * Below the filters, wide screens: lists in 8 of 12 columns, settings and call figures beside them in 4; narrow screens:
 	 * one below the other. The row and the main column take the full height left, so a list can fill it and scroll inside
-	 * itself.
+	 * itself. Half the usual gutter between the two columns, so the lists get the width.
 	 */
 	private static final String COLUMNS_TEMPLATE = "<div class='row' style='height: 100%'>"
-		+ "<div class='col-lg-8 col-xs-12' style='height: 100%' location='" + MAIN_LOC + "'></div>"
-		+ "<div class='col-lg-4 col-xs-12' location='" + SIDE_LOC + "'></div></div>";
+		+ "<div class='col-lg-8 col-xs-12' style='height: 100%; padding-right: 8px' location='" + MAIN_LOC + "'></div>"
+		+ "<div class='col-lg-4 col-xs-12' style='padding-left: 7px' location='" + SIDE_LOC + "'></div></div>";
 
 	private final CustomLayout filterRow;
 	/** The lists. */
@@ -85,7 +85,8 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 		setExpandRatio(filterRow, 0);
 
 		contentLayout = new VerticalLayout();
-		contentLayout.setMargin(new MarginInfo(false, true, true, true));
+		// no right margin: the side column follows straight after the gutter
+		contentLayout.setMargin(new MarginInfo(false, false, true, true));
 		contentLayout.setSpacing(false);
 		contentLayout.setSizeFull();
 		contentLayout.setStyleName("crud-main-layout");
