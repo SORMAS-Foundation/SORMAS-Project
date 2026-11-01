@@ -92,9 +92,11 @@ public interface Strings {
 	String climateSummaryApiKeyMissing = "climateSummaryApiKeyMissing";
 	String climateSummaryApiKeySet = "climateSummaryApiKeySet";
 	String climateSummaryCallsPerNight = "climateSummaryCallsPerNight";
+	String climateSummaryDailySource = "climateSummaryDailySource";
+	String climateSummaryHistorySource = "climateSummaryHistorySource";
 	String climateSummaryLastNight = "climateSummaryLastNight";
+	String climateSummaryMinHistory = "climateSummaryMinHistory";
 	String climateSummaryNoNightlyFetch = "climateSummaryNoNightlyFetch";
-	String climateSummarySources = "climateSummarySources";
 	String climateValuesLine = "climateValuesLine";
 	String climateWarningLastNightFailed = "climateWarningLastNightFailed";
 	String climateWarningLimitReached = "climateWarningLimitReached";
@@ -580,6 +582,7 @@ public interface Strings {
 	String headingClimateNewObservation = "headingClimateNewObservation";
 	String headingClimateObservation = "headingClimateObservation";
 	String headingClimateRelinkDays = "headingClimateRelinkDays";
+	String headingClimateSummary = "headingClimateSummary";
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
 	String headingClinicalPresentation = "headingClinicalPresentation";
 	String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";

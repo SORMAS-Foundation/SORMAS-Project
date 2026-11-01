@@ -149,7 +149,8 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		RowCount rowCount = new RowCount(Strings.labelNumberOfClimateObservations, grid.getDataSize());
 		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
 
-		contentLayout.addComponents(districtsWithoutPoint, createFilterBar(), rowCount, grid);
+		sideLayout.addComponent(districtsWithoutPoint);
+		contentLayout.addComponents(createFilterBar(), rowCount, grid);
 		contentLayout.setExpandRatio(grid, 1);
 	}
 

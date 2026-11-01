@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.climate;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
@@ -31,14 +32,30 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Configuration › Climate data: one menu entry with two tabs, Observations and Backfill, each its own view. Both show the
- * read-only climate settings and call figures; the switcher between the tabs sits in the header.
+ * read-only climate settings and call figures in a side column; the switcher between the tabs sits in the header.
  */
 @SuppressWarnings("java:S110") // suppress sonar too many parents warning
 public abstract class AbstractClimateDataView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -6131779003127547520L;
 
+	private static final String MAIN_LOC = "main";
+	private static final String SIDE_LOC = "side";
+
+	/**
+	 * Wide screens: filters and lists in 8 of 12 columns, settings and call figures beside them in 4; narrow screens: one
+	 * below the other. The row and the main column take the full height, so a list can fill what is left below its filters
+	 * and scroll inside itself.
+	 */
+	private static final String COLUMNS_TEMPLATE = "<div class='row' style='height: 100%'>"
+		+ "<div class='col-lg-8 col-xs-12' style='height: 100%' location='" + MAIN_LOC + "'></div>"
+		+ "<div class='col-lg-4 col-xs-12' location='" + SIDE_LOC + "'></div></div>";
+
+	/** The filters and lists. */
 	protected final VerticalLayout contentLayout;
+	/** The settings and call figures, and anything else that describes the data rather than lists it. */
+	protected final VerticalLayout sideLayout;
+	protected final CustomLayout columns;
 	private final ClimateSummaryStrip summaryStrip;
 	private SubMenu menu;
 	private ClimateSummaryDto summary;
@@ -47,19 +64,30 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 
 		super(viewName);
 
+		// first in the header, so it sits left of each tab's own buttons, like the cases view switcher
+		addHeaderComponent(createTabSwitcher(viewName));
+
 		contentLayout = new VerticalLayout();
 		contentLayout.setMargin(true);
 		contentLayout.setSpacing(false);
 		contentLayout.setSizeFull();
 		contentLayout.setStyleName("crud-main-layout");
 
-		// first in the header, so it sits left of each tab's own buttons, like the cases view switcher
-		addHeaderComponent(createTabSwitcher(viewName));
-
 		summaryStrip = new ClimateSummaryStrip();
-		contentLayout.addComponent(summaryStrip);
+		sideLayout = new VerticalLayout(summaryStrip);
+		sideLayout.setMargin(true);
+		sideLayout.setSpacing(true);
+		sideLayout.setWidthFull();
 
-		addComponent(contentLayout);
+		columns = new CustomLayout();
+		columns.setTemplateContents(COLUMNS_TEMPLATE);
+		columns.addStyleName(CssStyles.ROOT_COMPONENT);
+		columns.setSizeFull();
+		columns.addComponent(contentLayout, MAIN_LOC);
+		columns.addComponent(sideLayout, SIDE_LOC);
+
+		addComponent(columns);
+		setExpandRatio(columns, 1);
 	}
 
 	private static OptionGroup createTabSwitcher(String viewName) {

@@ -84,6 +84,7 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		super(VIEW_NAME);
 		// two lists one below the other: the page scrolls
 		setHeightUndefined();
+		columns.setHeightUndefined();
 		contentLayout.setHeightUndefined();
 
 		if (UiUtil.permitted(UserRight.CLIMATE_MANAGE_SOURCES)) {
@@ -98,17 +99,17 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		backfillUnavailable.setWidthFull();
 		backfillUnavailable.addStyleName(CssStyles.LABEL_WARNING);
 		backfillUnavailable.setVisible(false);
+		sideLayout.addComponent(backfillUnavailable);
 
 		criteria.createdFrom(daysAgo(DEFAULT_PERIOD));
 		jobsGrid = new ClimateJobsGrid(criteria, this::refreshSummary);
-		jobsGrid.setHeight(420, Unit.PIXELS);
+		jobsGrid.setHeight(480, Unit.PIXELS);
 
 		coverageRegion = new ComboBox<>(I18nProperties.getCaption(Captions.Region), FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		coverageRegion.addValueChangeListener(e -> loadCoverage());
 		configureCoverageGrid();
 
 		contentLayout.addComponents(
-			backfillUnavailable,
 			heading(Captions.climateJobs),
 			createJobFilters(),
 			jobsGrid,

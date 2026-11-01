@@ -48,21 +48,38 @@ public class ClimateSummaryStrip extends VerticalLayout {
 
 	private static final long serialVersionUID = 4520813262019418632L;
 
-	private final Label sources = new Label();
-	private final Label calls = new Label();
+	private final Label dailySource = new Label();
+	private final Label historySource = new Label();
+	private final Label apiKey = new Label();
+	private final Label minHistory = new Label();
+	private final Label callsPerNight = new Label();
+	private final Label lastNight = new Label();
 	private final Label warning = new Label();
 
 	public ClimateSummaryStrip() {
 
 		setMargin(false);
 		setSpacing(false);
-		addStyleName(CssStyles.VSPACE_3);
+		setWidthFull();
 
-		sources.setWidthFull();
-		calls.setWidthFull();
-		warning.setWidthFull();
-		warning.addStyleName(CssStyles.LABEL_WARNING);
-		addComponents(sources, calls, warning);
+		Label heading = new Label(I18nProperties.getString(Strings.headingClimateSummary));
+		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_NONE);
+		addComponent(heading);
+
+		// one item per line: the strip sits in a narrow side column
+		for (Label label : new Label[] {
+			dailySource,
+			historySource,
+			apiKey,
+			minHistory,
+			callsPerNight,
+			lastNight,
+			warning }) {
+			label.setWidthFull();
+			addComponent(label);
+		}
+		callsPerNight.addStyleName(CssStyles.VSPACE_TOP_4);
+		warning.addStyleNames(CssStyles.LABEL_WARNING, CssStyles.VSPACE_TOP_4);
 
 		if (UiUtil.permitted(UserRight.SYSTEM_CONFIGURATION)) {
 			Button settings =
@@ -73,27 +90,23 @@ public class ClimateSummaryStrip extends VerticalLayout {
 
 	public void update(ClimateSummaryDto summary) {
 
-		String apiKey = I18nProperties.getString(summary.isApiKeySet() ? Strings.climateSummaryApiKeySet : Strings.climateSummaryApiKeyMissing);
-		sources.setValue(
-			String.format(
-				I18nProperties.getString(Strings.climateSummarySources),
-				summary.getDailySource(),
-				summary.getHistorySource(),
-				apiKey,
-				summary.getMinHistoryYears(),
-				summary.getHistoryYears()));
+		dailySource.setValue(String.format(I18nProperties.getString(Strings.climateSummaryDailySource), summary.getDailySource()));
+		historySource.setValue(String.format(I18nProperties.getString(Strings.climateSummaryHistorySource), summary.getHistorySource()));
+		apiKey.setValue(I18nProperties.getString(summary.isApiKeySet() ? Strings.climateSummaryApiKeySet : Strings.climateSummaryApiKeyMissing));
+		minHistory.setValue(
+			String.format(I18nProperties.getString(Strings.climateSummaryMinHistory), summary.getMinHistoryYears(), summary.getHistoryYears()));
 
 		boolean fromOpenWeather = summary.getDailySource() == ClimateDailySource.OPENWEATHER;
-		calls.setVisible(fromOpenWeather);
+		callsPerNight.setVisible(fromOpenWeather);
+		lastNight.setVisible(fromOpenWeather);
 		if (fromOpenWeather) {
-			calls.setValue(
+			callsPerNight.setValue(
 				String.format(
 					I18nProperties.getString(Strings.climateSummaryCallsPerNight),
 					formatCount(summary.getCallsPerNight()),
 					formatCount(summary.getDistrictLocations()),
-					formatCount(summary.getEnvironmentOnlyLocations()))
-					+ " · "
-					+ describeLastNight(summary.getLastNightlyFetch()));
+					formatCount(summary.getEnvironmentOnlyLocations())));
+			lastNight.setValue(describeLastNight(summary.getLastNightlyFetch()));
 		}
 
 		String warningText = fromOpenWeather ? getWarning(summary) : null;
