@@ -109,6 +109,8 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		if (UiUtil.permitted(UserRight.CLIMATE_IMPORT)) {
 			addHeaderComponent(ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new ClimateImportLayout());
+				// the rules text would otherwise stretch the window across the screen
+				window.setWidth(800, Unit.PIXELS);
 				window.setCaption(I18nProperties.getString(Strings.headingClimateImport));
 				window.addCloseListener(c -> reload());
 			}, ValoTheme.BUTTON_PRIMARY));
