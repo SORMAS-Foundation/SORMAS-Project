@@ -36,6 +36,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.climate.ClimateDailySource;
 import de.symeda.sormas.api.climate.ClimateDataSource;
 import de.symeda.sormas.api.climate.ClimateDistrictDto;
@@ -160,9 +161,11 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		// placeholders rather than captions, as in the other directories, so the filters take less height
 		regionFilter = new ComboBox<>(null, FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		regionFilter.setPlaceholder(I18nProperties.getCaption(Captions.Region));
+		regionFilter.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter = new ComboBox<>();
 		districtFilter.setPlaceholder(I18nProperties.getCaption(Captions.District));
+		districtFilter.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		updateDistricts();
 		districtFilter.setValue(criteria.getDistrict());
 		placeTypeFilter = new ComboBox<>(null, Arrays.asList(ClimatePlaceType.values()));
@@ -171,6 +174,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		placeTypeFilter.setValue(criteria.getPlaceType());
 		environmentFilter = new ComboBox<>();
 		environmentFilter.setPlaceholder(I18nProperties.getCaption(Captions.climatePlaceKindEnvironment));
+		environmentFilter.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		updateEnvironments();
 		environmentFilter.setValue(criteria.getEnvironment());
 

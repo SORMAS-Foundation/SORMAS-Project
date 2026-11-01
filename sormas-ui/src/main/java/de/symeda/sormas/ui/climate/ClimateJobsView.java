@@ -33,6 +33,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.climate.ClimateHistoryCoverageDto;
 import de.symeda.sormas.api.climate.ClimateHistorySource;
 import de.symeda.sormas.api.climate.ClimateJobCriteria;
@@ -105,6 +106,7 @@ public class ClimateJobsView extends AbstractClimateDataView {
 
 		coverageRegion = new ComboBox<>(null, FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		coverageRegion.setPlaceholder(I18nProperties.getCaption(Captions.Region));
+		coverageRegion.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		coverageRegion.addStyleName(CssStyles.VSPACE_4);
 		coverageRegion.addValueChangeListener(e -> loadCoverage());
 		configureCoverageGrid();

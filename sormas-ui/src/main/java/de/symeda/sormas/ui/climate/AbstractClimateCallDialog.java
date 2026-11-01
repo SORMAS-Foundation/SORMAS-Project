@@ -32,6 +32,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.climate.ClimateCallEstimateDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -74,6 +75,8 @@ public abstract class AbstractClimateCallDialog extends VerticalLayout {
 
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.Region), FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.District));
+		region.setItemCaptionGenerator(ReferenceDto::buildCaption);
+		district.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		region.addValueChangeListener(e -> {
 			district.setItems(
 				e.getValue() != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(e.getValue().getUuid()) : Collections.emptyList());

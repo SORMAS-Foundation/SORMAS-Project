@@ -42,6 +42,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.climate.ClimateDataSource;
 import de.symeda.sormas.api.climate.ClimateEarlierValueDto;
 import de.symeda.sormas.api.climate.ClimateObservationEntryDto;
@@ -168,6 +169,9 @@ public class ClimateObservationForm extends VerticalLayout {
 			FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		district = new ComboBox<>(I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.DISTRICT));
 		environment = new ComboBox<>(I18nProperties.getCaption(Captions.climatePlaceKindEnvironment));
+		region.setItemCaptionGenerator(ReferenceDto::buildCaption);
+		district.setItemCaptionGenerator(ReferenceDto::buildCaption);
+		environment.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		environment.setVisible(false);
 		date = new DateField(I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.DATE));
 		date.setDateFormat(DateFormatHelper.getDateFormatPattern());
