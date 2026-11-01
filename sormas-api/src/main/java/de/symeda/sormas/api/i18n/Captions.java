@@ -1054,6 +1054,8 @@ public interface Captions {
 	String ClimateObservationExport_regions = "ClimateObservationExport.regions";
 	String ClimateObservationExport_reportingUser = "ClimateObservationExport.reportingUser";
 	String ClimateObservationExport_uuid = "ClimateObservationExport.uuid";
+	String climateObservationsFrom = "climateObservationsFrom";
+	String climateObservationsTo = "climateObservationsTo";
 	String climateOnlyRelinksWithSkippedDays = "climateOnlyRelinksWithSkippedDays";
 	String climatePlaceKind = "climatePlaceKind";
 	String climatePlaceKindDistrict = "climatePlaceKindDistrict";

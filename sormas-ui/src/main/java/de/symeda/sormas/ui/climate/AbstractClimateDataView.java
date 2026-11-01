@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.climate;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -42,19 +43,24 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 
 	private static final long serialVersionUID = -6131779003127547520L;
 
+	private static final String FILTERS_LOC = "filters";
 	private static final String MAIN_LOC = "main";
 	private static final String SIDE_LOC = "side";
 
+	/** The filters across the full width. */
+	private static final String FILTER_ROW_TEMPLATE = "<div class='row'><div class='col-lg-12 col-xs-12' location='" + FILTERS_LOC + "'></div></div>";
+
 	/**
-	 * Wide screens: filters and lists in 8 of 12 columns, settings and call figures beside them in 4; narrow screens: one
-	 * below the other. The row and the main column take the full height, so a list can fill what is left below its filters
-	 * and scroll inside itself.
+	 * Below the filters, wide screens: lists in 8 of 12 columns, settings and call figures beside them in 4; narrow screens:
+	 * one below the other. The row and the main column take the full height left, so a list can fill it and scroll inside
+	 * itself.
 	 */
 	private static final String COLUMNS_TEMPLATE = "<div class='row' style='height: 100%'>"
 		+ "<div class='col-lg-8 col-xs-12' style='height: 100%' location='" + MAIN_LOC + "'></div>"
 		+ "<div class='col-lg-4 col-xs-12' location='" + SIDE_LOC + "'></div></div>";
 
-	/** The filters and lists. */
+	private final CustomLayout filterRow;
+	/** The lists. */
 	protected final VerticalLayout contentLayout;
 	/** The settings and call figures, and anything else that describes the data rather than lists it. */
 	protected final VerticalLayout sideLayout;
@@ -70,8 +76,14 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 		// first in the header, so it sits left of each tab's own buttons, like the cases view switcher
 		addHeaderComponent(createTabSwitcher(viewName));
 
+		filterRow = new CustomLayout();
+		filterRow.setTemplateContents(FILTER_ROW_TEMPLATE);
+		filterRow.addStyleName(CssStyles.ROOT_COMPONENT);
+		filterRow.setWidthFull();
+		addComponent(filterRow);
+
 		contentLayout = new VerticalLayout();
-		contentLayout.setMargin(true);
+		contentLayout.setMargin(new MarginInfo(false, true, true, true));
 		contentLayout.setSpacing(false);
 		contentLayout.setSizeFull();
 		contentLayout.setStyleName("crud-main-layout");
@@ -81,8 +93,8 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 		sideLayout.setMargin(true);
 		sideLayout.setSpacing(true);
 		sideLayout.setWidthFull();
-		// a card with a shadow, level with the filters beside it
-		sideLayout.addStyleNames(CssStyles.VIEW_SECTION, CssStyles.MARGIN_TOP_4);
+		// a card with a shadow, level with the list beside it
+		sideLayout.addStyleName(CssStyles.VIEW_SECTION);
 
 		columns = new CustomLayout();
 		columns.setTemplateContents(COLUMNS_TEMPLATE);
@@ -116,10 +128,10 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 	}
 
 	/**
-	 * @return the filters in a bar that wraps onto further lines when the column is too narrow for them, as the filter
-	 *         forms of the other directories do
+	 * Puts the filters in the full-width row above the lists, in a bar that wraps onto further lines when the screen is too
+	 * narrow for them, as the filter forms of the other directories do.
 	 */
-	protected static CustomLayout createFilterBar(Component... filters) {
+	protected void setFilters(Component... filters) {
 
 		String[] locations = new String[filters.length];
 		for (int i = 0; i < filters.length; i++) {
@@ -128,12 +140,16 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 		CustomLayout filterBar = new CustomLayout();
 		filterBar.setTemplateContents(LayoutUtil.filterLocs(locations));
 		filterBar.setWidthFull();
-		filterBar.addStyleName(CssStyles.VSPACE_3);
 		for (int i = 0; i < filters.length; i++) {
 			filters[i].addStyleNames(AbstractFilterForm.FILTER_ITEM_STYLE, CssStyles.VSPACE_4);
 			filterBar.addComponent(filters[i], locations[i]);
 		}
-		return filterBar;
+
+		// the same side margins as the list below
+		VerticalLayout filterLayout = new VerticalLayout(filterBar);
+		filterLayout.setMargin(new MarginInfo(true, true, false, true));
+		filterLayout.setWidthFull();
+		filterRow.addComponent(filterLayout, FILTERS_LOC);
 	}
 
 	@Override

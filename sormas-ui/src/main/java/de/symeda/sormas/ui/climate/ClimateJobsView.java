@@ -27,7 +27,6 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -104,13 +103,15 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		jobsGrid = new ClimateJobsGrid(criteria, this::refreshSummary);
 		jobsGrid.setHeight(480, Unit.PIXELS);
 
-		coverageRegion = new ComboBox<>(I18nProperties.getCaption(Captions.Region), FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		coverageRegion = new ComboBox<>(null, FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		coverageRegion.setPlaceholder(I18nProperties.getCaption(Captions.Region));
+		coverageRegion.addStyleName(CssStyles.VSPACE_4);
 		coverageRegion.addValueChangeListener(e -> loadCoverage());
 		configureCoverageGrid();
 
+		createJobFilters();
 		contentLayout.addComponents(
 			heading(Captions.climateJobs),
-			createJobFilters(),
 			jobsGrid,
 			heading(Captions.climateHistoryCoverage),
 			coverageRegion,
@@ -126,22 +127,24 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		return heading;
 	}
 
-	private CustomLayout createJobFilters() {
+	private void createJobFilters() {
 
-		ComboBox<ClimateJobType> type =
-			new ComboBox<>(I18nProperties.getPrefixCaption(ClimateJobIndexDto.I18N_PREFIX, ClimateJobIndexDto.JOB_TYPE), Arrays.asList(ClimateJobType.values()));
+		// placeholders rather than captions, as in the other directories
+		ComboBox<ClimateJobType> type = new ComboBox<>(null, Arrays.asList(ClimateJobType.values()));
+		type.setPlaceholder(I18nProperties.getPrefixCaption(ClimateJobIndexDto.I18N_PREFIX, ClimateJobIndexDto.JOB_TYPE));
 		type.addValueChangeListener(e -> {
 			criteria.jobType(e.getValue());
 			jobsGrid.reload();
 		});
-		ComboBox<ClimateJobStatus> status = new ComboBox<>(
-			I18nProperties.getPrefixCaption(ClimateJobIndexDto.I18N_PREFIX, ClimateJobIndexDto.STATUS),
-			Arrays.asList(ClimateJobStatus.values()));
+		ComboBox<ClimateJobStatus> status = new ComboBox<>(null, Arrays.asList(ClimateJobStatus.values()));
+		status.setPlaceholder(I18nProperties.getPrefixCaption(ClimateJobIndexDto.I18N_PREFIX, ClimateJobIndexDto.STATUS));
+		status.setWidth(260, Unit.PIXELS);
 		status.addValueChangeListener(e -> {
 			criteria.status(e.getValue());
 			jobsGrid.reload();
 		});
-		ComboBox<Integer> period = new ComboBox<>(I18nProperties.getCaption(Captions.climateJobPeriod), PERIODS);
+		ComboBox<Integer> period = new ComboBox<>(null, PERIODS);
+		period.setDescription(I18nProperties.getCaption(Captions.climateJobPeriod));
 		period.setItemCaptionGenerator(
 			days -> days == 0
 				? I18nProperties.getString(Strings.climateAllTime)
@@ -159,10 +162,7 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		});
 		Button refresh = ButtonHelper.createIconButton(Captions.cronJobRefresh, VaadinIcons.REFRESH, e -> refresh());
 
-		// no caption: force-caption keeps them level with the captioned filters
-		onlySkipped.addStyleName(CssStyles.FORCE_CAPTION);
-		refresh.addStyleName(CssStyles.FORCE_CAPTION);
-		return createFilterBar(type, status, period, onlySkipped, refresh);
+		setFilters(type, status, period, onlySkipped, refresh);
 	}
 
 	private void configureCoverageGrid() {

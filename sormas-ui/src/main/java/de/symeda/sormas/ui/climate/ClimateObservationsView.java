@@ -28,10 +28,8 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -98,11 +96,9 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 			criteria,
 			UiUtil.permitted(UserRight.CLIMATE_EDIT) ? row -> ClimateObservationForm.openEdit(row, this::reload) : null);
 
-		HorizontalLayout actions = new HorizontalLayout();
-		actions.setMargin(false);
-		actions.addStyleName(CssStyles.VSPACE_3);
+		// each button its own header component, centred like the buttons of the other configuration views
 		if (UiUtil.permitted(UserRight.CLIMATE_EDIT)) {
-			actions.addComponent(
+			addHeaderComponent(
 				ButtonHelper.createIconButton(
 					Captions.climateNewObservation,
 					VaadinIcons.PLUS_CIRCLE,
@@ -110,7 +106,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 					ValoTheme.BUTTON_PRIMARY));
 		}
 		if (UiUtil.permitted(UserRight.CLIMATE_IMPORT)) {
-			actions.addComponent(ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
+			addHeaderComponent(ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new ClimateImportLayout());
 				window.setCaption(I18nProperties.getString(Strings.headingClimateImport));
 				window.addCloseListener(c -> reload());
@@ -131,7 +127,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 				ExportEntityName.CLIMATE_OBSERVATIONS,
 				null);
 			new IgnoreCancelDownloader(export).extend(exportButton);
-			actions.addComponent(exportButton);
+			addHeaderComponent(exportButton);
 		}
 		if (UiUtil.permitted(UserRight.CLIMATE_MANAGE_SOURCES)) {
 			fetchNowButton = ButtonHelper.createIconButton(
@@ -139,9 +135,8 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 				VaadinIcons.CLOUD_DOWNLOAD,
 				e -> ClimateFetchNowDialog.open(this::refreshSummary),
 				ValoTheme.BUTTON_PRIMARY);
-			actions.addComponent(fetchNowButton);
+			addHeaderComponent(fetchNowButton);
 		}
-		addHeaderComponent(actions);
 
 		districtsWithoutPoint = ButtonHelper.createButton("", e -> showDistrictsWithoutPoint(), ValoTheme.BUTTON_LINK);
 		districtsWithoutPoint.setVisible(false);
@@ -150,7 +145,8 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
 
 		sideLayout.addComponent(districtsWithoutPoint);
-		contentLayout.addComponents(createObservationFilters(), rowCount, grid);
+		createObservationFilters();
+		contentLayout.addComponents(rowCount, grid);
 		contentLayout.setExpandRatio(grid, 1);
 	}
 
@@ -159,33 +155,35 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		return new ClimateObservationCriteria().dateBetween(toDate(yesterday.minusDays(DEFAULT_DAYS - 1)), toDate(yesterday));
 	}
 
-	private CustomLayout createObservationFilters() {
+	private void createObservationFilters() {
 
-		regionFilter = new ComboBox<>(
-			I18nProperties.getCaption(Captions.Region),
-			FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		// placeholders rather than captions, as in the other directories, so the filters take less height
+		regionFilter = new ComboBox<>(null, FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		regionFilter.setPlaceholder(I18nProperties.getCaption(Captions.Region));
 		regionFilter.setValue(criteria.getRegion());
-		districtFilter = new ComboBox<>(I18nProperties.getCaption(Captions.District));
+		districtFilter = new ComboBox<>();
+		districtFilter.setPlaceholder(I18nProperties.getCaption(Captions.District));
 		updateDistricts();
 		districtFilter.setValue(criteria.getDistrict());
-		placeTypeFilter = new ComboBox<>(
-			I18nProperties.getPrefixCaption(ClimateObservationIndexDto.I18N_PREFIX, ClimateObservationCriteria.PLACE_TYPE),
-			Arrays.asList(ClimatePlaceType.values()));
+		placeTypeFilter = new ComboBox<>(null, Arrays.asList(ClimatePlaceType.values()));
+		placeTypeFilter.setDescription(I18nProperties.getPrefixCaption(ClimateObservationIndexDto.I18N_PREFIX, ClimateObservationCriteria.PLACE_TYPE));
 		placeTypeFilter.setEmptySelectionAllowed(false);
 		placeTypeFilter.setValue(criteria.getPlaceType());
-		environmentFilter = new ComboBox<>(I18nProperties.getCaption(Captions.climatePlaceKindEnvironment));
+		environmentFilter = new ComboBox<>();
+		environmentFilter.setPlaceholder(I18nProperties.getCaption(Captions.climatePlaceKindEnvironment));
 		updateEnvironments();
 		environmentFilter.setValue(criteria.getEnvironment());
 
-		DateField dateFrom = new DateField(I18nProperties.getCaption(Captions.climateFilterDateFrom), toLocalDate(criteria.getDateFrom()));
-		DateField dateTo = new DateField(I18nProperties.getCaption(Captions.climateFilterDateTo), toLocalDate(criteria.getDateTo()));
+		DateField dateFrom = new DateField(null, toLocalDate(criteria.getDateFrom()));
+		dateFrom.setPlaceholder(I18nProperties.getCaption(Captions.climateObservationsFrom));
+		DateField dateTo = new DateField(null, toLocalDate(criteria.getDateTo()));
+		dateTo.setPlaceholder(I18nProperties.getCaption(Captions.climateObservationsTo));
 		for (DateField field : Arrays.asList(dateFrom, dateTo)) {
 			field.setDateFormat(DateFormatHelper.getDateFormatPattern());
-			field.setWidth(130, Unit.PIXELS);
+			field.setWidth(170, Unit.PIXELS);
 		}
-		ComboBox<ClimateDataSource> sourceFilter = new ComboBox<>(
-			I18nProperties.getPrefixCaption(ClimateObservationIndexDto.I18N_PREFIX, ClimateObservationIndexDto.SOURCE),
-			Arrays.asList(ClimateDataSource.values()));
+		ComboBox<ClimateDataSource> sourceFilter = new ComboBox<>(null, Arrays.asList(ClimateDataSource.values()));
+		sourceFilter.setPlaceholder(I18nProperties.getPrefixCaption(ClimateObservationIndexDto.I18N_PREFIX, ClimateObservationIndexDto.SOURCE));
 		sourceFilter.setValue(criteria.getSource());
 
 		regionFilter.addValueChangeListener(e -> {
@@ -224,9 +222,9 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		Button reset = ButtonHelper.createButton(Captions.actionResetFilters, e -> {
 			ViewModelProviders.of(ClimateObservationsView.class).remove(ClimateObservationCriteria.class);
 			navigateTo(null);
-		}, CssStyles.FORCE_CAPTION);
+		});
 
-		return createFilterBar(regionFilter, districtFilter, placeTypeFilter, environmentFilter, dateFrom, dateTo, sourceFilter, reset);
+		setFilters(regionFilter, districtFilter, placeTypeFilter, environmentFilter, dateFrom, dateTo, sourceFilter, reset);
 	}
 
 	private void updateDistricts() {
