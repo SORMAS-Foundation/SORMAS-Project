@@ -159,7 +159,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 	private void createObservationFilters() {
 
 		// placeholders rather than captions, as in the other directories, so the filters take less height
-		regionFilter = new ComboBox<>(null, FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		regionFilter = new ComboBox<>(null, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		regionFilter.setPlaceholder(I18nProperties.getCaption(Captions.Region));
 		regionFilter.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		regionFilter.setValue(criteria.getRegion());

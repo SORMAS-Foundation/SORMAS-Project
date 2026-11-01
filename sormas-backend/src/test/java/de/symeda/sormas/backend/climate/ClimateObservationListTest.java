@@ -42,14 +42,18 @@ import de.symeda.sormas.api.climate.ClimatePlaceType;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.climate.ClimateJobFacadeEjb.ClimateJobFacadeEjbLocal;
 import de.symeda.sormas.backend.climate.ClimateObservationFacadeEjb.ClimateObservationFacadeEjbLocal;
 import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
@@ -213,6 +217,23 @@ class ClimateObservationListTest extends AbstractBeanTest {
 		List<ClimateDistrictDto> withoutPoint = facade.getDistrictsWithoutPoint();
 		assertEquals(Collections.singletonList(rdcf.district.getUuid()), withoutPoint.stream().map(d -> d.getDistrict().getUuid()).collect(Collectors.toList()));
 		assertEquals(rdcf.region.getUuid(), withoutPoint.get(0).getRegion().getUuid());
+	}
+
+	@Test
+	void testDistrictsOfOtherCountriesAreLeftOut() {
+
+		// the test server's country is "nigeria"
+		creator.createCountry("Nigeria", "NGA", "566");
+		Country ghana = creator.createCountry("Ghana", "GHA", "288");
+		Region abroad = creator.createRegion("Greater Accra");
+		RegionDto abroadDto = getRegionFacade().getByUuid(abroad.getUuid());
+		abroadDto.setCountry(new CountryReferenceDto(ghana.getUuid(), ghana.getIsoCode()));
+		getRegionFacade().save(abroadDto);
+		creator.createDistrict("Accra", getRegionService().getByUuid(abroad.getUuid()));
+
+		List<ClimateDistrictDto> withoutPoint = facade.getDistrictsWithoutPoint();
+		assertEquals(Collections.singletonList(rdcf.district.getUuid()), withoutPoint.stream().map(d -> d.getDistrict().getUuid()).collect(Collectors.toList()));
+		assertEquals(1, getBean(ClimateJobFacadeEjbLocal.class).getSummary().getDistrictsWithoutPoint());
 	}
 
 	@Test

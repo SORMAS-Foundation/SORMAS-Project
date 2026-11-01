@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -34,8 +35,10 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.PluralAttribute;
 
 import de.symeda.sormas.api.climate.ClimateGrid;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
@@ -43,6 +46,9 @@ import de.symeda.sormas.backend.location.Location;
 @Stateless
 @LocalBean
 public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
+
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
 
 	public ClimateLocationService() {
 		super(ClimateLocation.class);
@@ -204,17 +210,24 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 	/**
 	 * @return the districts that are not archived (of the region, or all), sorted by region and district name, each as
 	 *         region uuid, region name, district uuid, district name, location id (null when not linked yet) and the
-	 *         location's latitude (null when it has no coordinates, so no API data is fetched for the district)
+	 *         location's latitude (null when it has no coordinates, so no API data is fetched for the district). When a
+	 *         server country is configured, only districts of regions in that country or without a country, as the region
+	 *         lists elsewhere.
 	 */
 	public List<Object[]> getDistrictsWithLocation(Long regionId) {
 
+		CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 		TypedQuery<Object[]> query = em.createQuery(
 			"SELECT r." + Region.UUID + ", r." + Region.NAME + ", d." + District.UUID + ", d." + District.NAME + ", l.id, l." + ClimateLocation.LATITUDE
-				+ " FROM District d JOIN d." + District.REGION + " r LEFT JOIN d." + District.CLIMATE_LOCATION + " l WHERE d." + District.ARCHIVED
-				+ " = false" + (regionId != null ? " AND r.id = :region" : "") + " ORDER BY r." + Region.NAME + ", d." + District.NAME,
+				+ " FROM District d JOIN d." + District.REGION + " r LEFT JOIN r." + Region.COUNTRY + " c LEFT JOIN d." + District.CLIMATE_LOCATION
+				+ " l WHERE d." + District.ARCHIVED + " = false" + (regionId != null ? " AND r.id = :region" : "")
+				+ (serverCountry != null ? " AND (c IS NULL OR c.uuid = :country)" : "") + " ORDER BY r." + Region.NAME + ", d." + District.NAME,
 			Object[].class);
 		if (regionId != null) {
 			query.setParameter("region", regionId);
+		}
+		if (serverCountry != null) {
+			query.setParameter("country", serverCountry.getUuid());
 		}
 		return query.getResultList();
 	}

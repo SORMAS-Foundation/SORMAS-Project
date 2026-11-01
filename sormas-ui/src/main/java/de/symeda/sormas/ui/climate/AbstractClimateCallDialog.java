@@ -73,7 +73,7 @@ public abstract class AbstractClimateCallDialog extends VerticalLayout {
 		setSpacing(true);
 		setWidth(640, Unit.PIXELS);
 
-		region = new ComboBox<>(I18nProperties.getCaption(Captions.Region), FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region = new ComboBox<>(I18nProperties.getCaption(Captions.Region), FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.District));
 		region.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		district.setItemCaptionGenerator(ReferenceDto::buildCaption);

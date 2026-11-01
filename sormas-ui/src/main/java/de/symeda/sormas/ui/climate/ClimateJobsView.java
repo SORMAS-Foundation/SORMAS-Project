@@ -103,7 +103,7 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		criteria.createdFrom(daysAgo(DEFAULT_PERIOD));
 		jobsGrid = new ClimateJobsGrid(criteria, this::refreshSummary);
 
-		coverageRegion = new ComboBox<>(null, FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		coverageRegion = new ComboBox<>(null, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		coverageRegion.setPlaceholder(I18nProperties.getCaption(Captions.Region));
 		coverageRegion.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		coverageRegion.addStyleName(CssStyles.VSPACE_4);

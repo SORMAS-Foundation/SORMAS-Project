@@ -166,7 +166,7 @@ public class ClimateObservationForm extends VerticalLayout {
 
 		region = new ComboBox<>(
 			I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.REGION),
-			FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		district = new ComboBox<>(I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.DISTRICT));
 		environment = new ComboBox<>(I18nProperties.getCaption(Captions.climatePlaceKindEnvironment));
 		region.setItemCaptionGenerator(ReferenceDto::buildCaption);
