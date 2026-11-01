@@ -48,6 +48,7 @@ public class ClimateJobsGrid extends FilteredGrid<ClimateJobIndexDto, ClimateJob
 
 	private static final String ACTIONS = "actions";
 	private static final String NOTE = "lastError";
+	private static final int MAX_VISIBLE_ROWS = 12;
 
 	private final Runnable onChanged;
 
@@ -58,6 +59,7 @@ public class ClimateJobsGrid extends FilteredGrid<ClimateJobIndexDto, ClimateJob
 		setWidthFull();
 		setLazyDataProvider(FacadeProvider.getClimateJobFacade()::getIndexList, FacadeProvider.getClimateJobFacade()::count);
 		setCriteria(criteria);
+		fitHeight();
 
 		removeColumn(ClimateJobIndexDto.CREATION_DATE);
 		addColumn(j -> DateFormatHelper.formatLocalDateTime(j.getCreationDate())).setId(ClimateJobIndexDto.CREATION_DATE);
@@ -212,5 +214,13 @@ public class ClimateJobsGrid extends FilteredGrid<ClimateJobIndexDto, ClimateJob
 
 	public void reload() {
 		getDataProvider().refreshAll();
+		fitHeight();
+	}
+
+	/**
+	 * As tall as the jobs listed, up to {@link #MAX_VISIBLE_ROWS}; beyond that the list scrolls.
+	 */
+	private void fitHeight() {
+		setHeightByRows(Math.max(1, Math.min(FacadeProvider.getClimateJobFacade().count(getCriteria()), MAX_VISIBLE_ROWS)));
 	}
 }
