@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.climate;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -28,7 +29,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
 /**
  * Configuration › Climate data: one menu entry with two tabs, Observations and Backfill, each its own view. Both show the
@@ -78,6 +81,8 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 		sideLayout.setMargin(true);
 		sideLayout.setSpacing(true);
 		sideLayout.setWidthFull();
+		// a card with a shadow, level with the filters beside it
+		sideLayout.addStyleNames(CssStyles.VIEW_SECTION, CssStyles.MARGIN_TOP_4);
 
 		columns = new CustomLayout();
 		columns.setTemplateContents(COLUMNS_TEMPLATE);
@@ -94,7 +99,8 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 
 		OptionGroup switcher = new OptionGroup();
 		switcher.setId("climateViewSwitcher");
-		CssStyles.style(switcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		// no force-caption: the header buttons have no caption, so the switcher lines up with them
+		CssStyles.style(switcher, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		switcher.addItem(ClimateObservationsView.VIEW_NAME);
 		switcher.setItemCaption(ClimateObservationsView.VIEW_NAME, I18nProperties.getCaption(Captions.climateTabObservations));
 		switcher.addItem(ClimateJobsView.VIEW_NAME);
@@ -107,6 +113,27 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 			}
 		});
 		return switcher;
+	}
+
+	/**
+	 * @return the filters in a bar that wraps onto further lines when the column is too narrow for them, as the filter
+	 *         forms of the other directories do
+	 */
+	protected static CustomLayout createFilterBar(Component... filters) {
+
+		String[] locations = new String[filters.length];
+		for (int i = 0; i < filters.length; i++) {
+			locations[i] = "filter" + i;
+		}
+		CustomLayout filterBar = new CustomLayout();
+		filterBar.setTemplateContents(LayoutUtil.filterLocs(locations));
+		filterBar.setWidthFull();
+		filterBar.addStyleName(CssStyles.VSPACE_3);
+		for (int i = 0; i < filters.length; i++) {
+			filters[i].addStyleNames(AbstractFilterForm.FILTER_ITEM_STYLE, CssStyles.VSPACE_4);
+			filterBar.addComponent(filters[i], locations[i]);
+		}
+		return filterBar;
 	}
 
 	@Override

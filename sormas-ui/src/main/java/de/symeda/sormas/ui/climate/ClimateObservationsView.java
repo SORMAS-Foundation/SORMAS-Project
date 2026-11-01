@@ -26,9 +26,9 @@ import java.util.List;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -150,7 +150,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
 
 		sideLayout.addComponent(districtsWithoutPoint);
-		contentLayout.addComponents(createFilterBar(), rowCount, grid);
+		contentLayout.addComponents(createObservationFilters(), rowCount, grid);
 		contentLayout.setExpandRatio(grid, 1);
 	}
 
@@ -159,12 +159,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		return new ClimateObservationCriteria().dateBetween(toDate(yesterday.minusDays(DEFAULT_DAYS - 1)), toDate(yesterday));
 	}
 
-	private HorizontalLayout createFilterBar() {
-
-		HorizontalLayout filters = new HorizontalLayout();
-		filters.setMargin(false);
-		filters.setSpacing(true);
-		filters.addStyleName(CssStyles.VSPACE_3);
+	private CustomLayout createObservationFilters() {
 
 		regionFilter = new ComboBox<>(
 			I18nProperties.getCaption(Captions.Region),
@@ -231,9 +226,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 			navigateTo(null);
 		}, CssStyles.FORCE_CAPTION);
 
-		filters.addComponents(regionFilter, districtFilter, placeTypeFilter, environmentFilter, dateFrom, dateTo, sourceFilter, reset);
-		filters.setComponentAlignment(reset, Alignment.BOTTOM_LEFT);
-		return filters;
+		return createFilterBar(regionFilter, districtFilter, placeTypeFilter, environmentFilter, dateFrom, dateTo, sourceFilter, reset);
 	}
 
 	private void updateDistricts() {

@@ -24,12 +24,11 @@ import java.util.List;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.Registration;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
@@ -127,7 +126,7 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		return heading;
 	}
 
-	private HorizontalLayout createJobFilters() {
+	private CustomLayout createJobFilters() {
 
 		ComboBox<ClimateJobType> type =
 			new ComboBox<>(I18nProperties.getPrefixCaption(ClimateJobIndexDto.I18N_PREFIX, ClimateJobIndexDto.JOB_TYPE), Arrays.asList(ClimateJobType.values()));
@@ -160,12 +159,10 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		});
 		Button refresh = ButtonHelper.createIconButton(Captions.cronJobRefresh, VaadinIcons.REFRESH, e -> refresh());
 
-		HorizontalLayout filters = new HorizontalLayout(type, status, period, onlySkipped, refresh);
-		filters.setMargin(false);
-		filters.addStyleName(CssStyles.VSPACE_3);
-		filters.setComponentAlignment(onlySkipped, Alignment.BOTTOM_LEFT);
-		filters.setComponentAlignment(refresh, Alignment.BOTTOM_LEFT);
-		return filters;
+		// no caption: force-caption keeps them level with the captioned filters
+		onlySkipped.addStyleName(CssStyles.FORCE_CAPTION);
+		refresh.addStyleName(CssStyles.FORCE_CAPTION);
+		return createFilterBar(type, status, period, onlySkipped, refresh);
 	}
 
 	private void configureCoverageGrid() {
