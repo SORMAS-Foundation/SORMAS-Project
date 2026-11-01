@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.UserError;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -81,7 +80,10 @@ public class ClimateObservationForm extends VerticalLayout {
 	private ComboBox<EnvironmentReferenceDto> environment;
 	private DateField date;
 
-	private final Label placeInfo = new Label("", ContentMode.TEXT);
+	/** The place and day, in bold. */
+	private final Label placeTitle = new Label();
+	/** Who shares the location and what saving replaces, one wrapping line each. */
+	private final VerticalLayout placeNotes = new VerticalLayout();
 	private final TextField temperatureMin = numberField(ClimateObservationEntryDto.TEMPERATURE_MIN);
 	private final TextField temperatureMean = numberField(ClimateObservationEntryDto.TEMPERATURE_MEAN);
 	private final TextField temperatureMax = numberField(ClimateObservationEntryDto.TEMPERATURE_MAX);
@@ -126,14 +128,22 @@ public class ClimateObservationForm extends VerticalLayout {
 			addComponent(createPlaceFields());
 		}
 
-		placeInfo.setWidthFull();
-		placeInfo.addStyleName(CssStyles.LABEL_SECONDARY);
-		addComponent(placeInfo);
+		placeTitle.setWidthFull();
+		placeTitle.addStyleName(CssStyles.LABEL_BOLD);
+		placeTitle.setVisible(false);
+		placeNotes.setMargin(false);
+		placeNotes.setSpacing(false);
+		VerticalLayout placeHeader = new VerticalLayout(placeTitle, placeNotes);
+		placeHeader.setMargin(false);
+		placeHeader.setSpacing(false);
+		addComponent(placeHeader);
 
 		FormLayout values = new FormLayout();
 		values.setMargin(false);
 		humidityMeasure.setEmptySelectionAllowed(true);
 		sourceDetail.setWidth(320, Unit.PIXELS);
+		// the theme gives fields a bottom margin; the form's row spacing is enough here
+		CssStyles.style(CssStyles.VSPACE_NONE, humidityMeasure, sourceDetail);
 		values.addComponents(temperatureMin, temperatureMean, temperatureMax, rainfall, relativeHumidity, humidityMeasure, sourceDetail);
 		addComponent(values);
 
@@ -193,9 +203,12 @@ public class ClimateObservationForm extends VerticalLayout {
 		environment.addValueChangeListener(e -> loadCurrent());
 		date.addValueChangeListener(e -> loadCurrent());
 
-		HorizontalLayout fields = new HorizontalLayout(region, district, environment, date);
+		CssStyles.style(CssStyles.VSPACE_NONE, placeKind, region, district, environment, date);
+		HorizontalLayout kindAndDate = new HorizontalLayout(placeKind, date);
+		kindAndDate.setMargin(false);
+		HorizontalLayout fields = new HorizontalLayout(region, district, environment);
 		fields.setMargin(false);
-		VerticalLayout place = new VerticalLayout(placeKind, fields);
+		VerticalLayout place = new VerticalLayout(kindAndDate, fields);
 		place.setMargin(false);
 		return place;
 	}
@@ -220,7 +233,7 @@ public class ClimateObservationForm extends VerticalLayout {
 		}
 		if (date.getValue() == null || (key.getEnvironmentUuid() == null && key.getDistrictUuid() == null)) {
 			current = null;
-			placeInfo.setValue("");
+			showPlace(null, Collections.emptyList());
 			setValuesEnabled(false);
 			return;
 		}
@@ -229,7 +242,7 @@ public class ClimateObservationForm extends VerticalLayout {
 			show(FacadeProvider.getClimateObservationFacade().getObservation(key));
 		} catch (ValidationRuntimeException e) {
 			current = null;
-			placeInfo.setValue(e.getMessage());
+			showPlace(null, Collections.singletonList(e.getMessage()));
 			setValuesEnabled(false);
 		}
 	}
@@ -239,16 +252,14 @@ public class ClimateObservationForm extends VerticalLayout {
 		current = observation;
 		setValuesEnabled(true);
 
-		List<String> info = new ArrayList<>();
-		info.add(ClimateCaptions.place(observation) + " · " + DateFormatHelper.formatDate(observation.getObservationDate()));
+		List<String> notes = new ArrayList<>();
 		if (observation.isShared()) {
-			info.add(String.format(I18nProperties.getString(Strings.climateSharedBy), String.join(", ", ClimateCaptions.placeNames(observation))));
+			notes.add(String.format(I18nProperties.getString(Strings.climateSharedBy), String.join(", ", ClimateCaptions.placeNames(observation))));
 		}
 		if (observation.getSource() != null && observation.getSource() != ClimateDataSource.MANUAL) {
-			info.add(String.format(I18nProperties.getString(Strings.infoClimateObservationReplaces), observation.getSource()));
+			notes.add(String.format(I18nProperties.getString(Strings.infoClimateObservationReplaces), observation.getSource()));
 		}
-		placeInfo.setValue(String.join("\n", info));
-		placeInfo.setContentMode(ContentMode.PREFORMATTED);
+		showPlace(ClimateCaptions.place(observation) + " · " + DateFormatHelper.formatDate(observation.getObservationDate()), notes);
 
 		temperatureMin.setValue(ClimateCaptions.number(observation.getTemperatureMin()));
 		temperatureMean.setValue(ClimateCaptions.number(observation.getTemperatureMean()));
@@ -266,6 +277,22 @@ public class ClimateObservationForm extends VerticalLayout {
 
 		deleteButton.setVisible(
 			observation.getUuid() != null && (observation.getSource() == ClimateDataSource.MANUAL || observation.getSource() == ClimateDataSource.IMPORT));
+	}
+
+	/**
+	 * @param title
+	 *            the place and day, or null to hide it
+	 */
+	private void showPlace(String title, List<String> notes) {
+
+		placeTitle.setValue(title);
+		placeTitle.setVisible(title != null);
+		placeNotes.removeAllComponents();
+		for (String note : notes) {
+			Label label = new Label(note);
+			label.setWidthFull();
+			placeNotes.addComponent(label);
+		}
 	}
 
 	private void configureEarlierValues() {
@@ -378,6 +405,7 @@ public class ClimateObservationForm extends VerticalLayout {
 	private static TextField numberField(String property) {
 		TextField field = new TextField(I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, property));
 		field.setWidth(120, Unit.PIXELS);
+		field.addStyleName(CssStyles.VSPACE_NONE);
 		return field;
 	}
 }
