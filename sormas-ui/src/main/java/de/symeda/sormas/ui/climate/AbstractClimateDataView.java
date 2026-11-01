@@ -15,27 +15,23 @@
 
 package de.symeda.sormas.ui.climate;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.climate.ClimateSummaryDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Configuration › Climate data: one menu entry with two tabs, Observations and Backfill, each its own view. Both show the
- * read-only climate settings and call figures at the top.
+ * read-only climate settings and call figures; the switcher between the tabs sits in the header.
  */
 @SuppressWarnings("java:S110") // suppress sonar too many parents warning
 public abstract class AbstractClimateDataView extends AbstractConfigurationView {
@@ -56,7 +52,9 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 		contentLayout.setSpacing(false);
 		contentLayout.setSizeFull();
 		contentLayout.setStyleName("crud-main-layout");
-		contentLayout.addComponent(createTabBar(viewName));
+
+		// first in the header, so it sits left of each tab's own buttons, like the cases view switcher
+		addHeaderComponent(createTabSwitcher(viewName));
 
 		summaryStrip = new ClimateSummaryStrip();
 		contentLayout.addComponent(summaryStrip);
@@ -64,27 +62,23 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 		addComponent(contentLayout);
 	}
 
-	private static HorizontalLayout createTabBar(String viewName) {
+	private static OptionGroup createTabSwitcher(String viewName) {
 
-		HorizontalLayout tabBar = new HorizontalLayout();
-		tabBar.setSpacing(true);
-		tabBar.setMargin(false);
-		tabBar.addStyleName(CssStyles.VSPACE_3);
-
-		Button observations = ButtonHelper.createButton(
-			Captions.climateTabObservations,
-			e -> SormasUI.get().getNavigator().navigateTo(ClimateObservationsView.VIEW_NAME),
-			ValoTheme.BUTTON_BORDERLESS,
-			CssStyles.BUTTON_FILTER);
-		Button backfill = ButtonHelper.createButton(
-			Captions.climateTabBackfill,
-			e -> SormasUI.get().getNavigator().navigateTo(ClimateJobsView.VIEW_NAME),
-			ValoTheme.BUTTON_BORDERLESS,
-			CssStyles.BUTTON_FILTER);
-		List<Button> tabs = Arrays.asList(observations, backfill);
-		CssStyles.styleSectionFilterButton(ClimateJobsView.VIEW_NAME.equals(viewName) ? backfill : observations, tabs);
-		tabBar.addComponents(observations, backfill);
-		return tabBar;
+		OptionGroup switcher = new OptionGroup();
+		switcher.setId("climateViewSwitcher");
+		CssStyles.style(switcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		switcher.addItem(ClimateObservationsView.VIEW_NAME);
+		switcher.setItemCaption(ClimateObservationsView.VIEW_NAME, I18nProperties.getCaption(Captions.climateTabObservations));
+		switcher.addItem(ClimateJobsView.VIEW_NAME);
+		switcher.setItemCaption(ClimateJobsView.VIEW_NAME, I18nProperties.getCaption(Captions.climateTabBackfill));
+		switcher.setValue(viewName);
+		switcher.addValueChangeListener(e -> {
+			String target = (String) e.getProperty().getValue();
+			if (target != null && !target.equals(viewName)) {
+				SormasUI.get().getNavigator().navigateTo(target);
+			}
+		});
+		return switcher;
 	}
 
 	@Override
