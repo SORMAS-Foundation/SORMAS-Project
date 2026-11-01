@@ -81,6 +81,8 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 		filterRow.addStyleName(CssStyles.ROOT_COMPONENT);
 		filterRow.setWidthFull();
 		addComponent(filterRow);
+		// AbstractView expands every component it adds; the filters take only their own height
+		setExpandRatio(filterRow, 0);
 
 		contentLayout = new VerticalLayout();
 		contentLayout.setMargin(new MarginInfo(false, true, true, true));
@@ -111,8 +113,8 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 
 		OptionGroup switcher = new OptionGroup();
 		switcher.setId("climateViewSwitcher");
-		// no force-caption: the header buttons have no caption, so the switcher lines up with them
-		CssStyles.style(switcher, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		// no force-caption and no bottom margin (option groups get 16px), so it centres like the header buttons
+		CssStyles.style(switcher, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY, CssStyles.VSPACE_NONE);
 		switcher.addItem(ClimateObservationsView.VIEW_NAME);
 		switcher.setItemCaption(ClimateObservationsView.VIEW_NAME, I18nProperties.getCaption(Captions.climateTabObservations));
 		switcher.addItem(ClimateJobsView.VIEW_NAME);
