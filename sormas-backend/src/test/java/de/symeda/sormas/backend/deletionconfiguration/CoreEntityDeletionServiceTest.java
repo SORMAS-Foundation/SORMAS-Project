@@ -29,10 +29,11 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
@@ -1089,5 +1090,70 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		loginWith(user);
 
 		assertNull(getSymptomsService().getByUuid(symptoms.getUuid()));
+	}
+
+	@Test
+	public void caseDeletionKeepsSampleReportsOfItsSamples() {
+		createDeletionConfigurations();
+		DeletionConfiguration caseConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		ExternalMessageDto message = creator.createExternalMessage(null);
+		SampleReportDto sampleReport = creator.createSampleReport(message, sample.toReference());
+
+		final Date expired = DateUtils.addDays(new Date(), (-1) * caseConfig.deletionPeriod - 1);
+		executeInTransaction(em -> {
+			Case persisted = em.createQuery("select c from cases c where c.uuid=:uuid", Case.class)
+				.setParameter("uuid", caze.getUuid())
+				.getSingleResult();
+			persisted.setCreationDate(new Timestamp(expired.getTime()));
+			persisted.setChangeDate(new Timestamp(expired.getTime()));
+			em.persist(persisted);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getSampleService().count());
+		assertEquals(1, getSampleReportService().count());
+		assertNull(getSampleReportService().getByUuid(sampleReport.getUuid()).getSample());
+	}
+
+	@Test
+	public void caseDeletionUnlinksOnlyTheSampleReportOfTheDeletedSample() {
+		createDeletionConfigurations();
+		DeletionConfiguration caseConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		CaseDataDto keptCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		CaseDataDto expiredCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		SampleDto sampleX = creator.createSample(keptCase.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sampleY = creator.createSample(expiredCase.toReference(), user.toReference(), rdcf.facility);
+		ExternalMessageDto message = creator.createExternalMessage(null);
+		SampleReportDto reportX = creator.createSampleReport(message, sampleX.toReference());
+		SampleReportDto reportY = creator.createSampleReport(message, sampleY.toReference());
+
+		final Date expired = DateUtils.addDays(new Date(), (-1) * caseConfig.deletionPeriod - 1);
+		executeInTransaction(em -> {
+			Case persisted = em.createQuery("select c from cases c where c.uuid=:uuid", Case.class)
+				.setParameter("uuid", expiredCase.getUuid())
+				.getSingleResult();
+			persisted.setCreationDate(new Timestamp(expired.getTime()));
+			persisted.setChangeDate(new Timestamp(expired.getTime()));
+			em.persist(persisted);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertNotNull(getSampleService().getByUuid(sampleX.getUuid()));
+		assertNull(getSampleService().getByUuid(sampleY.getUuid()));
+		assertEquals(2, getSampleReportService().count());
+		assertEquals(sampleX.getUuid(), getSampleReportService().getByUuid(reportX.getUuid()).getSample().getUuid());
+		assertNull(getSampleReportService().getByUuid(reportY.getUuid()).getSample());
 	}
 }

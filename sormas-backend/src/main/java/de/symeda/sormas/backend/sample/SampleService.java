@@ -77,7 +77,6 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -100,7 +99,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -143,7 +142,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
-	private ExternalMessageService externalMessageService;
+	private SampleReportService sampleReportService;
 	@EJB
 	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -1106,13 +1105,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			ensurePersisted(referralSample);
 		}
 
-		// Remove the reference from all lab messages
-		externalMessageService.getForSample(new SampleReferenceDto(sample.getUuid())).forEach(labMessage -> {
-			if (CollectionUtils.isNotEmpty(labMessage.getSampleReports())) {
-				labMessage.getSampleReports().get(0).setSample(null);
-			}
-			externalMessageService.ensurePersisted(labMessage);
-		});
+		sampleReportService.unlinkSample(sample);
 	}
 
 	/**
