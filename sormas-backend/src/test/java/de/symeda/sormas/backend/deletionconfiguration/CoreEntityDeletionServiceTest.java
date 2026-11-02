@@ -29,6 +29,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -65,6 +66,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
@@ -1055,5 +1057,37 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		loginWith(user);
 
 		assertEquals(1, getCaseService().count());
+	}
+
+	@Test
+	public void externalMessageSymptomsSurviveTheOrphanCleanup() {
+		TestDataCreator.RDCF redcf = creator.createRDCF();
+		UserDto user = creator.createUser(redcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		ExternalMessageDto message = creator.createExternalMessage(m -> {
+			m.setCaseSymptoms(SymptomsDto.build());
+			m.getCaseSymptoms().setFever(SymptomState.YES);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(SymptomState.YES, getExternalMessageFacade().getByUuid(message.getUuid()).getCaseSymptoms().getFever());
+	}
+
+	@Test
+	public void unreferencedSymptomsAreStillDeleted() {
+		TestDataCreator.RDCF redcf = creator.createRDCF();
+		UserDto user = creator.createUser(redcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		Symptoms symptoms = new Symptoms();
+		executeInTransaction(em -> {
+			em.persist(symptoms);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertNull(getSymptomsService().getByUuid(symptoms.getUuid()));
 	}
 }
