@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -39,6 +40,8 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 
 	private static final int EDIT_COLUMN_WIDTH = 60;
 	private static final String RUN_NOW_COLUMN_ID = "runNow";
+
+	private String searchText = "";
 
 	public ScheduledJobsGrid(Consumer<CronJobStatusDto> editHandler, Consumer<CronJobStatusDto> runNowHandler) {
 
@@ -111,6 +114,31 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		List<CronJobStatusDto> statuses = FacadeProvider.getCronJobFacade().getAllJobStatuses();
 		statuses.sort(Comparator.comparing(CronJobStatusDto::getNextFireTime, Comparator.nullsLast(Comparator.naturalOrder())));
 		setItems(statuses);
+		applySearchFilter();
+	}
+
+	public void setSearchText(String searchText) {
+
+		this.searchText = searchText;
+		applySearchFilter();
+	}
+
+	public static boolean matchesSearch(String jobName, String description, String searchText) {
+
+		if (searchText == null || searchText.trim().isEmpty()) {
+			return true;
+		}
+		String needle = searchText.trim().toLowerCase();
+		return contains(jobName, needle) || contains(description, needle);
+	}
+
+	private static boolean contains(String value, String lowerCaseNeedle) {
+		return value != null && value.toLowerCase().contains(lowerCaseNeedle);
+	}
+
+	private void applySearchFilter() {
+		((ListDataProvider<CronJobStatusDto>) getDataProvider())
+			.setFilter(status -> matchesSearch(status.getJobName(), describeJob(status), searchText));
 	}
 
 	private String describeJob(CronJobStatusDto status) {

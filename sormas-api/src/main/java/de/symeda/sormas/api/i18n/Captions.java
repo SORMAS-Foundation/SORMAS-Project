@@ -1253,6 +1253,7 @@ public interface Captions {
 	String cronJobRefresh = "cronJobRefresh";
 	String cronJobRunNow = "cronJobRunNow";
 	String cronJobSchedule = "cronJobSchedule";
+	String cronJobSearchPlaceholder = "cronJobSearchPlaceholder";
 	String CustomizableEnum_hasDetails = "CustomizableEnum.hasDetails";
 	String CustomizableEnum_hasDetails_short = "CustomizableEnum.hasDetails.short";
 	String CustomizableEnumValue_active = "CustomizableEnumValue.active";

@@ -15,8 +15,10 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -48,6 +50,11 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 		grid = new ScheduledJobsGrid(this::openScheduleEditor, this::runNow);
 
 		HorizontalLayout toolbar = new HorizontalLayout();
+		TextField searchField = new TextField();
+		searchField.setPlaceholder(I18nProperties.getCaption(Captions.cronJobSearchPlaceholder));
+		searchField.setValueChangeMode(ValueChangeMode.LAZY);
+		searchField.addValueChangeListener(event -> grid.setSearchText(event.getValue()));
+		toolbar.addComponent(searchField);
 		toolbar.addComponent(ButtonHelper.createButton(Captions.cronJobRefresh, event -> grid.reload()));
 
 		VerticalLayout layout = new VerticalLayout();
