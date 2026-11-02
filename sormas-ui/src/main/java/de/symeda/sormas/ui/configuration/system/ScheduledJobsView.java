@@ -16,13 +16,16 @@
 package de.symeda.sormas.ui.configuration.system;
 
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
 import de.symeda.sormas.api.systemconfiguration.CronJobFacade;
+import de.symeda.sormas.api.systemconfiguration.CronJobRunNowResult;
 import de.symeda.sormas.api.systemconfiguration.CronJobStatusDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -42,7 +45,7 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 
 		super(VIEW_NAME);
 
-		grid = new ScheduledJobsGrid(this::openScheduleEditor);
+		grid = new ScheduledJobsGrid(this::openScheduleEditor, this::runNow);
 
 		HorizontalLayout toolbar = new HorizontalLayout();
 		toolbar.addComponent(ButtonHelper.createButton(Captions.cronJobRefresh, event -> grid.reload()));
@@ -81,6 +84,14 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 				grid.reload();
 				return true;
 			});
+	}
+
+	private void runNow(CronJobStatusDto status) {
+
+		CronJobRunNowResult result = FacadeProvider.getCronJobFacade().runNow(status.getJobName());
+		String messageKey = result == CronJobRunNowResult.QUEUED ? Strings.messageCronJobRunQueued : Strings.messageCronJobRunAlreadyQueued;
+		Notification.show(I18nProperties.getString(messageKey), Notification.Type.TRAY_NOTIFICATION);
+		grid.reload();
 	}
 
 	private void saveScheduleExpression(CronJobStatusDto status, String expression) {

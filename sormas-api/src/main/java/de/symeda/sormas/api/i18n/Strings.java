@@ -1499,6 +1499,8 @@ public interface Strings {
 	String messageCountVisitsNotSetToLost = "messageCountVisitsNotSetToLost";
 	String messageCountVisitsNotSetToLostAccessDeniedReason = "messageCountVisitsNotSetToLostAccessDeniedReason";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
+	String messageCronJobRunAlreadyQueued = "messageCronJobRunAlreadyQueued";
+	String messageCronJobRunQueued = "messageCronJobRunQueued";
 	String messageCustomizableEnumValueSaved = "messageCustomizableEnumValueSaved";
 	String messageCustomizableFieldCloned = "messageCustomizableFieldCloned";
 	String messageCustomizableFieldCreated = "messageCustomizableFieldCreated";

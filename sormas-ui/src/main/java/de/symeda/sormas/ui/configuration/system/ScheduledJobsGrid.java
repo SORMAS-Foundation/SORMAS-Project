@@ -38,8 +38,9 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final int EDIT_COLUMN_WIDTH = 60;
+	private static final String RUN_NOW_COLUMN_ID = "runNow";
 
-	public ScheduledJobsGrid(Consumer<CronJobStatusDto> editHandler) {
+	public ScheduledJobsGrid(Consumer<CronJobStatusDto> editHandler, Consumer<CronJobStatusDto> runNowHandler) {
 
 		super(CronJobStatusDto.class);
 		setSizeFull();
@@ -57,13 +58,13 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		addColumn(this::describeDuration).setId("duration").setCaption(I18nProperties.getCaption(Captions.cronJobDuration));
 		addColumn(this::describeOutcome).setId("outcome").setCaption(I18nProperties.getCaption(Captions.cronJobOutcome));
 
-		addEditColumn(editHandler);
+		addEditAndRunNowColumns(editHandler, runNowHandler);
 
 		setDescriptionGenerator(this::describeRow);
 		reload();
 	}
 
-	private void addEditColumn(Consumer<CronJobStatusDto> editHandler) {
+	private void addEditAndRunNowColumns(Consumer<CronJobStatusDto> editHandler, Consumer<CronJobStatusDto> runNowHandler) {
 
 		List<Column<CronJobStatusDto, ?>> columnOrder = new ArrayList<>(getColumns());
 
@@ -73,10 +74,36 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		editColumn.setSortable(false);
 		editColumn.setWidth(EDIT_COLUMN_WIDTH);
 
+		Column<CronJobStatusDto, String> runNowColumn = addColumn(status -> VaadinIcons.PLAY.getHtml(), new HtmlRenderer());
+		runNowColumn.setId(RUN_NOW_COLUMN_ID);
+		runNowColumn.setCaption(I18nProperties.getCaption(Captions.cronJobRunNow));
+		runNowColumn.setSortable(false);
+		runNowColumn.setWidth(EDIT_COLUMN_WIDTH);
+
+		columnOrder.add(0, runNowColumn);
 		columnOrder.add(0, editColumn);
 		setColumnOrder(columnOrder.toArray(new Column[0]));
 
-		addItemClickListener(new ShowDetailsListener<>(FilteredGrid.ACTION_BTN_ID, editHandler::accept));
+		addItemClickListener(new ShowDetailsListener<CronJobStatusDto>(FilteredGrid.ACTION_BTN_ID, editHandler) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void handleItemClick(ItemClick<CronJobStatusDto> event) {
+				if (!isRunNowColumn(event.getColumn())) {
+					super.handleItemClick(event);
+				}
+			}
+		});
+		addItemClickListener(event -> {
+			if (event.getItem() != null && isRunNowColumn(event.getColumn()) && !event.getMouseEventDetails().isDoubleClick()) {
+				runNowHandler.accept(event.getItem());
+			}
+		});
+	}
+
+	private boolean isRunNowColumn(Column<CronJobStatusDto, ?> column) {
+		return column != null && RUN_NOW_COLUMN_ID.equals(column.getId());
 	}
 
 	public void reload() {
