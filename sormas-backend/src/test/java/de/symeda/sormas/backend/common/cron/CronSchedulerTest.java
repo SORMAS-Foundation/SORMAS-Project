@@ -18,17 +18,23 @@ package de.symeda.sormas.backend.common.cron;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import javax.ejb.ScheduleExpression;
+import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import javax.enterprise.context.control.RequestContextController;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,14 +43,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import de.symeda.sormas.api.systemconfiguration.CronJobRunNowResult;
 import de.symeda.sormas.api.systemconfiguration.CronJobRunOutcome;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -271,5 +281,204 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		getBean(CronScheduler.class).reschedule(CronJob.ARCHIVE_CASES);
 
 		verify(existingTimer, never()).cancel();
+	}
+
+	@Test
+	public void runNowQueuesAOneOffNonPersistentTimer() {
+
+		assertEquals(CronJobRunNowResult.QUEUED, getBean(CronScheduler.class).runNow(CronJob.ARCHIVE_CASES));
+
+		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
+		verify(MockProducer.getTimerService()).createSingleActionTimer(anyLong(), configs.capture());
+		assertEquals(new ManualCronJobRun(CronJob.ARCHIVE_CASES), configs.getValue().getInfo());
+		assertFalse(configs.getValue().isPersistent());
+	}
+
+	@Test
+	public void aSecondRunNowWhileQueuedIsIgnored() {
+
+		CronScheduler scheduler = getBean(CronScheduler.class);
+
+		assertEquals(CronJobRunNowResult.QUEUED, scheduler.runNow(CronJob.ARCHIVE_CASES));
+		assertEquals(CronJobRunNowResult.ALREADY_QUEUED, scheduler.runNow(CronJob.ARCHIVE_CASES));
+
+		verify(MockProducer.getTimerService(), times(1)).createSingleActionTimer(anyLong(), any());
+	}
+
+	@Test
+	public void aManualRunIsRecordedAndReleasesTheQueuedFlag() {
+
+		CronScheduler scheduler = getBean(CronScheduler.class);
+		Date beforeRun = new Date();
+
+		scheduler.runNow(CronJob.ARCHIVE_CASES);
+		scheduler.executeJob(manualTimer(CronJob.ARCHIVE_CASES));
+
+		CronJobRun recorded = getBean(CronJobRunRepository.class).findLatest(CronJob.ARCHIVE_CASES).orElseThrow();
+		assertEquals(CronJobRunOutcome.SUCCESS, recorded.getOutcome());
+		assertFalse(recorded.getStart().before(beforeRun));
+		assertEquals(CronJobRunNowResult.QUEUED, scheduler.runNow(CronJob.ARCHIVE_CASES));
+	}
+
+	@Test
+	public void aFailedManualRunAllowsTheNextRunNow() {
+
+		Mockito.doThrow(new RuntimeException("boom")).when(cronService).archiveCases();
+		CronScheduler scheduler = getBean(CronScheduler.class);
+
+		scheduler.runNow(CronJob.ARCHIVE_CASES);
+		scheduler.executeJob(manualTimer(CronJob.ARCHIVE_CASES));
+
+		assertEquals(CronJobRunOutcome.FAILED, getBean(CronJobRunRepository.class).findLatest(CronJob.ARCHIVE_CASES).orElseThrow().getOutcome());
+		assertEquals(CronJobRunNowResult.QUEUED, scheduler.runNow(CronJob.ARCHIVE_CASES));
+	}
+
+	@Test
+	public void aFailedTimerCreationReleasesTheQueuedFlag() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		CronScheduler scheduler = getBean(CronScheduler.class);
+		when(timerService.createSingleActionTimer(anyLong(), any())).thenThrow(new IllegalStateException());
+
+		assertThrows(IllegalStateException.class, () -> scheduler.runNow(CronJob.ARCHIVE_CASES));
+
+		reset(timerService);
+		assertEquals(CronJobRunNowResult.QUEUED, scheduler.runNow(CronJob.ARCHIVE_CASES));
+	}
+
+	@Test
+	public void aManualRunWaitsForTheRunningScheduledRun() throws InterruptedException {
+
+		CountDownLatch entered = new CountDownLatch(1);
+		CountDownLatch release = new CountDownLatch(1);
+		blockArchiveCases(entered, release);
+		Timer timer = timerFiring(CronJob.ARCHIVE_CASES, new ManualCronJobRun(CronJob.ARCHIVE_CASES));
+		Thread scheduledRun = executeInBackground(timer);
+		Thread manualRun = executeInBackground(timer);
+
+		try {
+			scheduledRun.start();
+			assertTrue(entered.await(5, TimeUnit.SECONDS));
+			manualRun.start();
+			Thread.sleep(200);
+			verify(cronService, times(1)).archiveCases();
+		} finally {
+			release.countDown();
+			scheduledRun.join(5000);
+			manualRun.join(5000);
+		}
+
+		assertFalse(scheduledRun.isAlive());
+		assertFalse(manualRun.isAlive());
+		verify(cronService, times(2)).archiveCases();
+	}
+
+	@Test
+	public void aScheduledRunIsSkippedWhileTheJobRuns() throws InterruptedException {
+
+		CountDownLatch entered = new CountDownLatch(1);
+		CountDownLatch release = new CountDownLatch(1);
+		blockArchiveCases(entered, release);
+		Timer timer = timerFiring(CronJob.ARCHIVE_CASES);
+		Thread firstRun = executeInBackground(timer);
+		Thread collidingRun = executeInBackground(timer);
+
+		try {
+			firstRun.start();
+			assertTrue(entered.await(5, TimeUnit.SECONDS));
+			collidingRun.start();
+			collidingRun.join(5000);
+			assertFalse(collidingRun.isAlive());
+		} finally {
+			release.countDown();
+			firstRun.join(5000);
+			collidingRun.join(5000);
+		}
+
+		assertFalse(firstRun.isAlive());
+		verify(cronService, times(1)).archiveCases();
+	}
+
+	@Test
+	public void differentJobsDoNotBlockEachOther() throws InterruptedException {
+
+		CountDownLatch entered = new CountDownLatch(1);
+		CountDownLatch release = new CountDownLatch(1);
+		blockArchiveCases(entered, release);
+		Timer timer = timerFiring(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_EVENTS);
+		Thread archiveCasesRun = executeInBackground(timer);
+
+		try {
+			archiveCasesRun.start();
+			assertTrue(entered.await(5, TimeUnit.SECONDS));
+			getBean(CronScheduler.class).executeJob(timer);
+			verify(cronService).archiveEvents();
+		} finally {
+			release.countDown();
+			archiveCasesRun.join(5000);
+		}
+
+		assertFalse(archiveCasesRun.isAlive());
+	}
+
+	@Test
+	public void aQueuedManualRunSurvivesRescheduling() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		Timer manualTimer = manualTimer(CronJob.ARCHIVE_CASES);
+		when(timerService.createSingleActionTimer(anyLong(), any())).thenReturn(manualTimer);
+		CronScheduler scheduler = getBean(CronScheduler.class);
+
+		assertEquals(CronJobRunNowResult.QUEUED, scheduler.runNow(CronJob.ARCHIVE_CASES));
+		when(timerService.getTimers()).thenReturn(List.of(manualTimer));
+		scheduler.reschedule(CronJob.ARCHIVE_CASES);
+
+		verify(manualTimer, never()).cancel();
+	}
+
+	@Test
+	public void aDisabledJobCanStillRunNow() {
+
+		setConfigurationValue(CronJob.ARCHIVE_CASES, "");
+		CronScheduler scheduler = getBean(CronScheduler.class);
+
+		assertEquals(CronJobRunNowResult.QUEUED, scheduler.runNow(CronJob.ARCHIVE_CASES));
+		scheduler.executeJob(manualTimer(CronJob.ARCHIVE_CASES));
+
+		verify(cronService).archiveCases();
+	}
+
+	private Timer manualTimer(CronJob job) {
+		return timerFiring(new ManualCronJobRun(job));
+	}
+
+	// cdi-test allows one mock per type per test, so one timer answers in turn
+	private Timer timerFiring(Serializable firstInfo, Serializable... laterInfos) {
+		Timer timer = mock(Timer.class);
+		when(timer.getInfo()).thenReturn(firstInfo, laterInfos);
+		return timer;
+	}
+
+	private Thread executeInBackground(Timer timer) {
+		CronScheduler scheduler = getBean(CronScheduler.class);
+		RequestContextController requestContext = getBean(RequestContextController.class);
+		return new Thread(() -> {
+			requestContext.activate();
+			try {
+				scheduler.executeJob(timer);
+			} finally {
+				requestContext.deactivate();
+			}
+		});
+	}
+
+	private void blockArchiveCases(CountDownLatch entered, CountDownLatch release) {
+		Mockito.doAnswer(invocation -> {
+			entered.countDown();
+			if (!release.await(5, TimeUnit.SECONDS)) {
+				throw new IllegalStateException("The blocked job was never released");
+			}
+			return null;
+		}).when(cronService).archiveCases();
 	}
 }

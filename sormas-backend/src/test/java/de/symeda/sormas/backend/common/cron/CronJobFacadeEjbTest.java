@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.systemconfiguration.CronJobRunNowResult;
 import de.symeda.sormas.api.systemconfiguration.CronJobStatusDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -113,5 +115,19 @@ public class CronJobFacadeEjbTest extends AbstractBeanTest {
 		CronJobStatusDto status = statusesByJobName().get(CronJob.CLEAN_UP_TEMPORARY_FILES.name());
 		assertNotNull(status.getLastRunStart());
 		assertNotNull(status.getLastRunOutcome());
+	}
+
+	@Test
+	public void runNowResolvesTheJobByName() {
+
+		assertEquals(CronJobRunNowResult.QUEUED, getBean(CronJobFacadeEjb.CronJobFacadeEjbLocal.class).runNow("ARCHIVE_CASES"));
+	}
+
+	@Test
+	public void runNowRejectsAnUnknownJob() {
+
+		CronJobFacadeEjb facade = getBean(CronJobFacadeEjb.CronJobFacadeEjbLocal.class);
+
+		assertThrows(IllegalArgumentException.class, () -> facade.runNow("NO_SUCH_JOB"));
 	}
 }

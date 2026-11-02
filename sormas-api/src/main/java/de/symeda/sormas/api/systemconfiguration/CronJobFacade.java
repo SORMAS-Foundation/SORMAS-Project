@@ -25,4 +25,6 @@ public interface CronJobFacade {
 	String CRON_CONFIGURATION_CATEGORY = "CRON";
 
 	List<CronJobStatusDto> getAllJobStatuses();
+
+	CronJobRunNowResult runNow(String jobName);
 }
