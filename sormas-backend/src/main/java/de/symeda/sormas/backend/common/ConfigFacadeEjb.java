@@ -188,7 +188,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
 	public static final String IMPORT_FILE_SIZE_LIMIT_MB = "importFileSizeLimitMb";
 	public static final int DEFAULT_IMPORT_FILE_SIZE_LIMIT_MB = 20;
-	public static final String NEGATIVE_COVID_TESTS_MAX_AGE_DAYS = "negativeCovidTestsMaxAgeDays";
 
 	public static final String MINIMUM_EMANCIPATED_AGE = "minimumEmancipatedAge";
 	public static final int DEFAULT_MINIMUM_EMANCIPATED_AGE = 14;
@@ -824,11 +823,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public void resetRequestContext() {
 		RequestContextHolder.reset();
-	}
-
-	@Override
-	public Integer getNegaiveCovidTestsMaxAgeDays() {
-		return parseProperty(NEGATIVE_COVID_TESTS_MAX_AGE_DAYS, null, Integer::parseInt);
 	}
 
 	@Override

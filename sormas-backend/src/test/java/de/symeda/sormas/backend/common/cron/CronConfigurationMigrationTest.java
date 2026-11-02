@@ -43,24 +43,7 @@ public class CronConfigurationMigrationTest {
 	@Test
 	public void migrationSeedsEveryCronConfigurationValue() {
 
-		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer();
-		try {
-			container.start();
-		} catch (IllegalStateException e) {
-			assumeNoException("Could not find a valid Docker environment, skipping test", e);
-		}
-
-		Map<String, String> properties = new HashMap<>();
-		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
-		properties.put("javax.persistence.jdbc.user", container.getUsername());
-		properties.put("javax.persistence.jdbc.password", container.getPassword());
-		properties.put("javax.persistence.jdbc.driver", container.getDriverClassName());
-		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
-		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
-		properties.put("hibernate.hbm2ddl.auto", "none");
-
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("beanTestPU", properties);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		EntityManager entityManager = createMigratedEntityManager();
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> rows = entityManager
@@ -87,5 +70,39 @@ public class CronConfigurationMigrationTest {
 		assertFalse(stored.matcher("0 0 0 */2 * *").matches(), "stored pattern must reject an increment on day of month");
 		assertTrue(stored.matcher("0 15 1 * * *").matches());
 		assertTrue(stored.matcher("").matches());
+	}
+
+	@Test
+	public void migrationRemovesTheNegativeSampleCleanupRow() {
+
+		EntityManager entityManager = createMigratedEntityManager();
+
+		Number removedRows = (Number) entityManager
+			.createNativeQuery("SELECT COUNT(*) FROM systemconfigurationvalue WHERE config_key = 'CRON.SOFT_DELETE_OLD_NEGATIVE_SAMPLES'")
+			.getSingleResult();
+
+		assertEquals(0, removedRows.intValue());
+	}
+
+	private EntityManager createMigratedEntityManager() {
+
+		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer();
+		try {
+			container.start();
+		} catch (IllegalStateException e) {
+			assumeNoException("Could not find a valid Docker environment, skipping test", e);
+		}
+
+		Map<String, String> properties = new HashMap<>();
+		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
+		properties.put("javax.persistence.jdbc.user", container.getUsername());
+		properties.put("javax.persistence.jdbc.password", container.getPassword());
+		properties.put("javax.persistence.jdbc.driver", container.getDriverClassName());
+		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
+		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
+		properties.put("hibernate.hbm2ddl.auto", "none");
+
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("beanTestPU", properties);
+		return entityManagerFactory.createEntityManager();
 	}
 }

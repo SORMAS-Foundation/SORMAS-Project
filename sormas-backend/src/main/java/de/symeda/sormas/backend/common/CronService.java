@@ -50,7 +50,6 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.SpecialCaseAccessFacadeEjbLocal;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -97,8 +96,6 @@ public class CronService {
 	private SpecialCaseAccessFacadeEjbLocal specialCaseAccessFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
-	@EJB
-	private SampleService sampleService;
 
 	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();
@@ -297,9 +294,5 @@ public class CronService {
 		if (userFacade.isSyncEnabled() && featureConfigurationFacade.isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
 			userFacade.syncUsersFromAuthenticationProvider();
 		}
-	}
-
-	public void sofDeleteOldNegativeSamples() {
-		sampleService.cleanupOldCovidSamples();
 	}
 }
