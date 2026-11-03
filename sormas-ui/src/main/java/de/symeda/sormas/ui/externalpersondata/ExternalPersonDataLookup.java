@@ -60,7 +60,8 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 		TextField lastName,
 		ComboBox birthYear,
 		ComboBox birthMonth,
-		ComboBox birthDay) {
+		ComboBox birthDay,
+		ComboBox sex) {
 
 		setWidth(800, Unit.PIXELS);
 		ExternalPersonDataSummaryDto summary = load(nationalHealthId);
@@ -71,7 +72,8 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 			&& StringUtils.isBlank(lastName.getValue())
 			&& birthYear.getValue() == null
 			&& birthMonth.getValue() == null
-			&& birthDay.getValue() == null;
+			&& birthDay.getValue() == null
+			&& sex.getValue() == null;
 
 		GridLayout comparison = new GridLayout(4, 1);
 		comparison.setSpacing(true);
@@ -117,6 +119,15 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 				birthMonth.setValue(birthDate.getMonthValue());
 				birthDay.setValue(birthDate.getDayOfMonth());
 			});
+
+		addComparison(
+			comparison,
+			PersonDto.SEX,
+			sex.getValue() == null ? null : sex.getValue().toString(),
+			summary.getSex() == null ? null : summary.getSex().toString(),
+			fillEmptyForm,
+			() -> isEditable(sex),
+			() -> sex.setValue(summary.getSex()));
 
 		if (summary.getAdditionalFields() != null && !summary.getAdditionalFields().isEmpty()) {
 			GridLayout additional = new GridLayout(2, summary.getAdditionalFields().size());

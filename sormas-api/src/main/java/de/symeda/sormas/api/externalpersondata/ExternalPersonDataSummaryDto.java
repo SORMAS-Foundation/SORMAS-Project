@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
+import de.symeda.sormas.api.person.Sex;
+
 public class ExternalPersonDataSummaryDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -12,6 +14,7 @@ public class ExternalPersonDataSummaryDto implements Serializable {
 	private String firstName;
 	private String lastName;
 	private LocalDate birthDate;
+	private Sex sex;
 	private Map<String, String> additionalFields;
 
 	public String getFirstName() {
@@ -38,6 +41,14 @@ public class ExternalPersonDataSummaryDto implements Serializable {
 		this.birthDate = birthDate;
 	}
 
+	public Sex getSex() {
+		return sex;
+	}
+
+	public void setSex(Sex sex) {
+		this.sex = sex;
+	}
+
 	public Map<String, String> getAdditionalFields() {
 		return additionalFields;
 	}
@@ -54,11 +65,12 @@ public class ExternalPersonDataSummaryDto implements Serializable {
 		return Objects.equals(firstName, that.firstName)
 			&& Objects.equals(lastName, that.lastName)
 			&& Objects.equals(birthDate, that.birthDate)
+			&& sex == that.sex
 			&& Objects.equals(additionalFields, that.additionalFields);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(firstName, lastName, birthDate, additionalFields);
+		return Objects.hash(firstName, lastName, birthDate, sex, additionalFields);
 	}
 }

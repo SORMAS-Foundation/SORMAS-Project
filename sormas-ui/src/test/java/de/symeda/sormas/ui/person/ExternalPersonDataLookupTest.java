@@ -28,6 +28,7 @@ import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSummaryDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -37,6 +38,61 @@ import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataLookup;
 class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest {
 
 	private ExternalPersonDataLookup victim;
+
+	@Test
+	void automaticallyFillsSexWhenComparedFieldsAreEmpty() {
+		try (Context context = new Context()) {
+			// PREPARE
+			context.first.clear();
+			context.last.clear();
+			context.year.setValue(null);
+			context.month.setValue(null);
+			context.day.setValue(null);
+			context.summary.setSex(Sex.FEMALE);
+			// EXECUTE
+			victim = context.create();
+			// CHECK
+			assertEquals(Sex.FEMALE, context.sex.getValue());
+			assertTrue(victim.isAutomaticallyApplied());
+		}
+	}
+
+	@Test
+	void existingSexPreventsAutomaticFillAndCanBeReplacedExplicitly() {
+		try (Context context = new Context()) {
+			// PREPARE
+			context.first.clear();
+			context.last.clear();
+			context.year.setValue(null);
+			context.month.setValue(null);
+			context.day.setValue(null);
+			context.sex.setValue(Sex.MALE);
+			context.summary.setSex(Sex.FEMALE);
+			// EXECUTE
+			victim = context.create();
+			// CHECK
+			assertFalse(victim.isAutomaticallyApplied());
+			assertEquals(Sex.MALE, context.sex.getValue());
+			context.select(victim, 4).setValue(true);
+			context.apply(victim).click();
+			assertEquals(Sex.FEMALE, context.sex.getValue());
+		}
+	}
+
+	@Test
+	void readOnlySexCannotBeOverwritten() {
+		try (Context context = new Context()) {
+			// PREPARE
+			context.sex.setValue(Sex.MALE);
+			context.sex.setReadOnly(true);
+			context.summary.setSex(Sex.FEMALE);
+			// EXECUTE
+			victim = context.create();
+			// CHECK
+			assertFalse(context.select(victim, 4).isEnabled());
+			assertEquals(Sex.MALE, context.sex.getValue());
+		}
+	}
 
 	@Test
 	void automaticallyFillsOnlyWhenAllComparedFieldsAreEmpty() {
@@ -258,7 +314,7 @@ class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest 
 	void blankHealthIdDoesNotCallProvider() {
 		try (Context context = new Context()) {
 			ExternalPersonDataLookup lookup =
-				new ExternalPersonDataLookup(" ", context.first, context.last, context.year, context.month, context.day);
+				new ExternalPersonDataLookup(" ", context.first, context.last, context.year, context.month, context.day, context.sex);
 			assertEquals(Strings.errorNoNationalHealthIdInContext, ((Label) lookup.getComponent(0)).getValue());
 			verifyNoInteractions(context.provider);
 		}
@@ -285,7 +341,8 @@ class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest 
 		private final MockedStatic<UiUtil> ui = mockStatic(UiUtil.class);
 		private final MockedStatic<I18nProperties> i18n = mockStatic(I18nProperties.class, invocation -> {
 			if (invocation.getMethod().getReturnType() == String.class && invocation.getArguments().length > 0) {
-				return invocation.getArgument(0);
+				Object argument = invocation.getArgument(0);
+				return argument instanceof Enum<?> ? ((Enum<?>) argument).name() : argument;
 			}
 			return org.mockito.Answers.RETURNS_DEFAULTS.answer(invocation);
 		});
@@ -297,11 +354,13 @@ class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest 
 		private final ComboBox year = new ComboBox();
 		private final ComboBox month = new ComboBox();
 		private final ComboBox day = new ComboBox();
+		private final ComboBox sex = new ComboBox();
 
 		private Context() {
 			facades.when(FacadeProvider::getExternalPersonDataProviderFacade).thenReturn(provider);
 			facades.when(FacadeProvider::getSystemConfigurationValueFacade).thenReturn(configuration);
 			i18n.when(I18nProperties::getUserLanguage).thenReturn(de.symeda.sormas.api.Language.EN);
+			sex.addItems((Object[]) Sex.values());
 			first.setValue("Current first");
 			last.setValue("Current last");
 			year.addItems(1999, 2000);
@@ -325,7 +384,7 @@ class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest 
 		}
 
 		private ExternalPersonDataLookup create() {
-			return new ExternalPersonDataLookup("health-id", first, last, year, month, day);
+			return new ExternalPersonDataLookup("health-id", first, last, year, month, day, sex);
 		}
 
 		private CheckBox select(ExternalPersonDataLookup lookup, int row) {

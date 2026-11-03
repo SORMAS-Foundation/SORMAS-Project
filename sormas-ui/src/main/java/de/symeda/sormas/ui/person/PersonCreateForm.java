@@ -215,7 +215,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 					getField(PersonDto.LAST_NAME),
 					birthDateYear,
 					birthDateMonth,
-					birthDateDay);
+					birthDateDay,
+					sex);
 				if (lookup.isAutomaticallyApplied()) {
 					return;
 				}
