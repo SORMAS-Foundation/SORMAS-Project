@@ -1,3 +1,17 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.ui.immunization.immunizationlink;
 
 import java.util.List;
@@ -6,6 +20,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
@@ -22,11 +37,23 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 
 	private final ImmunizationListCriteria immunizationCriteria;
 	private boolean isEditAllowed;
+	private final ReferenceDto origin;
 
 	public ImmunizationList(ImmunizationListCriteria immunizationCriteria, boolean isEditAllowed) {
+		this(immunizationCriteria, isEditAllowed, null);
+	}
+
+	/**
+	 * @param origin
+	 *            Case, contact or event participant this list is displayed on, or {@code null}. If set, opening an immunization from
+	 *            this list adds it to the URL, e.g. {@code immunizations/data/XYZ789-...?caseUuid=ABC123-...} for a case, so the
+	 *            immunization views show a link back to it.
+	 */
+	public ImmunizationList(ImmunizationListCriteria immunizationCriteria, boolean isEditAllowed, ReferenceDto origin) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.immunizationCriteria = immunizationCriteria;
 		this.isEditAllowed = isEditAllowed;
+		this.origin = origin;
 	}
 
 	@Override
@@ -58,7 +85,7 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 				listEntry.addActionButton(
 					listEntry.getImmunizationEntry().getUuid(),
 					(Button.ClickListener) event -> ControllerProvider.getImmunizationController()
-						.navigateToImmunization(listEntry.getImmunizationEntry().getUuid()),
+						.navigateToImmunization(listEntry.getImmunizationEntry().getUuid(), origin),
 					isEditableAndHasEditRight);
 				listEntry.setEnabled(isEditableAndHasEditRight);
 			}

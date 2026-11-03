@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -208,7 +208,8 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 					return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
 						.withDiseaseDetails(refreshedCase.getDiseaseDetails())
 						.build();
-				}, null, this::showUnsavedChangesPopup, isEditAllowed, vaccinationStatusPanel, SormasUI::refreshView)), IMMUNIZATION_LOC);
+				}, null, this::showUnsavedChangesPopup, isEditAllowed, vaccinationStatusPanel, SormasUI::refreshView, getCaseRef())),
+					IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
