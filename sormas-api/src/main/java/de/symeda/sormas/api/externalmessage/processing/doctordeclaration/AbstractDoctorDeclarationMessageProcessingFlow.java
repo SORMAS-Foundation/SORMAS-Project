@@ -640,6 +640,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		epiData.setContactWithSexWorker(externalMessageDto.getContactWithSexWorker());
 		epiData.setMotherCitizenship(externalMessageDto.getMotherCitizenship());
 		epiData.setMotherCountryOfBirth(externalMessageDto.getMotherCountryOfBirth());
+		epiData.setInfectionSource(externalMessageDto.getInfectionSource());
+		epiData.setInfectionSourceText(externalMessageDto.getInfectionSourceText());
 
 		if (externalMessageDto.getExposures() != null && !externalMessageDto.getExposures().isEmpty()) {
 			final ArrayList<ExposureDto> exposures = new ArrayList<>();
