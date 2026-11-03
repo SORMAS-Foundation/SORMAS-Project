@@ -30,6 +30,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -40,10 +43,45 @@ import de.symeda.sormas.backend.common.HistoryTablesTest.SormasPostgresSQLContai
 @ExtendWith(CdiTestJunitExtension.class)
 public class CronConfigurationMigrationTest {
 
+	private static SormasPostgresSQLContainer container;
+
+	private EntityManagerFactory entityManagerFactory;
+	private EntityManager entityManager;
+
+	@BeforeAll
+	public static void startContainer() {
+
+		container = new SormasPostgresSQLContainer();
+		try {
+			container.start();
+		} catch (IllegalStateException e) {
+			assumeNoException("Could not find a valid Docker environment, skipping test", e);
+		}
+	}
+
+	@AfterAll
+	public static void stopContainer() {
+
+		if (container != null) {
+			container.stop();
+		}
+	}
+
+	@AfterEach
+	public void closePersistence() {
+
+		if (entityManager != null && entityManager.isOpen()) {
+			entityManager.close();
+		}
+		if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
+			entityManagerFactory.close();
+		}
+	}
+
 	@Test
 	public void migrationSeedsEveryCronConfigurationValue() {
 
-		EntityManager entityManager = createMigratedEntityManager();
+		createMigratedEntityManager();
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> rows = entityManager
@@ -75,7 +113,7 @@ public class CronConfigurationMigrationTest {
 	@Test
 	public void migrationRemovesTheNegativeSampleCleanupRow() {
 
-		EntityManager entityManager = createMigratedEntityManager();
+		createMigratedEntityManager();
 
 		Number removedRows = (Number) entityManager
 			.createNativeQuery("SELECT COUNT(*) FROM systemconfigurationvalue WHERE config_key = 'CRON.SOFT_DELETE_OLD_NEGATIVE_SAMPLES'")
@@ -84,14 +122,7 @@ public class CronConfigurationMigrationTest {
 		assertEquals(0, removedRows.intValue());
 	}
 
-	private EntityManager createMigratedEntityManager() {
-
-		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer();
-		try {
-			container.start();
-		} catch (IllegalStateException e) {
-			assumeNoException("Could not find a valid Docker environment, skipping test", e);
-		}
+	private void createMigratedEntityManager() {
 
 		Map<String, String> properties = new HashMap<>();
 		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
@@ -101,8 +132,11 @@ public class CronConfigurationMigrationTest {
 		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
 		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
 		properties.put("hibernate.hbm2ddl.auto", "none");
+		// closing a factory with the shared Ehcache would break later tests
+		properties.put("hibernate.cache.use_second_level_cache", "false");
+		properties.put("hibernate.cache.use_query_cache", "false");
 
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("beanTestPU", properties);
-		return entityManagerFactory.createEntityManager();
+		entityManagerFactory = Persistence.createEntityManagerFactory("beanTestPU", properties);
+		entityManager = entityManagerFactory.createEntityManager();
 	}
 }
