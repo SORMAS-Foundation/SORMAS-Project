@@ -45,10 +45,15 @@ public class CronServiceTest extends AbstractBeanTest {
 
 		try {
 			FileTime threeHoursAgo = FileTime.from(Instant.now().minus(Duration.ofHours(3)));
+			Files.setLastModifiedTime(prefixed, threeHoursAgo);
+			Files.setLastModifiedTime(unprefixed, threeHoursAgo);
 			Files.setAttribute(prefixed, "basic:creationTime", threeHoursAgo);
 			Files.setAttribute(unprefixed, "basic:creationTime", threeHoursAgo);
 			assumeTrue(
-				Files.readAttributes(prefixed, BasicFileAttributes.class).creationTime().compareTo(threeHoursAgo) == 0,
+				Files.readAttributes(prefixed, BasicFileAttributes.class)
+					.creationTime()
+					.toInstant()
+					.isBefore(Instant.now().minus(Duration.ofHours(2))),
 				"File system does not support setting the creation time");
 
 			getBean(CronService.class).cleanUpTemporaryFiles();
