@@ -15,13 +15,14 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -42,6 +43,7 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 	private static final String RUN_NOW_COLUMN_ID = "runNow";
 
 	private String searchText = "";
+	private LocalDateTime lastRunNowTimestamp = LocalDateTime.now().minusSeconds(2);
 
 	public ScheduledJobsGrid(Consumer<CronJobStatusDto> editHandler, Consumer<CronJobStatusDto> runNowHandler) {
 
@@ -100,7 +102,11 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		});
 		addItemClickListener(event -> {
 			if (event.getItem() != null && isRunNowColumn(event.getColumn()) && !event.getMouseEventDetails().isDoubleClick()) {
-				runNowHandler.accept(event.getItem());
+				LocalDateTime now = LocalDateTime.now();
+				if (now.isAfter(lastRunNowTimestamp.plusSeconds(1))) {
+					lastRunNowTimestamp = now;
+					runNowHandler.accept(event.getItem());
+				}
 			}
 		});
 	}
