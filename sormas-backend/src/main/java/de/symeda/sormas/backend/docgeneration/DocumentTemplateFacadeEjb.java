@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -234,7 +236,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		String propertySeparator = documentWorkflow.isDocx() ? "." : "_";
 		Map<RootEntityType, RootEntityPropertyFiller> propertyFillerCache = new HashMap<>();
 		for (String propertyKey : documentVariables.getVariables()) {
-			if (isEntityVariable(documentWorkflow, propertyKey)) {
+			if (isResolvableEntityFor(documentWorkflow, propertyKey)) {
 				String variableBaseName = getVariableBaseName(propertyKey);
 				RootEntityType rootEntityType = RootEntityType.ofEntityName(variableBaseName);
 
@@ -420,9 +422,9 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile);
 		Set<String> propertyKeys = documentVariables.getVariables();
 		documentVariables.setAdditionalVariables(
-			propertyKeys.stream().filter(e -> !isEntityVariable(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList()));
+			propertyKeys.stream().filter(e -> !isResolvableEntityFor(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList()));
 		propertyKeys.stream()
-			.filter(e -> isEntityVariable(documentWorkflow, e))
+			.filter(e -> isResolvableEntityFor(documentWorkflow, e))
 			.forEach(e -> documentVariables.addUsedEntity(getVariableBaseName(e)));
 		return documentVariables;
 	}
@@ -508,12 +510,15 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return templateEngine.extractTemplateVariablesTxt(templateFile);
 	}
 
-	private boolean isEntityVariable(DocumentWorkflow documentWorkflow, String propertyKey) {
+	private boolean isResolvableEntityFor(DocumentWorkflow documentWorkflow, String propertyKey) {
 		if (propertyKey == null) {
 			return false;
 		}
 		String basename = getVariableBaseName(propertyKey);
-		return documentWorkflow.getRootEntityTypes().stream().map(RootEntityType::getEntityName).anyMatch(basename::equalsIgnoreCase);
+		return Stream
+			.concat(documentWorkflow.getRootEntityTypes().stream(), Arrays.stream(RootEntityType.values()).filter(type -> !type.isDataModelEntity()))
+			.map(RootEntityType::getEntityName)
+			.anyMatch(basename::equalsIgnoreCase);
 	}
 
 	private String getVariableBaseName(String propertyKey) {
