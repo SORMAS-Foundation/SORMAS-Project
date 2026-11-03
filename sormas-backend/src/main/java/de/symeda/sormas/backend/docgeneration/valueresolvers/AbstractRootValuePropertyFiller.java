@@ -32,9 +32,6 @@ public abstract class AbstractRootValuePropertyFiller implements RootEntityPrope
 
 		String propertyPath = AbstractRootValuePropertyFiller.buildPropertyPath(propertyKey, variableBaseName, propertySeparator);
 
-		logger.info("variableBaseName: [{}]", variableBaseName);
-		logger.info("propertyPath: [{}]", propertyPath);
-
 		Object propertyValue;
 		try {
 			propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(getEntity(), propertyPath, referenceDtoResolver);

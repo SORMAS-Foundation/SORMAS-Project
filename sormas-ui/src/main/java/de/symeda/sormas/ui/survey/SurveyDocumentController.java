@@ -240,7 +240,6 @@ public class SurveyDocumentController {
 				}
 
 				try {
-					// TODO: this is the code that displays additional variables
 					DocumentVariables documentVariables = FacadeProvider.getSurveyFacade().getDocumentVariables(survey.toReference());
 					List<String> additionalVariables = documentVariables.getAdditionalVariables();
 					if (additionalVariables != null && !additionalVariables.isEmpty()) {
