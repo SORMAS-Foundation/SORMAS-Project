@@ -72,9 +72,9 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 
