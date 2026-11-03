@@ -95,7 +95,7 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 
 	private void runNow(CronJobStatusDto status) {
 
-		CronJobRunNowResult result = FacadeProvider.getCronJobFacade().runNow(status.getJobName());
+		CronJobRunNowResult result = FacadeProvider.getCronJobFacade().executeJobNow(status.getJobName());
 		String messageKey = result == CronJobRunNowResult.QUEUED ? Strings.messageCronJobRunQueued : Strings.messageCronJobRunAlreadyQueued;
 		Notification.show(I18nProperties.getString(messageKey), Notification.Type.TRAY_NOTIFICATION);
 		grid.reload();

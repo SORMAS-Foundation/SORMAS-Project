@@ -62,7 +62,7 @@ public class CronJobFacadeEjb implements CronJobFacade {
 	}
 
 	@Override
-	public CronJobRunNowResult runNow(String jobName) {
+	public CronJobRunNowResult executeJobNow(String jobName) {
 		return cronScheduler.runNow(CronJob.valueOf(jobName));
 	}
 

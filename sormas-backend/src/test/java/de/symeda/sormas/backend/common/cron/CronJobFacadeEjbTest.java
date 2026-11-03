@@ -118,16 +118,16 @@ public class CronJobFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void runNowResolvesTheJobByName() {
+	public void executeJobNowResolvesTheJobByName() {
 
-		assertEquals(CronJobRunNowResult.QUEUED, getBean(CronJobFacadeEjb.CronJobFacadeEjbLocal.class).runNow("ARCHIVE_CASES"));
+		assertEquals(CronJobRunNowResult.QUEUED, getBean(CronJobFacadeEjb.CronJobFacadeEjbLocal.class).executeJobNow("ARCHIVE_CASES"));
 	}
 
 	@Test
-	public void runNowRejectsAnUnknownJob() {
+	public void executeJobNowRejectsAnUnknownJob() {
 
 		CronJobFacadeEjb facade = getBean(CronJobFacadeEjb.CronJobFacadeEjbLocal.class);
 
-		assertThrows(IllegalArgumentException.class, () -> facade.runNow("NO_SUCH_JOB"));
+		assertThrows(IllegalArgumentException.class, () -> facade.executeJobNow("NO_SUCH_JOB"));
 	}
 }

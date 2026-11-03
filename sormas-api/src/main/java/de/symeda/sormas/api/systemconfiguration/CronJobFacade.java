@@ -26,5 +26,5 @@ public interface CronJobFacade {
 
 	List<CronJobStatusDto> getAllJobStatuses();
 
-	CronJobRunNowResult runNow(String jobName);
+	CronJobRunNowResult executeJobNow(String jobName);
 }
