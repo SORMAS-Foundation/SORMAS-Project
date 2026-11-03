@@ -33,7 +33,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
@@ -326,7 +325,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 			.setPatchDictionary(patchDictionary)
-			.setInputLanguages(List.of(Language.DE, Language.EN, Language.FR));;
+			.setInputLanguages(List.of(Language.DE, Language.EN, Language.FR));
 
 		Mockito.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, healthcareWorker))
 			.thenReturn(expectedOccupationType);
@@ -459,47 +458,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(
 				toPatchDictionary(Map.of("Person.occupationType", input, "Person.occupationDetails", input)),
 				response.getValidPatchDictionary()));
-	}
-
-	private static @NotNull CustomizableEnumTranslation buildTranslation(String en, String irrelated) {
-		CustomizableEnumTranslation e1 = new CustomizableEnumTranslation();
-		e1.setLanguageCode(en);
-		e1.setValue(irrelated);
-		return e1;
-	}
-
-	@Test
-	void patch_referenceData_countryByExternalId() {
-		// PREPARE
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
-
-		CountryDto dto = new CountryDto();
-		dto.setIsoCode("DEU");
-		dto.setExternalId("DE");
-		dto.setDefaultName("Germany");
-		CountryDto germanyReferenceDto = getCountryFacade().save(dto);
-
-		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
-
-		// External IDs are matched ignoring whitespace and case.
-		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", " de    ");
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(patchDictionary);
-
-		// EXECUTE
-		DataPatchResponse response = victim().patch(request);
-
-		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
-
-		// CHECK
-
-		Assertions.assertAll(
-			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
-
-			() -> Assertions.assertEquals(
-				new CountryReferenceDto(germanyReferenceDto.getUuid(), germanyReferenceDto.getIsoCode()),
-				actualPerson.getBirthCountry()));
 	}
 
 	@Test

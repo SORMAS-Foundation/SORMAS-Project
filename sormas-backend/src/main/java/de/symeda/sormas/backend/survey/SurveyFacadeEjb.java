@@ -19,7 +19,11 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,14 +35,29 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.docgeneneration.*;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.externalemail.AttachmentException;
 import de.symeda.sormas.api.externalemail.ExternalEmailException;
@@ -46,7 +65,12 @@ import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.survey.*;
+import de.symeda.sormas.api.survey.SurveyCriteria;
+import de.symeda.sormas.api.survey.SurveyDocumentOptionsDto;
+import de.symeda.sormas.api.survey.SurveyDto;
+import de.symeda.sormas.api.survey.SurveyFacade;
+import de.symeda.sormas.api.survey.SurveyIndexDto;
+import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -54,8 +78,14 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.docgeneration.*;
+import de.symeda.sormas.backend.docgeneration.DocGenerationHelper;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateEntitiesBuilder;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateService;
+import de.symeda.sormas.backend.docgeneration.RootEntities;
+import de.symeda.sormas.backend.docgeneration.TemplateEngine;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -67,6 +97,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @Stateless(name = "SurveyFacade")
 @RightsAllowed(UserRight._SURVEY_VIEW)
 public class SurveyFacadeEjb implements SurveyFacade {
+
+	private final static Logger logger = LoggerFactory.getLogger(SurveyFacadeEjb.class);
 
 	private static final String SURVEY_TOKEN_DOCUMENT_PLACEHOLDER = "surveyToken";
 
@@ -324,6 +356,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	@Override
 	@PermitAll
 	public void generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException {
+		logger.error("TemplateProperties: [{}]", surveyOptions.getTemplateProperties());
 		SurveyDto survey = getByUuid(surveyOptions.getSurvey().getUuid());
 
 		createSurveyDocument(survey, surveyOptions);
@@ -333,6 +366,9 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	@PermitAll
 	public void sendDocument(SurveyDocumentOptionsDto surveyOptions)
 		throws DocumentTemplateException, ValidationException, AttachmentException, IOException, ExternalEmailException {
+
+		logger.error("TemplateProperties: [{}]", surveyOptions.getTemplateProperties());
+
 		Survey survey = surveyService.getByReferenceDto(surveyOptions.getSurvey());
 		SurveyDto surveyDto = toDto(survey);
 

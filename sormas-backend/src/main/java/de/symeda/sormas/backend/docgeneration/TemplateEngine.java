@@ -249,6 +249,9 @@ public class TemplateEngine {
 		Set<String> nullableVariables = new HashSet<>();
 		for (FieldExtractor field : extractor.getFields()) {
 			String fieldName = field.getName();
+
+			logger.error("FieldName: [{}]", fieldName);
+
 			Matcher matcher = VARIABLE_PATTERN.matcher(fieldName);
 			if (matcher.matches()) {
 				String withBrackets = matcher.group(3);
