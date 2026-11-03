@@ -5,14 +5,13 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.person.PersonDto;
 
 public class ExternalPersonDataAddressRequestDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private CaseDataDto caseData;
-	private PersonDto person;
+
 	private ContactDto contact;
 
 	public CaseDataDto getCaseData() {
@@ -21,14 +20,6 @@ public class ExternalPersonDataAddressRequestDto implements Serializable {
 
 	public void setCaseData(CaseDataDto caseData) {
 		this.caseData = caseData;
-	}
-
-	public PersonDto getPerson() {
-		return person;
-	}
-
-	public void setPerson(PersonDto person) {
-		this.person = person;
 	}
 
 	public ContactDto getContact() {
@@ -44,11 +35,11 @@ public class ExternalPersonDataAddressRequestDto implements Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ExternalPersonDataAddressRequestDto that = (ExternalPersonDataAddressRequestDto) o;
-		return Objects.equals(caseData, that.caseData) && Objects.equals(person, that.person) && Objects.equals(contact, that.contact);
+		return Objects.equals(caseData, that.caseData) && Objects.equals(contact, that.contact);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(caseData, person, contact);
+		return Objects.hash(caseData, contact);
 	}
 }

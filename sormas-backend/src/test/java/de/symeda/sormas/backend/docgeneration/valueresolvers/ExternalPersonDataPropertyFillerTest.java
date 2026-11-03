@@ -21,65 +21,71 @@ import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataAddressRequestDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.AbstractUnitTest;
 
 class ExternalPersonDataPropertyFillerTest extends AbstractUnitTest {
+
+	private ExternalPersonDataPropertyFiller victim;
 
 	@Mock
 	private ExternalPersonDataProviderFacade provider;
 
 	private final DocumentTemplateEntities entities = new DocumentTemplateEntities();
 	private final CaseDataDto caseData = new CaseDataDto();
-	private final PersonDto person = new PersonDto();
-	private ExternalPersonDataPropertyFiller filler;
 
 	@BeforeEach
 	void setUp() {
 		entities.addEntity(RootEntityType.ROOT_CASE, caseData);
-		entities.addEntity(RootEntityType.ROOT_PERSON, person);
-		filler = new ExternalPersonDataPropertyFiller(null, entities, provider);
+		victim = new ExternalPersonDataPropertyFiller(null, entities, provider);
 	}
 
 	@Test
-	void fillsAddressAndPassesCaseAndPersonToProvider() {
+	void fillsAddressAndPassesCaseToProvider() {
+		// PREPARE
 		LocationDto address = new LocationDto();
 		address.setCity("Paris");
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(address);
 		Properties properties = new Properties();
 
-		filler.fillValueInto("externalPersonData.city", properties);
+		// EXECUTE
+		victim.fillValueInto("externalPersonData.city", properties);
 
+		// CHECK
 		assertEquals("Paris", properties.getProperty("externalPersonData.city"));
 		ArgumentCaptor<ExternalPersonDataAddressRequestDto> request = ArgumentCaptor.forClass(ExternalPersonDataAddressRequestDto.class);
 		verify(provider).findAppropriateDocumentAddressFor(request.capture());
 		assertSame(caseData, request.getValue().getCaseData());
-		assertSame(person, request.getValue().getPerson());
 	}
 
 	@Test
 	void writesErrorMarkerWhenProviderFailsWithoutMessage() {
+		// PREPARE
 		when(provider.findAppropriateDocumentAddressFor(any())).thenThrow(new IllegalStateException());
 		Properties properties = new Properties();
 
-		filler.fillValueInto("externalPersonData.city", properties);
+		// EXECUTE
+		victim.fillValueInto("externalPersonData.city", properties);
 
+		// CHECK
 		assertEquals("*** Error for property: [externalPersonData.city] ***", properties.getProperty("externalPersonData.city"));
 		verify(provider).findAppropriateDocumentAddressFor(any());
 	}
 
 	@Test
 	void fetchesAddressOnlyOnceForMultipleProperties() {
+		// PREPARE
 		LocationDto address = new LocationDto();
 		address.setCity("Paris");
 		address.setStreet("Main Street");
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(address);
 		Properties properties = new Properties();
 
-		filler.fillValueInto("externalPersonData.city", properties);
-		filler.fillValueInto("externalPersonData.street", properties);
-		filler.fillValueInto("externalPersonData.city", properties);
+		// EXECUTE
+		victim.fillValueInto("externalPersonData.city", properties);
+		victim.fillValueInto("externalPersonData.street", properties);
+		victim.fillValueInto("externalPersonData.city", properties);
 
+		// CHECK
 		assertEquals("Paris", properties.getProperty("externalPersonData.city"));
 		assertEquals("Main Street", properties.getProperty("externalPersonData.street"));
 		verify(provider).findAppropriateDocumentAddressFor(any());
@@ -88,6 +94,9 @@ class ExternalPersonDataPropertyFillerTest extends AbstractUnitTest {
 
 	@Test
 	void doesNotFetchAddressUntilAPropertyIsRequested() {
+		// PREPARE
+		// EXECUTE
+		// CHECK
 		verifyNoInteractions(provider);
 	}
 }

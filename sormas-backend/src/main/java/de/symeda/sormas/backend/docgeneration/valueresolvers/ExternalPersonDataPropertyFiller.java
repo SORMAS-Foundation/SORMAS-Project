@@ -9,7 +9,6 @@ import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataAddressRequestDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 /**
@@ -46,10 +45,8 @@ public class ExternalPersonDataPropertyFiller extends AbstractRootValuePropertyF
 
 		ExternalPersonDataAddressRequestDto request = new ExternalPersonDataAddressRequestDto();
 		request.setCaseData((CaseDataDto) entities.getEntity(RootEntityType.ROOT_CASE));
-		request.setPerson((PersonDto) entities.getEntity(RootEntityType.ROOT_PERSON));
 
 		logger.info("Request.case: [{}]", request.getCaseData());
-		logger.info("Request.person: [{}]", request.getPerson());
 
 		address = externalPersonDataProviderFacade.findAppropriateDocumentAddressFor(request);
 
