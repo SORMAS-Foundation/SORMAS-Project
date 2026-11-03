@@ -116,6 +116,7 @@ public class CronScheduler {
 		}
 	}
 
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public CronJobRunNowResult runNow(CronJob job) {
 
 		if (!pendingManualRuns.add(job)) {
