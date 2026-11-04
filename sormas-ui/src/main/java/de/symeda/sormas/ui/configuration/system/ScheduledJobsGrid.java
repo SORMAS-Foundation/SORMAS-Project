@@ -40,6 +40,7 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final int EDIT_COLUMN_WIDTH = 60;
+	private static final int RUN_NOW_COLUMN_WIDTH = 100;
 	private static final String RUN_NOW_COLUMN_ID = "runNow";
 
 	private String searchText = "";
@@ -81,9 +82,11 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 
 		Column<CronJobStatusDto, String> runNowColumn = addColumn(status -> VaadinIcons.PLAY.getHtml(), new HtmlRenderer());
 		runNowColumn.setId(RUN_NOW_COLUMN_ID);
-		runNowColumn.setCaption(I18nProperties.getCaption(Captions.cronJobRunNow));
+		String runNowCaption = I18nProperties.getCaption(Captions.cronJobRunNow);
+		runNowColumn.setCaption(runNowCaption);
+		runNowColumn.setDescriptionGenerator(status -> runNowCaption);
 		runNowColumn.setSortable(false);
-		runNowColumn.setWidth(EDIT_COLUMN_WIDTH);
+		runNowColumn.setWidth(RUN_NOW_COLUMN_WIDTH);
 
 		columnOrder.add(0, runNowColumn);
 		columnOrder.add(0, editColumn);
