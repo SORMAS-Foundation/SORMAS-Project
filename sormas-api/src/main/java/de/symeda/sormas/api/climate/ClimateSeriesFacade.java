@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.climate;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.ejb.Remote;
 
@@ -39,4 +40,15 @@ public interface ClimateSeriesFacade {
 	 *         summary cards for the 7 days ending on the latest day with data
 	 */
 	ClimateDailySeriesDto getDailySeries(EnvironmentReferenceDto environment, LocalDate from, LocalDate to);
+
+	/**
+	 * @return what the environment Climate data tab's context strip shows: the point, who shares it, how far back its
+	 *         history goes and the warnings
+	 */
+	ClimateEnvironmentContextDto getEnvironmentContext(EnvironmentReferenceDto environment);
+
+	/**
+	 * @return one export row per day of the environment's daily series from {@code from} to {@code to}, oldest first
+	 */
+	List<ClimateDailyExportDto> getDailyExportList(EnvironmentReferenceDto environment, LocalDate from, LocalDate to);
 }

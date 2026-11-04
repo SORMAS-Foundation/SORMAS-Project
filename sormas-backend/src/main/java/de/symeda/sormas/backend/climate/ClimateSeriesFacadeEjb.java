@@ -34,8 +34,11 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.climate.ClimateDailyExportDto;
 import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
 import de.symeda.sormas.api.climate.ClimateDayDto;
+import de.symeda.sormas.api.climate.ClimateEnvironmentContextDto;
+import de.symeda.sormas.api.climate.ClimateJobType;
 import de.symeda.sormas.api.climate.ClimateRangeDto;
 import de.symeda.sormas.api.climate.ClimateSeriesCriteria;
 import de.symeda.sormas.api.climate.ClimateSeriesFacade;
@@ -45,17 +48,21 @@ import de.symeda.sormas.api.climate.ClimateWeekValueDto;
 import de.symeda.sormas.api.climate.ClimateWeeklySeriesDto;
 import de.symeda.sormas.api.climate.HumidityMeasure;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
 import de.symeda.sormas.backend.environment.EnvironmentService;
+import de.symeda.sormas.backend.geo.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ClimateSeriesFacade")
@@ -73,6 +80,12 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 	private DistrictService districtService;
 	@EJB
 	private EnvironmentService environmentService;
+	@EJB
+	private ClimateLocationService climateLocationService;
+	@EJB
+	private ClimateJobService climateJobService;
+	@EJB
+	private GeoShapeProviderEjbLocal geoShapeProvider;
 
 	@Override
 	@RightsAllowed({
@@ -158,6 +171,156 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 			: Collections.emptyMap();
 		series.getCards().addAll(ClimateSummaryCards.build(lastDay, cardDays, normals));
 		return series;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public ClimateEnvironmentContextDto getEnvironmentContext(EnvironmentReferenceDto environmentRef) {
+
+		Environment environment = environmentService.getByUuid(environmentRef.getUuid());
+		Location address = environment.getLocation();
+		District district = address != null ? address.getDistrict() : null;
+		ClimateLocation own = environment.getClimateLocation();
+		ClimateLocation location = shownLocation(environment);
+
+		ClimateEnvironmentContextDto context = new ClimateEnvironmentContextDto();
+		context.setEnvironment(EnvironmentFacadeEjb.toReferenceDto(environment));
+		context.setOwnLocation(own != null);
+		context.setReportDate(environment.getReportDate());
+		context.setArchived(environment.isArchived());
+		context.setDeleted(environment.isDeleted());
+		if (address != null) {
+			context.setLatitude(address.getLatitude());
+			context.setLongitude(address.getLongitude());
+		}
+		if (district != null) {
+			context.setDistrict(DistrictFacadeEjb.toReferenceDto(district));
+		}
+		if (location == null) {
+			return context;
+		}
+
+		context.setCellLatitude(location.getLatitude());
+		context.setCellLongitude(location.getLongitude());
+		context.setDistrictHasPoint(location.getLatitude() != null);
+		context.setStillUpdated(climateLocationService.isInUse(location.getId()));
+		context.setLatestDay(climateObservationService.getLatestDay(location.getId(), LocalDate.now().minusDays(1)));
+		context.setHistoryFrom(climateObservationService.getEarliestDay(location.getId()));
+
+		if (own != null) {
+			context.getSharedDistricts()
+				.addAll(climateLocationService.getDistrictNamesByLocation(Collections.singleton(own.getId())).getOrDefault(own.getId(), Collections.emptyList()));
+			context.getSharedEnvironments().addAll(climateLocationService.getOtherEnvironmentNames(own.getId(), environment.getId()));
+			if (district != null && address.getLatitude() != null && address.getLongitude() != null) {
+				DistrictReferenceDto districtRef = DistrictFacadeEjb.toReferenceDto(district);
+				if (geoShapeProvider.getDistrictShape(districtRef) != null) {
+					DistrictReferenceDto atPoint = geoShapeProvider.getDistrictByCoord(new GeoLatLon(address.getLatitude(), address.getLongitude()));
+					if (atPoint == null || !atPoint.getUuid().equals(district.getUuid())) {
+						context.setOutsideDistrict(true);
+						context.setDistrictAtPoint(atPoint);
+					}
+				}
+			}
+		}
+
+		boolean districtLocation = own == null || !context.getSharedDistricts().isEmpty();
+		for (ClimateJob job : climateJobService.getOpenJobs()) {
+			if (fillsHistory(job, location, district, districtLocation)) {
+				context.setLoadingJobType(job.getJobType());
+				context.setLoadingLocationsDone(job.getLocationsDone());
+				context.setLoadingLocationsTotal(job.getLocationsTotal());
+				break;
+			}
+		}
+		return context;
+	}
+
+	/**
+	 * @return true when the open job fills the location's history: a top-up of the location, or a backfill or fetch now
+	 *         whose scope holds the environment's district (environment-only locations only when the job includes
+	 *         environments)
+	 */
+	private static boolean fillsHistory(ClimateJob job, ClimateLocation location, District district, boolean districtLocation) {
+
+		if (job.getJobType() == ClimateJobType.TOP_UP) {
+			return job.getClimateLocation() != null && job.getClimateLocation().getId().equals(location.getId());
+		}
+		if (job.getJobType() != ClimateJobType.BACKFILL && job.getJobType() != ClimateJobType.FETCH) {
+			return false;
+		}
+		if (!districtLocation && !job.isIncludeEnvironments()) {
+			return false;
+		}
+		if (job.getDistrict() != null) {
+			return district != null && job.getDistrict().getId().equals(district.getId());
+		}
+		if (job.getRegion() != null) {
+			return district != null && job.getRegion().getId().equals(district.getRegion().getId());
+		}
+		return true;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_EXPORT)
+	public List<ClimateDailyExportDto> getDailyExportList(EnvironmentReferenceDto environmentRef, LocalDate from, LocalDate to) {
+
+		ClimateDailySeriesDto series = getDailySeries(environmentRef, from, to);
+		Environment environment = environmentService.getByUuid(environmentRef.getUuid());
+		ClimateLocation location = shownLocation(environment);
+		Map<LocalDate, ClimateObservation> rows =
+			location != null ? climateObservationService.getByLocationAndPeriod(location, from, to) : Collections.emptyMap();
+		String normalsFrom = series.isDistrictNormals() && series.getDistrict() != null
+			? series.getDistrict().getCaption()
+			: environment.getEnvironmentName();
+
+		List<ClimateDailyExportDto> export = new ArrayList<>(series.getDays().size());
+		for (ClimateDayDto day : series.getDays()) {
+			ClimateDailyExportDto row = new ClimateDailyExportDto();
+			row.setDate(ClimateCalendar.toDate(day.getDate()));
+			row.setTemperatureMin(day.getTemperatureMin());
+			row.setTemperatureMean(day.getTemperatureMean());
+			row.setTemperatureMax(day.getTemperatureMax());
+			row.setRainfall(day.getRainfall());
+			row.setRelativeHumidity(day.getRelativeHumidity());
+			row.setHumidityMeasure(day.getHumidityMeasure());
+			row.setSource(day.getSource());
+			ClimateObservation observation = rows.get(day.getDate());
+			row.setSourceDetail(observation != null ? observation.getSourceDetail() : null);
+			ClimateRangeDto rainfall = day.getRainfallNormal();
+			if (rainfall != null) {
+				row.setRainfallP10(rainfall.getP10());
+				row.setRainfallP50(rainfall.getP50());
+				row.setRainfallP90(rainfall.getP90());
+			}
+			ClimateRangeDto temperature = day.getTemperatureNormal();
+			if (temperature != null) {
+				row.setTemperatureP10(temperature.getP10());
+				row.setTemperatureP50(temperature.getP50());
+				row.setTemperatureP90(temperature.getP90());
+			}
+			ClimateRangeDto humidity = day.getHumidityNormal();
+			if (humidity != null) {
+				row.setHumidityP10(humidity.getP10());
+				row.setHumidityP50(humidity.getP50());
+				row.setHumidityP90(humidity.getP90());
+			}
+			if (rainfall != null || temperature != null || humidity != null) {
+				row.setNormalsFrom(normalsFrom);
+			}
+			export.add(row);
+		}
+		return export;
+	}
+
+	/**
+	 * @return the environment's own climate location, else its district's (no usable GPS), else null
+	 */
+	private static ClimateLocation shownLocation(Environment environment) {
+		if (environment.getClimateLocation() != null) {
+			return environment.getClimateLocation();
+		}
+		District district = environment.getLocation() != null ? environment.getLocation().getDistrict() : null;
+		return district != null ? district.getClimateLocation() : null;
 	}
 
 	private ClimateDailyNormals dailyNormals(Long location, List<Integer> referenceYears, int minYears) {

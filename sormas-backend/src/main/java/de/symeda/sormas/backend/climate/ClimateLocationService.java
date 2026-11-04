@@ -181,6 +181,21 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 	}
 
 	/**
+	 * @return the names of the environments (not deleted) other than {@code environmentId} that link to the location,
+	 *         sorted by name
+	 */
+	public List<String> getOtherEnvironmentNames(Long locationId, Long environmentId) {
+		return em
+			.createQuery(
+				"SELECT e." + Environment.ENVIRONMENT_NAME + " FROM environments e WHERE e." + Environment.CLIMATE_LOCATION + ".id = :location AND e.id <> :environment AND e."
+					+ Environment.DELETED + " = false ORDER BY e." + Environment.ENVIRONMENT_NAME,
+				String.class)
+			.setParameter("location", locationId)
+			.setParameter("environment", environmentId)
+			.getResultList();
+	}
+
+	/**
 	 * @return for each of the locations that something links to, the districts (archived ones too) with their regions, and
 	 *         the environments (not deleted), each sorted by name. Used to label rows on screen and in exports.
 	 */
