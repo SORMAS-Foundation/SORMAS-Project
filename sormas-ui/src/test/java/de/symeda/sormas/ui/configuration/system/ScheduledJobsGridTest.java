@@ -18,6 +18,8 @@ package de.symeda.sormas.ui.configuration.system;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Locale;
+
 import org.junit.jupiter.api.Test;
 
 public class ScheduledJobsGridTest {
@@ -48,5 +50,16 @@ public class ScheduledJobsGridTest {
 	@Test
 	public void nullDescriptionIsTreatedAsEmpty() {
 		assertTrue(ScheduledJobsGrid.matchesSearch("ARCHIVE_CASES", null, "archive"));
+	}
+
+	@Test
+	public void searchIgnoresCaseUnderTurkishDefaultLocale() {
+		Locale previous = Locale.getDefault();
+		Locale.setDefault(new Locale("tr", "TR"));
+		try {
+			assertTrue(ScheduledJobsGrid.matchesSearch("ARCHIVE_CASES", "", "archive"));
+		} finally {
+			Locale.setDefault(previous);
+		}
 	}
 }

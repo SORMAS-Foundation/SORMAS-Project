@@ -15,11 +15,12 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
@@ -44,7 +45,6 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 	private static final String RUN_NOW_COLUMN_ID = "runNow";
 
 	private String searchText = "";
-	private LocalDateTime lastRunNowTimestamp = LocalDateTime.now().minusSeconds(2);
 
 	public ScheduledJobsGrid(Consumer<CronJobStatusDto> editHandler, Consumer<CronJobStatusDto> runNowHandler) {
 
@@ -103,15 +103,7 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 				}
 			}
 		});
-		addItemClickListener(event -> {
-			if (event.getItem() != null && isRunNowColumn(event.getColumn()) && !event.getMouseEventDetails().isDoubleClick()) {
-				LocalDateTime now = LocalDateTime.now();
-				if (now.isAfter(lastRunNowTimestamp.plusSeconds(1))) {
-					lastRunNowTimestamp = now;
-					runNowHandler.accept(event.getItem());
-				}
-			}
-		});
+		addItemClickListener(new ShowDetailsListener<>(RUN_NOW_COLUMN_ID, false, runNowHandler));
 	}
 
 	private boolean isRunNowColumn(Column<CronJobStatusDto, ?> column) {
@@ -137,12 +129,8 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		if (searchText == null || searchText.trim().isEmpty()) {
 			return true;
 		}
-		String needle = searchText.trim().toLowerCase();
-		return contains(jobName, needle) || contains(description, needle);
-	}
-
-	private static boolean contains(String value, String lowerCaseNeedle) {
-		return value != null && value.toLowerCase().contains(lowerCaseNeedle);
+		String needle = searchText.trim();
+		return StringUtils.containsIgnoreCase(jobName, needle) || StringUtils.containsIgnoreCase(description, needle);
 	}
 
 	private void applySearchFilter() {
