@@ -22,9 +22,11 @@ import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.climate.ClimateCaseFacade;
 import de.symeda.sormas.api.climate.ClimateJobFacade;
 import de.symeda.sormas.api.climate.ClimateObservationFacade;
 import de.symeda.sormas.api.climate.ClimateSeriesFacade;
+import de.symeda.sormas.backend.climate.ClimateCaseFacadeEjb;
 import de.symeda.sormas.backend.climate.ClimateJobFacadeEjb;
 import de.symeda.sormas.backend.climate.ClimateObservationFacadeEjb;
 import de.symeda.sormas.backend.climate.ClimateSeriesFacadeEjb;
@@ -259,6 +261,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(ClimateJobFacadeEjb.ClimateJobFacadeEjbLocal.class);
 		} else if (ClimateSeriesFacade.class == clazz) {
 			return (P) beanTest.getBean(ClimateSeriesFacadeEjb.ClimateSeriesFacadeEjbLocal.class);
+		} else if (ClimateCaseFacade.class == clazz) {
+			return (P) beanTest.getBean(ClimateCaseFacadeEjb.ClimateCaseFacadeEjbLocal.class);
 		}
 
 		return null;
