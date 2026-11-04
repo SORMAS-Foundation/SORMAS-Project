@@ -102,6 +102,7 @@ public interface Strings {
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
 	String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
+	String confirmationCronJobRunNow = "confirmationCronJobRunNow";
 	String confirmationDearchiveAdverseEvent = "confirmationDearchiveAdverseEvent";
 	String confirmationDearchiveAdverseEventInvestigation = "confirmationDearchiveAdverseEventInvestigation";
 	String confirmationDearchiveArea = "confirmationDearchiveArea";

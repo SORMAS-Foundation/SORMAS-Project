@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.configuration.system;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -42,13 +43,15 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/scheduledJobs";
 
+	private static final int RUN_NOW_POPUP_WIDTH = 480;
+
 	private final ScheduledJobsGrid grid;
 
 	public ScheduledJobsView() {
 
 		super(VIEW_NAME);
 
-		grid = new ScheduledJobsGrid(this::openScheduleEditor, this::runNow);
+		grid = new ScheduledJobsGrid(this::openScheduleEditor, this::confirmRunNow);
 
 		HorizontalLayout toolbar = new HorizontalLayout();
 		TextField searchField = new TextField();
@@ -92,6 +95,24 @@ public class ScheduledJobsView extends AbstractConfigurationView {
 				saveScheduleExpression(status, field.getValue());
 				grid.reload();
 				return true;
+			});
+	}
+
+	private void confirmRunNow(CronJobStatusDto status) {
+
+		Label message = new Label(String.format(I18nProperties.getString(Strings.confirmationCronJobRunNow), status.getJobName()));
+		message.setWidthFull();
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.cronJobRunNow),
+			message,
+			I18nProperties.getCaption(Captions.actionConfirm),
+			I18nProperties.getCaption(Captions.actionCancel),
+			RUN_NOW_POPUP_WIDTH,
+			confirmed -> {
+				if (Boolean.TRUE.equals(confirmed)) {
+					runNow(status);
+				}
 			});
 	}
 
