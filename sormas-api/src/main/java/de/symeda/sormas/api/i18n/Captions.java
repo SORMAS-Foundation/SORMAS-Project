@@ -1007,6 +1007,7 @@ public interface Captions {
 	String ClimateHistoryCoverage_historyFrom = "ClimateHistoryCoverage.historyFrom";
 	String ClimateHistoryCoverage_sources = "ClimateHistoryCoverage.sources";
 	String ClimateHistoryCoverage_status = "ClimateHistoryCoverage.status";
+	String climateHumidityMean = "climateHumidityMean";
 	String climateIncludeEnvironments = "climateIncludeEnvironments";
 	String ClimateJob_calls = "ClimateJob.calls";
 	String ClimateJob_creationDate = "ClimateJob.creationDate";
@@ -1057,10 +1058,14 @@ public interface Captions {
 	String climateObservationsFrom = "climateObservationsFrom";
 	String climateObservationsTo = "climateObservationsTo";
 	String climateOnlyRelinksWithSkippedDays = "climateOnlyRelinksWithSkippedDays";
+	String climatePeriod1Year = "climatePeriod1Year";
+	String climatePeriod30Days = "climatePeriod30Days";
+	String climatePeriod90Days = "climatePeriod90Days";
 	String climatePlaceKind = "climatePlaceKind";
 	String climatePlaceKindDistrict = "climatePlaceKindDistrict";
 	String climatePlaceKindEnvironment = "climatePlaceKindEnvironment";
 	String climatePricePage = "climatePricePage";
+	String climateRainfallTotal = "climateRainfallTotal";
 	String ClimateRelinkDay_date = "ClimateRelinkDay.date";
 	String ClimateRelinkDay_districtValue = "ClimateRelinkDay.districtValue";
 	String ClimateRelinkDay_keptValue = "ClimateRelinkDay.keptValue";
@@ -1070,6 +1075,7 @@ public interface Captions {
 	String climateStartAgain = "climateStartAgain";
 	String climateTabBackfill = "climateTabBackfill";
 	String climateTabObservations = "climateTabObservations";
+	String climateTemperatureMean = "climateTemperatureMean";
 	String climateUseDistrictValue = "climateUseDistrictValue";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
@@ -1704,6 +1710,7 @@ public interface Captions {
 	String environmentActiveEnvironments = "environmentActiveEnvironments";
 	String environmentAllActiveAndArchivedEnvironments = "environmentAllActiveAndArchivedEnvironments";
 	String environmentArchivedEnvironments = "environmentArchivedEnvironments";
+	String environmentClimateData = "environmentClimateData";
 	String environmentDeletedEnvironments = "environmentDeletedEnvironments";
 	String environmentEnvironmentsList = "environmentEnvironmentsList";
 	String environmentEvents = "environmentEvents";

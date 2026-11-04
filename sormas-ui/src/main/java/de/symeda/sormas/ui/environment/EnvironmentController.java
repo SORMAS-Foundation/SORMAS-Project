@@ -55,6 +55,7 @@ public class EnvironmentController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EnvironmentsView.VIEW_NAME, EnvironmentsView.class);
 		navigator.addView(EnvironmentDataView.VIEW_NAME, EnvironmentDataView.class);
+		navigator.addView(EnvironmentClimateView.VIEW_NAME, EnvironmentClimateView.class);
 	}
 
 	public void create() {

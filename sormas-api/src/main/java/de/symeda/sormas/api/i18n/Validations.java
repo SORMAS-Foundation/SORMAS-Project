@@ -77,8 +77,8 @@ public interface Validations {
 	String climateReadingEnvironment = "climateReadingEnvironment";
 	String climateReadingFuture = "climateReadingFuture";
 	String climateReadingNotEditable = "climateReadingNotEditable";
-	String climateReadingNotFound = "climateReadingNotFound";
 	String climateReadingNotesTooLong = "climateReadingNotesTooLong";
+	String climateReadingNotFound = "climateReadingNotFound";
 	String climateReadingRainfallPeriod = "climateReadingRainfallPeriod";
 	String climateReadingRainfallRange = "climateReadingRainfallRange";
 	String climateSettingCatchupDays = "climateSettingCatchupDays";

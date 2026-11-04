@@ -15,14 +15,22 @@
 
 package de.symeda.sormas.ui.climate;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import de.symeda.sormas.api.climate.ClimateHistoryCoverageDto;
 import de.symeda.sormas.api.climate.ClimateObservationIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 
 /**
  * How the Climate data screen names places and values.
@@ -144,5 +152,55 @@ public final class ClimateCaptions {
 			return "";
 		}
 		return value == Math.rint(value) ? String.valueOf(value.longValue()) : String.valueOf(Math.round(value * 100) / 100.0);
+	}
+
+	/**
+	 * @return the value with one decimal (26.4, 0.0), or empty for no value: for chart hovers and cards, where a fixed
+	 *         number of decimals reads better
+	 */
+	public static String oneDecimal(Double value) {
+		return value != null ? String.format(Locale.ROOT, "%.1f", value) : "";
+	}
+
+	/**
+	 * @return a GPS coordinate with up to 5 decimals (about 1 m), or empty
+	 */
+	public static String coordinate(Double value) {
+		if (value == null) {
+			return "";
+		}
+		return BigDecimal.valueOf(value).setScale(5, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
+	}
+
+	/**
+	 * @return the day in the user's date format
+	 */
+	public static String date(LocalDate day) {
+		return day != null ? DateFormatHelper.formatDate(toDate(day)) : "";
+	}
+
+	/**
+	 * @return the start of the day in the server's time zone
+	 */
+	public static Date toDate(LocalDate day) {
+		return Date.from(day.atStartOfDay(ZoneId.systemDefault()).toInstant());
+	}
+
+	/**
+	 * @return the calendar day of the date in the server's time zone
+	 */
+	public static LocalDate toLocalDate(Date date) {
+		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+
+	/**
+	 * @return "A", "A and B", "A, B and C"
+	 */
+	public static String joinAnd(List<String> parts) {
+		if (parts.size() <= 1) {
+			return parts.isEmpty() ? "" : parts.get(0);
+		}
+		String head = String.join(", ", parts.subList(0, parts.size() - 1));
+		return String.format(I18nProperties.getString(Strings.climateAnd), head, parts.get(parts.size() - 1));
 	}
 }
