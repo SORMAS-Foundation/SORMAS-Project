@@ -16,17 +16,30 @@
 package de.symeda.sormas.ui.climate;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.climate.ClimateDailyExportDto;
 import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
+import de.symeda.sormas.api.climate.ClimateObservationExportDto;
+import de.symeda.sormas.api.climate.ClimateObservationIndexDto;
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.ui.IgnoreCancelDownloader;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.api.climate.ClimateEnvironmentContextDto;
 import de.symeda.sormas.api.climate.SiteClimateReadingDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
@@ -82,6 +95,8 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 	private final EnvironmentClimateChart chart = new EnvironmentClimateChart();
 	/** Cases near the site, or null without the case view right. */
 	private final EnvironmentNearbyCasesPanel nearbyCases;
+	private final SiteClimateReadingsPanel siteReadings;
+	private final EnvironmentClimateDaysPanel days;
 
 	/** The environment's samples, or null without the right to see them; loaded once. */
 	private final List<EnvironmentSampleIndexDto> samples;
@@ -122,6 +137,10 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 		} else {
 			nearbyCases = null;
 		}
+		siteReadings = new SiteClimateReadingsPanel(isSiteReadingEditAllowed(), this::reload);
+		addComponent(siteReadings);
+		days = new EnvironmentClimateDaysPanel(isManualEntryAllowed() ? environment : null, this::reload);
+		addComponent(days);
 
 		reload();
 	}
@@ -135,7 +154,62 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 			periodButtons.put(option, button);
 			actions.addComponent(button);
 		}
+		if (isSiteReadingEditAllowed()) {
+			actions.addComponent(
+				ButtonHelper.createIconButton(
+					Captions.climateNewSiteReading,
+					VaadinIcons.PLUS_CIRCLE,
+					e -> SiteClimateReadingForm.openNew(environment, this::reload),
+					ValoTheme.BUTTON_PRIMARY));
+		}
+		if (isManualEntryAllowed()) {
+			actions.addComponent(
+				ButtonHelper.createIconButton(
+					Captions.climateManualEntry,
+					VaadinIcons.PLUS_CIRCLE,
+					e -> ClimateObservationForm.openForEnvironment(environment, null, this::reload),
+					ValoTheme.BUTTON_PRIMARY));
+		}
+		if (UiUtil.permitted(UserRight.CLIMATE_EXPORT)) {
+			Button export = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			export.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			StreamResource resource = DownloadUtil.createCsvExportStreamResource(
+				ClimateDailyExportDto.class,
+				null,
+				// the whole period comes in one call; it is never more than a year of days
+				(Integer start, Integer max) -> start == 0
+					? FacadeProvider.getClimateSeriesFacade().getDailyExportList(environment, getFrom(), getTo())
+					: Collections.emptyList(),
+				(propertyId, type) -> {
+					String caption = I18nProperties.findPrefixCaption(
+						propertyId,
+						ClimateDailyExportDto.I18N_PREFIX,
+						ClimateObservationExportDto.I18N_PREFIX,
+						ClimateObservationIndexDto.I18N_PREFIX);
+					return Date.class.isAssignableFrom(type) ? caption + " (" + DateFormatHelper.getDateFormatPattern() + ")" : caption;
+				},
+				ExportEntityName.CLIMATE_DAILY_VALUES,
+				null);
+			new IgnoreCancelDownloader(resource).extend(export);
+			actions.addComponent(export);
+		}
 		return actions;
+	}
+
+	/**
+	 * @return true when the user may add and correct site readings: environment edit right and an environment they may
+	 *         edit (decision 99); no climate right needed beyond seeing the tab
+	 */
+	public boolean isSiteReadingEditAllowed() {
+		return environmentEditAllowed && UiUtil.permitted(UserRight.ENVIRONMENT_EDIT);
+	}
+
+	/**
+	 * @return true when the user may enter and correct daily values here: climate edit right and the environment's own
+	 *         record; in the district fallback the record belongs to the district (decision 100)
+	 */
+	public boolean isManualEntryAllowed() {
+		return context.isOwnLocation() && UiUtil.permitted(UserRight.CLIMATE_EDIT);
 	}
 
 	/**
@@ -192,6 +266,16 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 		if (nearbyCases != null) {
 			nearbyCases.update(from, to);
 		}
+		siteReadings.update(readings);
+		days.update(series.getDays());
+	}
+
+	SiteClimateReadingsPanel getSiteReadings() {
+		return siteReadings;
+	}
+
+	EnvironmentClimateDaysPanel getDays() {
+		return days;
 	}
 
 	EnvironmentNearbyCasesPanel getNearbyCases() {

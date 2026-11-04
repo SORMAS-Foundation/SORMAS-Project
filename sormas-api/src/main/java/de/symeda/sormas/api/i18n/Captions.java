@@ -992,6 +992,18 @@ public interface Captions {
 	String climateCancelJob = "climateCancelJob";
 	String climateCheckCalls = "climateCheckCalls";
 	String climateConfirmCalls = "climateConfirmCalls";
+	String ClimateDailyExport_date = "ClimateDailyExport.date";
+	String ClimateDailyExport_humidityP10 = "ClimateDailyExport.humidityP10";
+	String ClimateDailyExport_humidityP50 = "ClimateDailyExport.humidityP50";
+	String ClimateDailyExport_humidityP90 = "ClimateDailyExport.humidityP90";
+	String ClimateDailyExport_normalsFrom = "ClimateDailyExport.normalsFrom";
+	String ClimateDailyExport_rainfallP10 = "ClimateDailyExport.rainfallP10";
+	String ClimateDailyExport_rainfallP50 = "ClimateDailyExport.rainfallP50";
+	String ClimateDailyExport_rainfallP90 = "ClimateDailyExport.rainfallP90";
+	String ClimateDailyExport_temperatureP10 = "ClimateDailyExport.temperatureP10";
+	String ClimateDailyExport_temperatureP50 = "ClimateDailyExport.temperatureP50";
+	String ClimateDailyExport_temperatureP90 = "ClimateDailyExport.temperatureP90";
+	String climateDailyValues = "climateDailyValues";
 	String ClimateDistrict_district = "ClimateDistrict.district";
 	String ClimateDistrict_region = "ClimateDistrict.region";
 	String ClimateEarlierValue_changeDate = "ClimateEarlierValue.changeDate";
@@ -1022,6 +1034,7 @@ public interface Captions {
 	String ClimateJob_status = "ClimateJob.status";
 	String climateJobPeriod = "climateJobPeriod";
 	String climateJobs = "climateJobs";
+	String climateManualEntry = "climateManualEntry";
 	String climateNearbyAllDiseases = "climateNearbyAllDiseases";
 	String climateNearbyCaseDate = "climateNearbyCaseDate";
 	String climateNearbyCases = "climateNearbyCases";
@@ -1029,6 +1042,7 @@ public interface Captions {
 	String climateNearbyRadius = "climateNearbyRadius";
 	String climateNewBackfill = "climateNewBackfill";
 	String climateNewObservation = "climateNewObservation";
+	String climateNewSiteReading = "climateNewSiteReading";
 	String ClimateObservation_humidityMeasure = "ClimateObservation.humidityMeasure";
 	String ClimateObservation_observationDate = "ClimateObservation.observationDate";
 	String ClimateObservation_place = "ClimateObservation.place";
@@ -1076,6 +1090,7 @@ public interface Captions {
 	String ClimateRelinkDay_keptValue = "ClimateRelinkDay.keptValue";
 	String ClimateRelinkDay_sameValues = "ClimateRelinkDay.sameValues";
 	String climateShowDays = "climateShowDays";
+	String climateSiteReadings = "climateSiteReadings";
 	String climateStart = "climateStart";
 	String climateStartAgain = "climateStartAgain";
 	String climateTabBackfill = "climateTabBackfill";
@@ -3224,6 +3239,13 @@ public interface Captions {
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
 	String singleDayEventEvolutionDate = "singleDayEventEvolutionDate";
+	String SiteClimateReading_airTemperature = "SiteClimateReading.airTemperature";
+	String SiteClimateReading_notes = "SiteClimateReading.notes";
+	String SiteClimateReading_rainfall = "SiteClimateReading.rainfall";
+	String SiteClimateReading_rainfallPeriodHours = "SiteClimateReading.rainfallPeriodHours";
+	String SiteClimateReading_readingDateTime = "SiteClimateReading.readingDateTime";
+	String SiteClimateReading_relativeHumidity = "SiteClimateReading.relativeHumidity";
+	String SiteClimateReading_reportingUser = "SiteClimateReading.reportingUser";
 	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";

@@ -178,6 +178,7 @@ public interface Strings {
 	String climateSeriesTemperatureMean = "climateSeriesTemperatureMean";
 	String climateSeriesTemperatureRange = "climateSeriesTemperatureRange";
 	String climateSharedBy = "climateSharedBy";
+	String climateSiteReadingsNone = "climateSiteReadingsNone";
 	String climateSourceDays = "climateSourceDays";
 	String climateSummaryApiKeyMissing = "climateSummaryApiKeyMissing";
 	String climateSummaryApiKeySet = "climateSummaryApiKeySet";
@@ -296,6 +297,7 @@ public interface Strings {
 	String confirmationDeletePrescriptions = "confirmationDeletePrescriptions";
 	String confirmationDeletePrescriptionWithTreatment = "confirmationDeletePrescriptionWithTreatment";
 	String confirmationDeleteSamples = "confirmationDeleteSamples";
+	String confirmationDeleteSiteClimateReading = "confirmationDeleteSiteClimateReading";
 	String confirmationDeleteTasks = "confirmationDeleteTasks";
 	String confirmationDeleteTravelEntries = "confirmationDeleteTravelEntries";
 	String confirmationDeleteTreatments = "confirmationDeleteTreatments";
@@ -392,6 +394,7 @@ public interface Strings {
 	String entityCaseManagement = "entityCaseManagement";
 	String entityCases = "entityCases";
 	String entityCaseVisits = "entityCaseVisits";
+	String entityClimateDailyValues = "entityClimateDailyValues";
 	String entityClimateObservations = "entityClimateObservations";
 	String entityClinicalVisit = "entityClinicalVisit";
 	String entityClinicalVisits = "entityClinicalVisits";
@@ -1062,6 +1065,8 @@ public interface Strings {
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSimilarImmunization = "headingSimilarImmunization";
 	String headingSimilarPerson = "headingSimilarPerson";
+	String headingSiteClimateReading = "headingSiteClimateReading";
+	String headingSiteClimateReadingNew = "headingSiteClimateReadingNew";
 	String headingSomeCasesAlreadyInEvent = "headingSomeCasesAlreadyInEvent";
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
 	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";
@@ -1414,6 +1419,7 @@ public interface Strings {
 	String infoSelfReportCreateEntry = "infoSelfReportCreateEntry";
 	String infoSelfReportSelectOrCreateEntry = "infoSelfReportSelectOrCreateEntry";
 	String infoSimilarImmunization = "infoSimilarImmunization";
+	String infoSiteClimateReading = "infoSiteClimateReading";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	String infoSpecificEventSearch = "infoSpecificEventSearch";
@@ -1580,6 +1586,7 @@ public interface Strings {
 	String messageClimateBackfillQueued = "messageClimateBackfillQueued";
 	String messageClimateChoosePlaceAndDate = "messageClimateChoosePlaceAndDate";
 	String messageClimateEnterNumber = "messageClimateEnterNumber";
+	String messageClimateEnterWholeNumber = "messageClimateEnterWholeNumber";
 	String messageClimateFetchQueued = "messageClimateFetchQueued";
 	String messageClimateNothingToFetch = "messageClimateNothingToFetch";
 	String messageClimateObservationDeleted = "messageClimateObservationDeleted";
@@ -1946,6 +1953,8 @@ public interface Strings {
 	String messageSelfReportOutsideJurisdictionDeletionDenied = "messageSelfReportOutsideJurisdictionDeletionDenied";
 	String messageSelfReportSaved = "messageSelfReportSaved";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
+	String messageSiteClimateReadingDeleted = "messageSiteClimateReadingDeleted";
+	String messageSiteClimateReadingSaved = "messageSiteClimateReadingSaved";
 	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
 	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
 	String messageSormasToSormasSimilarContactFound = "messageSormasToSormasSimilarContactFound";

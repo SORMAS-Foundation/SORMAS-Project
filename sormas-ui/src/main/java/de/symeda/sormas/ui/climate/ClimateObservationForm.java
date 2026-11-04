@@ -72,6 +72,8 @@ public class ClimateObservationForm extends VerticalLayout {
 	private static final String ENVIRONMENT = "environment";
 
 	private final Runnable onChanged;
+	/** The environment whose record is entered, when opened from its Climate data tab; null on the admin screen. */
+	private final EnvironmentReferenceDto fixedEnvironment;
 	private Window window;
 
 	private RadioButtonGroup<String> placeKind;
@@ -104,7 +106,7 @@ public class ClimateObservationForm extends VerticalLayout {
 	 * Opens the form for an existing row.
 	 */
 	public static void openEdit(ClimateObservationIndexDto observation, Runnable onChanged) {
-		ClimateObservationForm form = new ClimateObservationForm(onChanged, false);
+		ClimateObservationForm form = new ClimateObservationForm(onChanged, false, null);
 		form.show(observation);
 		form.window = VaadinUiUtil.showPopupWindow(form, I18nProperties.getString(Strings.headingClimateObservation));
 	}
@@ -113,19 +115,43 @@ public class ClimateObservationForm extends VerticalLayout {
 	 * Opens an empty form, where the user picks a district or an environment and a day.
 	 */
 	public static void openNew(Runnable onChanged) {
-		ClimateObservationForm form = new ClimateObservationForm(onChanged, true);
+		ClimateObservationForm form = new ClimateObservationForm(onChanged, true, null);
 		form.window = VaadinUiUtil.showPopupWindow(form, I18nProperties.getString(Strings.headingClimateNewObservation));
 	}
 
-	private ClimateObservationForm(Runnable onChanged, boolean newEntry) {
+	/**
+	 * Opens the form for an environment's own climate record, from its Climate data tab: for the given day, or with a date
+	 * field when the day is null. Saving stores a manual value for every place sharing the location, which the form names.
+	 */
+	public static void openForEnvironment(EnvironmentReferenceDto environment, LocalDate day, Runnable onChanged) {
+
+		ClimateObservationForm form = new ClimateObservationForm(onChanged, day == null, environment);
+		if (day != null) {
+			ClimateObservationEntryDto key = new ClimateObservationEntryDto();
+			key.setEnvironmentUuid(environment.getUuid());
+			key.setDate(day.toString());
+			try {
+				form.show(FacadeProvider.getClimateObservationFacade().getObservation(key));
+			} catch (ValidationRuntimeException e) {
+				Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+		}
+		form.window = VaadinUiUtil.showPopupWindow(
+			form,
+			I18nProperties.getString(day == null ? Strings.headingClimateNewObservation : Strings.headingClimateObservation));
+	}
+
+	private ClimateObservationForm(Runnable onChanged, boolean newEntry, EnvironmentReferenceDto fixedEnvironment) {
 
 		this.onChanged = onChanged;
+		this.fixedEnvironment = fixedEnvironment;
 		setMargin(true);
 		setSpacing(true);
 		setWidth(720, Unit.PIXELS);
 
 		if (newEntry) {
-			addComponent(createPlaceFields());
+			addComponent(fixedEnvironment != null ? createDateField() : createPlaceFields());
 		}
 
 		placeTitle.setWidthFull();
@@ -213,6 +239,15 @@ public class ClimateObservationForm extends VerticalLayout {
 		return place;
 	}
 
+	private DateField createDateField() {
+		date = new DateField(I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.DATE));
+		date.setDateFormat(DateFormatHelper.getDateFormatPattern());
+		date.setRangeEnd(LocalDate.now().minusDays(1));
+		date.addValueChangeListener(e -> loadCurrent());
+		date.addStyleName(CssStyles.VSPACE_NONE);
+		return date;
+	}
+
 	private void updateEnvironments() {
 		environment.setItems(
 			region.getValue() != null || district.getValue() != null
@@ -226,7 +261,9 @@ public class ClimateObservationForm extends VerticalLayout {
 	private void loadCurrent() {
 
 		ClimateObservationEntryDto key = new ClimateObservationEntryDto();
-		if (ENVIRONMENT.equals(placeKind.getValue())) {
+		if (fixedEnvironment != null) {
+			key.setEnvironmentUuid(fixedEnvironment.getUuid());
+		} else if (ENVIRONMENT.equals(placeKind.getValue())) {
 			key.setEnvironmentUuid(environment.getValue() != null ? environment.getValue().getUuid() : null);
 		} else {
 			key.setDistrictUuid(district.getValue() != null ? district.getValue().getUuid() : null);
@@ -387,7 +424,7 @@ public class ClimateObservationForm extends VerticalLayout {
 	 * @throws NumberFormatException
 	 *             when the field holds something else; the field then shows the error
 	 */
-	private static Double readNumber(TextField field) {
+	static Double readNumber(TextField field) {
 
 		field.setComponentError(null);
 		String text = StringUtils.trimToNull(field.getValue());
