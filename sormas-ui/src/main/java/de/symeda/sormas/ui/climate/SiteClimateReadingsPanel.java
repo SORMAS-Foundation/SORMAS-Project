@@ -38,7 +38,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * The site readings of the period shown, newest first (decision 99). Users who may edit the environment correct or delete
- * them; deleting asks first, and the reading's earlier values stay in the change history.
+ * them; deleting asks first and removes the reading with its change history.
  */
 public class SiteClimateReadingsPanel extends VerticalLayout {
 

@@ -44,7 +44,7 @@ public interface SiteClimateReadingFacade {
 	SiteClimateReadingDto saveReading(SiteClimateReadingDto reading);
 
 	/**
-	 * Deletes a reading; its earlier values stay in the change history.
+	 * Deletes a reading, with its change history.
 	 *
 	 * @throws de.symeda.sormas.api.utils.ValidationRuntimeException
 	 *             when the reading is unknown or its environment may not be edited

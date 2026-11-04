@@ -83,7 +83,7 @@ public interface ClimateObservationFacade {
 	List<ClimateEarlierValueDto> getEarlierValues(String observationUuid);
 
 	/**
-	 * Deletes a manual or imported value; the row stays in the change history. OpenWeather rows cannot be deleted: the
+	 * Deletes a manual or imported value, with its change history. OpenWeather rows cannot be deleted: the
 	 * nightly fetch would bring recent days back, and older days are filled again by fetch now.
 	 *
 	 * @throws de.symeda.sormas.api.utils.ValidationRuntimeException

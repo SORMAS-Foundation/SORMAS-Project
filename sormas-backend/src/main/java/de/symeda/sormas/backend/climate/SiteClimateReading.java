@@ -32,7 +32,7 @@ import de.symeda.sormas.backend.user.User;
 
 /**
  * A spot measurement taken at an environment (site reading). It belongs to the environment, not to a climate location,
- * and never changes the daily record. Earlier values are kept in the history table, also after a delete.
+ * and never changes the daily record. Earlier values are kept in the history table; a delete removes them with the row.
  */
 @Entity(name = SiteClimateReading.TABLE_NAME)
 public class SiteClimateReading extends AbstractDomainObject {

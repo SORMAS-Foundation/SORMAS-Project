@@ -445,7 +445,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	@Override
 	public boolean deletePermanent(Environment environment) {
-		// site readings belong to the environment and go with it; their change history stays
+		// site readings belong to the environment and go with it
 		siteClimateReadingService.deleteByEnvironment(environment);
 		return super.deletePermanent(environment);
 	}
