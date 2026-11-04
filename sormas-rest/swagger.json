@@ -14223,7 +14223,7 @@
           },
           "prescribedDrug" : {
             "type" : "string",
-            "enum" : [ "AMIKACIN", "BEDAQUILINE", "CAPREOMYCIN", "CIPROFLOXACIN", "DELAMANID", "ETHAMBUTOL", "GATIFLOXACIN", "ISONIAZID", "KANAMYCIN", "LEVOFLOXACIN", "MOXIFLOXACIN", "OFLOXACIN", "RIFAMPICIN", "STREPTOMYCIN", "CEFTRIAXONE", "PENICILLIN", "ERYTHROMYCIN", "AZITHROMYCIN", "CEFIXIME", "TETRACYCLINE", "GENTAMICIN", "SPECTINOMYCIN", "CEFTAZIDIME", "CEFOTAXIME", "AMPICILLIN", "TRIMETHOPRIM_SULFAMETHOXAZOLE", "CLINDAMYCIN", "LINEZOLID", "MEROPENEM", "OTHER" ]
+            "enum" : [ "AMIKACIN", "BEDAQUILINE", "CAPREOMYCIN", "CIPROFLOXACIN", "DELAMANID", "ETHAMBUTOL", "GATIFLOXACIN", "ISONIAZID", "KANAMYCIN", "LEVOFLOXACIN", "MOXIFLOXACIN", "OFLOXACIN", "RIFAMPICIN", "STREPTOMYCIN", "CEFTRIAXONE", "PENICILLIN", "ERYTHROMYCIN", "AZITHROMYCIN", "CEFIXIME", "TETRACYCLINE", "GENTAMICIN", "SPECTINOMYCIN", "CEFTAZIDIME", "CEFOTAXIME", "AMPICILLIN", "TRIMETHOPRIM_SULFAMETHOXAZOLE", "CLINDAMYCIN", "LINEZOLID", "MEROPENEM", "CLOFAZIMINE", "ETHIONAMIDE", "PRETOMANID", "PYRAZINAMIDE", "OTHER" ]
           },
           "prescribedDrugText" : {
             "type" : "string"
@@ -14529,7 +14529,7 @@
           },
           "prescribedDrug" : {
             "type" : "string",
-            "enum" : [ "AMIKACIN", "BEDAQUILINE", "CAPREOMYCIN", "CIPROFLOXACIN", "DELAMANID", "ETHAMBUTOL", "GATIFLOXACIN", "ISONIAZID", "KANAMYCIN", "LEVOFLOXACIN", "MOXIFLOXACIN", "OFLOXACIN", "RIFAMPICIN", "STREPTOMYCIN", "CEFTRIAXONE", "PENICILLIN", "ERYTHROMYCIN", "AZITHROMYCIN", "CEFIXIME", "TETRACYCLINE", "GENTAMICIN", "SPECTINOMYCIN", "CEFTAZIDIME", "CEFOTAXIME", "AMPICILLIN", "TRIMETHOPRIM_SULFAMETHOXAZOLE", "CLINDAMYCIN", "LINEZOLID", "MEROPENEM", "OTHER" ]
+            "enum" : [ "AMIKACIN", "BEDAQUILINE", "CAPREOMYCIN", "CIPROFLOXACIN", "DELAMANID", "ETHAMBUTOL", "GATIFLOXACIN", "ISONIAZID", "KANAMYCIN", "LEVOFLOXACIN", "MOXIFLOXACIN", "OFLOXACIN", "RIFAMPICIN", "STREPTOMYCIN", "CEFTRIAXONE", "PENICILLIN", "ERYTHROMYCIN", "AZITHROMYCIN", "CEFIXIME", "TETRACYCLINE", "GENTAMICIN", "SPECTINOMYCIN", "CEFTAZIDIME", "CEFOTAXIME", "AMPICILLIN", "TRIMETHOPRIM_SULFAMETHOXAZOLE", "CLINDAMYCIN", "LINEZOLID", "MEROPENEM", "CLOFAZIMINE", "ETHIONAMIDE", "PRETOMANID", "PYRAZINAMIDE", "OTHER" ]
           },
           "prescribedDrugText" : {
             "type" : "string"
@@ -14871,7 +14871,7 @@
           },
           "prescribedDrug" : {
             "type" : "string",
-            "enum" : [ "AMIKACIN", "BEDAQUILINE", "CAPREOMYCIN", "CIPROFLOXACIN", "DELAMANID", "ETHAMBUTOL", "GATIFLOXACIN", "ISONIAZID", "KANAMYCIN", "LEVOFLOXACIN", "MOXIFLOXACIN", "OFLOXACIN", "RIFAMPICIN", "STREPTOMYCIN", "CEFTRIAXONE", "PENICILLIN", "ERYTHROMYCIN", "AZITHROMYCIN", "CEFIXIME", "TETRACYCLINE", "GENTAMICIN", "SPECTINOMYCIN", "CEFTAZIDIME", "CEFOTAXIME", "AMPICILLIN", "TRIMETHOPRIM_SULFAMETHOXAZOLE", "CLINDAMYCIN", "LINEZOLID", "MEROPENEM", "OTHER" ]
+            "enum" : [ "AMIKACIN", "BEDAQUILINE", "CAPREOMYCIN", "CIPROFLOXACIN", "DELAMANID", "ETHAMBUTOL", "GATIFLOXACIN", "ISONIAZID", "KANAMYCIN", "LEVOFLOXACIN", "MOXIFLOXACIN", "OFLOXACIN", "RIFAMPICIN", "STREPTOMYCIN", "CEFTRIAXONE", "PENICILLIN", "ERYTHROMYCIN", "AZITHROMYCIN", "CEFIXIME", "TETRACYCLINE", "GENTAMICIN", "SPECTINOMYCIN", "CEFTAZIDIME", "CEFOTAXIME", "AMPICILLIN", "TRIMETHOPRIM_SULFAMETHOXAZOLE", "CLINDAMYCIN", "LINEZOLID", "MEROPENEM", "CLOFAZIMINE", "ETHIONAMIDE", "PRETOMANID", "PYRAZINAMIDE", "OTHER" ]
           },
           "prescribedDrugText" : {
             "type" : "string"
@@ -15041,7 +15041,7 @@
           },
           "prescribedDrug" : {
             "type" : "string",
-            "enum" : [ "AMIKACIN", "BEDAQUILINE", "CAPREOMYCIN", "CIPROFLOXACIN", "DELAMANID", "ETHAMBUTOL", "GATIFLOXACIN", "ISONIAZID", "KANAMYCIN", "LEVOFLOXACIN", "MOXIFLOXACIN", "OFLOXACIN", "RIFAMPICIN", "STREPTOMYCIN", "CEFTRIAXONE", "PENICILLIN", "ERYTHROMYCIN", "AZITHROMYCIN", "CEFIXIME", "TETRACYCLINE", "GENTAMICIN", "SPECTINOMYCIN", "CEFTAZIDIME", "CEFOTAXIME", "AMPICILLIN", "TRIMETHOPRIM_SULFAMETHOXAZOLE", "CLINDAMYCIN", "LINEZOLID", "MEROPENEM", "OTHER" ]
+            "enum" : [ "AMIKACIN", "BEDAQUILINE", "CAPREOMYCIN", "CIPROFLOXACIN", "DELAMANID", "ETHAMBUTOL", "GATIFLOXACIN", "ISONIAZID", "KANAMYCIN", "LEVOFLOXACIN", "MOXIFLOXACIN", "OFLOXACIN", "RIFAMPICIN", "STREPTOMYCIN", "CEFTRIAXONE", "PENICILLIN", "ERYTHROMYCIN", "AZITHROMYCIN", "CEFIXIME", "TETRACYCLINE", "GENTAMICIN", "SPECTINOMYCIN", "CEFTAZIDIME", "CEFOTAXIME", "AMPICILLIN", "TRIMETHOPRIM_SULFAMETHOXAZOLE", "CLINDAMYCIN", "LINEZOLID", "MEROPENEM", "CLOFAZIMINE", "ETHIONAMIDE", "PRETOMANID", "PYRAZINAMIDE", "OTHER" ]
           },
           "prescribedDrugText" : {
             "type" : "string"
@@ -17172,6 +17172,17 @@
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "clofazimineMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "clofazimineMic" : {
+            "type" : "string"
+          },
+          "clofazimineSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
@@ -17206,6 +17217,17 @@
             "type" : "string"
           },
           "ethambutolSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "ethionamideMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "ethionamideMic" : {
+            "type" : "string"
+          },
+          "ethionamideSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
@@ -17322,8 +17344,30 @@
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "pretomanidMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "pretomanidMic" : {
+            "type" : "string"
+          },
+          "pretomanidSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
           "pseudonymized" : {
             "type" : "boolean"
+          },
+          "pyrazinamideMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "pyrazinamideMic" : {
+            "type" : "string"
+          },
+          "pyrazinamideSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "rifampicinMethod" : {
             "type" : "string",
@@ -27608,6 +27652,17 @@
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "clofazimineMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "clofazimineMic" : {
+            "type" : "string"
+          },
+          "clofazimineSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
           "cqValue" : {
             "type" : "number",
             "format" : "float"
@@ -27662,6 +27717,17 @@
             "type" : "string"
           },
           "ethambutolSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "ethionamideMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "ethionamideMic" : {
+            "type" : "string"
+          },
+          "ethionamideSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
@@ -27723,6 +27789,17 @@
             "type" : "string"
           },
           "levofloxacinSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "linezolidMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "linezolidMic" : {
+            "type" : "string"
+          },
+          "linezolidSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
@@ -27799,6 +27876,28 @@
             "type" : "string",
             "maxLength" : 1000000,
             "minLength" : 0
+          },
+          "pretomanidMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "pretomanidMic" : {
+            "type" : "string"
+          },
+          "pretomanidSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "pyrazinamideMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "BREAKPOINT", "ETEST", "MIC", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
+          },
+          "pyrazinamideMic" : {
+            "type" : "string"
+          },
+          "pyrazinamideSusceptibility" : {
+            "type" : "string",
+            "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "rifampicinMic" : {
             "type" : "string"
