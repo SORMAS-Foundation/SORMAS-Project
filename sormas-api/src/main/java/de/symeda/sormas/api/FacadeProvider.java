@@ -38,6 +38,7 @@ import de.symeda.sormas.api.climate.ClimateCaseFacade;
 import de.symeda.sormas.api.climate.ClimateJobFacade;
 import de.symeda.sormas.api.climate.ClimateObservationFacade;
 import de.symeda.sormas.api.climate.ClimateSeriesFacade;
+import de.symeda.sormas.api.climate.SiteClimateReadingFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
@@ -628,6 +629,10 @@ public class FacadeProvider {
 
 	public static ClimateCaseFacade getClimateCaseFacade() {
 		return get().lookupEjbRemote(ClimateCaseFacade.class);
+	}
+
+	public static SiteClimateReadingFacade getSiteClimateReadingFacade() {
+		return get().lookupEjbRemote(SiteClimateReadingFacade.class);
 	}
 
 	public static ClimateObservationFacade getClimateObservationFacade() {

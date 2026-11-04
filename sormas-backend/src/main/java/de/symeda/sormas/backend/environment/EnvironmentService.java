@@ -27,6 +27,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.climate.SiteClimateReadingService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
@@ -52,6 +53,8 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	private UserService userService;
 	@EJB
 	private EnvironmentSampleService environmentSampleService;
+	@EJB
+	private SiteClimateReadingService siteClimateReadingService;
 
 	public EnvironmentService() {
 		super(Environment.class, DeletableEntityType.ENVIRONMENT);
@@ -438,6 +441,13 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	public void delete(Environment environment, DeletionDetails deletionDetails) {
 		environment.getEnvironmentSamples().forEach(s -> environmentSampleService.delete(s, deletionDetails));
 		super.delete(environment, deletionDetails);
+	}
+
+	@Override
+	public boolean deletePermanent(Environment environment) {
+		// site readings belong to the environment and go with it; their change history stays
+		siteClimateReadingService.deleteByEnvironment(environment);
+		return super.deletePermanent(environment);
 	}
 
 	@Override

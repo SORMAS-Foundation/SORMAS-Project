@@ -26,10 +26,12 @@ import de.symeda.sormas.api.climate.ClimateCaseFacade;
 import de.symeda.sormas.api.climate.ClimateJobFacade;
 import de.symeda.sormas.api.climate.ClimateObservationFacade;
 import de.symeda.sormas.api.climate.ClimateSeriesFacade;
+import de.symeda.sormas.api.climate.SiteClimateReadingFacade;
 import de.symeda.sormas.backend.climate.ClimateCaseFacadeEjb;
 import de.symeda.sormas.backend.climate.ClimateJobFacadeEjb;
 import de.symeda.sormas.backend.climate.ClimateObservationFacadeEjb;
 import de.symeda.sormas.backend.climate.ClimateSeriesFacadeEjb;
+import de.symeda.sormas.backend.climate.SiteClimateReadingFacadeEjb;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
@@ -263,6 +265,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(ClimateSeriesFacadeEjb.ClimateSeriesFacadeEjbLocal.class);
 		} else if (ClimateCaseFacade.class == clazz) {
 			return (P) beanTest.getBean(ClimateCaseFacadeEjb.ClimateCaseFacadeEjbLocal.class);
+		} else if (SiteClimateReadingFacade.class == clazz) {
+			return (P) beanTest.getBean(SiteClimateReadingFacadeEjb.SiteClimateReadingFacadeEjbLocal.class);
 		}
 
 		return null;
