@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.api.climate;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.ejb.Remote;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 
 /**
  * Case counts beside climate: weekly case-based counts, incidence and the usual range for the Climate dashboard. Counts
@@ -31,4 +35,13 @@ public interface ClimateCaseFacade {
 	 *         district is given, with the series of each of the region's districts added when the criteria asks for them
 	 */
 	List<ClimateCaseSeriesDto> getCaseSeries(ClimateCaseCriteria criteria);
+
+	/**
+	 * @return the weekly cases near the environment from {@code from} to {@code to}: those whose home address, else
+	 *         report point, lies within {@code radiusKm}, and those without a point in the environment's community; by
+	 *         community only when the environment has no usable GPS
+	 * @param disease
+	 *            the disease to count, or null for all diseases
+	 */
+	ClimateNearbyCasesDto getNearbyCases(EnvironmentReferenceDto environment, Disease disease, double radiusKm, LocalDate from, LocalDate to);
 }
