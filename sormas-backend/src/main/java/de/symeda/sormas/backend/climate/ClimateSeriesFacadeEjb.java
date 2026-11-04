@@ -34,6 +34,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
+import de.symeda.sormas.api.climate.ClimateDayDto;
 import de.symeda.sormas.api.climate.ClimateRangeDto;
 import de.symeda.sormas.api.climate.ClimateSeriesCriteria;
 import de.symeda.sormas.api.climate.ClimateSeriesFacade;
@@ -42,8 +44,12 @@ import de.symeda.sormas.api.climate.ClimateWeekDto;
 import de.symeda.sormas.api.climate.ClimateWeekValueDto;
 import de.symeda.sormas.api.climate.ClimateWeeklySeriesDto;
 import de.symeda.sormas.api.climate.HumidityMeasure;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
+import de.symeda.sormas.backend.environment.EnvironmentService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
@@ -65,6 +71,8 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private EnvironmentService environmentService;
 
 	@Override
 	@RightsAllowed({
@@ -97,6 +105,107 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 			districts.forEach(district -> regionSeries.getDistrictSeries().add(run.districtSeries(district)));
 		}
 		return regionSeries;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_VIEW)
+	public ClimateDailySeriesDto getDailySeries(EnvironmentReferenceDto environmentRef, LocalDate from, LocalDate to) {
+
+		if (environmentRef == null || from == null || to == null || from.isAfter(to)) {
+			throw new IllegalArgumentException("A daily climate series needs an environment and a period");
+		}
+
+		Environment environment = environmentService.getByUuid(environmentRef.getUuid());
+		District district = environment.getLocation() != null ? environment.getLocation().getDistrict() : null;
+		ClimateLocation own = environment.getClimateLocation();
+		ClimateLocation districtLocation = district != null ? district.getClimateLocation() : null;
+		ClimateLocation location = own != null ? own : districtLocation;
+
+		int currentYear = LocalDate.now().getYear();
+		List<Integer> referenceYears = IntStream.range(currentYear - climateSettings.getHistoryYears(), currentYear).boxed().collect(Collectors.toList());
+		int minYears = climateSettings.getMinHistoryYears();
+
+		ClimateDailyNormals normals = location != null ? dailyNormals(location.getId(), referenceYears, minYears) : null;
+		boolean districtNormals = own == null && location != null;
+		if (own != null && districtLocation != null && !districtLocation.getId().equals(own.getId())) {
+			ClimateDailyNormals districtsNormals = dailyNormals(districtLocation.getId(), referenceYears, minYears);
+			if (countDaysWithNormals(districtsNormals, from, to) > countDaysWithNormals(normals, from, to)) {
+				normals = districtsNormals;
+				districtNormals = true;
+			}
+		}
+
+		ClimateDailySeriesDto series = new ClimateDailySeriesDto(
+			EnvironmentFacadeEjb.toReferenceDto(environment),
+			district != null ? DistrictFacadeEjb.toReferenceDto(district) : null,
+			own == null,
+			districtNormals,
+			location != null ? climateObservationService.getEarliestDay(location.getId()) : null,
+			minYears,
+			referenceYears.get(0),
+			referenceYears.get(referenceYears.size() - 1));
+
+		Map<LocalDate, ClimateObservation> rows =
+			location != null ? climateObservationService.getByLocationAndPeriod(location, from, to) : Collections.emptyMap();
+		for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
+			series.getDays().add(day(date, rows.get(date), normals));
+		}
+
+		LocalDate lastDay = location != null ? climateObservationService.getLatestDay(location.getId(), LocalDate.now().minusDays(1)) : null;
+		Map<LocalDate, ClimateDay> cardDays = lastDay != null
+			? climateObservationService.getDays(Collections.singleton(location.getId()), lastDay.minusYears(1).minusDays(6), lastDay)
+				.getOrDefault(location.getId(), Collections.emptyMap())
+			: Collections.emptyMap();
+		series.getCards().addAll(ClimateSummaryCards.build(lastDay, cardDays, normals));
+		return series;
+	}
+
+	private ClimateDailyNormals dailyNormals(Long location, List<Integer> referenceYears, int minYears) {
+
+		LocalDate referenceFrom = LocalDate.of(referenceYears.get(0), 1, 1);
+		LocalDate referenceTo = LocalDate.of(referenceYears.get(referenceYears.size() - 1), 12, 31);
+		return normalsCache.get(
+			"D|L" + location + "|" + referenceYears + "|" + minYears,
+			climateObservationService.getFingerprint(Collections.singleton(location), referenceFrom, referenceTo),
+			() -> ClimateDailyNormals.compute(
+				climateObservationService.getDays(Collections.singleton(location), referenceFrom, referenceTo)
+					.getOrDefault(location, Collections.emptyMap()),
+				referenceYears,
+				minYears));
+	}
+
+	private static long countDaysWithNormals(ClimateDailyNormals normals, LocalDate from, LocalDate to) {
+		long count = 0;
+		for (LocalDate date = from; normals != null && !date.isAfter(to); date = date.plusDays(1)) {
+			if (normals.hasAny(date)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	private static ClimateDayDto day(LocalDate date, ClimateObservation row, ClimateDailyNormals normals) {
+
+		ClimateDayDto day = new ClimateDayDto(date);
+		HumidityMeasure measure = null;
+		if (row != null) {
+			day.setTemperatures(row.getTemperatureMin(), row.getTemperatureMean(), row.getTemperatureMax());
+			day.setRainfall(row.getRainfall());
+			day.setSource(row.getSource());
+			if (row.getRelativeHumidity() != null) {
+				measure = row.getHumidityMeasure();
+			}
+		}
+		if (normals != null) {
+			if (measure == null) {
+				measure = normals.getHumidityMeasureForGap(date);
+			}
+			day.setRainfallNormal(normals.getRainfall(date));
+			day.setTemperatureNormal(normals.getTemperature(date));
+			day.setHumidityNormal(normals.getHumidity(date, measure));
+		}
+		day.setHumidity(row != null ? row.getRelativeHumidity() : null, measure);
+		return day;
 	}
 
 	private static Long locationId(District district) {

@@ -118,6 +118,21 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 	}
 
 	/**
+	 * @return the latest day up to {@code upTo} that the location holds a row for, or null when it holds none
+	 */
+	public LocalDate getLatestDay(Long locationId, LocalDate upTo) {
+		Date latest = em
+			.createQuery(
+				"SELECT MAX(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
+					+ ClimateObservation.CLIMATE_LOCATION + ".id = :location AND o." + ClimateObservation.OBSERVATION_DATE + " <= :upTo",
+				Date.class)
+			.setParameter("location", locationId)
+			.setParameter("upTo", ClimateCalendar.toDate(upTo))
+			.getSingleResult();
+		return ClimateCalendar.toLocalDate(latest);
+	}
+
+	/**
 	 * @return the earliest day held by any location a district that is not archived links to, or null when none holds data.
 	 *         Automatic top-ups fill new locations back to this day, so all locations share the same reference years.
 	 */

@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.api.climate;
 
+import java.time.LocalDate;
+
 import javax.ejb.Remote;
+
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 
 /**
  * Climate figures for the Climate dashboard and the environment Climate data tab, worked out from the best-available
@@ -29,4 +33,10 @@ public interface ClimateSeriesFacade {
 	 *         each of the region's districts added when the criteria asks for them
 	 */
 	ClimateWeeklySeriesDto getWeeklySeries(ClimateSeriesCriteria criteria);
+
+	/**
+	 * @return the environment's daily climate from {@code from} to {@code to} (both included), with daily normals and the
+	 *         summary cards for the 7 days ending on the latest day with data
+	 */
+	ClimateDailySeriesDto getDailySeries(EnvironmentReferenceDto environment, LocalDate from, LocalDate to);
 }
