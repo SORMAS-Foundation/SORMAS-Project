@@ -42,6 +42,12 @@ public class ClimateSettings {
 	public static final int MAX_CATCHUP_DAYS = 9;
 	/** Default of CLIMATE_MIN_HISTORY_YEARS. */
 	public static final int DEFAULT_MIN_HISTORY_YEARS = 3;
+	/** Default of CLIMATE_RAINFALL_MIN_MM. */
+	public static final double DEFAULT_RAINFALL_MIN_MM = 60;
+	/** Default of CLIMATE_CASE_MIN_HISTORY_YEARS. */
+	public static final int DEFAULT_CASE_MIN_HISTORY_YEARS = 3;
+	/** Default of CLIMATE_CASE_MIN_WEEKLY_CASES. */
+	public static final int DEFAULT_CASE_MIN_WEEKLY_CASES = 5;
 
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
@@ -104,6 +110,44 @@ public class ClimateSettings {
 			return years >= 1 && years <= historyYears ? years : Math.min(DEFAULT_MIN_HISTORY_YEARS, historyYears);
 		} catch (NumberFormatException e) {
 			return Math.min(DEFAULT_MIN_HISTORY_YEARS, historyYears);
+		}
+	}
+
+	/**
+	 * @return the weekly rainfall a week needs, in mm, before it can be flagged as unusual
+	 */
+	public double getRainfallMinMm() {
+		try {
+			double mm = Double.parseDouble(StringUtils.trimToEmpty(systemConfigurationValueFacade.getValue(ClimateConfiguration.RAINFALL_MIN_MM)));
+			return mm >= 0 ? mm : DEFAULT_RAINFALL_MIN_MM;
+		} catch (NumberFormatException e) {
+			return DEFAULT_RAINFALL_MIN_MM;
+		}
+	}
+
+	/**
+	 * @return the reference years with data a case usual range needs
+	 */
+	public int getCaseMinHistoryYears() {
+		try {
+			int years =
+				Integer.parseInt(StringUtils.trimToEmpty(systemConfigurationValueFacade.getValue(ClimateConfiguration.CASE_MIN_HISTORY_YEARS)));
+			return years >= 1 && years <= ClimateConfiguration.MAX_HISTORY_YEARS ? years : DEFAULT_CASE_MIN_HISTORY_YEARS;
+		} catch (NumberFormatException e) {
+			return DEFAULT_CASE_MIN_HISTORY_YEARS;
+		}
+	}
+
+	/**
+	 * @return the median weekly count below which a week gets no case usual range
+	 */
+	public int getCaseMinWeeklyCases() {
+		try {
+			int cases =
+				Integer.parseInt(StringUtils.trimToEmpty(systemConfigurationValueFacade.getValue(ClimateConfiguration.CASE_MIN_WEEKLY_CASES)));
+			return cases >= 0 ? cases : DEFAULT_CASE_MIN_WEEKLY_CASES;
+		} catch (NumberFormatException e) {
+			return DEFAULT_CASE_MIN_WEEKLY_CASES;
 		}
 	}
 
