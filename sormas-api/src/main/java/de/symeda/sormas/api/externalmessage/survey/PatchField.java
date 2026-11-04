@@ -9,12 +9,10 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * To be able to repeat some groups and make them belong together, the groupIndex was added.
  */
-@JsonDeserialize(using = PatchFieldDeserializer.class)
 public class PatchField implements Serializable {
 
 	private static final long serialVersionUID = 1L;

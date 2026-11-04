@@ -28,7 +28,7 @@ class PatchFieldSerializationTest extends AbstractUnitTest {
 		"field@nested@2" })
 	void deserializeSerializedValue(String value) throws Exception {
 		// PREPARE
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = ObjectMapperProvider.getInstance();
 		int separator = value.lastIndexOf('@');
 		PatchField expected =
 			separator < 0 ? PatchField.of(value) : PatchField.of(value.substring(0, separator), Integer.valueOf(value.substring(separator + 1)));
