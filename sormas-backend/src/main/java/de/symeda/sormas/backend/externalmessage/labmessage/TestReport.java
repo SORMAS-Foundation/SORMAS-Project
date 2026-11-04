@@ -195,6 +195,21 @@ public class TestReport extends AbstractDomainObject {
 	private String spectinomycinMic;
 	private DrugSusceptibilityType spectinomycinSusceptibility;
 	private SusceptibilityMethod spectinomycinMethod;
+	private String clofazimineMic;
+	private DrugSusceptibilityType clofazimineSusceptibility;
+	private SusceptibilityMethod clofazimineMethod;
+	private String ethionamideMic;
+	private DrugSusceptibilityType ethionamideSusceptibility;
+	private SusceptibilityMethod ethionamideMethod;
+	private String linezolidMic;
+	private DrugSusceptibilityType linezolidSusceptibility;
+	private SusceptibilityMethod linezolidMethod;
+	private String pretomanidMic;
+	private DrugSusceptibilityType pretomanidSusceptibility;
+	private SusceptibilityMethod pretomanidMethod;
+	private String pyrazinamideMic;
+	private DrugSusceptibilityType pyrazinamideSusceptibility;
+	private SusceptibilityMethod pyrazinamideMethod;
 	private String porBAllele;
 	private String tbpBAllele;
 	private String sequenceType;
@@ -1021,6 +1036,141 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setSpectinomycinMethod(SusceptibilityMethod value) {
 		spectinomycinMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getClofazimineMic() {
+		return clofazimineMic;
+	}
+
+	public void setClofazimineMic(String value) {
+		clofazimineMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getClofazimineSusceptibility() {
+		return clofazimineSusceptibility;
+	}
+
+	public void setClofazimineSusceptibility(DrugSusceptibilityType value) {
+		clofazimineSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getClofazimineMethod() {
+		return clofazimineMethod;
+	}
+
+	public void setClofazimineMethod(SusceptibilityMethod value) {
+		clofazimineMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getEthionamideMic() {
+		return ethionamideMic;
+	}
+
+	public void setEthionamideMic(String value) {
+		ethionamideMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getEthionamideSusceptibility() {
+		return ethionamideSusceptibility;
+	}
+
+	public void setEthionamideSusceptibility(DrugSusceptibilityType value) {
+		ethionamideSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getEthionamideMethod() {
+		return ethionamideMethod;
+	}
+
+	public void setEthionamideMethod(SusceptibilityMethod value) {
+		ethionamideMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getLinezolidMic() {
+		return linezolidMic;
+	}
+
+	public void setLinezolidMic(String value) {
+		linezolidMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getLinezolidSusceptibility() {
+		return linezolidSusceptibility;
+	}
+
+	public void setLinezolidSusceptibility(DrugSusceptibilityType value) {
+		linezolidSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getLinezolidMethod() {
+		return linezolidMethod;
+	}
+
+	public void setLinezolidMethod(SusceptibilityMethod value) {
+		linezolidMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPretomanidMic() {
+		return pretomanidMic;
+	}
+
+	public void setPretomanidMic(String value) {
+		pretomanidMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getPretomanidSusceptibility() {
+		return pretomanidSusceptibility;
+	}
+
+	public void setPretomanidSusceptibility(DrugSusceptibilityType value) {
+		pretomanidSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getPretomanidMethod() {
+		return pretomanidMethod;
+	}
+
+	public void setPretomanidMethod(SusceptibilityMethod value) {
+		pretomanidMethod = value;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPyrazinamideMic() {
+		return pyrazinamideMic;
+	}
+
+	public void setPyrazinamideMic(String value) {
+		pyrazinamideMic = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getPyrazinamideSusceptibility() {
+		return pyrazinamideSusceptibility;
+	}
+
+	public void setPyrazinamideSusceptibility(DrugSusceptibilityType value) {
+		pyrazinamideSusceptibility = value;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getPyrazinamideMethod() {
+		return pyrazinamideMethod;
+	}
+
+	public void setPyrazinamideMethod(SusceptibilityMethod value) {
+		pyrazinamideMethod = value;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

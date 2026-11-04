@@ -135,6 +135,18 @@ public class DrugSusceptibilityMapper {
 		target.setMeropenemMethod(source.getMeropenemMethod());
 		target.setMeropenemMic(source.getMeropenemMic());
 		target.setMeropenemSusceptibility(source.getMeropenemSusceptibility());
+		target.setClofazimineMethod(source.getClofazimineMethod());
+		target.setClofazimineMic(source.getClofazimineMic());
+		target.setClofazimineSusceptibility(source.getClofazimineSusceptibility());
+		target.setEthionamideMethod(source.getEthionamideMethod());
+		target.setEthionamideMic(source.getEthionamideMic());
+		target.setEthionamideSusceptibility(source.getEthionamideSusceptibility());
+		target.setPretomanidMethod(source.getPretomanidMethod());
+		target.setPretomanidMic(source.getPretomanidMic());
+		target.setPretomanidSusceptibility(source.getPretomanidSusceptibility());
+		target.setPyrazinamideMethod(source.getPyrazinamideMethod());
+		target.setPyrazinamideMic(source.getPyrazinamideMic());
+		target.setPyrazinamideSusceptibility(source.getPyrazinamideSusceptibility());
 
 		return target;
 	}
@@ -236,6 +248,18 @@ public class DrugSusceptibilityMapper {
 		target.setMeropenemMethod(source.getMeropenemMethod());
 		target.setMeropenemMic(source.getMeropenemMic());
 		target.setMeropenemSusceptibility(source.getMeropenemSusceptibility());
+		target.setClofazimineMethod(source.getClofazimineMethod());
+		target.setClofazimineMic(source.getClofazimineMic());
+		target.setClofazimineSusceptibility(source.getClofazimineSusceptibility());
+		target.setEthionamideMethod(source.getEthionamideMethod());
+		target.setEthionamideMic(source.getEthionamideMic());
+		target.setEthionamideSusceptibility(source.getEthionamideSusceptibility());
+		target.setPretomanidMethod(source.getPretomanidMethod());
+		target.setPretomanidMic(source.getPretomanidMic());
+		target.setPretomanidSusceptibility(source.getPretomanidSusceptibility());
+		target.setPyrazinamideMethod(source.getPyrazinamideMethod());
+		target.setPyrazinamideMic(source.getPyrazinamideMic());
+		target.setPyrazinamideSusceptibility(source.getPyrazinamideSusceptibility());
 
 		return target;
 	}

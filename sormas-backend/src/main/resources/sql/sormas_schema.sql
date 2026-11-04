@@ -17953,4 +17953,67 @@ ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS infectionsourcetext
 
 INSERT INTO schema_version (version_number, comment) VALUES (678, '#14342 - Diphtheria lab message process: infection source on external messages');
 
+
+-- 2026-11-04 Tuberculosis drug susceptibility fields #14385
+
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clofaziminemic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clofaziminesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clofaziminemethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS ethionamidemic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS ethionamidesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS ethionamidemethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS pretomanidmic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS pretomanidsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS pretomanidmethod varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS pyrazinamidemic varchar(512);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS pyrazinamidesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS pyrazinamidemethod varchar(255);
+
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clofaziminemic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clofaziminesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS clofaziminemethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS ethionamidemic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS ethionamidesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS ethionamidemethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS pretomanidmic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS pretomanidsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS pretomanidmethod varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS pyrazinamidemic varchar(512);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS pyrazinamidesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history ADD COLUMN IF NOT EXISTS pyrazinamidemethod varchar(255);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS clofaziminemic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS clofaziminesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS clofaziminemethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ethionamidemic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ethionamidesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ethionamidemethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS pretomanidmic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS pretomanidsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS pretomanidmethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS pyrazinamidemic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS pyrazinamidesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS pyrazinamidemethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS linezolidmic varchar(512);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS clofaziminemic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS clofaziminesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS clofaziminemethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ethionamidemic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ethionamidesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ethionamidemethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS pretomanidmic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS pretomanidsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS pretomanidmethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS pyrazinamidemic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS pyrazinamidesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS pyrazinamidemethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS linezolidmic varchar(512);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS linezolidsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (679, '#14385 - Tuberculosis drug susceptibility fields');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
