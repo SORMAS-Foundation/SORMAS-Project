@@ -80,6 +80,8 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 	private final Map<ClimatePeriod, Button> periodButtons = new EnumMap<>(ClimatePeriod.class);
 	private final EnvironmentClimateCards cards = new EnvironmentClimateCards();
 	private final EnvironmentClimateChart chart = new EnvironmentClimateChart();
+	/** Cases near the site, or null without the case view right. */
+	private final EnvironmentNearbyCasesPanel nearbyCases;
 
 	/** The environment's samples, or null without the right to see them; loaded once. */
 	private final List<EnvironmentSampleIndexDto> samples;
@@ -114,6 +116,12 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 		addComponent(createActions());
 		addComponent(cards);
 		addComponent(chart);
+		if (UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
+			nearbyCases = new EnvironmentNearbyCasesPanel(environment, !context.isOwnLocation());
+			addComponent(nearbyCases);
+		} else {
+			nearbyCases = null;
+		}
 
 		reload();
 	}
@@ -181,6 +189,13 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 		strip.update(context, series, from, LocalDate.now());
 		cards.update(series);
 		chart.update(series, from, to, context.getReportDate(), samples, events, readings);
+		if (nearbyCases != null) {
+			nearbyCases.update(from, to);
+		}
+	}
+
+	EnvironmentNearbyCasesPanel getNearbyCases() {
+		return nearbyCases;
 	}
 
 	public List<SiteClimateReadingDto> getReadings() {

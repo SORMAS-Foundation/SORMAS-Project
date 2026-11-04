@@ -1022,6 +1022,11 @@ public interface Captions {
 	String ClimateJob_status = "ClimateJob.status";
 	String climateJobPeriod = "climateJobPeriod";
 	String climateJobs = "climateJobs";
+	String climateNearbyAllDiseases = "climateNearbyAllDiseases";
+	String climateNearbyCaseDate = "climateNearbyCaseDate";
+	String climateNearbyCases = "climateNearbyCases";
+	String climateNearbyPlacedBy = "climateNearbyPlacedBy";
+	String climateNearbyRadius = "climateNearbyRadius";
 	String climateNewBackfill = "climateNewBackfill";
 	String climateNewObservation = "climateNewObservation";
 	String ClimateObservation_humidityMeasure = "ClimateObservation.humidityMeasure";
