@@ -162,7 +162,8 @@ public enum Drug {
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	@Diseases(value = {
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.TUBERCULOSIS })
 	LINEZOLID,
 
 	@DrugTypes(value = {
@@ -170,6 +171,30 @@ public enum Drug {
 	@Diseases(value = {
 		Disease.DIPHTHERIA })
 	MEROPENEM,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	CLOFAZIMINE,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	ETHIONAMIDE,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	PRETOMANID,
+
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	PYRAZINAMIDE,
 
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })

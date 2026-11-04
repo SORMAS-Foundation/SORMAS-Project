@@ -230,6 +230,21 @@ public class TestReportDto extends EntityDto {
 	private String spectinomycinMic;
 	private DrugSusceptibilityType spectinomycinSusceptibility;
 	private SusceptibilityMethod spectinomycinMethod;
+	private String clofazimineMic;
+	private DrugSusceptibilityType clofazimineSusceptibility;
+	private SusceptibilityMethod clofazimineMethod;
+	private String ethionamideMic;
+	private DrugSusceptibilityType ethionamideSusceptibility;
+	private SusceptibilityMethod ethionamideMethod;
+	private String linezolidMic;
+	private DrugSusceptibilityType linezolidSusceptibility;
+	private SusceptibilityMethod linezolidMethod;
+	private String pretomanidMic;
+	private DrugSusceptibilityType pretomanidSusceptibility;
+	private SusceptibilityMethod pretomanidMethod;
+	private String pyrazinamideMic;
+	private DrugSusceptibilityType pyrazinamideSusceptibility;
+	private SusceptibilityMethod pyrazinamideMethod;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String porBAllele;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -999,6 +1014,126 @@ public class TestReportDto extends EntityDto {
 
 	public void setSpectinomycinMethod(SusceptibilityMethod value) {
 		spectinomycinMethod = value;
+	}
+
+	public String getClofazimineMic() {
+		return clofazimineMic;
+	}
+
+	public void setClofazimineMic(String value) {
+		clofazimineMic = value;
+	}
+
+	public DrugSusceptibilityType getClofazimineSusceptibility() {
+		return clofazimineSusceptibility;
+	}
+
+	public void setClofazimineSusceptibility(DrugSusceptibilityType value) {
+		clofazimineSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getClofazimineMethod() {
+		return clofazimineMethod;
+	}
+
+	public void setClofazimineMethod(SusceptibilityMethod value) {
+		clofazimineMethod = value;
+	}
+
+	public String getEthionamideMic() {
+		return ethionamideMic;
+	}
+
+	public void setEthionamideMic(String value) {
+		ethionamideMic = value;
+	}
+
+	public DrugSusceptibilityType getEthionamideSusceptibility() {
+		return ethionamideSusceptibility;
+	}
+
+	public void setEthionamideSusceptibility(DrugSusceptibilityType value) {
+		ethionamideSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getEthionamideMethod() {
+		return ethionamideMethod;
+	}
+
+	public void setEthionamideMethod(SusceptibilityMethod value) {
+		ethionamideMethod = value;
+	}
+
+	public String getLinezolidMic() {
+		return linezolidMic;
+	}
+
+	public void setLinezolidMic(String value) {
+		linezolidMic = value;
+	}
+
+	public DrugSusceptibilityType getLinezolidSusceptibility() {
+		return linezolidSusceptibility;
+	}
+
+	public void setLinezolidSusceptibility(DrugSusceptibilityType value) {
+		linezolidSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getLinezolidMethod() {
+		return linezolidMethod;
+	}
+
+	public void setLinezolidMethod(SusceptibilityMethod value) {
+		linezolidMethod = value;
+	}
+
+	public String getPretomanidMic() {
+		return pretomanidMic;
+	}
+
+	public void setPretomanidMic(String value) {
+		pretomanidMic = value;
+	}
+
+	public DrugSusceptibilityType getPretomanidSusceptibility() {
+		return pretomanidSusceptibility;
+	}
+
+	public void setPretomanidSusceptibility(DrugSusceptibilityType value) {
+		pretomanidSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getPretomanidMethod() {
+		return pretomanidMethod;
+	}
+
+	public void setPretomanidMethod(SusceptibilityMethod value) {
+		pretomanidMethod = value;
+	}
+
+	public String getPyrazinamideMic() {
+		return pyrazinamideMic;
+	}
+
+	public void setPyrazinamideMic(String value) {
+		pyrazinamideMic = value;
+	}
+
+	public DrugSusceptibilityType getPyrazinamideSusceptibility() {
+		return pyrazinamideSusceptibility;
+	}
+
+	public void setPyrazinamideSusceptibility(DrugSusceptibilityType value) {
+		pyrazinamideSusceptibility = value;
+	}
+
+	public SusceptibilityMethod getPyrazinamideMethod() {
+		return pyrazinamideMethod;
+	}
+
+	public void setPyrazinamideMethod(SusceptibilityMethod value) {
+		pyrazinamideMethod = value;
 	}
 
 	public String getPorBAllele() {
