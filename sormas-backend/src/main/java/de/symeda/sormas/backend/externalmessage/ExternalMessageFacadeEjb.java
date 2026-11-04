@@ -347,8 +347,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
+	public List<ExternalMessageDto> saveAndProcessSurveyResponsesForCron() {
+		return saveAndProcessSurveyResponsesForCron(null);
+	}
+
+	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
-	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
+	public List<ExternalMessageDto> saveAndProcessSurveyResponsesForCron(Date since) {
 
 		if (since == null) {
 			int dateRange = Integer.parseInt(

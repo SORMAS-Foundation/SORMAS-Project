@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
-import javax.enterprise.inject.spi.CDI;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
@@ -50,7 +49,6 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-import fish.payara.security.openid.api.OpenIdContext;
 
 public class ExternalMessagesView extends AbstractView {
 
@@ -330,7 +328,7 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private void fetchSurveyMessages(Date since) {
-		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses(since);
+		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponsesForCron(since);
 
 		grid.reload();
 	}

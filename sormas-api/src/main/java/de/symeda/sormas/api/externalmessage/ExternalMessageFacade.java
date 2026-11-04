@@ -32,10 +32,10 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 	 *            if not specified
 	 * @return external messages that have been saved.
 	 */
-	List<ExternalMessageDto> saveAndProcessSurveyResponses(@Nullable Date since);
+	List<ExternalMessageDto> saveAndProcessSurveyResponsesForCron(@Nullable Date since);
 
-	default List<ExternalMessageDto> saveAndProcessSurveyResponses() {
-		return saveAndProcessSurveyResponses(null);
+	default List<ExternalMessageDto> saveAndProcessSurveyResponsesForCron() {
+		return saveAndProcessSurveyResponsesForCron(null);
 	}
 
 	void validate(ExternalMessageDto dto);
