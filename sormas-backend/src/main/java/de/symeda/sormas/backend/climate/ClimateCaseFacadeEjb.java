@@ -40,6 +40,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
+import org.apache.commons.collections4.ListUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -52,6 +55,7 @@ import de.symeda.sormas.api.climate.ClimateNearbyCasesWeekDto;
 import de.symeda.sormas.api.climate.ClimateRangeDto;
 import de.symeda.sormas.api.climate.ClimateUsualRangeMissing;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -67,9 +71,11 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
 import de.symeda.sormas.backend.environment.EnvironmentService;
+import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.infrastructure.PopulationData;
 import de.symeda.sormas.backend.infrastructure.PopulationDataService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -258,34 +264,40 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 		Expression<Date> caseDate = cb.coalesce(onsetDate, caze.get(Case.REPORT_DATE));
 		Expression<Double> addressLatitude = address.get(Location.LATITUDE);
 		Expression<Double> addressLongitude = address.get(Location.LONGITUDE);
-		Expression<Double> reportLatitude = caze.get(Case.REPORT_LAT);
-		Expression<Double> reportLongitude = caze.get(Case.REPORT_LON);
+		Expression<Long> epiDataId = caze.get(Case.EPI_DATA).get(EpiData.ID);
 		Expression<Long> caseCommunity =
 			cb.coalesce(address.join(Location.COMMUNITY, JoinType.LEFT).get(Community.ID), joins.getResponsibleCommunity().get(Community.ID));
 
 		Predicate addressPoint = cb.and(cb.isNotNull(addressLatitude), cb.isNotNull(addressLongitude));
-		Predicate reportPoint = cb.and(cb.isNotNull(reportLatitude), cb.isNotNull(reportLongitude));
 		Predicate sameCommunity = communityId != null ? cb.equal(caseCommunity, communityId) : cb.disjunction();
 		Predicate place;
 		if (byCommunityOnly) {
 			place = sameCommunity;
 		} else {
-			// a latitude/longitude box around the site narrows the cases; the exact distance is checked below
+			// a latitude/longitude box around the site narrows the cases; the exact distance is checked below, on the point
+			// the case is placed at
 			double latitude = site.getLatitude();
 			double longitude = site.getLongitude();
 			double latitudeDelta = radiusKm / KM_PER_DEGREE_LATITUDE;
 			double longitudeDelta = radiusKm / (KM_PER_DEGREE_LATITUDE * Math.max(Math.cos(Math.toRadians(latitude)), 0.01));
+
+			Subquery<Long> infectionInBox = cq.subquery(Long.class);
+			Root<Exposure> exposure = infectionInBox.from(Exposure.class);
+			Join<Exposure, Location> exposureLocation = exposure.join(Exposure.LOCATION);
+			infectionInBox.select(exposure.get(Exposure.ID))
+				.where(
+					cb.equal(exposure.get(Exposure.EPI_DATA), caze.get(Case.EPI_DATA)),
+					cb.isTrue(exposure.get(ExposureDto.PROBABLE_INFECTION_ENVIRONMENT)),
+					cb.between(exposureLocation.get(Location.LATITUDE), latitude - latitudeDelta, latitude + latitudeDelta),
+					cb.between(exposureLocation.get(Location.LONGITUDE), longitude - longitudeDelta, longitude + longitudeDelta));
+
 			place = cb.or(
 				cb.and(
 					addressPoint,
 					cb.between(addressLatitude, latitude - latitudeDelta, latitude + latitudeDelta),
 					cb.between(addressLongitude, longitude - longitudeDelta, longitude + longitudeDelta)),
-				cb.and(
-					cb.not(addressPoint),
-					reportPoint,
-					cb.between(reportLatitude, latitude - latitudeDelta, latitude + latitudeDelta),
-					cb.between(reportLongitude, longitude - longitudeDelta, longitude + longitudeDelta)),
-				cb.and(cb.not(addressPoint), cb.not(reportPoint), sameCommunity));
+				cb.exists(infectionInBox),
+				cb.and(cb.not(addressPoint), sameCommunity));
 		}
 
 		Predicate filter = cb.and(
@@ -298,25 +310,79 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 			filter = cb.and(filter, cb.equal(caze.get(Case.DISEASE), disease));
 		}
 		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createUserFilter(queryContext));
-		cq.multiselect(caze.get(Case.UUID), onsetDate, caze.get(Case.REPORT_DATE), addressLatitude, addressLongitude, reportLatitude, reportLongitude);
+		cq.multiselect(caze.get(Case.UUID), onsetDate, caze.get(Case.REPORT_DATE), addressLatitude, addressLongitude, epiDataId);
 		cq.where(filter);
+		List<Object[]> rows = em.createQuery(cq).getResultList();
 
-		for (Object[] row : em.createQuery(cq).getResultList()) {
+		Map<Long, double[]> infectionPoints =
+			byCommunityOnly ? Collections.emptyMap() : getInfectionPoints(rows.stream().map(row -> (Long) row[5]).collect(Collectors.toList()));
+		for (Object[] row : rows) {
 			Date day = (Date) (row[1] != null ? row[1] : row[2]);
 			ClimateNearbyCasesWeekDto week = weeks.get(ClimateStatistics.epiWeekOf(ClimateCalendar.toLocalDate(day)));
 			if (week == null) {
 				continue;
 			}
-			// the home address first, else the point where the case was reported
-			Double latitude = row[3] != null && row[4] != null ? (Double) row[3] : (Double) row[5];
-			Double longitude = row[3] != null && row[4] != null ? (Double) row[4] : (Double) row[6];
-			if (byCommunityOnly || latitude == null || longitude == null) {
-				week.getCommunityCaseUuids().add((String) row[0]);
-			} else if (distanceKm(site.getLatitude(), site.getLongitude(), latitude, longitude) <= radiusKm) {
-				week.getCaseUuids().add((String) row[0]);
+			String uuid = (String) row[0];
+			if (byCommunityOnly) {
+				week.getCommunityCaseUuids().add(uuid);
+				continue;
+			}
+			// the probable infection environment first, else the home address (decision 82); never the report point or the
+			// facility, which say where the case was seen, not where the person was exposed
+			double[] infection = infectionPoints.get((Long) row[5]);
+			double[] point = infection != null
+				? infection
+				: isUsablePoint((Double) row[3], (Double) row[4]) ? new double[] {
+					(Double) row[3],
+					(Double) row[4] } : null;
+			if (point == null) {
+				week.getCommunityCaseUuids().add(uuid);
+			} else if (distanceKm(site.getLatitude(), site.getLongitude(), point[0], point[1]) <= radiusKm) {
+				week.getCaseUuids().add(uuid);
+				if (infection != null) {
+					week.getExposureCaseUuids().add(uuid);
+				}
 			}
 		}
 		return nearby;
+	}
+
+	/**
+	 * @return by epi data id, the point of the exposure marked as the probable infection environment, when it has usable
+	 *         GPS; of several, the one that started last
+	 */
+	private Map<Long, double[]> getInfectionPoints(List<Long> epiDataIds) {
+
+		Map<Long, double[]> points = new HashMap<>();
+		Map<Long, Date> startDates = new HashMap<>();
+		for (List<Long> batch : ListUtils.partition(epiDataIds, ModelConstants.PARAMETER_LIMIT)) {
+			if (batch.isEmpty()) {
+				continue;
+			}
+			List<Object[]> exposures = em
+				.createQuery(
+					"SELECT e." + Exposure.EPI_DATA + ".id, e." + ExposureDto.START_DATE + ", l." + Location.LATITUDE + ", l." + Location.LONGITUDE
+						+ " FROM " + Exposure.TABLE_NAME + " e JOIN e." + Exposure.LOCATION + " l WHERE e." + Exposure.EPI_DATA + ".id IN :epiData AND e."
+						+ ExposureDto.PROBABLE_INFECTION_ENVIRONMENT + " = true ORDER BY e.id",
+					Object[].class)
+				.setParameter("epiData", batch)
+				.getResultList();
+			for (Object[] exposure : exposures) {
+				Long epiData = (Long) exposure[0];
+				Date start = (Date) exposure[1];
+				if (!isUsablePoint((Double) exposure[2], (Double) exposure[3])) {
+					continue;
+				}
+				Date latest = startDates.get(epiData);
+				if (!points.containsKey(epiData) || (start != null && (latest == null || !start.before(latest)))) {
+					points.put(epiData, new double[] {
+						(Double) exposure[2],
+						(Double) exposure[3] });
+					startDates.put(epiData, start);
+				}
+			}
+		}
+		return points;
 	}
 
 	/**

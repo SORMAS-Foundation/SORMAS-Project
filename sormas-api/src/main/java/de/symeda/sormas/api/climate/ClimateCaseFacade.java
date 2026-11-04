@@ -37,9 +37,9 @@ public interface ClimateCaseFacade {
 	List<ClimateCaseSeriesDto> getCaseSeries(ClimateCaseCriteria criteria);
 
 	/**
-	 * @return the weekly cases near the environment from {@code from} to {@code to}: those whose home address, else
-	 *         report point, lies within {@code radiusKm}, and those without a point in the environment's community; by
-	 *         community only when the environment has no usable GPS
+	 * @return the weekly cases near the environment from {@code from} to {@code to}: those placed within {@code radiusKm}
+	 *         by their probable infection environment, else their home address, and those without a point in the
+	 *         environment's community (decision 82); by community only when the environment has no usable GPS
 	 * @param disease
 	 *            the disease to count, or null for all diseases
 	 */

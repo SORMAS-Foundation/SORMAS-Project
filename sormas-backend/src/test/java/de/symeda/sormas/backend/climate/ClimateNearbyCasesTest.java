@@ -38,6 +38,8 @@ import de.symeda.sormas.api.climate.ClimateNearbyCasesDto;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesWeekDto;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -48,9 +50,11 @@ import de.symeda.sormas.backend.climate.ClimateCaseFacadeEjb.ClimateCaseFacadeEj
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 /**
- * Cases near an environment: by home address, else report point, within the radius; without a point, by community.
+ * Cases near an environment: by probable infection environment, else home address, within the radius; without a point,
+ * by community. Report points and facility points are never used (decision 82).
  */
 class ClimateNearbyCasesTest extends AbstractBeanTest {
 
@@ -87,39 +91,92 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void testRadiusPointsAndCommunity() {
+	void testHomeAddressAndCommunityButNeverReportOrFacilityPoints() {
 
 		Community otherCommunity = creator.createCommunity("Other community", getDistrictService().getByUuid(rdcf.district.getUuid()));
+		// the facility of the cases lies at the site, so a facility point would wrongly place every case there
+		executeInTransaction(em -> {
+			Facility facility = getFacilityService().getByUuid(rdcf.facility.getUuid());
+			facility.setLatitude(SITE_LATITUDE);
+			facility.setLongitude(SITE_LONGITUDE);
+		});
 
-		String home = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.81, SITE_LONGITUDE, null, null, rdcf.community).getUuid();
-		String farHome = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.83, SITE_LONGITUDE, null, null, rdcf.community).getUuid();
-		String reported = createCase(Disease.DENGUE, CaseClassification.PROBABLE, null, null, 6.805, 3.505, rdcf.community).getUuid();
-		// the home address wins over a report point near the site
-		createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.90, SITE_LONGITUDE, SITE_LATITUDE, SITE_LONGITUDE, rdcf.community);
-		String sameCommunity = createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, null, rdcf.community).getUuid();
-		createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, null, CommunityFacadeEjb.toReferenceDto(otherCommunity));
-		createCase(Disease.DENGUE, CaseClassification.NO_CASE, SITE_LATITUDE, SITE_LONGITUDE, null, null, rdcf.community);
-		String cholera = createCase(Disease.CHOLERA, CaseClassification.SUSPECT, SITE_LATITUDE, SITE_LONGITUDE, null, null, rdcf.community).getUuid();
+		String home = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		String farHome = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.83, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		// a report point near the site is not used: without a home point the case is matched by community
+		String reported = createCase(Disease.DENGUE, CaseClassification.PROBABLE, null, null, new double[] {
+			6.805,
+			3.505 }, rdcf.community).getUuid();
+		// a far home address is not overridden by a report point at the site
+		createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.90, SITE_LONGITUDE, new double[] {
+			SITE_LATITUDE,
+			SITE_LONGITUDE }, rdcf.community);
+		String sameCommunity = createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, rdcf.community).getUuid();
+		createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, CommunityFacadeEjb.toReferenceDto(otherCommunity));
+		createCase(Disease.DENGUE, CaseClassification.NO_CASE, SITE_LATITUDE, SITE_LONGITUDE, null, rdcf.community);
+		String cholera = createCase(Disease.CHOLERA, CaseClassification.SUSPECT, SITE_LATITUDE, SITE_LONGITUDE, null, rdcf.community).getUuid();
 
 		ClimateNearbyCasesDto dengue = facade.getNearbyCases(environment.toReference(), Disease.DENGUE, 2, day.minusDays(10), day.plusDays(1));
 		assertFalse(dengue.isByCommunityOnly());
 		ClimateNearbyCasesWeekDto week = weekOf(dengue);
-		assertEquals(new HashSet<>(Arrays.asList(home, reported)), new HashSet<>(week.getCaseUuids()));
-		assertEquals(Collections.singletonList(sameCommunity), week.getCommunityCaseUuids());
-		assertEquals(1, dengue.getCommunityTotal());
+		assertEquals(Collections.singletonList(home), week.getCaseUuids());
+		assertEquals(1, week.getHomeCount());
+		assertEquals(0, week.getExposureCount());
+		assertEquals(new HashSet<>(Arrays.asList(reported, sameCommunity)), new HashSet<>(week.getCommunityCaseUuids()));
+		assertEquals(2, dengue.getCommunityTotal());
 
 		ClimateNearbyCasesWeekDto withinFive = weekOf(facade.getNearbyCases(environment.toReference(), Disease.DENGUE, 5, day, day));
-		assertEquals(new HashSet<>(Arrays.asList(home, farHome, reported)), new HashSet<>(withinFive.getCaseUuids()));
+		assertEquals(new HashSet<>(Arrays.asList(home, farHome)), new HashSet<>(withinFive.getCaseUuids()));
 
 		ClimateNearbyCasesWeekDto allDiseases = weekOf(facade.getNearbyCases(environment.toReference(), null, 2, day, day));
-		assertEquals(new HashSet<>(Arrays.asList(home, reported, cholera)), new HashSet<>(allDiseases.getCaseUuids()));
+		assertEquals(new HashSet<>(Arrays.asList(home, cholera)), new HashSet<>(allDiseases.getCaseUuids()));
+	}
+
+	@Test
+	void testProbableInfectionEnvironmentComesBeforeTheHomeAddress() {
+
+		// lives 11 km away, probably infected at the site
+		String exposedHere =
+			createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.90, SITE_LONGITUDE, null, rdcf.community, exposure(6.805, 3.50, 10, true))
+				.getUuid();
+		// lives at the site, probably infected 16 km away
+		createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.81, SITE_LONGITUDE, null, rdcf.community, exposure(6.95, 3.50, 10, true));
+		// an exposure not marked as the probable infection environment does not move the case
+		createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.90, SITE_LONGITUDE, null, rdcf.community, exposure(6.805, 3.50, 10, false));
+		// of two marked exposures the one that started last wins
+		String laterHere = createCase(
+			Disease.DENGUE,
+			CaseClassification.SUSPECT,
+			6.90,
+			SITE_LONGITUDE,
+			null,
+			rdcf.community,
+			exposure(6.95, 3.50, 20, true),
+			exposure(6.805, 3.50, 5, true)).getUuid();
+		createCase(
+			Disease.DENGUE,
+			CaseClassification.SUSPECT,
+			6.81,
+			SITE_LONGITUDE,
+			null,
+			rdcf.community,
+			exposure(6.805, 3.50, 20, true),
+			exposure(6.95, 3.50, 5, true));
+		// without a home point, a marked exposure far away places the case there: neither nearby nor matched by community
+		createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, rdcf.community, exposure(6.95, 3.50, 10, true));
+
+		ClimateNearbyCasesWeekDto week = weekOf(facade.getNearbyCases(environment.toReference(), Disease.DENGUE, 2, day, day));
+		assertEquals(new HashSet<>(Arrays.asList(exposedHere, laterHere)), new HashSet<>(week.getCaseUuids()));
+		assertEquals(2, week.getExposureCount());
+		assertEquals(0, week.getHomeCount());
+		assertEquals(0, week.getCommunityCount());
 	}
 
 	@Test
 	void testEnvironmentWithoutUsableGpsCountsByCommunity() {
 
-		String home = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.81, SITE_LONGITUDE, null, null, rdcf.community).getUuid();
-		String noPoint = createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, null, rdcf.community).getUuid();
+		String home = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		String noPoint = createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, rdcf.community).getUuid();
 		executeInTransaction(em -> {
 			Environment entity = getEnvironmentService().getByUuid(environment.getUuid());
 			entity.getLocation().setLatitude(0.0);
@@ -143,17 +200,29 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 	}
 
 	/**
-	 * Creates a case with onset on {@link #day}, its person's home address point and the case's report point (either may
-	 * be empty), with the home address in the given community.
+	 * @return an exposure at the point that started {@code daysBeforeOnset} days before {@link #day}
+	 */
+	private ExposureDto exposure(double latitude, double longitude, int daysBeforeOnset, boolean probableInfectionEnvironment) {
+		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
+		exposure.getLocation().setLatitude(latitude);
+		exposure.getLocation().setLongitude(longitude);
+		exposure.setStartDate(ClimateCalendar.toDate(day.minusDays(daysBeforeOnset)));
+		exposure.setProbableInfectionEnvironment(probableInfectionEnvironment);
+		return exposure;
+	}
+
+	/**
+	 * Creates a case with onset on {@link #day}, its person's home address point (may be empty) in the given community,
+	 * the case's report point (may be null) and exposures.
 	 */
 	private CaseDataDto createCase(
 		Disease disease,
 		CaseClassification classification,
 		Double homeLatitude,
 		Double homeLongitude,
-		Double reportLatitude,
-		Double reportLongitude,
-		CommunityReferenceDto community) {
+		double[] reportPoint,
+		CommunityReferenceDto community,
+		ExposureDto... exposures) {
 
 		PersonDto person = creator.createPerson("Case", "Person", p -> {
 			p.getAddress().setLatitude(homeLatitude);
@@ -168,11 +237,11 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 			c.setCaseClassification(classification);
 			c.setReportDate(date);
 			c.getSymptoms().setOnsetDate(date);
-			c.setReportLat(reportLatitude);
-			c.setReportLon(reportLongitude);
-			// SORMAS gives a new case without a report point its facility's point; an accuracy keeps the point empty
-			c.setReportLatLonAccuracy(reportLatitude == null ? 0f : null);
+			if (reportPoint != null) {
+				c.setReportLat(reportPoint[0]);
+				c.setReportLon(reportPoint[1]);
+			}
+			c.getEpiData().getExposures().addAll(Arrays.asList(exposures));
 		});
 	}
-
 }

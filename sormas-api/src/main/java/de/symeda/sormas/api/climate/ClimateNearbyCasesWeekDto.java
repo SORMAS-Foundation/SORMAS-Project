@@ -23,8 +23,9 @@ import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.utils.EpiWeek;
 
 /**
- * The cases near an environment in one epi week: those within the radius, and those without a point that were matched by
- * community, with their UUIDs so the week's cases can be opened.
+ * The cases near an environment in one epi week: those placed within the radius (by their probable infection environment,
+ * else their home address), and those without a point that were matched by community, with their UUIDs so the week's
+ * cases can be opened.
  */
 @AuditedClass
 public class ClimateNearbyCasesWeekDto implements Serializable {
@@ -33,6 +34,7 @@ public class ClimateNearbyCasesWeekDto implements Serializable {
 
 	private final EpiWeek week;
 	private final List<String> caseUuids = new ArrayList<>();
+	private final List<String> exposureCaseUuids = new ArrayList<>();
 	private final List<String> communityCaseUuids = new ArrayList<>();
 
 	public ClimateNearbyCasesWeekDto(EpiWeek week) {
@@ -58,8 +60,29 @@ public class ClimateNearbyCasesWeekDto implements Serializable {
 		return communityCaseUuids.size();
 	}
 
+	/**
+	 * @return the cases of {@link #getCount()} placed by an exposure marked as the probable infection environment
+	 */
+	public int getExposureCount() {
+		return exposureCaseUuids.size();
+	}
+
+	/**
+	 * @return the cases of {@link #getCount()} placed by their home address
+	 */
+	public int getHomeCount() {
+		return caseUuids.size() - exposureCaseUuids.size();
+	}
+
 	public List<String> getCaseUuids() {
 		return caseUuids;
+	}
+
+	/**
+	 * @return the UUIDs of the cases placed by their probable infection environment, a subset of {@link #getCaseUuids()}
+	 */
+	public List<String> getExposureCaseUuids() {
+		return exposureCaseUuids;
 	}
 
 	public List<String> getCommunityCaseUuids() {
