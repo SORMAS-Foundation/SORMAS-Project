@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.climate;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +41,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.collections4.ListUtils;
+
 import de.symeda.sormas.api.climate.ClimateDataSource;
 import de.symeda.sormas.api.climate.ClimateEarlierValueDto;
 import de.symeda.sormas.api.climate.ClimateObservationCriteria;
@@ -52,6 +55,7 @@ import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
@@ -458,5 +462,71 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 			query.setParameter("region", regionId);
 		}
 		return query.getResultList();
+	}
+
+	/**
+	 * @return the rows of the locations between {@code from} and {@code to} (inclusive), as days by location id; a
+	 *         location without rows is left out
+	 */
+	public Map<Long, Map<LocalDate, ClimateDay>> getDays(Collection<Long> locationIds, LocalDate from, LocalDate to) {
+
+		Map<Long, Map<LocalDate, ClimateDay>> daysByLocation = new HashMap<>();
+		if (locationIds.isEmpty()) {
+			return daysByLocation;
+		}
+		for (List<Long> batch : ListUtils.partition(new ArrayList<>(locationIds), ModelConstants.PARAMETER_LIMIT)) {
+			em.createQuery(
+				"SELECT o." + ClimateObservation.CLIMATE_LOCATION + ".id, o." + ClimateObservation.OBSERVATION_DATE + ", o."
+					+ ClimateObservation.TEMPERATURE_MIN + ", o." + ClimateObservation.TEMPERATURE_MAX + ", o." + ClimateObservation.TEMPERATURE_MEAN
+					+ ", o." + ClimateObservation.RAINFALL + ", o." + ClimateObservation.RELATIVE_HUMIDITY + ", o." + ClimateObservation.HUMIDITY_MEASURE
+					+ " FROM " + ClimateObservation.TABLE_NAME + " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + ".id IN :locations AND o."
+					+ ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to",
+				Object[].class)
+				.setParameter("locations", batch)
+				.setParameter("from", ClimateCalendar.toDate(from))
+				.setParameter("to", ClimateCalendar.toDate(to))
+				.getResultList()
+				.forEach(row -> {
+					LocalDate day = ClimateCalendar.toLocalDate((Date) row[1]);
+					daysByLocation.computeIfAbsent((Long) row[0], id -> new HashMap<>())
+						.put(
+							day,
+							new ClimateDay(
+								day,
+								(Double) row[2],
+								(Double) row[3],
+								(Double) row[4],
+								(Double) row[5],
+								(Double) row[6],
+								(HumidityMeasure) row[7]));
+				});
+		}
+		return daysByLocation;
+	}
+
+	/**
+	 * @return a value that changes whenever a row of the locations between {@code from} and {@code to} is added, changed or
+	 *         deleted: the number of rows and the latest change date. The normals cache compares it before using an entry.
+	 */
+	public String getFingerprint(Collection<Long> locationIds, LocalDate from, LocalDate to) {
+
+		long count = 0;
+		long latestChange = 0;
+		for (List<Long> batch : ListUtils.partition(new ArrayList<>(locationIds), ModelConstants.PARAMETER_LIMIT)) {
+			Object[] row = em
+				.createQuery(
+					"SELECT COUNT(o), MAX(o." + ClimateObservation.CHANGE_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
+						+ ClimateObservation.CLIMATE_LOCATION + ".id IN :locations AND o." + ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to",
+					Object[].class)
+				.setParameter("locations", batch)
+				.setParameter("from", ClimateCalendar.toDate(from))
+				.setParameter("to", ClimateCalendar.toDate(to))
+				.getSingleResult();
+			count += ((Number) row[0]).longValue();
+			if (row[1] != null) {
+				latestChange = Math.max(latestChange, ((Date) row[1]).getTime());
+			}
+		}
+		return count + "/" + latestChange;
 	}
 }

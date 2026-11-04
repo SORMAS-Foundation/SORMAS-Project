@@ -271,6 +271,63 @@ public final class ClimateStatistics {
 			humidityMeasure != null ? humidity.size() : Math.max(dailyMeanHumidity.size(), noonHumidity.size()));
 	}
 
+	/**
+	 * Combines the weeks of a region's districts into the region's week (decision 65): each value is the mean over the
+	 * districts with a complete week, and a gap when fewer than half of the {@code districtCount} districts have one.
+	 * Humidity uses daily means when at least half the districts have them, else noon readings by the same test. The day
+	 * counts of the result are numbers of districts.
+	 *
+	 * @param districtWeeks
+	 *            the week of each district that holds data; districts without data are left out but counted in
+	 *            {@code districtCount}
+	 */
+	public static ClimateWeekFigures combine(EpiWeek week, Collection<ClimateWeekFigures> districtWeeks, int districtCount) {
+
+		List<Double> rainfall = new ArrayList<>();
+		List<Double> mean = new ArrayList<>();
+		List<Double> min = new ArrayList<>();
+		List<Double> max = new ArrayList<>();
+		List<Double> dailyMeanHumidity = new ArrayList<>();
+		List<Double> noonHumidity = new ArrayList<>();
+		for (ClimateWeekFigures district : districtWeeks) {
+			addIfPresent(rainfall, district.getRainfall());
+			addIfPresent(mean, district.getTemperatureMean());
+			addIfPresent(min, district.getTemperatureMin());
+			addIfPresent(max, district.getTemperatureMax());
+			if (district.getHumidityMeasure() == HumidityMeasure.DAILY_MEAN) {
+				dailyMeanHumidity.add(district.getHumidity());
+			} else if (district.getHumidityMeasure() == HumidityMeasure.NOON_READING) {
+				noonHumidity.add(district.getHumidity());
+			}
+		}
+
+		HumidityMeasure humidityMeasure = null;
+		List<Double> humidity = Collections.emptyList();
+		if (isEnoughDistricts(dailyMeanHumidity, districtCount)) {
+			humidityMeasure = HumidityMeasure.DAILY_MEAN;
+			humidity = dailyMeanHumidity;
+		} else if (isEnoughDistricts(noonHumidity, districtCount)) {
+			humidityMeasure = HumidityMeasure.NOON_READING;
+			humidity = noonHumidity;
+		}
+
+		return new ClimateWeekFigures(
+			week,
+			isEnoughDistricts(rainfall, districtCount) ? mean(rainfall) : null,
+			isEnoughDistricts(mean, districtCount) ? mean(mean) : null,
+			isEnoughDistricts(min, districtCount) ? mean(min) : null,
+			isEnoughDistricts(max, districtCount) ? mean(max) : null,
+			humidityMeasure != null ? mean(humidity) : null,
+			humidityMeasure,
+			rainfall.size(),
+			mean.size(),
+			humidityMeasure != null ? humidity.size() : Math.max(dailyMeanHumidity.size(), noonHumidity.size()));
+	}
+
+	private static boolean isEnoughDistricts(List<Double> values, int districtCount) {
+		return !values.isEmpty() && values.size() * 2 >= districtCount;
+	}
+
 	public static double sum(Collection<Double> values) {
 		return values.stream().mapToDouble(Double::doubleValue).sum();
 	}
