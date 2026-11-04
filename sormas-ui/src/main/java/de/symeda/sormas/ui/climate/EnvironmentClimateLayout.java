@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.climate;
 
 import java.time.LocalDate;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import com.vaadin.ui.Button;
@@ -27,8 +28,16 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
 import de.symeda.sormas.api.climate.ClimateEnvironmentContextDto;
+import de.symeda.sormas.api.climate.SiteClimateReadingDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
+import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -70,9 +79,16 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 	private final HorizontalLayout actions = new HorizontalLayout();
 	private final Map<ClimatePeriod, Button> periodButtons = new EnumMap<>(ClimatePeriod.class);
 	private final EnvironmentClimateCards cards = new EnvironmentClimateCards();
+	private final EnvironmentClimateChart chart = new EnvironmentClimateChart();
+
+	/** The environment's samples, or null without the right to see them; loaded once. */
+	private final List<EnvironmentSampleIndexDto> samples;
+	/** The events linked to the environment, or null without the right to see them; loaded once. */
+	private final List<EventIndexDto> events;
 
 	private ClimatePeriod period = DEFAULT_PERIOD;
 	private ClimateDailySeriesDto series;
+	private List<SiteClimateReadingDto> readings;
 
 	/**
 	 * @param environmentEditAllowed
@@ -84,6 +100,12 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 		this.environment = environment;
 		this.environmentEditAllowed = environmentEditAllowed;
 		this.context = FacadeProvider.getClimateSeriesFacade().getEnvironmentContext(environment);
+		this.samples = UiUtil.permitted(FeatureType.SAMPLES_LAB, UserRight.ENVIRONMENT_SAMPLE_VIEW)
+			? FacadeProvider.getEnvironmentSampleFacade().getIndexList(new EnvironmentSampleCriteria().withEnvironment(environment), null, null, null)
+			: null;
+		this.events = UiUtil.permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW)
+			? FacadeProvider.getEventFacade().getIndexList(new EventCriteria().environment(environment), null, null, null)
+			: null;
 
 		setMargin(false);
 		setWidthFull();
@@ -91,6 +113,7 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 		addComponent(strip);
 		addComponent(createActions());
 		addComponent(cards);
+		addComponent(chart);
 
 		reload();
 	}
@@ -154,8 +177,18 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 		LocalDate from = getFrom();
 		LocalDate to = getTo();
 		series = FacadeProvider.getClimateSeriesFacade().getDailySeries(environment, from, to);
+		readings = FacadeProvider.getSiteClimateReadingFacade().getReadings(environment, from, to);
 		strip.update(context, series, from, LocalDate.now());
 		cards.update(series);
+		chart.update(series, from, to, context.getReportDate(), samples, events, readings);
+	}
+
+	public List<SiteClimateReadingDto> getReadings() {
+		return readings;
+	}
+
+	EnvironmentClimateChart getChart() {
+		return chart;
 	}
 
 	protected EnvironmentReferenceDto getEnvironment() {
