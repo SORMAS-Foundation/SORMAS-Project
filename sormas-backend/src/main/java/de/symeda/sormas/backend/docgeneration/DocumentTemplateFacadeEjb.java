@@ -22,18 +22,23 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
@@ -78,6 +83,8 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.valueresolvers.RootEntityPropertyFiller;
+import de.symeda.sormas.backend.docgeneration.valueresolvers.RootEntityPropertyFillersFactory;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -97,7 +104,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @Stateless(name = "DocumentTemplateFacade")
 public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
-	private static final Pattern BASENAME_PATTERN = Pattern.compile("^([^_.]+)([_.].*)?");
+	public static final Pattern BASENAME_PATTERN = Pattern.compile("^([^_.]+)([_.].*)?");
 	public static final int EMAIL_SUBJECT_MAX_LENGTH = 50;
 	public static final String EMAIL_TEMPLATE_SUBJECT_PREFIX = "#";
 
@@ -148,6 +155,9 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	@EJB
 	private TravelEntryFacadeEjbLocal travelEntryFacade;
+
+	@Inject
+	private RootEntityPropertyFillersFactory propertyFillersFactory;
 
 	private TemplateEngine templateEngine = new TemplateEngine();
 
@@ -224,8 +234,9 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
 
 		String propertySeparator = documentWorkflow.isDocx() ? "." : "_";
+		Map<RootEntityType, RootEntityPropertyFiller> propertyFillerCache = new HashMap<>();
 		for (String propertyKey : documentVariables.getVariables()) {
-			if (isEntityVariable(documentWorkflow, propertyKey)) {
+			if (isResolvableEntityFor(documentWorkflow, propertyKey)) {
 				String variableBaseName = getVariableBaseName(propertyKey);
 				RootEntityType rootEntityType = RootEntityType.ofEntityName(variableBaseName);
 
@@ -236,7 +247,15 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				// check if the entity is from a general.
 				// General entities are used for common and dynamic data that can be referenced across different entities.
 				if (rootEntityType == RootEntityType.ROOT_GENERAL) {
+					// could be integrated into RootEntityPropertyFiller approach as also not a "data model entity".
 					fillGeneralValues(documentVariables, properties, propertyKey);
+				} else if (!rootEntityType.isDataModelEntity()) {
+					RootEntityPropertyFiller resolver = propertyFillerCache.computeIfAbsent(
+						rootEntityType,
+						actualEntityType -> propertyFillersFactory.createPropertyFiller(actualEntityType, entities, referenceDtoResolver));
+					resolver.fillValueInto(propertyKey, properties);
+
+					continue;
 				}
 
 				Object entity = entities.getEntity(rootEntityType);
@@ -403,9 +422,9 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile);
 		Set<String> propertyKeys = documentVariables.getVariables();
 		documentVariables.setAdditionalVariables(
-			propertyKeys.stream().filter(e -> !isEntityVariable(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList()));
+			propertyKeys.stream().filter(e -> !isResolvableEntityFor(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList()));
 		propertyKeys.stream()
-			.filter(e -> isEntityVariable(documentWorkflow, e))
+			.filter(e -> isResolvableEntityFor(documentWorkflow, e))
 			.forEach(e -> documentVariables.addUsedEntity(getVariableBaseName(e)));
 		return documentVariables;
 	}
@@ -491,12 +510,15 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return templateEngine.extractTemplateVariablesTxt(templateFile);
 	}
 
-	private boolean isEntityVariable(DocumentWorkflow documentWorkflow, String propertyKey) {
+	private boolean isResolvableEntityFor(DocumentWorkflow documentWorkflow, String propertyKey) {
 		if (propertyKey == null) {
 			return false;
 		}
 		String basename = getVariableBaseName(propertyKey);
-		return documentWorkflow.getRootEntityTypes().stream().map(RootEntityType::getEntityName).anyMatch(basename::equalsIgnoreCase);
+		return Stream
+			.concat(documentWorkflow.getRootEntityTypes().stream(), Arrays.stream(RootEntityType.values()).filter(type -> !type.isDataModelEntity()))
+			.map(RootEntityType::getEntityName)
+			.anyMatch(basename::equalsIgnoreCase);
 	}
 
 	private String getVariableBaseName(String propertyKey) {

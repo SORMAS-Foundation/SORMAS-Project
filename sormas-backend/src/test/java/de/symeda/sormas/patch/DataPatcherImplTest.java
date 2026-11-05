@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -86,19 +85,11 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
 import de.symeda.sormas.backend.patch.EqualValueOverrideHelper;
-import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
-import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.CollectionPatchMapper;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
 import de.symeda.sormas.backend.util.InstanceProvider;
 
 class DataPatcherImplTest extends AbstractBeanTest {
-
-	@BeforeEach
-	void setUp() {
-		// CDI look-up not easily achievable within this therefore setting the singleton before each test "in-case".
-		getBean(CollectionPatchMapper.class).setValueMapperRegistry(getBean(ValueMapperRegistry.class));
-	}
 
 	@Test
 	void patch_aliasUsage() {
@@ -478,23 +469,23 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void patch_referenceData_country() {
+	void patch_referenceData_countryByExternalId() {
 		// PREPARE
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
 
 		CountryDto dto = new CountryDto();
 		dto.setIsoCode("DEU");
+		dto.setExternalId("DE");
 		dto.setDefaultName("Germany");
 		CountryDto germanyReferenceDto = getCountryFacade().save(dto);
 
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
 
-		// must be able to ignore accents - whitespaces - case
-		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", " Deutschländ    ");
+		// External IDs are matched ignoring whitespace and case.
+		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", " de    ");
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(patchDictionary)
-			.setInputLanguages(List.of(Language.DE, Language.EN, Language.FR));
+			.setPatchDictionary(patchDictionary);
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);

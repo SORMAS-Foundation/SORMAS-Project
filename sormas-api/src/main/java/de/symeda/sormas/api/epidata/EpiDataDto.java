@@ -196,7 +196,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private String otherDetails;
 	// airport worker should be applicable for all countries and diseases.
 	@Diseases(value = Disease.GONOCOCCAL_INFECTION, hide = true)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown airportWorker;
 	@Diseases({
 		Disease.MALARIA })

@@ -226,7 +226,7 @@ public class CronService {
 			return;
 		}
 
-		List<ExternalMessageDto> surveyExternalMessages = externalMessageFacade.saveAndProcessSurveyResponses();
+		List<ExternalMessageDto> surveyExternalMessages = externalMessageFacade.saveAndProcessSurveyResponsesForCron();
 
 		if (logger.isInfoEnabled()) {
 			List<String> reportIds = surveyExternalMessages.stream().map(ExternalMessageDto::getReportId).collect(Collectors.toList());
