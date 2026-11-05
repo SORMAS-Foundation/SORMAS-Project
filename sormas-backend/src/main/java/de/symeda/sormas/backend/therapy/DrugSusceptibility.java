@@ -185,6 +185,18 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private String meropenemMic;
 	private DrugSusceptibilityType meropenemSusceptibility;
 	private SusceptibilityMethod meropenemMethod;
+	private String clofazimineMic;
+	private DrugSusceptibilityType clofazimineSusceptibility;
+	private SusceptibilityMethod clofazimineMethod;
+	private String ethionamideMic;
+	private DrugSusceptibilityType ethionamideSusceptibility;
+	private SusceptibilityMethod ethionamideMethod;
+	private String pretomanidMic;
+	private DrugSusceptibilityType pretomanidSusceptibility;
+	private SusceptibilityMethod pretomanidMethod;
+	private String pyrazinamideMic;
+	private DrugSusceptibilityType pyrazinamideSusceptibility;
+	private SusceptibilityMethod pyrazinamideMethod;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getAmikacinMic() {
@@ -967,5 +979,113 @@ public class DrugSusceptibility extends AbstractDomainObject {
 
 	public void setMeropenemMethod(SusceptibilityMethod meropenemMethod) {
 		this.meropenemMethod = meropenemMethod;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getClofazimineMic() {
+		return clofazimineMic;
+	}
+
+	public void setClofazimineMic(String clofazimineMic) {
+		this.clofazimineMic = clofazimineMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getClofazimineSusceptibility() {
+		return clofazimineSusceptibility;
+	}
+
+	public void setClofazimineSusceptibility(DrugSusceptibilityType clofazimineSusceptibility) {
+		this.clofazimineSusceptibility = clofazimineSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getClofazimineMethod() {
+		return clofazimineMethod;
+	}
+
+	public void setClofazimineMethod(SusceptibilityMethod clofazimineMethod) {
+		this.clofazimineMethod = clofazimineMethod;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getEthionamideMic() {
+		return ethionamideMic;
+	}
+
+	public void setEthionamideMic(String ethionamideMic) {
+		this.ethionamideMic = ethionamideMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getEthionamideSusceptibility() {
+		return ethionamideSusceptibility;
+	}
+
+	public void setEthionamideSusceptibility(DrugSusceptibilityType ethionamideSusceptibility) {
+		this.ethionamideSusceptibility = ethionamideSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getEthionamideMethod() {
+		return ethionamideMethod;
+	}
+
+	public void setEthionamideMethod(SusceptibilityMethod ethionamideMethod) {
+		this.ethionamideMethod = ethionamideMethod;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPretomanidMic() {
+		return pretomanidMic;
+	}
+
+	public void setPretomanidMic(String pretomanidMic) {
+		this.pretomanidMic = pretomanidMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getPretomanidSusceptibility() {
+		return pretomanidSusceptibility;
+	}
+
+	public void setPretomanidSusceptibility(DrugSusceptibilityType pretomanidSusceptibility) {
+		this.pretomanidSusceptibility = pretomanidSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getPretomanidMethod() {
+		return pretomanidMethod;
+	}
+
+	public void setPretomanidMethod(SusceptibilityMethod pretomanidMethod) {
+		this.pretomanidMethod = pretomanidMethod;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPyrazinamideMic() {
+		return pyrazinamideMic;
+	}
+
+	public void setPyrazinamideMic(String pyrazinamideMic) {
+		this.pyrazinamideMic = pyrazinamideMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getPyrazinamideSusceptibility() {
+		return pyrazinamideSusceptibility;
+	}
+
+	public void setPyrazinamideSusceptibility(DrugSusceptibilityType pyrazinamideSusceptibility) {
+		this.pyrazinamideSusceptibility = pyrazinamideSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getPyrazinamideMethod() {
+		return pyrazinamideMethod;
+	}
+
+	public void setPyrazinamideMethod(SusceptibilityMethod pyrazinamideMethod) {
+		this.pyrazinamideMethod = pyrazinamideMethod;
 	}
 }

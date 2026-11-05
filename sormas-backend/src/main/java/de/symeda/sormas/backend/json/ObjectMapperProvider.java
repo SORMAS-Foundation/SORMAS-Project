@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
+import de.symeda.sormas.api.externalmessage.survey.PatchFieldDeserializer;
 import de.symeda.sormas.api.externalmessage.survey.PatchFieldKeyDeserializer;
 
 /**
@@ -78,6 +79,7 @@ public final class ObjectMapperProvider {
 
 		SimpleModule simpleModule = new SimpleModule();
 		simpleModule.addKeyDeserializer(PatchField.class, new PatchFieldKeyDeserializer());
+		simpleModule.addDeserializer(PatchField.class, new PatchFieldDeserializer());
 		mapper.registerModule(simpleModule);
 
 		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

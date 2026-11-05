@@ -126,6 +126,22 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String MEROPENEM_SUSCEPTIBILITY = "meropenemSusceptibility";
 	public static final String MEROPENEM_METHOD = "meropenemMethod";
 
+	public static final String CLOFAZIMINE_MIC = "clofazimineMic";
+	public static final String CLOFAZIMINE_SUSCEPTIBILITY = "clofazimineSusceptibility";
+	public static final String CLOFAZIMINE_METHOD = "clofazimineMethod";
+
+	public static final String ETHIONAMIDE_MIC = "ethionamideMic";
+	public static final String ETHIONAMIDE_SUSCEPTIBILITY = "ethionamideSusceptibility";
+	public static final String ETHIONAMIDE_METHOD = "ethionamideMethod";
+
+	public static final String PRETOMANID_MIC = "pretomanidMic";
+	public static final String PRETOMANID_SUSCEPTIBILITY = "pretomanidSusceptibility";
+	public static final String PRETOMANID_METHOD = "pretomanidMethod";
+
+	public static final String PYRAZINAMIDE_MIC = "pyrazinamideMic";
+	public static final String PYRAZINAMIDE_SUSCEPTIBILITY = "pyrazinamideSusceptibility";
+	public static final String PYRAZINAMIDE_METHOD = "pyrazinamideMethod";
+
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -571,17 +587,20 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	//Linezolid
 	@Diseases(value = {
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private String linezolidMic;
 	@Diseases(value = {
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType linezolidSusceptibility;
 	@Diseases(value = {
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod linezolidMethod;
@@ -602,6 +621,70 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod meropenemMethod;
+
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private String clofazimineMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType clofazimineSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private SusceptibilityMethod clofazimineMethod;
+
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private String ethionamideMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType ethionamideSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private SusceptibilityMethod ethionamideMethod;
+
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private String pretomanidMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType pretomanidSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private SusceptibilityMethod pretomanidMethod;
+
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private String pyrazinamideMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType pyrazinamideSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private SusceptibilityMethod pyrazinamideMethod;
 
 	public static DrugSusceptibilityDto build() {
 		DrugSusceptibilityDto drugSusceptibility = new DrugSusceptibilityDto();
@@ -1303,5 +1386,101 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	public void setMeropenemMethod(SusceptibilityMethod meropenemMethod) {
 		this.meropenemMethod = meropenemMethod;
+	}
+
+	public String getClofazimineMic() {
+		return clofazimineMic;
+	}
+
+	public void setClofazimineMic(String clofazimineMic) {
+		this.clofazimineMic = clofazimineMic;
+	}
+
+	public DrugSusceptibilityType getClofazimineSusceptibility() {
+		return clofazimineSusceptibility;
+	}
+
+	public void setClofazimineSusceptibility(DrugSusceptibilityType clofazimineSusceptibility) {
+		this.clofazimineSusceptibility = clofazimineSusceptibility;
+	}
+
+	public SusceptibilityMethod getClofazimineMethod() {
+		return clofazimineMethod;
+	}
+
+	public void setClofazimineMethod(SusceptibilityMethod clofazimineMethod) {
+		this.clofazimineMethod = clofazimineMethod;
+	}
+
+	public String getEthionamideMic() {
+		return ethionamideMic;
+	}
+
+	public void setEthionamideMic(String ethionamideMic) {
+		this.ethionamideMic = ethionamideMic;
+	}
+
+	public DrugSusceptibilityType getEthionamideSusceptibility() {
+		return ethionamideSusceptibility;
+	}
+
+	public void setEthionamideSusceptibility(DrugSusceptibilityType ethionamideSusceptibility) {
+		this.ethionamideSusceptibility = ethionamideSusceptibility;
+	}
+
+	public SusceptibilityMethod getEthionamideMethod() {
+		return ethionamideMethod;
+	}
+
+	public void setEthionamideMethod(SusceptibilityMethod ethionamideMethod) {
+		this.ethionamideMethod = ethionamideMethod;
+	}
+
+	public String getPretomanidMic() {
+		return pretomanidMic;
+	}
+
+	public void setPretomanidMic(String pretomanidMic) {
+		this.pretomanidMic = pretomanidMic;
+	}
+
+	public DrugSusceptibilityType getPretomanidSusceptibility() {
+		return pretomanidSusceptibility;
+	}
+
+	public void setPretomanidSusceptibility(DrugSusceptibilityType pretomanidSusceptibility) {
+		this.pretomanidSusceptibility = pretomanidSusceptibility;
+	}
+
+	public SusceptibilityMethod getPretomanidMethod() {
+		return pretomanidMethod;
+	}
+
+	public void setPretomanidMethod(SusceptibilityMethod pretomanidMethod) {
+		this.pretomanidMethod = pretomanidMethod;
+	}
+
+	public String getPyrazinamideMic() {
+		return pyrazinamideMic;
+	}
+
+	public void setPyrazinamideMic(String pyrazinamideMic) {
+		this.pyrazinamideMic = pyrazinamideMic;
+	}
+
+	public DrugSusceptibilityType getPyrazinamideSusceptibility() {
+		return pyrazinamideSusceptibility;
+	}
+
+	public void setPyrazinamideSusceptibility(DrugSusceptibilityType pyrazinamideSusceptibility) {
+		this.pyrazinamideSusceptibility = pyrazinamideSusceptibility;
+	}
+
+	public SusceptibilityMethod getPyrazinamideMethod() {
+		return pyrazinamideMethod;
+	}
+
+	public void setPyrazinamideMethod(SusceptibilityMethod pyrazinamideMethod) {
+		this.pyrazinamideMethod = pyrazinamideMethod;
 	}
 }

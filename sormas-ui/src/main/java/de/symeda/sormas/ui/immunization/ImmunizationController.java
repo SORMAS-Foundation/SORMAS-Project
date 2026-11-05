@@ -1,8 +1,24 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.ui.immunization;
 
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable;
@@ -10,9 +26,13 @@ import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -78,7 +98,20 @@ public class ImmunizationController {
 	}
 
 	public void create(PersonReferenceDto person, Disease disease, String diseaseDetails, Runnable savedCallback) {
-		CommitDiscardWrapperComponent<?> createComponent = getImmunizationCreateComponent(person, disease, diseaseDetails, savedCallback);
+		create(person, disease, diseaseDetails, savedCallback, null);
+	}
+
+	/**
+	 * Opens the creation popup for an immunization of {@code person} and remembers the case, contact or event participant it was
+	 * started from.
+	 * <p>
+	 * Example: started from the immunization side component of case {@code ABC123-...}, saving the new immunization
+	 * {@code XYZ789-...} navigates to {@code immunizations/data/XYZ789-...?caseUuid=ABC123-...}, so the back link to the case is
+	 * shown. With {@code origin == null} it navigates to {@code immunizations/data/XYZ789-...} as before. The quick creation
+	 * (system configuration {@code USE_QUICK_IMMUNIZATION_CREATION}) does not navigate and only runs {@code savedCallback}.
+	 */
+	public void create(PersonReferenceDto person, Disease disease, String diseaseDetails, Runnable savedCallback, ReferenceDto origin) {
+		CommitDiscardWrapperComponent<?> createComponent = getImmunizationCreateComponent(person, disease, diseaseDetails, savedCallback, origin);
 		if (createComponent != null) {
 			VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
 		}
@@ -136,6 +169,41 @@ public class ImmunizationController {
 
 	public void navigateToImmunization(String uuid) {
 		navigateToView(ImmunizationDataView.VIEW_NAME, uuid);
+	}
+
+	/**
+	 * Opens the immunization and remembers the case, contact or event participant it was opened from, so the immunization views
+	 * show a link back to it.
+	 * <p>
+	 * Example: with a {@code ContactReferenceDto} of UUID {@code ABC123-...},
+	 * {@code navigateToImmunization("XYZ789-...", contactRef)} navigates to
+	 * {@code immunizations/data/XYZ789-...?contactUuid=ABC123-...}. With {@code origin == null}, a blank UUID or any other
+	 * reference type it behaves exactly like {@link #navigateToImmunization(String)} and navigates to
+	 * {@code immunizations/data/XYZ789-...}.
+	 */
+	public void navigateToImmunization(String uuid, ReferenceDto origin) {
+		final String originParam = getOriginParam(origin);
+		if (originParam == null || StringUtils.isBlank(origin.getUuid())) {
+			navigateToImmunization(uuid);
+		} else {
+			navigateToView(ImmunizationDataView.VIEW_NAME, uuid + "?" + originParam + "=" + origin.getUuid());
+		}
+	}
+
+	/**
+	 * @return The URL parameter name for the type of {@code origin}, e.g. {@code "caseUuid"} for a {@code CaseReferenceDto}, or
+	 *         {@code null} for {@code null} and unsupported reference types.
+	 */
+	private static String getOriginParam(ReferenceDto origin) {
+		if (origin instanceof CaseReferenceDto) {
+			return AbstractImmunizationView.ORIGIN_CASE_PARAM;
+		} else if (origin instanceof ContactReferenceDto) {
+			return AbstractImmunizationView.ORIGIN_CONTACT_PARAM;
+		} else if (origin instanceof EventParticipantReferenceDto) {
+			return AbstractImmunizationView.ORIGIN_EVENT_PARTICIPANT_PARAM;
+		} else {
+			return null;
+		}
 	}
 
 	public void navigateToView(String viewName, String uuid) {
@@ -215,7 +283,8 @@ public class ImmunizationController {
 		PersonReferenceDto personReferenceDto,
 		Disease disease,
 		String diseaseDetails,
-		Runnable savedCallback) {
+		Runnable savedCallback,
+		ReferenceDto origin) {
 
 		if (FacadeProvider.getImmunizationFacade().isUseQuickImmunizationCreation()) {
 			return buildQuickCreateComponent(personReferenceDto, disease, diseaseDetails, savedCallback);
@@ -238,7 +307,7 @@ public class ImmunizationController {
 				if (!createForm.getFieldGroup().isModified()) {
 
 					final ImmunizationDto dto = createForm.getValue();
-					selectOrCreateimmunizationForPerson(dto, personReferenceDto);
+					selectOrCreateimmunizationForPerson(dto, personReferenceDto, origin);
 				}
 			});
 			return viewComponent;
@@ -312,7 +381,7 @@ public class ImmunizationController {
 		// Initialize 'Archive' button
 		if (UiUtil.permitted(UserRight.IMMUNIZATION_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(immunizationDto, ArchiveHandlers.forImmunization(), editComponent, () -> navigateToImmunization(uuid));
+				.addArchivingButton(immunizationDto, ArchiveHandlers.forImmunization(), editComponent, SormasUI::refreshView);
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -345,6 +414,10 @@ public class ImmunizationController {
 	}
 
 	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson) {
+		selectOrCreateimmunizationForPerson(dto, selectedPerson, null);
+	}
+
+	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson, ReferenceDto origin) {
 		dto.setPerson(selectedPerson);
 		selectOrCreateImmunization(dto, uuid -> {
 			if (uuid == null) {
@@ -355,7 +428,7 @@ public class ImmunizationController {
 				dto.setChangeDate(new Date());
 			}
 			FacadeProvider.getImmunizationFacade().save(dto);
-			navigateToImmunization(uuid);
+			navigateToImmunization(uuid, origin);
 		});
 	}
 
