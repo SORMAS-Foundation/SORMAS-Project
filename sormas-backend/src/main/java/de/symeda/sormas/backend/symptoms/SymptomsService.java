@@ -29,6 +29,7 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.visit.Visit;
 
 @Stateless
@@ -60,7 +61,18 @@ public class SymptomsService extends BaseAdoService<Symptoms> {
 		clinicalVisitSubquery.where(cb.equal(clinicalVisitRoot.get(ClinicalVisit.SYMPTOMS), symptomsRoot.get(Symptoms.ID)));
 		clinicalVisitSubquery.select(clinicalVisitRoot.get(Case.ID));
 
-		cq.where(cb.not(cb.or(cb.exists(visitSubquery), cb.exists(caseSubquery), cb.exists(clinicalVisitSubquery))));
+		Subquery<Long> externalMessageSubquery = cq.subquery(Long.class);
+		Root<ExternalMessage> externalMessageRoot = externalMessageSubquery.from(ExternalMessage.class);
+		externalMessageSubquery.where(cb.equal(externalMessageRoot.get(ExternalMessage.CASE_SYMPTOMS), symptomsRoot.get(Symptoms.ID)));
+		externalMessageSubquery.select(externalMessageRoot.get(ExternalMessage.ID));
+
+		cq.where(
+			cb.not(
+				cb.or(
+					cb.exists(visitSubquery),
+					cb.exists(caseSubquery),
+					cb.exists(clinicalVisitSubquery),
+					cb.exists(externalMessageSubquery))));
 		cq.select(symptomsRoot.get(Symptoms.UUID));
 
 		return em.createQuery(cq).getResultList();

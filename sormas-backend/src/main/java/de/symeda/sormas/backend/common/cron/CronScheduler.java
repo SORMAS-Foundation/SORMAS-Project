@@ -20,6 +20,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -43,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
+import de.symeda.sormas.api.systemconfiguration.CronJobRunNowResult;
 import de.symeda.sormas.api.systemconfiguration.CronJobRunOutcome;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
@@ -70,6 +74,10 @@ public class CronScheduler {
 	@EJB
 	private CronJobRunRepository cronJobRunRepository;
 
+	private final ConcurrentHashMap<CronJob, ReentrantLock> runLocks = new ConcurrentHashMap<>();
+
+	private final Set<CronJob> pendingManualRuns = ConcurrentHashMap.newKeySet();
+
 	@PostConstruct
 	public void scheduleAllJobs() {
 
@@ -80,7 +88,8 @@ public class CronScheduler {
 				logger.error("Could not cancel existing scheduled job timers, skipping scheduling to avoid duplicate timers", e);
 				return;
 			}
-			for (CronJob job : CronJob.values()) {
+			pendingManualRuns.clear();
+			for (CronJob job : CronJob.active()) {
 				try {
 					scheduleJob(job, resolveExpression(job));
 				} catch (Exception e) {
@@ -97,23 +106,32 @@ public class CronScheduler {
 		Object timerInfo = null;
 		try {
 			timerInfo = timer.getInfo();
-			CronJob job = (CronJob) timerInfo;
-			Date start = new Date();
-			CronJobRunOutcome outcome = CronJobRunOutcome.SUCCESS;
-			String failureMessage = null;
-
-			try {
-				job.execute(cronService);
-			} catch (Exception e) {
-				outcome = CronJobRunOutcome.FAILED;
-				failureMessage = e.getMessage();
-				logger.error("Scheduled job {} failed", job, e);
+			if (timerInfo instanceof ManualCronJobRun) {
+				runManually(((ManualCronJobRun) timerInfo).getJob());
+			} else {
+				runOnSchedule((CronJob) timerInfo);
 			}
-
-			cronJobRunRepository.record(job, new CronJobRun(start, new Date(), outcome, failureMessage));
 		} catch (Exception e) {
 			logger.error("Scheduled job execution failed for timer info {}", timerInfo, e);
 		}
+	}
+
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+	public CronJobRunNowResult runNow(CronJob job) {
+
+		if (job.isRetired()) {
+			throw new IllegalArgumentException("The scheduled job " + job + " is retired and cannot be run");
+		}
+		if (!pendingManualRuns.add(job)) {
+			return CronJobRunNowResult.ALREADY_QUEUED;
+		}
+		try {
+			timerService.createSingleActionTimer(1, new TimerConfig(new ManualCronJobRun(job), false));
+		} catch (RuntimeException e) {
+			pendingManualRuns.remove(job);
+			throw e;
+		}
+		return CronJobRunNowResult.QUEUED;
 	}
 
 	public Map<CronJob, Date> getNextFireTimes() {
@@ -134,6 +152,9 @@ public class CronScheduler {
 
 	public void reschedule(CronJob job) {
 
+		if (job.isRetired()) {
+			return;
+		}
 		String configured = systemConfigurationValueFacade.getValue(job.getConfigKey());
 		if (configured != null && !CronExpressionValidator.isValid(configured)) {
 			logger.error(
@@ -168,6 +189,53 @@ public class CronScheduler {
 		} catch (IllegalArgumentException e) {
 			logger.warn("Ignoring a change to the unknown cron configuration key {}", key);
 		}
+	}
+
+	private void runManually(CronJob job) {
+
+		ReentrantLock runLock = runLockOf(job);
+		runLock.lock();
+		try {
+			runAndRecord(job);
+		} finally {
+			runLock.unlock();
+			pendingManualRuns.remove(job);
+		}
+	}
+
+	private void runOnSchedule(CronJob job) {
+
+		ReentrantLock runLock = runLockOf(job);
+		if (!runLock.tryLock()) {
+			logger.warn("Skipping scheduled run of {} because it is still running", job);
+			return;
+		}
+		try {
+			runAndRecord(job);
+		} finally {
+			runLock.unlock();
+		}
+	}
+
+	private ReentrantLock runLockOf(CronJob job) {
+		return runLocks.computeIfAbsent(job, ignored -> new ReentrantLock());
+	}
+
+	private void runAndRecord(CronJob job) {
+
+		Date start = new Date();
+		CronJobRunOutcome outcome = CronJobRunOutcome.SUCCESS;
+		String failureMessage = null;
+
+		try {
+			job.execute(cronService);
+		} catch (Exception e) {
+			outcome = CronJobRunOutcome.FAILED;
+			failureMessage = e.getMessage();
+			logger.error("Scheduled job {} failed", job, e);
+		}
+
+		cronJobRunRepository.record(job, new CronJobRun(start, new Date(), outcome, failureMessage));
 	}
 
 	private String resolveExpression(CronJob job) {

@@ -102,6 +102,7 @@ public interface Strings {
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
 	String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
+	String confirmationCronJobRunNow = "confirmationCronJobRunNow";
 	String confirmationDearchiveAdverseEvent = "confirmationDearchiveAdverseEvent";
 	String confirmationDearchiveAdverseEventInvestigation = "confirmationDearchiveAdverseEventInvestigation";
 	String confirmationDearchiveArea = "confirmationDearchiveArea";
@@ -1269,7 +1270,6 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionCronFetchSurveyResponses = "infoSystemConfigurationValueDescriptionCronFetchSurveyResponses";
 	String infoSystemConfigurationValueDescriptionCronGenerateAutomaticTasks = "infoSystemConfigurationValueDescriptionCronGenerateAutomaticTasks";
 	String infoSystemConfigurationValueDescriptionCronSendNewAndDueTaskMessages = "infoSystemConfigurationValueDescriptionCronSendNewAndDueTaskMessages";
-	String infoSystemConfigurationValueDescriptionCronSoftDeleteOldNegativeSamples = "infoSystemConfigurationValueDescriptionCronSoftDeleteOldNegativeSamples";
 	String infoSystemConfigurationValueDescriptionCronSyncInfraWithCentral = "infoSystemConfigurationValueDescriptionCronSyncInfraWithCentral";
 	String infoSystemConfigurationValueDescriptionCronSyncUsersFromAuthProvider = "infoSystemConfigurationValueDescriptionCronSyncUsersFromAuthProvider";
 	String infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses = "infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses";
@@ -1500,6 +1500,8 @@ public interface Strings {
 	String messageCountVisitsNotSetToLost = "messageCountVisitsNotSetToLost";
 	String messageCountVisitsNotSetToLostAccessDeniedReason = "messageCountVisitsNotSetToLostAccessDeniedReason";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
+	String messageCronJobRunAlreadyQueued = "messageCronJobRunAlreadyQueued";
+	String messageCronJobRunQueued = "messageCronJobRunQueued";
 	String messageCustomizableEnumValueSaved = "messageCustomizableEnumValueSaved";
 	String messageCustomizableFieldCloned = "messageCustomizableFieldCloned";
 	String messageCustomizableFieldCreated = "messageCustomizableFieldCreated";

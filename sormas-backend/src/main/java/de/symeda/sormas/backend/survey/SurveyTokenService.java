@@ -21,6 +21,7 @@ import java.util.Optional;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -45,6 +46,14 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 
 	public SurveyTokenService() {
 		super(SurveyToken.class);
+	}
+
+	public void deleteByCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<SurveyToken> cd = cb.createCriteriaDelete(SurveyToken.class);
+		Root<SurveyToken> root = cd.from(SurveyToken.class);
+		cd.where(cb.equal(root.get(SurveyToken.CASE_ASSIGNED_TO), caze));
+		em.createQuery(cd).executeUpdate();
 	}
 
 	public Predicate buildCriteriaFilter(SurveyTokenCriteria criteria, CriteriaBuilder cb, Root<SurveyToken> root, SurveyTokenJoins joins) {

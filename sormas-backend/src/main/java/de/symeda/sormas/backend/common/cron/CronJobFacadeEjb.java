@@ -28,6 +28,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
 import de.symeda.sormas.api.systemconfiguration.CronJobFacade;
+import de.symeda.sormas.api.systemconfiguration.CronJobRunNowResult;
 import de.symeda.sormas.api.systemconfiguration.CronJobStatusDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -54,10 +55,15 @@ public class CronJobFacadeEjb implements CronJobFacade {
 		Map<String, SystemConfigurationValueDto> valuesByKey = configurationValuesByKey();
 		List<CronJobStatusDto> statuses = new ArrayList<>();
 
-		for (CronJob job : CronJob.values()) {
+		for (CronJob job : CronJob.active()) {
 			statuses.add(toStatus(job, valuesByKey.get(job.getConfigKey()), nextFireTimes.get(job)));
 		}
 		return statuses;
+	}
+
+	@Override
+	public CronJobRunNowResult executeJobNow(String jobName) {
+		return cronScheduler.runNow(CronJob.valueOf(jobName));
 	}
 
 	private Map<String, SystemConfigurationValueDto> configurationValuesByKey() {
