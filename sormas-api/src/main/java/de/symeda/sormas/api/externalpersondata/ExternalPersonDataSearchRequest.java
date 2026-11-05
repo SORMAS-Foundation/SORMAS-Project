@@ -6,6 +6,9 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.person.Sex;
 
+/**
+ * Search criteria to filter / find entries in the tool implementing {@link ExternalPersonDataProviderFacade}.
+ */
 public class ExternalPersonDataSearchRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;

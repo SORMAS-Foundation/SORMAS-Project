@@ -11,7 +11,10 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.location.LocationDto;
 
 /**
- * Closely linked to @{@link ExternalPersonDataProviderFacade} this is the one to be implemented by external adapters.
+ * Contract meant to be implemented by external SORMAS adapters to return External Person Data.
+ * Linked to @{@link ExternalPersonDataProviderFacade}
+ *
+ * @implNote Might require caching in implementations, to avoid performance penalities.
  */
 @Remote
 public interface ExternalPersonDataProviderAdapterFacade {
@@ -19,7 +22,6 @@ public interface ExternalPersonDataProviderAdapterFacade {
 	@Nullable
 	ExternalPersonDataSummaryDto findDataByNationalHealthId(@NotNull String nationalHealthId);
 
-	// TODO: might extend this to use: getCreatableEntityDtos() results
 	@Nullable
 	ExternalPersonDataForDisplayDto findDisplayDataByNationalHealthId(@NotNull String nationalHealthId);
 
