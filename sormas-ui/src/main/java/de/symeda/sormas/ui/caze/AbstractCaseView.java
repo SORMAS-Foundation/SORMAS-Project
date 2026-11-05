@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.ui.caze;
 
-import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY;
+import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_TAB_NAME_KEY;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -266,7 +266,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			menu.addView(
 				CaseExternalPersonDataView.VIEW_NAME,
 				FacadeProvider.getSystemConfigurationValueFacade()
-					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_NAME_KEY, I18nProperties.getCaption(Captions.externalPersonData)),
+					.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_TAB_NAME_KEY, I18nProperties.getCaption(Captions.externalPersonData)),
 				params);
 		}
 

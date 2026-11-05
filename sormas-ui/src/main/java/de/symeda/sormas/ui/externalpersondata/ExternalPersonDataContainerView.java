@@ -1,6 +1,6 @@
 package de.symeda.sormas.ui.externalpersondata;
 
-import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_MENU_NAME_KEY;
+import static de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_DIRECTORY_NAME_KEY;
 
 import com.vaadin.navigator.ViewChangeListener;
 
@@ -22,7 +22,7 @@ public class ExternalPersonDataContainerView extends AbstractView {
 		menu.addView(
 			ExternalPersonDataListView.VIEW_NAME,
 			FacadeProvider.getSystemConfigurationValueFacade()
-				.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_PROVIDER_MENU_NAME_KEY, I18nProperties.getCaption(Captions.View_externalPersons)));
+				.getValueOrDefaultTo(EXTERNAL_PERSON_DATA_DIRECTORY_NAME_KEY, I18nProperties.getCaption(Captions.View_externalPersons)));
 		addComponent(menu);
 		setExpandRatio(menu, 0);
 	}
