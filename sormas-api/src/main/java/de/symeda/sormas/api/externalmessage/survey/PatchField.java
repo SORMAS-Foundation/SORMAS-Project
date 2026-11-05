@@ -7,7 +7,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -30,7 +29,6 @@ public class PatchField implements Serializable {
 	public PatchField() {
 	}
 
-	@JsonCreator
 	public PatchField(String field, @Nullable Integer groupIndex) {
 		this.field = field;
 		this.groupIndex = groupIndex;
