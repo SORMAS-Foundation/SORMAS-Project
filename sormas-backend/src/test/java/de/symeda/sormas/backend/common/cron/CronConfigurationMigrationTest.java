@@ -93,9 +93,9 @@ public class CronConfigurationMigrationTest {
 
 		Map<String, Object[]> rowsByKey = rows.stream().collect(Collectors.toMap(row -> (String) row[0], row -> row));
 
-		assertEquals(CronJob.values().length, rowsByKey.size());
+		assertEquals(CronJob.active().size(), rowsByKey.size());
 
-		for (CronJob job : CronJob.values()) {
+		for (CronJob job : CronJob.active()) {
 			Object[] row = rowsByKey.get(job.getConfigKey());
 			assertNotNull(row, job.getConfigKey());
 			assertEquals(job.getDefaultExpression(), row[1], job.getConfigKey());

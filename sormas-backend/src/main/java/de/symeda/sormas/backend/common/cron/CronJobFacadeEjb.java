@@ -55,7 +55,7 @@ public class CronJobFacadeEjb implements CronJobFacade {
 		Map<String, SystemConfigurationValueDto> valuesByKey = configurationValuesByKey();
 		List<CronJobStatusDto> statuses = new ArrayList<>();
 
-		for (CronJob job : CronJob.values()) {
+		for (CronJob job : CronJob.active()) {
 			statuses.add(toStatus(job, valuesByKey.get(job.getConfigKey()), nextFireTimes.get(job)));
 		}
 		return statuses;

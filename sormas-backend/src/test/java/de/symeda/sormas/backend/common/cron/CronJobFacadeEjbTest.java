@@ -62,13 +62,18 @@ public class CronJobFacadeEjbTest extends AbstractBeanTest {
 
 		List<CronJobStatusDto> statuses = getBean(CronJobFacadeEjb.CronJobFacadeEjbLocal.class).getAllJobStatuses();
 
-		assertEquals(CronJob.values().length, statuses.size());
-		for (CronJob job : CronJob.values()) {
+		assertEquals(CronJob.active().size(), statuses.size());
+		for (CronJob job : CronJob.active()) {
 			CronJobStatusDto status = statusesByJobName().get(job.name());
 			assertNotNull(status, job.name());
 			assertEquals(job.getConfigKey(), status.getConfigKey());
 			assertEquals(job.getDefaultExpression(), status.getDefaultExpression());
 		}
+	}
+
+	@Test
+	public void aRetiredJobIsNotReported() {
+		assertFalse(statusesByJobName().containsKey(CronJob.SOFT_DELETE_OLD_NEGATIVE_SAMPLES.name()));
 	}
 
 	@Test

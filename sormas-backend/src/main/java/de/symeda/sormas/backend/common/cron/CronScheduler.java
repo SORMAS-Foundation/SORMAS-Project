@@ -89,7 +89,7 @@ public class CronScheduler {
 				return;
 			}
 			pendingManualRuns.clear();
-			for (CronJob job : CronJob.values()) {
+			for (CronJob job : CronJob.active()) {
 				try {
 					scheduleJob(job, resolveExpression(job));
 				} catch (Exception e) {
@@ -119,6 +119,9 @@ public class CronScheduler {
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public CronJobRunNowResult runNow(CronJob job) {
 
+		if (job.isRetired()) {
+			throw new IllegalArgumentException("The scheduled job " + job + " is retired and cannot be run");
+		}
 		if (!pendingManualRuns.add(job)) {
 			return CronJobRunNowResult.ALREADY_QUEUED;
 		}
@@ -149,6 +152,9 @@ public class CronScheduler {
 
 	public void reschedule(CronJob job) {
 
+		if (job.isRetired()) {
+			return;
+		}
 		String configured = systemConfigurationValueFacade.getValue(job.getConfigKey());
 		if (configured != null && !CronExpressionValidator.isValid(configured)) {
 			logger.error(

@@ -94,10 +94,10 @@ public class CronSchedulerTest extends AbstractBeanTest {
 
 		ArgumentCaptor<ScheduleExpression> expressions = ArgumentCaptor.forClass(ScheduleExpression.class);
 		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
-		verify(timerService, times(CronJob.values().length)).createCalendarTimer(expressions.capture(), configs.capture());
+		verify(timerService, times(CronJob.active().size())).createCalendarTimer(expressions.capture(), configs.capture());
 
 		assertEquals(
-			Arrays.stream(CronJob.values()).collect(Collectors.toSet()),
+			CronJob.active().stream().collect(Collectors.toSet()),
 			configs.getAllValues().stream().map(TimerConfig::getInfo).collect(Collectors.toSet()));
 		assertTrue(configs.getAllValues().stream().noneMatch(TimerConfig::isPersistent));
 	}
@@ -113,9 +113,9 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		assertDoesNotThrow(() -> getBean(CronScheduler.class).scheduleAllJobs());
 
 		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
-		verify(timerService, times(CronJob.values().length)).createCalendarTimer(any(), configs.capture());
+		verify(timerService, times(CronJob.active().size())).createCalendarTimer(any(), configs.capture());
 		assertEquals(
-			Arrays.stream(CronJob.values()).collect(Collectors.toSet()),
+			CronJob.active().stream().collect(Collectors.toSet()),
 			configs.getAllValues().stream().map(TimerConfig::getInfo).collect(Collectors.toSet()));
 	}
 
@@ -129,7 +129,7 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		getBean(CronScheduler.class).scheduleAllJobs();
 
 		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
-		verify(timerService, times(CronJob.values().length - 1)).createCalendarTimer(any(), configs.capture());
+		verify(timerService, times(CronJob.active().size() - 1)).createCalendarTimer(any(), configs.capture());
 		assertTrue(configs.getAllValues().stream().noneMatch(config -> CronJob.ARCHIVE_CASES.equals(config.getInfo())));
 	}
 
@@ -144,7 +144,7 @@ public class CronSchedulerTest extends AbstractBeanTest {
 
 		ArgumentCaptor<ScheduleExpression> expressions = ArgumentCaptor.forClass(ScheduleExpression.class);
 		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
-		verify(timerService, times(CronJob.values().length)).createCalendarTimer(expressions.capture(), configs.capture());
+		verify(timerService, times(CronJob.active().size())).createCalendarTimer(expressions.capture(), configs.capture());
 
 		List<TimerConfig> capturedConfigs = configs.getAllValues();
 		int archiveCasesIndex = IntStream.range(0, capturedConfigs.size())
@@ -446,6 +446,21 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		scheduler.executeJob(manualTimer(CronJob.ARCHIVE_CASES));
 
 		verify(cronService).archiveCases();
+	}
+
+	@Test
+	public void aRetiredJobIsNeitherScheduledNorRunNow() {
+
+		CronScheduler scheduler = getBean(CronScheduler.class);
+		reset(MockProducer.getTimerService());
+
+		scheduler.scheduleAllJobs();
+		scheduler.reschedule(CronJob.SOFT_DELETE_OLD_NEGATIVE_SAMPLES);
+
+		verify(MockProducer.getTimerService(), never())
+			.createCalendarTimer(any(), argThat(config -> CronJob.SOFT_DELETE_OLD_NEGATIVE_SAMPLES.equals(config.getInfo())));
+		assertThrows(IllegalArgumentException.class, () -> scheduler.runNow(CronJob.SOFT_DELETE_OLD_NEGATIVE_SAMPLES));
+		verify(MockProducer.getTimerService(), never()).createSingleActionTimer(anyLong(), any());
 	}
 
 	private Timer manualTimer(CronJob job) {
