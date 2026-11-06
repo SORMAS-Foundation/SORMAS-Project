@@ -246,7 +246,6 @@ public class EnvironmentClimateLayout extends CustomLayout {
 		stack.setWidthFull();
 		stack.addStyleName(CssStyles.VSPACE_TOP_4);
 		for (Button button : buttons) {
-			button.setWidthFull();
 			stack.addComponent(button);
 		}
 		card.addComponent(stack);

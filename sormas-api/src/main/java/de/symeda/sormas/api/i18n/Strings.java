@@ -61,6 +61,7 @@ public interface Strings {
 	String climateAxisHumidity = "climateAxisHumidity";
 	String climateAxisRainfall = "climateAxisRainfall";
 	String climateAxisSamples = "climateAxisSamples";
+	String climateAxisSamplesNone = "climateAxisSamplesNone";
 	String climateAxisTemperature = "climateAxisTemperature";
 	String climateBackfillNoApiKey = "climateBackfillNoApiKey";
 	String climateCallEstimate = "climateCallEstimate";

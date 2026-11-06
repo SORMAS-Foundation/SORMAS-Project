@@ -101,7 +101,61 @@ class EnvironmentClimateChartTest {
 		String script = chart.getScript();
 		assertFalse(script.contains("samples-"));
 		assertFalse(script.contains("id:'events'"));
+		assertFalse(script.contains("plotBands:"), "no lanes");
 		assertTrue(EnvironmentClimateChart.status(series).startsWith("Building climate history: "), EnvironmentClimateChart.status(series));
+	}
+
+	@Test
+	void testEmptyLanesSayNothingInThePeriod() throws IOException {
+
+		EnvironmentClimateChart chart = new EnvironmentClimateChart();
+		chart.update(
+			series(true),
+			FROM,
+			TO,
+			null,
+			Collections.singletonList(sample("W-old", FROM.minusDays(5), PathogenTestResultType.POSITIVE)),
+			Collections.emptyList(),
+			Collections.emptyList());
+
+		String script = chart.getScript();
+		assertTrue(script.contains("text:'Samples'"), script);
+		assertTrue(script.contains("No samples in this period"));
+		assertTrue(script.contains("text:'Events'"));
+		assertTrue(script.contains("No linked events in this period"));
+
+		Path out = Paths.get("target", "climate-chart-empty-test.js");
+		Files.createDirectories(out.getParent());
+		Files.write(out, script.getBytes(StandardCharsets.UTF_8));
+	}
+
+	@Test
+	void testRowsLaidOutInPixelsWithRoomForTheirNames() {
+
+		List<EnvironmentClimateChart.Row> rows = Arrays.asList(
+			EnvironmentClimateChart.Row.lane("Samples", null),
+			EnvironmentClimateChart.Row.lane("Events", null),
+			EnvironmentClimateChart.Row.panel("Rain (mm)", 32),
+			EnvironmentClimateChart.Row.panel("Temp (°C)", 36),
+			EnvironmentClimateChart.Row.panel("Humidity (%)", 32));
+		EnvironmentClimateChart.layoutRows(rows);
+
+		int previousBottom = EnvironmentClimateChart.PLOT_TOP;
+		for (int i = 0; i < rows.size(); i++) {
+			EnvironmentClimateChart.Row row = rows.get(i);
+			int space = row.getTop() - previousBottom;
+			int expected = i == 0 ? 0 : i < 2 ? EnvironmentClimateChart.LANE_GAP : EnvironmentClimateChart.TITLE_BAND;
+			if (i == 2) {
+				expected += EnvironmentClimateChart.LANE_GAP;
+			}
+			assertEquals(expected, space, "space above row " + i);
+			previousBottom = row.getTop() + row.getHeight();
+		}
+		assertEquals(EnvironmentClimateChart.LANE_HEIGHT, rows.get(0).getHeight());
+		assertEquals(
+			EnvironmentClimateChart.CHART_HEIGHT - EnvironmentClimateChart.MARGIN_BOTTOM,
+			previousBottom,
+			"the last panel ends at the plot's bottom");
 	}
 
 	@Test

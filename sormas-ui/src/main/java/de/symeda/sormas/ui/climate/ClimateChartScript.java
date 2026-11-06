@@ -28,7 +28,7 @@ import de.symeda.sormas.api.utils.DateFormatHelper;
 public final class ClimateChartScript {
 
 	/** Left and right margins shared by the stacked charts, so their time axes line up. */
-	public static final int MARGIN_LEFT = 96;
+	public static final int MARGIN_LEFT = 64;
 	public static final int MARGIN_RIGHT = 24;
 
 	private static final long HALF_DAY = 12L * 60 * 60 * 1000;

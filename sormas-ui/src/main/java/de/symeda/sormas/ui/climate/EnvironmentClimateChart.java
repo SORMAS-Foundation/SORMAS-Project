@@ -70,6 +70,18 @@ public class EnvironmentClimateChart extends VerticalLayout {
 	static final String SAMPLES = "samples";
 	static final String EVENTS = "events";
 
+	/** The chart's height in pixels; the rows are laid out in pixels inside it (decision 107). */
+	static final int CHART_HEIGHT = 700;
+	/** Room above the plot for the details line of the day hovered. */
+	static final int PLOT_TOP = 100;
+	/** Room below the plot for the date labels and the legend. */
+	static final int MARGIN_BOTTOM = 130;
+	static final int LANE_HEIGHT = 26;
+	static final int LANE_GAP = 6;
+	/** The band above each panel that holds its name. */
+	static final int TITLE_BAND = 26;
+	private static final String TITLE_STYLE = "{fontWeight:'normal',color:'#555555'}";
+
 	/** How a sample is shown: positive when any pathogen test is positive (decision 92), else by its latest result. */
 	enum SampleStatus {
 
@@ -120,7 +132,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		status.setWidthFull();
 		status.addStyleName(CssStyles.LABEL_SECONDARY);
 		chart.setWidthFull();
-		chart.setHeight(680, Unit.PIXELS);
+		chart.setHeight(CHART_HEIGHT, Unit.PIXELS);
 		credit.addStyleNames(CssStyles.LABEL_SECONDARY, CssStyles.LABEL_SMALL);
 		addComponents(status, chart, credit);
 	}
@@ -191,18 +203,20 @@ public class EnvironmentClimateChart extends VerticalLayout {
 
 		List<Row> rows = new ArrayList<>();
 		if (samplesByDay != null) {
-			rows.add(new Row(I18nProperties.getString(Strings.climateAxisSamples), 6, false));
+			rows.add(
+				Row.lane(
+					I18nProperties.getString(Strings.climateAxisSamples),
+					samplesByDay.isEmpty() ? I18nProperties.getString(Strings.climateAxisSamplesNone) : null));
 		}
 		if (eventsByDay != null) {
 			rows.add(
-				new Row(
-					I18nProperties.getString(eventsByDay.isEmpty() ? Strings.climateAxisEventsNone : Strings.climateAxisEvents),
-					6,
-					false));
+				Row.lane(
+					I18nProperties.getString(Strings.climateAxisEvents),
+					eventsByDay.isEmpty() ? I18nProperties.getString(Strings.climateAxisEventsNone) : null));
 		}
-		Row rain = new Row(I18nProperties.getString(Strings.climateAxisRainfall), 28, true);
-		Row temperature = new Row(I18nProperties.getString(Strings.climateAxisTemperature), 30, true);
-		Row humidity = new Row(I18nProperties.getString(Strings.climateAxisHumidity), 24, true);
+		Row rain = Row.panel(I18nProperties.getString(Strings.climateAxisRainfall), 32);
+		Row temperature = Row.panel(I18nProperties.getString(Strings.climateAxisTemperature), 36);
+		Row humidity = Row.panel(I18nProperties.getString(Strings.climateAxisHumidity), 32);
 		rows.add(rain);
 		rows.add(temperature);
 		rows.add(humidity);
@@ -223,9 +237,21 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			.append(ClimateChartScript.MARGIN_LEFT)
 			.append(",marginRight:")
 			.append(ClimateChartScript.MARGIN_RIGHT)
-			.append(",marginTop:100,spacingTop:4,animation:false},")
+			.append(",marginTop:")
+			.append(PLOT_TOP)
+			.append(",marginBottom:")
+			.append(MARGIN_BOTTOM)
+			.append(",spacingTop:4,animation:false,events:{render:function(){var ch=this;")
+			.append("(ch.panelTitles||[]).forEach(function(t){t.destroy();});")
+			.append("ch.panelTitles=ch.yAxis.filter(function(a){return a.options.panelTitle;}).map(function(a){")
+			.append("return ch.renderer.text(a.options.panelTitle,ch.plotLeft,a.top-")
+			.append(TITLE_BAND / 3)
+			.append(").css({color:'#555555',fontSize:'12px'}).add();});}}},")
 			.append("title:{text:null},credits:{enabled:false},exporting:{enabled:false},time:{useUTC:true},")
-			.append("legend:{enabled:true,itemStyle:{fontWeight:'normal'}},");
+			// the bottom margin is fixed so the rows can be laid out in pixels; a long legend pages instead of growing
+			.append("legend:{enabled:true,maxHeight:")
+			.append(MARGIN_BOTTOM - 30)
+			.append(",itemStyle:{fontWeight:'normal'}},");
 
 		// x axis: the days shown, the crosshair through every row and the report date
 		js.append("xAxis:{type:'datetime',min:")
@@ -251,23 +277,33 @@ public class EnvironmentClimateChart extends VerticalLayout {
 
 		js.append("yAxis:[");
 		for (Row row : rows) {
-			js.append("{title:{text:")
-				.append(string(row.title))
-				.append(",rotation:0,align:'high',textAlign:'left',offset:0,x:2,y:-5,reserveSpace:false,style:{fontWeight:'normal',color:'#555555'}},top:'")
-				.append(row.top)
-				.append("%',height:'")
-				.append(row.height)
-				.append("%',offset:0,lineWidth:1,");
-			if (row.values) {
-				js.append("labels:{x:-6},showLastLabel:false,gridLineDashStyle:'Dot'");
+			js.append("{top:").append(row.top).append(",height:").append(row.height).append(",offset:0,");
+			if (row.lane) {
+				// a lane: its name in the left margin, level with it, on a light background; a note when it is empty
+				js.append("title:{text:")
+					.append(string(row.title))
+					.append(",rotation:0,align:'middle',textAlign:'right',offset:8,y:4,reserveSpace:false,style:")
+					.append(TITLE_STYLE)
+					.append("},lineWidth:0,min:-1,max:1,startOnTick:false,endOnTick:false,labels:{enabled:false},gridLineWidth:0,")
+					.append("plotBands:[{from:-1,to:1,color:'#f4f6f7'");
+				if (row.note != null) {
+					js.append(",label:{text:")
+						.append(string(html(row.note)))
+						.append(",align:'left',verticalAlign:'middle',x:8,y:4,style:{color:'#888888',fontStyle:'italic'}}");
+				}
+				js.append("}]");
+			} else {
+				// a panel: its name is drawn in the band above it by the render event (an axis title moves with the
+				// width of the axis labels)
+				js.append("title:{text:null},panelTitle:")
+					.append(string(row.title))
+					.append(",lineWidth:1,labels:{x:-6},gridLineDashStyle:'Dot'");
 				if (row == humidity) {
 					js.append(",min:0,max:100,tickAmount:3");
 				}
 				if (row == rain) {
 					js.append(",min:0");
 				}
-			} else {
-				js.append("min:-1,max:1,labels:{enabled:false},gridLineWidth:0");
 			}
 			js.append("},");
 		}
@@ -649,32 +685,72 @@ public class EnvironmentClimateChart extends VerticalLayout {
 	}
 
 	/**
-	 * Gives each row its top and height in percent of the plot: the weights scaled to what is left after the gaps.
+	 * Gives each row its top and height in pixels from the top of the chart. Lanes have a fixed height; each panel has a
+	 * band above it for its name, and the panels share what is left by weight, the last one ending at the plot's bottom.
 	 */
-	private static void layoutRows(List<Row> rows) {
-		double gap = 3;
-		double available = 100 - gap * (rows.size() - 1);
-		double weights = rows.stream().mapToDouble(r -> r.weight).sum();
-		double top = 0;
+	static void layoutRows(List<Row> rows) {
+
+		int plotHeight = CHART_HEIGHT - PLOT_TOP - MARGIN_BOTTOM;
+		int fixed = 0;
+		double weights = 0;
 		for (Row row : rows) {
-			row.top = Math.round(top * 10) / 10.0;
-			row.height = Math.round(available * row.weight / weights * 10) / 10.0;
-			top += row.height + gap;
+			if (row.lane) {
+				fixed += LANE_HEIGHT + LANE_GAP;
+			} else {
+				fixed += TITLE_BAND;
+				weights += row.weight;
+			}
+		}
+		int available = plotHeight - fixed;
+		int y = 0;
+		Row last = rows.get(rows.size() - 1);
+		for (Row row : rows) {
+			if (row.lane) {
+				row.top = PLOT_TOP + y;
+				row.height = LANE_HEIGHT;
+				y += LANE_HEIGHT + LANE_GAP;
+			} else {
+				y += TITLE_BAND;
+				row.top = PLOT_TOP + y;
+				row.height = row == last ? plotHeight - y : (int) Math.round(available * row.weight / weights);
+				y += row.height;
+			}
 		}
 	}
 
-	private static final class Row {
+	static final class Row {
 
 		private final String title;
+		/** Shown inside an empty lane, or null. */
+		private final String note;
 		private final double weight;
-		private final boolean values;
-		private double top;
-		private double height;
+		private final boolean lane;
+		private int top;
+		private int height;
 
-		private Row(String title, double weight, boolean values) {
+		private Row(String title, String note, double weight, boolean lane) {
 			this.title = title;
+			this.note = note;
 			this.weight = weight;
-			this.values = values;
+			this.lane = lane;
+		}
+
+		/** A row of markers (samples, events), with a note when it has none in the period. */
+		static Row lane(String title, String note) {
+			return new Row(title, note, 0, true);
+		}
+
+		/** A panel of daily values, sharing the height left by weight. */
+		static Row panel(String title, double weight) {
+			return new Row(title, null, weight, false);
+		}
+
+		int getTop() {
+			return top;
+		}
+
+		int getHeight() {
+			return height;
 		}
 	}
 }
