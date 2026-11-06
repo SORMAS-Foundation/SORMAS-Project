@@ -192,6 +192,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.util.ValidationProblem;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
@@ -595,95 +596,150 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	public void validate(PersonDto source) throws ValidationRuntimeException {
+		collectValidationProblems(source).stream().findFirst().ifPresent(problem -> {
+			throw new ValidationRuntimeException(problem.getMessage());
+		});
+	}
+
+	public List<ValidationProblem> collectValidationProblems(PersonDto source) {
+		List<ValidationProblem> problems = new ArrayList<>();
 
 		if (StringUtils.isBlank(source.getFirstName())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyFirstName));
+			addProblem(problems, Validations.specifyFirstName, PersonDto.FIRST_NAME);
 		}
 		if (StringUtils.isBlank(source.getLastName())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
+			addProblem(problems, Validations.specifyLastName, PersonDto.LAST_NAME);
 		}
 		if (source.getSex() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifySex));
+			addProblem(problems, Validations.specifySex, PersonDto.SEX);
 		}
-		if (source.getPersonContactDetails()
-			.stream()
-			.filter(cd -> cd.isPrimaryContact() && cd.getPersonContactDetailType() == PersonContactDetailType.PHONE)
-			.count()
-			> 1) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryPhoneNumbers));
+		if (countPrimaryContactDetails(source, PersonContactDetailType.PHONE) > 1) {
+			addProblem(problems, Validations.personMultiplePrimaryPhoneNumbers, PersonDto.PERSON_CONTACT_DETAILS);
 		}
-		if (source.getPersonContactDetails()
-			.stream()
-			.filter(cd -> cd.isPrimaryContact() && cd.getPersonContactDetailType() == PersonContactDetailType.EMAIL)
-			.count()
-			> 1) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
+		if (countPrimaryContactDetails(source, PersonContactDetailType.EMAIL) > 1) {
+			addProblem(problems, Validations.personMultiplePrimaryEmailAddresses, PersonDto.PERSON_CONTACT_DETAILS);
 		}
 		if (!DataHelper.isValidEmailAddress(source.getEmailAddress())) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.validEmailAddress,
-					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.EMAIL_ADDRESS)));
+			addProblem(
+				problems,
+				Validations.validEmailAddress,
+				new Object[] {
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.EMAIL_ADDRESS) },
+				PersonDto.EMAIL_ADDRESS);
 		}
 		if (!DataHelper.isValidPhoneNumber(source.getPhone())) {
-			throw new ValidationRuntimeException(
-				I18nProperties
-					.getValidationError(Validations.validPhoneNumber, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE)));
+			addProblem(
+				problems,
+				Validations.validPhoneNumber,
+				new Object[] {
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE) },
+				PersonDto.PHONE);
 		}
 		if (source.getAddress() != null) {
-			if (source.getAddress().getRegion() != null
-				&& source.getAddress().getDistrict() != null
-				&& !districtFacade.getByUuid(source.getAddress().getDistrict().getUuid()).getRegion().equals(source.getAddress().getRegion())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
-			}
-			if (source.getAddress().getDistrict() != null
-				&& source.getAddress().getCommunity() != null
-				&& !communityFacade.getByUuid(source.getAddress().getCommunity().getUuid()).getDistrict().equals(source.getAddress().getDistrict())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressCommunityInAddressDistrict));
-			}
-			if ((source.getAddress().getDistrict() != null || source.getAddress().getFacility() != null) && source.getAddress().getRegion() == null) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
-			}
-			if (source.getAddress().getFacility() != null) {
-				FacilityDto healthFacility = facilityFacade.getByUuid(source.getAddress().getFacility().getUuid());
-
-				if (source.getAddress().getCommunity() == null
-					&& healthFacility.getDistrict() != null
-					&& !healthFacility.getDistrict().equals(source.getAddress().getDistrict())) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressDistrict));
-				}
-				if (source.getAddress().getCommunity() != null
-					&& healthFacility.getCommunity() != null
-					&& !source.getAddress().getCommunity().equals(healthFacility.getCommunity())) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressCommunity));
-				}
-				if (healthFacility.getRegion() != null && !source.getAddress().getRegion().equals(healthFacility.getRegion())) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressRegion));
-				}
-			}
-			if (!StringUtils.isAllBlank(
-				source.getAddress().getContactPersonFirstName(),
-				source.getAddress().getContactPersonLastName(),
-				source.getAddress().getContactPersonEmail(),
-				source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
-			}
-			if (!DataHelper.isValidEmailAddress(source.getAddress().getContactPersonEmail())) {
-				throw new ValidationRuntimeException(
-					I18nProperties.getValidationError(
-						Validations.validEmailAddress,
-						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
-			}
-			if (!DataHelper.isValidPhoneNumber(source.getAddress().getContactPersonPhone())) {
-				throw new ValidationRuntimeException(
-					I18nProperties.getValidationError(
-						Validations.validPhoneNumber,
-						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE)));
-			}
+			collectAddressProblems(source.getAddress(), problems);
 		}
 
-		// Validate birth date
-		PersonHelper.validateBirthDate(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD());
+		try {
+			PersonHelper.validateBirthDate(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD());
+		} catch (ValidationRuntimeException e) {
+			problems.add(
+				new ValidationProblem(null, e.getMessage(), PersonDto.BIRTH_DATE_DD, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_YYYY));
+		}
+
+		return problems;
+	}
+
+	private void collectAddressProblems(LocationDto address, List<ValidationProblem> problems) {
+		String regionPath = addressPath(LocationDto.REGION);
+		String districtPath = addressPath(LocationDto.DISTRICT);
+		String communityPath = addressPath(LocationDto.COMMUNITY);
+		String facilityPath = addressPath(LocationDto.FACILITY);
+
+		if (address.getRegion() != null
+			&& address.getDistrict() != null
+			&& !districtFacade.getByUuid(address.getDistrict().getUuid()).getRegion().equals(address.getRegion())) {
+			addProblem(problems, Validations.noAddressDistrictInAddressRegion, districtPath, regionPath);
+		}
+		if (address.getDistrict() != null
+			&& address.getCommunity() != null
+			&& !communityFacade.getByUuid(address.getCommunity().getUuid()).getDistrict().equals(address.getDistrict())) {
+			addProblem(problems, Validations.noAddressCommunityInAddressDistrict, communityPath, districtPath);
+		}
+		if ((address.getDistrict() != null || address.getFacility() != null) && address.getRegion() == null) {
+			addProblem(problems, Validations.validRegion, regionPath);
+		}
+		if (address.getFacility() != null && address.getRegion() != null) {
+			FacilityDto healthFacility = facilityFacade.getByUuid(address.getFacility().getUuid());
+
+			if (address.getCommunity() == null
+				&& healthFacility.getDistrict() != null
+				&& !healthFacility.getDistrict().equals(address.getDistrict())
+				&& isUnreported(problems, facilityPath, districtPath)) {
+				addProblem(problems, Validations.noAddressFacilityInAddressDistrict, facilityPath, districtPath);
+			}
+			if (address.getCommunity() != null
+				&& healthFacility.getCommunity() != null
+				&& !address.getCommunity().equals(healthFacility.getCommunity())
+				&& isUnreported(problems, facilityPath, communityPath)) {
+				addProblem(problems, Validations.noAddressFacilityInAddressCommunity, facilityPath, communityPath);
+			}
+			if (healthFacility.getRegion() != null
+				&& !address.getRegion().equals(healthFacility.getRegion())
+				&& isUnreported(problems, facilityPath, regionPath)) {
+				addProblem(problems, Validations.noAddressFacilityInAddressRegion, facilityPath, regionPath);
+			}
+		}
+		if (!StringUtils.isAllBlank(
+			address.getContactPersonFirstName(),
+			address.getContactPersonLastName(),
+			address.getContactPersonEmail(),
+			address.getContactPersonPhone()) && address.getFacilityType() == null) {
+			addProblem(
+				problems,
+				Validations.importPersonContactDetailsWithoutFacilityType,
+				addressPath(LocationDto.FACILITY_TYPE),
+				addressPath(LocationDto.CONTACT_PERSON_FIRST_NAME),
+				addressPath(LocationDto.CONTACT_PERSON_LAST_NAME),
+				addressPath(LocationDto.CONTACT_PERSON_EMAIL),
+				addressPath(LocationDto.CONTACT_PERSON_PHONE));
+		}
+		if (!DataHelper.isValidEmailAddress(address.getContactPersonEmail())) {
+			addProblem(
+				problems,
+				Validations.validEmailAddress,
+				new Object[] {
+					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL) },
+				addressPath(LocationDto.CONTACT_PERSON_EMAIL));
+		}
+		if (!DataHelper.isValidPhoneNumber(address.getContactPersonPhone())) {
+			addProblem(
+				problems,
+				Validations.validPhoneNumber,
+				new Object[] {
+					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE) },
+				addressPath(LocationDto.CONTACT_PERSON_PHONE));
+		}
+	}
+
+	private static long countPrimaryContactDetails(PersonDto person, PersonContactDetailType type) {
+		return person.getPersonContactDetails().stream().filter(cd -> cd.isPrimaryContact() && cd.getPersonContactDetailType() == type).count();
+	}
+
+	private static String addressPath(String property) {
+		return PersonDto.ADDRESS + "." + property;
+	}
+
+	private static boolean isUnreported(List<ValidationProblem> problems, String... paths) {
+		List<String> candidates = Arrays.asList(paths);
+		return problems.stream().noneMatch(problem -> problem.getPropertyPaths().stream().anyMatch(candidates::contains));
+	}
+
+	private static void addProblem(List<ValidationProblem> problems, String validationKey, String... propertyPaths) {
+		addProblem(problems, validationKey, new Object[0], propertyPaths);
+	}
+
+	private static void addProblem(List<ValidationProblem> problems, String validationKey, Object[] messageArgs, String... propertyPaths) {
+		problems.add(new ValidationProblem(validationKey, I18nProperties.getValidationError(validationKey, messageArgs), propertyPaths));
 	}
 
 	//@formatter:off
