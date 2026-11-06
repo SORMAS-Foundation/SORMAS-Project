@@ -130,6 +130,18 @@ public class CaseValidationProblemsTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void reportsTheDistrictOutsideTheRegionBesideTheCommunityOutsideTheDistrict() {
+		List<ValidationProblem> problems = collect(caze -> {
+			caze.setResponsibleDistrict(otherRdcf.district);
+			caze.setResponsibleCommunity(rdcf.community);
+		});
+
+		assertEquals(
+			List.of(Validations.noResponsibleCommunityInResponsibleDistrict, Validations.noResponsibleDistrictInResponsibleRegion),
+			keys(problems));
+	}
+
+	@Test
 	public void skipsDependentChecksWhenTheirInputsAreMissing() {
 		List<ValidationProblem> problems = collect(caze -> {
 			caze.setResponsibleRegion(null);

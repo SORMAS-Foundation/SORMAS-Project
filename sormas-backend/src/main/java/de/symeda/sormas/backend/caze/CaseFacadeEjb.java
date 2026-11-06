@@ -1957,7 +1957,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 		if (caze.getResponsibleDistrict() != null
 			&& caze.getResponsibleRegion() != null
-			&& problems.isUnreported(CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_REGION)
 			&& !districtFacade.getByUuid(caze.getResponsibleDistrict().getUuid()).getRegion().equals(caze.getResponsibleRegion())) {
 			problems.add(Validations.noResponsibleDistrictInResponsibleRegion, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_REGION);
 		}
