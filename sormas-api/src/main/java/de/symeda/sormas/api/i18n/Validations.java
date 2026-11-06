@@ -143,6 +143,8 @@ public interface Validations {
 	String importFacilityAlreadyExists = "importFacilityAlreadyExists";
 	String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";
 	String importFacilityNotUniqueInDistrict = "importFacilityNotUniqueInDistrict";
+	String importFacilityTypeMissing = "importFacilityTypeMissing";
+	String importFacilityTypeNotAccommodation = "importFacilityTypeNotAccommodation";
 	String importHierarchicalAstNotForTestType = "importHierarchicalAstNotForTestType";
 	String importHierarchicalCaseIdAmbiguous = "importHierarchicalCaseIdAmbiguous";
 	String importHierarchicalCaseIdNotFound = "importHierarchicalCaseIdNotFound";
@@ -171,13 +173,17 @@ public interface Validations {
 	String importLaboratoryAlreadyExists = "importLaboratoryAlreadyExists";
 	String importLineTooLong = "importLineTooLong";
 	String importPersonContactDetailsWithoutFacilityType = "importPersonContactDetailsWithoutFacilityType";
+	String importPlaceOfStayMissing = "importPlaceOfStayMissing";
 	String importPointOfEntryAlreadyExists = "importPointOfEntryAlreadyExists";
+	String importPointOfEntryMissing = "importPointOfEntryMissing";
 	String importPointOfEntryNotUniqueInDistrict = "importPointOfEntryNotUniqueInDistrict";
 	String importProbablyInvalidSeparator = "importProbablyInvalidSeparator";
 	String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
 	String importRegionNotInServerCountry = "importRegionNotInServerCountry";
 	String importRegionNotUnique = "importRegionNotUnique";
+	String importResponsibleDistrictMissing = "importResponsibleDistrictMissing";
+	String importResponsibleRegionMissing = "importResponsibleRegionMissing";
 	String importSelfReportPropertyTypeNotAllowed = "importSelfReportPropertyTypeNotAllowed";
 	String importSelfReportUnexpectedError = "importSelfReportUnexpectedError";
 	String importSubcontinentAlreadyExists = "importSubcontinentAlreadyExists";

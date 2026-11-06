@@ -600,7 +600,7 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 
 		ImportIssueDto issue = onlyIssue(preview);
 		assertEquals("CaseData.healthFacility", issue.getColumn());
-		assertEquals(I18nProperties.getValidationError(Validations.validFacility), issue.getMessage());
+		assertEquals(I18nProperties.getValidationError(Validations.importPlaceOfStayMissing), issue.getMessage());
 	}
 
 	@Test

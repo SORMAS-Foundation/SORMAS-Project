@@ -37,7 +37,7 @@ final class ValidationIssues {
 		problems.forEach(problem -> {
 			List<String> columns = columns(node, target, problem.getPropertyPaths(), headers);
 			if (columns.stream().noneMatch(columnsWithIssues::contains)) {
-				node.reportIssue(columns.isEmpty() ? null : String.join(", ", columns), problem.getMessage());
+				node.reportIssue(columns.isEmpty() ? null : String.join(", ", columns), ImportProblemWording.reword(problem));
 			}
 		});
 	}

@@ -38,7 +38,7 @@ public final class ValidationProblems {
 	}
 
 	public void add(String validationKey, Object[] messageArgs, String... propertyPaths) {
-		add(new ValidationProblem(validationKey, I18nProperties.getValidationError(validationKey, messageArgs), propertyPaths));
+		add(new ValidationProblem(validationKey, I18nProperties.getValidationError(validationKey, messageArgs), messageArgs, propertyPaths));
 	}
 
 	public void add(ValidationProblem problem) {
