@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -103,7 +104,7 @@ public class EnvironmentClimateCards extends VerticalLayout {
 		layout.setWidthFull();
 		layout.addStyleName(CssStyles.BACKGROUND_ROUNDED_CORNERS);
 
-		Label title = new Label(title(card.getVariable()));
+		Label title = new Label(ClimateIcon.of(card.getVariable()).html(ClimateIcon.LARGE) + " " + ClimateChartScript.html(title(card.getVariable())), ContentMode.HTML);
 		title.addStyleName(CssStyles.LABEL_BOLD);
 		layout.addComponent(title);
 

@@ -10,4 +10,50 @@
   .climate-days-grid {
     margin-top: 15px;
   }
+
+  // icons for rainfall, temperature and humidity (ClimateIcon): each drawing is a mask filled with the CSS color,
+  // so an icon is as large as the text around it and coloured like text; the colours are the chart's panel colours
+  // (the drawings are fully percent-encoded: the theme compiler drops the quotes around a url)
+  .climate-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  // a cloud with three drops
+  .climate-icon-rainfall {
+    color: #3c78b4;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2024%2024%27%3E%3Cg%20fill=%27black%27%3E%3Ccircle%20cx=%278%27%20cy=%2710%27%20r=%273.5%27/%3E%3Ccircle%20cx=%2713%27%20cy=%277.5%27%20r=%274.5%27/%3E%3Ccircle%20cx=%2717.5%27%20cy=%2710.5%27%20r=%273%27/%3E%3Crect%20x=%278%27%20y=%279.5%27%20width=%279.5%27%20height=%274%27/%3E%3C/g%3E%3Cpath%20d=%27M8.5%2016.5l-1%203M13%2016.5l-1%204.5M17.5%2016.5l-1%203%27%20stroke=%27black%27%20stroke-width=%272%27%20stroke-linecap=%27round%27/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2024%2024%27%3E%3Cg%20fill=%27black%27%3E%3Ccircle%20cx=%278%27%20cy=%2710%27%20r=%273.5%27/%3E%3Ccircle%20cx=%2713%27%20cy=%277.5%27%20r=%274.5%27/%3E%3Ccircle%20cx=%2717.5%27%20cy=%2710.5%27%20r=%273%27/%3E%3Crect%20x=%278%27%20y=%279.5%27%20width=%279.5%27%20height=%274%27/%3E%3C/g%3E%3Cpath%20d=%27M8.5%2016.5l-1%203M13%2016.5l-1%204.5M17.5%2016.5l-1%203%27%20stroke=%27black%27%20stroke-width=%272%27%20stroke-linecap=%27round%27/%3E%3C/svg%3E");
+  }
+
+  // a thermometer with a scale
+  .climate-icon-temperature {
+    color: #d35400;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2024%2024%27%3E%3Cpath%20d=%27M8.5%2014.2V5a2%202%200%200%201%204%200v9.2a4%204%200%201%201-4%200z%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.8%27%20stroke-linejoin=%27round%27/%3E%3Ccircle%20cx=%2710.5%27%20cy=%2717.66%27%20r=%271.9%27/%3E%3Cpath%20d=%27M10.5%2017V9%27%20stroke=%27black%27%20stroke-width=%271.8%27%20stroke-linecap=%27round%27/%3E%3Cpath%20d=%27M15%206h2M15%209h2M15%2012h2%27%20stroke=%27black%27%20stroke-width=%271.5%27%20stroke-linecap=%27round%27/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2024%2024%27%3E%3Cpath%20d=%27M8.5%2014.2V5a2%202%200%200%201%204%200v9.2a4%204%200%201%201-4%200z%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.8%27%20stroke-linejoin=%27round%27/%3E%3Ccircle%20cx=%2710.5%27%20cy=%2717.66%27%20r=%271.9%27/%3E%3Cpath%20d=%27M10.5%2017V9%27%20stroke=%27black%27%20stroke-width=%271.8%27%20stroke-linecap=%27round%27/%3E%3Cpath%20d=%27M15%206h2M15%209h2M15%2012h2%27%20stroke=%27black%27%20stroke-width=%271.5%27%20stroke-linecap=%27round%27/%3E%3C/svg%3E");
+  }
+
+  // a drop with two waves
+  .climate-icon-humidity {
+    color: #1f6f8b;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2024%2024%27%3E%3Cpath%20d=%27M12%202.8C12%202.8%205.5%2010.2%205.5%2014.6a6.5%206.5%200%200%200%2013%200C18.5%2010.2%2012%202.8%2012%202.8z%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.8%27%20stroke-linejoin=%27round%27/%3E%3Cpath%20d=%27M8.3%2014c1.2-.9%202.5-.9%203.7%200s2.5.9%203.7%200M8.3%2017.3c1.2-.9%202.5-.9%203.7%200s2.5.9%203.7%200%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.5%27%20stroke-linecap=%27round%27/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2024%2024%27%3E%3Cpath%20d=%27M12%202.8C12%202.8%205.5%2010.2%205.5%2014.6a6.5%206.5%200%200%200%2013%200C18.5%2010.2%2012%202.8%2012%202.8z%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.8%27%20stroke-linejoin=%27round%27/%3E%3Cpath%20d=%27M8.3%2014c1.2-.9%202.5-.9%203.7%200s2.5.9%203.7%200M8.3%2017.3c1.2-.9%202.5-.9%203.7%200s2.5.9%203.7%200%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.5%27%20stroke-linecap=%27round%27/%3E%3C/svg%3E");
+  }
+
+  .climate-icon.climate-icon-large {
+    font-size: 1.5em;
+  }
+
+  .climate-icon.climate-icon-muted {
+    color: #888888;
+  }
 }

@@ -84,6 +84,9 @@ class EnvironmentClimateChartTest {
 		assertTrue(script.contains("Flood &lt;after&gt; &#39;storm&#39;"), "event titles are escaped");
 		assertTrue(script.contains("Report date"));
 		assertTrue(script.contains("Point at a day to see its details."), "the hint in the details area");
+		for (ClimateIcon icon : ClimateIcon.values()) {
+			assertTrue(script.contains("climate-icon " + icon.getStyle()), "each panel name starts with its icon: " + icon);
+		}
 		assertEquals("Normal range: 2021–2025, from Bagaces district", EnvironmentClimateChart.status(series));
 
 		// written for a render check in a browser with the bundled Highcharts files
@@ -174,6 +177,8 @@ class EnvironmentClimateChartTest {
 		assertTrue(details.contains("Temperature 26.0 °C (min 22.0, max 31.0)"), details);
 		assertTrue(details.contains("noon reading"), details);
 		assertTrue(details.contains("Source: OpenWeather"), details);
+		assertTrue(details.contains(ClimateIcon.RAINFALL.html() + " Rainfall 12.0 mm"), details);
+		assertTrue(details.contains(ClimateIcon.HUMIDITY.html() + " Humidity"), details);
 
 		ClimateDayDto gap = new ClimateDayDto(TO);
 		assertTrue(EnvironmentClimateChart.details(gap, null, null, null).contains("No data"));

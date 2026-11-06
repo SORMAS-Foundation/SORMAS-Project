@@ -246,11 +246,12 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			.append(",marginBottom:")
 			.append(MARGIN_BOTTOM)
 			.append(",spacingTop:4,animation:false,events:{render:function(){var ch=this;")
+			// the panel names are HTML so they can start with their climate icon (decision 111)
 			.append("(ch.panelTitles||[]).forEach(function(t){t.destroy();});")
 			.append("ch.panelTitles=ch.yAxis.filter(function(a){return a.options.panelTitle;}).map(function(a){")
 			.append("return ch.renderer.text(a.options.panelTitle,ch.plotLeft,a.top-")
 			.append(TITLE_BAND / 3)
-			.append(").css({color:'#555555',fontSize:'12px'}).add();});")
+			.append(",true).css({color:'#555555',fontSize:'12px'}).add();});")
 			// a hint in the details area until a day is pointed at; the details box covers it
 			.append("if(ch.hoverHint){ch.hoverHint.destroy();}ch.hoverHint=ch.renderer.text(")
 			.append(string(I18nProperties.getString(Strings.climateChartHint)))
@@ -303,8 +304,9 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			} else {
 				// a panel: its name is drawn in the band above it by the render event (an axis title moves with the
 				// width of the axis labels)
+				ClimateIcon icon = row == rain ? ClimateIcon.RAINFALL : row == temperature ? ClimateIcon.TEMPERATURE : ClimateIcon.HUMIDITY;
 				js.append("title:{text:null},panelTitle:")
-					.append(string(row.title))
+					.append(string(icon.html() + " " + html(row.title)))
 					.append(",lineWidth:1,labels:{x:-6},gridLineDashStyle:'Dot'");
 				if (row == humidity) {
 					js.append(",min:0,max:100,tickAmount:3");
@@ -519,7 +521,8 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			parts.add(I18nProperties.getString(Strings.climateNoData));
 		} else {
 			parts.add(
-				String.format(I18nProperties.getString(Strings.climateDetailRainfall), value(day.getRainfall(), " mm"))
+				ClimateIcon.RAINFALL.html() + " "
+					+ String.format(I18nProperties.getString(Strings.climateDetailRainfall), value(day.getRainfall(), " mm"))
 					+ normal(day.getRainfallNormal(), " mm"));
 			String temperature = String.format(I18nProperties.getString(Strings.climateDetailTemperature), value(day.getTemperatureMean(), " °C"));
 			if (day.getTemperatureMin() != null || day.getTemperatureMax() != null) {
@@ -530,12 +533,12 @@ public class EnvironmentClimateChart extends VerticalLayout {
 						value(day.getTemperatureMax(), ""))
 					+ ")";
 			}
-			parts.add(temperature + normal(day.getTemperatureNormal(), " °C"));
+			parts.add(ClimateIcon.TEMPERATURE.html() + " " + temperature + normal(day.getTemperatureNormal(), " °C"));
 			String humidity = String.format(I18nProperties.getString(Strings.climateDetailHumidity), value(day.getRelativeHumidity(), " %"));
 			if (day.getRelativeHumidity() != null && day.getHumidityMeasure() == HumidityMeasure.NOON_READING) {
 				humidity += " " + I18nProperties.getString(Strings.climateDetailNoonReading);
 			}
-			parts.add(humidity + normal(day.getHumidityNormal(), " %"));
+			parts.add(ClimateIcon.HUMIDITY.html() + " " + humidity + normal(day.getHumidityNormal(), " %"));
 			parts.add(String.format(I18nProperties.getString(Strings.climateDetailSource), day.getSource()));
 		}
 
