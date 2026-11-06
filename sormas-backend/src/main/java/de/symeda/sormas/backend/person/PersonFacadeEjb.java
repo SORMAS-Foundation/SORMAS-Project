@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.backend.person;
 
+import static de.symeda.sormas.backend.util.ValidationProblems.addProblem;
+import static de.symeda.sormas.backend.util.ValidationProblems.isUnreported;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
@@ -727,19 +729,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	private static String addressPath(String property) {
 		return PersonDto.ADDRESS + "." + property;
-	}
-
-	private static boolean isUnreported(List<ValidationProblem> problems, String... paths) {
-		List<String> candidates = Arrays.asList(paths);
-		return problems.stream().noneMatch(problem -> problem.getPropertyPaths().stream().anyMatch(candidates::contains));
-	}
-
-	private static void addProblem(List<ValidationProblem> problems, String validationKey, String... propertyPaths) {
-		addProblem(problems, validationKey, new Object[0], propertyPaths);
-	}
-
-	private static void addProblem(List<ValidationProblem> problems, String validationKey, Object[] messageArgs, String... propertyPaths) {
-		problems.add(new ValidationProblem(validationKey, I18nProperties.getValidationError(validationKey, messageArgs), propertyPaths));
 	}
 
 	//@formatter:off
