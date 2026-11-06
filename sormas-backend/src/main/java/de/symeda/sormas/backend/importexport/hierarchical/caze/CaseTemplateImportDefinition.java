@@ -6,6 +6,8 @@ import java.util.Optional;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -34,6 +36,8 @@ import de.symeda.sormas.backend.user.CurrentUserService;
 @Stateless
 @LocalBean
 public class CaseTemplateImportDefinition implements ImportDefinition {
+
+	private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
 	@EJB
 	private CaseTemplateCellAdapter cellWriter;
@@ -110,14 +114,22 @@ public class CaseTemplateImportDefinition implements ImportDefinition {
 
 	@Override
 	public LevelHandler handler(ImportLevel level) {
+		ColumnHeaders headers = ColumnHeaders.lazily(this::columns);
 		if (level == CaseTemplateSchema.CASE_LEVEL) {
-			return new CaseHandler(caseFacade, personFacade, caseService, currentUserService, configFacade.getNameSimilarityThreshold());
+			return new CaseHandler(
+				caseFacade,
+				personFacade,
+				caseService,
+				currentUserService,
+				VALIDATOR,
+				headers,
+				configFacade.getNameSimilarityThreshold());
 		}
 		if (level == CaseTemplateSchema.SAMPLE_LEVEL) {
-			return new SampleHandler(sampleFacade, currentUserService);
+			return new SampleHandler(sampleFacade, currentUserService, headers);
 		}
 		if (level == CaseTemplateSchema.TEST_LEVEL) {
-			return new TestHandler(pathogenTestFacade, currentUserService);
+			return new TestHandler(pathogenTestFacade, currentUserService, headers);
 		}
 		throw new IllegalArgumentException(level.name() + " has no handler");
 	}

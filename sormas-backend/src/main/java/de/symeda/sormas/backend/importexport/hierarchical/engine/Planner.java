@@ -34,12 +34,13 @@ public final class Planner {
 		RecordBinder binder = new RecordBinder(definition.cellWriter());
 		Map<ImportNode, PlannedRecord> records = new IdentityHashMap<>();
 		Map<String, ImportNode> rootsByIdentity = new HashMap<>();
+		Map<ImportLevel, LevelHandler> handlers = new HashMap<>();
 
 		for (ImportLevel level : definition.schema().levels()) {
 			if (level.isEmbedded()) {
 				continue;
 			}
-			LevelHandler handler = definition.handler(level);
+			LevelHandler handler = handlers.computeIfAbsent(level, definition::handler);
 			List<PlannedRecord> drafts = draft(level, roots.values(), records, handler, binder, columns);
 			rejectDuplicateKeys(drafts, handler);
 			List<PlannedRecord> matchable = drafts.stream().filter(draft -> draft.node().issues().isEmpty()).collect(Collectors.toList());
@@ -73,7 +74,7 @@ public final class Planner {
 			}
 		}
 
-		records.values().forEach(record -> definition.handler(record.node().level()).complete(record));
+		records.values().forEach(record -> handlers.get(record.node().level()).complete(record));
 		rejectRecordsLinkedToFailedRoots(records);
 
 		List<PlannedBlock> blocks = roots.entrySet()

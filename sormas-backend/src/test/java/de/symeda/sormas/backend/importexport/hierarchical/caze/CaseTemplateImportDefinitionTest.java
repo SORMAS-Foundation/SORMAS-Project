@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
 import static de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade.CASE_TEMPLATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -591,6 +592,55 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		assertEquals(
 			I18nProperties.getValidationError(Validations.importHierarchicalVaccinationNotNested),
 			preview.getFileIssues().get(0).getMessage());
+	}
+
+	@Test
+	public void anEmptyHealthFacilityIsReportedOnItsColumn() {
+		ImportPreviewDto preview = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, NEW_CASE_ROW.replace("| HOSPITAL | Facility |", "| | |")));
+
+		ImportIssueDto issue = onlyIssue(preview);
+		assertEquals("CaseData.healthFacility", issue.getColumn());
+		assertEquals(I18nProperties.getValidationError(Validations.validFacility), issue.getMessage());
+	}
+
+	@Test
+	public void aRowWithTwoProblemsShowsBoth() {
+		String row = NEW_CASE_ROW.replace("| HOSPITAL | Facility |", "| | |").replace("| Muller |", "| |");
+
+		List<ImportIssueDto> issues = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, row)).allIssues();
+
+		assertEquals(List.of("Person.person.lastName", "CaseData.healthFacility"), columns(issues), issues.toString());
+	}
+
+	@Test
+	public void anUnknownFacilityNameShowsOnlyTheCellProblem() {
+		String row = NEW_CASE_ROW.replace("| HOSPITAL | Facility |", "| HOSPITAL | No such facility |");
+
+		ImportIssueDto issue = onlyIssue(facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, row)));
+
+		assertEquals("CaseData.healthFacility", issue.getColumn());
+		assertNotEquals(I18nProperties.getValidationError(Validations.validFacility), issue.getMessage());
+	}
+
+	@Test
+	public void aTooLongTextIsStillReportedOnItsColumn() {
+		String row = NEW_CASE_ROW.replace("| Jean |", "| " + "J".repeat(600) + " |");
+
+		ImportIssueDto issue = onlyIssue(facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, row)));
+
+		assertEquals("Person.person.firstName", issue.getColumn());
+	}
+
+	private static ImportIssueDto onlyIssue(ImportPreviewDto preview) {
+		List<ImportIssueDto> issues = preview.allIssues();
+		assertEquals(1, issues.size(), issues.toString());
+		return issues.get(0);
+	}
+
+	private static List<String> columns(List<ImportIssueDto> issues) {
+		List<String> columns = new ArrayList<>();
+		issues.forEach(issue -> columns.add(issue.getColumn()));
+		return columns;
 	}
 
 	private CaseDataDto onlyCase() {

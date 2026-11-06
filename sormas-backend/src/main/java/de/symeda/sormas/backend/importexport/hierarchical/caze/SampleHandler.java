@@ -34,10 +34,12 @@ final class SampleHandler implements LevelHandler {
 
 	private final SampleFacadeEjbLocal sampleFacade;
 	private final CurrentUserService currentUserService;
+	private final ColumnHeaders headers;
 
-	SampleHandler(SampleFacadeEjbLocal sampleFacade, CurrentUserService currentUserService) {
+	SampleHandler(SampleFacadeEjbLocal sampleFacade, CurrentUserService currentUserService, ColumnHeaders headers) {
 		this.sampleFacade = sampleFacade;
 		this.currentUserService = currentUserService;
+		this.headers = headers;
 	}
 
 	@Override
@@ -116,13 +118,13 @@ final class SampleHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
-		if (RejectedRecords.alreadyRejected(record)) {
+		if (RejectedRecords.hasCellIssues(record)) {
 			return;
 		}
 		try {
 			sampleFacade.validate(record.target(SAMPLE), false);
 		} catch (ValidationRuntimeException e) {
-			ValidationIssues.report(record.node(), SAMPLE, e);
+			ValidationIssues.report(record.node(), SAMPLE, e, headers);
 		}
 	}
 }
