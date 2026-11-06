@@ -18123,4 +18123,38 @@ ON CONFLICT (config_key) DO NOTHING;
 
 INSERT INTO schema_version (version_number, comment) VALUES (678, 'Climate feature: climate jobs and their schedules');
 
+CREATE TABLE IF NOT EXISTS siteclimatereading (
+    id bigint NOT NULL,
+    uuid varchar(36) NOT NULL UNIQUE,
+    changedate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationdate timestamp(3) NOT NULL DEFAULT NOW(),
+    change_user_id bigint,
+    sys_period tstzrange NOT NULL,
+    environment_id bigint NOT NULL,
+    readingdatetime timestamp NOT NULL,
+    airtemperature double precision,
+    rainfall double precision,
+    rainfallperiodhours integer,
+    relativehumidity double precision,
+    notes varchar(1024),
+    reportinguser_id bigint NOT NULL,
+    PRIMARY KEY (id)
+);
+ALTER TABLE siteclimatereading ADD CONSTRAINT fk_siteclimatereading_environment_id FOREIGN KEY (environment_id) REFERENCES environments (id);
+ALTER TABLE siteclimatereading ADD CONSTRAINT fk_siteclimatereading_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
+ALTER TABLE siteclimatereading ADD CONSTRAINT fk_siteclimatereading_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+CREATE INDEX IF NOT EXISTS idx_siteclimatereading_environment_id ON siteclimatereading (environment_id);
+ALTER TABLE siteclimatereading OWNER TO sormas_user;
+
+CREATE TABLE siteclimatereading_history (LIKE siteclimatereading);
+DROP TRIGGER IF EXISTS versioning_trigger ON siteclimatereading;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON siteclimatereading
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'siteclimatereading_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON siteclimatereading;
+CREATE TRIGGER delete_history_trigger AFTER DELETE ON siteclimatereading
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('siteclimatereading_history', 'id');
+ALTER TABLE siteclimatereading_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (679, '#14382 - Climate feature: site climate readings');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
