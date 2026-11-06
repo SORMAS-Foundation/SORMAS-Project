@@ -993,6 +993,8 @@ public interface Strings {
 	String headingWrongFileType = "headingWrongFileType";
 	String immunizationRecoveryHeading = "immunizationRecoveryHeading";
 	String immunizationVaccinationHeading = "immunizationVaccinationHeading";
+	String importTemplateHealthFacilityRequired = "importTemplateHealthFacilityRequired";
+	String importTemplatePointOfEntryRequired = "importTemplatePointOfEntryRequired";
 	String inactive = "inactive";
 	String inColumn = "inColumn";
 	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";
