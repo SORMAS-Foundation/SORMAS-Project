@@ -84,6 +84,7 @@ public interface Strings {
 	String climateCardsNormalFromDistrict = "climateCardsNormalFromDistrict";
 	String climateCardValuesOnly = "climateCardValuesOnly";
 	String climateCardWithinRange = "climateCardWithinRange";
+	String climateChartHint = "climateChartHint";
 	String climateChooseOne = "climateChooseOne";
 	String climateContextArchivedShared = "climateContextArchivedShared";
 	String climateContextArchivedStopped = "climateContextArchivedStopped";
@@ -133,6 +134,7 @@ public interface Strings {
 	String climateJobScopeRelink = "climateJobScopeRelink";
 	String climateJobScopeWithEnvironments = "climateJobScopeWithEnvironments";
 	String climateLastDays = "climateLastDays";
+	String climateLessThanOneMonth = "climateLessThanOneMonth";
 	String climateMonths = "climateMonths";
 	String climateNearbyAxis = "climateNearbyAxis";
 	String climateNearbyByCommunityOnly = "climateNearbyByCommunityOnly";

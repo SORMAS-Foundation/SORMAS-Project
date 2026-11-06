@@ -992,6 +992,7 @@ public interface Captions {
 	String climateCancelJob = "climateCancelJob";
 	String climateCheckCalls = "climateCheckCalls";
 	String climateConfirmCalls = "climateConfirmCalls";
+	String climateDailyChart = "climateDailyChart";
 	String ClimateDailyExport_date = "ClimateDailyExport.date";
 	String ClimateDailyExport_humidityP10 = "ClimateDailyExport.humidityP10";
 	String ClimateDailyExport_humidityP50 = "ClimateDailyExport.humidityP50";

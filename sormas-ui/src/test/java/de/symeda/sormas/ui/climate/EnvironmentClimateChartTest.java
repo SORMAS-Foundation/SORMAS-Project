@@ -83,6 +83,7 @@ class EnvironmentClimateChartTest {
 		assertFalse(script.contains("W-old"), "samples outside the period are left out");
 		assertTrue(script.contains("Flood &lt;after&gt; &#39;storm&#39;"), "event titles are escaped");
 		assertTrue(script.contains("Report date"));
+		assertTrue(script.contains("Point at a day to see its details."), "the hint in the details area");
 		assertEquals("Normal range: 2021–2025, from Bagaces district", EnvironmentClimateChart.status(series));
 
 		// written for a render check in a browser with the bundled Highcharts files
@@ -102,7 +103,7 @@ class EnvironmentClimateChartTest {
 		assertFalse(script.contains("samples-"));
 		assertFalse(script.contains("id:'events'"));
 		assertFalse(script.contains("plotBands:"), "no lanes");
-		assertTrue(EnvironmentClimateChart.status(series).startsWith("Building climate history: "), EnvironmentClimateChart.status(series));
+		assertTrue(EnvironmentClimateChart.status(series).startsWith("Building climate history for normal ranges: "), EnvironmentClimateChart.status(series));
 	}
 
 	@Test

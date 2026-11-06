@@ -116,6 +116,12 @@ public class EnvironmentClimateContextCard extends SideComponent {
 				stale ? CssStyles.LABEL_WARNING : null);
 		}
 
+		// where the chart's normal ranges come from, or how much history has built up before they exist (decision 108)
+		String normals = EnvironmentClimateChart.status(series);
+		if (!normals.isEmpty()) {
+			addLine(VaadinIcons.CHART, normals, null);
+		}
+
 		if (context.isOwnLocation() && context.isShared()) {
 			HorizontalLayout shared =
 				addLine(VaadinIcons.SHARE, String.format(I18nProperties.getString(Strings.climateContextShared), sharedWith(context)), null);

@@ -63,7 +63,8 @@ class ClimateCaptionsTest {
 
 		assertEquals("1 year 2 months", ClimateCaptions.period(Period.of(1, 2, 10)));
 		assertEquals("3 years", ClimateCaptions.period(Period.of(3, 0, 0)));
-		assertEquals("0 months", ClimateCaptions.period(Period.ZERO));
+		assertEquals("less than a month", ClimateCaptions.period(Period.ZERO));
+		assertEquals("less than a month", ClimateCaptions.period(Period.ofDays(23)));
 
 		ClimateHistoryCoverageDto coverage = new ClimateHistoryCoverageDto(null, null, true);
 		coverage.addDays(2021, ClimateDataSource.IMPORT, 365, LocalDate.of(2021, 1, 1));

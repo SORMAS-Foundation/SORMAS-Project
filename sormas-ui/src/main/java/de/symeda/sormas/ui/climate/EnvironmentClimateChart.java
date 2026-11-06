@@ -49,6 +49,7 @@ import de.symeda.sormas.api.climate.SiteClimateReadingDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -116,7 +117,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		}
 	}
 
-	private final Label status = new Label();
+	private final Label dates = new Label();
 	private final ClimateChart chart = new ClimateChart(this::pointClicked);
 	private final Label credit = new Label(ClimateObservationExportDto.OPENWEATHER_CREDIT);
 
@@ -129,12 +130,14 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		setMargin(false);
 		setSpacing(false);
 		setWidthFull();
-		status.setWidthFull();
-		status.addStyleName(CssStyles.LABEL_SECONDARY);
+		// a heading of its own, so the chart does not read as part of the summary cards above it (decision 109)
+		Label heading = new Label(I18nProperties.getCaption(Captions.climateDailyChart));
+		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_3);
+		dates.addStyleNames(CssStyles.LABEL_SECONDARY, CssStyles.LABEL_SMALL);
 		chart.setWidthFull();
 		chart.setHeight(CHART_HEIGHT, Unit.PIXELS);
 		credit.addStyleNames(CssStyles.LABEL_SECONDARY, CssStyles.LABEL_SMALL);
-		addComponents(status, chart, credit);
+		addComponents(heading, dates, chart, credit);
 	}
 
 	/**
@@ -156,8 +159,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		eventsByDay = events != null ? byDay(events, EnvironmentClimateChart::eventDate, from, to) : null;
 		Map<Long, List<SiteClimateReadingDto>> readingsByDay = byDay(readings, SiteClimateReadingDto::getReadingDateTime, from, to);
 
-		status.setValue(status(series));
-		status.setVisible(!status.getValue().isEmpty());
+		dates.setValue(ClimateCaptions.date(from) + " – " + ClimateCaptions.date(to));
 		credit.setVisible(series.getDays().stream().anyMatch(d -> d.getSource() == ClimateDataSource.OPENWEATHER));
 		lastScript = script(series, from, to, reportDate, readingsByDay);
 		chart.setHcjs(lastScript);
@@ -171,7 +173,8 @@ public class EnvironmentClimateChart extends VerticalLayout {
 	}
 
 	/**
-	 * @return the legend line: where the normal ranges come from, or how much history has built up before they exist
+	 * @return where the normal ranges come from, or how much history has built up before they exist; shown in the context
+	 *         card (decision 108)
 	 */
 	static String status(ClimateDailySeriesDto series) {
 
@@ -246,7 +249,11 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			.append("ch.panelTitles=ch.yAxis.filter(function(a){return a.options.panelTitle;}).map(function(a){")
 			.append("return ch.renderer.text(a.options.panelTitle,ch.plotLeft,a.top-")
 			.append(TITLE_BAND / 3)
-			.append(").css({color:'#555555',fontSize:'12px'}).add();});}}},")
+			.append(").css({color:'#555555',fontSize:'12px'}).add();});")
+			// a hint in the details area until a day is pointed at; the details box covers it
+			.append("if(ch.hoverHint){ch.hoverHint.destroy();}ch.hoverHint=ch.renderer.text(")
+			.append(string(I18nProperties.getString(Strings.climateChartHint)))
+			.append(",ch.plotLeft,20).css({color:'#999999',fontSize:'12px',fontStyle:'italic'}).add();}}},")
 			.append("title:{text:null},credits:{enabled:false},exporting:{enabled:false},time:{useUTC:true},")
 			// the bottom margin is fixed so the rows can be laid out in pixels; a long legend pages instead of growing
 			.append("legend:{enabled:true,maxHeight:")

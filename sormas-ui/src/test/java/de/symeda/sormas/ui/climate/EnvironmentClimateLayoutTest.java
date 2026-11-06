@@ -74,6 +74,9 @@ class EnvironmentClimateLayoutTest extends AbstractUiBeanTest {
 		assertTrue(card.contains("Source: OpenWeather 5 days"), card);
 		assertFalse(card.contains("No usable GPS"), card);
 		assertFalse(card.contains(" · "), "one fact per line: " + card);
+		assertTrue(card.contains("Building climate history for normal ranges: less than a month of "), "the chart's status is in the card: " + card);
+		assertFalse(text(layout.getChart()).contains("Building climate history"), "and no longer above the chart");
+		assertTrue(text(layout.getChart()).contains("Daily climate, samples and events"), "the chart has its own heading");
 		assertNull(layout.getActions(), "no actions card without any of its rights");
 
 		layout.getPeriodGroup().setValue(ClimatePeriod.DAYS_30);

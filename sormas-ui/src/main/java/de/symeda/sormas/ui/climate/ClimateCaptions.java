@@ -102,10 +102,13 @@ public final class ClimateCaptions {
 	}
 
 	/**
-	 * @return "1 year 2 months", "3 years", "4 months"
+	 * @return "1 year 2 months", "3 years", "4 months", or "less than a month"
 	 */
 	public static String period(Period period) {
 
+		if (period.getYears() <= 0 && period.getMonths() <= 0) {
+			return I18nProperties.getString(Strings.climateLessThanOneMonth);
+		}
 		List<String> parts = new ArrayList<>();
 		if (period.getYears() > 0) {
 			parts.add(
