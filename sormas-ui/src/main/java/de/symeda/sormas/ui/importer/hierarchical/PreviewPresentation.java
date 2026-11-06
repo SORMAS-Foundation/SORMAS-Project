@@ -2,6 +2,8 @@ package de.symeda.sormas.ui.importer.hierarchical;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +32,9 @@ public final class PreviewPresentation {
 	public PreviewPresentation(ImportPreviewDto preview, ImportReportDto report) {
 		this.problems = new ArrayList<>(preview.allIssues());
 		report.getResults().forEach(result -> problems.addAll(result.getIssues()));
-		this.problemRows = problems.stream().map(issue -> new ProblemRow(recordOf(preview, issue), issue)).collect(Collectors.toList());
+		TreeMap<Integer, BlockPreviewDto> blocksByFirstLine = new TreeMap<>();
+		preview.getBlocks().forEach(block -> blocksByFirstLine.putIfAbsent(block.getFirstLine(), block));
+		this.problemRows = problems.stream().map(issue -> new ProblemRow(recordOf(blocksByFirstLine, issue), issue)).collect(Collectors.toList());
 		this.changes = readyOperations(preview)
 			.flatMap(
 				operation -> operation.getChanges()
@@ -103,17 +107,13 @@ public final class PreviewPresentation {
 		return Math.max(1, Math.min(itemCount, MAX_GRID_ROWS));
 	}
 
-	private static String recordOf(ImportPreviewDto preview, ImportIssueDto issue) {
+	private static String recordOf(TreeMap<Integer, BlockPreviewDto> blocksByFirstLine, ImportIssueDto issue) {
 		Integer line = issue.getLineNumber();
 		if (line == null) {
 			return "";
 		}
-		return preview.getBlocks()
-			.stream()
-			.filter(block -> block.getFirstLine() <= line && line <= block.getLastLine())
-			.map(BlockPreviewDto::getLabel)
-			.findFirst()
-			.orElse("");
+		Map.Entry<Integer, BlockPreviewDto> entry = blocksByFirstLine.floorEntry(line);
+		return entry != null && line <= entry.getValue().getLastLine() ? entry.getValue().getLabel() : "";
 	}
 
 	private static Stream<RecordOperationDto> readyOperations(ImportPreviewDto preview) {

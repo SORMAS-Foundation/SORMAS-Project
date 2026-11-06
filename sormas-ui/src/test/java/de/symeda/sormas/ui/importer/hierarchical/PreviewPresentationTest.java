@@ -87,6 +87,21 @@ class PreviewPresentationTest {
 	}
 
 	@Test
+	void aLineOutsideEveryBlockOrWithoutLineHasNoRecord() {
+		BlockPreviewDto broken = new BlockPreviewDto(0, 5, 7, "Case A", BlockStatus.ERROR, "", List.of(), List.of());
+		ImportIssueDto outside = new ImportIssueDto(ImportIssueKind.BLOCK, 9, "col", "outside");
+		ImportIssueDto before = new ImportIssueDto(ImportIssueKind.BLOCK, 2, "col", "before");
+		ImportIssueDto noLine = new ImportIssueDto(ImportIssueKind.BLOCK, null, null, "file");
+		ImportReportDto report = new ImportReportDto(List.of(new BlockResultDto(0, BlockOutcome.FAILED, List.of(outside, before, noLine))));
+
+		PreviewPresentation presentation = new PreviewPresentation(preview(broken), report);
+
+		assertEquals("", presentation.problemRows().get(0).getRecord());
+		assertEquals("", presentation.problemRows().get(1).getRecord());
+		assertEquals("", presentation.problemRows().get(2).getRecord());
+	}
+
+	@Test
 	void doesNotCountHeldBackLinesAsProblems() {
 		ImportIssueDto problem = new ImportIssueDto(ImportIssueKind.BLOCK, 5, "CaseData.healthFacility", "unknown");
 		ImportIssueDto heldOne = new ImportIssueDto(ImportIssueKind.SKIPPED, 6, null, "held");
