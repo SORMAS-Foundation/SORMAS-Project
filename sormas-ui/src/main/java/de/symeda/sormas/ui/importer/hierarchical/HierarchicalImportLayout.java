@@ -38,7 +38,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
-import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
