@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.climate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -67,13 +68,21 @@ class EnvironmentClimateLayoutTest extends AbstractUiBeanTest {
 		assertEquals(EnvironmentClimateLayout.DEFAULT_PERIOD, layout.getPeriod());
 		assertEquals(90, layout.getSeries().getDays().size());
 		assertEquals(yesterday, layout.getSeries().getDays().get(89).getDate());
-		String strip = text(layout.getStrip());
-		assertTrue(strip.contains("10.52657, -84.90845"), strip);
-		assertTrue(strip.contains("OpenWeather 5 days"), strip);
-		assertFalse(strip.contains("No usable GPS"), strip);
+		assertEquals(EnvironmentClimateLayout.DEFAULT_PERIOD, layout.getPeriodGroup().getValue(), "90 days is selected");
+		String card = text(layout.getContextCard());
+		assertTrue(card.contains("10.52657, -84.90845"), card);
+		assertTrue(card.contains("Source: OpenWeather 5 days"), card);
+		assertFalse(card.contains("No usable GPS"), card);
+		assertFalse(card.contains(" · "), "one fact per line: " + card);
+		assertNull(layout.getActions(), "no actions card without any of its rights");
 
-		layout.selectPeriod(ClimatePeriod.DAYS_30);
+		layout.getPeriodGroup().setValue(ClimatePeriod.DAYS_30);
+		assertEquals(ClimatePeriod.DAYS_30, layout.getPeriod());
 		assertEquals(30, layout.getSeries().getDays().size());
+
+		layout.selectPeriod(ClimatePeriod.YEAR);
+		assertEquals(ClimatePeriod.YEAR, layout.getPeriodGroup().getValue());
+		assertEquals(365, layout.getSeries().getDays().size());
 	}
 
 	@Test
@@ -86,9 +95,9 @@ class EnvironmentClimateLayoutTest extends AbstractUiBeanTest {
 
 		EnvironmentClimateLayout layout = new EnvironmentClimateLayout(environment.toReference(), true);
 
-		String strip = text(layout.getStrip());
-		assertTrue(strip.contains("No usable GPS for this environment – showing Bagaces district climate."), strip);
-		assertTrue(strip.contains("No climate data held"), strip);
+		String card = text(layout.getContextCard());
+		assertTrue(card.contains("No usable GPS for this environment – showing Bagaces district climate."), card);
+		assertTrue(card.contains("No climate data held"), card);
 	}
 
 	private EnvironmentDto createEnvironment(double latitude, double longitude) {

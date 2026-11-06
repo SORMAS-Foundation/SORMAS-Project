@@ -23,6 +23,9 @@ import static org.mockito.ArgumentMatchers.any;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -37,6 +40,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import com.vaadin.data.provider.Query;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HasComponents;
 
 import de.symeda.sormas.api.climate.ClimateDayDto;
 import de.symeda.sormas.api.climate.SiteClimateReadingDto;
@@ -87,6 +93,7 @@ class EnvironmentClimateEditTest extends AbstractUiBeanTest {
 
 		assertTrue(layout.isManualEntryAllowed());
 		assertTrue(layout.isSiteReadingEditAllowed());
+		assertEquals(Arrays.asList("Site reading", "Manual entry", "Export"), buttonCaptions(layout.getActions()), "stacked in the actions card");
 		assertEquals(8, layout.getDays().getGrid().getColumns().size(), "values, source and the edit action");
 		assertEquals(7, layout.getSiteReadings().getGrid().getColumns().size(), "values and the edit and delete actions");
 
@@ -112,8 +119,22 @@ class EnvironmentClimateEditTest extends AbstractUiBeanTest {
 
 		assertFalse(layout.isManualEntryAllowed(), "the record belongs to the district");
 		assertFalse(layout.isSiteReadingEditAllowed(), "the environment may not be edited");
+		assertEquals(Collections.singletonList("Export"), buttonCaptions(layout.getActions()));
 		assertEquals(7, layout.getDays().getGrid().getColumns().size());
 		assertEquals(6, layout.getSiteReadings().getGrid().getColumns().size());
+	}
+
+	/**
+	 * @return the captions of the buttons in the component, in order
+	 */
+	private static List<String> buttonCaptions(Component component) {
+		List<String> captions = new ArrayList<>();
+		if (component instanceof Button) {
+			captions.add(component.getCaption());
+		} else if (component instanceof HasComponents) {
+			((HasComponents) component).forEach(child -> captions.addAll(buttonCaptions(child)));
+		}
+		return captions;
 	}
 
 	private EnvironmentDto createEnvironment() {

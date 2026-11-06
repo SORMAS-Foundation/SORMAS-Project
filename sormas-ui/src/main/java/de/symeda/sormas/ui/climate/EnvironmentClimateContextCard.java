@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
@@ -29,105 +32,129 @@ import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
 import de.symeda.sormas.api.climate.ClimateDataSource;
 import de.symeda.sormas.api.climate.ClimateDayDto;
 import de.symeda.sormas.api.climate.ClimateEnvironmentContextDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 /**
- * The context strip of the environment Climate data tab: which point the data belongs to, its sources over the period
- * shown, the latest day and how far back history goes, then a line per situation that needs saying (no usable GPS,
- * shared, outside the district, archived, history loading, no early history).
+ * The context card on the right of the environment Climate data tab (decision 105): which point the data belongs to,
+ * its sources over the period shown, how far back history goes and the latest day, then a line per situation that needs
+ * saying (no usable GPS, shared, outside the district, archived, history loading, no early history). One fact per line,
+ * each with an icon.
  */
-public class EnvironmentClimateStrip extends VerticalLayout {
+public class EnvironmentClimateContextCard extends SideComponent {
 
 	private static final long serialVersionUID = -2185338040815560410L;
 
 	/** The latest day turns to warning colour when older than this: the provider's 1-day delay plus 2 days. */
 	public static final int STALE_AFTER_DAYS = 3;
 
-	public EnvironmentClimateStrip() {
-		setMargin(false);
-		setSpacing(false);
-		setWidthFull();
+	private final VerticalLayout lines = new VerticalLayout();
+
+	public EnvironmentClimateContextCard() {
+		super(I18nProperties.getCaption(Captions.environmentClimateData));
+		addStyleName(CssStyles.SIDE_COMPONENT);
+		lines.setMargin(false);
+		lines.setSpacing(false);
+		lines.setWidthFull();
+		lines.addStyleName(CssStyles.VSPACE_TOP_4);
+		addComponent(lines);
 	}
 
 	public void update(ClimateEnvironmentContextDto context, ClimateDailySeriesDto series, LocalDate periodFrom, LocalDate today) {
 
-		removeAllComponents();
+		lines.removeAllComponents();
 
 		if (!context.isOwnLocation() && context.getDistrict() == null) {
-			addLine(I18nProperties.getString(Strings.climateContextNoDistrict), CssStyles.LABEL_WARNING);
+			addLine(VaadinIcons.WARNING, I18nProperties.getString(Strings.climateContextNoDistrict), CssStyles.LABEL_WARNING);
 			return;
 		}
 
-		if (!context.isOwnLocation()) {
-			addLine(String.format(I18nProperties.getString(Strings.climateContextNoGps), context.getDistrict().getCaption()), CssStyles.LABEL_WARNING);
-			if (!context.isDistrictHasPoint()) {
-				addLine(String.format(I18nProperties.getString(Strings.climateContextDistrictNoPoint), context.getDistrict().getCaption()), null);
-			}
-		}
-
-		List<String> facts = new ArrayList<>();
 		if (context.isOwnLocation()) {
-			facts.add(
+			addLine(
+				VaadinIcons.MAP_MARKER,
 				String.format(
 					I18nProperties.getString(Strings.climateContextPoint),
 					ClimateCaptions.coordinate(context.getLatitude()),
 					ClimateCaptions.coordinate(context.getLongitude()),
 					ClimateCaptions.coordinate(context.getCellLatitude()),
-					ClimateCaptions.coordinate(context.getCellLongitude())));
+					ClimateCaptions.coordinate(context.getCellLongitude())),
+				null);
+		} else {
+			addLine(
+				VaadinIcons.MAP_MARKER,
+				String.format(I18nProperties.getString(Strings.climateContextNoGps), context.getDistrict().getCaption()),
+				CssStyles.LABEL_WARNING);
+			if (!context.isDistrictHasPoint()) {
+				addLine(
+					VaadinIcons.INFO_CIRCLE,
+					String.format(I18nProperties.getString(Strings.climateContextDistrictNoPoint), context.getDistrict().getCaption()),
+					null);
+			}
 		}
+
 		String sources = sources(series);
 		if (sources != null) {
-			facts.add(String.format(I18nProperties.getString(Strings.climateContextSources), sources));
+			addLine(VaadinIcons.DATABASE, String.format(I18nProperties.getString(Strings.climateContextSources), sources), null);
 		}
 		if (context.getHistoryFrom() != null) {
-			facts.add(String.format(I18nProperties.getString(Strings.climateContextHistoryFrom), ClimateCaptions.date(context.getHistoryFrom())));
-		}
-		if (!facts.isEmpty()) {
-			addLine(String.join(" · ", facts), null);
+			addLine(
+				VaadinIcons.TIME_BACKWARD,
+				String.format(I18nProperties.getString(Strings.climateContextHistoryFrom), ClimateCaptions.date(context.getHistoryFrom())),
+				null);
 		}
 
 		if (context.getLatestDay() == null) {
-			addLine(I18nProperties.getString(Strings.climateContextNoData), null);
+			addLine(VaadinIcons.CALENDAR, I18nProperties.getString(Strings.climateContextNoData), null);
 		} else {
 			boolean stale = context.getLatestDay().isBefore(today.minusDays(STALE_AFTER_DAYS));
 			addLine(
+				VaadinIcons.CALENDAR,
 				String.format(I18nProperties.getString(Strings.climateContextLatestDay), ClimateCaptions.date(context.getLatestDay())),
 				stale ? CssStyles.LABEL_WARNING : null);
 		}
 
 		if (context.isOwnLocation() && context.isShared()) {
-			Label shared = addLine(String.format(I18nProperties.getString(Strings.climateContextShared), sharedWith(context)), null);
+			HorizontalLayout shared =
+				addLine(VaadinIcons.SHARE, String.format(I18nProperties.getString(Strings.climateContextShared), sharedWith(context)), null);
 			List<String> names = new ArrayList<>(context.getSharedDistricts());
 			names.addAll(context.getSharedEnvironments());
 			shared.setDescription(String.join(", ", names));
 		}
 
 		if (context.isOutsideDistrict()) {
-			addLine(String.format(I18nProperties.getString(Strings.climateContextOutsideDistrict), context.getDistrict().getCaption()), CssStyles.LABEL_WARNING);
+			addLine(
+				VaadinIcons.WARNING,
+				String.format(I18nProperties.getString(Strings.climateContextOutsideDistrict), context.getDistrict().getCaption()),
+				CssStyles.LABEL_WARNING);
 		}
 
 		if (context.isArchived() || context.isDeleted()) {
-			String key;
+			VaadinIcons icon = context.isDeleted() ? VaadinIcons.TRASH : VaadinIcons.ARCHIVE;
 			if (context.isStillUpdated()) {
-				key = context.isDeleted() ? Strings.climateContextDeletedShared : Strings.climateContextArchivedShared;
-				addLine(String.format(I18nProperties.getString(key), stillUpdatedBy(context)), null);
+				String key = context.isDeleted() ? Strings.climateContextDeletedShared : Strings.climateContextArchivedShared;
+				addLine(icon, String.format(I18nProperties.getString(key), stillUpdatedBy(context)), null);
 			} else {
-				key = context.isDeleted() ? Strings.climateContextDeletedStopped : Strings.climateContextArchivedStopped;
-				addLine(I18nProperties.getString(key), null);
+				String key = context.isDeleted() ? Strings.climateContextDeletedStopped : Strings.climateContextArchivedStopped;
+				addLine(icon, I18nProperties.getString(key), null);
 			}
 		}
 
 		if (context.getLoadingJobType() != null) {
 			addLine(
+				VaadinIcons.REFRESH,
 				String.format(
 					I18nProperties.getString(Strings.climateContextLoading),
 					context.getLoadingLocationsDone(),
 					context.getLoadingLocationsTotal()),
 				null);
 		} else if (context.getHistoryFrom() != null && context.getHistoryFrom().isAfter(periodFrom)) {
-			addLine(String.format(I18nProperties.getString(Strings.climateContextNotLoaded), ClimateCaptions.date(context.getHistoryFrom())), null);
+			addLine(
+				VaadinIcons.INFO_CIRCLE,
+				String.format(I18nProperties.getString(Strings.climateContextNotLoaded), ClimateCaptions.date(context.getHistoryFrom())),
+				null);
 		}
 	}
 
@@ -180,13 +207,26 @@ public class EnvironmentClimateStrip extends VerticalLayout {
 		return sharedWith(context);
 	}
 
-	private Label addLine(String text, String style) {
-		Label label = new Label(text);
-		label.setWidthFull();
+	/**
+	 * Adds one fact: the icon, then the text, which wraps within the card.
+	 */
+	private HorizontalLayout addLine(VaadinIcons icon, String text, String style) {
+
+		Label iconLabel = new Label(icon.getHtml(), ContentMode.HTML);
+		iconLabel.setWidthUndefined();
+		Label textLabel = new Label(text);
+		textLabel.setWidthFull();
+
+		HorizontalLayout line = new HorizontalLayout(iconLabel, textLabel);
+		line.setMargin(false);
+		line.setSpacing(true);
+		line.setWidthFull();
+		line.setExpandRatio(textLabel, 1);
 		if (style != null) {
-			label.addStyleName(style);
+			iconLabel.addStyleName(style);
+			textLabel.addStyleName(style);
 		}
-		addComponent(label);
-		return label;
+		lines.addComponent(line);
+		return line;
 	}
 }

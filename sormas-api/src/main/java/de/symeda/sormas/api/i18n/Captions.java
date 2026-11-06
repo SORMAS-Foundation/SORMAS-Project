@@ -1077,6 +1077,7 @@ public interface Captions {
 	String climateObservationsFrom = "climateObservationsFrom";
 	String climateObservationsTo = "climateObservationsTo";
 	String climateOnlyRelinksWithSkippedDays = "climateOnlyRelinksWithSkippedDays";
+	String climatePeriod = "climatePeriod";
 	String climatePeriod1Year = "climatePeriod1Year";
 	String climatePeriod30Days = "climatePeriod30Days";
 	String climatePeriod90Days = "climatePeriod90Days";

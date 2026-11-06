@@ -16,16 +16,16 @@
 package de.symeda.sormas.ui.climate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -51,14 +51,18 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 /**
- * The content of the environment Climate data tab (decision 85): context strip, period and actions, summary cards, the
- * stacked chart, cases near the site, site readings and daily values. The period drives everything but the cards.
+ * The content of the environment Climate data tab (decisions 85 and 105). On the left, 8 columns: the period, summary
+ * cards, the stacked chart, cases near the site, site readings and daily values. On the right, 4 columns: the context
+ * card and the actions card. The period drives everything but the summary cards.
  */
-public class EnvironmentClimateLayout extends VerticalLayout {
+public class EnvironmentClimateLayout extends CustomLayout {
 
 	private static final long serialVersionUID = -6203816730541296364L;
 
@@ -88,9 +92,13 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 	private final boolean environmentEditAllowed;
 	private final ClimateEnvironmentContextDto context;
 
-	private final EnvironmentClimateStrip strip = new EnvironmentClimateStrip();
-	private final HorizontalLayout actions = new HorizontalLayout();
-	private final Map<ClimatePeriod, Button> periodButtons = new EnumMap<>(ClimatePeriod.class);
+	private static final String MAIN_LOC = "main";
+	private static final String SIDE_LOC = "side";
+
+	private final EnvironmentClimateContextCard contextCard = new EnvironmentClimateContextCard();
+	/** The actions card, or null when the user may do none of its actions. */
+	private final SideComponent actions;
+	private final RadioButtonGroup<ClimatePeriod> periodGroup = new RadioButtonGroup<>();
 	private final EnvironmentClimateCards cards = new EnvironmentClimateCards();
 	private final EnvironmentClimateChart chart = new EnvironmentClimateChart();
 	/** Cases near the site, or null without the case view right. */
@@ -124,38 +132,72 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 			? FacadeProvider.getEventFacade().getIndexList(new EventCriteria().environment(environment), null, null, null)
 			: null;
 
-		setMargin(false);
+		// the same split as the environment's own tab (LayoutWithSidePanel): 8 columns of content, 4 of side cards
+		addStyleName(CssStyles.ROOT_COMPONENT);
 		setWidthFull();
+		setHeightUndefined();
+		setTemplateContents(
+			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, MAIN_LOC), LayoutUtil.fluidColumnLoc(4, 0, 12, 0, SIDE_LOC)));
 
-		addComponent(strip);
-		addComponent(createActions());
-		addComponent(cards);
-		addComponent(chart);
+		VerticalLayout main = new VerticalLayout();
+		main.setMargin(false);
+		main.setWidthFull();
+		main.addComponent(createPeriodGroup());
+		main.addComponent(cards);
+		main.addComponent(chart);
 		if (UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			nearbyCases = new EnvironmentNearbyCasesPanel(environment, !context.isOwnLocation());
-			addComponent(nearbyCases);
+			main.addComponent(nearbyCases);
 		} else {
 			nearbyCases = null;
 		}
 		siteReadings = new SiteClimateReadingsPanel(isSiteReadingEditAllowed(), this::reload);
-		addComponent(siteReadings);
+		main.addComponent(siteReadings);
 		days = new EnvironmentClimateDaysPanel(isManualEntryAllowed() ? environment : null, this::reload);
-		addComponent(days);
+		main.addComponent(days);
+		addComponent(main, MAIN_LOC);
+
+		VerticalLayout side = new VerticalLayout();
+		side.setMargin(false);
+		side.setSpacing(false);
+		side.setWidthFull();
+		side.addComponent(contextCard);
+		actions = createActions();
+		if (actions != null) {
+			side.addComponent(actions);
+		}
+		addComponent(side, SIDE_LOC);
 
 		reload();
 	}
 
-	private HorizontalLayout createActions() {
+	/**
+	 * @return the period choice as radio buttons, 90 days selected (decision 106)
+	 */
+	private RadioButtonGroup<ClimatePeriod> createPeriodGroup() {
 
-		actions.setMargin(false);
-		actions.addStyleName(CssStyles.VSPACE_TOP_4);
-		for (ClimatePeriod option : ClimatePeriod.values()) {
-			Button button = ButtonHelper.createButton(option.caption, e -> selectPeriod(option));
-			periodButtons.put(option, button);
-			actions.addComponent(button);
-		}
+		periodGroup.setCaption(I18nProperties.getCaption(Captions.climatePeriod));
+		periodGroup.setItems(ClimatePeriod.values());
+		periodGroup.setItemCaptionGenerator(option -> I18nProperties.getCaption(option.caption));
+		periodGroup.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		periodGroup.setValue(period);
+		periodGroup.addValueChangeListener(e -> {
+			if (e.getValue() != null && e.getValue() != period) {
+				selectPeriod(e.getValue());
+			}
+		});
+		return periodGroup;
+	}
+
+	/**
+	 * @return the actions card (decision 105): site reading, manual entry and export stacked, each only with its right;
+	 *         null when the user may do none of them
+	 */
+	private SideComponent createActions() {
+
+		List<Button> buttons = new ArrayList<>();
 		if (isSiteReadingEditAllowed()) {
-			actions.addComponent(
+			buttons.add(
 				ButtonHelper.createIconButton(
 					Captions.climateNewSiteReading,
 					VaadinIcons.PLUS_CIRCLE,
@@ -163,7 +205,7 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 					ValoTheme.BUTTON_PRIMARY));
 		}
 		if (isManualEntryAllowed()) {
-			actions.addComponent(
+			buttons.add(
 				ButtonHelper.createIconButton(
 					Captions.climateManualEntry,
 					VaadinIcons.PLUS_CIRCLE,
@@ -191,9 +233,24 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 				ExportEntityName.CLIMATE_DAILY_VALUES,
 				null);
 			new IgnoreCancelDownloader(resource).extend(export);
-			actions.addComponent(export);
+			buttons.add(export);
 		}
-		return actions;
+		if (buttons.isEmpty()) {
+			return null;
+		}
+
+		SideComponent card = new SideComponent(I18nProperties.getString(Strings.entityActions));
+		card.addStyleName(CssStyles.SIDE_COMPONENT);
+		VerticalLayout stack = new VerticalLayout();
+		stack.setMargin(false);
+		stack.setWidthFull();
+		stack.addStyleName(CssStyles.VSPACE_TOP_4);
+		for (Button button : buttons) {
+			button.setWidthFull();
+			stack.addComponent(button);
+		}
+		card.addComponent(stack);
+		return card;
 	}
 
 	/**
@@ -229,11 +286,23 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 
 	public void selectPeriod(ClimatePeriod period) {
 		this.period = period;
+		periodGroup.setValue(period);
 		reload();
 	}
 
-	EnvironmentClimateStrip getStrip() {
-		return strip;
+	EnvironmentClimateContextCard getContextCard() {
+		return contextCard;
+	}
+
+	/**
+	 * @return the actions card, or null when the user may do none of its actions
+	 */
+	SideComponent getActions() {
+		return actions;
+	}
+
+	RadioButtonGroup<ClimatePeriod> getPeriodGroup() {
+		return periodGroup;
 	}
 
 	public ClimateEnvironmentContextDto getContext() {
@@ -249,18 +318,11 @@ public class EnvironmentClimateLayout extends VerticalLayout {
 	 */
 	public void reload() {
 
-		periodButtons.forEach((option, button) -> {
-			button.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-			if (option == period) {
-				button.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			}
-		});
-
 		LocalDate from = getFrom();
 		LocalDate to = getTo();
 		series = FacadeProvider.getClimateSeriesFacade().getDailySeries(environment, from, to);
 		readings = FacadeProvider.getSiteClimateReadingFacade().getReadings(environment, from, to);
-		strip.update(context, series, from, LocalDate.now());
+		contextCard.update(context, series, from, LocalDate.now());
 		cards.update(series);
 		chart.update(series, from, to, context.getReportDate(), samples, events, readings);
 		if (nearbyCases != null) {
