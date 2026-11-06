@@ -18,12 +18,14 @@ import de.symeda.sormas.backend.util.ValidationProblem;
 public class PersonValidationProblemsTest extends AbstractBeanTest {
 
 	private RDCF rdcf;
+	private RDCF otherRdcf;
 
 	@Override
 	public void init() {
 		super.init();
 
 		rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		otherRdcf = creator.createRDCF("Other Region", "Other District", "Other Community", "Other Facility");
 		loginWith(creator.createNationalUser());
 	}
 
@@ -64,6 +66,81 @@ public class PersonValidationProblemsTest extends AbstractBeanTest {
 		assertEquals(1, problems.size());
 		assertEquals(Validations.validRegion, problems.get(0).getValidationKey());
 		assertEquals(List.of("address.region"), problems.get(0).getPropertyPaths());
+	}
+
+	@Test
+	public void reportsADistrictOutsideTheAddressRegion() {
+		PersonDto person = validPerson();
+		person.getAddress().setRegion(rdcf.region);
+		person.getAddress().setDistrict(otherRdcf.district);
+
+		assertSingleProblem(person, Validations.noAddressDistrictInAddressRegion, "address.district", "address.region");
+	}
+
+	@Test
+	public void doesNotRepeatTheRegionMismatchForAFacilityOfAnotherRegion() {
+		PersonDto person = validPerson();
+		person.getAddress().setRegion(rdcf.region);
+		person.getAddress().setDistrict(otherRdcf.district);
+		person.getAddress().setFacility(otherRdcf.facility);
+
+		assertSingleProblem(person, Validations.noAddressDistrictInAddressRegion, "address.district", "address.region");
+	}
+
+	@Test
+	public void reportsACommunityOutsideTheAddressDistrict() {
+		PersonDto person = validPerson();
+		person.getAddress().setRegion(rdcf.region);
+		person.getAddress().setDistrict(rdcf.district);
+		person.getAddress().setCommunity(otherRdcf.community);
+
+		assertSingleProblem(person, Validations.noAddressCommunityInAddressDistrict, "address.community", "address.district");
+	}
+
+	@Test
+	public void reportsAFacilityOutsideTheAddressDistrict() {
+		PersonDto person = validPerson();
+		person.getAddress().setRegion(rdcf.region);
+		person.getAddress().setDistrict(rdcf.district);
+		person.getAddress().setFacility(otherRdcf.facility);
+
+		assertSingleProblem(person, Validations.noAddressFacilityInAddressDistrict, "address.facility", "address.district");
+	}
+
+	@Test
+	public void reportsContactPersonDetailsWithoutAFacilityType() {
+		PersonDto person = validPerson();
+		person.getAddress().setContactPersonFirstName("Jane");
+
+		assertSingleProblem(
+			person,
+			Validations.importPersonContactDetailsWithoutFacilityType,
+			"address.facilityType",
+			"address.contactPersonFirstName",
+			"address.contactPersonLastName",
+			"address.contactPersonEmail",
+			"address.contactPersonPhone");
+	}
+
+	@Test
+	public void reportsIndependentProblemsTogetherInOrder() {
+		PersonDto person = validPerson();
+		person.setLastName(null);
+		person.setEmailAddress("not an email");
+
+		List<ValidationProblem> problems = getPersonFacade().collectValidationProblems(person);
+
+		assertEquals(
+			List.of(Validations.specifyLastName, Validations.validEmailAddress),
+			problems.stream().map(ValidationProblem::getValidationKey).collect(Collectors.toList()));
+	}
+
+	private void assertSingleProblem(PersonDto person, String validationKey, String... propertyPaths) {
+		List<ValidationProblem> problems = getPersonFacade().collectValidationProblems(person);
+
+		assertEquals(1, problems.size());
+		assertEquals(validationKey, problems.get(0).getValidationKey());
+		assertEquals(List.of(propertyPaths), problems.get(0).getPropertyPaths());
 	}
 
 	private PersonDto validPerson() {
