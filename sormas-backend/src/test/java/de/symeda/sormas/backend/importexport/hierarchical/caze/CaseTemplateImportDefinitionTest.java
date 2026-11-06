@@ -644,6 +644,20 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 		assertEquals("Person.person.firstName", issue.getColumn());
 	}
 
+	@Test
+	public void aMissingResponsibleJurisdictionUsesTheImportWordingOnItsColumns() {
+		String row = NEW_CASE_ROW.replace("| Region | District |", "| | |");
+
+		List<ImportIssueDto> issues = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, row)).allIssues();
+
+		ImportIssueDto region = issues.stream().filter(issue -> "CaseData.responsibleRegion".equals(issue.getColumn())).findFirst().orElseThrow();
+		ImportIssueDto district = issues.stream().filter(issue -> "CaseData.responsibleDistrict".equals(issue.getColumn())).findFirst().orElseThrow();
+		assertEquals(I18nProperties.getValidationError(Validations.importResponsibleRegionMissing), region.getMessage(), issues.toString());
+		assertEquals(I18nProperties.getValidationError(Validations.importResponsibleDistrictMissing), district.getMessage(), issues.toString());
+		assertEquals(1, issues.stream().filter(issue -> "CaseData.responsibleRegion".equals(issue.getColumn())).count(), issues.toString());
+		assertEquals(1, issues.stream().filter(issue -> "CaseData.responsibleDistrict".equals(issue.getColumn())).count(), issues.toString());
+	}
+
 	private static ImportIssueDto onlyIssue(ImportPreviewDto preview) {
 		List<ImportIssueDto> issues = preview.allIssues();
 		assertEquals(1, issues.size(), issues.toString());
