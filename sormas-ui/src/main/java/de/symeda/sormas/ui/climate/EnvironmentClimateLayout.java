@@ -179,7 +179,9 @@ public class EnvironmentClimateLayout extends CustomLayout {
 		periodGroup.setCaption(I18nProperties.getCaption(Captions.climatePeriod));
 		periodGroup.setItems(ClimatePeriod.values());
 		periodGroup.setItemCaptionGenerator(option -> I18nProperties.getCaption(option.caption));
-		periodGroup.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		periodGroup.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.VSPACE_NONE);
+		// a period is always chosen, so it is shown like the other required option groups (investigation status)
+		periodGroup.setRequiredIndicatorVisible(true);
 		periodGroup.setValue(period);
 		periodGroup.addValueChangeListener(e -> {
 			if (e.getValue() != null && e.getValue() != period) {

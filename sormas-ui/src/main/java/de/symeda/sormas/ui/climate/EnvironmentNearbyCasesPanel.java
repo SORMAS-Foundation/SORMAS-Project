@@ -75,7 +75,7 @@ public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 		addStyleName(CssStyles.VSPACE_TOP_4);
 
 		Label heading = new Label(I18nProperties.getCaption(Captions.climateNearbyCases));
-		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE);
+		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		Label help = new Label(I18nProperties.getString(Strings.climateNearbyHelp));
 		help.setWidthFull();
 		help.addStyleName(CssStyles.LABEL_SECONDARY);
@@ -92,6 +92,7 @@ public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 		CssStyles.style(CssStyles.VSPACE_NONE, disease, radius);
 		HorizontalLayout filters = new HorizontalLayout(disease, radius);
 		filters.setMargin(false);
+		filters.addStyleName(CssStyles.CLIMATE_NEARBY_FILTERS);
 
 		note.setWidthFull();
 		note.addStyleName(CssStyles.LABEL_SECONDARY);

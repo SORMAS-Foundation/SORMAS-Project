@@ -69,6 +69,7 @@ class EnvironmentClimateLayoutTest extends AbstractUiBeanTest {
 		assertEquals(90, layout.getSeries().getDays().size());
 		assertEquals(yesterday, layout.getSeries().getDays().get(89).getDate());
 		assertEquals(EnvironmentClimateLayout.DEFAULT_PERIOD, layout.getPeriodGroup().getValue(), "90 days is selected");
+		assertTrue(layout.getPeriodGroup().isRequiredIndicatorVisible(), "shown as required");
 		String card = text(layout.getContextCard());
 		assertTrue(card.contains("10.52657, -84.90845"), card);
 		assertTrue(card.contains("Source: OpenWeather 5 days"), card);

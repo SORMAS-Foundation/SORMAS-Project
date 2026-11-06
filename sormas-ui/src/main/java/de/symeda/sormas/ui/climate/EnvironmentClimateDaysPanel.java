@@ -58,7 +58,7 @@ public class EnvironmentClimateDaysPanel extends VerticalLayout {
 		addStyleName(CssStyles.VSPACE_TOP_4);
 
 		Label heading = new Label(I18nProperties.getCaption(Captions.climateDailyValues));
-		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE);
+		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 
 		grid.setWidthFull();
 		grid.addColumn(day -> ClimateCaptions.date(day.getDate())).setCaption(caption(ClimateObservationIndexDto.OBSERVATION_DATE));
@@ -77,6 +77,7 @@ public class EnvironmentClimateDaysPanel extends VerticalLayout {
 			}).setWidth(70);
 		}
 		grid.setHeightByRows(10);
+		grid.addStyleName(CssStyles.CLIMATE_DAYS_GRID);
 		addComponents(heading, grid);
 	}
 

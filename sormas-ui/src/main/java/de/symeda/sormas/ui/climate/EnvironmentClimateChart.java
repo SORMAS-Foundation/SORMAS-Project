@@ -132,11 +132,12 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		setWidthFull();
 		// a heading of its own, so the chart does not read as part of the summary cards above it (decision 109)
 		Label heading = new Label(I18nProperties.getCaption(Captions.climateDailyChart));
-		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_3);
+		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		dates.addStyleNames(CssStyles.LABEL_SECONDARY, CssStyles.LABEL_SMALL);
 		chart.setWidthFull();
 		chart.setHeight(CHART_HEIGHT, Unit.PIXELS);
-		credit.addStyleNames(CssStyles.LABEL_SECONDARY, CssStyles.LABEL_SMALL);
+		credit.setWidthFull();
+		credit.addStyleNames(CssStyles.LABEL_SECONDARY, CssStyles.LABEL_SMALL, CssStyles.ALIGN_CENTER);
 		addComponents(heading, dates, chart, credit);
 	}
 

@@ -209,6 +209,9 @@ public final class CssStyles {
 	public static final String ALIGN_CENTER = "align-center";
 	public static final String ALIGN_RIGHT = "align-right";
 
+	public static final String CLIMATE_NEARBY_FILTERS = "climate-nearby-filters";
+	public static final String CLIMATE_DAYS_GRID = "climate-days-grid";
+
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
 	public static final String OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL = "horizontal-switch-critical";

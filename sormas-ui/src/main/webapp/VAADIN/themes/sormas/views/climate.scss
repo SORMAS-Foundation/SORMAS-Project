@@ -1,0 +1,13 @@
+@mixin sormas-climate-view {
+
+  // environment Climate data tab: the disease and radius row of "Cases near this site"
+  .climate-nearby-filters {
+    margin-top: 16px;
+    margin-bottom: 10px;
+  }
+
+  // environment Climate data tab: the daily values table under its heading
+  .climate-days-grid {
+    margin-top: 15px;
+  }
+}

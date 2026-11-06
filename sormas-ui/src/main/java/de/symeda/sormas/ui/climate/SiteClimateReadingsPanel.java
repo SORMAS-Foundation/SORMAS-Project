@@ -60,7 +60,7 @@ public class SiteClimateReadingsPanel extends VerticalLayout {
 		addStyleName(CssStyles.VSPACE_TOP_4);
 
 		Label heading = new Label(I18nProperties.getCaption(Captions.climateSiteReadings));
-		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE);
+		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		empty.addStyleName(CssStyles.LABEL_SECONDARY);
 
 		grid.setWidthFull();
