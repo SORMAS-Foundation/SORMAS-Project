@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.importexport.hierarchical.engine.ColumnSpec;
 import de.symeda.sormas.backend.importexport.hierarchical.engine.ImportNode;
 import de.symeda.sormas.backend.util.ValidationProblem;
 
@@ -28,14 +27,14 @@ final class ValidationIssues {
 		}
 		List<PlacedProblem> problems = fieldErrors.entrySet()
 			.stream()
-			.map(error -> place(node, target, new ValidationProblem(null, error.getValue(), dottedPaths(error.getKey())), headers))
+			.map(error -> place(target, new ValidationProblem(null, error.getValue(), dottedPaths(error.getKey())), headers))
 			.sorted(Comparator.comparing(PlacedProblem::column, Comparator.nullsLast(Comparator.naturalOrder())))
 			.collect(Collectors.toList());
 		report(node, problems);
 	}
 
 	static void report(ImportNode node, String target, List<ValidationProblem> problems, ColumnHeaders headers) {
-		report(node, problems.stream().map(problem -> place(node, target, problem, headers)).collect(Collectors.toList()));
+		report(node, problems.stream().map(problem -> place(target, problem, headers)).collect(Collectors.toList()));
 	}
 
 	private static void report(ImportNode node, List<PlacedProblem> problems) {
@@ -47,10 +46,10 @@ final class ValidationIssues {
 			.forEach(problem -> node.reportIssue(problem.column(), ImportProblemWording.reword(problem.problem)));
 	}
 
-	private static PlacedProblem place(ImportNode node, String target, ValidationProblem problem, ColumnHeaders headers) {
+	private static PlacedProblem place(String target, ValidationProblem problem, ColumnHeaders headers) {
 		List<String> columns = problem.getPropertyPaths()
 			.stream()
-			.map(path -> header(node, target, path, headers))
+			.map(path -> headers.headerFor(target, path))
 			.flatMap(Optional::stream)
 			.distinct()
 			.collect(Collectors.toList());
@@ -60,22 +59,6 @@ final class ValidationIssues {
 	private static String[] dottedPaths(List<String> path) {
 		return path == null || path.isEmpty() ? new String[0] : new String[] {
 			String.join(".", path) };
-	}
-
-	private static Optional<String> header(ImportNode node, String target, String dottedPath, ColumnHeaders headers) {
-		return headers.headerFor(target, dottedPath).or(() -> fileHeader(node, target, dottedPath));
-	}
-
-	private static Optional<String> fileHeader(ImportNode node, String target, String dottedPath) {
-		String[] propertyPath = dottedPath.split("\\.");
-		return node.cells()
-			.keySet()
-			.stream()
-			.map(CaseTemplateSchema::resolve)
-			.flatMap(Optional::stream)
-			.filter(column -> column.target().equals(target) && Arrays.equals(column.propertyPath(), propertyPath))
-			.map(ColumnSpec::header)
-			.findFirst();
 	}
 
 	private static final class PlacedProblem {

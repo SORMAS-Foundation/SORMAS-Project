@@ -150,7 +150,7 @@ class ImportExecutorTest {
 	}
 
 	private static ImportPreviewDto preview(ToyDefinition toy, ImportSheet sheet) {
-		return PreviewMapper.toPreview(toy, new Planner().plan(toy, sheet, null));
+		return PreviewMapper.toPreview(new Planner().plan(toy, sheet, null));
 	}
 
 	private static ImportSheet sheet(String... rows) {

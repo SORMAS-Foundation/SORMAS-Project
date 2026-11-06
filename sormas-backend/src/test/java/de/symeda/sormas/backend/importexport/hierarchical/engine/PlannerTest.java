@@ -225,6 +225,19 @@ class PlannerTest {
 	}
 
 	@Test
+	void theHandlersGetThePlansColumnsWithoutAskingTheDefinitionAgain() {
+		ToyDefinition toy = new ToyDefinition();
+
+		ImportPlan plan = new Planner().plan(toy, SheetFixtures.table("| parent.key | parent.alias | child.code |", "| P1 | Beta | C1 |"), null);
+		PreviewMapper.toPreview(plan);
+
+		assertEquals(1, toy.columnsCalls);
+		assertEquals(2, toy.handlerColumns.size());
+		toy.handlerColumns
+			.forEach(columns -> assertTrue(columns.stream().anyMatch(column -> "parent.alias".equals(column.header())), columns.toString()));
+	}
+
+	@Test
 	void anUnknownColumnIsAFileIssueUnlessTheDefinitionIgnoresIt() {
 		ImportSheet sheet = SheetFixtures.table("| parent.key | parent.colour |", "| P1 | red |");
 

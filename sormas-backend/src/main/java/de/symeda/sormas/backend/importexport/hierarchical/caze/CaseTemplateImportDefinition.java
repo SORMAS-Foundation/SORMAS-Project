@@ -113,8 +113,8 @@ public class CaseTemplateImportDefinition implements ImportDefinition {
 	}
 
 	@Override
-	public LevelHandler handler(ImportLevel level) {
-		ColumnHeaders headers = ColumnHeaders.lazily(this::columns);
+	public LevelHandler handler(ImportLevel level, List<ColumnSpec> columns) {
+		ColumnHeaders headers = ColumnHeaders.of(columns);
 		if (level == CaseTemplateSchema.CASE_LEVEL) {
 			return new CaseHandler(
 				caseFacade,
