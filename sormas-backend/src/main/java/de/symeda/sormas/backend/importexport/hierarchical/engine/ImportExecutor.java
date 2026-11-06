@@ -53,7 +53,7 @@ public final class ImportExecutor {
 			block.root().lineNumber(),
 			null,
 			I18nProperties.getValidationError(Validations.importHierarchicalLinkedPersonNotImported, block.rootRecord().linkedRoot().lineNumber()));
-		return new BlockResultDto(block.index(), BlockOutcome.FAILED, List.of(issue));
+		return new BlockResultDto(block.index(), BlockOutcome.FAILED, withHeldBackLines(block, List.of(issue)));
 	}
 
 	private static BlockResultDto commitBlock(ImportDefinition definition, PlannedBlock block, String previewedFingerprint, BlockRunner runner) {
@@ -68,7 +68,7 @@ public final class ImportExecutor {
 					block.root().lineNumber(),
 					null,
 					I18nProperties.getValidationError(Validations.importHierarchicalChangedSincePreview)));
-			return new BlockResultDto(block.index(), BlockOutcome.CHANGED_SINCE_PREVIEW, issues);
+			return new BlockResultDto(block.index(), BlockOutcome.CHANGED_SINCE_PREVIEW, withHeldBackLines(block, issues));
 		}
 		if (block.status() == BlockStatus.UNCHANGED) {
 			return new BlockResultDto(block.index(), BlockOutcome.UNCHANGED, List.of());
@@ -78,10 +78,14 @@ public final class ImportExecutor {
 			return new BlockResultDto(block.index(), BlockOutcome.COMMITTED, List.of());
 		} catch (RuntimeException e) {
 			ImportIssueDto failure = new ImportIssueDto(ImportIssueKind.COMMIT, block.root().lineNumber(), null, rootMessage(e));
-			List<ImportIssueDto> issues = new ArrayList<>(List.of(failure));
-			issues.addAll(HeldBackLines.of(block.root(), List.of(failure)));
-			return new BlockResultDto(block.index(), BlockOutcome.FAILED, issues);
+			return new BlockResultDto(block.index(), BlockOutcome.FAILED, withHeldBackLines(block, List.of(failure)));
 		}
+	}
+
+	private static List<ImportIssueDto> withHeldBackLines(PlannedBlock block, List<ImportIssueDto> issues) {
+		List<ImportIssueDto> all = new ArrayList<>(issues);
+		all.addAll(HeldBackLines.of(block.root(), issues));
+		return all;
 	}
 
 	static String rootMessage(Throwable throwable) {

@@ -95,6 +95,37 @@ class ImportExecutorTest {
 	}
 
 	@Test
+	void aBlockNotImportedBecauseOfItsLinkedRootHoldsBackItsOtherLines() {
+		ToyDefinition toy = new ToyDefinition();
+		ImportSheet sheet = sheet("| P1 | explode | | | |", "| with-P1 | Beta | C1 | 1 | |", "|    |         | C2 | 2 | |");
+
+		ImportReportDto report = new ImportExecutor().commit(toy, sheet, preview(toy, sheet).readyFingerprints(), countingRunner);
+
+		List<ImportIssueDto> issues = report.getResults().get(1).getIssues();
+		assertEquals(2, issues.size());
+		assertEquals(ImportIssueKind.SKIPPED, issues.get(1).getKind());
+		assertEquals(Integer.valueOf(4), issues.get(1).getLineNumber());
+		assertEquals(I18nProperties.getValidationError(Validations.importHierarchicalLineHeldBack, 3), issues.get(1).getMessage());
+	}
+
+	@Test
+	void aBlockChangedSinceThePreviewHoldsBackItsOtherLines() {
+		ToyDefinition toy = new ToyDefinition().withParent("P1", "Alpha", new Date(1_000L));
+		ImportSheet sheet = sheet("| P1 | Beta | C1 | 1 | |", "|    |      | C2 | 2 | |");
+		Map<Integer, String> previewed = preview(toy, sheet).readyFingerprints();
+		toy.parentVersions.put("P1", new Date(2_000L));
+
+		ImportReportDto report = new ImportExecutor().commit(toy, sheet, previewed, countingRunner);
+
+		List<ImportIssueDto> issues = report.getResults().get(0).getIssues();
+		assertEquals(BlockOutcome.CHANGED_SINCE_PREVIEW, report.getResults().get(0).getOutcome());
+		assertEquals(2, issues.size());
+		assertEquals(ImportIssueKind.SKIPPED, issues.get(1).getKind());
+		assertEquals(Integer.valueOf(3), issues.get(1).getLineNumber());
+		assertEquals(I18nProperties.getValidationError(Validations.importHierarchicalLineHeldBack, 2), issues.get(1).getMessage());
+	}
+
+	@Test
 	void anUnchangedBlockIsNeverCommitted() {
 		ToyDefinition toy = new ToyDefinition().withParent("P1", "Alpha", new Date(1_000L));
 		ImportSheet sheet = sheet("| P1 | Alpha | | | |");
