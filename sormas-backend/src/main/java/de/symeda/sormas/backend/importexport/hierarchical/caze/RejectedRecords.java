@@ -12,7 +12,7 @@ final class RejectedRecords {
 	private RejectedRecords() {
 	}
 
-	static boolean hasCellIssues(PlannedRecord record) {
+	static boolean hasAnyIssue(PlannedRecord record) {
 		return issuesOf(record.node()).findAny().isPresent();
 	}
 

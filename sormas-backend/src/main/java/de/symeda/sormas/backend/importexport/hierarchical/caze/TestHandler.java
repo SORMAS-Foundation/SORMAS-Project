@@ -115,7 +115,7 @@ final class TestHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
-		if (RejectedRecords.hasCellIssues(record)) {
+		if (RejectedRecords.hasAnyIssue(record)) {
 			return;
 		}
 		try {
