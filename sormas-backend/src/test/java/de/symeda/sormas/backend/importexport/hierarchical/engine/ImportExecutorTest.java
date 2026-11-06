@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
@@ -74,6 +76,22 @@ class ImportExecutorTest {
 			I18nProperties.getValidationError(Validations.importHierarchicalLinkedPersonNotImported, 2),
 			report.getResults().get(1).getIssues().get(0).getMessage());
 		assertEquals(1, runs.get());
+	}
+
+	@Test
+	void aBlockFailingAtCommitHoldsBackItsOtherLines() {
+		ToyDefinition toy = new ToyDefinition();
+		ImportSheet sheet = sheet("| P1 | explode | C1 | 1 | |", "|    |         | C2 | 2 | |");
+
+		ImportReportDto report = new ImportExecutor().commit(toy, sheet, preview(toy, sheet).readyFingerprints(), countingRunner);
+
+		List<ImportIssueDto> issues = report.getResults().get(0).getIssues();
+		assertEquals(2, issues.size());
+		assertEquals(ImportIssueKind.COMMIT, issues.get(0).getKind());
+		assertEquals(Integer.valueOf(2), issues.get(0).getLineNumber());
+		assertEquals(ImportIssueKind.SKIPPED, issues.get(1).getKind());
+		assertEquals(Integer.valueOf(3), issues.get(1).getLineNumber());
+		assertEquals(I18nProperties.getValidationError(Validations.importHierarchicalLineHeldBack, 2), issues.get(1).getMessage());
 	}
 
 	@Test

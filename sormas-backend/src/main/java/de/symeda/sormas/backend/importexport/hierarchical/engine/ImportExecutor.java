@@ -78,7 +78,9 @@ public final class ImportExecutor {
 			return new BlockResultDto(block.index(), BlockOutcome.COMMITTED, List.of());
 		} catch (RuntimeException e) {
 			ImportIssueDto failure = new ImportIssueDto(ImportIssueKind.COMMIT, block.root().lineNumber(), null, rootMessage(e));
-			return new BlockResultDto(block.index(), BlockOutcome.FAILED, List.of(failure));
+			List<ImportIssueDto> issues = new ArrayList<>(List.of(failure));
+			issues.addAll(HeldBackLines.of(block.root(), List.of(failure)));
+			return new BlockResultDto(block.index(), BlockOutcome.FAILED, issues);
 		}
 	}
 
