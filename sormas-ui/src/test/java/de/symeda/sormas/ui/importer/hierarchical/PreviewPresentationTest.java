@@ -76,6 +76,31 @@ class PreviewPresentationTest {
 	}
 
 	@Test
+	void namesTheRecordOfEachProblem() {
+		ImportIssueDto issue = new ImportIssueDto(ImportIssueKind.BLOCK, 6, "CaseData.healthFacility", "unknown");
+		BlockPreviewDto broken = new BlockPreviewDto(0, 5, 7, "Case OneSampleTwoTests", BlockStatus.ERROR, "", List.of(), List.of(issue));
+
+		PreviewPresentation presentation = new PreviewPresentation(preview(broken), emptyReport());
+
+		assertEquals("Case OneSampleTwoTests", presentation.problemRows().get(0).getRecord());
+		assertEquals(6, presentation.problemRows().get(0).getLineNumber());
+	}
+
+	@Test
+	void doesNotCountHeldBackLinesAsProblems() {
+		ImportIssueDto problem = new ImportIssueDto(ImportIssueKind.BLOCK, 5, "CaseData.healthFacility", "unknown");
+		ImportIssueDto heldOne = new ImportIssueDto(ImportIssueKind.SKIPPED, 6, null, "held");
+		ImportIssueDto heldTwo = new ImportIssueDto(ImportIssueKind.SKIPPED, 7, null, "held");
+		BlockPreviewDto broken = new BlockPreviewDto(0, 5, 7, "B", BlockStatus.ERROR, "", List.of(), List.of(problem, heldOne, heldTwo));
+
+		PreviewPresentation presentation = new PreviewPresentation(preview(broken), emptyReport());
+
+		assertEquals(3, presentation.problemRows().size());
+		assertEquals(1, presentation.problemCount());
+		assertTrue(presentation.problemRows().get(1).isHeldBack());
+	}
+
+	@Test
 	void flagsProblemsOnlyWhenThereAreSome() {
 		BlockPreviewDto broken = new BlockPreviewDto(1, 5, 5, "B", BlockStatus.ERROR, "", List.of(), List.of(BAD_DATE));
 

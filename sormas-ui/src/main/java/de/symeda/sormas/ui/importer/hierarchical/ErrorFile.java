@@ -42,12 +42,12 @@ public final class ErrorFile {
 			}
 			for (ImportIssueDto issue : block.issues) {
 				int line = issue.getLineNumber() != null ? issue.getLineNumber() : block.firstLine;
-				messages.computeIfAbsent(line, l -> new ArrayList<>()).add(issue.getMessage());
+				messages.computeIfAbsent(line, l -> new ArrayList<>()).add(messageOf(issue));
 			}
 		}
 		for (ImportIssueDto issue : looseIssues) {
 			lines.add(issue.getLineNumber());
-			messages.computeIfAbsent(issue.getLineNumber(), l -> new ArrayList<>()).add(issue.getMessage());
+			messages.computeIfAbsent(issue.getLineNumber(), l -> new ArrayList<>()).add(messageOf(issue));
 		}
 
 		List<String[]> rows = new ArrayList<>();
@@ -67,6 +67,10 @@ public final class ErrorFile {
 			}
 		}
 		return rows;
+	}
+
+	private static String messageOf(ImportIssueDto issue) {
+		return issue.getColumn() == null || issue.getColumn().isEmpty() ? issue.getMessage() : issue.getColumn() + ": " + issue.getMessage();
 	}
 
 	private static String[] withMessage(String message, List<String> cells) {

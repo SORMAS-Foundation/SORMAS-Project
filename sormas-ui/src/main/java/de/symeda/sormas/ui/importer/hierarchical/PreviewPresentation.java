@@ -11,6 +11,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.hierarchical.BlockPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.MatchReason;
@@ -22,12 +23,14 @@ public final class PreviewPresentation {
 	private static final int MAX_GRID_ROWS = 8;
 
 	private final List<ImportIssueDto> problems;
+	private final List<ProblemRow> problemRows;
 	private final List<ChangeRow> changes;
 	private final List<RecordOperationDto> newRecords;
 
 	public PreviewPresentation(ImportPreviewDto preview, ImportReportDto report) {
 		this.problems = new ArrayList<>(preview.allIssues());
 		report.getResults().forEach(result -> problems.addAll(result.getIssues()));
+		this.problemRows = problems.stream().map(issue -> new ProblemRow(recordOf(preview, issue), issue)).collect(Collectors.toList());
 		this.changes = readyOperations(preview)
 			.flatMap(
 				operation -> operation.getChanges()
@@ -45,6 +48,14 @@ public final class PreviewPresentation {
 
 	public List<ImportIssueDto> problems() {
 		return problems;
+	}
+
+	public List<ProblemRow> problemRows() {
+		return problemRows;
+	}
+
+	public int problemCount() {
+		return (int) problemRows.stream().filter(row -> !row.isHeldBack()).count();
 	}
 
 	public List<ChangeRow> changes() {
@@ -92,12 +103,56 @@ public final class PreviewPresentation {
 		return Math.max(1, Math.min(itemCount, MAX_GRID_ROWS));
 	}
 
+	private static String recordOf(ImportPreviewDto preview, ImportIssueDto issue) {
+		Integer line = issue.getLineNumber();
+		if (line == null) {
+			return "";
+		}
+		return preview.getBlocks()
+			.stream()
+			.filter(block -> block.getFirstLine() <= line && line <= block.getLastLine())
+			.map(BlockPreviewDto::getLabel)
+			.findFirst()
+			.orElse("");
+	}
+
 	private static Stream<RecordOperationDto> readyOperations(ImportPreviewDto preview) {
 		return preview.getBlocks()
 			.stream()
 			.filter(block -> block.getStatus() == BlockStatus.READY)
 			.map(BlockPreviewDto::getOperations)
 			.flatMap(List::stream);
+	}
+
+	public static final class ProblemRow {
+
+		private final String record;
+		private final ImportIssueDto issue;
+
+		ProblemRow(String record, ImportIssueDto issue) {
+			this.record = record;
+			this.issue = issue;
+		}
+
+		public String getRecord() {
+			return record;
+		}
+
+		public Integer getLineNumber() {
+			return issue.getLineNumber();
+		}
+
+		public String getColumn() {
+			return issue.getColumn();
+		}
+
+		public String getMessage() {
+			return issue.getMessage();
+		}
+
+		public boolean isHeldBack() {
+			return issue.getKind() == ImportIssueKind.SKIPPED;
+		}
 	}
 
 	public static final class ChangeRow {
