@@ -14,8 +14,6 @@
  */
 package de.symeda.sormas.backend.person;
 
-import static de.symeda.sormas.backend.util.ValidationProblems.addProblem;
-import static de.symeda.sormas.backend.util.ValidationProblems.isUnreported;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
@@ -195,6 +193,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.util.ValidationProblem;
+import de.symeda.sormas.backend.util.ValidationProblems;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
@@ -598,41 +597,40 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	public void validate(PersonDto source) throws ValidationRuntimeException {
-		collectValidationProblems(source).stream().findFirst().ifPresent(problem -> {
-			throw new ValidationRuntimeException(problem.getMessage());
-		});
+		collect(source, ValidationProblems.failingFast());
 	}
 
 	public List<ValidationProblem> collectValidationProblems(PersonDto source) {
-		List<ValidationProblem> problems = new ArrayList<>();
+		ValidationProblems problems = ValidationProblems.collecting();
+		collect(source, problems);
+		return problems.asList();
+	}
+
+	private void collect(PersonDto source, ValidationProblems problems) {
 
 		if (StringUtils.isBlank(source.getFirstName())) {
-			addProblem(problems, Validations.specifyFirstName, PersonDto.FIRST_NAME);
+			problems.add(Validations.specifyFirstName, PersonDto.FIRST_NAME);
 		}
 		if (StringUtils.isBlank(source.getLastName())) {
-			addProblem(problems, Validations.specifyLastName, PersonDto.LAST_NAME);
+			problems.add(Validations.specifyLastName, PersonDto.LAST_NAME);
 		}
 		if (source.getSex() == null) {
-			addProblem(problems, Validations.specifySex, PersonDto.SEX);
+			problems.add(Validations.specifySex, PersonDto.SEX);
 		}
 		if (countPrimaryContactDetails(source, PersonContactDetailType.PHONE) > 1) {
-			addProblem(problems, Validations.personMultiplePrimaryPhoneNumbers, PersonDto.PERSON_CONTACT_DETAILS);
+			problems.add(Validations.personMultiplePrimaryPhoneNumbers, PersonDto.PERSON_CONTACT_DETAILS);
 		}
 		if (countPrimaryContactDetails(source, PersonContactDetailType.EMAIL) > 1) {
-			addProblem(problems, Validations.personMultiplePrimaryEmailAddresses, PersonDto.PERSON_CONTACT_DETAILS);
+			problems.add(Validations.personMultiplePrimaryEmailAddresses, PersonDto.PERSON_CONTACT_DETAILS);
 		}
 		if (!DataHelper.isValidEmailAddress(source.getEmailAddress())) {
-			addProblem(
-				problems,
-				Validations.validEmailAddress,
+			problems.add(Validations.validEmailAddress,
 				new Object[] {
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.EMAIL_ADDRESS) },
 				PersonDto.EMAIL_ADDRESS);
 		}
 		if (!DataHelper.isValidPhoneNumber(source.getPhone())) {
-			addProblem(
-				problems,
-				Validations.validPhoneNumber,
+			problems.add(Validations.validPhoneNumber,
 				new Object[] {
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE) },
 				PersonDto.PHONE);
@@ -647,11 +645,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			problems.add(
 				new ValidationProblem(null, e.getMessage(), PersonDto.BIRTH_DATE_DD, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_YYYY));
 		}
-
-		return problems;
 	}
 
-	private void collectAddressProblems(LocationDto address, List<ValidationProblem> problems) {
+	private void collectAddressProblems(LocationDto address, ValidationProblems problems) {
 		String regionPath = addressPath(LocationDto.REGION);
 		String districtPath = addressPath(LocationDto.DISTRICT);
 		String communityPath = addressPath(LocationDto.COMMUNITY);
@@ -660,15 +656,15 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		if (address.getRegion() != null
 			&& address.getDistrict() != null
 			&& !districtFacade.getByUuid(address.getDistrict().getUuid()).getRegion().equals(address.getRegion())) {
-			addProblem(problems, Validations.noAddressDistrictInAddressRegion, districtPath, regionPath);
+			problems.add(Validations.noAddressDistrictInAddressRegion, districtPath, regionPath);
 		}
 		if (address.getDistrict() != null
 			&& address.getCommunity() != null
 			&& !communityFacade.getByUuid(address.getCommunity().getUuid()).getDistrict().equals(address.getDistrict())) {
-			addProblem(problems, Validations.noAddressCommunityInAddressDistrict, communityPath, districtPath);
+			problems.add(Validations.noAddressCommunityInAddressDistrict, communityPath, districtPath);
 		}
 		if ((address.getDistrict() != null || address.getFacility() != null) && address.getRegion() == null) {
-			addProblem(problems, Validations.validRegion, regionPath);
+			problems.add(Validations.validRegion, regionPath);
 		}
 		if (address.getFacility() != null && address.getRegion() != null) {
 			FacilityDto healthFacility = facilityFacade.getByUuid(address.getFacility().getUuid());
@@ -676,19 +672,19 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			if (address.getCommunity() == null
 				&& healthFacility.getDistrict() != null
 				&& !healthFacility.getDistrict().equals(address.getDistrict())
-				&& isUnreported(problems, facilityPath, districtPath)) {
-				addProblem(problems, Validations.noAddressFacilityInAddressDistrict, facilityPath, districtPath);
+				&& problems.isUnreported(facilityPath, districtPath)) {
+				problems.add(Validations.noAddressFacilityInAddressDistrict, facilityPath, districtPath);
 			}
 			if (address.getCommunity() != null
 				&& healthFacility.getCommunity() != null
 				&& !address.getCommunity().equals(healthFacility.getCommunity())
-				&& isUnreported(problems, facilityPath, communityPath)) {
-				addProblem(problems, Validations.noAddressFacilityInAddressCommunity, facilityPath, communityPath);
+				&& problems.isUnreported(facilityPath, communityPath)) {
+				problems.add(Validations.noAddressFacilityInAddressCommunity, facilityPath, communityPath);
 			}
 			if (healthFacility.getRegion() != null
 				&& !address.getRegion().equals(healthFacility.getRegion())
-				&& isUnreported(problems, facilityPath, regionPath)) {
-				addProblem(problems, Validations.noAddressFacilityInAddressRegion, facilityPath, regionPath);
+				&& problems.isUnreported(facilityPath, regionPath)) {
+				problems.add(Validations.noAddressFacilityInAddressRegion, facilityPath, regionPath);
 			}
 		}
 		if (!StringUtils.isAllBlank(
@@ -696,9 +692,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			address.getContactPersonLastName(),
 			address.getContactPersonEmail(),
 			address.getContactPersonPhone()) && address.getFacilityType() == null) {
-			addProblem(
-				problems,
-				Validations.importPersonContactDetailsWithoutFacilityType,
+			problems.add(Validations.importPersonContactDetailsWithoutFacilityType,
 				addressPath(LocationDto.FACILITY_TYPE),
 				addressPath(LocationDto.CONTACT_PERSON_FIRST_NAME),
 				addressPath(LocationDto.CONTACT_PERSON_LAST_NAME),
@@ -706,17 +700,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				addressPath(LocationDto.CONTACT_PERSON_PHONE));
 		}
 		if (!DataHelper.isValidEmailAddress(address.getContactPersonEmail())) {
-			addProblem(
-				problems,
-				Validations.validEmailAddress,
+			problems.add(Validations.validEmailAddress,
 				new Object[] {
 					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL) },
 				addressPath(LocationDto.CONTACT_PERSON_EMAIL));
 		}
 		if (!DataHelper.isValidPhoneNumber(address.getContactPersonPhone())) {
-			addProblem(
-				problems,
-				Validations.validPhoneNumber,
+			problems.add(Validations.validPhoneNumber,
 				new Object[] {
 					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE) },
 				addressPath(LocationDto.CONTACT_PERSON_PHONE));

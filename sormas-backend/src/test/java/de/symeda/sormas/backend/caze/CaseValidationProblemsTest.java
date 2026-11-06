@@ -14,9 +14,12 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -175,6 +178,19 @@ public class CaseValidationProblemsTest extends AbstractBeanTest {
 		ValidationRuntimeException e = assertThrows(ValidationRuntimeException.class, () -> getCaseFacade().validate(caze));
 
 		assertEquals(I18nProperties.getValidationError(Validations.validResponsibleRegion), e.getMessage());
+	}
+
+	@Test
+	public void validateStopsAtTheFirstProblemBeforeLookingUpUnknownReferences() {
+		CaseDataDto caze = validCase();
+		caze.setDisease(null);
+		caze.setRegion(rdcf.region);
+		caze.setDistrict(new DistrictReferenceDto(DataHelper.createUuid(), "Unknown", null));
+		caze.setHealthFacility(new FacilityReferenceDto(DataHelper.createUuid(), "Unknown", null));
+
+		ValidationRuntimeException e = assertThrows(ValidationRuntimeException.class, () -> getCaseFacade().validate(caze));
+
+		assertEquals(I18nProperties.getValidationError(Validations.validDisease), e.getMessage());
 	}
 
 	private List<ValidationProblem> collect(Consumer<CaseDataDto> breakIt) {

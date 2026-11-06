@@ -2,15 +2,20 @@ package de.symeda.sormas.backend.person;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.util.ValidationProblem;
@@ -133,6 +138,18 @@ public class PersonValidationProblemsTest extends AbstractBeanTest {
 		assertEquals(
 			List.of(Validations.specifyLastName, Validations.validEmailAddress),
 			problems.stream().map(ValidationProblem::getValidationKey).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void validateStopsAtTheFirstProblemBeforeLookingUpUnknownReferences() {
+		PersonDto person = validPerson();
+		person.setFirstName(null);
+		person.getAddress().setRegion(rdcf.region);
+		person.getAddress().setDistrict(new DistrictReferenceDto(DataHelper.createUuid(), "Unknown", null));
+
+		ValidationRuntimeException e = assertThrows(ValidationRuntimeException.class, () -> getPersonFacade().validate(person));
+
+		assertEquals(I18nProperties.getValidationError(Validations.specifyFirstName), e.getMessage());
 	}
 
 	private void assertSingleProblem(PersonDto person, String validationKey, String... propertyPaths) {

@@ -18,8 +18,6 @@ package de.symeda.sormas.backend.caze;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.createOrderBuilder;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
-import static de.symeda.sormas.backend.util.ValidationProblems.addProblem;
-import static de.symeda.sormas.backend.util.ValidationProblems.isUnreported;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.util.Objects.isNull;
 
@@ -165,8 +163,8 @@ import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
@@ -372,6 +370,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.util.ValidationProblem;
+import de.symeda.sormas.backend.util.ValidationProblems;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
@@ -1920,73 +1919,72 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public void validate(@Valid CaseDataDto caze) throws ValidationRuntimeException {
-		collectValidationProblems(caze).stream().findFirst().ifPresent(problem -> {
-			throw new ValidationRuntimeException(problem.getMessage());
-		});
+		collect(caze, ValidationProblems.failingFast());
 	}
 
 	public List<ValidationProblem> collectValidationProblems(CaseDataDto caze) {
-		List<ValidationProblem> problems = new ArrayList<>();
+		ValidationProblems problems = ValidationProblems.collecting();
+		collect(caze, problems);
+		return problems.asList();
+	}
+
+	private void collect(CaseDataDto caze, ValidationProblems problems) {
 
 		if (caze.getReportingUser() == null && !caze.isPseudonymized()) {
-			addProblem(problems, Validations.validReportingUser, CaseDataDto.REPORTING_USER);
+			problems.add(Validations.validReportingUser, CaseDataDto.REPORTING_USER);
 		}
 		if (caze.getResponsibleRegion() == null) {
-			addProblem(problems, Validations.validResponsibleRegion, CaseDataDto.RESPONSIBLE_REGION);
+			problems.add(Validations.validResponsibleRegion, CaseDataDto.RESPONSIBLE_REGION);
 		}
 		if (caze.getResponsibleDistrict() == null) {
-			addProblem(problems, Validations.validResponsibleDistrict, CaseDataDto.RESPONSIBLE_DISTRICT);
+			problems.add(Validations.validResponsibleDistrict, CaseDataDto.RESPONSIBLE_DISTRICT);
 		}
 		if (caze.getResponsibleDistrict() != null
 			&& caze.getResponsibleCommunity() != null
 			&& !communityFacade.getByUuid(caze.getResponsibleCommunity().getUuid()).getDistrict().equals(caze.getResponsibleDistrict())) {
-			addProblem(
-				problems,
-				Validations.noResponsibleCommunityInResponsibleDistrict,
+			problems.add(Validations.noResponsibleCommunityInResponsibleDistrict,
 				CaseDataDto.RESPONSIBLE_COMMUNITY,
 				CaseDataDto.RESPONSIBLE_DISTRICT);
 		}
 		if ((caze.getCaseOrigin() == null || caze.getCaseOrigin() == CaseOrigin.IN_COUNTRY) && caze.getHealthFacility() == null) {
-			addProblem(problems, Validations.validFacility, CaseDataDto.HEALTH_FACILITY);
+			problems.add(Validations.validFacility, CaseDataDto.HEALTH_FACILITY);
 		}
 		if (CaseOrigin.POINT_OF_ENTRY.equals(caze.getCaseOrigin()) && caze.getPointOfEntry() == null) {
-			addProblem(problems, Validations.validPointOfEntry, CaseDataDto.POINT_OF_ENTRY);
+			problems.add(Validations.validPointOfEntry, CaseDataDto.POINT_OF_ENTRY);
 		}
 		if (caze.getDisease() == null) {
-			addProblem(problems, Validations.validDisease, CaseDataDto.DISEASE);
+			problems.add(Validations.validDisease, CaseDataDto.DISEASE);
 		}
 		if (caze.getResponsibleDistrict() != null
 			&& caze.getResponsibleRegion() != null
-			&& isUnreported(problems, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_REGION)
+			&& problems.isUnreported(CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_REGION)
 			&& !districtFacade.getByUuid(caze.getResponsibleDistrict().getUuid()).getRegion().equals(caze.getResponsibleRegion())) {
-			addProblem(problems, Validations.noResponsibleDistrictInResponsibleRegion, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_REGION);
+			problems.add(Validations.noResponsibleDistrictInResponsibleRegion, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_REGION);
 		}
 		if (caze.getRegion() != null
 			&& caze.getDistrict() != null
 			&& !districtFacade.getByUuid(caze.getDistrict().getUuid()).getRegion().equals(caze.getRegion())) {
-			addProblem(problems, Validations.noDistrictInRegion, CaseDataDto.DISTRICT, CaseDataDto.REGION);
+			problems.add(Validations.noDistrictInRegion, CaseDataDto.DISTRICT, CaseDataDto.REGION);
 		}
 		if (caze.getDistrict() != null
 			&& caze.getCommunity() != null
 			&& !communityFacade.getByUuid(caze.getCommunity().getUuid()).getDistrict().equals(caze.getDistrict())) {
-			addProblem(problems, Validations.noCommunityInDistrict, CaseDataDto.COMMUNITY, CaseDataDto.DISTRICT);
+			problems.add(Validations.noCommunityInDistrict, CaseDataDto.COMMUNITY, CaseDataDto.DISTRICT);
 		}
 		if (caze.getHealthFacility() != null) {
 			collectHealthFacilityProblems(caze, problems);
 		}
-
-		return problems;
 	}
 
-	private void collectHealthFacilityProblems(CaseDataDto caze, List<ValidationProblem> problems) {
+	private void collectHealthFacilityProblems(CaseDataDto caze, ValidationProblems problems) {
 		FacilityDto healthFacility = facilityFacade.getByUuid(caze.getHealthFacility().getUuid());
 
 		if (caze.getFacilityType() == null) {
 			if (!FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid())) {
-				addProblem(problems, Validations.noFacilityType, CaseDataDto.FACILITY_TYPE);
+				problems.add(Validations.noFacilityType, CaseDataDto.FACILITY_TYPE);
 			}
 		} else if (!caze.getFacilityType().isAccommodation()) {
-			addProblem(problems, Validations.notAccomodationFacilityType, new Object[] {
+			problems.add(Validations.notAccomodationFacilityType, new Object[] {
 				caze.getFacilityType()
 			}, CaseDataDto.FACILITY_TYPE);
 		}
@@ -2021,7 +2019,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	private void collectFacilityProblems(
-		List<ValidationProblem> problems,
+		ValidationProblems problems,
 		FacilityDto healthFacility,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
@@ -2037,19 +2035,19 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (community == null
 			&& healthFacility.getDistrict() != null
 			&& !healthFacility.getDistrict().equals(district)
-			&& isUnreported(problems, facilityPath, districtPath)) {
-			addProblem(problems, districtKey, facilityPath, districtPath);
+			&& problems.isUnreported(facilityPath, districtPath)) {
+			problems.add(districtKey, facilityPath, districtPath);
 		}
 		if (community != null
 			&& healthFacility.getCommunity() != null
 			&& !community.equals(healthFacility.getCommunity())
-			&& isUnreported(problems, facilityPath, communityPath)) {
-			addProblem(problems, communityKey, facilityPath, communityPath);
+			&& problems.isUnreported(facilityPath, communityPath)) {
+			problems.add(communityKey, facilityPath, communityPath);
 		}
 		if (healthFacility.getRegion() != null
 			&& !healthFacility.getRegion().equals(region)
-			&& isUnreported(problems, facilityPath, regionPath)) {
-			addProblem(problems, regionKey, facilityPath, regionPath);
+			&& problems.isUnreported(facilityPath, regionPath)) {
+			problems.add(regionKey, facilityPath, regionPath);
 		}
 	}
 
