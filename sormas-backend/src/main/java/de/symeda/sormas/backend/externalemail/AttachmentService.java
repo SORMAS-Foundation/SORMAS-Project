@@ -199,7 +199,7 @@ public class AttachmentService {
 
 		@Override
 		public File convert(File file) {
-			String targetPdfFilePath = "TODO_TARGET_TO_SPECIFY";
+			String targetPdfFilePath = getTmpFilePathForConversion() + PDF_FILE_EXTENSION;
 			getDocxToPdfConversionFacade().convertToPdf(file.getPath(), targetPdfFilePath);
 			return new File(targetPdfFilePath);
 		}
