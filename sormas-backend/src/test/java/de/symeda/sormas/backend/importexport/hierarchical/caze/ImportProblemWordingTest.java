@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,10 @@ public class ImportProblemWordingTest {
 				FacilityType.LABORATORY },
 			"facilityType");
 
-		assertEquals(I18nProperties.getValidationError(Validations.importFacilityTypeNotAccommodation, FacilityType.LABORATORY), ImportProblemWording.reword(problem));
+		assertEquals(
+			I18nProperties.getValidationError(Validations.importFacilityTypeNotAccommodation, "LABORATORY"),
+			ImportProblemWording.reword(problem));
+		assertTrue(ImportProblemWording.reword(problem).contains("LABORATORY"));
 	}
 
 	@Test

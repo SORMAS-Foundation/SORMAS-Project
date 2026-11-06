@@ -1,9 +1,11 @@
 package de.symeda.sormas.backend.importexport.hierarchical.caze;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.backend.util.ValidationProblem;
 
 final class ImportProblemWording {
@@ -25,8 +27,12 @@ final class ImportProblemWording {
 	private ImportProblemWording() {
 	}
 
+	private static Object[] messageArgs(ValidationProblem problem) {
+		return Arrays.stream(problem.getMessageArgs()).map(arg -> arg instanceof FacilityType ? ((FacilityType) arg).name() : arg).toArray();
+	}
+
 	static String reword(ValidationProblem problem) {
 		String importKey = problem.getValidationKey() == null ? null : IMPORT_KEYS.get(problem.getValidationKey());
-		return importKey == null ? problem.getMessage() : I18nProperties.getValidationError(importKey, problem.getMessageArgs());
+		return importKey == null ? problem.getMessage() : I18nProperties.getValidationError(importKey, messageArgs(problem));
 	}
 }

@@ -34,6 +34,7 @@ import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.CaseTemplateLayout;
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
@@ -613,13 +614,25 @@ public class CaseTemplateImportDefinitionTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void anUnknownFacilityNameShowsOnlyTheCellProblem() {
+	public void aRecordWithACellErrorShowsOnlyTheCellProblem() {
 		String row = NEW_CASE_ROW.replace("| HOSPITAL | Facility |", "| HOSPITAL | No such facility |");
 
 		ImportIssueDto issue = onlyIssue(facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, row)));
 
 		assertEquals("CaseData.healthFacility", issue.getColumn());
 		assertNotEquals(I18nProperties.getValidationError(Validations.validFacility), issue.getMessage());
+	}
+
+	@Test
+	public void aSampleOnAContinuationLineIsHeldBackWhenTheCaseHasAProblem() {
+		String row = NEW_CASE_ROW.replace("| HOSPITAL | Facility |", "| | |").replace("| S1 | 9/2/2026 | BLOOD | Central Lab | CULTURE | 9/3/2026 | POSITIVE |", "| | | | | | | |");
+		String sampleRow = "| | | | | | | | | | | S2 | 9/2/2026 | BLOOD | Central Lab | CULTURE | 9/3/2026 | POSITIVE |";
+
+		List<ImportIssueDto> issues = facade.checkImport(CASE_TEMPLATE, SheetFixtures.table(NEW_CASE_HEADER, row, sampleRow)).allIssues();
+
+		ImportIssueDto heldBack = issues.stream().filter(issue -> issue.getKind() == ImportIssueKind.SKIPPED).findFirst().orElseThrow();
+		assertEquals(Integer.valueOf(3), heldBack.getLineNumber());
+		assertEquals(I18nProperties.getValidationError(Validations.importHierarchicalLineHeldBack, 2), heldBack.getMessage());
 	}
 
 	@Test
