@@ -19,7 +19,14 @@ class ValidationIssuesTest {
 
 	private static final ColumnHeaders NO_HEADERS = ColumnHeaders.of(List.of());
 	private static final ColumnHeaders TEMPLATE_HEADERS = ColumnHeaders.of(
-		Stream.of("CaseData.responsibleRegion", "CaseData.responsibleDistrict", "CaseData.healthFacility", "Person.person.address.region")
+		Stream
+			.of(
+				"CaseData.responsibleRegion",
+				"CaseData.responsibleDistrict",
+				"CaseData.healthFacility",
+				"Person.person.address.region",
+				"Person.person.firstName",
+				"Person.person.lastName")
 			.map(header -> CaseTemplateSchema.resolve(header).orElseThrow())
 			.collect(Collectors.toList()));
 
@@ -30,30 +37,41 @@ class ValidationIssuesTest {
 		errors.put(List.of("firstName"), "You have to specify a first name");
 		ImportNode node = node();
 
-		ValidationIssues.report(node, CaseTemplateSchema.PERSON, new ValidationRuntimeException(errors), NO_HEADERS);
+		ValidationIssues.report(node, CaseTemplateSchema.PERSON, new ValidationRuntimeException(errors), TEMPLATE_HEADERS);
 
 		assertEquals(2, node.issues().size());
-		assertEquals("person.firstName", node.issues().get(0).getColumn());
+		assertEquals("Person.person.firstName", node.issues().get(0).getColumn());
 		assertEquals("You have to specify a first name", node.issues().get(0).getMessage());
-		assertEquals("person.lastName", node.issues().get(1).getColumn());
+		assertEquals("Person.person.lastName", node.issues().get(1).getColumn());
 	}
 
 	@Test
-	void namesAFieldErrorByTheFileHeaderOfItsCell() {
-		ImportNode node = new ImportNode(
-			CaseTemplateSchema.CASE_LEVEL,
-			2,
-			Map.of("Person.person.firstName", "Jean", "Symptoms.symptoms.otherNonHemorrhagicSymptomsText", "cough"));
+	void namesAFieldErrorOnANestedPropertyByItsColumn() {
+		ImportNode node = node();
+		ColumnHeaders headers = ColumnHeaders.of(List.of(CaseTemplateSchema.resolve("Symptoms.symptoms.otherNonHemorrhagicSymptomsText").orElseThrow()));
 
-		ValidationIssues.report(node, CaseTemplateSchema.PERSON, new ValidationRuntimeException(Map.of(List.of("firstName"), "too long")), NO_HEADERS);
 		ValidationIssues.report(
 			node,
 			CaseTemplateSchema.CASE,
 			new ValidationRuntimeException(Map.of(List.of("symptoms", "otherNonHemorrhagicSymptomsText"), "too long")),
-			NO_HEADERS);
+			headers);
 
-		assertEquals("Person.person.firstName", node.issues().get(0).getColumn());
-		assertEquals("Symptoms.symptoms.otherNonHemorrhagicSymptomsText", node.issues().get(1).getColumn());
+		assertEquals("Symptoms.symptoms.otherNonHemorrhagicSymptomsText", node.issues().get(0).getColumn());
+	}
+
+	@Test
+	void leavesAFieldErrorOnAPropertyWithoutAColumnWithoutAColumn() {
+		ImportNode node = node();
+
+		ValidationIssues.report(
+			node,
+			CaseTemplateSchema.CASE,
+			new ValidationRuntimeException(Map.of(List.of("reportingUser"), "You have to specify a reporting user")),
+			TEMPLATE_HEADERS);
+
+		assertEquals(1, node.issues().size());
+		assertNull(node.issues().get(0).getColumn());
+		assertEquals("You have to specify a reporting user", node.issues().get(0).getMessage());
 	}
 
 	@Test
@@ -96,7 +114,7 @@ class ValidationIssuesTest {
 	}
 
 	@Test
-	void keepsTheProblemOrderAndFallsBackToTheTargetPath() {
+	void keepsTheProblemOrderAndLeavesAnUnknownPropertyWithoutAColumn() {
 		ImportNode node = node();
 
 		ValidationIssues.report(
@@ -106,7 +124,8 @@ class ValidationIssuesTest {
 			TEMPLATE_HEADERS);
 
 		assertEquals("CaseData.responsibleRegion", node.issues().get(0).getColumn());
-		assertEquals("case.notInTemplate", node.issues().get(1).getColumn());
+		assertNull(node.issues().get(1).getColumn());
+		assertEquals("first", node.issues().get(1).getMessage());
 	}
 
 	@Test
@@ -123,6 +142,48 @@ class ValidationIssuesTest {
 		assertEquals(2, node.issues().size());
 		assertEquals("No such facility", node.issues().get(0).getMessage());
 		assertEquals("region missing", node.issues().get(1).getMessage());
+	}
+
+	@Test
+	void keepsAProblemOnSeveralColumnsWhenOnlySomeOfThemHaveAnIssue() {
+		ImportNode node = node();
+		node.reportIssue("CaseData.responsibleRegion", "No such region");
+
+		ValidationIssues.report(
+			node,
+			CaseTemplateSchema.CASE,
+			List.of(new ValidationProblem(null, "not in region", "responsibleDistrict", "responsibleRegion")),
+			TEMPLATE_HEADERS);
+
+		assertEquals(2, node.issues().size());
+		assertEquals("CaseData.responsibleDistrict, CaseData.responsibleRegion", node.issues().get(1).getColumn());
+	}
+
+	@Test
+	void dropsAProblemWhenEachOfItsColumnsAlreadyHasAnIssue() {
+		ImportNode node = node();
+		node.reportIssue("CaseData.responsibleDistrict, CaseData.responsibleRegion", "not in region");
+
+		ValidationIssues.report(
+			node,
+			CaseTemplateSchema.CASE,
+			List.of(
+				new ValidationProblem(null, "district problem", "responsibleDistrict"),
+				new ValidationProblem(null, "region problem", "responsibleRegion")),
+			TEMPLATE_HEADERS);
+
+		assertEquals(1, node.issues().size());
+	}
+
+	@Test
+	void keepsAProblemWithoutAColumnBesideAColumnIssue() {
+		ImportNode node = node();
+		node.reportIssue("CaseData.healthFacility", "No such facility");
+
+		ValidationIssues.report(node, CaseTemplateSchema.CASE, List.of(new ValidationProblem(null, "no reporting user", "reportingUser")), TEMPLATE_HEADERS);
+
+		assertEquals(2, node.issues().size());
+		assertNull(node.issues().get(1).getColumn());
 	}
 
 	@Test

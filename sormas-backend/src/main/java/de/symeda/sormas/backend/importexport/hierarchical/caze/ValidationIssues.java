@@ -15,6 +15,8 @@ import de.symeda.sormas.backend.util.ValidationProblem;
 
 final class ValidationIssues {
 
+	private static final String COLUMN_SEPARATOR = ", ";
+
 	private ValidationIssues() {
 	}
 
@@ -24,22 +26,35 @@ final class ValidationIssues {
 			node.reportIssue(null, exception.getMessage());
 			return;
 		}
-		List<ValidationProblem> problems = fieldErrors.entrySet()
+		List<PlacedProblem> problems = fieldErrors.entrySet()
 			.stream()
-			.map(error -> new ValidationProblem(null, error.getValue(), dottedPaths(error.getKey())))
-			.sorted(Comparator.comparing(problem -> String.valueOf(column(node, target, problem.getPropertyPaths(), headers))))
+			.map(error -> place(node, target, new ValidationProblem(null, error.getValue(), dottedPaths(error.getKey())), headers))
+			.sorted(Comparator.comparing(PlacedProblem::column, Comparator.nullsLast(Comparator.naturalOrder())))
 			.collect(Collectors.toList());
-		report(node, target, problems, headers);
+		report(node, problems);
 	}
 
 	static void report(ImportNode node, String target, List<ValidationProblem> problems, ColumnHeaders headers) {
-		Set<String> columnsWithIssues = RejectedRecords.columnsWithIssues(node).collect(Collectors.toSet());
-		problems.forEach(problem -> {
-			List<String> columns = columns(node, target, problem.getPropertyPaths(), headers);
-			if (columns.stream().noneMatch(columnsWithIssues::contains)) {
-				node.reportIssue(columns.isEmpty() ? null : String.join(", ", columns), ImportProblemWording.reword(problem));
-			}
-		});
+		report(node, problems.stream().map(problem -> place(node, target, problem, headers)).collect(Collectors.toList()));
+	}
+
+	private static void report(ImportNode node, List<PlacedProblem> problems) {
+		Set<String> columnsWithIssues = RejectedRecords.columnsWithIssues(node)
+			.flatMap(column -> Arrays.stream(column.split(COLUMN_SEPARATOR)))
+			.collect(Collectors.toSet());
+		problems.stream()
+			.filter(problem -> problem.columns.isEmpty() || !columnsWithIssues.containsAll(problem.columns))
+			.forEach(problem -> node.reportIssue(problem.column(), ImportProblemWording.reword(problem.problem)));
+	}
+
+	private static PlacedProblem place(ImportNode node, String target, ValidationProblem problem, ColumnHeaders headers) {
+		List<String> columns = problem.getPropertyPaths()
+			.stream()
+			.map(path -> header(node, target, path, headers))
+			.flatMap(Optional::stream)
+			.distinct()
+			.collect(Collectors.toList());
+		return new PlacedProblem(problem, columns);
 	}
 
 	private static String[] dottedPaths(List<String> path) {
@@ -47,17 +62,8 @@ final class ValidationIssues {
 			String.join(".", path) };
 	}
 
-	private static String column(ImportNode node, String target, List<String> dottedPaths, ColumnHeaders headers) {
-		List<String> columns = columns(node, target, dottedPaths, headers);
-		return columns.isEmpty() ? null : String.join(", ", columns);
-	}
-
-	private static List<String> columns(ImportNode node, String target, List<String> dottedPaths, ColumnHeaders headers) {
-		return dottedPaths.stream().map(path -> header(node, target, path, headers)).distinct().collect(Collectors.toList());
-	}
-
-	private static String header(ImportNode node, String target, String dottedPath, ColumnHeaders headers) {
-		return headers.headerFor(target, dottedPath).or(() -> fileHeader(node, target, dottedPath)).orElse(target + "." + dottedPath);
+	private static Optional<String> header(ImportNode node, String target, String dottedPath, ColumnHeaders headers) {
+		return headers.headerFor(target, dottedPath).or(() -> fileHeader(node, target, dottedPath));
 	}
 
 	private static Optional<String> fileHeader(ImportNode node, String target, String dottedPath) {
@@ -70,5 +76,20 @@ final class ValidationIssues {
 			.filter(column -> column.target().equals(target) && Arrays.equals(column.propertyPath(), propertyPath))
 			.map(ColumnSpec::header)
 			.findFirst();
+	}
+
+	private static final class PlacedProblem {
+
+		private final ValidationProblem problem;
+		private final List<String> columns;
+
+		private PlacedProblem(ValidationProblem problem, List<String> columns) {
+			this.problem = problem;
+			this.columns = columns;
+		}
+
+		private String column() {
+			return columns.isEmpty() ? null : String.join(COLUMN_SEPARATOR, columns);
+		}
 	}
 }
