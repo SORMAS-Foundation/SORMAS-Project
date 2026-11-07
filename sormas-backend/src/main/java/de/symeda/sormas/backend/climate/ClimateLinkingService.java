@@ -213,6 +213,19 @@ public class ClimateLinkingService {
 			return false;
 		}
 
+		// the site's imported and manual values describe the site, so they move with it, as a district's do (decision 132);
+		// without usable GPS the tab shows the district's climate and nothing is copied
+		if (current != null && target != null) {
+			ClimateRowCopyResult copyResult = climateObservationService.copyExternalRows(current, target);
+			if (!copyResult.isEmpty()) {
+				logger.info(
+					"Environment {} moved to climate location {}: {} imported/manual rows copied, {} days skipped because the cell already had equal or better data",
+					environment.getUuid(),
+					target.getId(),
+					copyResult.getCopied(),
+					copyResult.getSkipped());
+			}
+		}
 		environment.setClimateLocation(target);
 		environmentService.ensurePersisted(environment);
 		if (!isGridSizeChange(current)) {

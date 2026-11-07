@@ -234,6 +234,39 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void testEnvironmentMoveCopiesImportedAndManualRows() {
+
+		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		EnvironmentDto environment = createEnvironment(rdcf, user, 6.60, 3.35);
+		ClimateLocation oldLocation = getEnvironmentClimateLocation(environment.getUuid());
+
+		Date day1 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 3));
+		Date day2 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 2));
+		Date day3 = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1));
+		createObservation(oldLocation, day1, ClimateDataSource.IMPORT, 10.0);
+		createObservation(oldLocation, day2, ClimateDataSource.MANUAL, 20.0);
+		createObservation(oldLocation, day3, ClimateDataSource.OPENWEATHER, 30.0);
+		ClimateLocation newLocation = getBean(ClimateLocationService.class).getOrCreate(7.50, 3.35, 0.05);
+		createObservation(newLocation, day2, ClimateDataSource.MANUAL, 88.0);
+
+		environment = getEnvironmentFacade().getEnvironmentByUuid(environment.getUuid());
+		environment.getLocation().setLatitude(7.50);
+		getEnvironmentFacade().save(environment);
+
+		assertEquals(newLocation.getId(), getEnvironmentClimateLocation(environment.getUuid()).getId());
+		Map<Long, ClimateObservation> newRows = getObservationsByDay(newLocation);
+		assertEquals(2, newRows.size());
+		assertEquals(ClimateDataSource.IMPORT, newRows.get(day1.getTime()).getSource(), "the site's imported value moves with it (decision 132)");
+		assertEquals(10.0, newRows.get(day1.getTime()).getRainfall());
+		assertEquals(88.0, newRows.get(day2.getTime()).getRainfall(), "the new cell's own manual value stays");
+		assertNull(newRows.get(day3.getTime()), "OpenWeather rows are fetched again for the new point");
+		assertEquals(3, getObservationsByDay(oldLocation).size(), "the old location keeps its rows");
+		assertTrue(getRelinkJobs().isEmpty(), "environment moves are logged, not stored as relinks");
+	}
+
+	@Test
 	void testDistrictPointChangeCopiesImportedAndManualRows() {
 
 		createFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true);
