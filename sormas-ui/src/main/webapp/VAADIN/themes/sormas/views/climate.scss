@@ -39,6 +39,21 @@
     padding: 12px 16px;
   }
 
+  // Climate dashboard: a filled card where the chart would be, until a region is chosen or something is ticked
+  .climate-dashboard-empty {
+    background: #f2f6fb;
+    border-radius: 6px;
+    padding: 16px;
+  }
+
+  // Climate dashboard: the display controls (diseases, climate panels, shading, measure, lag) in a row that wraps
+  .climate-dashboard-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 8px 24px;
+  }
+
   // icons for rainfall, temperature and humidity (ClimateIcon): each drawing is a mask filled with the CSS color,
   // so an icon is as large as the text around it and coloured like text; the colours are the chart's panel colours
   // (the drawings are fully percent-encoded: the theme compiler drops the quotes around a url)

@@ -1005,6 +1005,17 @@ public interface Captions {
 	String ClimateDailyExport_temperatureP50 = "ClimateDailyExport.temperatureP50";
 	String ClimateDailyExport_temperatureP90 = "ClimateDailyExport.temperatureP90";
 	String climateDailyValues = "climateDailyValues";
+	String climateDashboardChart = "climateDashboardChart";
+	String climateDashboardClassification = "climateDashboardClassification";
+	String climateDashboardClimate = "climateDashboardClimate";
+	String climateDashboardDiseases = "climateDashboardDiseases";
+	String climateDashboardFrom = "climateDashboardFrom";
+	String climateDashboardMeasure = "climateDashboardMeasure";
+	String climateDashboardMeasureCount = "climateDashboardMeasureCount";
+	String climateDashboardMeasureIncidence = "climateDashboardMeasureIncidence";
+	String climateDashboardShade = "climateDashboardShade";
+	String climateDashboardShadeNone = "climateDashboardShadeNone";
+	String climateDashboardTo = "climateDashboardTo";
 	String ClimateDistrict_district = "ClimateDistrict.district";
 	String ClimateDistrict_region = "ClimateDistrict.region";
 	String ClimateEarlierValue_changeDate = "ClimateEarlierValue.changeDate";

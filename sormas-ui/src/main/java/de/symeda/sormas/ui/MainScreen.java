@@ -72,6 +72,7 @@ import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
+import de.symeda.sormas.ui.dashboard.climate.ClimateDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.gis.GisDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
@@ -128,6 +129,8 @@ public class MainScreen extends HorizontalLayout {
 					defaultView = CampaignDashboardView.VIEW_NAME;
 				} else if (sampleDashboardPermitted()) {
 					defaultView = SampleDashboardView.VIEW_NAME;
+				} else if (ClimateDashboardView.permitted()) {
+					defaultView = ClimateDashboardView.VIEW_NAME;
 				} else if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasExternalLaboratoryJurisdictionLevel()) {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_VIEW)) {
@@ -244,6 +247,12 @@ public class MainScreen extends HorizontalLayout {
 		} else if (gisDashboardPermitted()) {
 			menu.addView(
 				GisDashboardView.class,
+				AbstractDashboardView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuDashboard),
+				VaadinIcons.DASHBOARD);
+		} else if (ClimateDashboardView.permitted()) {
+			menu.addView(
+				ClimateDashboardView.class,
 				AbstractDashboardView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuDashboard),
 				VaadinIcons.DASHBOARD);
@@ -535,6 +544,9 @@ public class MainScreen extends HorizontalLayout {
 
 		if (sampleDashboardPermitted()) {
 			views.add(SampleDashboardView.VIEW_NAME);
+		}
+		if (ClimateDashboardView.permitted()) {
+			views.add(ClimateDashboardView.VIEW_NAME);
 		}
 
 		return views;
