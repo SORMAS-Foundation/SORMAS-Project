@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
@@ -46,7 +46,7 @@ public class EnvironmentClimateCards extends VerticalLayout {
 
 	private final Label heading = new Label();
 	private final Label normalsFrom = new Label();
-	private final HorizontalLayout cards = new HorizontalLayout();
+	private final CssLayout cards = new CssLayout();
 
 	public EnvironmentClimateCards() {
 
@@ -56,7 +56,8 @@ public class EnvironmentClimateCards extends VerticalLayout {
 		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE);
 		normalsFrom.addStyleName(CssStyles.LABEL_SECONDARY);
 		normalsFrom.setWidthFull();
-		cards.setMargin(false);
+		// a flex row (climate.scss): the cards share the width, grow to the height of the tallest and wrap on narrow screens
+		cards.addStyleName(CssStyles.CLIMATE_CARDS);
 		cards.setWidthFull();
 		addComponents(heading, normalsFrom, cards);
 	}
@@ -99,10 +100,10 @@ public class EnvironmentClimateCards extends VerticalLayout {
 	private static VerticalLayout card(ClimateSummaryCardDto card) {
 
 		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(true);
+		layout.setMargin(false);
 		layout.setSpacing(false);
 		layout.setWidthFull();
-		layout.addStyleName(CssStyles.BACKGROUND_ROUNDED_CORNERS);
+		layout.addStyleName(CssStyles.CLIMATE_CARD);
 
 		Label title = new Label(ClimateIcon.of(card.getVariable()).html(ClimateIcon.LARGE) + " " + ClimateChartScript.html(title(card.getVariable())), ContentMode.HTML);
 		title.addStyleName(CssStyles.LABEL_BOLD);
@@ -115,7 +116,7 @@ public class EnvironmentClimateCards extends VerticalLayout {
 		}
 
 		Label value = new Label(value(card));
-		value.addStyleName(CssStyles.LABEL_LARGE);
+		value.addStyleNames(CssStyles.LABEL_LARGE, CssStyles.LABEL_BOLD);
 		layout.addComponent(value);
 
 		for (String line : comparisonLines(card)) {

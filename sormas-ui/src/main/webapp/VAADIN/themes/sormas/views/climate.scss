@@ -11,6 +11,23 @@
     margin-top: 15px;
   }
 
+  // environment Climate data tab: the summary cards share the row, all as tall as the tallest, and wrap on narrow screens;
+  // the 8px above them follows the "Last 7 days with data" heading, or the normals line under it when it shows
+  .climate-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .climate-cards > .climate-card {
+    flex: 1 1 200px;
+    min-width: 0;
+    background: #f2f6fb;
+    border-radius: 6px;
+    padding: 12px 16px;
+  }
+
   // icons for rainfall, temperature and humidity (ClimateIcon): each drawing is a mask filled with the CSS color,
   // so an icon is as large as the text around it and coloured like text; the colours are the chart's panel colours
   // (the drawings are fully percent-encoded: the theme compiler drops the quotes around a url)
