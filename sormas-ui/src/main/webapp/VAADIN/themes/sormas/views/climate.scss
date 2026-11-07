@@ -6,6 +6,11 @@
     margin-bottom: 10px;
   }
 
+  // environment Climate data tab: the dates under the "Daily climate, samples and events" heading, in the normal text colour
+  .climate-chart-dates {
+    font-size: 13px;
+  }
+
   // environment Climate data tab: the site readings and daily values tables under their headings
   .climate-grid {
     margin-top: 15px;

@@ -211,6 +211,7 @@ public final class CssStyles {
 
 	public static final String CLIMATE_NEARBY_FILTERS = "climate-nearby-filters";
 	public static final String CLIMATE_GRID = "climate-grid";
+	public static final String CLIMATE_CHART_DATES = "climate-chart-dates";
 	public static final String CLIMATE_CARDS = "climate-cards";
 	public static final String CLIMATE_CARD = "climate-card";
 
