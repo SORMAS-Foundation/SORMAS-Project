@@ -180,6 +180,17 @@ class EnvironmentClimateChartTest {
 		assertTrue(details.contains(ClimateIcon.RAINFALL.html() + " Rainfall 12.0 mm"), details);
 		assertTrue(details.contains(ClimateIcon.HUMIDITY.html() + " Humidity"), details);
 
+		// a site reading's values after their icons (decision 116)
+		SiteClimateReadingDto reading = SiteClimateReadingDto.build(null);
+		reading.setReadingDateTime(Date.from(TO.atTime(LocalTime.of(10, 15)).atZone(ZoneId.systemDefault()).toInstant()));
+		reading.setAirTemperature(7.2);
+		reading.setRainfall(0.0);
+		reading.setRainfallPeriodHours(2);
+		reading.setRelativeHumidity(58.0);
+		String withReading = EnvironmentClimateChart.details(day, Collections.singletonList(reading), null, null);
+		assertTrue(withReading.contains(ClimateIcon.TEMPERATURE.html() + " 7.2 °C · " + ClimateIcon.RAINFALL.html() + " 0 mm in 2 h · "), withReading);
+		assertTrue(withReading.contains(ClimateIcon.HUMIDITY.html() + " 58 %"), withReading);
+
 		ClimateDayDto gap = new ClimateDayDto(TO);
 		assertTrue(EnvironmentClimateChart.details(gap, null, null, null).contains("No data"));
 	}

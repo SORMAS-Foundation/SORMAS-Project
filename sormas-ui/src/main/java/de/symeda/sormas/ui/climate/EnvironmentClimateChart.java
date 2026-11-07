@@ -545,7 +545,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		StringBuilder html = new StringBuilder(String.join(" · ", parts));
 		if (readings != null) {
 			for (SiteClimateReadingDto reading : readings) {
-				html.append("<br/>").append(html(siteReading(reading)));
+				html.append("<br/>").append(siteReading(reading));
 			}
 		}
 		long dayX = x(day.getDate());
@@ -572,26 +572,28 @@ public class EnvironmentClimateChart extends VerticalLayout {
 	}
 
 	/**
-	 * @return "Site reading 14:00: 27.5 °C · 12 mm in 24 h · 81 %"
+	 * @return "Site reading 14:00: 27.5 °C · 12 mm in 24 h · 81 %" as HTML, each value after its climate icon (decision 116)
 	 */
 	static String siteReading(SiteClimateReadingDto reading) {
 		List<String> values = new ArrayList<>();
 		if (reading.getAirTemperature() != null) {
-			values.add(ClimateCaptions.oneDecimal(reading.getAirTemperature()) + " °C");
+			values.add(ClimateIcon.TEMPERATURE.html() + " " + html(ClimateCaptions.oneDecimal(reading.getAirTemperature()) + " °C"));
 		}
 		if (reading.getRainfall() != null) {
 			values.add(
-				String.format(
-					I18nProperties.getString(Strings.climateReadingRainfall),
-					ClimateCaptions.number(reading.getRainfall()),
-					reading.getRainfallPeriodHours()));
+				ClimateIcon.RAINFALL.html() + " "
+					+ html(
+						String.format(
+							I18nProperties.getString(Strings.climateReadingRainfall),
+							ClimateCaptions.number(reading.getRainfall()),
+							reading.getRainfallPeriodHours())));
 		}
 		if (reading.getRelativeHumidity() != null) {
-			values.add(ClimateCaptions.number(reading.getRelativeHumidity()) + " %");
+			values.add(ClimateIcon.HUMIDITY.html() + " " + html(ClimateCaptions.number(reading.getRelativeHumidity()) + " %"));
 		}
 		return String.format(
-			I18nProperties.getString(Strings.climateDetailSiteReading),
-			DateFormatHelper.formatLocalDateTime(reading.getReadingDateTime()),
+			html(I18nProperties.getString(Strings.climateDetailSiteReading)),
+			html(DateFormatHelper.formatLocalDateTime(reading.getReadingDateTime())),
 			String.join(" · ", values));
 	}
 
