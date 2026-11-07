@@ -260,6 +260,47 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	}
 
 	@Test
+	void testLagShiftsTheClimatePanelsAndTheShading() {
+
+		Long location = districtLocation(10.52657, -84.90845);
+		EpiWeek week = DateHelper.getPreviousEpiWeek(lastWeek);
+		int year = week.getYear();
+		for (int y = year - 3; y < year; y++) {
+			for (int w = week.getWeek() - 1; w <= week.getWeek() + 1; w++) {
+				fillWeek(location, new EpiWeek(y, w), 1.0);
+			}
+		}
+		fillWeek(location, week, 30.0);
+
+		ClimateDashboardLayout layout = regionLayout();
+		layout.getDistrictFilter().setValue(rdcf.district);
+		layout.apply();
+		// the unusual week is the 51st of the 52 shown (index 50)
+		assertTrue(layout.getChart().getScript().contains("{from:49.5,to:50.5,"), "shaded where it happened");
+		assertEquals("Shift climate by: 0 weeks", layout.getLagSlider().getCaption());
+
+		layout.getLagSlider().setValue(1d);
+		String script = layout.getChart().getScript();
+		dump("dashboard-lag.js", script);
+		assertEquals("Shift climate by: 1 week", layout.getLagSlider().getCaption());
+		assertTrue(script.contains("{from:50.5,to:51.5,"), "the shading moves with the climate panels");
+		assertFalse(script.contains("{from:49.5,to:50.5,"));
+		assertTrue(script.contains("— 1 week earlier"), "the panel names state the shift");
+		assertTrue(
+			script.contains(String.format("Climate of week %d/%d (1 week earlier):", week.getWeek(), week.getYear())),
+			"the last week shows the climate of the week before");
+
+		layout.getLagSlider().setValue((double) ClimateDashboardLayout.MAX_LAG);
+		List<EpiWeek> shown = layout.getClimate().getShownWeeks().stream().map(w -> w.getWeek()).collect(Collectors.toList());
+		EpiWeek leadStart = layout.getClimate().getWeeks().get(0).getWeek();
+		assertTrue(
+			ClimateDashboardChart.details(shown.get(0), 0, layout.getClimate(), java.util.Collections.emptyList(), java.util.EnumSet.allOf(ClimateVariable.class), Measure.COUNT, 12)
+				.contains(String.format("Climate of week %d/%d (12 weeks earlier):", leadStart.getWeek(), leadStart.getYear())),
+			"the first week still has climate: 12 weeks are loaded before the period");
+		assertEquals(52, layout.getClimate().getShownWeeks().size(), "no new request: the same series");
+	}
+
+	@Test
 	void testDistrictWithoutPoint() {
 
 		ClimateDashboardLayout layout = regionLayout();

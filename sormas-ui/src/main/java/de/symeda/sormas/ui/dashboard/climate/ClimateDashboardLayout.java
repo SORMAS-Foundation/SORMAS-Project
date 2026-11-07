@@ -38,6 +38,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.RadioButtonGroup;
+import com.vaadin.ui.Slider;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -159,6 +160,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final CheckBoxGroup<ClimateVariable> climateGroup = new CheckBoxGroup<>();
 	private final ComboBox<ClimateVariable> shadeSelect = new ComboBox<>();
 	private final RadioButtonGroup<Measure> measureGroup = new RadioButtonGroup<>();
+	private final Slider lagSlider = new Slider(0, MAX_LAG);
 	private final CssLayout controls = new CssLayout();
 	private final VerticalLayout notes = new VerticalLayout();
 	private final ClimateDashboardChart chart = new ClimateDashboardChart();
@@ -332,12 +334,23 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			}
 		});
 
+		// the shift is display-only: a move redraws from the loaded series, with no new request (decision 126)
+		lagSlider.setResolution(0);
+		lagSlider.setValue(0d);
+		lagSlider.setWidth(200, Unit.PIXELS);
+		lagSlider.setCaption(lagCaption(0));
+		lagSlider.addValueChangeListener(e -> {
+			lagSlider.setCaption(lagCaption(getLag()));
+			redrawUnlessUpdating();
+		});
+
 		controls.addStyleName(CssStyles.CLIMATE_DASHBOARD_CONTROLS);
 		controls.setWidthFull();
 		addControl(diseaseGroup);
 		addControl(climateGroup);
 		addControl(shadeSelect);
 		addControl(measureGroup);
+		addControl(lagSlider);
 		return controls;
 	}
 
@@ -498,7 +511,20 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			addNote(String.format(I18nProperties.getString(Strings.climateDashboardShadeNoNormals), climate.getMinHistoryYears()));
 		}
 
-		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), 0);
+		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), getLag());
+	}
+
+	/**
+	 * @return how many weeks earlier the climate panels show
+	 */
+	int getLag() {
+		return lagSlider.getValue() != null ? lagSlider.getValue().intValue() : 0;
+	}
+
+	static String lagCaption(int lag) {
+		return lag == 1
+			? I18nProperties.getString(Strings.climateDashboardLagOne)
+			: String.format(I18nProperties.getString(Strings.climateDashboardLag), lag);
 	}
 
 	private void addNote(String text) {
@@ -566,6 +592,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 	ComboBox<ClimateVariable> getShadeSelect() {
 		return shadeSelect;
+	}
+
+	Slider getLagSlider() {
+		return lagSlider;
 	}
 
 	RadioButtonGroup<Measure> getMeasureGroup() {

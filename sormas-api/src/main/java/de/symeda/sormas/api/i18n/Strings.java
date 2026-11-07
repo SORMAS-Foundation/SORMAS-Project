@@ -124,6 +124,8 @@ public interface Strings {
 	String climateDashboardHint = "climateDashboardHint";
 	String climateDashboardHistoryIncomplete = "climateDashboardHistoryIncomplete";
 	String climateDashboardJurisdiction = "climateDashboardJurisdiction";
+	String climateDashboardLag = "climateDashboardLag";
+	String climateDashboardLagOne = "climateDashboardLagOne";
 	String climateDashboardNoClimateData = "climateDashboardNoClimateData";
 	String climateDashboardNoDiseases = "climateDashboardNoDiseases";
 	String climateDashboardNoPoint = "climateDashboardNoPoint";
