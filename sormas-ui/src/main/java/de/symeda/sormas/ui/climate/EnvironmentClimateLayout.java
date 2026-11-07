@@ -204,7 +204,7 @@ public class EnvironmentClimateLayout extends CustomLayout {
 					Captions.climateNewSiteReading,
 					VaadinIcons.PLUS_CIRCLE,
 					e -> SiteClimateReadingForm.openNew(environment, this::reload),
-					ValoTheme.BUTTON_LINK));
+					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT));
 		}
 		if (isManualEntryAllowed()) {
 			buttons.add(
@@ -212,10 +212,10 @@ public class EnvironmentClimateLayout extends CustomLayout {
 					Captions.climateManualEntry,
 					VaadinIcons.PLUS_CIRCLE,
 					e -> ClimateObservationForm.openForEnvironment(environment, null, this::reload),
-					ValoTheme.BUTTON_LINK));
+					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT));
 		}
 		if (UiUtil.permitted(UserRight.CLIMATE_EXPORT)) {
-			Button export = ButtonHelper.createIconButton(Captions.climateExportDailyValues, VaadinIcons.TABLE, null, ValoTheme.BUTTON_LINK);
+			Button export = ButtonHelper.createIconButton(Captions.climateExportDailyValues, VaadinIcons.TABLE, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			export.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			StreamResource resource = DownloadUtil.createCsvExportStreamResource(
 				ClimateDailyExportDto.class,
@@ -245,6 +245,8 @@ public class EnvironmentClimateLayout extends CustomLayout {
 		card.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
 		VerticalLayout stack = new VerticalLayout();
 		stack.setMargin(false);
+		// compact links, one under the other without gaps (decision 117)
+		stack.setSpacing(false);
 		stack.setWidthFull();
 		stack.addStyleName(CssStyles.VSPACE_TOP_4);
 		for (Button button : buttons) {
