@@ -188,8 +188,10 @@ class EnvironmentClimateChartTest {
 		reading.setRainfallPeriodHours(2);
 		reading.setRelativeHumidity(58.0);
 		String withReading = EnvironmentClimateChart.details(day, Collections.singletonList(reading), null, null);
-		assertTrue(withReading.contains(ClimateIcon.TEMPERATURE.html() + " 7.2 °C · " + ClimateIcon.RAINFALL.html() + " 0 mm in 2 h · "), withReading);
-		assertTrue(withReading.contains(ClimateIcon.HUMIDITY.html() + " 58 %"), withReading);
+		assertTrue(
+			withReading.contains(
+				ClimateIcon.RAINFALL.html() + " 0 mm in 2 h · " + ClimateIcon.TEMPERATURE.html() + " 7.2 °C · " + ClimateIcon.HUMIDITY.html() + " 58 %"),
+			withReading);
 
 		ClimateDayDto gap = new ClimateDayDto(TO);
 		assertTrue(EnvironmentClimateChart.details(gap, null, null, null).contains("No data"));

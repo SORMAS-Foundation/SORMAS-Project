@@ -572,13 +572,11 @@ public class EnvironmentClimateChart extends VerticalLayout {
 	}
 
 	/**
-	 * @return "Site reading 14:00: 27.5 °C · 12 mm in 24 h · 81 %" as HTML, each value after its climate icon (decision 116)
+	 * @return "Site reading 14:00: 12 mm in 24 h · 27.5 °C · 81 %" as HTML, each value after its climate icon and in the
+	 *         order of the day's own values: rainfall, temperature, humidity (decision 116)
 	 */
 	static String siteReading(SiteClimateReadingDto reading) {
 		List<String> values = new ArrayList<>();
-		if (reading.getAirTemperature() != null) {
-			values.add(ClimateIcon.TEMPERATURE.html() + " " + html(ClimateCaptions.oneDecimal(reading.getAirTemperature()) + " °C"));
-		}
 		if (reading.getRainfall() != null) {
 			values.add(
 				ClimateIcon.RAINFALL.html() + " "
@@ -587,6 +585,9 @@ public class EnvironmentClimateChart extends VerticalLayout {
 							I18nProperties.getString(Strings.climateReadingRainfall),
 							ClimateCaptions.number(reading.getRainfall()),
 							reading.getRainfallPeriodHours())));
+		}
+		if (reading.getAirTemperature() != null) {
+			values.add(ClimateIcon.TEMPERATURE.html() + " " + html(ClimateCaptions.oneDecimal(reading.getAirTemperature()) + " °C"));
 		}
 		if (reading.getRelativeHumidity() != null) {
 			values.add(ClimateIcon.HUMIDITY.html() + " " + html(ClimateCaptions.number(reading.getRelativeHumidity()) + " %"));
