@@ -121,6 +121,26 @@ class ClimateDistrictTableTest extends AbstractUiBeanTest {
 		layout.getLagSlider().setValue(5d);
 		assertEquals("70 mm", table.getRows().stream().filter(r -> r.getDistrict().equals(rdcf.district)).findFirst().get().rainfallText(), "not shifted");
 
+		// the export: the region's weeks, then each district's, with the lag left out (decision 128)
+		List<de.symeda.sormas.api.climate.ClimateDashboardExportDto> exportRows = layout.getExportRows();
+		assertEquals(3 * 52, exportRows.size());
+		List<String> header = ClimateDashboardExport.header(layout.selectedDiseases());
+		assertEquals(5 + 6 * layout.selectedDiseases().size() + 21 + 1, header.size());
+		assertTrue(header.contains(Disease.DENGUE + " cases"), header.toString());
+		assertTrue(header.contains("Rainfall same week last year (mm)"));
+		de.symeda.sormas.api.climate.ClimateDashboardExportDto lastBagacesWeek = exportRows.stream()
+			.filter(r -> rdcf.district.equals(r.getDistrict()) && r.getClimate().getWeek().equals(lastWeek))
+			.findFirst()
+			.get();
+		List<String> line = ClimateDashboardExport.line(lastBagacesWeek, layout.selectedDiseases());
+		assertEquals(header.size(), line.size());
+		assertEquals("Bagaces", line.get(1));
+		assertEquals("200000", line.get(4));
+		assertEquals("70", line.get(header.indexOf("Rainfall (mm)")), "the week's own rainfall, not the shifted one");
+		assertEquals("7", line.get(header.indexOf("Rainfall days with data (districts for a region)")));
+		assertEquals("2", line.get(header.indexOf(Disease.DENGUE + " cases")));
+		assertEquals("", line.get(header.size() - 1), "no OpenWeather days, no credit");
+
 		table.getOnSelect().accept(liberia);
 		assertEquals(liberia, layout.getSelection().getDistrict(), "a row click shows that district");
 		assertFalse(table.isVisible());

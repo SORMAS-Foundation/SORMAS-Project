@@ -48,6 +48,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.climate.ClimateCaseClassificationFilter;
 import de.symeda.sormas.api.climate.ClimateCaseCriteria;
 import de.symeda.sormas.api.climate.ClimateCaseSeriesDto;
+import de.symeda.sormas.api.climate.ClimateDashboardExportDto;
 import de.symeda.sormas.api.climate.ClimateDistrictDto;
 import de.symeda.sormas.api.climate.ClimateSeriesCriteria;
 import de.symeda.sormas.api.climate.ClimateVariable;
@@ -171,6 +172,9 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final Map<Disease, ClimateCaseSeriesDto> cases = new EnumMap<>(Disease.class);
 	/** Set while the controls are changed by code, so their listeners do not redraw. */
 	private boolean updating;
+	/** Told whether filters are applied, for example to enable the export. */
+	private java.util.function.Consumer<Boolean> selectionListener = applied -> {
+	};
 	/** The measure the user chose; counts are shown instead while incidence is not available (decision 74). */
 	private Measure preferredMeasure = Measure.INCIDENCE;
 
@@ -428,6 +432,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 		emptyCard.setVisible(false);
 		content.setVisible(true);
+		selectionListener.accept(true);
 		redraw();
 	}
 
@@ -473,6 +478,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		cases.clear();
 		emptyCard.setVisible(true);
 		content.setVisible(false);
+		selectionListener.accept(false);
 	}
 
 	/**
@@ -520,6 +526,26 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		if (showTable) {
 			table.update(selection.getPlaceName(), climate, selectedCaseSeries(), measureGroup.getValue(), shadeSelect.getValue());
 		}
+	}
+
+	void setSelectionListener(java.util.function.Consumer<Boolean> selectionListener) {
+		this.selectionListener = selectionListener;
+	}
+
+	/**
+	 * @return the export rows for the applied filters and the ticked diseases, or none before a region is applied
+	 */
+	List<ClimateDashboardExportDto> getExportRows() {
+		if (selection == null) {
+			return Collections.emptyList();
+		}
+		return FacadeProvider.getClimateCaseFacade()
+			.getDashboardExportList(
+				new ClimateCaseCriteria().region(selection.getRegion())
+					.district(selection.getDistrict())
+					.weeks(selection.getFrom(), selection.getTo())
+					.diseases(selectedDiseases())
+					.classification(selection.classification));
 	}
 
 	/**

@@ -164,6 +164,12 @@ public interface Strings {
 	String climateDetailTemperature = "climateDetailTemperature";
 	String climateDistrictsWithoutPoint = "climateDistrictsWithoutPoint";
 	String climateDistrictWithoutPoint = "climateDistrictWithoutPoint";
+	String climateExportAboveUsual = "climateExportAboveUsual";
+	String climateExportCases = "climateExportCases";
+	String climateExportIncidence = "climateExportIncidence";
+	String climateExportReportDateCases = "climateExportReportDateCases";
+	String climateExportUsualP10 = "climateExportUsualP10";
+	String climateExportUsualP90 = "climateExportUsualP90";
 	String climateFetchNowNoApiKey = "climateFetchNowNoApiKey";
 	String climateGridSizeOption = "climateGridSizeOption";
 	String climateHasPoint = "climateHasPoint";
@@ -447,6 +453,7 @@ public interface Strings {
 	String entityCases = "entityCases";
 	String entityCaseVisits = "entityCaseVisits";
 	String entityClimateDailyValues = "entityClimateDailyValues";
+	String entityClimateDashboard = "entityClimateDashboard";
 	String entityClimateObservations = "entityClimateObservations";
 	String entityClinicalVisit = "entityClinicalVisit";
 	String entityClinicalVisits = "entityClinicalVisits";

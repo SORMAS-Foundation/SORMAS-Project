@@ -37,6 +37,13 @@ public interface ClimateCaseFacade {
 	List<ClimateCaseSeriesDto> getCaseSeries(ClimateCaseCriteria criteria);
 
 	/**
+	 * @return the Climate dashboard export (decision 128): one row per epi week of the criteria's district, or of its region
+	 *         and then each of its districts when no district is given, with the week's climate and the cases of each
+	 *         disease of the criteria; needs CLIMATE_EXPORT and DASHBOARD_CLIMATE_VIEW
+	 */
+	List<ClimateDashboardExportDto> getDashboardExportList(ClimateCaseCriteria criteria);
+
+	/**
 	 * @return the weekly cases near the environment from {@code from} to {@code to}: those placed within {@code radiusKm}
 	 *         by their probable infection environment, else their home address, and those without a point in the
 	 *         environment's community (decision 82); by community only when the environment has no usable GPS

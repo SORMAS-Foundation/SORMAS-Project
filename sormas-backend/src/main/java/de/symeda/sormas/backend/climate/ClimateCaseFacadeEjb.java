@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -50,10 +51,14 @@ import de.symeda.sormas.api.climate.ClimateCaseCriteria;
 import de.symeda.sormas.api.climate.ClimateCaseFacade;
 import de.symeda.sormas.api.climate.ClimateCaseSeriesDto;
 import de.symeda.sormas.api.climate.ClimateCaseWeekDto;
+import de.symeda.sormas.api.climate.ClimateDashboardExportDto;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesDto;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesWeekDto;
 import de.symeda.sormas.api.climate.ClimateRangeDto;
+import de.symeda.sormas.api.climate.ClimateSeriesCriteria;
 import de.symeda.sormas.api.climate.ClimateUsualRangeMissing;
+import de.symeda.sormas.api.climate.ClimateWeekDto;
+import de.symeda.sormas.api.climate.ClimateWeeklySeriesDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -119,6 +124,8 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 	private PopulationDataService populationDataService;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	@EJB
+	private ClimateSeriesFacadeEjb.ClimateSeriesFacadeEjbLocal climateSeriesFacade;
 
 	@Override
 	@RightsAllowed(UserRight._DASHBOARD_CLIMATE_VIEW)
@@ -224,6 +231,65 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 			result.add(regionSeries);
 		}
 		return result;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CLIMATE_EXPORT)
+	public List<ClimateDashboardExportDto> getDashboardExportList(ClimateCaseCriteria criteria) {
+
+		// the export holds the dashboard's case counts, so it needs the dashboard's right as well (decision 128)
+		if (!currentUserService.hasUserRight(UserRight.DASHBOARD_CLIMATE_VIEW)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+
+		boolean includeDistricts = criteria.getDistrict() == null;
+		ClimateWeeklySeriesDto climate = climateSeriesFacade.getWeeklySeries(
+			new ClimateSeriesCriteria().region(criteria.getRegion())
+				.district(criteria.getDistrict())
+				.weeks(criteria.getFromWeek(), criteria.getToWeek())
+				.includeDistricts(includeDistricts));
+		List<ClimateCaseSeriesDto> cases = getCaseSeries(
+			new ClimateCaseCriteria().region(criteria.getRegion())
+				.district(criteria.getDistrict())
+				.weeks(criteria.getFromWeek(), criteria.getToWeek())
+				.diseases(criteria.getDiseases())
+				.classification(criteria.getClassification())
+				.includeDistricts(includeDistricts));
+
+		List<ClimateDashboardExportDto> rows = new ArrayList<>(exportRows(climate, cases));
+		if (includeDistricts) {
+			for (ClimateWeeklySeriesDto districtClimate : climate.getDistrictSeries()) {
+				List<ClimateCaseSeriesDto> districtCases = cases.stream()
+					.map(
+						series -> series.getDistrictSeries()
+							.stream()
+							.filter(s -> districtClimate.getDistrict().equals(s.getDistrict()))
+							.findFirst()
+							.orElse(null))
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
+				rows.addAll(exportRows(districtClimate, districtCases));
+			}
+		}
+		return rows;
+	}
+
+	/**
+	 * @return one row per week of the place's climate series, with the cases of the same week
+	 */
+	private static List<ClimateDashboardExportDto> exportRows(ClimateWeeklySeriesDto climate, List<ClimateCaseSeriesDto> cases) {
+
+		Integer population = cases.isEmpty() ? null : cases.get(0).getPopulation();
+		List<ClimateDashboardExportDto> rows = new ArrayList<>();
+		for (ClimateWeekDto week : climate.getShownWeeks()) {
+			ClimateDashboardExportDto row =
+				new ClimateDashboardExportDto(climate.getRegion(), climate.getDistrict(), week, climate.isOpenWeatherData(), population);
+			for (ClimateCaseSeriesDto series : cases) {
+				series.getWeeks().stream().filter(w -> w.getWeek().equals(week.getWeek())).findFirst().ifPresent(w -> row.putCases(series.getDisease(), w));
+			}
+			rows.add(row);
+		}
+		return rows;
 	}
 
 	@Override
