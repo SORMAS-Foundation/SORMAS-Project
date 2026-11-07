@@ -192,8 +192,8 @@ public class EnvironmentClimateLayout extends CustomLayout {
 	}
 
 	/**
-	 * @return the actions card (decision 105): site reading, manual entry and export stacked, each only with its right;
-	 *         null when the user may do none of them
+	 * @return the actions card (decision 105): add site reading, add daily values and export, stacked as links with their
+	 *         icons (decision 117), each only with its right; null when the user may do none of them
 	 */
 	private SideComponent createActions() {
 
@@ -204,7 +204,7 @@ public class EnvironmentClimateLayout extends CustomLayout {
 					Captions.climateNewSiteReading,
 					VaadinIcons.PLUS_CIRCLE,
 					e -> SiteClimateReadingForm.openNew(environment, this::reload),
-					ValoTheme.BUTTON_PRIMARY));
+					ValoTheme.BUTTON_LINK));
 		}
 		if (isManualEntryAllowed()) {
 			buttons.add(
@@ -212,10 +212,10 @@ public class EnvironmentClimateLayout extends CustomLayout {
 					Captions.climateManualEntry,
 					VaadinIcons.PLUS_CIRCLE,
 					e -> ClimateObservationForm.openForEnvironment(environment, null, this::reload),
-					ValoTheme.BUTTON_PRIMARY));
+					ValoTheme.BUTTON_LINK));
 		}
 		if (UiUtil.permitted(UserRight.CLIMATE_EXPORT)) {
-			Button export = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			Button export = ButtonHelper.createIconButton(Captions.climateExportDailyValues, VaadinIcons.TABLE, null, ValoTheme.BUTTON_LINK);
 			export.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			StreamResource resource = DownloadUtil.createCsvExportStreamResource(
 				ClimateDailyExportDto.class,

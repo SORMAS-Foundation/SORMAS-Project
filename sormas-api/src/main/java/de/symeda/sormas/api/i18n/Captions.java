@@ -1010,6 +1010,7 @@ public interface Captions {
 	String ClimateEarlierValue_changeDate = "ClimateEarlierValue.changeDate";
 	String climateEarlierValues = "climateEarlierValues";
 	String climateEditSettings = "climateEditSettings";
+	String climateExportDailyValues = "climateExportDailyValues";
 	String climateFetchNow = "climateFetchNow";
 	String climateFilterDateFrom = "climateFilterDateFrom";
 	String climateFilterDateTo = "climateFilterDateTo";

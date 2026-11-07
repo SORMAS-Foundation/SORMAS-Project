@@ -43,6 +43,7 @@ import com.vaadin.data.provider.Query;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.climate.ClimateDayDto;
 import de.symeda.sormas.api.climate.SiteClimateReadingDto;
@@ -93,7 +94,7 @@ class EnvironmentClimateEditTest extends AbstractUiBeanTest {
 
 		assertTrue(layout.isManualEntryAllowed());
 		assertTrue(layout.isSiteReadingEditAllowed());
-		assertEquals(Arrays.asList("Site reading", "Manual entry", "Export"), buttonCaptions(layout.getActions()), "stacked in the actions card");
+		assertEquals(Arrays.asList("Add site reading", "Add daily values", "Export daily values"), buttonCaptions(layout.getActions()), "stacked in the actions card");
 		assertEquals(8, layout.getDays().getGrid().getColumns().size(), "values, source and the edit action");
 		assertEquals(7, layout.getSiteReadings().getGrid().getColumns().size(), "values and the edit and delete actions");
 
@@ -119,17 +120,19 @@ class EnvironmentClimateEditTest extends AbstractUiBeanTest {
 
 		assertFalse(layout.isManualEntryAllowed(), "the record belongs to the district");
 		assertFalse(layout.isSiteReadingEditAllowed(), "the environment may not be edited");
-		assertEquals(Collections.singletonList("Export"), buttonCaptions(layout.getActions()));
+		assertEquals(Collections.singletonList("Export daily values"), buttonCaptions(layout.getActions()));
 		assertEquals(7, layout.getDays().getGrid().getColumns().size());
 		assertEquals(6, layout.getSiteReadings().getGrid().getColumns().size());
 	}
 
 	/**
-	 * @return the captions of the buttons in the component, in order
+	 * @return the captions of the buttons in the component, in order; every one is a link with an icon (decision 117)
 	 */
 	private static List<String> buttonCaptions(Component component) {
 		List<String> captions = new ArrayList<>();
 		if (component instanceof Button) {
+			assertTrue(component.getStyleName().contains(ValoTheme.BUTTON_LINK), component.getCaption() + " is a link");
+			assertTrue(component.getIcon() != null, component.getCaption() + " has an icon");
 			captions.add(component.getCaption());
 		} else if (component instanceof HasComponents) {
 			((HasComponents) component).forEach(child -> captions.addAll(buttonCaptions(child)));
