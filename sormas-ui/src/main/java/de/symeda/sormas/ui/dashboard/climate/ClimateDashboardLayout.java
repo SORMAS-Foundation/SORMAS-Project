@@ -164,6 +164,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final CssLayout controls = new CssLayout();
 	private final VerticalLayout notes = new VerticalLayout();
 	private final ClimateDashboardChart chart = new ClimateDashboardChart();
+	private final ClimateDistrictTable table = new ClimateDistrictTable(this::selectDistrict);
 
 	private Selection selection;
 	private ClimateWeeklySeriesDto climate;
@@ -212,7 +213,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		content.addComponent(createControls());
 		notes.setMargin(false);
 		notes.setSpacing(false);
-		content.addComponents(notes, chart);
+		content.addComponents(notes, chart, table);
 		addComponent(content);
 
 		resetFilters();
@@ -512,6 +513,23 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		}
 
 		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), getLag());
+
+		// the district table: a region without a district (decision 127); not shifted by the lag
+		boolean showTable = selection.getDistrict() == null && !climate.getDistrictSeries().isEmpty();
+		table.setVisible(showTable);
+		if (showTable) {
+			table.update(selection.getPlaceName(), climate, selectedCaseSeries(), measureGroup.getValue(), shadeSelect.getValue());
+		}
+	}
+
+	/**
+	 * Shows one district of the region: a click on its row in the district table.
+	 */
+	void selectDistrict(DistrictReferenceDto district) {
+		if (districtFilter.isEnabled()) {
+			districtFilter.setValue(district);
+			apply();
+		}
 	}
 
 	/**
@@ -612,6 +630,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 	VerticalLayout getNotes() {
 		return notes;
+	}
+
+	ClimateDistrictTable getTable() {
+		return table;
 	}
 
 	ClimateDashboardChart getChart() {

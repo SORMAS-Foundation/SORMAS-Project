@@ -109,6 +109,8 @@ public interface Strings {
 	String climateDashboardAboveNormal = "climateDashboardAboveNormal";
 	String climateDashboardAboveUsual = "climateDashboardAboveUsual";
 	String climateDashboardChooseRegion = "climateDashboardChooseRegion";
+	String climateDashboardColumnCount = "climateDashboardColumnCount";
+	String climateDashboardColumnIncidence = "climateDashboardColumnIncidence";
 	String climateDashboardCountsNoPopulation = "climateDashboardCountsNoPopulation";
 	String climateDashboardDates = "climateDashboardDates";
 	String climateDashboardDetailCount = "climateDashboardDetailCount";
@@ -121,6 +123,7 @@ public interface Strings {
 	String climateDashboardDetailReportDate = "climateDashboardDetailReportDate";
 	String climateDashboardDetailUsual = "climateDashboardDetailUsual";
 	String climateDashboardDiseaseCap = "climateDashboardDiseaseCap";
+	String climateDashboardDistricts = "climateDashboardDistricts";
 	String climateDashboardHint = "climateDashboardHint";
 	String climateDashboardHistoryIncomplete = "climateDashboardHistoryIncomplete";
 	String climateDashboardJurisdiction = "climateDashboardJurisdiction";
@@ -136,6 +139,7 @@ public interface Strings {
 	String climateDashboardPanelShiftedOne = "climateDashboardPanelShiftedOne";
 	String climateDashboardPeriodOrder = "climateDashboardPeriodOrder";
 	String climateDashboardPeriodTooLong = "climateDashboardPeriodTooLong";
+	String climateDashboardRecentAbove = "climateDashboardRecentAbove";
 	String climateDashboardSeriesLastYear = "climateDashboardSeriesLastYear";
 	String climateDashboardSeriesRainfall = "climateDashboardSeriesRainfall";
 	String climateDashboardSeriesTemperature = "climateDashboardSeriesTemperature";
@@ -143,9 +147,11 @@ public interface Strings {
 	String climateDashboardShadeNoNormals = "climateDashboardShadeNoNormals";
 	String climateDashboardShifted = "climateDashboardShifted";
 	String climateDashboardShiftedOne = "climateDashboardShiftedOne";
+	String climateDashboardUnusualColumn = "climateDashboardUnusualColumn";
 	String climateDashboardUsualRange = "climateDashboardUsualRange";
 	String climateDashboardUsualRangeExcluded = "climateDashboardUsualRangeExcluded";
 	String climateDashboardWeek = "climateDashboardWeek";
+	String climateDashboardWeeksOf = "climateDashboardWeeksOf";
 	String climateDetailEvents = "climateDetailEvents";
 	String climateDetailHumidity = "climateDetailHumidity";
 	String climateDetailMinMax = "climateDetailMinMax";
