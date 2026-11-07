@@ -210,7 +210,7 @@ public final class CssStyles {
 	public static final String ALIGN_RIGHT = "align-right";
 
 	public static final String CLIMATE_NEARBY_FILTERS = "climate-nearby-filters";
-	public static final String CLIMATE_DAYS_GRID = "climate-days-grid";
+	public static final String CLIMATE_GRID = "climate-grid";
 	public static final String CLIMATE_CARDS = "climate-cards";
 	public static final String CLIMATE_CARD = "climate-card";
 

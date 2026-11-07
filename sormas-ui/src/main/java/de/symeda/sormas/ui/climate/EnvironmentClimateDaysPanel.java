@@ -77,7 +77,7 @@ public class EnvironmentClimateDaysPanel extends VerticalLayout {
 			}).setWidth(70);
 		}
 		grid.setHeightByRows(10);
-		grid.addStyleName(CssStyles.CLIMATE_DAYS_GRID);
+		grid.addStyleName(CssStyles.CLIMATE_GRID);
 		addComponents(heading, grid);
 	}
 

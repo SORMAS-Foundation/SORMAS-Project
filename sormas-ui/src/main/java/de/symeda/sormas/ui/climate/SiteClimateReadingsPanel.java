@@ -64,6 +64,7 @@ public class SiteClimateReadingsPanel extends VerticalLayout {
 		empty.addStyleName(CssStyles.LABEL_SECONDARY);
 
 		grid.setWidthFull();
+		grid.addStyleName(CssStyles.CLIMATE_GRID);
 		grid.addColumn(r -> DateFormatHelper.formatLocalDateTime(r.getReadingDateTime())).setCaption(caption(SiteClimateReadingDto.READING_DATE_TIME));
 		grid.addColumn(r -> ClimateCaptions.number(r.getAirTemperature())).setCaption(caption(SiteClimateReadingDto.AIR_TEMPERATURE));
 		grid.addColumn(SiteClimateReadingsPanel::rainfall).setCaption(caption(SiteClimateReadingDto.RAINFALL));
