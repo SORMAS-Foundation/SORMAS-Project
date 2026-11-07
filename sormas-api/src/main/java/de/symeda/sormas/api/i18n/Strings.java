@@ -75,6 +75,7 @@ public interface Strings {
 	String climateCardLessRainLastYear = "climateCardLessRainLastYear";
 	String climateCardMoreRain = "climateCardMoreRain";
 	String climateCardMoreRainLastYear = "climateCardMoreRainLastYear";
+	String climateCardNoData = "climateCardNoData";
 	String climateCardNoonReading = "climateCardNoonReading";
 	String climateCardNormallyDry = "climateCardNormallyDry";
 	String climateCardNotEnoughData = "climateCardNotEnoughData";

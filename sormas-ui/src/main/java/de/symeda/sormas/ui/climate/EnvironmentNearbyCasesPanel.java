@@ -94,7 +94,6 @@ public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 		filters.addStyleName(CssStyles.CLIMATE_NEARBY_FILTERS);
 
 		note.setWidthFull();
-		note.addStyleName(CssStyles.LABEL_SECONDARY);
 		chart.setWidthFull();
 		chart.setHeight(220, Unit.PIXELS);
 

@@ -137,7 +137,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		chart.setWidthFull();
 		chart.setHeight(CHART_HEIGHT, Unit.PIXELS);
 		credit.setWidthFull();
-		credit.addStyleNames(CssStyles.LABEL_SECONDARY, CssStyles.LABEL_SMALL, CssStyles.ALIGN_CENTER);
+		credit.addStyleNames(CssStyles.LABEL_SMALL, CssStyles.ALIGN_CENTER);
 		addComponents(heading, dates, chart, credit);
 	}
 

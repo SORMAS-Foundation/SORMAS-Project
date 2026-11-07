@@ -44,6 +44,9 @@ public class EnvironmentClimateCards extends VerticalLayout {
 
 	private static final long serialVersionUID = 6915416713390367183L;
 
+	/** The value of a card without data. */
+	static final String NO_VALUE = "–";
+
 	private final Label heading = new Label();
 	private final Label normalsFrom = new Label();
 	private final CssLayout cards = new CssLayout();
@@ -54,7 +57,6 @@ public class EnvironmentClimateCards extends VerticalLayout {
 		setSpacing(false);
 		setWidthFull();
 		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE);
-		normalsFrom.addStyleName(CssStyles.LABEL_SECONDARY);
 		normalsFrom.setWidthFull();
 		// a flex row (climate.scss): the cards share the width, grow to the height of the tallest and wrap on narrow screens
 		cards.addStyleName(CssStyles.CLIMATE_CARDS);
@@ -70,6 +72,13 @@ public class EnvironmentClimateCards extends VerticalLayout {
 		if (first == null || first.getFirstDay() == null) {
 			heading.setValue(I18nProperties.getString(Strings.climateCardsHeadingNoData));
 			normalsFrom.setVisible(false);
+			// the three cards still show, with a dash for the value, so the section is not blank (decision 114)
+			for (ClimateVariable variable : ClimateVariable.values()) {
+				VerticalLayout layout = cardLayout(variable);
+				layout.addComponent(valueLabel(NO_VALUE));
+				layout.addComponent(wrapping(I18nProperties.getString(Strings.climateCardNoData), null));
+				cards.addComponent(layout);
+			}
 			return;
 		}
 
@@ -99,40 +108,59 @@ public class EnvironmentClimateCards extends VerticalLayout {
 
 	private static VerticalLayout card(ClimateSummaryCardDto card) {
 
-		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(false);
-		layout.setSpacing(false);
-		layout.setWidthFull();
-		layout.addStyleName(CssStyles.CLIMATE_CARD);
+		VerticalLayout layout = cardLayout(card.getVariable());
 
-		Label title = new Label(ClimateIcon.of(card.getVariable()).html(ClimateIcon.LARGE) + " " + ClimateChartScript.html(title(card.getVariable())), ContentMode.HTML);
-		title.addStyleName(CssStyles.LABEL_BOLD);
-		layout.addComponent(title);
-
+		// lines are in the normal text colour, except the noon reading note and the warning colour outside the normal range (decision 114)
 		if (card.getComparison() == ClimateComparison.NOT_ENOUGH_DATA) {
-			layout.addComponent(wrapping(I18nProperties.getString(Strings.climateCardNotEnoughData), CssStyles.LABEL_SECONDARY));
-			layout.addComponent(wrapping(String.format(I18nProperties.getString(Strings.climateCardDays), card.getDays()), CssStyles.LABEL_SECONDARY));
+			layout.addComponent(valueLabel(NO_VALUE));
+			layout.addComponent(wrapping(I18nProperties.getString(Strings.climateCardNotEnoughData), null));
+			layout.addComponent(wrapping(String.format(I18nProperties.getString(Strings.climateCardDays), card.getDays()), null));
 			return layout;
 		}
 
-		Label value = new Label(value(card));
-		value.addStyleNames(CssStyles.LABEL_LARGE, CssStyles.LABEL_BOLD);
-		layout.addComponent(value);
+		layout.addComponent(valueLabel(value(card)));
 
 		for (String line : comparisonLines(card)) {
 			layout.addComponent(wrapping(line, null));
 		}
 		if (card.getComparison() == ClimateComparison.NORMAL && card.getPosition() != null) {
 			boolean outside = card.getPosition() != ClimateRangePosition.WITHIN;
-			layout.addComponent(wrapping(position(card.getPosition()), outside ? CssStyles.LABEL_WARNING : CssStyles.LABEL_SECONDARY));
+			layout.addComponent(wrapping(position(card.getPosition()), outside ? CssStyles.LABEL_WARNING : null));
 		}
 		if (card.getVariable() == ClimateVariable.HUMIDITY && card.getHumidityMeasure() == HumidityMeasure.NOON_READING) {
 			layout.addComponent(wrapping(I18nProperties.getString(Strings.climateCardNoonReading), CssStyles.LABEL_SECONDARY));
 		}
 		if (card.getDays() < 7) {
-			layout.addComponent(wrapping(String.format(I18nProperties.getString(Strings.climateCardDays), card.getDays()), CssStyles.LABEL_SECONDARY));
+			layout.addComponent(wrapping(String.format(I18nProperties.getString(Strings.climateCardDays), card.getDays()), null));
 		}
 		return layout;
+	}
+
+	/**
+	 * @return a card with the variable's icon and name
+	 */
+	private static VerticalLayout cardLayout(ClimateVariable variable) {
+
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(false);
+		layout.setSpacing(false);
+		layout.setWidthFull();
+		layout.addStyleName(CssStyles.CLIMATE_CARD);
+
+		Label title = new Label(ClimateIcon.of(variable).html(ClimateIcon.LARGE) + " " + ClimateChartScript.html(title(variable)), ContentMode.HTML);
+		title.addStyleName(CssStyles.LABEL_BOLD);
+		layout.addComponent(title);
+		return layout;
+	}
+
+	private static Label valueLabel(String text) {
+		Label value = new Label(text);
+		value.addStyleNames(CssStyles.LABEL_LARGE, CssStyles.LABEL_BOLD);
+		return value;
+	}
+
+	CssLayout getCards() {
+		return cards;
 	}
 
 	static String title(ClimateVariable variable) {
