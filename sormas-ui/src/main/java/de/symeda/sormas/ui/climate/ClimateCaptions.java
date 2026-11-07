@@ -70,6 +70,39 @@ public final class ClimateCaptions {
 	}
 
 	/**
+	 * @return the row's place as seen from one environment's Climate data tab: that environment, not the first of the
+	 *         sharing places (decision 113)
+	 */
+	public static String place(String environmentName) {
+		return String.format(I18nProperties.getString(Strings.climatePlaceEnvironment), environmentName);
+	}
+
+	/**
+	 * @return every place using the row's location except the given environment; the row carries names only, so the
+	 *         environment is taken out by its name (one entry when two environments share a name)
+	 */
+	public static List<String> otherPlaceNames(ClimateObservationIndexDto observation, String environmentName) {
+
+		List<String> names = placeNames(observation);
+		names.remove(place(environmentName));
+		return names;
+	}
+
+	/**
+	 * @return "This day's climate record is shared with 6 other places in the same grid cell, so saving changes it for
+	 *         them too: …", or null when no other place uses the location
+	 */
+	public static String sharedWithOthers(List<String> others) {
+
+		if (others.isEmpty()) {
+			return null;
+		}
+		return others.size() == 1
+			? String.format(I18nProperties.getString(Strings.climateSharedWithOther), others.get(0))
+			: String.format(I18nProperties.getString(Strings.climateSharedWithOthers), others.size(), String.join(", ", others));
+	}
+
+	/**
 	 * @return "84 (noon reading)", or empty without a value
 	 */
 	public static String humidity(ClimateObservationIndexDto observation) {

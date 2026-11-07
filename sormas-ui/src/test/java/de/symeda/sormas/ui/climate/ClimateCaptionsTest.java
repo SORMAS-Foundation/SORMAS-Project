@@ -52,6 +52,17 @@ class ClimateCaptionsTest {
 		assertEquals("Ikeja + 2 more", ClimateCaptions.place(shared));
 		assertEquals(Arrays.asList("Ikeja", "Well A (environment)", "Well B (environment)"), ClimateCaptions.placeNames(shared));
 
+		// seen from Well B's Climate data tab (decision 113)
+		assertEquals("Well B (environment)", ClimateCaptions.place("Well B"));
+		assertEquals(Arrays.asList("Ikeja", "Well A (environment)"), ClimateCaptions.otherPlaceNames(shared, "Well B"));
+		assertEquals(
+			"This day's climate record is shared with 2 other places in the same grid cell, so saving changes it for them too: Ikeja, Well A (environment)",
+			ClimateCaptions.sharedWithOthers(ClimateCaptions.otherPlaceNames(shared, "Well B")));
+		assertEquals(
+			"This day's climate record is shared with 1 other place in the same grid cell, so saving changes it there too: Ikeja",
+			ClimateCaptions.sharedWithOthers(Collections.singletonList("Ikeja")));
+		assertEquals(null, ClimateCaptions.sharedWithOthers(ClimateCaptions.otherPlaceNames(environment, "Well A")));
+
 		ClimateObservationIndexDto unlinked = new ClimateObservationIndexDto();
 		unlinked.setLatitude(6.6);
 		unlinked.setLongitude(3.35);

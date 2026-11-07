@@ -181,6 +181,8 @@ public interface Strings {
 	String climateSeriesTemperatureMean = "climateSeriesTemperatureMean";
 	String climateSeriesTemperatureRange = "climateSeriesTemperatureRange";
 	String climateSharedBy = "climateSharedBy";
+	String climateSharedWithOther = "climateSharedWithOther";
+	String climateSharedWithOthers = "climateSharedWithOthers";
 	String climateSiteReadingsNone = "climateSiteReadingsNone";
 	String climateSourceDays = "climateSourceDays";
 	String climateSummaryApiKeyMissing = "climateSummaryApiKeyMissing";

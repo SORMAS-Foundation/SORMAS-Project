@@ -290,13 +290,24 @@ public class ClimateObservationForm extends VerticalLayout {
 		setValuesEnabled(true);
 
 		List<String> notes = new ArrayList<>();
-		if (observation.isShared()) {
-			notes.add(String.format(I18nProperties.getString(Strings.climateSharedBy), String.join(", ", ClimateCaptions.placeNames(observation))));
+		String place;
+		if (fixedEnvironment != null) {
+			// from an environment's tab: lead with that environment and say which other places the save also changes (decision 113)
+			place = ClimateCaptions.place(fixedEnvironment.getCaption());
+			String shared = ClimateCaptions.sharedWithOthers(ClimateCaptions.otherPlaceNames(observation, fixedEnvironment.getCaption()));
+			if (shared != null) {
+				notes.add(shared);
+			}
+		} else {
+			place = ClimateCaptions.place(observation);
+			if (observation.isShared()) {
+				notes.add(String.format(I18nProperties.getString(Strings.climateSharedBy), String.join(", ", ClimateCaptions.placeNames(observation))));
+			}
 		}
 		if (observation.getSource() != null && observation.getSource() != ClimateDataSource.MANUAL) {
 			notes.add(String.format(I18nProperties.getString(Strings.infoClimateObservationReplaces), observation.getSource()));
 		}
-		showPlace(ClimateCaptions.place(observation) + " · " + DateFormatHelper.formatDate(observation.getObservationDate()), notes);
+		showPlace(place + " · " + DateFormatHelper.formatDate(observation.getObservationDate()), notes);
 
 		temperatureMin.setValue(ClimateCaptions.number(observation.getTemperatureMin()));
 		temperatureMean.setValue(ClimateCaptions.number(observation.getTemperatureMean()));
