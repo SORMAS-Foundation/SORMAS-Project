@@ -301,6 +301,57 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	}
 
 	@Test
+	void testHeatmapView() {
+
+		Long location = districtLocation(10.52657, -84.90845);
+		EpiWeek week = DateHelper.getPreviousEpiWeek(lastWeek);
+		int year = week.getYear();
+		for (int y = year - 3; y < year; y++) {
+			for (int w = week.getWeek() - 1; w <= week.getWeek() + 1; w++) {
+				fillWeek(location, new EpiWeek(y, w), 1.0);
+			}
+		}
+		fillWeek(location, week, 30.0);
+		for (int i = 0; i < 4; i++) {
+			creator.createCase(user.toReference(), rdcf, c -> {
+				c.setDisease(Disease.DENGUE);
+				c.setCaseClassification(CaseClassification.SUSPECT);
+				c.setReportDate(DateHelper.getEpiWeekStart(lastWeek));
+				c.getSymptoms().setOnsetDate(DateHelper.getEpiWeekStart(lastWeek));
+			});
+		}
+
+		ClimateDashboardLayout layout = regionLayout();
+		layout.getDistrictFilter().setValue(rdcf.district);
+		layout.apply();
+		List<Disease> offered = layout.getOfferedDiseases();
+
+		layout.getViewGroup().setValue(ClimateDashboardLayout.View.HEATMAP);
+		layout.getDiseaseGroup().setValue(new java.util.HashSet<>(offered.subList(0, Math.min(offered.size(), ClimateDashboardLayout.HEATMAP_DISEASE_CAP))));
+		assertEquals(Math.min(offered.size(), ClimateDashboardLayout.HEATMAP_DISEASE_CAP), layout.selectedDiseases().size(), "up to 10 in the heatmap");
+		String script = layout.getChart().getScript();
+		dump("dashboard-heatmap.js", script);
+		assertTrue(script.contains("type:'heatmap'"), "one heatmap row per disease");
+		assertTrue(script.contains("colorAxis:{min:0,max:1"), "coloured by the share of each disease's busiest week");
+		assertTrue(script.contains("colorAxis:false"), "the other series keep their colours");
+		assertTrue(script.contains("Each row relative to its busiest week in the period (cases)"));
+		assertTrue(script.contains("borderColor:'" + ClimateDashboardChart.OUTLINE_COLOR + "',borderWidth:2"), "the unusual week is outlined");
+		assertTrue(script.contains("Rain (mm)"), "the climate panels stay below");
+		assertTrue(script.contains("4 cases"), "the details line shows the real figures");
+		assertEquals(
+			ClimateDashboardChart.PLOT_TOP + ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.HEATMAP_ROW * layout.selectedDiseases().size()
+				+ 3 * (ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.CLIMATE_PANEL)
+				+ 3 * ClimateDashboardChart.PANEL_GAP
+				+ ClimateDashboardChart.MARGIN_BOTTOM,
+			layout.getChart().getChartHeight());
+
+		layout.getViewGroup().setValue(ClimateDashboardLayout.View.PANELS);
+		assertEquals(offered.subList(0, ClimateDashboardLayout.PANELS_DISEASE_CAP), layout.selectedDiseases(), "back to panels keeps the first 4");
+		assertEquals(ClimateDashboardLayout.PANELS_DISEASE_CAP, layout.getDiseaseGroup().getValue().size());
+		assertFalse(layout.getChart().getScript().contains("type:'heatmap'"));
+	}
+
+	@Test
 	void testDistrictWithoutPoint() {
 
 		ClimateDashboardLayout layout = regionLayout();

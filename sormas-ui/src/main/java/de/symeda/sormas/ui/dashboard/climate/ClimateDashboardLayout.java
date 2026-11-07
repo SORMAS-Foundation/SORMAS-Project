@@ -104,6 +104,24 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		}
 	}
 
+	/** How the diseases are drawn (decision 129; overlaid lines are left out, decision 130). */
+	public enum View {
+
+		PANELS(Captions.climateDashboardViewPanels),
+		HEATMAP(Captions.climateDashboardViewHeatmap);
+
+		private final String caption;
+
+		View(String caption) {
+			this.caption = caption;
+		}
+
+		@Override
+		public String toString() {
+			return I18nProperties.getCaption(caption);
+		}
+	}
+
 	/** The filters as last applied. */
 	static final class Selection {
 
@@ -157,6 +175,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final ComboBox<EpiWeek> toFilter = new ComboBox<>();
 	private final Label emptyCard = new Label();
 	private final VerticalLayout content = new VerticalLayout();
+	private final RadioButtonGroup<View> viewGroup = new RadioButtonGroup<>();
 	private final CheckBoxGroup<Disease> diseaseGroup = new CheckBoxGroup<>();
 	private final CheckBoxGroup<ClimateVariable> climateGroup = new CheckBoxGroup<>();
 	private final ComboBox<ClimateVariable> shadeSelect = new ComboBox<>();
@@ -298,6 +317,26 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private CssLayout createControls() {
 
 
+		viewGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardView));
+		viewGroup.setItems(View.values());
+		viewGroup.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		viewGroup.setValue(View.PANELS);
+		viewGroup.addValueChangeListener(e -> {
+			if (e.getValue() == null) {
+				return;
+			}
+			updating = true;
+			try {
+				// back to separate panels with more ticked than the cap: the first 4 stay
+				List<Disease> kept = offeredDiseases.stream().filter(diseaseGroup.getValue()::contains).limit(diseaseCap()).collect(Collectors.toList());
+				diseaseGroup.setValue(new LinkedHashSet<>(kept));
+				diseaseGroup.getDataProvider().refreshAll();
+			} finally {
+				updating = false;
+			}
+			redrawUnlessUpdating();
+		});
+
 		diseaseGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardDiseases));
 		diseaseGroup.setItems(offeredDiseases);
 		diseaseGroup.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -351,6 +390,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 		controls.addStyleName(CssStyles.CLIMATE_DASHBOARD_CONTROLS);
 		controls.setWidthFull();
+		addControl(viewGroup);
 		addControl(diseaseGroup);
 		addControl(climateGroup);
 		addControl(shadeSelect);
@@ -518,7 +558,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			addNote(String.format(I18nProperties.getString(Strings.climateDashboardShadeNoNormals), climate.getMinHistoryYears()));
 		}
 
-		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), getLag());
+		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), getLag(), viewGroup.getValue() == View.HEATMAP);
 
 		// the district table: a region without a district (decision 127); not shifted by the lag
 		boolean showTable = selection.getDistrict() == null && !climate.getDistrictSeries().isEmpty();
@@ -578,7 +618,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	private int diseaseCap() {
-		return PANELS_DISEASE_CAP;
+		return viewGroup.getValue() == View.HEATMAP ? HEATMAP_DISEASE_CAP : PANELS_DISEASE_CAP;
 	}
 
 	private boolean incidenceAvailable() {
@@ -624,6 +664,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 	ComboBox<EpiWeek> getToFilter() {
 		return toFilter;
+	}
+
+	RadioButtonGroup<View> getViewGroup() {
+		return viewGroup;
 	}
 
 	CheckBoxGroup<Disease> getDiseaseGroup() {

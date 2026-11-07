@@ -73,6 +73,8 @@ public class ClimateDashboardChart extends VerticalLayout {
 	/** The band above each panel that holds its name. */
 	static final int TITLE_BAND = 26;
 	static final int PANEL_GAP = 8;
+	/** The height of one disease row in the heatmap. */
+	static final int HEATMAP_ROW = 26;
 
 	/** Disease colours: none of them is the rain blue, the temperature orange or the shading amber. */
 	static final String[] DISEASE_COLORS = {
@@ -87,6 +89,8 @@ public class ClimateDashboardChart extends VerticalLayout {
 		"#515a5a",
 		"#7b241c" };
 	static final String SHADING_COLOR = "rgba(243,156,18,0.18)";
+	/** The heatmap outline of an unusual week. */
+	static final String OUTLINE_COLOR = "#e67e22";
 
 	private final Label dates = new Label();
 	private final Label status = new Label();
@@ -120,6 +124,8 @@ public class ClimateDashboardChart extends VerticalLayout {
 	 *            the variable whose unusual weeks are shaded, or null for none
 	 * @param lag
 	 *            how many weeks earlier the climate panels show (decision 126)
+	 * @param heatmap
+	 *            true for one heatmap row per disease instead of a panel per disease (decision 129)
 	 */
 	public void update(
 		Selection selection,
@@ -128,7 +134,8 @@ public class ClimateDashboardChart extends VerticalLayout {
 		Set<ClimateVariable> variables,
 		ClimateVariable shading,
 		Measure measure,
-		int lag) {
+		int lag,
+		boolean heatmap) {
 
 		dates.setValue(String.format(I18nProperties.getString(Strings.climateDashboardDates), weekLabel(selection.getFrom()), weekLabel(selection.getTo())));
 		status.setValue(status(climate));
@@ -140,7 +147,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 			lastScript = null;
 			return;
 		}
-		lastScript = script(selection, climate, cases, variables, shading, measure, lag);
+		lastScript = script(selection, climate, cases, variables, shading, measure, lag, heatmap);
 		chart.setHeight(chartHeight, Unit.PIXELS);
 		chart.setHcjs(lastScript);
 	}
@@ -206,7 +213,8 @@ public class ClimateDashboardChart extends VerticalLayout {
 		Set<ClimateVariable> variables,
 		ClimateVariable shading,
 		Measure measure,
-		int lag) {
+		int lag,
+		boolean heatmap) {
 
 		List<EpiWeek> weeks = climate.getShownWeeks().stream().map(ClimateWeekDto::getWeek).collect(Collectors.toList());
 		int count = weeks.size();
@@ -214,8 +222,9 @@ public class ClimateDashboardChart extends VerticalLayout {
 		// rows in pixels: a name band above each panel, then the panel (decision 122)
 		List<int[]> rows = new ArrayList<>();
 		int y = PLOT_TOP;
-		for (int i = 0; i < cases.size() + variables.size(); i++) {
-			int height = i < cases.size() ? DISEASE_PANEL : CLIMATE_PANEL;
+		int diseaseRows = heatmap ? (cases.isEmpty() ? 0 : 1) : cases.size();
+		for (int i = 0; i < diseaseRows + variables.size(); i++) {
+			int height = i < diseaseRows ? (heatmap ? HEATMAP_ROW * cases.size() : DISEASE_PANEL) : CLIMATE_PANEL;
 			y += TITLE_BAND;
 			rows.add(new int[] {
 				y,
@@ -232,7 +241,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 		js.append("];\n");
 
 		js.append("var options = {chart:{marginLeft:")
-			.append(ClimateChartScript.MARGIN_LEFT)
+			.append(heatmap ? heatmapMargin(cases) : ClimateChartScript.MARGIN_LEFT)
 			.append(",marginRight:")
 			.append(ClimateChartScript.MARGIN_RIGHT)
 			.append(",marginTop:")
@@ -273,8 +282,17 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 		js.append("yAxis:[");
 		int row = 0;
-		for (ClimateCaseSeriesDto series : cases) {
-			appendAxis(js, rows.get(row++), diseaseTitle(series, measure), ",min:0");
+		if (heatmap) {
+			if (!cases.isEmpty()) {
+				StringBuilder categories = new StringBuilder(",reversed:true,gridLineWidth:0,lineWidth:0,categories:[");
+				cases.forEach(series -> categories.append(string(series.getDisease().toString())).append(','));
+				categories.append("],labels:{x:-6,style:{fontSize:'12px',color:'#333333'}}");
+				appendAxis(js, rows.get(row++), heatmapTitle(measure), categories.toString());
+			}
+		} else {
+			for (ClimateCaseSeriesDto series : cases) {
+				appendAxis(js, rows.get(row++), diseaseTitle(series, measure), ",min:0");
+			}
 		}
 		for (ClimateVariable variable : orderedVariables(variables)) {
 			String title = climateTitle(variable, lag) + climateNote(selection, climate, variable);
@@ -287,49 +305,17 @@ public class ClimateDashboardChart extends VerticalLayout {
 			.append("formatter:function(){var p=this.points?this.points[0]:this;var c=p.series.chart;var d=details[p.point.x];")
 			.append("return d?'<div style=\"white-space:normal;width:'+c.plotWidth+'px\">'+d+'</div>':false;}},");
 
-		js.append("plotOptions:{series:{animation:false,states:{inactive:{opacity:1}}},column:{pointPadding:0.05,groupPadding:0,borderWidth:0},")
+		if (heatmap) {
+			// the colour scale of the heatmap only; the other series keep their own colours
+			js.append("colorAxis:{min:0,max:1,minColor:'#f4ecf7',maxColor:'#4a235a',labels:{formatter:function(){return Math.round(this.value*100)+'%';}}},");
+		}
+		js.append("plotOptions:{series:{animation:false,states:{inactive:{opacity:1}}"
+			+ (heatmap ? ",colorAxis:false" : "")
+			+ "},column:{pointPadding:0.05,groupPadding:0,borderWidth:0},")
 			.append("arearange:{lineWidth:0,marker:{enabled:false}},line:{marker:{enabled:false}}},");
 
 		js.append("series:[");
-		int axis = 0;
-		boolean usualLegend = true;
-		for (int d = 0; d < cases.size(); d++) {
-			ClimateCaseSeriesDto series = cases.get(d);
-			boolean hasRange = series.countWeeksWithUsualRange() > 0;
-			if (hasRange) {
-				js.append("{type:'arearange',yAxis:").append(axis).append(",color:'#bdbdbd',fillOpacity:0.55,zIndex:0,");
-				if (usualLegend) {
-					js.append("id:'usual',name:").append(string(usualRangeName(series))).append(',');
-					usualLegend = false;
-				} else {
-					js.append("linkedTo:'usual',");
-				}
-				js.append("data:[");
-				for (int i = 0; i < count; i++) {
-					ClimateRangeDto range = usualRange(series.getWeeks().get(i), measure);
-					js.append('[')
-						.append(i)
-						.append(',')
-						.append(range != null ? number(range.getP10()) : "null")
-						.append(',')
-						.append(range != null ? number(range.getP90()) : "null")
-						.append("],");
-				}
-				js.append("]},");
-			}
-			js.append("{type:'column',name:")
-				.append(string(series.getDisease().toString()))
-				.append(",yAxis:")
-				.append(axis)
-				.append(",color:'")
-				.append(DISEASE_COLORS[d % DISEASE_COLORS.length])
-				.append("',zIndex:1,data:[");
-			for (int i = 0; i < count; i++) {
-				js.append(number(caseValue(series.getWeeks().get(i), measure))).append(',');
-			}
-			js.append("]},");
-			axis++;
-		}
+		int axis = heatmap ? appendHeatmap(js, climate, cases, shading, measure, lag, count) : appendDiseasePanels(js, cases, measure, count);
 
 		boolean normalLegend = true;
 		boolean lastYearLegend = true;
@@ -413,6 +399,136 @@ public class ClimateDashboardChart extends VerticalLayout {
 		}
 		js.append("]};");
 		return js.toString();
+	}
+
+	/**
+	 * Adds a column panel per disease over its usual range band (decision 123).
+	 *
+	 * @return the number of y axes used
+	 */
+	private static int appendDiseasePanels(StringBuilder js, List<ClimateCaseSeriesDto> cases, Measure measure, int count) {
+
+		int axis = 0;
+		boolean usualLegend = true;
+		for (int d = 0; d < cases.size(); d++) {
+			ClimateCaseSeriesDto series = cases.get(d);
+			boolean hasRange = series.countWeeksWithUsualRange() > 0;
+			if (hasRange) {
+				js.append("{type:'arearange',yAxis:").append(axis).append(",color:'#bdbdbd',fillOpacity:0.55,zIndex:0,");
+				if (usualLegend) {
+					js.append("id:'usual',name:").append(string(usualRangeName(series))).append(',');
+					usualLegend = false;
+				} else {
+					js.append("linkedTo:'usual',");
+				}
+				js.append("data:[");
+				for (int i = 0; i < count; i++) {
+					ClimateRangeDto range = usualRange(series.getWeeks().get(i), measure);
+					js.append('[')
+						.append(i)
+						.append(',')
+						.append(range != null ? number(range.getP10()) : "null")
+						.append(',')
+						.append(range != null ? number(range.getP90()) : "null")
+						.append("],");
+				}
+				js.append("]},");
+			}
+			js.append("{type:'column',name:")
+				.append(string(series.getDisease().toString()))
+				.append(",yAxis:")
+				.append(axis)
+				.append(",color:'")
+				.append(DISEASE_COLORS[d % DISEASE_COLORS.length])
+				.append("',zIndex:1,data:[");
+			for (int i = 0; i < count; i++) {
+				js.append(number(caseValue(series.getWeeks().get(i), measure))).append(',');
+			}
+			js.append("]},");
+			axis++;
+		}
+		return axis;
+	}
+
+	/**
+	 * Adds the heatmap (decision 129): one row per disease, each cell coloured by its share of that disease's busiest
+	 * week in the period; an amber outline on unusual weeks of the shaded variable (with the lag); a dot where the week
+	 * is above the usual range.
+	 *
+	 * @return the number of y axes used
+	 */
+	private static int appendHeatmap(
+		StringBuilder js,
+		ClimateWeeklySeriesDto climate,
+		List<ClimateCaseSeriesDto> cases,
+		ClimateVariable shading,
+		Measure measure,
+		int lag,
+		int count) {
+
+		if (cases.isEmpty()) {
+			return 0;
+		}
+		js.append("{type:'heatmap',yAxis:0,colorAxis:0,name:")
+			.append(string(I18nProperties.getString(Strings.climateDashboardSeriesHeatmap)))
+			.append(",borderWidth:1,borderColor:'#ffffff',colsize:1,showInLegend:false,data:[");
+		StringBuilder above = new StringBuilder();
+		StringBuilder outlines = new StringBuilder();
+		for (int d = 0; d < cases.size(); d++) {
+			ClimateCaseSeriesDto series = cases.get(d);
+			double peak = 0;
+			for (int i = 0; i < count; i++) {
+				Double value = caseValue(series.getWeeks().get(i), measure);
+				peak = Math.max(peak, value != null ? value : 0);
+			}
+			for (int i = 0; i < count; i++) {
+				ClimateCaseWeekDto week = series.getWeeks().get(i);
+				Double value = caseValue(week, measure);
+				double share = peak > 0 && value != null ? value / peak : 0;
+				ClimateWeekDto shifted = shading != null ? shiftedWeek(climate, i, lag) : null;
+				js.append("{x:").append(i).append(",y:").append(d).append(",value:").append(number(share)).append("},");
+				if (shifted != null && shifted.get(shading).isUnusual()) {
+					outlines.append("{x:").append(i).append(",y:").append(d).append(",value:0,color:'rgba(0,0,0,0)'},");
+				}
+				if (week.isAboveUsualRange()) {
+					above.append('[').append(i).append(',').append(d).append("],");
+				}
+			}
+		}
+		js.append("]},");
+		if (outlines.length() > 0) {
+			// unusual weeks as amber outlines over the cells, not fills (UI spec); the v8 heatmap ignores borders per cell
+			js.append("{type:'heatmap',yAxis:0,colorAxis:false,showInLegend:false,enableMouseTracking:false,colsize:1,zIndex:2,")
+				.append("borderColor:'")
+				.append(OUTLINE_COLOR)
+				.append("',borderWidth:2,data:[")
+				.append(outlines)
+				.append("]},");
+		}
+		if (above.length() > 0) {
+			js.append("{type:'scatter',yAxis:0,name:")
+				.append(string(I18nProperties.getString(Strings.climateDashboardAboveUsual)))
+				.append(",color:'#ffffff',marker:{symbol:'circle',radius:3,lineColor:'#333333',lineWidth:1},zIndex:3,data:[")
+				.append(above)
+				.append("]},");
+		}
+		return 1;
+	}
+
+	/**
+	 * @return the left margin of the heatmap view: wide enough for the longest disease name beside its row
+	 */
+	static int heatmapMargin(List<ClimateCaseSeriesDto> cases) {
+		int longest = cases.stream().mapToInt(series -> series.getDisease().toString().length()).max().orElse(0);
+		return Math.max(ClimateChartScript.MARGIN_LEFT, Math.min(240, 7 * longest + 20));
+	}
+
+	static String heatmapTitle(Measure measure) {
+		return html(
+			String.format(
+				I18nProperties.getString(Strings.climateDashboardHeatmapTitle),
+				I18nProperties.getCaption(measure == Measure.INCIDENCE ? Captions.climateDashboardMeasureIncidence : Captions.climateDashboardMeasureCount)
+					.toLowerCase()));
 	}
 
 	private static void appendAxis(StringBuilder js, int[] row, String title, String extra) {

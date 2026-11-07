@@ -53,6 +53,7 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 	"jquery.slim.min.js",
 	"highcharts.js",
 	"highcharts-more.js",
+	"highcharts-heatmap.js",
 	"highcharts-connector.js",
 	"highcharts-exporting.js",
 	"highcharts-export-data.js",

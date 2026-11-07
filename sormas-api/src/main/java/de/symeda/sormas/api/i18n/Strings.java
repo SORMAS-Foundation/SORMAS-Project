@@ -124,6 +124,7 @@ public interface Strings {
 	String climateDashboardDetailUsual = "climateDashboardDetailUsual";
 	String climateDashboardDiseaseCap = "climateDashboardDiseaseCap";
 	String climateDashboardDistricts = "climateDashboardDistricts";
+	String climateDashboardHeatmapTitle = "climateDashboardHeatmapTitle";
 	String climateDashboardHint = "climateDashboardHint";
 	String climateDashboardHistoryIncomplete = "climateDashboardHistoryIncomplete";
 	String climateDashboardJurisdiction = "climateDashboardJurisdiction";
@@ -140,6 +141,7 @@ public interface Strings {
 	String climateDashboardPeriodOrder = "climateDashboardPeriodOrder";
 	String climateDashboardPeriodTooLong = "climateDashboardPeriodTooLong";
 	String climateDashboardRecentAbove = "climateDashboardRecentAbove";
+	String climateDashboardSeriesHeatmap = "climateDashboardSeriesHeatmap";
 	String climateDashboardSeriesLastYear = "climateDashboardSeriesLastYear";
 	String climateDashboardSeriesRainfall = "climateDashboardSeriesRainfall";
 	String climateDashboardSeriesTemperature = "climateDashboardSeriesTemperature";

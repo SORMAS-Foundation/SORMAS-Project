@@ -1047,6 +1047,9 @@ public interface Captions {
 	String climateDashboardShadeNone = "climateDashboardShadeNone";
 	String climateDashboardTableDisease = "climateDashboardTableDisease";
 	String climateDashboardTo = "climateDashboardTo";
+	String climateDashboardView = "climateDashboardView";
+	String climateDashboardViewHeatmap = "climateDashboardViewHeatmap";
+	String climateDashboardViewPanels = "climateDashboardViewPanels";
 	String climateDashboardWeeksAbove = "climateDashboardWeeksAbove";
 	String ClimateDistrict_district = "ClimateDistrict.district";
 	String ClimateDistrict_region = "ClimateDistrict.region";
