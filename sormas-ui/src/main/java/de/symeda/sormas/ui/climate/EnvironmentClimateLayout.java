@@ -242,7 +242,7 @@ public class EnvironmentClimateLayout extends CustomLayout {
 		}
 
 		SideComponent card = new SideComponent(I18nProperties.getString(Strings.entityActions));
-		card.addStyleName(CssStyles.SIDE_COMPONENT);
+		card.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
 		VerticalLayout stack = new VerticalLayout();
 		stack.setMargin(false);
 		stack.setWidthFull();

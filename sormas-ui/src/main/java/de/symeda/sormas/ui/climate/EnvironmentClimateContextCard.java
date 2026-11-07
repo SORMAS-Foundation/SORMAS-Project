@@ -55,7 +55,7 @@ public class EnvironmentClimateContextCard extends SideComponent {
 
 	public EnvironmentClimateContextCard() {
 		super(I18nProperties.getCaption(Captions.environmentClimateData));
-		addStyleName(CssStyles.SIDE_COMPONENT);
+		addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
 		lines.setMargin(false);
 		lines.setSpacing(false);
 		lines.setWidthFull();

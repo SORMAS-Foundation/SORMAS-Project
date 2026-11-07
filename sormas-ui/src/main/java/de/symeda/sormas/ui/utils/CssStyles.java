@@ -267,6 +267,7 @@ public final class CssStyles {
 	public static final String ROOT_COMPONENT = "root-component";
 	public static final String MAIN_COMPONENT = "main-component";
 	public static final String SIDE_COMPONENT = "side-component";
+	public static final String SIDE_COMPONENT_FLUID = "side-component-fluid";
 
 	// Statistics layout
 	public static final String STATISTICS_TITLE_BOX = "title-box";

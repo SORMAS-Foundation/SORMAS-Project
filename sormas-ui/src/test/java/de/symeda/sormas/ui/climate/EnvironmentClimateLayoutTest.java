@@ -43,6 +43,7 @@ import de.symeda.sormas.backend.climate.ClimateObservation;
 import de.symeda.sormas.backend.environment.EnvironmentService;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.climate.EnvironmentClimateLayout.ClimatePeriod;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 class EnvironmentClimateLayoutTest extends AbstractUiBeanTest {
 
@@ -70,6 +71,7 @@ class EnvironmentClimateLayoutTest extends AbstractUiBeanTest {
 		assertEquals(yesterday, layout.getSeries().getDays().get(89).getDate());
 		assertEquals(EnvironmentClimateLayout.DEFAULT_PERIOD, layout.getPeriodGroup().getValue(), "90 days is selected");
 		assertTrue(layout.getPeriodGroup().isRequiredIndicatorVisible(), "shown as required");
+		assertTrue(layout.getContextCard().getStyleName().contains(CssStyles.SIDE_COMPONENT_FLUID), "fits the side column");
 		String card = text(layout.getContextCard());
 		assertTrue(card.contains("10.52657, -84.90845"), card);
 		assertTrue(card.contains("Source: OpenWeather 5 days"), card);
