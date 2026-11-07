@@ -520,6 +520,32 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 	}
 
 	/**
+	 * @return true when at least one row of the locations between {@code from} and {@code to} (inclusive) comes from the
+	 *         source, for example to show the OpenWeather credit
+	 */
+	public boolean hasSource(Collection<Long> locationIds, LocalDate from, LocalDate to, ClimateDataSource source) {
+
+		for (List<Long> batch : ListUtils.partition(new ArrayList<>(locationIds), ModelConstants.PARAMETER_LIMIT)) {
+			boolean found = !em
+				.createQuery(
+					"SELECT o.id FROM " + ClimateObservation.TABLE_NAME + " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + ".id IN :locations AND o."
+						+ ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to AND o." + ClimateObservation.SOURCE + " = :source",
+					Long.class)
+				.setParameter("locations", batch)
+				.setParameter("from", ClimateCalendar.toDate(from))
+				.setParameter("to", ClimateCalendar.toDate(to))
+				.setParameter("source", source)
+				.setMaxResults(1)
+				.getResultList()
+				.isEmpty();
+			if (found) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * @return a value that changes whenever a row of the locations between {@code from} and {@code to} is added, changed or
 	 *         deleted: the number of rows and the latest change date. The normals cache compares it before using an entry.
 	 */

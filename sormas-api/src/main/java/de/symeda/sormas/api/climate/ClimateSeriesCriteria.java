@@ -36,6 +36,7 @@ public class ClimateSeriesCriteria extends BaseCriteria {
 	private EpiWeek fromWeek;
 	private EpiWeek toWeek;
 	private boolean includeDistricts;
+	private int leadWeeks;
 
 	@IgnoreForUrl
 	public RegionReferenceDto getRegion() {
@@ -83,6 +84,20 @@ public class ClimateSeriesCriteria extends BaseCriteria {
 
 	public ClimateSeriesCriteria includeDistricts(boolean includeDistricts) {
 		this.includeDistricts = includeDistricts;
+		return this;
+	}
+
+	/**
+	 * @return how many weeks before {@link #getFromWeek()} to return as well, for the dashboard's lag (decision 126); they
+	 *         are left out of completeness and the range figures
+	 */
+	@IgnoreForUrl
+	public int getLeadWeeks() {
+		return leadWeeks;
+	}
+
+	public ClimateSeriesCriteria leadWeeks(int leadWeeks) {
+		this.leadWeeks = leadWeeks;
 		return this;
 	}
 }

@@ -49,6 +49,8 @@ public class ClimateWeeklySeriesDto implements Serializable {
 	private final List<ClimateWeekDto> weeks;
 	private final Map<ClimateVariable, Double> completeness = new EnumMap<>(ClimateVariable.class);
 	private final List<ClimateWeeklySeriesDto> districtSeries = new ArrayList<>();
+	private int leadWeeks;
+	private boolean openWeatherData;
 
 	public ClimateWeeklySeriesDto(
 		RegionReferenceDto region,
@@ -118,13 +120,45 @@ public class ClimateWeeklySeriesDto implements Serializable {
 		return lastReferenceYear;
 	}
 
+	/**
+	 * @return every week returned: the lead weeks asked for the lag, then the weeks of the period
+	 */
 	public List<ClimateWeekDto> getWeeks() {
 		return Collections.unmodifiableList(weeks);
 	}
 
 	/**
-	 * @return the share of days in the period, up to yesterday, with a value of the variable, from 0 to 1; for a region the
-	 *         mean of its districts; null when the period has no past days
+	 * @return the weeks of the period, without the lead weeks; the range figures below use these
+	 */
+	public List<ClimateWeekDto> getShownWeeks() {
+		return Collections.unmodifiableList(weeks.subList(Math.min(leadWeeks, weeks.size()), weeks.size()));
+	}
+
+	/**
+	 * @return how many weeks before the period start {@link #getWeeks()}, for the dashboard's lag (decision 126)
+	 */
+	public int getLeadWeeks() {
+		return leadWeeks;
+	}
+
+	public void setLeadWeeks(int leadWeeks) {
+		this.leadWeeks = leadWeeks;
+	}
+
+	/**
+	 * @return true when a day of the weeks returned comes from OpenWeather, so the screen shows its credit (decision 102)
+	 */
+	public boolean isOpenWeatherData() {
+		return openWeatherData;
+	}
+
+	public void setOpenWeatherData(boolean openWeatherData) {
+		this.openWeatherData = openWeatherData;
+	}
+
+	/**
+	 * @return the share of days in the period (lead weeks left out), up to yesterday, with a value of the variable, from 0
+	 *         to 1; for a region the mean of its districts; null when the period has no past days
 	 */
 	public Double getCompleteness(ClimateVariable variable) {
 		return completeness.get(variable);
@@ -145,11 +179,11 @@ public class ClimateWeeklySeriesDto implements Serializable {
 	 * @return true when at least one week has a normal range for the variable
 	 */
 	public boolean hasNormals(ClimateVariable variable) {
-		return weeks.stream().anyMatch(week -> week.get(variable).getNormal() != null);
+		return getShownWeeks().stream().anyMatch(week -> week.get(variable).getNormal() != null);
 	}
 
 	public long countUnusualWeeks(ClimateVariable variable) {
-		return weeks.stream().filter(week -> week.get(variable).isUnusual()).count();
+		return getShownWeeks().stream().filter(week -> week.get(variable).isUnusual()).count();
 	}
 
 	/**
@@ -171,7 +205,7 @@ public class ClimateWeeklySeriesDto implements Serializable {
 	 * @return the humidity measure most complete weeks have, which {@link #getHumidityMean()} uses
 	 */
 	public HumidityMeasure getRangeHumidityMeasure() {
-		return weeks.stream()
+		return getShownWeeks().stream()
 			.filter(week -> week.getHumidity().getValue() != null)
 			.collect(Collectors.groupingBy(ClimateWeekDto::getHumidityMeasure, Collectors.counting()))
 			.entrySet()
@@ -190,7 +224,7 @@ public class ClimateWeeklySeriesDto implements Serializable {
 	}
 
 	private List<Double> completeValues(ClimateVariable variable, HumidityMeasure measure) {
-		return weeks.stream()
+		return getShownWeeks().stream()
 			.filter(week -> measure == null || measure == week.getHumidityMeasure())
 			.map(week -> week.get(variable).getValue())
 			.filter(Objects::nonNull)

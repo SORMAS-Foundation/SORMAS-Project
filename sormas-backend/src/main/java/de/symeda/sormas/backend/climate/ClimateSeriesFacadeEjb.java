@@ -35,6 +35,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.climate.ClimateDailyExportDto;
+import de.symeda.sormas.api.climate.ClimateDataSource;
 import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
 import de.symeda.sormas.api.climate.ClimateDayDto;
 import de.symeda.sormas.api.climate.ClimateEnvironmentContextDto;
@@ -109,7 +110,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 			districts.sort(Comparator.comparing(District::getName, String.CASE_INSENSITIVE_ORDER));
 		}
 
-		WeeklyRun run = new WeeklyRun(region, districts, criteria.getFromWeek(), criteria.getToWeek());
+		WeeklyRun run = new WeeklyRun(region, districts, criteria.getFromWeek(), criteria.getToWeek(), Math.max(0, criteria.getLeadWeeks()));
 		if (criteria.getDistrict() != null) {
 			return run.districtSeries(districts.get(0));
 		}
@@ -388,6 +389,9 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 		private final Region region;
 		private final List<District> districts;
 		private final List<EpiWeek> shownWeeks;
+		/** Weeks before the first week shown, at the start of {@link #shownWeeks}, for the lag (decision 126). */
+		private final int leadWeeks;
+		private final LocalDate leadFrom;
 		private final List<Integer> referenceYears;
 		private final int minYears;
 		private final double rainfallMinMm;
@@ -400,11 +404,13 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 		private Map<Long, Map<EpiWeek, ClimateWeekFigures>> referenceFigures;
 		private final Map<Long, ClimateWeeklyNormals> locationNormals = new HashMap<>();
 
-		WeeklyRun(Region region, List<District> districts, EpiWeek fromWeek, EpiWeek toWeek) {
+		WeeklyRun(Region region, List<District> districts, EpiWeek fromWeek, EpiWeek toWeek, int leadWeeks) {
 
 			this.region = region;
 			this.districts = districts;
-			shownWeeks = ClimateStatistics.weeksBetween(fromWeek, toWeek);
+			this.leadWeeks = leadWeeks;
+			leadFrom = ClimateStatistics.firstDay(fromWeek).minusWeeks(leadWeeks);
+			shownWeeks = ClimateStatistics.weeksBetween(ClimateStatistics.epiWeekOf(leadFrom), toWeek);
 
 			int currentYear = ClimateStatistics.epiWeekOf(LocalDate.now()).getYear();
 			int historyYears = climateSettings.getHistoryYears();
@@ -416,7 +422,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 
 			shownFrom = ClimateStatistics.firstDay(fromWeek);
 			shownTo = ClimateStatistics.firstDay(toWeek).plusDays(6);
-			LocalDate loadFrom = shownFrom.minusWeeks(53);
+			LocalDate loadFrom = leadFrom.minusWeeks(53);
 			shownDays = climateObservationService.getDays(locationIds(), loadFrom, shownTo);
 			List<EpiWeek> loadedWeeks = ClimateStatistics.weeksBetween(ClimateStatistics.epiWeekOf(loadFrom), toWeek);
 			shownDays.forEach((location, days) -> shownFigures.put(location, rollUp(days, loadedWeeks)));
@@ -436,6 +442,8 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 				referenceYears.get(0),
 				referenceYears.get(referenceYears.size() - 1),
 				weeks(figures, normals, false));
+			series.setLeadWeeks(leadWeeks);
+			series.setOpenWeatherData(openWeatherData(location != null ? Collections.singleton(location) : Collections.<Long>emptySet()));
 			Map<LocalDate, ClimateDay> days = location != null ? shownDays.getOrDefault(location, Collections.emptyMap()) : Collections.emptyMap();
 			for (ClimateVariable variable : ClimateVariable.values()) {
 				series.setCompleteness(variable, completeness(days, variable));
@@ -445,7 +453,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 
 		ClimateWeeklySeriesDto regionSeries() {
 
-			Map<EpiWeek, ClimateWeekFigures> figures = combine(shownFigures, ClimateStatistics.weeksBetween(ClimateStatistics.epiWeekOf(shownFrom.minusWeeks(53)), shownWeeks.get(shownWeeks.size() - 1)));
+			Map<EpiWeek, ClimateWeekFigures> figures = combine(shownFigures, ClimateStatistics.weeksBetween(ClimateStatistics.epiWeekOf(leadFrom.minusWeeks(53)), shownWeeks.get(shownWeeks.size() - 1)));
 			String key = "W|R|" + districts.stream().map(district -> String.valueOf(locationId(district))).collect(Collectors.joining(",")) + "|"
 				+ referenceYears + "|" + minYears;
 			ClimateWeeklyNormals normals = normalsCache.get(
@@ -473,6 +481,8 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 				referenceYears.get(0),
 				referenceYears.get(referenceYears.size() - 1),
 				weeks(figures, normals, true));
+			series.setLeadWeeks(leadWeeks);
+			series.setOpenWeatherData(openWeatherData(locationIds()));
 			for (ClimateVariable variable : ClimateVariable.values()) {
 				List<Double> shares = districts.stream().map(district -> {
 					Long location = locationId(district);
@@ -506,6 +516,13 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 			int lastYear = referenceYears.get(referenceYears.size() - 1);
 			return ClimateStatistics
 				.weeksBetween(new EpiWeek(referenceYears.get(0), 1), new EpiWeek(lastYear, ClimateStatistics.weeksInEpiYear(lastYear)));
+		}
+
+		/**
+		 * @return true when a day returned (lead weeks included) comes from OpenWeather, so the screen shows its credit
+		 */
+		private boolean openWeatherData(Set<Long> locations) {
+			return climateObservationService.hasSource(locations, leadFrom, shownTo, ClimateDataSource.OPENWEATHER);
 		}
 
 		private Set<Long> locationIds() {

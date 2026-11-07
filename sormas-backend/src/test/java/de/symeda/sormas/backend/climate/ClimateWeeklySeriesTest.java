@@ -79,6 +79,7 @@ class ClimateWeeklySeriesTest extends AbstractBeanTest {
 		ClimateWeeklySeriesDto series = facade.getWeeklySeries(districtCriteria(new EpiWeek(year, 10), new EpiWeek(year, 11)));
 
 		assertTrue(series.isHasPoint());
+		assertTrue(series.isOpenWeatherData());
 		assertEquals(year - 5, series.getFirstReferenceYear());
 		assertEquals(year - 1, series.getLastReferenceYear());
 		assertEquals(ClimateStatistics.firstDay(new EpiWeek(year - 3, 9)), series.getHistoryFrom());
@@ -248,6 +249,35 @@ class ClimateWeeklySeriesTest extends AbstractBeanTest {
 		assertNull(series.getWeeks().get(0).getRainfall().getValue());
 		assertNull(series.getRainfallTotal());
 		assertFalse(series.hasNormals(ClimateVariable.RAINFALL));
+	}
+
+	@Test
+	void testLeadWeeksAreReturnedButLeftOutOfTheRangeFigures() {
+
+		Long location = districtLocation(rdcf.district.getUuid(), 6.60, 3.35);
+		fillWeek(location, new EpiWeek(year, 8), ClimateDataSource.IMPORT, 30.0, 25.0, 70.0, HumidityMeasure.DAILY_MEAN);
+		fillWeek(location, new EpiWeek(year, 9), ClimateDataSource.IMPORT, 30.0, 25.0, 70.0, HumidityMeasure.DAILY_MEAN);
+		fillWeek(location, new EpiWeek(year, 10), ClimateDataSource.IMPORT, 1.0, 20.0, 70.0, HumidityMeasure.DAILY_MEAN);
+
+		ClimateWeeklySeriesDto series = facade.getWeeklySeries(districtCriteria(new EpiWeek(year, 10), new EpiWeek(year, 11)).leadWeeks(2));
+
+		assertEquals(2, series.getLeadWeeks());
+		assertFalse(series.isOpenWeatherData(), "imported rows only, so no OpenWeather credit");
+		assertEquals(4, series.getWeeks().size());
+		assertEquals(new EpiWeek(year, 8), series.getWeeks().get(0).getWeek());
+		assertEquals(210.0, series.getWeeks().get(0).getRainfall().getValue(), DELTA, "the lead weeks carry their values");
+		assertEquals(2, series.getShownWeeks().size());
+		assertEquals(new EpiWeek(year, 10), series.getShownWeeks().get(0).getWeek());
+		assertEquals(7.0, series.getRainfallTotal(), DELTA, "the range figures use the period only");
+		assertEquals(20.0, series.getTemperatureMean(), DELTA);
+		assertEquals(0.5, series.getCompleteness(ClimateVariable.RAINFALL), DELTA, "7 of the period's 14 days, lead weeks left out");
+
+		ClimateWeeklySeriesDto region = facade.getWeeklySeries(
+			new ClimateSeriesCriteria().region(rdcf.region).weeks(new EpiWeek(year, 10), new EpiWeek(year, 11)).leadWeeks(2).includeDistricts(true));
+		assertEquals(4, region.getWeeks().size());
+		assertEquals(210.0, region.getWeeks().get(0).getRainfall().getValue(), DELTA);
+		assertEquals(7.0, region.getRainfallTotal(), DELTA);
+		assertEquals(2, region.getDistrictSeries().get(0).getLeadWeeks());
 	}
 
 	private double p90(ClimateSeriesCriteria criteria) {
