@@ -95,8 +95,8 @@ public class ClimateJobService extends BaseAdoService<ClimateJob> {
 	/**
 	 * Queues an automatic top-up for a location a district or environment has just moved to, when history comes from
 	 * OpenWeather: it fills the location back to the earliest day the district locations hold, so all locations share the
-	 * same reference years. Nothing is queued when no district holds data yet, when the location already goes back that
-	 * far, or when a top-up for it is still open.
+	 * same reference years, but no further back than the first reference year (decision 133). Nothing is queued when no
+	 * district holds data yet, when the location already goes back that far, or when a top-up for it is still open.
 	 */
 	public void queueTopUp(ClimateLocation location, LocalDate today) {
 
@@ -104,9 +104,16 @@ public class ClimateJobService extends BaseAdoService<ClimateJob> {
 			return;
 		}
 
-		LocalDate from = climateObservationService.getEarliestDistrictDay();
+		LocalDate earliestDistrictDay = climateObservationService.getEarliestDistrictDay();
+		if (earliestDistrictDay == null) {
+			return;
+		}
+		// no further back than the reference years the normals use (decision 133): imported district history can reach
+		// back many years, and a top-up asks for no confirmation
+		LocalDate referenceStart = referenceStart(today, climateSettings.getHistoryYears());
+		LocalDate from = earliestDistrictDay.isAfter(referenceStart) ? earliestDistrictDay : referenceStart;
 		LocalDate to = today.minusDays(1);
-		if (from == null || from.isAfter(to)) {
+		if (from.isAfter(to)) {
 			return;
 		}
 		LocalDate earliestHere = climateObservationService.getEarliestDay(location.getId());
@@ -176,6 +183,16 @@ public class ClimateJobService extends BaseAdoService<ClimateJob> {
 		}
 		ensurePersisted(job);
 		return job;
+	}
+
+	/**
+	 * @return the first day of the reference years: 1 January of the first reference calendar year (daily normals), or the
+	 *         first day of the first reference epi year (weekly normals) when that is earlier
+	 */
+	static LocalDate referenceStart(LocalDate today, int historyYears) {
+		LocalDate calendarStart = LocalDate.of(today.getYear() - historyYears, 1, 1);
+		LocalDate epiStart = ClimateStatistics.firstDayOfEpiYear(ClimateStatistics.epiWeekOf(today).getYear() - historyYears);
+		return epiStart.isBefore(calendarStart) ? epiStart : calendarStart;
 	}
 
 	private boolean hasOpenTopUp(ClimateLocation location) {

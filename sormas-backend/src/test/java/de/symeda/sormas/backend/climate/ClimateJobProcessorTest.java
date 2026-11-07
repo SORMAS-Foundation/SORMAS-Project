@@ -314,13 +314,33 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void testTopUpGoesNoFurtherBackThanTheReferenceYears() {
+
+		// 15 years of imported district history: a top-up still fetches only the reference years (decision 133)
+		setClimateSetting(ClimateConfiguration.HISTORY_SOURCE, "OPENWEATHER");
+		saveDistrictClimatePoint(rdcf.district.getUuid(), 6.60, 3.35);
+		createObservation(getDistrictLocationId(rdcf.district.getUuid()), LocalDate.now().minusYears(15), ClimateDataSource.IMPORT, 1.0);
+
+		createEnvironment(8.50, 3.35);
+
+		List<ClimateJob> topUps = getJobs(ClimateJobType.TOP_UP);
+		assertEquals(1, topUps.size());
+		LocalDate from = ClimateCalendar.toLocalDate(topUps.get(0).getFromDate());
+		int historyYears = getBean(ClimateSettings.class).getHistoryYears();
+		assertEquals(ClimateJobService.referenceStart(LocalDate.now(), historyYears), from);
+		assertTrue(!from.isAfter(LocalDate.of(LocalDate.now().getYear() - historyYears, 1, 1)), "covers the first reference calendar year");
+		assertTrue(from.isAfter(LocalDate.of(LocalDate.now().getYear() - historyYears - 1, 12, 20)), "and no more: " + from);
+	}
+
+	@Test
 	void testGridSizeChangeRelinksAtNightWithoutTopUps() {
 
 		setClimateSetting(ClimateConfiguration.HISTORY_SOURCE, "OPENWEATHER");
 		saveDistrictClimatePoint(rdcf.district.getUuid(), 6.60, 3.35);
 		Long oldLocation = getDistrictLocationId(rdcf.district.getUuid());
 		createObservation(oldLocation, LocalDate.now().minusYears(1), ClimateDataSource.IMPORT, 1.0);
-		createEnvironment(7.50, 3.35);
+		EnvironmentDto environment = createEnvironment(7.50, 3.35);
+		createObservation(getEnvironmentLocationId(environment.getUuid()), LocalDate.now().minusDays(5), ClimateDataSource.MANUAL, 2.0);
 		int topUpsBefore = getJobs(ClimateJobType.TOP_UP).size();
 
 		setClimateSetting(ClimateConfiguration.GRID_SIZE, "0.1");
@@ -330,6 +350,12 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		assertEquals(0.1, relinked.getGridSize());
 		assertEquals(66, relinked.getLatIndex());
 		assertEquals(1, getObservations(relinked.getId()).stream().filter(o -> o.getSource() == ClimateDataSource.IMPORT).count(), "imported rows are copied");
+		Long environmentLocation = getEnvironmentLocationId(environment.getUuid());
+		assertEquals(0.1, getBean(ClimateLocationService.class).getById(environmentLocation).getGridSize());
+		assertEquals(
+			ClimateDataSource.MANUAL,
+			getObservationsByDay(environmentLocation).get(LocalDate.now().minusDays(5)).getSource(),
+			"the environment's manual value moves with it although the site did not move (decision 132)");
 		assertEquals(topUpsBefore, getJobs(ClimateJobType.TOP_UP).size(), "a grid size change queues no top-ups");
 	}
 
@@ -472,6 +498,12 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		district.setClimateLatitude(latitude);
 		district.setClimateLongitude(longitude);
 		getDistrictFacade().save(district);
+	}
+
+	private Long getEnvironmentLocationId(String environmentUuid) {
+		return executeInTransaction(em -> {
+			return getBean(de.symeda.sormas.backend.environment.EnvironmentService.class).getByUuid(environmentUuid).getClimateLocation().getId();
+		});
 	}
 
 	private Long getDistrictLocationId(String districtUuid) {
