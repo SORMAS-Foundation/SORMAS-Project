@@ -345,7 +345,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		diseaseGroup.setItems(offeredDiseases);
 		// one checkbox per line (decision 136)
 		diseaseGroup.setItemEnabledProvider(disease -> diseaseGroup.getValue().contains(disease) || diseaseGroup.getValue().size() < diseaseCap());
-		diseaseGroup.setVisible(!offeredDiseases.isEmpty());
+		// kept with its caption when no disease is marked, so the note sits where the checkboxes would be (decision 138)
 		diseaseGroup.addStyleName(CssStyles.VSPACE_NONE);
 		diseaseGroup.addValueChangeListener(e -> {
 			// the cap is shown by disabling the other boxes, so the provider is asked again after each change

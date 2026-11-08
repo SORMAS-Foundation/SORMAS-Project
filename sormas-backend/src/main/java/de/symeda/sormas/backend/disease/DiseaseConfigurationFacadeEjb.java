@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.climate.ClimateConfiguration;
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
@@ -316,8 +315,9 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		if (dto.getExtendedClassificationMulti() == null) {
 			dto.setExtendedClassificationMulti(dto.getDisease().isDefaultExtendedClassificationMulti());
 		}
+		// no shipped list: a disease is climate-sensitive only when an admin marks it (decision 138)
 		if (dto.getClimateSensitive() == null) {
-			dto.setClimateSensitive(ClimateConfiguration.DEFAULT_CLIMATE_SENSITIVE_DISEASES.contains(dto.getDisease()));
+			dto.setClimateSensitive(false);
 		}
 		if (dto.getIncubationPeriodEnabled() == null) {
 			dto.setIncubationPeriodEnabled(dto.getDisease().isDefaultIncubationPeriodEnabled());
@@ -646,7 +646,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		for (DiseaseConfiguration configuration : service.getAll()) {
 			Disease disease = configuration.getDisease();
 
-			if (enabled(configuration.getClimateSensitive(), ClimateConfiguration.DEFAULT_CLIMATE_SENSITIVE_DISEASES.contains(disease))) {
+			if (isTrue(configuration.getClimateSensitive())) {
 				climateSensitiveDiseases.add(disease);
 			}
 			if (configuration.getUsualRangeExcludedYears() != null && !configuration.getUsualRangeExcludedYears().isEmpty()) {

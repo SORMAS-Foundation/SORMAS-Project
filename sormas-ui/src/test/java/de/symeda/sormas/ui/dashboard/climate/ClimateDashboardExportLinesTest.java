@@ -70,6 +70,7 @@ class ClimateDashboardExportLinesTest extends AbstractUiBeanTest {
 		liberiaPlace = new TestDataCreator.RDCF(new TestDataCreator.RDCFEntities(region, liberiaDistrict, community, facility));
 		user = useNationalAdminLogin();
 		lastWeek = DateHelper.getPreviousEpiWeek(new Date());
+		ClimateDashboardLayoutTest.markClimateSensitive(getDiseaseConfigurationFacade(), Disease.DENGUE, Disease.CHOLERA);
 	}
 
 	@Test

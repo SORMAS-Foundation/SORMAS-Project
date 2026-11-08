@@ -55,6 +55,18 @@ import de.symeda.sormas.ui.dashboard.climate.ClimateDashboardLayout.Measure;
 
 class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 
+	/** The diseases the tests mark climate-sensitive, all with case surveillance. */
+	static final Disease[] MARKED = {
+		Disease.MALARIA,
+		Disease.DENGUE,
+		Disease.CHIKUNGUNYA,
+		Disease.YELLOW_FEVER,
+		Disease.WEST_NILE_FEVER,
+		Disease.CHOLERA,
+		Disease.TYPHOID_FEVER,
+		Disease.CSM,
+		Disease.LASSA };
+
 	private TestDataCreator.RDCF rdcf;
 	private UserDto user;
 	/** The last complete epi week, the end of the default period. */
@@ -66,6 +78,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		rdcf = creator.createRDCF("Guanacaste", "Bagaces", "Community", "Facility");
 		user = useNationalAdminLogin();
 		lastWeek = DateHelper.getPreviousEpiWeek(new Date());
+		markClimateSensitive(getDiseaseConfigurationFacade(), MARKED);
 	}
 
 	@Test
@@ -197,6 +210,29 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		layout.getDiseaseGroup().select(fifth);
 		assertTrue(layout.getCases().containsKey(fifth), "a ticked disease that was not loaded is loaded");
 		assertTrue(layout.getChart().getScript().contains(fifth.toString()));
+	}
+
+	@Test
+	void testNoDiseaseMarkedClimateSensitive() {
+
+		for (Disease disease : MARKED) {
+			de.symeda.sormas.api.disease.DiseaseConfigurationDto configuration = getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
+			configuration.setClimateSensitive(false);
+			getDiseaseConfigurationFacade().saveDiseaseConfiguration(configuration);
+		}
+		getDiseaseConfigurationFacade().loadData();
+
+		ClimateDashboardLayout layout = new ClimateDashboardLayout(nationalUser(), JurisdictionLevel.NATION);
+		assertTrue(layout.getOfferedDiseases().isEmpty(), "no shipped list: only what an admin marks");
+		String note =
+			"No diseases are marked as climate-sensitive. An admin can mark them in Configuration › Diseases, in the Climate section of each disease. Only diseases with case surveillance are listed.";
+		assertTrue(layout.getDiseaseGroup().isVisible(), "the Diseases caption stays, with the note under it");
+		assertTrue(text(layout.getFilterCard()).contains(note), text(layout.getFilterCard()));
+
+		layout.getRegionFilter().setValue(rdcf.region);
+		layout.apply();
+		assertEquals(note, layout.getEmptyCard().getValue());
+		assertFalse(layout.getContent().isVisible());
 	}
 
 	@Test
@@ -419,6 +455,18 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	private static int chartHeight(int[] panels) {
 		return ClimateDashboardChart.PLOT_TOP + java.util.Arrays.stream(panels).sum() + panels.length * ClimateDashboardChart.TITLE_BAND
 			+ (panels.length - 1) * ClimateDashboardChart.PANEL_GAP + ClimateDashboardChart.MARGIN_BOTTOM;
+	}
+
+	/**
+	 * Marks the diseases climate-sensitive, as an admin does in the disease configuration (decision 138: there is no shipped list).
+	 */
+	static void markClimateSensitive(de.symeda.sormas.api.disease.DiseaseConfigurationFacade facade, Disease... diseases) {
+		for (Disease disease : diseases) {
+			de.symeda.sormas.api.disease.DiseaseConfigurationDto configuration = facade.getDiseaseConfiguration(disease);
+			configuration.setClimateSensitive(true);
+			facade.saveDiseaseConfiguration(configuration);
+		}
+		facade.loadData();
 	}
 
 	private ClimateDashboardLayout regionLayout() {

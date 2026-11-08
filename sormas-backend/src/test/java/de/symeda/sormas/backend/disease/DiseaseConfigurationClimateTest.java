@@ -33,17 +33,18 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 class DiseaseConfigurationClimateTest extends AbstractBeanTest {
 
 	@Test
-	void testClimateSensitiveDefaultsComeFromTheShippedList() {
+	void testNoDiseaseIsClimateSensitiveUntilAnAdminMarksIt() {
 
 		getDiseaseConfigurationFacade().loadData();
 
-		assertTrue(getDiseaseConfigurationFacade().isClimateSensitive(Disease.MALARIA));
-		assertTrue(getDiseaseConfigurationFacade().isClimateSensitive(Disease.CHOLERA));
-		assertFalse(getDiseaseConfigurationFacade().isClimateSensitive(Disease.MEASLES));
+		// no shipped list (decision 138)
+		assertFalse(getDiseaseConfigurationFacade().isClimateSensitive(Disease.MALARIA));
+		assertFalse(getDiseaseConfigurationFacade().isClimateSensitive(Disease.CHOLERA));
+		assertTrue(getDiseaseConfigurationFacade().getAllClimateSensitiveDiseases().isEmpty());
 
 		DiseaseConfigurationDto malaria = getDiseaseConfigurationFacade().getDiseaseConfiguration(Disease.MALARIA);
 		DiseaseConfigurationDto byUuid = getDiseaseConfigurationFacade().getByUuid(malaria.getUuid());
-		assertEquals(Boolean.TRUE, byUuid.getClimateSensitive(), "an empty flag is shown with its default");
+		assertEquals(Boolean.FALSE, byUuid.getClimateSensitive(), "an empty flag is shown unticked");
 	}
 
 	@Test

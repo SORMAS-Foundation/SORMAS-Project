@@ -15,12 +15,6 @@
 
 package de.symeda.sormas.api.climate;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-
-import de.symeda.sormas.api.Disease;
-
 /**
  * Keys of the climate settings in system configuration (category {@link #CATEGORY_NAME}) and other fixed climate values.
  */
@@ -47,24 +41,6 @@ public final class ClimateConfiguration {
 
 	/** How many complete years the disease configuration offers as excluded years for the case usual range. */
 	public static final int EXCLUDABLE_YEARS = 10;
-
-	/**
-	 * Diseases that are climate-sensitive when their disease configuration leaves the flag empty. Kept in code rather than
-	 * set by SQL, because disease configuration rows of a fresh install are created at server start, after the SQL has run.
-	 */
-	public static final Set<Disease> DEFAULT_CLIMATE_SENSITIVE_DISEASES = Collections.unmodifiableSet(
-		EnumSet.of(
-			Disease.MALARIA,
-			Disease.DENGUE,
-			Disease.CHIKUNGUNYA,
-			Disease.YELLOW_FEVER,
-			Disease.WEST_NILE_FEVER,
-			Disease.CHOLERA,
-			Disease.TYPHOID_FEVER,
-			Disease.DIARRHEA_DEHYDRATION,
-			Disease.DIARRHEA_BLOOD,
-			Disease.CSM,
-			Disease.LASSA));
 
 	private ClimateConfiguration() {
 	}
