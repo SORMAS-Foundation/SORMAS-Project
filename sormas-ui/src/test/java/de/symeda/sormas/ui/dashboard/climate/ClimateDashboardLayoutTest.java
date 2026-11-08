@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.ui.dashboard.climate;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -78,6 +77,8 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertEquals("Choose a region under Place and period and press Apply to see its climate and cases.", layout.getEmptyCard().getValue());
 		assertFalse(layout.getContent().isVisible(), "no blank chart before a region is chosen");
 		assertFalse(layout.getDisplayCard().isVisible(), "no display controls before a region is applied: they would change nothing");
+		assertFalse(layout.getDiseaseGroup().getStyleName().contains(com.vaadin.ui.themes.ValoTheme.OPTIONGROUP_HORIZONTAL), "one disease checkbox per line");
+		assertTrue(layout.getRegionFilter().getStyleName().contains(de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE), "compact cards: no margin under the fields");
 		assertTrue(layout.getRegionFilter().isEnabled());
 		assertTrue(layout.getDistrictFilter().isEnabled());
 		assertEquals(lastWeek, layout.getToFilter().getValue(), "the default period ends with the last complete week");
@@ -242,15 +243,11 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertTrue(script.contains("no data (0 of 7 days)"), "a week without data is a gap, never 0");
 		assertEquals("Normal range: " + (year - 5) + "–" + (year - 1), layout.getChart().getStatus().getValue());
 		assertFalse(layout.getChart().getCredit().isVisible(), "imported data only");
+		assertTrue(script.contains("c.pointerY<top+h+8"), "the details line follows the part of the chart in view");
 		assertEquals(
-			chartHeight(
-				new int[] {
-					ClimateDashboardChart.DISEASE_PANEL,
-					ClimateDashboardChart.CLIMATE_PANEL,
-					ClimateDashboardChart.CLIMATE_PANEL,
-					ClimateDashboardChart.CLIMATE_PANEL }),
+			chartHeight(ClimateDashboardChart.panelHeights(1, 0, 3, ClimateDashboardChart.fillHeight(0))),
 			layout.getChart().getChartHeight(),
-			"rows in pixels; four panels already pass the fill height, so they keep their base heights");
+			"rows in pixels, fitting the window (" + ClimateDashboardChart.DEFAULT_WINDOW_HEIGHT + " px without a page)");
 
 		layout.getShadeSelect().setValue(null);
 		assertFalse(layout.getChart().getScript().contains(ClimateDashboardChart.SHADING_COLOR), "shading can be switched off");
@@ -259,9 +256,9 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertFalse(layout.getChart().getScript().contains("Humidity (%)"));
 		dump("dashboard-fill.js", layout.getChart().getScript());
 		assertEquals(
-			chartHeight(ClimateDashboardChart.panelHeights(1, 0, 1)),
+			chartHeight(ClimateDashboardChart.panelHeights(1, 0, 1, ClimateDashboardChart.fillHeight(0))),
 			layout.getChart().getChartHeight(),
-			"two panels fill the chart");
+			"two panels share the window too");
 		layout.getClimateGroup().clear();
 		layout.getDiseaseGroup().clear();
 		assertTrue(layout.getChart().getNothingChosen().isVisible(), "a filled note, never a blank chart");
@@ -347,7 +344,8 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertTrue(script.contains("borderColor:'" + ClimateDashboardChart.OUTLINE_COLOR + "',borderWidth:2"), "the unusual week is outlined");
 		assertTrue(script.contains("Rain (mm)"), "the climate panels stay below");
 		assertTrue(script.contains("4 cases"), "the details line shows the real figures");
-		int[] heatmapHeights = ClimateDashboardChart.panelHeights(0, ClimateDashboardChart.HEATMAP_ROW * layout.selectedDiseases().size(), 3);
+		int[] heatmapHeights = ClimateDashboardChart
+			.panelHeights(0, ClimateDashboardChart.HEATMAP_ROW * layout.selectedDiseases().size(), 3, ClimateDashboardChart.fillHeight(0));
 		assertEquals(ClimateDashboardChart.HEATMAP_ROW * layout.selectedDiseases().size(), heatmapHeights[0], "the heatmap keeps its rows");
 		assertEquals(chartHeight(heatmapHeights), layout.getChart().getChartHeight());
 
@@ -371,32 +369,31 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	}
 
 	@Test
-	void testPanelsFillTheChart() {
+	void testPanelsFitTheWindow() {
 
-		int[] two = ClimateDashboardChart.panelHeights(1, 0, 1);
-		assertArrayEquals(
-			new int[] {
-				2 * ClimateDashboardChart.DISEASE_PANEL,
-				2 * ClimateDashboardChart.CLIMATE_PANEL },
-			two,
-			"one disease and one climate panel are twice their base heights");
-		assertEquals(
-			ClimateDashboardChart.FILL_HEIGHT,
-			two[0] + two[1] + 2 * ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.PANEL_GAP,
-			"together they fill the chart");
+		// a laptop showing about 695 px of page: 1 disease and 3 climate panels, details strip, axis and legend all fit
+		int laptop = 695;
+		int[] four = ClimateDashboardChart.panelHeights(1, 0, 3, ClimateDashboardChart.fillHeight(laptop));
+		assertEquals(laptop - ClimateDashboardChart.WINDOW_MARGIN, chartHeight(four), 1.0, "the whole chart fits the window");
+		assertTrue(four[0] > four[1], "a disease panel is a little taller than a climate panel");
+		assertTrue(four[1] >= ClimateDashboardChart.MIN_PANEL);
 
-		int[] seven = ClimateDashboardChart.panelHeights(4, 0, 3);
-		assertEquals(ClimateDashboardChart.DISEASE_PANEL, seven[0], "many panels keep their base heights; the chart grows");
-		assertEquals(ClimateDashboardChart.CLIMATE_PANEL, seven[6]);
+		// 4 diseases and 3 climate panels do not fit: each keeps the minimum and the page scrolls
+		int[] seven = ClimateDashboardChart.panelHeights(4, 0, 3, ClimateDashboardChart.fillHeight(laptop));
+		assertTrue(java.util.Arrays.stream(seven).allMatch(h -> h == ClimateDashboardChart.MIN_PANEL), java.util.Arrays.toString(seven));
+		assertTrue(chartHeight(seven) > laptop);
 
-		int[] heatmap = ClimateDashboardChart.panelHeights(0, 5 * ClimateDashboardChart.HEATMAP_ROW, 1);
-		assertEquals(5 * ClimateDashboardChart.HEATMAP_ROW, heatmap[0], "the heatmap keeps its rows");
-		assertEquals(
-			ClimateDashboardChart.FILL_HEIGHT,
-			heatmap[0] + heatmap[1] + 2 * ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.PANEL_GAP,
-			"the climate panel takes the rest");
+		// a taller window gives taller panels
+		int[] two = ClimateDashboardChart.panelHeights(1, 0, 1, ClimateDashboardChart.fillHeight(1000));
+		assertEquals(1000 - ClimateDashboardChart.WINDOW_MARGIN, chartHeight(two), 1.0);
+		assertTrue(two[0] > 2 * ClimateDashboardChart.DISEASE_PANEL, two[0] + " px");
 
-		assertEquals(0, ClimateDashboardChart.panelHeights(0, 0, 0).length);
+		// the heatmap keeps its rows; the climate panel takes the rest
+		int[] heatmap = ClimateDashboardChart.panelHeights(0, 5 * ClimateDashboardChart.HEATMAP_ROW, 1, ClimateDashboardChart.fillHeight(laptop));
+		assertEquals(5 * ClimateDashboardChart.HEATMAP_ROW, heatmap[0]);
+		assertEquals(laptop - ClimateDashboardChart.WINDOW_MARGIN, chartHeight(heatmap), 1.0);
+
+		assertEquals(0, ClimateDashboardChart.panelHeights(0, 0, 0, 500).length);
 	}
 
 	/**

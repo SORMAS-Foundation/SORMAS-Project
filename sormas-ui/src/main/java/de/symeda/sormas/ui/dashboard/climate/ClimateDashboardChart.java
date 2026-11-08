@@ -67,17 +67,22 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 	/** Room above the plot for the details line of the week pointed at: up to about 90 px when it wraps in 8 columns. */
 	static final int PLOT_TOP = 100;
+	/** Room below the plot for the week labels and the legend (two rows). */
+	static final int MARGIN_BOTTOM = 80;
 	/**
-	 * The height the panels fill together, name bands and gaps included (decision 135); with many panels at their base
-	 * heights the chart is taller.
+	 * The relative heights of a disease and a climate panel; the panels share the window's height in this proportion
+	 * (decision 136).
 	 */
-	static final int FILL_HEIGHT = 600;
-	/** Room below the plot for the week labels and the legend. */
-	static final int MARGIN_BOTTOM = 90;
 	static final int DISEASE_PANEL = 140;
 	static final int CLIMATE_PANEL = 130;
+	/** No panel is drawn lower than this; with many panels the chart is then taller than the window. */
+	static final int MIN_PANEL = 70;
+	/** What the chart leaves of the browser window's height, so its bottom edge shows. */
+	static final int WINDOW_MARGIN = 16;
+	/** The window height assumed when the browser's is not known (tests). */
+	static final int DEFAULT_WINDOW_HEIGHT = 800;
 	/** The band above each panel that holds its name. */
-	static final int TITLE_BAND = 26;
+	static final int TITLE_BAND = 22;
 	static final int PANEL_GAP = 8;
 	/** The height of one disease row in the heatmap. */
 	static final int HEATMAP_ROW = 26;
@@ -107,6 +112,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 	private String lastScript;
 	private int chartHeight;
+	private int windowHeight;
 
 	public ClimateDashboardChart() {
 
@@ -138,6 +144,8 @@ public class ClimateDashboardChart extends VerticalLayout {
 	 *            how many weeks earlier the climate panels show (decision 126)
 	 * @param heatmap
 	 *            true for one heatmap row per disease instead of a panel per disease (decision 129)
+	 * @param windowHeight
+	 *            the browser window's height, which the chart fits (decision 136)
 	 */
 	public void update(
 		Selection selection,
@@ -147,7 +155,10 @@ public class ClimateDashboardChart extends VerticalLayout {
 		ClimateVariable shading,
 		Measure measure,
 		int lag,
-		boolean heatmap) {
+		boolean heatmap,
+		int windowHeight) {
+
+		this.windowHeight = windowHeight;
 
 		dates.setValue(String.format(I18nProperties.getString(Strings.climateDashboardDates), weekLabel(selection.getFrom()), weekLabel(selection.getTo())));
 		status.setValue(status(climate));
@@ -206,13 +217,24 @@ public class ClimateDashboardChart extends VerticalLayout {
 	}
 
 	/**
+	 * @return the height the panels share, name bands and gaps included, so the whole chart with its details strip,
+	 *         axis and legend fits the window (decision 136)
+	 */
+	static int fillHeight(int windowHeight) {
+		return (windowHeight > 0 ? windowHeight : DEFAULT_WINDOW_HEIGHT) - WINDOW_MARGIN - PLOT_TOP - MARGIN_BOTTOM;
+	}
+
+	/**
 	 * @param heatmapHeight
 	 *            the height of the heatmap's rows, or 0 without a heatmap
-	 * @return the height of each panel, top to bottom: the disease panels or the heatmap, then the climate panels. With
-	 *         their name bands and gaps they fill {@link #FILL_HEIGHT} (decision 135): disease and climate panels grow in
-	 *         proportion to their base heights, the heatmap keeps its rows, and no panel gets smaller than its base height
+	 * @param fillHeight
+	 *            the height the panels share, name bands and gaps included ({@link #fillHeight(int)})
+	 * @return the height of each panel, top to bottom: the disease panels or the heatmap, then the climate panels
+	 *         (decision 136). Disease and climate panels share what the name bands, gaps and heatmap leave, in the
+	 *         proportion of {@link #DISEASE_PANEL} to {@link #CLIMATE_PANEL}, but none is lower than {@link #MIN_PANEL};
+	 *         the heatmap keeps its rows
 	 */
-	static int[] panelHeights(int diseasePanels, int heatmapHeight, int climatePanels) {
+	static int[] panelHeights(int diseasePanels, int heatmapHeight, int climatePanels, int fillHeight) {
 
 		int panels = diseasePanels + (heatmapHeight > 0 ? 1 : 0) + climatePanels;
 		if (panels == 0) {
@@ -220,7 +242,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 		}
 		int fixed = panels * TITLE_BAND + (panels - 1) * PANEL_GAP + heatmapHeight;
 		int base = diseasePanels * DISEASE_PANEL + climatePanels * CLIMATE_PANEL;
-		double scale = base == 0 ? 1 : Math.max(1, (double) (FILL_HEIGHT - fixed) / base);
+		double scale = base == 0 ? 1 : (double) (fillHeight - fixed) / base;
 
 		int[] heights = new int[panels];
 		int i = 0;
@@ -228,10 +250,10 @@ public class ClimateDashboardChart extends VerticalLayout {
 			heights[i++] = heatmapHeight;
 		}
 		for (int d = 0; d < diseasePanels; d++) {
-			heights[i++] = (int) Math.round(DISEASE_PANEL * scale);
+			heights[i++] = Math.max(MIN_PANEL, (int) Math.round(DISEASE_PANEL * scale));
 		}
 		for (int c = 0; c < climatePanels; c++) {
-			heights[i++] = (int) Math.round(CLIMATE_PANEL * scale);
+			heights[i++] = Math.max(MIN_PANEL, (int) Math.round(CLIMATE_PANEL * scale));
 		}
 		return heights;
 	}
@@ -265,7 +287,11 @@ public class ClimateDashboardChart extends VerticalLayout {
 		// rows in pixels: a name band above each panel, then the panel (decision 122), filling the chart (decision 135)
 		List<int[]> rows = new ArrayList<>();
 		int y = PLOT_TOP;
-		for (int height : panelHeights(heatmap ? 0 : cases.size(), heatmap ? HEATMAP_ROW * cases.size() : 0, variables.size())) {
+		for (int height : panelHeights(
+			heatmap ? 0 : cases.size(),
+			heatmap ? HEATMAP_ROW * cases.size() : 0,
+			variables.size(),
+			fillHeight(windowHeight))) {
 			y += TITLE_BAND;
 			rows.add(new int[] {
 				y,
@@ -289,7 +315,10 @@ public class ClimateDashboardChart extends VerticalLayout {
 			.append(PLOT_TOP)
 			.append(",marginBottom:")
 			.append(MARGIN_BOTTOM)
-			.append(",spacingTop:4,animation:false,events:{render:function(){var ch=this;")
+			// where the pointer is, for the details line below
+			.append(",spacingTop:4,animation:false,events:{load:function(){var ch=this;")
+			.append("ch.container.addEventListener('mousemove',function(e){ch.pointerY=e.clientY-ch.container.getBoundingClientRect().top;});},")
+			.append("render:function(){var ch=this;")
 			.append("(ch.panelTitles||[]).forEach(function(t){t.destroy();});")
 			.append("ch.panelTitles=ch.yAxis.filter(function(a){return a.options.panelTitle;}).map(function(a){")
 			.append("return ch.renderer.text(a.options.panelTitle,ch.plotLeft,a.top-")
@@ -341,8 +370,13 @@ public class ClimateDashboardChart extends VerticalLayout {
 		}
 		js.append("],");
 
-		js.append("tooltip:{shared:true,useHTML:true,shadow:false,borderWidth:0,backgroundColor:'rgba(255,255,255,0.96)',")
-			.append("positioner:function(){return {x:this.chart.plotLeft,y:0};},")
+		js.append("tooltip:{shared:true,useHTML:true,shadow:false,animation:false,borderWidth:0,backgroundColor:'rgba(255,255,255,0.96)',")
+			// the details line sits at the top of the part of the chart in view, so it stays visible when the page is
+			// scrolled; when the pointer is right under it, it moves to the bottom of that part (decision 136)
+			.append("positioner:function(w,h){var c=this.chart;var r=c.container.getBoundingClientRect();")
+			.append("var top=Math.max(0,-r.top);var bottom=Math.min(c.chartHeight,(window.innerHeight||document.documentElement.clientHeight)-r.top);")
+			.append("var y=top;if(c.pointerY!==undefined&&c.pointerY<top+h+8){y=Math.max(top,bottom-h);}")
+			.append("return {x:c.plotLeft,y:y};},")
 			.append("formatter:function(){var p=this.points?this.points[0]:this;var c=p.series.chart;var d=details[p.point.x];")
 			.append("return d?'<div style=\"white-space:normal;width:'+c.plotWidth+'px\">'+d+'</div>':false;}},");
 

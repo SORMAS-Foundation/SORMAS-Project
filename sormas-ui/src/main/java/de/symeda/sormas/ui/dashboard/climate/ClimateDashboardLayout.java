@@ -205,6 +205,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	};
 	/** The measure the user chose; counts are shown instead while incidence is not available (decision 74). */
 	private Measure preferredMeasure = Measure.INCIDENCE;
+	/** Removes the window resize listener when the layout is detached. */
+	private com.vaadin.shared.Registration resizeRegistration;
+	/** The window height the chart was last drawn for. */
+	private int drawnForHeight;
 
 	/**
 	 * @param user
@@ -326,6 +330,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 		for (ComboBox<?> filter : Arrays.asList(regionFilter, districtFilter, classificationFilter, fromFilter, toFilter)) {
 			filter.setWidthFull();
+			// no bottom margin under each field: the card's spacing is enough (decision 136)
+			filter.addStyleName(CssStyles.VSPACE_NONE);
 		}
 		HorizontalLayout weeks = new HorizontalLayout(fromFilter, toFilter);
 		weeks.setMargin(false);
@@ -367,7 +373,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 		diseaseGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardDiseases));
 		diseaseGroup.setItems(offeredDiseases);
-		diseaseGroup.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		// one checkbox per line (decision 136)
 		diseaseGroup.setItemEnabledProvider(disease -> diseaseGroup.getValue().contains(disease) || diseaseGroup.getValue().size() < diseaseCap());
 		diseaseGroup.setVisible(!offeredDiseases.isEmpty());
 		diseaseGroup.select(offeredDiseases.stream().limit(PANELS_DISEASE_CAP).toArray(Disease[]::new));
@@ -416,6 +422,9 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		});
 
 		shadeSelect.setWidthFull();
+		for (Component control : Arrays.asList(viewGroup, diseaseGroup, climateGroup, shadeSelect, measureGroup)) {
+			control.addStyleName(CssStyles.VSPACE_NONE);
+		}
 		displayCard.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
 		displayCard.addComponent(
 			stack(viewGroup, withNote(diseaseGroup, diseaseNote), climateGroup, withNote(shadeSelect, shadeNote), withNote(measureGroup, measureNote), lagSlider));
@@ -614,7 +623,37 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			shadeNote,
 			shadeSelect.isEnabled() ? null : String.format(I18nProperties.getString(Strings.climateDashboardShadeNoNormals), climate.getMinHistoryYears()));
 
-		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), getLag(), viewGroup.getValue() == View.HEATMAP);
+		drawnForHeight = windowHeight();
+		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), getLag(), viewGroup.getValue() == View.HEATMAP, drawnForHeight);
+	}
+
+	/**
+	 * @return the browser window's height, which the chart fits (decision 136), or 0 when there is no page (tests)
+	 */
+	private static int windowHeight() {
+		return Page.getCurrent() != null ? Page.getCurrent().getBrowserWindowHeight() : 0;
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+		// the chart fits the window, so it is drawn again when the window's height changes
+		if (Page.getCurrent() != null) {
+			resizeRegistration = Page.getCurrent().addBrowserWindowResizeListener(e -> {
+				if (e.getHeight() != drawnForHeight) {
+					redraw();
+				}
+			});
+		}
+	}
+
+	@Override
+	public void detach() {
+		if (resizeRegistration != null) {
+			resizeRegistration.remove();
+			resizeRegistration = null;
+		}
+		super.detach();
 	}
 
 	void setSelectionListener(java.util.function.Consumer<Boolean> selectionListener) {
