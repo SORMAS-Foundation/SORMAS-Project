@@ -53,9 +53,12 @@
 
   // Climate dashboard: the chart in 8 columns and the cards in 4 (decision 135); below the large-screen width the columns
   // stack, and the cards come first so Apply is not under the chart
+  // capped at 1600 px and left-aligned like SORMAS's other capped pages, so the chart is not stretched on large screens
+  // (decision 140)
   .climate-dashboard-split {
     display: flex;
     flex-wrap: wrap;
+    max-width: 1600px;
   }
   .climate-dashboard-split:before, .climate-dashboard-split:after {
     display: none;

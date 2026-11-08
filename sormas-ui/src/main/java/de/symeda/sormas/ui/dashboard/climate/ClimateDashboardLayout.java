@@ -229,9 +229,9 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			.sorted(Comparator.comparing(Disease::toString, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
 
-		// 8 columns of chart and 4 of cards, as on the environment Climate data tab, but without its 1280 px cap so the chart
-		// gets the screen's width; below the large-screen width the cards come first (climate.scss), so Apply is not
-		// under the chart
+		// 8 columns of chart and 4 of cards, as on the environment Climate data tab, capped at 1600 px instead of its 1280 px
+		// and left-aligned like it (climate.scss, decision 140), so a 5-year chart has room without stretching on large
+		// screens; below the large-screen width the cards come first (climate.scss), so Apply is not under the chart
 		CustomLayout split = new CustomLayout();
 		split.setWidthFull();
 		split.setTemplateContents(
