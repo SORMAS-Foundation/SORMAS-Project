@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.dashboard.climate;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -241,20 +242,26 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertTrue(script.contains("no data (0 of 7 days)"), "a week without data is a gap, never 0");
 		assertEquals("Normal range: " + (year - 5) + "–" + (year - 1), layout.getChart().getStatus().getValue());
 		assertFalse(layout.getChart().getCredit().isVisible(), "imported data only");
-		int height = layout.getChart().getChartHeight();
 		assertEquals(
-			ClimateDashboardChart.PLOT_TOP + (ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.DISEASE_PANEL)
-				+ 3 * (ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.CLIMATE_PANEL)
-				+ 3 * ClimateDashboardChart.PANEL_GAP
-				+ ClimateDashboardChart.MARGIN_BOTTOM,
-			height,
-			"rows in pixels");
+			chartHeight(
+				new int[] {
+					ClimateDashboardChart.DISEASE_PANEL,
+					ClimateDashboardChart.CLIMATE_PANEL,
+					ClimateDashboardChart.CLIMATE_PANEL,
+					ClimateDashboardChart.CLIMATE_PANEL }),
+			layout.getChart().getChartHeight(),
+			"rows in pixels; four panels already pass the fill height, so they keep their base heights");
 
 		layout.getShadeSelect().setValue(null);
 		assertFalse(layout.getChart().getScript().contains(ClimateDashboardChart.SHADING_COLOR), "shading can be switched off");
 
 		layout.getClimateGroup().deselect(ClimateVariable.HUMIDITY, ClimateVariable.TEMPERATURE);
 		assertFalse(layout.getChart().getScript().contains("Humidity (%)"));
+		dump("dashboard-fill.js", layout.getChart().getScript());
+		assertEquals(
+			chartHeight(ClimateDashboardChart.panelHeights(1, 0, 1)),
+			layout.getChart().getChartHeight(),
+			"two panels fill the chart");
 		layout.getClimateGroup().clear();
 		layout.getDiseaseGroup().clear();
 		assertTrue(layout.getChart().getNothingChosen().isVisible(), "a filled note, never a blank chart");
@@ -340,12 +347,9 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertTrue(script.contains("borderColor:'" + ClimateDashboardChart.OUTLINE_COLOR + "',borderWidth:2"), "the unusual week is outlined");
 		assertTrue(script.contains("Rain (mm)"), "the climate panels stay below");
 		assertTrue(script.contains("4 cases"), "the details line shows the real figures");
-		assertEquals(
-			ClimateDashboardChart.PLOT_TOP + ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.HEATMAP_ROW * layout.selectedDiseases().size()
-				+ 3 * (ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.CLIMATE_PANEL)
-				+ 3 * ClimateDashboardChart.PANEL_GAP
-				+ ClimateDashboardChart.MARGIN_BOTTOM,
-			layout.getChart().getChartHeight());
+		int[] heatmapHeights = ClimateDashboardChart.panelHeights(0, ClimateDashboardChart.HEATMAP_ROW * layout.selectedDiseases().size(), 3);
+		assertEquals(ClimateDashboardChart.HEATMAP_ROW * layout.selectedDiseases().size(), heatmapHeights[0], "the heatmap keeps its rows");
+		assertEquals(chartHeight(heatmapHeights), layout.getChart().getChartHeight());
 
 		layout.getViewGroup().setValue(ClimateDashboardLayout.View.PANELS);
 		assertEquals(offered.subList(0, ClimateDashboardLayout.PANELS_DISEASE_CAP), layout.selectedDiseases(), "back to panels keeps the first 4");
@@ -364,6 +368,44 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertFalse(layout.getShadeSelect().isEnabled(), "no normals, no shading");
 		assertTrue(text(layout.getDisplayCard()).contains("Shading needs normal ranges (3 years of climate history)."), text(layout.getDisplayCard()));
 		assertEquals("No climate data yet", layout.getChart().getStatus().getValue());
+	}
+
+	@Test
+	void testPanelsFillTheChart() {
+
+		int[] two = ClimateDashboardChart.panelHeights(1, 0, 1);
+		assertArrayEquals(
+			new int[] {
+				2 * ClimateDashboardChart.DISEASE_PANEL,
+				2 * ClimateDashboardChart.CLIMATE_PANEL },
+			two,
+			"one disease and one climate panel are twice their base heights");
+		assertEquals(
+			ClimateDashboardChart.FILL_HEIGHT,
+			two[0] + two[1] + 2 * ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.PANEL_GAP,
+			"together they fill the chart");
+
+		int[] seven = ClimateDashboardChart.panelHeights(4, 0, 3);
+		assertEquals(ClimateDashboardChart.DISEASE_PANEL, seven[0], "many panels keep their base heights; the chart grows");
+		assertEquals(ClimateDashboardChart.CLIMATE_PANEL, seven[6]);
+
+		int[] heatmap = ClimateDashboardChart.panelHeights(0, 5 * ClimateDashboardChart.HEATMAP_ROW, 1);
+		assertEquals(5 * ClimateDashboardChart.HEATMAP_ROW, heatmap[0], "the heatmap keeps its rows");
+		assertEquals(
+			ClimateDashboardChart.FILL_HEIGHT,
+			heatmap[0] + heatmap[1] + 2 * ClimateDashboardChart.TITLE_BAND + ClimateDashboardChart.PANEL_GAP,
+			"the climate panel takes the rest");
+
+		assertEquals(0, ClimateDashboardChart.panelHeights(0, 0, 0).length);
+	}
+
+	/**
+	 * @return the chart's height for these panels: the room for the details line, each panel under its name band, the gaps
+	 *         and the room for the axis and legend
+	 */
+	private static int chartHeight(int[] panels) {
+		return ClimateDashboardChart.PLOT_TOP + java.util.Arrays.stream(panels).sum() + panels.length * ClimateDashboardChart.TITLE_BAND
+			+ (panels.length - 1) * ClimateDashboardChart.PANEL_GAP + ClimateDashboardChart.MARGIN_BOTTOM;
 	}
 
 	private ClimateDashboardLayout regionLayout() {

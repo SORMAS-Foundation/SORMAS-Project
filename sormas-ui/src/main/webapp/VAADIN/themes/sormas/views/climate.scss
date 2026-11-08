@@ -17,6 +17,11 @@
     font-weight: bold;
   }
 
+  // Climate dashboard: the history status beside the dates, in their size but not bold (decision 135)
+  .climate-chart-status {
+    font-size: 12px;
+  }
+
   // environment Climate data tab: the site readings and daily values tables under their headings
   .climate-grid {
     margin-top: 15px;

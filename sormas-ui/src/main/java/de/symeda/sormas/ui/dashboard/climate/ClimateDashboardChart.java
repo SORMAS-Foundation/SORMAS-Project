@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
@@ -64,8 +65,13 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 	private static final long serialVersionUID = 6290233816312585069L;
 
-	/** Room above the plot for the details line of the week pointed at. */
+	/** Room above the plot for the details line of the week pointed at: up to about 90 px when it wraps in 8 columns. */
 	static final int PLOT_TOP = 100;
+	/**
+	 * The height the panels fill together, name bands and gaps included (decision 135); with many panels at their base
+	 * heights the chart is taller.
+	 */
+	static final int FILL_HEIGHT = 600;
 	/** Room below the plot for the week labels and the legend. */
 	static final int MARGIN_BOTTOM = 90;
 	static final int DISEASE_PANEL = 140;
@@ -110,13 +116,19 @@ public class ClimateDashboardChart extends VerticalLayout {
 		Label heading = new Label(I18nProperties.getCaption(Captions.climateDashboardChart));
 		heading.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		dates.addStyleName(CssStyles.CLIMATE_CHART_DATES);
-		status.setWidthFull();
+		status.addStyleName(CssStyles.CLIMATE_CHART_STATUS);
+		// the period and the history status on one line under the heading (decision 135)
+		Label separator = new Label(" · ");
+		separator.addStyleName(CssStyles.CLIMATE_CHART_STATUS);
+		HorizontalLayout subtitle = new HorizontalLayout(dates, separator, status);
+		subtitle.setMargin(false);
+		subtitle.setSpacing(false);
 		nothingChosen.addStyleName(CssStyles.CLIMATE_DASHBOARD_EMPTY);
 		nothingChosen.setWidthFull();
 		chart.setWidthFull();
 		credit.setWidthFull();
 		credit.addStyleNames(CssStyles.LABEL_SMALL, CssStyles.ALIGN_CENTER);
-		addComponents(heading, dates, status, nothingChosen, chart, credit);
+		addComponents(heading, subtitle, nothingChosen, chart, credit);
 	}
 
 	/**
@@ -193,6 +205,37 @@ public class ClimateDashboardChart extends VerticalLayout {
 		return String.format(I18nProperties.getString(Strings.climateHistoryBuilding), ClimateCaptions.period(held), climate.getMinHistoryYears());
 	}
 
+	/**
+	 * @param heatmapHeight
+	 *            the height of the heatmap's rows, or 0 without a heatmap
+	 * @return the height of each panel, top to bottom: the disease panels or the heatmap, then the climate panels. With
+	 *         their name bands and gaps they fill {@link #FILL_HEIGHT} (decision 135): disease and climate panels grow in
+	 *         proportion to their base heights, the heatmap keeps its rows, and no panel gets smaller than its base height
+	 */
+	static int[] panelHeights(int diseasePanels, int heatmapHeight, int climatePanels) {
+
+		int panels = diseasePanels + (heatmapHeight > 0 ? 1 : 0) + climatePanels;
+		if (panels == 0) {
+			return new int[0];
+		}
+		int fixed = panels * TITLE_BAND + (panels - 1) * PANEL_GAP + heatmapHeight;
+		int base = diseasePanels * DISEASE_PANEL + climatePanels * CLIMATE_PANEL;
+		double scale = base == 0 ? 1 : Math.max(1, (double) (FILL_HEIGHT - fixed) / base);
+
+		int[] heights = new int[panels];
+		int i = 0;
+		if (heatmapHeight > 0) {
+			heights[i++] = heatmapHeight;
+		}
+		for (int d = 0; d < diseasePanels; d++) {
+			heights[i++] = (int) Math.round(DISEASE_PANEL * scale);
+		}
+		for (int c = 0; c < climatePanels; c++) {
+			heights[i++] = (int) Math.round(CLIMATE_PANEL * scale);
+		}
+		return heights;
+	}
+
 	static String weekLabel(EpiWeek week) {
 		return week.getWeek() + "/" + week.getYear();
 	}
@@ -219,12 +262,10 @@ public class ClimateDashboardChart extends VerticalLayout {
 		List<EpiWeek> weeks = climate.getShownWeeks().stream().map(ClimateWeekDto::getWeek).collect(Collectors.toList());
 		int count = weeks.size();
 
-		// rows in pixels: a name band above each panel, then the panel (decision 122)
+		// rows in pixels: a name band above each panel, then the panel (decision 122), filling the chart (decision 135)
 		List<int[]> rows = new ArrayList<>();
 		int y = PLOT_TOP;
-		int diseaseRows = heatmap ? (cases.isEmpty() ? 0 : 1) : cases.size();
-		for (int i = 0; i < diseaseRows + variables.size(); i++) {
-			int height = i < diseaseRows ? (heatmap ? HEATMAP_ROW * cases.size() : DISEASE_PANEL) : CLIMATE_PANEL;
+		for (int height : panelHeights(heatmap ? 0 : cases.size(), heatmap ? HEATMAP_ROW * cases.size() : 0, variables.size())) {
 			y += TITLE_BAND;
 			rows.add(new int[] {
 				y,
