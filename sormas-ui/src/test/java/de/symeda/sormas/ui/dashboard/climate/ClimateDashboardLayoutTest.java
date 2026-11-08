@@ -92,7 +92,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertNull(layout.getSelection().getDistrict());
 		assertEquals(52, layout.getClimate().getShownWeeks().size());
 		assertEquals(ClimateDashboardLayout.MAX_LAG, layout.getClimate().getLeadWeeks(), "12 weeks of climate before the period, for the lag");
-		assertEquals(1, layout.getClimate().getDistrictSeries().size(), "the region's districts, for the district table");
+		assertEquals(1, layout.getClimate().getDistrictSeries().size(), "the region's districts, for the status line");
 	}
 
 	@Test

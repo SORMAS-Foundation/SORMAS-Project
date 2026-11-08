@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.dashboard.climate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -47,9 +46,11 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.climate.ClimateCaptions;
-import de.symeda.sormas.ui.dashboard.climate.ClimateDistrictTable.Row;
 
-class ClimateDistrictTableTest extends AbstractUiBeanTest {
+/**
+ * The Climate dashboard export's columns and lines (decision 128), written in the UI from the backend's rows.
+ */
+class ClimateDashboardExportLinesTest extends AbstractUiBeanTest {
 
 	private TestDataCreator.RDCF rdcf;
 	private DistrictReferenceDto liberia;
@@ -72,7 +73,7 @@ class ClimateDistrictTableTest extends AbstractUiBeanTest {
 	}
 
 	@Test
-	void testOneRowPerDistrictWithTheChosenDisease() {
+	void testHeaderAndLines() {
 
 		Long bagaces = districtLocation(rdcf.district, 10.52657, -84.90845);
 		fillWeek(bagaces, lastWeek, 10.0);
@@ -88,38 +89,7 @@ class ClimateDistrictTableTest extends AbstractUiBeanTest {
 		layout.apply();
 		layout.getDiseaseGroup().setValue(new java.util.HashSet<>(java.util.Arrays.asList(Disease.DENGUE, Disease.CHOLERA)));
 
-		ClimateDistrictTable table = layout.getTable();
-		assertTrue(table.isVisible(), "a region without a district has the table");
-		assertEquals("Districts of Guanacaste", table.getHeading().getValue());
-		List<Disease> offered = ((com.vaadin.data.provider.ListDataProvider<Disease>) table.getDiseaseSelect().getDataProvider()).getItems()
-			.stream()
-			.collect(java.util.stream.Collectors.toList());
-		assertEquals(layout.selectedDiseases(), offered, "the dropdown offers the ticked diseases");
-		table.getDiseaseSelect().setValue(Disease.DENGUE);
-
-		List<Row> rows = table.getRows();
-		assertEquals(2, rows.size());
-		Row bagacesRow = rows.stream().filter(r -> r.getDistrict().equals(rdcf.district)).findFirst().get();
-		Row liberiaRow = rows.stream().filter(r -> r.getDistrict().equals(liberia)).findFirst().get();
-		assertEquals("1.0", bagacesRow.valueText(ClimateDashboardLayout.Measure.INCIDENCE), "2 cases per 200,000");
-		assertEquals("2.0", liberiaRow.valueText(ClimateDashboardLayout.Measure.INCIDENCE), "1 case per 50,000");
-		assertEquals(ClimateDistrictTable.DASH, bagacesRow.weeksAboveText(), "no usual range");
-		assertEquals("Usual range not shown: too few years of data", bagacesRow.getNoUsualRange(), "the reason on hover");
-		assertEquals(ClimateDistrictTable.DASH, bagacesRow.recentText());
-		assertEquals("70 mm", bagacesRow.rainfallText());
-		assertEquals("25.0 °C", bagacesRow.temperatureText());
-		assertEquals(ClimateDistrictTable.DASH, liberiaRow.rainfallText(), "no climate data");
-		assertEquals(ClimateDistrictTable.DASH, bagacesRow.unusualText(), "no normals yet");
-		assertTrue(bagacesRow.getNoNormals().startsWith("Building climate history"), bagacesRow.getNoNormals());
-		assertEquals("2%", bagacesRow.completenessText(), "7 of the 364 days");
-		assertTrue(bagacesRow.getCompletenessDetail().startsWith("Rainfall 2% · Temperature 2% · Humidity 2%"), bagacesRow.getCompletenessDetail());
-
-		table.getDiseaseSelect().setValue(Disease.CHOLERA);
-		rows = table.getRows();
-		assertEquals("0", rows.stream().filter(r -> r.getDistrict().equals(rdcf.district)).findFirst().get().valueText(ClimateDashboardLayout.Measure.COUNT));
-
 		layout.getLagSlider().setValue(5d);
-		assertEquals("70 mm", table.getRows().stream().filter(r -> r.getDistrict().equals(rdcf.district)).findFirst().get().rainfallText(), "not shifted");
 
 		// the export: the region's weeks, then each district's, with the lag left out (decision 128)
 		List<de.symeda.sormas.api.climate.ClimateDashboardExportDto> exportRows = layout.getExportRows();
@@ -140,23 +110,6 @@ class ClimateDistrictTableTest extends AbstractUiBeanTest {
 		assertEquals("7", line.get(header.indexOf("Rainfall days with data (districts for a region)")));
 		assertEquals("2", line.get(header.indexOf(Disease.DENGUE + " cases")));
 		assertEquals("", line.get(header.size() - 1), "no OpenWeather days, no credit");
-
-		table.getOnSelect().accept(liberia);
-		assertEquals(liberia, layout.getSelection().getDistrict(), "a row click shows that district");
-		assertFalse(table.isVisible());
-	}
-
-	@Test
-	void testDistrictUserHasNoTable() {
-
-		UserDto districtUser = UserDto.build();
-		districtUser.setRegion(rdcf.region);
-		districtUser.setDistrict(rdcf.district);
-		ClimateDashboardLayout layout = new ClimateDashboardLayout(districtUser, JurisdictionLevel.DISTRICT);
-
-		assertFalse(layout.getTable().isVisible());
-		layout.selectDistrict(liberia);
-		assertEquals(rdcf.district, layout.getSelection().getDistrict(), "a fixed district cannot be changed from the table");
 	}
 
 	private void createCase(DistrictReferenceDto district, Disease disease) {
