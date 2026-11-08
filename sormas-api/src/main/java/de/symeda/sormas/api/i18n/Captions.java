@@ -1041,7 +1041,7 @@ public interface Captions {
 	String climateDashboardMeasure = "climateDashboardMeasure";
 	String climateDashboardMeasureCount = "climateDashboardMeasureCount";
 	String climateDashboardMeasureIncidence = "climateDashboardMeasureIncidence";
-	String climateDashboardPlaceAndPeriod = "climateDashboardPlaceAndPeriod";
+	String climateDashboardPlacePeriodDiseases = "climateDashboardPlacePeriodDiseases";
 	String climateDashboardShade = "climateDashboardShade";
 	String climateDashboardShadeNone = "climateDashboardShadeNone";
 	String climateDashboardTo = "climateDashboardTo";

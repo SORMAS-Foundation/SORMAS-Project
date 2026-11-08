@@ -74,7 +74,11 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		ClimateDashboardLayout layout = new ClimateDashboardLayout(nationalUser(), JurisdictionLevel.NATION);
 
 		assertTrue(layout.getEmptyCard().isVisible());
-		assertEquals("Choose a region under Place and period and press Apply to see its climate and cases.", layout.getEmptyCard().getValue());
+		assertEquals(
+			"Choose a region and at least one disease under Place, period and diseases, then press Apply to see the chart.",
+			layout.getEmptyCard().getValue());
+		assertTrue(layout.getDiseaseGroup().getValue().isEmpty(), "no disease ticked at first");
+		assertTrue(isInside(layout.getDiseaseGroup(), layout.getFilterCard()), "the diseases are chosen with the place and period");
 		assertFalse(layout.getContent().isVisible(), "no blank chart before a region is chosen");
 		assertFalse(layout.getDisplayCard().isVisible(), "no display controls before a region is applied: they would change nothing");
 		assertFalse(layout.getDiseaseGroup().getStyleName().contains(com.vaadin.ui.themes.ValoTheme.OPTIONGROUP_HORIZONTAL), "one disease checkbox per line");
@@ -90,6 +94,14 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		layout.getRegionFilter().setValue(rdcf.region);
 		layout.apply();
 
+		assertNotNull(layout.getSelection(), "applied without a disease");
+		assertTrue(layout.getEmptyCard().isVisible());
+		assertEquals("Tick at least one disease under Place, period and diseases to see the chart.", layout.getEmptyCard().getValue());
+		assertFalse(layout.getContent().isVisible(), "no chart without a disease");
+		assertFalse(layout.getDisplayCard().isVisible());
+
+		layout.getDiseaseGroup().select(Disease.DENGUE);
+		assertNotNull(layout.getChart().getScript(), "a tick draws at once, without Apply");
 		assertFalse(layout.getEmptyCard().isVisible());
 		assertTrue(layout.getContent().isVisible());
 		assertTrue(layout.getDisplayCard().isVisible());
@@ -164,17 +176,20 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	@Test
 	void testDiseasesAreCappedAndLoadedWhenTicked() {
 
-		ClimateDashboardLayout layout = regionLayout();
+		ClimateDashboardLayout layout = new ClimateDashboardLayout(nationalUser(), JurisdictionLevel.NATION);
+		layout.getRegionFilter().setValue(rdcf.region);
+		layout.apply();
 		List<Disease> offered = layout.getOfferedDiseases();
 		assertTrue(offered.size() > ClimateDashboardLayout.PANELS_DISEASE_CAP, "the default climate-sensitive list: " + offered);
 		assertTrue(offered.contains(Disease.DENGUE));
+		assertTrue(layout.getCases().isEmpty(), "nothing ticked, nothing loaded");
 
-		assertEquals(ClimateDashboardLayout.PANELS_DISEASE_CAP, layout.getDiseaseGroup().getValue().size(), "the first 4 are ticked");
+		layout.getDiseaseGroup().setValue(new java.util.HashSet<>(offered.subList(0, ClimateDashboardLayout.PANELS_DISEASE_CAP)));
 		assertEquals(offered.subList(0, ClimateDashboardLayout.PANELS_DISEASE_CAP), layout.selectedDiseases());
 		assertEquals(ClimateDashboardLayout.PANELS_DISEASE_CAP, layout.getCases().size());
 		Disease fifth = offered.get(ClimateDashboardLayout.PANELS_DISEASE_CAP);
 		assertFalse(layout.getDiseaseGroup().getItemEnabledProvider().test(fifth), "the others are disabled at the cap");
-		assertTrue(text(layout.getDisplayCard()).contains("Up to 4 diseases can be shown in this view."));
+		assertTrue(text(layout.getFilterCard()).contains("Up to 4 diseases can be shown in this view."), "the note under the diseases");
 
 		Disease first = offered.get(0);
 		layout.getDiseaseGroup().deselect(first);
@@ -260,9 +275,10 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 			layout.getChart().getChartHeight(),
 			"two panels share the window too");
 		layout.getClimateGroup().clear();
+		assertTrue(layout.getChart().getScript().contains(Disease.DENGUE + " (cases)"), "the disease panel alone");
 		layout.getDiseaseGroup().clear();
-		assertTrue(layout.getChart().getNothingChosen().isVisible(), "a filled note, never a blank chart");
-		assertNull(layout.getChart().getScript());
+		assertTrue(layout.getEmptyCard().isVisible(), "a filled note, never a blank chart");
+		assertFalse(layout.getContent().isVisible());
 	}
 
 	@Test
@@ -408,8 +424,21 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	private ClimateDashboardLayout regionLayout() {
 		ClimateDashboardLayout layout = new ClimateDashboardLayout(nationalUser(), JurisdictionLevel.NATION);
 		layout.getRegionFilter().setValue(rdcf.region);
+		layout.getDiseaseGroup().select(Disease.DENGUE);
 		layout.apply();
 		return layout;
+	}
+
+	/**
+	 * @return whether the component sits somewhere inside the container
+	 */
+	private static boolean isInside(com.vaadin.ui.Component component, com.vaadin.ui.Component container) {
+		for (com.vaadin.ui.Component c = component; c != null; c = c.getParent()) {
+			if (c == container) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

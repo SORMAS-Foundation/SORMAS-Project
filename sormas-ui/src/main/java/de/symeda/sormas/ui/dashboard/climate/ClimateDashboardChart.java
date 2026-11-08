@@ -105,7 +105,6 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 	private final Label dates = new Label();
 	private final Label status = new Label();
-	private final Label nothingChosen = new Label(I18nProperties.getString(Strings.climateDashboardNothingChosen));
 	private final ClimateChart chart = new ClimateChart((seriesId, key) -> {
 	});
 	private final Label credit = new Label(ClimateObservationExportDto.OPENWEATHER_CREDIT);
@@ -129,12 +128,10 @@ public class ClimateDashboardChart extends VerticalLayout {
 		HorizontalLayout subtitle = new HorizontalLayout(dates, separator, status);
 		subtitle.setMargin(false);
 		subtitle.setSpacing(false);
-		nothingChosen.addStyleName(CssStyles.CLIMATE_DASHBOARD_EMPTY);
-		nothingChosen.setWidthFull();
 		chart.setWidthFull();
 		credit.setWidthFull();
 		credit.addStyleNames(CssStyles.LABEL_SMALL, CssStyles.ALIGN_CENTER);
-		addComponents(heading, subtitle, nothingChosen, chart, credit);
+		addComponents(heading, subtitle, chart, credit);
 	}
 
 	/**
@@ -162,21 +159,15 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 		dates.setValue(String.format(I18nProperties.getString(Strings.climateDashboardDates), weekLabel(selection.getFrom()), weekLabel(selection.getTo())));
 		status.setValue(status(climate));
-		boolean empty = cases.isEmpty() && variables.isEmpty();
-		nothingChosen.setVisible(empty);
-		chart.setVisible(!empty);
-		credit.setVisible(!empty && !variables.isEmpty() && climate.isOpenWeatherData());
-		if (empty) {
-			lastScript = null;
-			return;
-		}
+		// the layout draws only with at least one disease ticked (decision 137), so there is always a panel
+		credit.setVisible(!variables.isEmpty() && climate.isOpenWeatherData());
 		lastScript = script(selection, climate, cases, variables, shading, measure, lag, heatmap);
 		chart.setHeight(chartHeight, Unit.PIXELS);
 		chart.setHcjs(lastScript);
 	}
 
 	/**
-	 * @return the Highcharts script of the last update, or null when nothing was drawn
+	 * @return the Highcharts script of the last update, or null before the first
 	 */
 	String getScript() {
 		return lastScript;
@@ -192,10 +183,6 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 	Label getCredit() {
 		return credit;
-	}
-
-	Label getNothingChosen() {
-		return nothingChosen;
 	}
 
 	/**

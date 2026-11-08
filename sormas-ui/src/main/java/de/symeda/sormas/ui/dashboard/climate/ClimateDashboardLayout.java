@@ -192,6 +192,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final Label diseaseNote = note(null);
 	private final Label shadeNote = note(null);
 	private final Label measureNote = note(null);
+	private final SideComponent filterCard = new SideComponent(I18nProperties.getCaption(Captions.climateDashboardPlacePeriodDiseases));
 	private final SideComponent displayCard = new SideComponent(I18nProperties.getCaption(Captions.climateDashboardDisplay));
 	private final ClimateDashboardChart chart = new ClimateDashboardChart();
 
@@ -291,7 +292,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	/**
-	 * @return the filters in their card, applied with Apply (decision 135)
+	 * @return the filters and the diseases in their card, applied with Apply (decisions 135, 137)
 	 */
 	private SideComponent createFilters() {
 
@@ -339,10 +340,41 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		HorizontalLayout buttons = new HorizontalLayout(applyButton, resetButton);
 		buttons.setMargin(false);
 
-		SideComponent card = new SideComponent(I18nProperties.getCaption(Captions.climateDashboardPlaceAndPeriod));
-		card.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
-		card.addComponent(stack(regionFilter, districtFilter, classificationFilter, weeks, buttons, jurisdictionNote));
-		return card;
+		// the diseases are chosen with the place and period, none ticked at first; the chart needs at least one (decision 137)
+		diseaseGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardDiseases));
+		diseaseGroup.setItems(offeredDiseases);
+		// one checkbox per line (decision 136)
+		diseaseGroup.setItemEnabledProvider(disease -> diseaseGroup.getValue().contains(disease) || diseaseGroup.getValue().size() < diseaseCap());
+		diseaseGroup.setVisible(!offeredDiseases.isEmpty());
+		diseaseGroup.addStyleName(CssStyles.VSPACE_NONE);
+		diseaseGroup.addValueChangeListener(e -> {
+			// the cap is shown by disabling the other boxes, so the provider is asked again after each change
+			diseaseGroup.getDataProvider().refreshAll();
+			updateDiseaseNote();
+			// once applied, a tick takes effect at once, without Apply
+			if (!updating && selection != null) {
+				loadCases(selectedDiseases());
+				redraw();
+			}
+		});
+		updateDiseaseNote();
+
+		filterCard.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
+		filterCard.addComponent(stack(regionFilter, districtFilter, classificationFilter, weeks, withNote(diseaseGroup, diseaseNote), buttons, jurisdictionNote));
+		return filterCard;
+	}
+
+	/**
+	 * Says under the diseases why none can be ticked, or that the view's cap is reached.
+	 */
+	private void updateDiseaseNote() {
+		setNote(
+			diseaseNote,
+			offeredDiseases.isEmpty()
+				? I18nProperties.getString(Strings.climateDashboardNoDiseases)
+				: diseaseGroup.getValue().size() >= diseaseCap()
+					? String.format(I18nProperties.getString(Strings.climateDashboardDiseaseCap), diseaseCap())
+					: null);
 	}
 
 	/**
@@ -369,21 +401,6 @@ public class ClimateDashboardLayout extends VerticalLayout {
 				updating = false;
 			}
 			redrawUnlessUpdating();
-		});
-
-		diseaseGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardDiseases));
-		diseaseGroup.setItems(offeredDiseases);
-		// one checkbox per line (decision 136)
-		diseaseGroup.setItemEnabledProvider(disease -> diseaseGroup.getValue().contains(disease) || diseaseGroup.getValue().size() < diseaseCap());
-		diseaseGroup.setVisible(!offeredDiseases.isEmpty());
-		diseaseGroup.select(offeredDiseases.stream().limit(PANELS_DISEASE_CAP).toArray(Disease[]::new));
-		diseaseGroup.addValueChangeListener(e -> {
-			// the cap is shown by disabling the other boxes, so the provider is asked again after each change
-			diseaseGroup.getDataProvider().refreshAll();
-			if (!updating && selection != null) {
-				loadCases(selectedDiseases());
-				redraw();
-			}
 		});
 
 		climateGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardClimate));
@@ -422,12 +439,11 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		});
 
 		shadeSelect.setWidthFull();
-		for (Component control : Arrays.asList(viewGroup, diseaseGroup, climateGroup, shadeSelect, measureGroup)) {
+		for (Component control : Arrays.asList(viewGroup, climateGroup, shadeSelect, measureGroup)) {
 			control.addStyleName(CssStyles.VSPACE_NONE);
 		}
 		displayCard.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
-		displayCard.addComponent(
-			stack(viewGroup, withNote(diseaseGroup, diseaseNote), climateGroup, withNote(shadeSelect, shadeNote), withNote(measureGroup, measureNote), lagSlider));
+		displayCard.addComponent(stack(viewGroup, climateGroup, withNote(shadeSelect, shadeNote), withNote(measureGroup, measureNote), lagSlider));
 		return displayCard;
 	}
 
@@ -530,11 +546,6 @@ public class ClimateDashboardLayout extends VerticalLayout {
 					.includeDistricts(selection.getDistrict() == null));
 		cases.clear();
 		loadCases(selectedDiseases());
-
-		emptyCard.setVisible(false);
-		content.setVisible(true);
-		displayCard.setVisible(true);
-		selectionListener.accept(true);
 		redraw();
 	}
 
@@ -577,10 +588,18 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		selection = null;
 		climate = null;
 		cases.clear();
-		emptyCard.setVisible(true);
-		content.setVisible(false);
-		displayCard.setVisible(false);
-		selectionListener.accept(false);
+		showChart(false, Strings.climateDashboardChooseRegion);
+	}
+
+	/**
+	 * Shows the chart with its display controls and export, or instead the card saying what is missing.
+	 */
+	private void showChart(boolean shown, String missing) {
+		emptyCard.setValue(missing != null ? I18nProperties.getString(missing) : null);
+		emptyCard.setVisible(!shown);
+		content.setVisible(shown);
+		displayCard.setVisible(shown);
+		selectionListener.accept(shown);
 	}
 
 	/**
@@ -591,6 +610,12 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		if (selection == null) {
 			return;
 		}
+		// no chart, display controls or export until a disease is ticked (decision 137)
+		if (selectedDiseases().isEmpty()) {
+			showChart(false, offeredDiseases.isEmpty() ? Strings.climateDashboardNoDiseases : Strings.climateDashboardChooseDisease);
+			return;
+		}
+		showChart(true, null);
 
 		updating = true;
 		try {
@@ -604,13 +629,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		}
 
 		// each note under the control it explains (decision 135)
-		setNote(
-			diseaseNote,
-			offeredDiseases.isEmpty()
-				? I18nProperties.getString(Strings.climateDashboardNoDiseases)
-				: diseaseGroup.getValue().size() >= diseaseCap()
-					? String.format(I18nProperties.getString(Strings.climateDashboardDiseaseCap), diseaseCap())
-					: null);
+		updateDiseaseNote();
 		List<DistrictReferenceDto> withoutPopulation = districtsWithoutPopulation();
 		setNote(
 			measureNote,
@@ -768,6 +787,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 	VerticalLayout getContent() {
 		return content;
+	}
+
+	SideComponent getFilterCard() {
+		return filterCard;
 	}
 
 	SideComponent getDisplayCard() {

@@ -108,6 +108,7 @@ public interface Strings {
 	String climateContextSources = "climateContextSources";
 	String climateDashboardAboveNormal = "climateDashboardAboveNormal";
 	String climateDashboardAboveUsual = "climateDashboardAboveUsual";
+	String climateDashboardChooseDisease = "climateDashboardChooseDisease";
 	String climateDashboardChooseRegion = "climateDashboardChooseRegion";
 	String climateDashboardCountsNoPopulation = "climateDashboardCountsNoPopulation";
 	String climateDashboardDates = "climateDashboardDates";
@@ -130,7 +131,6 @@ public interface Strings {
 	String climateDashboardNoClimateData = "climateDashboardNoClimateData";
 	String climateDashboardNoDiseases = "climateDashboardNoDiseases";
 	String climateDashboardNoPoint = "climateDashboardNoPoint";
-	String climateDashboardNothingChosen = "climateDashboardNothingChosen";
 	String climateDashboardPanelCount = "climateDashboardPanelCount";
 	String climateDashboardPanelIncidence = "climateDashboardPanelIncidence";
 	String climateDashboardPanelShifted = "climateDashboardPanelShifted";
