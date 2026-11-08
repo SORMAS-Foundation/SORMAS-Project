@@ -46,12 +46,20 @@
     padding: 16px;
   }
 
-  // Climate dashboard: the display controls (diseases, climate panels, shading, measure, lag) in a row that wraps
-  .climate-dashboard-controls {
+  // Climate dashboard: the chart in 8 columns and the cards in 4 (decision 135); below the large-screen width the columns
+  // stack, and the cards come first so Apply is not under the chart
+  .climate-dashboard-split {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 8px 24px;
+  }
+  .climate-dashboard-split:before, .climate-dashboard-split:after {
+    display: none;
+  }
+
+  // Climate dashboard: a note right under the control it explains, in the normal text colour
+  .climate-dashboard-note {
+    font-size: 13px;
+    margin-top: 4px;
   }
 
   // icons for rainfall, temperature and humidity (ClimateIcon): each drawing is a mask filled with the CSS color,
@@ -98,5 +106,15 @@
 
   .climate-icon.climate-icon-muted {
     color: #888888;
+  }
+}
+
+// Climate dashboard: below the large-screen width (Bootstrap's col-lg) the cards come before the chart. Included outside
+// the .sormas block in styles.scss, since the theme compiler cannot nest a media query inside it (as print.scss).
+@mixin sormas-climate-media {
+  @media (max-width: 1199px) {
+    .sormas .climate-dashboard-split > .climate-dashboard-side {
+      order: -1;
+    }
   }
 }

@@ -33,7 +33,8 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBoxGroup;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -64,10 +65,13 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 /**
- * The Climate dashboard's content (decisions 119–121): the filters, applied with Apply; the display controls, which
- * redraw from the data already loaded; the notes and the chart.
+ * The Climate dashboard's content (decisions 119–121 and 135): the chart in 8 columns on the left; on the right, in 4
+ * columns, the "Place and period" card, whose filters take effect with Apply, and the "Display" card, whose controls
+ * redraw from the data already loaded, each with its note under it. On narrow screens the cards come first.
  */
 public class ClimateDashboardLayout extends VerticalLayout {
 
@@ -163,6 +167,9 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		}
 	}
 
+	private static final String MAIN_LOC = "main";
+	private static final String SIDE_LOC = "side";
+
 	private final RegionReferenceDto userRegion;
 	private final DistrictReferenceDto userDistrict;
 	private final List<EpiWeek> offeredWeeks;
@@ -181,8 +188,11 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final ComboBox<ClimateVariable> shadeSelect = new ComboBox<>();
 	private final RadioButtonGroup<Measure> measureGroup = new RadioButtonGroup<>();
 	private final Slider lagSlider = new Slider(0, MAX_LAG);
-	private final CssLayout controls = new CssLayout();
-	private final VerticalLayout notes = new VerticalLayout();
+	private final Label jurisdictionNote = note(Strings.climateDashboardJurisdiction);
+	private final Label diseaseNote = note(null);
+	private final Label shadeNote = note(null);
+	private final Label measureNote = note(null);
+	private final SideComponent displayCard = new SideComponent(I18nProperties.getCaption(Captions.climateDashboardDisplay));
 	private final ClimateDashboardChart chart = new ClimateDashboardChart();
 
 	private Selection selection;
@@ -217,26 +227,36 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			.sorted(Comparator.comparing(Disease::toString, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
 
-		addComponent(createFilters());
-		if (isBelowDistrict(jurisdictionLevel) && userDistrict != null) {
-			Label jurisdictionNote = new Label(I18nProperties.getString(Strings.climateDashboardJurisdiction));
-			jurisdictionNote.addStyleName(CssStyles.VSPACE_TOP_NONE);
-			addComponent(jurisdictionNote);
-		}
+		// 8 columns of chart and 4 of cards, as on the environment Climate data tab, but without its 1280 px cap so the chart
+		// gets the screen's width; below the large-screen width the cards come first (climate.scss), so Apply is not
+		// under the chart
+		CustomLayout split = new CustomLayout();
+		split.setWidthFull();
+		split.setTemplateContents(
+			LayoutUtil.fluidRowCss(
+				CssStyles.CLIMATE_DASHBOARD_SPLIT,
+				LayoutUtil.fluidColumnLoc(8, 0, 12, 0, MAIN_LOC),
+				new LayoutUtil.FluidColumn(CssStyles.CLIMATE_DASHBOARD_SIDE, 4, 0, 12, 0, SIDE_LOC, null)));
+		addComponent(split);
 
 		emptyCard.setValue(I18nProperties.getString(Strings.climateDashboardChooseRegion));
 		emptyCard.setWidthFull();
 		emptyCard.addStyleName(CssStyles.CLIMATE_DASHBOARD_EMPTY);
-		addComponent(emptyCard);
-
 		content.setMargin(false);
-		content.setSpacing(true);
+		content.setSpacing(false);
 		content.setWidthFull();
-		content.addComponent(createControls());
-		notes.setMargin(false);
-		notes.setSpacing(false);
-		content.addComponents(notes, chart);
-		addComponent(content);
+		content.addComponent(chart);
+		VerticalLayout main = new VerticalLayout(emptyCard, content);
+		main.setMargin(false);
+		main.setWidthFull();
+		split.addComponent(main, MAIN_LOC);
+
+		jurisdictionNote.setVisible(isBelowDistrict(jurisdictionLevel) && userDistrict != null);
+		VerticalLayout side = new VerticalLayout(createFilters(), createControls());
+		side.setMargin(false);
+		side.setSpacing(false);
+		side.setWidthFull();
+		split.addComponent(side, SIDE_LOC);
 
 		resetFilters();
 		if (selectedRegion() != null) {
@@ -266,13 +286,15 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		return weeks;
 	}
 
-	private HorizontalLayout createFilters() {
+	/**
+	 * @return the filters in their card, applied with Apply (decision 135)
+	 */
+	private SideComponent createFilters() {
 
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(ClimateDistrictDto.I18N_PREFIX, ClimateDistrictDto.REGION));
 		regionFilter.setRequiredIndicatorVisible(true);
 		regionFilter.setItemCaptionGenerator(ReferenceDto::buildCaption);
 		regionFilter.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-		regionFilter.setWidth(200, Unit.PIXELS);
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
 			districtFilter.setItems(region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : Collections.emptyList());
@@ -283,18 +305,15 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 		districtFilter.setCaption(I18nProperties.getPrefixCaption(ClimateDistrictDto.I18N_PREFIX, ClimateDistrictDto.DISTRICT));
 		districtFilter.setItemCaptionGenerator(ReferenceDto::buildCaption);
-		districtFilter.setWidth(200, Unit.PIXELS);
 
 		classificationFilter.setCaption(I18nProperties.getCaption(Captions.climateDashboardClassification));
 		classificationFilter.setItems(ClimateCaseClassificationFilter.values());
 		classificationFilter.setEmptySelectionAllowed(false);
-		classificationFilter.setWidth(220, Unit.PIXELS);
 
 		for (ComboBox<EpiWeek> weekFilter : Arrays.asList(fromFilter, toFilter)) {
 			weekFilter.setItems(offeredWeeks);
 			weekFilter.setItemCaptionGenerator(EpiWeek::toShortString);
 			weekFilter.setEmptySelectionAllowed(false);
-			weekFilter.setWidth(140, Unit.PIXELS);
 		}
 		fromFilter.setCaption(I18nProperties.getCaption(Captions.climateDashboardFrom));
 		toFilter.setCaption(I18nProperties.getCaption(Captions.climateDashboardTo));
@@ -305,16 +324,26 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			apply();
 		});
 
-		HorizontalLayout filters = new HorizontalLayout(regionFilter, districtFilter, classificationFilter, fromFilter, toFilter, applyButton, resetButton);
-		filters.setMargin(false);
-		filters.setSpacing(true);
-		filters.setComponentAlignment(applyButton, com.vaadin.ui.Alignment.BOTTOM_LEFT);
-		filters.setComponentAlignment(resetButton, com.vaadin.ui.Alignment.BOTTOM_LEFT);
-		return filters;
+		for (ComboBox<?> filter : Arrays.asList(regionFilter, districtFilter, classificationFilter, fromFilter, toFilter)) {
+			filter.setWidthFull();
+		}
+		HorizontalLayout weeks = new HorizontalLayout(fromFilter, toFilter);
+		weeks.setMargin(false);
+		weeks.setWidthFull();
+		HorizontalLayout buttons = new HorizontalLayout(applyButton, resetButton);
+		buttons.setMargin(false);
+
+		SideComponent card = new SideComponent(I18nProperties.getCaption(Captions.climateDashboardPlaceAndPeriod));
+		card.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
+		card.addComponent(stack(regionFilter, districtFilter, classificationFilter, weeks, buttons, jurisdictionNote));
+		return card;
 	}
 
-	private CssLayout createControls() {
-
+	/**
+	 * @return the display controls in their card, each note under the control it explains (decision 135); the card is
+	 *         shown once filters are applied, since before that its controls change nothing
+	 */
+	private SideComponent createControls() {
 
 		viewGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardView));
 		viewGroup.setItems(View.values());
@@ -362,7 +391,6 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		shadeSelect.setEmptySelectionCaption(I18nProperties.getCaption(Captions.climateDashboardShadeNone));
 		shadeSelect.setTextInputAllowed(false);
 		shadeSelect.setValue(ClimateVariable.RAINFALL);
-		shadeSelect.setWidth(160, Unit.PIXELS);
 		shadeSelect.addValueChangeListener(e -> redrawUnlessUpdating());
 
 		measureGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardMeasure));
@@ -380,31 +408,55 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		// the shift is display-only: a move redraws from the loaded series, with no new request (decision 126)
 		lagSlider.setResolution(0);
 		lagSlider.setValue(0d);
-		lagSlider.setWidth(200, Unit.PIXELS);
+		lagSlider.setWidthFull();
 		lagSlider.setCaption(lagCaption(0));
 		lagSlider.addValueChangeListener(e -> {
 			lagSlider.setCaption(lagCaption(getLag()));
 			redrawUnlessUpdating();
 		});
 
-		controls.addStyleName(CssStyles.CLIMATE_DASHBOARD_CONTROLS);
-		controls.setWidthFull();
-		addControl(viewGroup);
-		addControl(diseaseGroup);
-		addControl(climateGroup);
-		addControl(shadeSelect);
-		addControl(measureGroup);
-		addControl(lagSlider);
-		return controls;
+		shadeSelect.setWidthFull();
+		displayCard.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
+		displayCard.addComponent(
+			stack(viewGroup, withNote(diseaseGroup, diseaseNote), climateGroup, withNote(shadeSelect, shadeNote), withNote(measureGroup, measureNote), lagSlider));
+		return displayCard;
 	}
 
 	/**
-	 * Adds a control to the wrapping row; each gets a box of its own, because a CssLayout puts a child's caption beside it
-	 * as a separate element, which the flex row would otherwise place next to the control.
+	 * @return the components one under the other, with the usual spacing
 	 */
-	void addControl(com.vaadin.ui.Component control) {
-		CssLayout box = new CssLayout(control);
-		controls.addComponent(box);
+	private static VerticalLayout stack(Component... components) {
+		VerticalLayout stack = new VerticalLayout(components);
+		stack.setMargin(false);
+		stack.setWidthFull();
+		return stack;
+	}
+
+	/**
+	 * @return the control with its note right under it
+	 */
+	private static VerticalLayout withNote(Component control, Label note) {
+		VerticalLayout box = new VerticalLayout(control, note);
+		box.setMargin(false);
+		box.setSpacing(false);
+		box.setWidthFull();
+		return box;
+	}
+
+	/**
+	 * @return a note for under a control: the given text, or hidden until a text is set
+	 */
+	private static Label note(String text) {
+		Label note = new Label(text != null ? I18nProperties.getString(text) : null, ContentMode.TEXT);
+		note.setWidthFull();
+		note.addStyleName(CssStyles.CLIMATE_DASHBOARD_NOTE);
+		note.setVisible(text != null);
+		return note;
+	}
+
+	private static void setNote(Label note, String text) {
+		note.setValue(text);
+		note.setVisible(text != null);
 	}
 
 	private void redrawUnlessUpdating() {
@@ -472,6 +524,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 		emptyCard.setVisible(false);
 		content.setVisible(true);
+		displayCard.setVisible(true);
 		selectionListener.accept(true);
 		redraw();
 	}
@@ -517,6 +570,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		cases.clear();
 		emptyCard.setVisible(true);
 		content.setVisible(false);
+		displayCard.setVisible(false);
 		selectionListener.accept(false);
 	}
 
@@ -540,22 +594,25 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			updating = false;
 		}
 
-		notes.removeAllComponents();
-		if (offeredDiseases.isEmpty()) {
-			addNote(I18nProperties.getString(Strings.climateDashboardNoDiseases));
-		} else if (diseaseGroup.getValue().size() >= diseaseCap()) {
-			addNote(String.format(I18nProperties.getString(Strings.climateDashboardDiseaseCap), diseaseCap()));
-		}
+		// each note under the control it explains (decision 135)
+		setNote(
+			diseaseNote,
+			offeredDiseases.isEmpty()
+				? I18nProperties.getString(Strings.climateDashboardNoDiseases)
+				: diseaseGroup.getValue().size() >= diseaseCap()
+					? String.format(I18nProperties.getString(Strings.climateDashboardDiseaseCap), diseaseCap())
+					: null);
 		List<DistrictReferenceDto> withoutPopulation = districtsWithoutPopulation();
-		if (!withoutPopulation.isEmpty()) {
-			addNote(
-				String.format(
+		setNote(
+			measureNote,
+			withoutPopulation.isEmpty()
+				? null
+				: String.format(
 					I18nProperties.getString(Strings.climateDashboardCountsNoPopulation),
 					withoutPopulation.stream().map(DistrictReferenceDto::getCaption).collect(Collectors.joining(", "))));
-		}
-		if (!shadeSelect.isEnabled()) {
-			addNote(String.format(I18nProperties.getString(Strings.climateDashboardShadeNoNormals), climate.getMinHistoryYears()));
-		}
+		setNote(
+			shadeNote,
+			shadeSelect.isEnabled() ? null : String.format(I18nProperties.getString(Strings.climateDashboardShadeNoNormals), climate.getMinHistoryYears()));
 
 		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), getLag(), viewGroup.getValue() == View.HEATMAP);
 	}
@@ -591,12 +648,6 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		return lag == 1
 			? I18nProperties.getString(Strings.climateDashboardLagOne)
 			: String.format(I18nProperties.getString(Strings.climateDashboardLag), lag);
-	}
-
-	private void addNote(String text) {
-		Label note = new Label(text, ContentMode.TEXT);
-		note.setWidthFull();
-		notes.addComponent(note);
 	}
 
 	private int diseaseCap() {
@@ -680,8 +731,12 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		return content;
 	}
 
-	VerticalLayout getNotes() {
-		return notes;
+	SideComponent getDisplayCard() {
+		return displayCard;
+	}
+
+	Label getJurisdictionNote() {
+		return jurisdictionNote;
 	}
 
 	ClimateDashboardChart getChart() {

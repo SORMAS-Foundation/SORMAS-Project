@@ -1009,6 +1009,7 @@ public interface Captions {
 	String climateDashboardClassification = "climateDashboardClassification";
 	String climateDashboardClimate = "climateDashboardClimate";
 	String climateDashboardDiseases = "climateDashboardDiseases";
+	String climateDashboardDisplay = "climateDashboardDisplay";
 	String climateDashboardExport = "climateDashboardExport";
 	String ClimateDashboardExport_district = "ClimateDashboardExport.district";
 	String ClimateDashboardExport_epiWeek = "ClimateDashboardExport.epiWeek";
@@ -1040,6 +1041,7 @@ public interface Captions {
 	String climateDashboardMeasure = "climateDashboardMeasure";
 	String climateDashboardMeasureCount = "climateDashboardMeasureCount";
 	String climateDashboardMeasureIncidence = "climateDashboardMeasureIncidence";
+	String climateDashboardPlaceAndPeriod = "climateDashboardPlaceAndPeriod";
 	String climateDashboardShade = "climateDashboardShade";
 	String climateDashboardShadeNone = "climateDashboardShadeNone";
 	String climateDashboardTo = "climateDashboardTo";

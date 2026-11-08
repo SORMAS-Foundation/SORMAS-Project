@@ -74,8 +74,9 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		ClimateDashboardLayout layout = new ClimateDashboardLayout(nationalUser(), JurisdictionLevel.NATION);
 
 		assertTrue(layout.getEmptyCard().isVisible());
-		assertEquals("Choose a region and press Apply to see its climate and cases.", layout.getEmptyCard().getValue());
+		assertEquals("Choose a region under Place and period and press Apply to see its climate and cases.", layout.getEmptyCard().getValue());
 		assertFalse(layout.getContent().isVisible(), "no blank chart before a region is chosen");
+		assertFalse(layout.getDisplayCard().isVisible(), "no display controls before a region is applied: they would change nothing");
 		assertTrue(layout.getRegionFilter().isEnabled());
 		assertTrue(layout.getDistrictFilter().isEnabled());
 		assertEquals(lastWeek, layout.getToFilter().getValue(), "the default period ends with the last complete week");
@@ -89,6 +90,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 
 		assertFalse(layout.getEmptyCard().isVisible());
 		assertTrue(layout.getContent().isVisible());
+		assertTrue(layout.getDisplayCard().isVisible());
 		assertNull(layout.getSelection().getDistrict());
 		assertEquals(52, layout.getClimate().getShownWeeks().size());
 		assertEquals(ClimateDashboardLayout.MAX_LAG, layout.getClimate().getLeadWeeks(), "12 weeks of climate before the period, for the lag");
@@ -170,7 +172,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertEquals(ClimateDashboardLayout.PANELS_DISEASE_CAP, layout.getCases().size());
 		Disease fifth = offered.get(ClimateDashboardLayout.PANELS_DISEASE_CAP);
 		assertFalse(layout.getDiseaseGroup().getItemEnabledProvider().test(fifth), "the others are disabled at the cap");
-		assertTrue(text(layout.getNotes()).contains("Up to 4 diseases can be shown in this view."));
+		assertTrue(text(layout.getDisplayCard()).contains("Up to 4 diseases can be shown in this view."));
 
 		Disease first = offered.get(0);
 		layout.getDiseaseGroup().deselect(first);
@@ -186,7 +188,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		ClimateDashboardLayout layout = regionLayout();
 		assertEquals(Measure.COUNT, layout.getMeasureGroup().getValue(), "no population data");
 		assertFalse(layout.getMeasureGroup().getItemEnabledProvider().test(Measure.INCIDENCE));
-		assertTrue(text(layout.getNotes()).contains("Showing counts: no population data for Bagaces."), text(layout.getNotes()));
+		assertTrue(text(layout.getDisplayCard()).contains("Showing counts: no population data for Bagaces."), text(layout.getDisplayCard()));
 
 		creator.createPopulationData(rdcf.region, rdcf.district, 100_000, new Date());
 		layout.apply();
@@ -196,7 +198,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		layout.apply();
 		assertEquals(Measure.COUNT, layout.getMeasureGroup().getValue(), "the user's choice is kept");
 		layout.getMeasureGroup().setValue(Measure.INCIDENCE);
-		assertFalse(text(layout.getNotes()).contains("Showing counts"));
+		assertFalse(text(layout.getDisplayCard()).contains("Showing counts"));
 		assertTrue(layout.getChart().getScript().contains("(per 100,000)"));
 	}
 
@@ -360,7 +362,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 
 		assertTrue(layout.getChart().getScript().contains("No climate data for Bagaces: the district has no point."));
 		assertFalse(layout.getShadeSelect().isEnabled(), "no normals, no shading");
-		assertTrue(text(layout.getNotes()).contains("Shading needs normal ranges (3 years of climate history)."), text(layout.getNotes()));
+		assertTrue(text(layout.getDisplayCard()).contains("Shading needs normal ranges (3 years of climate history)."), text(layout.getDisplayCard()));
 		assertEquals("No climate data yet", layout.getChart().getStatus().getValue());
 	}
 

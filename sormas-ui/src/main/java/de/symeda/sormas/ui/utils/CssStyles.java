@@ -216,7 +216,9 @@ public final class CssStyles {
 	public static final String CLIMATE_CARDS = "climate-cards";
 	public static final String CLIMATE_CARD = "climate-card";
 	public static final String CLIMATE_DASHBOARD_EMPTY = "climate-dashboard-empty";
-	public static final String CLIMATE_DASHBOARD_CONTROLS = "climate-dashboard-controls";
+	public static final String CLIMATE_DASHBOARD_SPLIT = "climate-dashboard-split";
+	public static final String CLIMATE_DASHBOARD_SIDE = "climate-dashboard-side";
+	public static final String CLIMATE_DASHBOARD_NOTE = "climate-dashboard-note";
 
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
