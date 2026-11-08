@@ -201,9 +201,6 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final Map<Disease, ClimateCaseSeriesDto> cases = new EnumMap<>(Disease.class);
 	/** Set while the controls are changed by code, so their listeners do not redraw. */
 	private boolean updating;
-	/** Told whether filters are applied, for example to enable the export. */
-	private java.util.function.Consumer<Boolean> selectionListener = applied -> {
-	};
 	/** The measure the user chose; counts are shown instead while incidence is not available (decision 74). */
 	private Measure preferredMeasure = Measure.INCIDENCE;
 	/** Removes the window resize listener when the layout is detached. */
@@ -592,14 +589,13 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	/**
-	 * Shows the chart with its display controls and export, or instead the card saying what is missing.
+	 * Shows the chart with its display controls and the export link under it, or instead the card saying what is missing.
 	 */
 	private void showChart(boolean shown, String missing) {
 		emptyCard.setValue(missing != null ? I18nProperties.getString(missing) : null);
 		emptyCard.setVisible(!shown);
 		content.setVisible(shown);
 		displayCard.setVisible(shown);
-		selectionListener.accept(shown);
 	}
 
 	/**
@@ -675,8 +671,12 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		super.detach();
 	}
 
-	void setSelectionListener(java.util.function.Consumer<Boolean> selectionListener) {
-		this.selectionListener = selectionListener;
+	/**
+	 * Adds a component under the chart, left-aligned, shown and hidden with the chart (the export link, decision 139).
+	 */
+	void addBelowChart(Component component) {
+		component.addStyleName(CssStyles.VSPACE_TOP_4);
+		content.addComponent(component);
 	}
 
 	/**

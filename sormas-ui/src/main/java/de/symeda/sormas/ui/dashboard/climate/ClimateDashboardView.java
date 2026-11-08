@@ -24,10 +24,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.climate.ClimateObservationsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -35,7 +33,7 @@ import de.symeda.sormas.ui.IgnoreCancelDownloader;
 
 /**
  * The Climate dashboard (decision 118): climate-sensitive diseases against the weekly climate of a region or district.
- * Read-only; the header links to the Climate data admin screen.
+ * Read-only; the header has only the dashboard switcher (decision 139).
  */
 public class ClimateDashboardView extends AbstractDashboardView {
 
@@ -52,27 +50,16 @@ public class ClimateDashboardView extends AbstractDashboardView {
 		dashboardSwitcher.setValue(DashboardType.CLIMATE);
 		dashboardSwitcher.addValueChangeListener(this::navigateToDashboardView);
 
-		if (UiUtil.permitted(FeatureType.CLIMATE_MANAGEMENT, UserRight.CLIMATE_VIEW)) {
-			Button climateData = ButtonHelper.createIconButton(
-				Captions.environmentClimateData,
-				VaadinIcons.DATABASE,
-				e -> SormasUI.get().getNavigator().navigateTo(ClimateObservationsView.VIEW_NAME),
-				ValoTheme.BUTTON_LINK);
-			addHeaderComponent(climateData);
-		}
-
 		dashboardLayout.setHeightUndefined();
 		layout = new ClimateDashboardLayout(UserProvider.getCurrent().getUser(), UserProvider.getCurrent().getJurisdictionLevel());
 		dashboardLayout.addComponent(layout);
 
 		if (UiUtil.permitted(FeatureType.CLIMATE_MANAGEMENT, UserRight.CLIMATE_EXPORT)) {
-			// the data behind the applied filters, never shifted by the lag (decision 128)
-			Button export = ButtonHelper.createIconButton(Captions.climateDashboardExport, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			// the data behind the applied filters, never shifted by the lag (decision 128); a link under the chart, shown with it (decision 139)
+			Button export = ButtonHelper.createIconButton(Captions.climateDashboardExport, VaadinIcons.TABLE, null, ValoTheme.BUTTON_LINK);
 			export.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			new IgnoreCancelDownloader(ClimateDashboardExport.resource(layout::getExportRows, layout::selectedDiseases)).extend(export);
-			export.setEnabled(layout.getSelection() != null);
-			layout.setSelectionListener(export::setEnabled);
-			addHeaderComponent(export);
+			layout.addBelowChart(export);
 		}
 	}
 

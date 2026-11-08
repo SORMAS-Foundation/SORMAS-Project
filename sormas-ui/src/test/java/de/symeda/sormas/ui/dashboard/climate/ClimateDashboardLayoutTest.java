@@ -115,6 +115,9 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 
 		layout.getDiseaseGroup().select(Disease.DENGUE);
 		assertNotNull(layout.getChart().getScript(), "a tick draws at once, without Apply");
+		Label exportLink = new Label("Export CSV");
+		layout.addBelowChart(exportLink);
+		assertTrue(isInside(exportLink, layout.getContent()), "the export link sits under the chart and is shown and hidden with it");
 		assertFalse(layout.getEmptyCard().isVisible());
 		assertTrue(layout.getContent().isVisible());
 		assertTrue(layout.getDisplayCard().isVisible());
