@@ -1922,7 +1922,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		collect(caze, ValidationProblems.failingFast());
 	}
 
-	public List<ValidationProblem> collectValidationProblems(CaseDataDto caze) {
+	public List<ValidationProblem> getValidationProblems(CaseDataDto caze) {
 		ValidationProblems problems = ValidationProblems.collecting();
 		collect(caze, problems);
 		return problems.asList();

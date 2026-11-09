@@ -36,7 +36,7 @@ public class PersonValidationProblemsTest extends AbstractBeanTest {
 
 	@Test
 	public void reportsEveryMissingFieldInOrder() {
-		List<ValidationProblem> problems = getPersonFacade().collectValidationProblems(PersonDto.build());
+		List<ValidationProblem> problems = getPersonFacade().getValidationProblems(PersonDto.build());
 
 		assertEquals(
 			List.of(Validations.specifyFirstName, Validations.specifyLastName, Validations.specifySex),
@@ -53,7 +53,7 @@ public class PersonValidationProblemsTest extends AbstractBeanTest {
 		person.setBirthdateMM(2);
 		person.setBirthdateYYYY(2000);
 
-		List<ValidationProblem> problems = getPersonFacade().collectValidationProblems(person);
+		List<ValidationProblem> problems = getPersonFacade().getValidationProblems(person);
 
 		assertEquals(1, problems.size());
 		assertNull(problems.get(0).getValidationKey());
@@ -66,7 +66,7 @@ public class PersonValidationProblemsTest extends AbstractBeanTest {
 		person.getAddress().setDistrict(rdcf.district);
 		person.getAddress().setFacility(rdcf.facility);
 
-		List<ValidationProblem> problems = getPersonFacade().collectValidationProblems(person);
+		List<ValidationProblem> problems = getPersonFacade().getValidationProblems(person);
 
 		assertEquals(1, problems.size());
 		assertEquals(Validations.validRegion, problems.get(0).getValidationKey());
@@ -133,7 +133,7 @@ public class PersonValidationProblemsTest extends AbstractBeanTest {
 		person.setLastName(null);
 		person.setEmailAddress("not an email");
 
-		List<ValidationProblem> problems = getPersonFacade().collectValidationProblems(person);
+		List<ValidationProblem> problems = getPersonFacade().getValidationProblems(person);
 
 		assertEquals(
 			List.of(Validations.specifyLastName, Validations.validEmailAddress),
@@ -153,7 +153,7 @@ public class PersonValidationProblemsTest extends AbstractBeanTest {
 	}
 
 	private void assertSingleProblem(PersonDto person, String validationKey, String... propertyPaths) {
-		List<ValidationProblem> problems = getPersonFacade().collectValidationProblems(person);
+		List<ValidationProblem> problems = getPersonFacade().getValidationProblems(person);
 
 		assertEquals(1, problems.size());
 		assertEquals(validationKey, problems.get(0).getValidationKey());

@@ -252,9 +252,9 @@ final class CaseHandler implements LevelHandler {
 			record.reportIssue(CaseTemplateSchema.EPID_NUMBER, I18nProperties.getString(Strings.messageEpidNumberWarning));
 		}
 		PersonDto person = record.target(PERSON);
-		ValidationIssues.report(record.node(), PERSON, personFacade.collectValidationProblems(person), headers);
+		ValidationIssues.report(record.node(), PERSON, personFacade.getValidationProblems(person), headers);
 		reportConstraintViolations(record, PERSON, person);
-		ValidationIssues.report(record.node(), CASE, caseFacade.collectValidationProblems(caze), headers);
+		ValidationIssues.report(record.node(), CASE, caseFacade.getValidationProblems(caze), headers);
 		reportConstraintViolations(record, CASE, caze);
 	}
 

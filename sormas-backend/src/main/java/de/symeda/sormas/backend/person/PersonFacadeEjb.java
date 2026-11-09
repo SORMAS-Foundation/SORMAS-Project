@@ -600,7 +600,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		collect(source, ValidationProblems.failingFast());
 	}
 
-	public List<ValidationProblem> collectValidationProblems(PersonDto source) {
+	public List<ValidationProblem> getValidationProblems(PersonDto source) {
 		ValidationProblems problems = ValidationProblems.collecting();
 		collect(source, problems);
 		return problems.asList();

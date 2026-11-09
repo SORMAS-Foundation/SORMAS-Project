@@ -212,7 +212,7 @@ public class CaseValidationProblemsTest extends AbstractBeanTest {
 	}
 
 	private List<ValidationProblem> collect(CaseDataDto caze) {
-		return getCaseFacade().collectValidationProblems(caze);
+		return getCaseFacade().getValidationProblems(caze);
 	}
 
 	private List<String> keys(List<ValidationProblem> problems) {
