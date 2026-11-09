@@ -15,23 +15,37 @@
 
 package de.symeda.sormas.api.epipulse.referencevalue;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
+/**
+ * EpiPulse {@code CaseClassification} codes and the SORMAS classifications behind them.
+ *
+ * <p>
+ * Supports both CSV rendering and inclusion logic. {@code CONF} intentionally covers plain
+ * confirmed plus both symptom-qualified confirmed classifications.
+ */
 public enum EpipulseCaseClassificationRef {
 
-	CONF(CaseClassification.CONFIRMED),
+	CONF(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS),
 	POSS(CaseClassification.SUSPECT),
 	PROB(CaseClassification.PROBABLE);
 
-	private final CaseClassification caseClassification;
+	private final List<CaseClassification> caseClassifications;
 
-	EpipulseCaseClassificationRef(CaseClassification caseClassification) {
-		this.caseClassification = caseClassification;
+	EpipulseCaseClassificationRef(CaseClassification... caseClassifications) {
+		this.caseClassifications = Collections.unmodifiableList(Arrays.asList(caseClassifications));
 	}
 
-	public CaseClassification getCaseClassification() {
-		return caseClassification;
+	/** @return SORMAS classifications represented by this code */
+	public List<CaseClassification> getCaseClassifications() {
+		return caseClassifications;
 	}
 
 	public static EpipulseCaseClassificationRef getByCaseClassification(CaseClassification classification) {
@@ -40,11 +54,24 @@ public enum EpipulseCaseClassificationRef {
 		}
 
 		for (EpipulseCaseClassificationRef classificationRef : values()) {
-			if (classificationRef.caseClassification == classification) {
+			if (classificationRef.caseClassifications.contains(classification)) {
 				return classificationRef;
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Collects all SORMAS classifications represented by the given code set.
+	 */
+	public static Set<CaseClassification> caseClassificationsOf(Set<EpipulseCaseClassificationRef> codes) {
+
+		Set<CaseClassification> classifications = EnumSet.noneOf(CaseClassification.class);
+		for (EpipulseCaseClassificationRef code : codes) {
+			classifications.addAll(code.caseClassifications);
+		}
+
+		return Collections.unmodifiableSet(classifications);
 	}
 
 	@Override

@@ -183,6 +183,9 @@ public class EpipulseLaboratoryMapper {
 	/**
 	 * Maps susceptibility text to EpiPulse SIR codes ({@code S}, {@code I}, {@code R}).
 	 */
+	/** The TUBE code for a drug no susceptibility test covered. */
+	private static final String TB_SIR_NOT_TESTED = "NOTEST";
+
 	public static String mapDrugSusceptibilityToSIR(String susceptibility) {
 		if (susceptibility == null || susceptibility.trim().isEmpty()) {
 			return null;
@@ -199,6 +202,82 @@ public class EpipulseLaboratoryMapper {
 		}
 
 		return null; // Unknown susceptibility
+	}
+
+	/**
+	 * Maps a susceptibility to the {@code SIR_*} value set TUBE declares, unlike every other
+	 * subject code's has no {@code I}.
+	 *
+	 * <p>
+	 * An absent result reports {@code NOTEST}.
+	 */
+	public static String mapDrugSusceptibilityToTbSIR(String susceptibility) {
+
+		if (susceptibility == null || susceptibility.trim().isEmpty()) {
+			return TB_SIR_NOT_TESTED;
+		}
+
+		String sir = mapDrugSusceptibilityToSIR(susceptibility);
+
+		return "S".equals(sir) || "R".equals(sir) ? sir : null;
+	}
+
+	// ==================== TUBE ResultOtherTest ====================
+
+	/** The TUBE code for a family of tests that was not carried out, and the column's floor. */
+	private static final String OTHER_TEST_NOT_TESTED = "NOTEST";
+
+	private static final String POSITIVE_RESULT = "POS";
+	private static final String NEGATIVE_RESULT = "NEG";
+
+	/**
+	 * Combines the nucleic-acid and histopathology summaries into the one {@code ResultOtherTest}
+	 * code EpiPulse declares for TUBE.
+	 *
+	 * <p>
+	 * Each argument is {@code POS} when any test of that family was positive, {@code NEG} when one
+	 * was done and none was positive, and {@code NOTEST} (or {@code null}) when none was done - the
+	 * three values {@code TubeSql.buildTestResultCte} produces. The codes distinguish all six
+	 * combinations that EpiPulse can express:
+	 *
+	 * <pre>
+	 * histopathology  nucleic acid   code
+	 * POS             POS            NUCLAHISTOL
+	 * POS             NEG            NONUCLAHISTOL
+	 * POS             not tested     HISTOL
+	 * NEG/not tested  POS            NUCLA
+	 * NEG/not tested  NEG            NONUCLA
+	 * NEG/not tested  not tested     NOTEST
+	 * </pre>
+	 *
+	 * <p>
+	 * The last row covers two different situations that EpiPulse cannot tell apart: neither test
+	 * was done, and a histopathology that found no granulomata with no nucleic-acid test beside it.
+	 * There is no code for a negative histopathology on its own - {@code NONUCLAHISTOL} and
+	 * {@code HISTOL} both require granulomata - so both report {@code NOTEST}.
+	 */
+	public static String mapOtherTestResult(String histopathologyResult, String nucleicAcidResult) {
+
+		boolean histopathologyPositive = POSITIVE_RESULT.equals(histopathologyResult);
+
+		if (histopathologyPositive) {
+			if (POSITIVE_RESULT.equals(nucleicAcidResult)) {
+				return "NUCLAHISTOL";
+			}
+			if (NEGATIVE_RESULT.equals(nucleicAcidResult)) {
+				return "NONUCLAHISTOL";
+			}
+			return "HISTOL";
+		}
+
+		if (POSITIVE_RESULT.equals(nucleicAcidResult)) {
+			return "NUCLA";
+		}
+		if (NEGATIVE_RESULT.equals(nucleicAcidResult)) {
+			return "NONUCLA";
+		}
+
+		return OTHER_TEST_NOT_TESTED;
 	}
 
 	// ==================== MIC ====================

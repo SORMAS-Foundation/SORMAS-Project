@@ -433,11 +433,12 @@ public class EpipulseMappingTest {
 	}
 
 	@Test
-	@DisplayName("the two qualified CONFIRMED classifications report blank, which is correct for EpiPulse")
-	public void qualifiedConfirmedClassificationsReportBlank() {
+	@DisplayName("the two qualified CONFIRMED classifications report CONF, like a plain confirmation")
+	public void qualifiedConfirmedClassificationsReportConfirmed() {
 
-		assertNull(classification(CaseClassification.CONFIRMED_NO_SYMPTOMS));
-		assertNull(classification(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
+		// Symptom-qualified confirmations are still confirmed in EpiPulse.
+		assertEquals("CONF", classification(CaseClassification.CONFIRMED_NO_SYMPTOMS));
+		assertEquals("CONF", classification(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 	}
 
 	private static String classification(CaseClassification value) {
