@@ -310,7 +310,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 			.append("ch.panelTitles=ch.yAxis.filter(function(a){return a.options.panelTitle;}).map(function(a){")
 			.append("return ch.renderer.text(a.options.panelTitle,ch.plotLeft,a.top-")
 			.append(TITLE_BAND / 3)
-			.append(",true).css({color:'#555555',fontSize:'12px'}).add();});")
+			.append(",true).css({color:'#333333',fontSize:'12px'}).add();});")
 			.append("if(ch.hoverHint){ch.hoverHint.destroy();}ch.hoverHint=ch.renderer.text(")
 			.append(string(I18nProperties.getString(Strings.climateDashboardHint)))
 			.append(",ch.plotLeft,20).css({color:'#999999',fontSize:'12px',fontStyle:'italic'}).add();}}},")
@@ -613,10 +613,10 @@ public class ClimateDashboardChart extends VerticalLayout {
 	 * @return the disease panel's name as HTML, with the reason when it has no usual range (decision 123)
 	 */
 	static String diseaseTitle(ClimateCaseSeriesDto series, Measure measure) {
-		String title = html(
+		String title = "<b>" + html(
 			String.format(
 				I18nProperties.getString(measure == Measure.INCIDENCE ? Strings.climateDashboardPanelIncidence : Strings.climateDashboardPanelCount),
-				series.getDisease().toString()));
+				series.getDisease().toString())) + "</b>";
 		if (series.countWeeksWithUsualRange() == 0) {
 			Set<ClimateUsualRangeMissing> reasons = series.getWeeks()
 				.stream()
@@ -647,7 +647,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 	 * @return the climate panel's name as HTML: its icon and name, and the shift when there is one
 	 */
 	static String climateTitle(ClimateVariable variable, int lag) {
-		String title = ClimateIcon.of(variable).html() + " " + html(I18nProperties.getString(axisName(variable)));
+		String title = ClimateIcon.of(variable).html() + " <b>" + html(I18nProperties.getString(axisName(variable))) + "</b>";
 		if (lag == 1) {
 			title += " " + html(I18nProperties.getString(Strings.climateDashboardPanelShiftedOne));
 		} else if (lag > 1) {

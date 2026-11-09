@@ -251,7 +251,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			.append("ch.panelTitles=ch.yAxis.filter(function(a){return a.options.panelTitle;}).map(function(a){")
 			.append("return ch.renderer.text(a.options.panelTitle,ch.plotLeft,a.top-")
 			.append(TITLE_BAND / 3)
-			.append(",true).css({color:'#555555',fontSize:'12px'}).add();});")
+			.append(",true).css({color:'#333333',fontSize:'12px'}).add();});")
 			// a hint in the details area until a day is pointed at; the details box covers it
 			.append("if(ch.hoverHint){ch.hoverHint.destroy();}ch.hoverHint=ch.renderer.text(")
 			.append(string(I18nProperties.getString(Strings.climateChartHint)))
@@ -306,7 +306,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 				// width of the axis labels)
 				ClimateIcon icon = row == rain ? ClimateIcon.RAINFALL : row == temperature ? ClimateIcon.TEMPERATURE : ClimateIcon.HUMIDITY;
 				js.append("title:{text:null},panelTitle:")
-					.append(string(icon.html() + " " + html(row.title)))
+					.append(string(icon.html() + " <b>" + html(row.title) + "</b>"))
 					.append(",lineWidth:1,labels:{x:-6},gridLineDashStyle:'Dot'");
 				if (row == humidity) {
 					js.append(",min:0,max:100,tickAmount:3");

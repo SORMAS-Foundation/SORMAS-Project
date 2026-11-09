@@ -64,9 +64,10 @@
     display: none;
   }
 
-  // Climate dashboard: a note right under the control it explains, in the normal text colour
+  // Climate dashboard: a note right under the control it explains, in the normal text colour, 12 px like the chart text
+  // (decision 142)
   .climate-dashboard-note {
-    font-size: 13px;
+    font-size: 12px;
     margin-top: 4px;
   }
 

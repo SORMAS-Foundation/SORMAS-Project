@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBoxGroup;
 import com.vaadin.ui.ComboBox;
@@ -672,11 +673,12 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	/**
-	 * Adds a component under the chart, left-aligned, shown and hidden with the chart (the export link, decision 139).
+	 * Adds a component under the chart, right-aligned, shown and hidden with the chart (the export link, decisions 139 and 142).
 	 */
 	void addBelowChart(Component component) {
 		component.addStyleName(CssStyles.VSPACE_TOP_4);
 		content.addComponent(component);
+		content.setComponentAlignment(component, Alignment.MIDDLE_RIGHT);
 	}
 
 	/**

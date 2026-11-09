@@ -55,7 +55,7 @@ public class ClimateDashboardView extends AbstractDashboardView {
 		dashboardLayout.addComponent(layout);
 
 		if (UiUtil.permitted(FeatureType.CLIMATE_MANAGEMENT, UserRight.CLIMATE_EXPORT)) {
-			// the data behind the applied filters, never shifted by the lag (decision 128); a link under the chart, shown with it (decision 139)
+			// the data behind the applied filters, never shifted by the lag (decision 128); a link under the chart, right-aligned, shown with it (decisions 139 and 142)
 			Button export = ButtonHelper.createIconButton(Captions.climateDashboardExport, VaadinIcons.TABLE, null, ValoTheme.BUTTON_LINK);
 			export.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			new IgnoreCancelDownloader(ClimateDashboardExport.resource(layout::getExportRows, layout::selectedDiseases)).extend(export);
