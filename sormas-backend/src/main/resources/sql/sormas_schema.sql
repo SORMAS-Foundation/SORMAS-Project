@@ -18045,4 +18045,7 @@ WHERE dc.disease = 'DIPHTHERIA'
 
 INSERT INTO schema_version (version_number, comment) VALUES (681, '#14391 - Doctor declaration treatments and pregnancy on external messages, PERSON_TO_PERSON exposure category for diphtheria');
 
+-- 2026-11-09 #14288 Preset Rubella case surveillance once on Luxembourg servers, applied in StartupShutdownService
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (682, '#14288 - Preset the Rubella configuration on Luxembourg servers', true);
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
