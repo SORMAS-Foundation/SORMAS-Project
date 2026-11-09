@@ -38,6 +38,7 @@ public enum EpipulseDiseaseRef {
 	SALM(EpipulseSubjectCode.SALM), // Salmonellosis
 	SHIG(EpipulseSubjectCode.SHIG), // Shigellosis
 	SYPH(EpipulseSubjectCode.SYPH, EpipulseSubjectCode.CONSYPH), // Syphilis; EpiPulse reports CONSYPH under this same disease code
+	TUBE(EpipulseSubjectCode.TUBE), // Tuberculosis
 	WNF(EpipulseSubjectCode.WNF); // West Nile virus infection
 
 	private final EpipulseSubjectCode[] subjectCodes;

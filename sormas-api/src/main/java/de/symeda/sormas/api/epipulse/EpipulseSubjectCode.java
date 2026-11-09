@@ -39,6 +39,7 @@ public enum EpipulseSubjectCode {
 	SALM(true, Disease.SALMONELLOSIS, false), // Salmonellosis - SalmFieldModel
 	SHIG(true, Disease.SHIGELLOSIS, false), // Shigellosis - ShigFieldModel
 	SYPH(true, Disease.SYPHILIS, false, EpipulseCaseSubset.SYPHILIS_ACQUIRED), // Syphilis - SyphFieldModel
+	TUBE(true, Disease.TUBERCULOSIS, false), // Tuberculosis - TubeFieldModel
 	WNF(true, Disease.WEST_NILE_FEVER, false); // West Nile virus infection
 
 	private final boolean diseaseModel;

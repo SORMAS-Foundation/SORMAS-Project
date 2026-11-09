@@ -290,7 +290,22 @@ final class FieldReaders {
 		};
 	}
 
-	/** {@code YES}/{@code NO} as a boolean; {@code UNKNOWN}, blank or unrecognised as {@code null}. */
+	/**
+	 * Reads an EpiPulse BOOL from {@link YesNoUnknown}; {@code UNKNOWN}/blank/unrecognized -> no value.
+	 */
+	static BiConsumer<EpipulseDiseaseExportEntryDto, EpipulseRow> yesNoUnknown(
+		String alias,
+		BiConsumer<EpipulseDiseaseExportEntryDto, Boolean> setter) {
+
+		return (dto, row) -> {
+			Boolean value = parseYesNo((String) row.get(alias));
+			if (value != null) {
+				setter.accept(dto, value);
+			}
+		};
+	}
+
+	/** {@code YES}/{@code NO} as boolean; otherwise {@code null}. */
 	private static Boolean parseYesNo(String value) {
 
 		YesNoUnknown yesNoUnknown = parseEnum(YesNoUnknown.class, value);

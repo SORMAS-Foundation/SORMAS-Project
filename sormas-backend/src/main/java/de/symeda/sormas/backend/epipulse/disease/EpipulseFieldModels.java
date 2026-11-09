@@ -52,6 +52,7 @@ public final class EpipulseFieldModels {
 		dedicated.put(EpipulseSubjectCode.GONO, GonoFieldModel::create);
 		dedicated.put(EpipulseSubjectCode.RUBE, RubeFieldModel::create);
 		dedicated.put(EpipulseSubjectCode.SHIG, ShigFieldModel::create);
+		dedicated.put(EpipulseSubjectCode.TUBE, TubeFieldModel::create);
 		DEDICATED = Collections.unmodifiableMap(dedicated);
 	}
 
