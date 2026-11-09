@@ -18048,4 +18048,14 @@ INSERT INTO schema_version (version_number, comment) VALUES (681, '#14391 - Doct
 -- 2026-11-09 #14288 Preset Rubella case surveillance once on Luxembourg servers, applied in StartupShutdownService
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (682, '#14288 - Preset the Rubella configuration on Luxembourg servers', true);
 
+-- 2026-11-09 #14288 IgG avidity on Rubella and congenital rubella pathogen tests
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS avidityperformed boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS avidityindex real;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS avidityinterpretation varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS avidityperformed boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS avidityindex real;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS avidityinterpretation varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (683, '#14288 - Add IgG avidity to pathogen tests');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

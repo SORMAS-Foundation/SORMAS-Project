@@ -366,6 +366,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
 		target.setSequenceId(source.getSequenceId());
 		target.setSeroConversion(source.getSeroConversion());
+		target.setAvidityPerformed(source.getAvidityPerformed());
+		target.setAvidityIndex(source.getAvidityIndex());
+		target.setAvidityInterpretation(source.getAvidityInterpretation());
 
 		// IGRA tube values
 		target.setTubeNil(source.getTubeNil());
@@ -717,6 +720,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
 		target.setSequenceId(source.getSequenceId());
 		target.setSeroConversion(source.getSeroConversion());
+		target.setAvidityPerformed(source.getAvidityPerformed());
+		target.setAvidityIndex(source.getAvidityIndex());
+		target.setAvidityInterpretation(source.getAvidityInterpretation());
 		// Clear quantitative result fields that the selected method does not produce, so a value left over
 		// from a previous test type cannot survive and violate the method/result-type contract.
 		Set<ResultValueType> resultValueTypes = PathogenTestType.getResultValueTypes(target.getTestType());
