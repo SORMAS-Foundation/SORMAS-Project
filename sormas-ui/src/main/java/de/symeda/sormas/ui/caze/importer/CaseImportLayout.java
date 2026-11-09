@@ -72,6 +72,7 @@ public class CaseImportLayout extends AbstractImportLayout {
 	}
 
 	private void startClassicImport(File file) {
+		setDownloadErrorReportVisible(true);
 		try {
 			CaseImporter importer = new CaseImporter(file, true, currentUser, (ValueSeparator) separator.getValue());
 			importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
@@ -81,6 +82,7 @@ public class CaseImportLayout extends AbstractImportLayout {
 	}
 
 	private void showNestedPreview(ImportSheet sheet, char csvSeparator) {
+		setDownloadErrorReportVisible(false);
 		nestedPreview.separator(csvSeparator);
 		addComponent(nestedPreview);
 		nestedPreview.preview(sheet);

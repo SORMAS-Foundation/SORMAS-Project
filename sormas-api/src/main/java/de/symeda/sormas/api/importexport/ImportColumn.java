@@ -45,7 +45,7 @@ public class ImportColumn {
 
 	private String dataDescription;
 
-	private ImportColumn(String entityName, String columnName, String caption, String dataDescription) {
+	public ImportColumn(String entityName, String columnName, String caption, String dataDescription) {
 		this.entityName = entityName;
 		this.columnName = columnName;
 		this.caption = caption;

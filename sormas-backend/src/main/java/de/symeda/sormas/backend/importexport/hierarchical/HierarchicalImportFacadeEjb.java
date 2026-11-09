@@ -37,7 +37,7 @@ public class HierarchicalImportFacadeEjb implements HierarchicalImportFacade {
 	public ImportPreviewDto checkImport(String definitionId, ImportSheet sheet) {
 		em.setFlushMode(FlushModeType.COMMIT);
 		ImportDefinition definition = definition(definitionId);
-		return PreviewMapper.toPreview(definition, new Planner().plan(definition, sheet, null));
+		return PreviewMapper.toPreview(new Planner().plan(definition, sheet, null));
 	}
 
 	@Override

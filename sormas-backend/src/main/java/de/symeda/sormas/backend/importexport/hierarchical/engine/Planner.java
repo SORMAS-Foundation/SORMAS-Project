@@ -24,7 +24,7 @@ public final class Planner {
 		List<ImportIssueDto> fileIssues = new ArrayList<>(HeaderCheck.check(definition, sheet, sheetColumns));
 		fileIssues.addAll(definition.fileIssues(sheet));
 		if (!fileIssues.isEmpty()) {
-			return new ImportPlan(fileIssues, List.of(), List.of(), sheetColumns.ignored());
+			return new ImportPlan(fileIssues, List.of(), List.of(), sheetColumns.ignored(), Map.of());
 		}
 
 		Set<String> importableHeaders = sheetColumns.columns().stream().map(ColumnSpec::header).collect(Collectors.toSet());
@@ -34,12 +34,13 @@ public final class Planner {
 		RecordBinder binder = new RecordBinder(definition.cellWriter());
 		Map<ImportNode, PlannedRecord> records = new IdentityHashMap<>();
 		Map<String, ImportNode> rootsByIdentity = new HashMap<>();
+		Map<ImportLevel, LevelHandler> handlers = new HashMap<>();
 
 		for (ImportLevel level : definition.schema().levels()) {
 			if (level.isEmbedded()) {
 				continue;
 			}
-			LevelHandler handler = definition.handler(level);
+			LevelHandler handler = handlers.computeIfAbsent(level, handled -> definition.handler(handled, columns));
 			List<PlannedRecord> drafts = draft(level, roots.values(), records, handler, binder, columns);
 			rejectDuplicateKeys(drafts, handler);
 			List<PlannedRecord> matchable = drafts.stream().filter(draft -> draft.node().issues().isEmpty()).collect(Collectors.toList());
@@ -73,14 +74,14 @@ public final class Planner {
 			}
 		}
 
-		records.values().forEach(record -> definition.handler(record.node().level()).complete(record));
+		records.values().forEach(record -> handlers.get(record.node().level()).complete(record));
 		rejectRecordsLinkedToFailedRoots(records);
 
 		List<PlannedBlock> blocks = roots.entrySet()
 			.stream()
 			.map(entry -> new PlannedBlock(entry.getKey(), entry.getValue(), records.get(entry.getValue())))
 			.collect(Collectors.toList());
-		return new ImportPlan(List.of(), grouping.issues(), blocks, sheetColumns.ignored());
+		return new ImportPlan(List.of(), grouping.issues(), blocks, sheetColumns.ignored(), handlers);
 	}
 
 	private static void rejectRecordsLinkedToFailedRoots(Map<ImportNode, PlannedRecord> records) {

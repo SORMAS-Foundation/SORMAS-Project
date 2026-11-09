@@ -38,7 +38,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
-import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
@@ -74,7 +73,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	private final Label readyHeading = new Label("", ContentMode.TEXT);
 	private final Label readyMessage = new Label(I18nProperties.getString(Strings.messageHierarchicalImportNothingToReview), ContentMode.TEXT);
 	private final VerticalLayout readyPanel = new VerticalLayout(readyHeading, readyMessage);
-	private final Grid<ImportIssueDto> issueGrid = new Grid<>();
+	private final Grid<PreviewPresentation.ProblemRow> issueGrid = new Grid<>();
 	private final Grid<PreviewPresentation.ChangeRow> changeGrid = new Grid<>();
 	private final Grid<RecordOperationDto> newRecordGrid = new Grid<>();
 	private final TabSheet resultTabs = new TabSheet();
@@ -89,11 +88,12 @@ public class HierarchicalImportLayout extends VerticalLayout {
 	public HierarchicalImportLayout(String definitionId) {
 		this.definitionId = definitionId;
 
-		issueGrid.addColumn(ImportIssueDto::getLineNumber).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportLine));
-		issueGrid.addColumn(ImportIssueDto::getColumn).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportColumn));
-		issueGrid.addColumn(ImportIssueDto::getMessage)
+		issueGrid.addColumn(PreviewPresentation.ProblemRow::getRecord).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
+		issueGrid.addColumn(PreviewPresentation.ProblemRow::getLineNumber).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportLine));
+		issueGrid.addColumn(PreviewPresentation.ProblemRow::getColumn).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportColumn));
+		issueGrid.addColumn(PreviewPresentation.ProblemRow::getMessage)
 			.setCaption(I18nProperties.getCaption(Captions.hierarchicalImportProblem))
-			.setDescriptionGenerator(ImportIssueDto::getMessage);
+			.setDescriptionGenerator(PreviewPresentation.ProblemRow::getMessage);
 
 		changeGrid.addColumn(PreviewPresentation.ChangeRow::getRecord).setCaption(I18nProperties.getCaption(Captions.hierarchicalImportRecord));
 		changeGrid.addColumn(row -> PreviewPresentation.matchLabel(row.getMatchReason(), row.getLinkedLine()))
@@ -265,14 +265,14 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		showStatus(preview, step);
 		countsLine.setValue(countsText(preview));
 
-		PreviewPresentation presentation = new PreviewPresentation(preview, model.report());
+		PreviewPresentation presentation = new PreviewPresentation(preview, model.report(), ColumnLabels.of(model.sheet().getHeaders()));
 		readyHeading.setValue(String.format(I18nProperties.getString(Strings.headingHierarchicalImportReady), ready));
 		readyPanel.setVisible(step == ImportWizardModel.Step.PREVIEWED && model.canCommit() && presentation.nothingToReview());
 
-		showTab(issueGrid, Captions.hierarchicalImportProblems, presentation.problems());
+		showTab(issueGrid, Captions.hierarchicalImportProblems, presentation.problemRows(), presentation.problemCount());
 		resultTabs.getTab(issueGrid).setStyleName(presentation.hasProblems() ? CssStyles.LABEL_CRITICAL : null);
-		showTab(changeGrid, Captions.hierarchicalImportChanges, presentation.changes());
-		showTab(newRecordGrid, Captions.hierarchicalImportNewRecords, presentation.newRecords());
+		showTab(changeGrid, Captions.hierarchicalImportChanges, presentation.changes(), presentation.changes().size());
+		showTab(newRecordGrid, Captions.hierarchicalImportNewRecords, presentation.newRecords(), presentation.newRecords().size());
 		resultTabs.setVisible(anyTabVisible());
 
 		StreamResource errorFile =
@@ -282,11 +282,11 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		errorFileDownloader.setFileDownloadResource(errorFile);
 	}
 
-	private <T> void showTab(Grid<T> grid, String captionKey, List<T> rows) {
+	private <T> void showTab(Grid<T> grid, String captionKey, List<T> rows, int count) {
 		grid.setItems(rows);
 		grid.setHeightByRows(PreviewPresentation.gridRows(rows.size()));
 		TabSheet.Tab tab = resultTabs.getTab(grid);
-		tab.setCaption(I18nProperties.getCaption(captionKey) + " (" + rows.size() + ")");
+		tab.setCaption(I18nProperties.getCaption(captionKey) + " (" + count + ")");
 		tab.setVisible(!rows.isEmpty());
 	}
 
