@@ -247,6 +247,8 @@ public class StartupShutdownService {
 		syncUsers();
 
 		createMissingDiseaseConfigurations();
+		// upgrade() may have cached the disease lists before these rows existed
+		diseaseConfigurationFacade.loadData();
 
 		featureConfigurationService.createMissingFeatureConfigurations();
 		featureConfigurationService.updateFeatureConfigurations();
