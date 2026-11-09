@@ -43,7 +43,7 @@ class ErrorFileTest {
 		assertArrayEquals(new String[] { I18nProperties.getCaption(Captions.importErrorDescription), "epidNumber", "fieldSampleID" }, rows.get(1));
 		assertEquals(4, rows.size());
 		assertArrayEquals(new String[] { "changed", "A", "S1" }, rows.get(2));
-		assertArrayEquals(new String[] { "Sample.fieldSampleID: bad sample", "", "S2" }, rows.get(3));
+		assertArrayEquals(new String[] { "fieldSampleID: bad sample", "", "S2" }, rows.get(3));
 	}
 
 	@Test
@@ -53,7 +53,7 @@ class ErrorFileTest {
 
 		List<String[]> rows = ErrorFile.rows(sheet, List.of(new ErrorFile.FailedBlock(2, 2, List.of(issue))), List.of());
 
-		assertArrayEquals(new String[] { "CaseData.healthFacility: unknown facility", "X" }, rows.get(2));
+		assertArrayEquals(new String[] { "healthFacility: unknown facility", "X" }, rows.get(2));
 	}
 
 	@Test

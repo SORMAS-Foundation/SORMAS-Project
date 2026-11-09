@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.importer.hierarchical;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,12 +30,15 @@ public final class PreviewPresentation {
 	private final List<ChangeRow> changes;
 	private final List<RecordOperationDto> newRecords;
 
-	public PreviewPresentation(ImportPreviewDto preview, ImportReportDto report) {
+	public PreviewPresentation(ImportPreviewDto preview, ImportReportDto report, ColumnLabels labels) {
 		this.problems = new ArrayList<>(preview.allIssues());
 		report.getResults().forEach(result -> problems.addAll(result.getIssues()));
 		TreeMap<Integer, BlockPreviewDto> blocksByFirstLine = new TreeMap<>();
 		preview.getBlocks().forEach(block -> blocksByFirstLine.putIfAbsent(block.getFirstLine(), block));
-		this.problemRows = problems.stream().map(issue -> new ProblemRow(recordOf(blocksByFirstLine, issue), issue)).collect(Collectors.toList());
+		this.problemRows = problems.stream()
+			.sorted(Comparator.comparing(ImportIssueDto::getLineNumber, Comparator.nullsLast(Comparator.naturalOrder())))
+			.map(issue -> new ProblemRow(recordOf(blocksByFirstLine, issue), labels.label(issue.getColumn()), issue))
+			.collect(Collectors.toList());
 		this.changes = readyOperations(preview)
 			.flatMap(
 				operation -> operation.getChanges()
@@ -127,10 +131,12 @@ public final class PreviewPresentation {
 	public static final class ProblemRow {
 
 		private final String record;
+		private final String column;
 		private final ImportIssueDto issue;
 
-		ProblemRow(String record, ImportIssueDto issue) {
+		ProblemRow(String record, String column, ImportIssueDto issue) {
 			this.record = record;
+			this.column = column;
 			this.issue = issue;
 		}
 
@@ -143,7 +149,7 @@ public final class PreviewPresentation {
 		}
 
 		public String getColumn() {
-			return issue.getColumn();
+			return column;
 		}
 
 		public String getMessage() {

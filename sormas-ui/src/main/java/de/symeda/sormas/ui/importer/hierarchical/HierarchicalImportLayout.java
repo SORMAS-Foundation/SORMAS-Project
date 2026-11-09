@@ -265,7 +265,7 @@ public class HierarchicalImportLayout extends VerticalLayout {
 		showStatus(preview, step);
 		countsLine.setValue(countsText(preview));
 
-		PreviewPresentation presentation = new PreviewPresentation(preview, model.report());
+		PreviewPresentation presentation = new PreviewPresentation(preview, model.report(), ColumnLabels.of(model.sheet().getHeaders()));
 		readyHeading.setValue(String.format(I18nProperties.getString(Strings.headingHierarchicalImportReady), ready));
 		readyPanel.setVisible(step == ImportWizardModel.Step.PREVIEWED && model.canCommit() && presentation.nothingToReview());
 
