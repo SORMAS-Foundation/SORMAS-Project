@@ -4189,6 +4189,7 @@ public interface Captions {
 	String View_contacts_visits = "View.contacts.visits";
 	String View_dashboard_adverseevents = "View.dashboard.adverseevents";
 	String View_dashboard_campaigns = "View.dashboard.campaigns";
+	String View_dashboard_climate = "View.dashboard.climate";
 	String View_dashboard_contacts = "View.dashboard.contacts";
 	String View_dashboard_gis = "View.dashboard.gis";
 	String View_dashboard_samples = "View.dashboard.samples";

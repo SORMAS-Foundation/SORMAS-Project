@@ -32,6 +32,8 @@ import de.symeda.sormas.api.climate.ClimateJobIndexDto;
 import de.symeda.sormas.api.climate.ClimateJobType;
 import de.symeda.sormas.api.climate.ClimateObservationIndexDto;
 import de.symeda.sormas.api.climate.HumidityMeasure;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.dashboard.climate.ClimateDashboardView;
 
 class ClimateCaptionsTest {
 
@@ -121,5 +123,13 @@ class ClimateCaptionsTest {
 		observation.setRelativeHumidity(84.0);
 		observation.setHumidityMeasure(HumidityMeasure.NOON_READING);
 		assertEquals("84 (" + HumidityMeasure.NOON_READING + ")", ClimateCaptions.humidity(observation));
+	}
+
+	/**
+	 * The view title is looked up from the view name, as in AbstractView: without the caption the header shows "dashboard.climate".
+	 */
+	@Test
+	void testClimateDashboardTitle() {
+		assertEquals("Climate Dashboard", I18nProperties.getPrefixCaption("View", ClimateDashboardView.VIEW_NAME.replace("/", ".")));
 	}
 }
