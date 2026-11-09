@@ -227,8 +227,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 
 		ClimateDashboardLayout layout = new ClimateDashboardLayout(nationalUser(), JurisdictionLevel.NATION);
 		assertTrue(layout.getOfferedDiseases().isEmpty(), "no shipped list: only what an admin marks");
-		String note =
-			"No diseases are marked as climate-sensitive. An admin can mark them in Configuration › Diseases, in the Climate section of each disease. Only diseases with case surveillance are listed.";
+		String note = "No climate-sensitive diseases are configured.";
 		assertTrue(layout.getDiseaseGroup().isVisible(), "the Diseases caption stays, with the note under it");
 		assertTrue(text(layout.getFilterCard()).contains(note), text(layout.getFilterCard()));
 
