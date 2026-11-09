@@ -18027,6 +18027,11 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS linezolidmethod varchar(
 
 INSERT INTO schema_version (version_number, comment) VALUES (679, '#14385 - Tuberculosis drug susceptibility fields');
 
+-- 2026-11-03 Retire the COVID negative-sample cleanup job #13818
+DELETE FROM systemconfigurationvalue WHERE config_key = 'CRON.SOFT_DELETE_OLD_NEGATIVE_SAMPLES';
+
+INSERT INTO schema_version (version_number, comment) VALUES (680, 'Retire the COVID negative-sample cleanup job #13818');
+
 -- 2026-11-05 #14391 Doctor declaration treatments and pregnancy on external messages
 ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS treatments jsonb;
 ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS treatments jsonb;
@@ -18038,6 +18043,6 @@ ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS casepregnant varcha
 ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS casetrimester varchar(255);
 ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS casetrimester varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (680, '#14391 - Doctor declaration treatments and pregnancy on external messages');
+INSERT INTO schema_version (version_number, comment) VALUES (681, '#14391 - Doctor declaration treatments and pregnancy on external messages');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

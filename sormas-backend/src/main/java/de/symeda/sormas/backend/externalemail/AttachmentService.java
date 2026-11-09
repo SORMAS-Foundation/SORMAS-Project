@@ -49,6 +49,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.PdfWriter;
 
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -62,7 +63,6 @@ public class AttachmentService {
     public static final String DOCX_FILE_EXTENSION = ".docx";
     public static final String PDF_FILE_EXTENSION = ".pdf";
     public static final String IMAGE_FILE_EXTENSTIONS = ".jpg,.jpeg,.png,.gif";
-    private static final String TEMP_FILE_PREFIX = "sormas_temp";
     private static final Random RANDOM = new Random();
 
     @EJB
@@ -137,7 +137,7 @@ public class AttachmentService {
 
     private Path getTmpFilePathForConversion() {
         Path path = Paths.get(configFacade.getTempFilesPath());
-        String fileName = TEMP_FILE_PREFIX + "_converted_" + DateHelper.formatDateForExport(new Date()) + "_" + RANDOM.nextInt(Integer.MAX_VALUE);
+        String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_converted_" + DateHelper.formatDateForExport(new Date()) + "_" + RANDOM.nextInt(Integer.MAX_VALUE);
 
         return path.resolve(fileName);
 

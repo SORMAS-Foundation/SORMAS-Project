@@ -13,6 +13,7 @@ public final class PlannedBlock {
 	private final int index;
 	private final ImportNode root;
 	private final PlannedRecord rootRecord;
+	private final List<ImportIssueDto> problems;
 	private final List<ImportIssueDto> issues;
 	private final String fingerprint;
 
@@ -20,8 +21,9 @@ public final class PlannedBlock {
 		this.index = index;
 		this.root = root;
 		this.rootRecord = rootRecord;
-		this.issues = root.subtree().flatMap(node -> node.issues().stream()).collect(Collectors.toList());
-		this.fingerprint = issues.isEmpty() && rootRecord != null ? Fingerprint.of(rootRecord) : "";
+		this.problems = root.subtree().flatMap(node -> node.issues().stream()).collect(Collectors.toList());
+		this.issues = Stream.concat(problems.stream(), HeldBackLines.of(root, problems).stream()).collect(Collectors.toList());
+		this.fingerprint = problems.isEmpty() && rootRecord != null ? Fingerprint.of(rootRecord) : "";
 	}
 
 	public int index() {
@@ -45,7 +47,7 @@ public final class PlannedBlock {
 	}
 
 	public BlockStatus status() {
-		if (!issues.isEmpty() || rootRecord == null) {
+		if (!problems.isEmpty() || rootRecord == null) {
 			return BlockStatus.ERROR;
 		}
 		return records().allMatch(record -> record.operation() == OperationType.UNCHANGED) ? BlockStatus.UNCHANGED : BlockStatus.READY;

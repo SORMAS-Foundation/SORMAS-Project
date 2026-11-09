@@ -4,5 +4,6 @@ public enum ImportIssueKind {
 	FILE,
 	ROW,
 	BLOCK,
-	COMMIT
+	COMMIT,
+	SKIPPED
 }

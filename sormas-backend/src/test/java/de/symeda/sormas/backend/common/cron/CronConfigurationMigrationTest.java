@@ -30,6 +30,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -40,27 +43,45 @@ import de.symeda.sormas.backend.common.HistoryTablesTest.SormasPostgresSQLContai
 @ExtendWith(CdiTestJunitExtension.class)
 public class CronConfigurationMigrationTest {
 
-	@Test
-	public void migrationSeedsEveryCronConfigurationValue() {
+	private static SormasPostgresSQLContainer container;
 
-		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer();
+	private EntityManagerFactory entityManagerFactory;
+	private EntityManager entityManager;
+
+	@BeforeAll
+	public static void startContainer() {
+
+		container = new SormasPostgresSQLContainer();
 		try {
 			container.start();
 		} catch (IllegalStateException e) {
 			assumeNoException("Could not find a valid Docker environment, skipping test", e);
 		}
+	}
 
-		Map<String, String> properties = new HashMap<>();
-		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
-		properties.put("javax.persistence.jdbc.user", container.getUsername());
-		properties.put("javax.persistence.jdbc.password", container.getPassword());
-		properties.put("javax.persistence.jdbc.driver", container.getDriverClassName());
-		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
-		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
-		properties.put("hibernate.hbm2ddl.auto", "none");
+	@AfterAll
+	public static void stopContainer() {
 
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("beanTestPU", properties);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		if (container != null) {
+			container.stop();
+		}
+	}
+
+	@AfterEach
+	public void closePersistence() {
+
+		if (entityManager != null && entityManager.isOpen()) {
+			entityManager.close();
+		}
+		if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
+			entityManagerFactory.close();
+		}
+	}
+
+	@Test
+	public void migrationSeedsEveryCronConfigurationValue() {
+
+		createMigratedEntityManager();
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> rows = entityManager
@@ -72,9 +93,9 @@ public class CronConfigurationMigrationTest {
 
 		Map<String, Object[]> rowsByKey = rows.stream().collect(Collectors.toMap(row -> (String) row[0], row -> row));
 
-		assertEquals(CronJob.values().length, rowsByKey.size());
+		assertEquals(CronJob.active().size(), rowsByKey.size());
 
-		for (CronJob job : CronJob.values()) {
+		for (CronJob job : CronJob.active()) {
 			Object[] row = rowsByKey.get(job.getConfigKey());
 			assertNotNull(row, job.getConfigKey());
 			assertEquals(job.getDefaultExpression(), row[1], job.getConfigKey());
@@ -87,5 +108,35 @@ public class CronConfigurationMigrationTest {
 		assertFalse(stored.matcher("0 0 0 */2 * *").matches(), "stored pattern must reject an increment on day of month");
 		assertTrue(stored.matcher("0 15 1 * * *").matches());
 		assertTrue(stored.matcher("").matches());
+	}
+
+	@Test
+	public void migrationRemovesTheNegativeSampleCleanupRow() {
+
+		createMigratedEntityManager();
+
+		Number removedRows = (Number) entityManager
+			.createNativeQuery("SELECT COUNT(*) FROM systemconfigurationvalue WHERE config_key = 'CRON.SOFT_DELETE_OLD_NEGATIVE_SAMPLES'")
+			.getSingleResult();
+
+		assertEquals(0, removedRows.intValue());
+	}
+
+	private void createMigratedEntityManager() {
+
+		Map<String, String> properties = new HashMap<>();
+		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
+		properties.put("javax.persistence.jdbc.user", container.getUsername());
+		properties.put("javax.persistence.jdbc.password", container.getPassword());
+		properties.put("javax.persistence.jdbc.driver", container.getDriverClassName());
+		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
+		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
+		properties.put("hibernate.hbm2ddl.auto", "none");
+		// closing a factory with the shared Ehcache would break later tests
+		properties.put("hibernate.cache.use_second_level_cache", "false");
+		properties.put("hibernate.cache.use_query_cache", "false");
+
+		entityManagerFactory = Persistence.createEntityManagerFactory("beanTestPU", properties);
+		entityManager = entityManagerFactory.createEntityManager();
 	}
 }

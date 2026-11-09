@@ -154,6 +154,8 @@ public interface ConfigFacade {
 
 	boolean isAnyCaseClassificationCalculationEnabled();
 
+	// Only read by the retired negative sample cleanup job, kept for reuse
+	@Deprecated
 	Integer getNegaiveCovidTestsMaxAgeDays();
 
 	long getMinimumEmancipatedAge();
