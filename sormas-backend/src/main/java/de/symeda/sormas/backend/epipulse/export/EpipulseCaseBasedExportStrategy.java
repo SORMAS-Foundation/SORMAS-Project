@@ -41,6 +41,7 @@ import de.symeda.sormas.api.epipulse.EpipulseCaseSubset;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportResult;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
+import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulsePathogenTestTypeRef;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -105,7 +106,7 @@ public class EpipulseCaseBasedExportStrategy {
 			// while the field model owns every column in the query, which is what
 			// FieldModel's selectOffset exists to relax. If some other producer ever contributes
 			// columns ahead of the model's, revisit this.
-			Query query = em.createNativeQuery(buildQuery(fieldModel, exportDto.getSubjectCode().getCaseSubset()));
+			Query query = em.createNativeQuery(buildQuery(fieldModel, exportDto.getSubjectCode()));
 			setQueryParameters(query, exportDto, config, serverCountryLocale);
 			@SuppressWarnings("unchecked")
 			List<Object[]> resultList = query.getResultList();
@@ -125,9 +126,9 @@ public class EpipulseCaseBasedExportStrategy {
 	/**
 	 * Builds full SQL from common and disease query models plus model select columns.
 	 */
-	String buildQuery(FieldModel fieldModel, EpipulseCaseSubset caseSubset) {
+	String buildQuery(FieldModel fieldModel, EpipulseSubjectCode subjectCode) {
 
-		SqlQueryModel sql = EpipulseCommonSql.spec(configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG), caseSubset)
+		SqlQueryModel sql = EpipulseCommonSql.spec(configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG), subjectCode)
 			.plus(fieldModel.getSqlQueryModel());
 
 		return sql.withClause() + "SELECT " + fieldModel.buildSelectColumns() + sql.fromAndJoins() + " ORDER BY c.reportdate";
