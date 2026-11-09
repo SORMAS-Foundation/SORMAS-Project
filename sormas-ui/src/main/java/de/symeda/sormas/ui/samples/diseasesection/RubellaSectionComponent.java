@@ -34,6 +34,7 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 	private ComboBox<GenoType> genoTypeField;
 	private TextField genoTypeTextField;
 	private Label genoTypeTextSpacer;
+	private TextField sequenceIdTextField;
 
 	private PathogenTestType currentTestType;
 	private PathogenTestResultType currentResult;
@@ -51,8 +52,13 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 		genoTypeTextSpacer = createSpacer();
 		addToggleRow(genoTypeField, genoTypeTextField, genoTypeTextSpacer);
 
+		sequenceIdTextField = createTextField(PathogenTestDto.SEQUENCE_ID);
+		sequenceIdTextField.setVisible(false);
+		addRow(sequenceIdTextField);
+
 		binder.forField(genoTypeField).bind(PathogenTestDto::getGenoType, PathogenTestDto::setGenoType);
 		binder.forField(genoTypeTextField).bind(PathogenTestDto::getGenoTypeText, PathogenTestDto::setGenoTypeText);
+		binder.forField(sequenceIdTextField).bind(PathogenTestDto::getSequenceId, PathogenTestDto::setSequenceId);
 	}
 
 	@Override
@@ -88,10 +94,9 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 	private void updateVisibility() {
 		boolean visible = currentTestType == PathogenTestType.GENOTYPING && currentResult == PathogenTestResultType.POSITIVE;
 		genoTypeField.setVisible(visible);
+		sequenceIdTextField.setVisible(visible);
 		if (!visible) {
-			genoTypeField.clear();
-			genoTypeTextField.setVisible(false);
-			genoTypeTextField.clear();
+			setVisibleClear(false, genoTypeField, genoTypeTextField, sequenceIdTextField);
 		}
 		updateRowAndSelfVisibility();
 	}
@@ -104,6 +109,11 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 		}
 		dto.setGenoType(null);
 		dto.setGenoTypeText(null);
+		dto.setSequenceId(null);
+	}
+
+	TextField sequenceIdField() {
+		return sequenceIdTextField;
 	}
 
 	private void updateGenoTypeItems() {
