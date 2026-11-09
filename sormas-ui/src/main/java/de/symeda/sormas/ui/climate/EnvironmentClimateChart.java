@@ -323,11 +323,12 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			.append("positioner:function(){return {x:this.chart.plotLeft,y:0};},")
 			.append("formatter:function(){var d=details[this.x];var c=(this.points?this.points[0]:this).series.chart;return d?'<div style=\"white-space:normal;width:'+c.plotWidth+'px\">'+d+'</div>':false;}},");
 
+		// on hover, a circle on each line and no marker on the bands, so no shape suggests a meaning (decision 143)
 		js.append("plotOptions:{series:{animation:false,states:{inactive:{opacity:1}},point:{events:{click:")
 			.append(ClimateChart.clickHandler())
 			.append("}}},column:{pointPadding:0.05,groupPadding:0,borderWidth:0},")
-			.append("arearange:{lineWidth:0,enableMouseTracking:true,marker:{enabled:false}},")
-			.append("line:{marker:{enabled:false}}},");
+			.append("arearange:{lineWidth:0,enableMouseTracking:true,marker:{enabled:false,states:{hover:{enabled:false}}}},")
+			.append("line:{marker:{enabled:false,symbol:'circle'}}},");
 
 		js.append("series:[");
 		int axis = 0;

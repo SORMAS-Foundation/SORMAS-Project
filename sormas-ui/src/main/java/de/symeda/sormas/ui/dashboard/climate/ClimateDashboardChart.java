@@ -371,10 +371,11 @@ public class ClimateDashboardChart extends VerticalLayout {
 			// the colour scale of the heatmap only; the other series keep their own colours
 			js.append("colorAxis:{min:0,max:1,minColor:'#f4ecf7',maxColor:'#4a235a',labels:{formatter:function(){return Math.round(this.value*100)+'%';}}},");
 		}
+		// on hover, a circle on each line and no marker on the bands, so no shape suggests a meaning (decision 143)
 		js.append("plotOptions:{series:{animation:false,states:{inactive:{opacity:1}}"
 			+ (heatmap ? ",colorAxis:false" : "")
 			+ "},column:{pointPadding:0.05,groupPadding:0,borderWidth:0},")
-			.append("arearange:{lineWidth:0,marker:{enabled:false}},line:{marker:{enabled:false}}},");
+			.append("arearange:{lineWidth:0,marker:{enabled:false,states:{hover:{enabled:false}}}},line:{marker:{enabled:false,symbol:'circle'}}},");
 
 		js.append("series:[");
 		int axis = heatmap ? appendHeatmap(js, climate, cases, shading, measure, lag, count) : appendDiseasePanels(js, cases, measure, count);
