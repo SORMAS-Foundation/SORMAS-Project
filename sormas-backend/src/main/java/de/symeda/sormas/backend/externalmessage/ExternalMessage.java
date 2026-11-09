@@ -49,6 +49,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.SyphilisPresentation;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HivStatus;
@@ -72,6 +73,7 @@ import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
@@ -109,6 +111,8 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_CITIZENSHIP = "personCitizenship";
 	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
 	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
+	public static final String CASE_PREGNANT = "casePregnant";
+	public static final String CASE_TRIMESTER = "caseTrimester";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
@@ -146,6 +150,8 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
+	public static final String TREATMENTS = "treatments";
+	public static final String TREATMENT = "treatment";
 	public static final String ADDITIONAL_PERSON_CONTACT_DETAILS = "additionalPersonContactDetails";
 	public static final String ADDITIONAL_PERSON_ADDRESSES = "additionalPersonAddresses";
 
@@ -186,6 +192,8 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Country personCitizenship;
 	private SyphilisPresentation syphilisPresentation;
 	private YesNoUnknown stiProphylaxis;
+	private YesNoUnknown casePregnant;
+	private Trimester caseTrimester;
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
@@ -221,6 +229,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private List<SampleReport> sampleReports;
 	private SurveillanceReport surveillanceReport;
+	private Treatment treatment;
 	private String tsv;
 	private String personAdditionalDetails;
 
@@ -243,6 +252,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private String activitiesAsCase;
 	private String exposures;
+	private String treatments;
 	private String additionalPersonContactDetails;
 	private String additionalPersonAddresses;
 
@@ -570,6 +580,24 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.stiProphylaxis = stiProphylaxis;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCasePregnant() {
+		return casePregnant;
+	}
+
+	public void setCasePregnant(YesNoUnknown casePregnant) {
+		this.casePregnant = casePregnant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Trimester getCaseTrimester() {
+		return caseTrimester;
+	}
+
+	public void setCaseTrimester(Trimester caseTrimester) {
+		this.caseTrimester = caseTrimester;
+	}
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Facility getPersonFacility() {
 		return personFacility;
@@ -723,6 +751,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setSurveillanceReport(SurveillanceReport surveillanceReport) {
 		this.surveillanceReport = surveillanceReport;
+	}
+
+	@OneToOne(fetch = FetchType.LAZY)
+	public Treatment getTreatment() {
+		return treatment;
+	}
+
+	public void setTreatment(Treatment treatment) {
+		this.treatment = treatment;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = SampleReport.LAB_MESSAGE, fetch = FetchType.LAZY)
@@ -945,6 +982,16 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setExposures(String exposures) {
 		this.exposures = exposures;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getTreatments() {
+		return treatments;
+	}
+
+	public void setTreatments(String treatments) {
+		this.treatments = treatments;
 	}
 
 	public Date getDeceasedDate() {

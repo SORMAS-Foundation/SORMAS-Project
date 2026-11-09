@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,15 +18,12 @@ package de.symeda.sormas.ui.utils;
 import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -729,28 +726,57 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	}
 
 	/**
-	 * Sets up mutually exclusive behavior between two YesNoUnknown fields.
+	 * Sets up mutually exclusive behavior between two yes/no option group fields.
 	 * When one field is set to YES, the other is automatically set to NO.
+	 * Works for every enum that has the constants {@code YES} and {@code NO}, e.g. {@link YesNoUnknown} and {@code SymptomState}.
+	 * Other values (NO, UNKNOWN, empty) do not change the other field. A read-only other field is left untouched.
+	 * <p>
+	 * Example: setting "Respiratory with membrane" ({@code SymptomState}) to YES sets "Respiratory without membrane" to NO,
+	 * and setting "Pregnant" ({@link YesNoUnknown}) to YES sets "Postpartum" to NO.
 	 *
 	 * @param field1
-	 *            First field
+	 *            First field; nothing happens if {@code null}
 	 * @param field2
-	 *            Second field (mutually exclusive with field1)
+	 *            Second field (mutually exclusive with field1); nothing happens if {@code null}
 	 */
-	@SuppressWarnings("unchecked")
 	protected void setupMutuallyExclusiveFields(NullableOptionGroup field1, NullableOptionGroup field2) {
-		field1.addValueChangeListener(e -> {
-			Set<Object> value = (Set<Object>) e.getProperty().getValue();
-			if (value != null && value.contains(de.symeda.sormas.api.utils.YesNoUnknown.YES)) {
-				field2.setValue(new HashSet<>(Arrays.asList(de.symeda.sormas.api.utils.YesNoUnknown.NO)));
+
+		if (field1 == null || field2 == null) {
+			return;
+		}
+
+		field1.addValueChangeListener(e -> setOtherFieldToNoIfYes(field1, field2));
+		field2.addValueChangeListener(e -> setOtherFieldToNoIfYes(field2, field1));
+	}
+
+	/**
+	 * Sets {@code otherField} to the NO constant of the same enum if {@code sourceField} is YES.
+	 * Does nothing if the source value is not an enum constant named {@code YES}, the enum has no {@code NO} constant,
+	 * the other field is read-only or already NO.
+	 */
+	private void setOtherFieldToNoIfYes(NullableOptionGroup sourceField, NullableOptionGroup otherField) {
+
+		Object sourceValue = sourceField.getNullableValue();
+		if (!(sourceValue instanceof Enum) || !"YES".equals(((Enum<?>) sourceValue).name()) || otherField.isReadOnly()) {
+			return;
+		}
+
+		Object noValue = null;
+		Object[] enumConstants = ((Enum<?>) sourceValue).getDeclaringClass().getEnumConstants();
+		if (enumConstants != null) {
+			for (Object enumConstant : enumConstants) {
+				if (enumConstant instanceof Enum && "NO".equals(((Enum<?>) enumConstant).name())) {
+					noValue = enumConstant;
+					break;
+				}
 			}
-		});
-		field2.addValueChangeListener(e -> {
-			Set<Object> value = (Set<Object>) e.getProperty().getValue();
-			if (value != null && value.contains(de.symeda.sormas.api.utils.YesNoUnknown.YES)) {
-				field1.setValue(new HashSet<>(Arrays.asList(de.symeda.sormas.api.utils.YesNoUnknown.NO)));
-			}
-		});
+		}
+
+		if (noValue == null || noValue.equals(otherField.getNullableValue())) {
+			return;
+		}
+
+		otherField.setNullableValue(noValue);
 	}
 
 	/**

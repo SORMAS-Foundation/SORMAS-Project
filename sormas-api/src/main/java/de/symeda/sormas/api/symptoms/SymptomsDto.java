@@ -20,76 +20,40 @@ package de.symeda.sormas.api.symptoms;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_LUXEMBOURG;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
-import static de.symeda.sormas.api.Disease.ACUTE_VIRAL_HEPATITIS;
-import static de.symeda.sormas.api.Disease.ADENOVIRUS;
 import static de.symeda.sormas.api.Disease.AFP;
 import static de.symeda.sormas.api.Disease.ANTHRAX;
-import static de.symeda.sormas.api.Disease.ARI;
-import static de.symeda.sormas.api.Disease.BURULI_ULCER;
-import static de.symeda.sormas.api.Disease.CHIKUNGUNYA;
 import static de.symeda.sormas.api.Disease.CHOLERA;
 import static de.symeda.sormas.api.Disease.CONGENITAL_RUBELLA;
 import static de.symeda.sormas.api.Disease.CORONAVIRUS;
 import static de.symeda.sormas.api.Disease.CRYPTOSPORIDIOSIS;
 import static de.symeda.sormas.api.Disease.CSM;
-import static de.symeda.sormas.api.Disease.C_PNEUMONIAE;
 import static de.symeda.sormas.api.Disease.DENGUE;
-import static de.symeda.sormas.api.Disease.DIARRHEA_BLOOD;
-import static de.symeda.sormas.api.Disease.DIARRHEA_DEHYDRATION;
 import static de.symeda.sormas.api.Disease.DIPHTHERIA;
-import static de.symeda.sormas.api.Disease.ENTEROVIRUS;
 import static de.symeda.sormas.api.Disease.EVD;
-import static de.symeda.sormas.api.Disease.FHA;
 import static de.symeda.sormas.api.Disease.GIARDIASIS;
 import static de.symeda.sormas.api.Disease.GONOCOCCAL_INFECTION;
 import static de.symeda.sormas.api.Disease.GUINEA_WORM;
-import static de.symeda.sormas.api.Disease.HIV;
-import static de.symeda.sormas.api.Disease.H_METAPNEUMOVIRUS;
-import static de.symeda.sormas.api.Disease.INFLUENZA;
-import static de.symeda.sormas.api.Disease.INFLUENZA_A;
-import static de.symeda.sormas.api.Disease.INFLUENZA_B;
 import static de.symeda.sormas.api.Disease.INVASIVE_MENINGOCOCCAL_INFECTION;
 import static de.symeda.sormas.api.Disease.INVASIVE_PNEUMOCOCCAL_INFECTION;
 import static de.symeda.sormas.api.Disease.LASSA;
-import static de.symeda.sormas.api.Disease.LEPROSY;
-import static de.symeda.sormas.api.Disease.LYMPHATIC_FILARIASIS;
 import static de.symeda.sormas.api.Disease.MALARIA;
-import static de.symeda.sormas.api.Disease.MATERNAL_DEATHS;
 import static de.symeda.sormas.api.Disease.MEASLES;
 import static de.symeda.sormas.api.Disease.MONKEYPOX;
 import static de.symeda.sormas.api.Disease.MUMPS;
-import static de.symeda.sormas.api.Disease.M_PNEUMONIAE;
-import static de.symeda.sormas.api.Disease.NEONATAL_TETANUS;
 import static de.symeda.sormas.api.Disease.NEW_INFLUENZA;
-import static de.symeda.sormas.api.Disease.NON_NEONATAL_TETANUS;
-import static de.symeda.sormas.api.Disease.ONCHOCERCIASIS;
 import static de.symeda.sormas.api.Disease.OTHER;
-import static de.symeda.sormas.api.Disease.PARAINFLUENZA_1_4;
-import static de.symeda.sormas.api.Disease.PERINATAL_DEATHS;
 import static de.symeda.sormas.api.Disease.PERTUSSIS;
 import static de.symeda.sormas.api.Disease.PLAGUE;
-import static de.symeda.sormas.api.Disease.PNEUMONIA;
 import static de.symeda.sormas.api.Disease.POLIO;
-import static de.symeda.sormas.api.Disease.POST_IMMUNIZATION_ADVERSE_EVENTS_MILD;
-import static de.symeda.sormas.api.Disease.POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE;
 import static de.symeda.sormas.api.Disease.RABIES;
 import static de.symeda.sormas.api.Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
-import static de.symeda.sormas.api.Disease.RHINOVIRUS;
 import static de.symeda.sormas.api.Disease.RUBELLA;
 import static de.symeda.sormas.api.Disease.SALMONELLOSIS;
-import static de.symeda.sormas.api.Disease.SCHISTOSOMIASIS;
 import static de.symeda.sormas.api.Disease.SHIGELLOSIS;
-import static de.symeda.sormas.api.Disease.SNAKE_BITE;
-import static de.symeda.sormas.api.Disease.SOIL_TRANSMITTED_HELMINTHS;
 import static de.symeda.sormas.api.Disease.SYPHILIS;
-import static de.symeda.sormas.api.Disease.TRACHOMA;
-import static de.symeda.sormas.api.Disease.TRYPANOSOMIASIS;
 import static de.symeda.sormas.api.Disease.TUBERCULOSIS;
-import static de.symeda.sormas.api.Disease.TYPHOID_FEVER;
 import static de.symeda.sormas.api.Disease.UNDEFINED;
 import static de.symeda.sormas.api.Disease.UNSPECIFIED_VHF;
-import static de.symeda.sormas.api.Disease.WEST_NILE_FEVER;
-import static de.symeda.sormas.api.Disease.YAWS_ENDEMIC_SYPHILIS;
 import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
 import static de.symeda.sormas.api.Disease.YERSINIOSIS;
 
@@ -3658,7 +3622,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
 	private YesNoUnknown noComplications;
 	@Diseases({
-		MUMPS })
+		MUMPS,
+		CONGENITAL_RUBELLA })
 	@SymptomGrouping(SymptomGroup.CLINICAL_PRESENTATION)
 	@Complication({
 		MUMPS })

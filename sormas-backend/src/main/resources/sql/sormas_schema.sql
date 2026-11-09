@@ -17764,7 +17764,18 @@ WHERE dc.disease IN ('SYPHILIS', 'GONOCOCCAL_INFECTION')
   AND (dc.exposurecategories IS NULL
     OR NOT string_to_array(dc.exposurecategories, ',') @> ARRAY['PERSON_TO_PERSON', 'VERTICAL_TRANSMISSION']
     OR string_to_array(dc.exposurecategories, ',') && ARRAY['DIRECT_CONTACT', 'MEDICAL_CARE']);
-INSERT INTO schema_version (version_number, comment) VALUES (675, '#14353 - Replace deprecated exposure categories for syphilis and gonococcal infection');
+
+-- Add PERSON_TO_PERSON to the Diphtheria exposure categories, keeping the existing ones
+UPDATE diseaseconfiguration dc
+SET exposurecategories = (
+    SELECT string_agg(DISTINCT cat, ',')
+    FROM unnest(coalesce(string_to_array(dc.exposurecategories, ','), '{}') || ARRAY['PERSON_TO_PERSON']) AS cat
+),
+    changedate = now()
+WHERE dc.disease = 'DIPHTHERIA'
+  AND (dc.exposurecategories IS NULL
+    OR NOT string_to_array(dc.exposurecategories, ',') @> ARRAY['PERSON_TO_PERSON']);
+INSERT INTO schema_version (version_number, comment) VALUES (675, '#14353 - Replace deprecated exposure categories for syphilis and gonococcal infection, add PERSON_TO_PERSON to diphtheria');
 
 -- 2026-09-30 Carry IgG seroconversion on lab message test reports (issue #14356)
 
@@ -18015,5 +18026,18 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS linezolidsusceptibility 
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS linezolidmethod varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (679, '#14385 - Tuberculosis drug susceptibility fields');
+
+-- 2026-11-05 #14391 Doctor declaration treatments and pregnancy on external messages
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS treatments jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS treatments jsonb;
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS treatment_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_treatment_id FOREIGN KEY (treatment_id) REFERENCES treatment (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS treatment_id bigint;
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS casepregnant varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS casepregnant varchar(255);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS casetrimester varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS casetrimester varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (680, '#14391 - Doctor declaration treatments and pregnancy on external messages');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
