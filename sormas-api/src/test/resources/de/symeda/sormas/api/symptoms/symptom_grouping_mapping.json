@@ -3202,7 +3202,8 @@
     "oldSymptomGroup": "General",
     "proposedSymptomGroup": "Clinical presentation",
     "diseases": [
-      "MUMPS"
+      "MUMPS",
+      "CONGENITAL_RUBELLA"
     ]
   },
   {

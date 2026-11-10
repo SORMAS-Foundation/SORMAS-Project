@@ -1033,7 +1033,8 @@ public abstract class AbstractBeanTest {
 			getCustomizableEnumFacade(),
 			getCountryFacade(),
 			getSurveillanceReportFacade(),
-			getNotifierFacade()) {
+			getNotifierFacade(),
+			getTreatmentFacade()) {
 
 			@Override
 			public boolean hasAllUserRights(UserRight... userRights) {

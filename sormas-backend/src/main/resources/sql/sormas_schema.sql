@@ -18020,4 +18020,28 @@ DELETE FROM systemconfigurationvalue WHERE config_key = 'CRON.SOFT_DELETE_OLD_NE
 
 INSERT INTO schema_version (version_number, comment) VALUES (680, 'Retire the COVID negative-sample cleanup job #13818');
 
+-- 2026-11-05 #14391 Doctor declaration treatments and pregnancy on external messages
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS treatments jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS treatments jsonb;
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS treatment_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_treatment_id FOREIGN KEY (treatment_id) REFERENCES treatment (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS treatment_id bigint;
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS casepregnant varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS casepregnant varchar(255);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS casetrimester varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS casetrimester varchar(255);
+
+-- Add PERSON_TO_PERSON to the Diphtheria exposure categories, keeping the existing ones
+UPDATE diseaseconfiguration dc
+SET exposurecategories = (
+    SELECT string_agg(DISTINCT cat, ',')
+    FROM unnest(coalesce(string_to_array(dc.exposurecategories, ','), '{}') || ARRAY['PERSON_TO_PERSON']) AS cat
+),
+    changedate = now()
+WHERE dc.disease = 'DIPHTHERIA'
+  AND (dc.exposurecategories IS NULL
+    OR NOT string_to_array(dc.exposurecategories, ',') @> ARRAY['PERSON_TO_PERSON']);
+
+INSERT INTO schema_version (version_number, comment) VALUES (681, '#14391 - Doctor declaration treatments and pregnancy on external messages, PERSON_TO_PERSON exposure category for diphtheria');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

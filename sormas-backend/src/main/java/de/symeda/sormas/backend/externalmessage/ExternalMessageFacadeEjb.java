@@ -104,6 +104,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
+import de.symeda.sormas.api.therapy.TreatmentReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -132,6 +133,7 @@ import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
+import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -168,6 +170,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;
 	@EJB
 	private SurveillanceReportService surveillanceReportService;
+	@EJB
+	private TreatmentService treatmentService;
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -212,6 +216,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonCitizenship(countryService.getByReferenceDto(source.getPersonCitizenship()));
 		target.setSyphilisPresentation(source.getSyphilisPresentation());
 		target.setStiProphylaxis(source.getStiProphylaxis());
+		target.setCasePregnant(source.getCasePregnant());
+		target.setCaseTrimester(source.getCaseTrimester());
 		target.setPersonCity(source.getPersonCity());
 		target.setPersonExternalId(source.getPersonExternalId());
 		target.setPersonNationalHealthId(source.getPersonNationalHealthId());
@@ -253,6 +259,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setDiagnosticDate(source.getDiagnosticDate());
 		target.setActivitiesAsCase(source.getActivitiesAsCase());
 		target.setExposures(source.getExposures());
+		target.setTreatments(source.getTreatments());
 		target.setAdditionalPersonContactDetails(source.getAdditionalPersonContactDetails());
 		target.setAdditionalPersonAddresses(source.getAdditionalPersonAddresses());
 		target.setDeceasedDate(source.getDeceasedDate());
@@ -275,6 +282,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			target.setSampleReports(sampleReports);
 		}
 		target.setSurveillanceReport(surveillanceReportService.getByReferenceDto(source.getSurveillanceReport()));
+		target.setTreatment(treatmentService.getByReferenceDto(source.getTreatment()));
 		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setHospitalizationFacilityName(source.getHospitalizationFacilityName());
@@ -568,6 +576,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonCitizenship(CountryFacadeEjb.toReferenceDto(source.getPersonCitizenship()));
 		target.setSyphilisPresentation(source.getSyphilisPresentation());
 		target.setStiProphylaxis(source.getStiProphylaxis());
+		target.setCasePregnant(source.getCasePregnant());
+		target.setCaseTrimester(source.getCaseTrimester());
 		target.setPersonCity(source.getPersonCity());
 		target.setPersonExternalId(source.getPersonExternalId());
 		target.setPersonNationalHealthId(source.getPersonNationalHealthId());
@@ -609,6 +619,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setDiagnosticDate(source.getDiagnosticDate());
 		target.setActivitiesAsCase(source.getActivitiesAsCase());
 		target.setExposures(source.getExposures());
+		target.setTreatments(source.getTreatments());
 		target.setAdditionalPersonContactDetails(source.getAdditionalPersonContactDetails());
 		target.setAdditionalPersonAddresses(source.getAdditionalPersonAddresses());
 		target.setDeceasedDate(source.getDeceasedDate());
@@ -622,6 +633,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 		if (source.getSurveillanceReport() != null) {
 			target.setSurveillanceReport(SurveillanceReportFacadeEjb.toReferenceDto(source.getSurveillanceReport()));
+		}
+		if (source.getTreatment() != null) {
+			target.setTreatment(new TreatmentReferenceDto(source.getTreatment().getUuid()));
 		}
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());

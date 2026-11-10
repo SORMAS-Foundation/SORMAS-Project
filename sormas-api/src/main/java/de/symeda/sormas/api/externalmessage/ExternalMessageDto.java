@@ -30,6 +30,7 @@ import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.SyphilisPresentation;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.therapy.TreatmentReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -89,6 +91,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_CITIZENSHIP = "personCitizenship";
 	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
 	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
+	public static final String CASE_PREGNANT = "casePregnant";
+	public static final String CASE_TRIMESTER = "caseTrimester";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_PHONE = "personPhone";
@@ -124,6 +128,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
+	public static final String TREATMENTS = "treatments";
+	public static final String TREATMENT = "treatment";
 	public static final String ADDITIONAL_PERSON_CONTACT_DETAILS = "additionalPersonContactDetails";
 	public static final String ADDITIONAL_PERSON_ADDRESSES = "additionalPersonAddresses";
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
@@ -188,6 +194,18 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private SyphilisPresentation syphilisPresentation;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private YesNoUnknown stiProphylaxis;
+	/**
+	 * Whether the case person is pregnant. It is copied to {@link de.symeda.sormas.api.caze.CaseDataDto#getPregnant()} when the message
+	 * is processed.
+	 */
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private YesNoUnknown casePregnant;
+	/**
+	 * The pregnancy trimester of the case person. It is copied to {@link de.symeda.sormas.api.caze.CaseDataDto#getTrimester()} when the
+	 * message is processed.
+	 */
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Trimester caseTrimester;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -233,6 +251,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private List<SampleReportDto> sampleReports;
 	@AuditIncludeProperty
 	private SurveillanceReportReferenceDto surveillanceReport;
+	/**
+	 * The treatment created on the case therapy when the message was processed.
+	 */
+	private TreatmentReferenceDto treatment;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String externalMessageDetails;
@@ -289,6 +311,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	private String activitiesAsCase;
 	private String exposures;
+	/**
+	 * JSON list of {@link de.symeda.sormas.api.therapy.TreatmentDto} without therapy. They are saved on the case therapy when the
+	 * message is processed.
+	 */
+	private String treatments;
 	private String additionalPersonContactDetails;
 	private String additionalPersonAddresses;
 
@@ -578,6 +605,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setStiProphylaxis(YesNoUnknown stiProphylaxis) {
 		this.stiProphylaxis = stiProphylaxis;
+	}
+
+	public YesNoUnknown getCasePregnant() {
+		return casePregnant;
+	}
+
+	public void setCasePregnant(YesNoUnknown casePregnant) {
+		this.casePregnant = casePregnant;
+	}
+
+	public Trimester getCaseTrimester() {
+		return caseTrimester;
+	}
+
+	public void setCaseTrimester(Trimester caseTrimester) {
+		this.caseTrimester = caseTrimester;
 	}
 
 	public FacilityReferenceDto getPersonFacility() {
@@ -968,6 +1011,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setExposures(String exposures) {
 		this.exposures = exposures;
+	}
+
+	public String getTreatments() {
+		return treatments;
+	}
+
+	public void setTreatments(String treatments) {
+		this.treatments = treatments;
+	}
+
+	public TreatmentReferenceDto getTreatment() {
+		return treatment;
+	}
+
+	public void setTreatment(TreatmentReferenceDto treatment) {
+		this.treatment = treatment;
 	}
 
 	public Date getDeceasedDate() {
