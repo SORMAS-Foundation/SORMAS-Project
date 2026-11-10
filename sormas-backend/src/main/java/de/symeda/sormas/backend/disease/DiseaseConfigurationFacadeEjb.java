@@ -48,6 +48,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
@@ -57,6 +58,7 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationIndexDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.sort.EntitySortUtils;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -87,6 +89,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private DiseaseConfigurationService service;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	private static final List<Disease> activeDiseases = new ArrayList<>();
 	private static final List<Disease> inactiveDiseases = new ArrayList<>();
@@ -555,6 +559,34 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setChangeDate(new Timestamp((new Date()).getTime()));
 
 		return target;
+	}
+
+	public void presetLuxembourgRubellaConfiguration() {
+		if (!configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			return;
+		}
+
+		DiseaseConfiguration rubella =
+			Optional.ofNullable(service.getDiseaseConfiguration(Disease.RUBELLA)).orElseGet(() -> DiseaseConfiguration.build(Disease.RUBELLA));
+		rubella.setActive(true);
+		rubella.setPrimaryDisease(true);
+		rubella.setCaseSurveillanceEnabled(true);
+		rubella.setExposureCategories(withRespiratoryAndVerticalPathways(rubella.getExposureCategories()));
+		rubella.setChangeDate(new Timestamp(new Date().getTime()));
+		service.ensurePersisted(rubella);
+
+		loadData();
+	}
+
+	private static Set<ExposureCategory> withRespiratoryAndVerticalPathways(Set<ExposureCategory> exposureCategories) {
+		Set<ExposureCategory> pathways = EnumSet.noneOf(ExposureCategory.class);
+		if (exposureCategories != null) {
+			pathways.addAll(exposureCategories);
+		}
+		pathways.remove(ExposureCategory.AIR_BORNE);
+		pathways.add(ExposureCategory.RESPIRATORY);
+		pathways.add(ExposureCategory.VERTICAL_TRANSMISSION);
+		return pathways;
 	}
 
 	@PostConstruct

@@ -104,7 +104,8 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.RUBELLA })
 	private YesNoUnknown importedCase;
 
 	@HideForCountriesExcept(countries = {
@@ -112,7 +113,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.MEASLES,
 		Disease.MUMPS,
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.RUBELLA })
 	private ClusterType clusterType;
 
 	@HideForCountriesExcept(countries = {
@@ -120,7 +122,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.MEASLES,
 		Disease.MUMPS,
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.RUBELLA })
 	private boolean clusterRelated;
 
 	@HideForCountriesExcept(countries = {
@@ -128,14 +131,16 @@ public class EpiDataDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.MEASLES,
 		Disease.MUMPS,
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.RUBELLA })
 	private String clusterTypeText;
 
 	// lab message(MEAS-1 & MUMP-1) has been mapped to this identifier
 	@Diseases({
 		Disease.MUMPS,
 		Disease.MEASLES,
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.RUBELLA })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clusterIdentifier;
 
@@ -184,7 +189,8 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.MUMPS,
-		Disease.DIPHTHERIA })
+		Disease.DIPHTHERIA,
+		Disease.RUBELLA })
 	private CountryReferenceDto country;
 
 	@Valid
@@ -215,7 +221,8 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	@Diseases({
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.RUBELLA })
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Size(max = 255, message = Validations.textTooLong)

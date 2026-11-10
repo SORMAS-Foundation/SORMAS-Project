@@ -2594,6 +2594,9 @@ public interface Captions {
 	String PathogenTest = "PathogenTest";
 	String PathogenTest_accessionNumber = "PathogenTest.accessionNumber";
 	String PathogenTest_antibodyTitre = "PathogenTest.antibodyTitre";
+	String PathogenTest_avidityIndex = "PathogenTest.avidityIndex";
+	String PathogenTest_avidityInterpretation = "PathogenTest.avidityInterpretation";
+	String PathogenTest_avidityPerformed = "PathogenTest.avidityPerformed";
 	String PathogenTest_biotype = "PathogenTest.biotype";
 	String PathogenTest_biotypeText = "PathogenTest.biotypeText";
 	String PathogenTest_cgMlstCluster = "PathogenTest.cgMlstCluster";

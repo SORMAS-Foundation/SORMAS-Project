@@ -90,6 +90,7 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateService;
@@ -163,6 +164,8 @@ public class StartupShutdownService {
 	private ImportFacadeEjbLocal importFacade;
 	@EJB
 	private DiseaseConfigurationService diseaseConfigurationService;
+	@EJB
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private FeatureConfigurationService featureConfigurationService;
 	@EJB
@@ -244,6 +247,8 @@ public class StartupShutdownService {
 		syncUsers();
 
 		createMissingDiseaseConfigurations();
+		// upgrade() may have cached the disease lists before these rows existed
+		diseaseConfigurationFacade.loadData();
 
 		featureConfigurationService.createMissingFeatureConfigurations();
 		featureConfigurationService.updateFeatureConfigurations();
@@ -879,6 +884,9 @@ public class StartupShutdownService {
 				break;
 			case 553:
 				createEntitiesForDocumentTemplates();
+				break;
+			case 682:
+				diseaseConfigurationFacade.presetLuxembourgRubellaConfiguration();
 				break;
 			default:
 				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade));
