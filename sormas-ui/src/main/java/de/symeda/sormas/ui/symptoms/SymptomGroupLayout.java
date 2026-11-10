@@ -175,11 +175,11 @@ final class SymptomGroupLayout {
 		SymptomGroup.METABOLIC,
 		SymptomGroup.MUSCULOSKELETAL,
 		SymptomGroup.GENITAL,
+		SymptomGroup.SYSTEM_DISORDER,
+		SymptomGroup.OTHER,
 		SymptomGroup.STAGE,
 		SymptomGroup.SITE_OF_INFECTION,
 		SymptomGroup.CONCURRENT_STI,
-		SymptomGroup.SYSTEM_DISORDER,
-		SymptomGroup.OTHER,
 		SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE);
 
 	/**
