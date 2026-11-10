@@ -72,12 +72,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -995,7 +997,36 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(export.only(), NATIONAL_RECORD_ID), is(inside.getUuid()));
 	}
 
+	@Test
+	@DisplayName("every classified case is notified, a ruled-out one as DISCARDED, and an unclassified one is not")
+	public void classifiedCasesAreNotifiedAndRuledOutOnesAreDiscarded() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+		String possible = classifiedCase(CaseClassification.SUSPECT);
+		String discarded = classifiedCase(CaseClassification.NO_CASE);
+
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.MEAS, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible, discarded));
+
+		assertThat(export.value(export.entryFor(confirmed), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(export.value(export.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+		assertThat(export.value(export.entryFor(discarded), CASE_CLASSIFICATION), is("DISCARDED"));
+	}
+
 	// --- Fixture helpers ---
+
+	private String classifiedCase(CaseClassification classification) {
+		return fixture.caze(creator.createPerson().toReference(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
+	}
 
 	private Scenario complications(String label, Consumer<SymptomsDto> symptoms, String... expected) {
 

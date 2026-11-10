@@ -34,6 +34,10 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRe
  * This is one of two filters used by {@code filtered_cases} (besides
  * {@link EpipulseCaseSubset}). It decides which classifications are notifiable for a subject code.
  * Subject codes without an entry here notify all cases of their disease.
+ *
+ * <p>
+ * It also decides which codes the {@code CaseClassification} column may carry
+ * ({@link #reports}), so a code is written only where it is also selected.
  */
 public final class EpipulseCaseInclusion {
 
@@ -42,6 +46,16 @@ public final class EpipulseCaseInclusion {
 	 */
 	private static final Set<EpipulseCaseClassificationRef> CONFIRMED_PROBABLE_POSSIBLE = Collections
 		.unmodifiableSet(EnumSet.of(EpipulseCaseClassificationRef.CONF, EpipulseCaseClassificationRef.PROB, EpipulseCaseClassificationRef.POSS));
+
+	/**
+	 * Confirmed, probable, possible and discarded classification codes.
+	 */
+	private static final Set<EpipulseCaseClassificationRef> CONFIRMED_PROBABLE_POSSIBLE_DISCARDED = Collections.unmodifiableSet(
+		EnumSet.of(
+			EpipulseCaseClassificationRef.CONF,
+			EpipulseCaseClassificationRef.PROB,
+			EpipulseCaseClassificationRef.POSS,
+			EpipulseCaseClassificationRef.DISCARDED));
 
 	/**
 	 * Confirmed classification code only.
@@ -69,6 +83,8 @@ public final class EpipulseCaseInclusion {
 		notified.put(EpipulseSubjectCode.DENGUE, CONFIRMED_PROBABLE);
 		// MALA's CaseClassification value set in metadata is CONF only.
 		notified.put(EpipulseSubjectCode.MALA, CONFIRMED);
+		// MEAS's CaseClassification value set in metadata is CONF, PROB, POSS and DISCARDED.
+		notified.put(EpipulseSubjectCode.MEAS, CONFIRMED_PROBABLE_POSSIBLE_DISCARDED);
 
 		return Collections.unmodifiableMap(notified);
 	}
@@ -83,6 +99,16 @@ public final class EpipulseCaseInclusion {
 		Set<EpipulseCaseClassificationRef> codes = NOTIFIED_CODES.get(subjectCode);
 
 		return codes == null ? Collections.emptySet() : EpipulseCaseClassificationRef.caseClassificationsOf(codes);
+	}
+
+	/**
+	 * Whether this subject code writes the given code in its {@code CaseClassification} column.
+	 */
+	public static boolean reports(EpipulseSubjectCode subjectCode, EpipulseCaseClassificationRef code) {
+
+		Set<EpipulseCaseClassificationRef> codes = subjectCode == null ? null : NOTIFIED_CODES.get(subjectCode);
+
+		return (codes == null ? CONFIRMED_PROBABLE_POSSIBLE : codes).contains(code);
 	}
 
 	/**

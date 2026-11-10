@@ -542,9 +542,26 @@ public class EpipulseMappingTest {
 		assertEquals("CONF", classification(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 	}
 
+	@Test
+	@DisplayName("a ruled-out case reports DISCARDED for MEAS, and blank for a code without it")
+	public void ruledOutReportsDiscardedOnlyWhereDeclared() {
+
+		assertEquals("DISCARDED", classification(EpipulseSubjectCode.MEAS, CaseClassification.NO_CASE));
+		assertEquals("POSS", classification(EpipulseSubjectCode.MEAS, CaseClassification.SUSPECT));
+		assertNull(classification(EpipulseSubjectCode.MEAS, CaseClassification.NOT_CLASSIFIED));
+
+		// PERT's value set has no DISCARDED, and it does not narrow its cases.
+		assertNull(classification(EpipulseSubjectCode.PERT, CaseClassification.NO_CASE));
+	}
+
 	private static String classification(CaseClassification value) {
+		return classification(null, value);
+	}
+
+	private static String classification(EpipulseSubjectCode subjectCode, CaseClassification value) {
 
 		EpipulseDiseaseExportEntryDto entry = new EpipulseDiseaseExportEntryDto();
+		entry.setSubjectCode(subjectCode);
 		entry.setCaseClassification(value);
 
 		return EpipulseMapping.caseClassification(entry);

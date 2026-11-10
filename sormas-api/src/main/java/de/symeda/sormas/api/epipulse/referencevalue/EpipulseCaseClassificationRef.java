@@ -30,10 +30,16 @@ import de.symeda.sormas.api.i18n.I18nProperties;
  * <p>
  * Supports both CSV rendering and inclusion logic. {@code CONF} intentionally covers plain
  * confirmed plus both symptom-qualified confirmed classifications.
+ *
+ * <p>
+ * {@code DISCARDED} is reported only by the subject codes that declare it in
+ * {@link de.symeda.sormas.api.epipulse.EpipulseCaseInclusion}; every other code reports a
+ * ruled-out case blank, as its value set has no such code.
  */
 public enum EpipulseCaseClassificationRef {
 
 	CONF(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS),
+	DISCARDED(CaseClassification.NO_CASE),
 	POSS(CaseClassification.SUSPECT),
 	PROB(CaseClassification.PROBABLE);
 

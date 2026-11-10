@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
@@ -104,15 +105,55 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
+	@DisplayName("MEAS notifies confirmed, probable, possible and discarded cases")
+	public void measNotifiesEveryClassifiedCaseIncludingDiscarded() {
+
+		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.MEAS);
+
+		assertThat(
+			notified,
+			containsInAnyOrder(
+				CaseClassification.CONFIRMED,
+				CaseClassification.CONFIRMED_NO_SYMPTOMS,
+				CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+				CaseClassification.PROBABLE,
+				CaseClassification.SUSPECT,
+				CaseClassification.NO_CASE));
+
+		// An unclassified case is still not a notification.
+		assertThat(notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+
+		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.MEAS), is(true));
+	}
+
+	@Test
+	@DisplayName("DISCARDED is reported only by a code that declares it")
+	public void discardedIsReportedOnlyWhereDeclared() {
+
+		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.MEAS, EpipulseCaseClassificationRef.DISCARDED), is(true));
+
+		for (EpipulseSubjectCode subjectCode : EpipulseSubjectCode.values()) {
+			if (subjectCode != EpipulseSubjectCode.MEAS) {
+				assertThat(subjectCode.name(), EpipulseCaseInclusion.reports(subjectCode, EpipulseCaseClassificationRef.DISCARDED), is(false));
+			}
+		}
+		assertThat(EpipulseCaseInclusion.reports(null, EpipulseCaseClassificationRef.DISCARDED), is(false));
+
+		// A code with no rule keeps the three it always reported.
+		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.PERT, EpipulseCaseClassificationRef.POSS), is(true));
+	}
+
+	@Test
 	@DisplayName("a subject code with no rule notifies every case of its disease")
 	public void aSubjectCodeWithNoRuleNotifiesEveryCase() {
 
 		// Default behavior for non-enrolled codes is no narrowing.
-		for (EpipulseSubjectCode subjectCode : EpipulseSubjectCode.values()) {
-			if (subjectCode != EpipulseSubjectCode.TUBE && subjectCode != EpipulseSubjectCode.DENGUE && subjectCode != EpipulseSubjectCode.MALA) {
-				assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
-				assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(false));
-			}
+		Set<EpipulseSubjectCode> narrowed =
+			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS);
+
+		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(false));
 		}
 	}
 
@@ -134,18 +175,15 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
-	@DisplayName("no EpiPulse code claims an unclassified or ruled-out case")
-	public void noCodeClaimsAnUnclassifiedOrRuledOutCase() {
+	@DisplayName("no EpiPulse code claims an unclassified case, and a ruled-out case is DISCARDED")
+	public void noCodeClaimsAnUnclassifiedCase() {
 
-		// NOT_CLASSIFIED and NO_CASE must remain unmapped.
-		for (CaseClassification classification : new CaseClassification[] {
-			CaseClassification.NOT_CLASSIFIED,
-			CaseClassification.NO_CASE }) {
-
-			assertThat(classification.name(), EpipulseCaseClassificationRef.getByCaseClassification(classification), is(nullRef()));
-		}
-
+		// NOT_CLASSIFIED must remain unmapped.
+		assertThat(EpipulseCaseClassificationRef.getByCaseClassification(CaseClassification.NOT_CLASSIFIED), is(nullRef()));
 		assertThat(EpipulseCaseClassificationRef.getByCaseClassification(null), is(nullRef()));
+
+		// Which subject codes may write it is EpipulseCaseInclusion.reports, tested above.
+		assertThat(EpipulseCaseClassificationRef.getByCaseClassification(CaseClassification.NO_CASE), is(EpipulseCaseClassificationRef.DISCARDED));
 	}
 
 	@Test

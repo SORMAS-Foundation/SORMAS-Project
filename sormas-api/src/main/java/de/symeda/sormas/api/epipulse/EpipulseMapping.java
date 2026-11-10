@@ -165,14 +165,18 @@ public final class EpipulseMapping {
 	 * {@code CaseClassification} as recorded in SORMAS.
 	 *
 	 * <p>
-	 * No subject-code-specific narrowing is applied here. Any resulting EpiPulse rejection must be
-	 * handled by case filtering, not by silently changing this value.
+	 * This field writes a code only when the subject code reports it — see
+	 * {@link EpipulseCaseInclusion#reports}. For example, a ruled-out case gets {@code DISCARDED} only
+	 * if its subject code declares that value; otherwise the field stays blank. Case filtering decides
+	 * which cases reach the file at all, so this field does not.
 	 */
 	public static String caseClassification(EpipulseDiseaseExportEntryDto entry) {
 
 		EpipulseCaseClassificationRef classificationRef = EpipulseCaseClassificationRef.getByCaseClassification(entry.getCaseClassification());
 
-		return classificationRef == null ? null : classificationRef.name();
+		return classificationRef == null || !EpipulseCaseInclusion.reports(entry.getSubjectCode(), classificationRef)
+			? null
+			: classificationRef.name();
 	}
 
 	/** {@code DateOfOnset}; see {@link EpipulseCaseDates#dateOfOnset}. */
