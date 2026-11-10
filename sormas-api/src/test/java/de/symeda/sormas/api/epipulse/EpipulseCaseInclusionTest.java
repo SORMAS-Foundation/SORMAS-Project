@@ -63,12 +63,34 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
+	@DisplayName("DENGUE notifies confirmed and probable cases only")
+	public void dengueNotifiesConfirmedAndProbable() {
+
+		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.DENGUE);
+
+		assertThat(
+			notified,
+			containsInAnyOrder(
+				CaseClassification.CONFIRMED,
+				CaseClassification.CONFIRMED_NO_SYMPTOMS,
+				CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+				CaseClassification.PROBABLE));
+
+		// The metadata value set has no POSS for DENGUE.
+		assertThat(notified.contains(CaseClassification.SUSPECT), is(false));
+		assertThat(notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+		assertThat(notified.contains(CaseClassification.NO_CASE), is(false));
+
+		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.DENGUE), is(true));
+	}
+
+	@Test
 	@DisplayName("a subject code with no rule notifies every case of its disease")
 	public void aSubjectCodeWithNoRuleNotifiesEveryCase() {
 
 		// Default behavior for non-enrolled codes is no narrowing.
 		for (EpipulseSubjectCode subjectCode : EpipulseSubjectCode.values()) {
-			if (subjectCode != EpipulseSubjectCode.TUBE) {
+			if (subjectCode != EpipulseSubjectCode.TUBE && subjectCode != EpipulseSubjectCode.DENGUE) {
 				assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
 				assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(false));
 			}

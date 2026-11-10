@@ -43,6 +43,12 @@ public final class EpipulseCaseInclusion {
 	private static final Set<EpipulseCaseClassificationRef> CONFIRMED_PROBABLE_POSSIBLE = Collections
 		.unmodifiableSet(EnumSet.of(EpipulseCaseClassificationRef.CONF, EpipulseCaseClassificationRef.PROB, EpipulseCaseClassificationRef.POSS));
 
+	/**
+	 * Confirmed and probable classification codes.
+	 */
+	private static final Set<EpipulseCaseClassificationRef> CONFIRMED_PROBABLE =
+		Collections.unmodifiableSet(EnumSet.of(EpipulseCaseClassificationRef.CONF, EpipulseCaseClassificationRef.PROB));
+
 	private static final Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> NOTIFIED_CODES = notifiedCodes();
 
 	private EpipulseCaseInclusion() {
@@ -54,6 +60,8 @@ public final class EpipulseCaseInclusion {
 
 		// TUBE has no CaseClassification column in metadata; rule comes from TB specification.
 		notified.put(EpipulseSubjectCode.TUBE, CONFIRMED_PROBABLE_POSSIBLE);
+		// DENGUE's CaseClassification value set in metadata is CONF and PROB only.
+		notified.put(EpipulseSubjectCode.DENGUE, CONFIRMED_PROBABLE);
 
 		return Collections.unmodifiableMap(notified);
 	}
