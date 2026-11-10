@@ -120,22 +120,26 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
-	@DisplayName("MALA notifies confirmed cases only")
-	public void malaNotifiesConfirmedOnly() {
+	@DisplayName("MALA and PNEU notify confirmed cases only")
+	public void malaAndPneuNotifyConfirmedOnly() {
 
-		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.MALA);
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.MALA, EpipulseSubjectCode.PNEU)) {
 
-		assertThat(
-			notified,
-			containsInAnyOrder(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
 
-		// The metadata value set has neither PROB nor POSS for MALA.
-		assertThat(notified.contains(CaseClassification.PROBABLE), is(false));
-		assertThat(notified.contains(CaseClassification.SUSPECT), is(false));
-		assertThat(notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
-		assertThat(notified.contains(CaseClassification.NO_CASE), is(false));
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 
-		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.MALA), is(true));
+			// The metadata value set has neither PROB nor POSS for either code.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.PROBABLE), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.SUSPECT), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NO_CASE), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
 	}
 
 	@Test
@@ -191,7 +195,8 @@ public class EpipulseCaseInclusionTest {
 			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE, EpipulseSubjectCode.SALM,
 			EpipulseSubjectCode.SHIG,
 			EpipulseSubjectCode.SYPH,
-			EpipulseSubjectCode.CONSYPH);
+			EpipulseSubjectCode.CONSYPH,
+			EpipulseSubjectCode.PNEU);
 
 		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
 			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
