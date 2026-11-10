@@ -64,10 +64,10 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
-	@DisplayName("DENGUE and SALM notify confirmed and probable cases only")
-	public void dengueAndSalmNotifyConfirmedAndProbable() {
+	@DisplayName("DENGUE, SALM and SHIG notify confirmed and probable cases only")
+	public void dengueSalmAndShigNotifyConfirmedAndProbable() {
 
-		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.SALM)) {
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.SALM, EpipulseSubjectCode.SHIG)) {
 
 			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
 
@@ -158,7 +158,8 @@ public class EpipulseCaseInclusionTest {
 
 		// Default behavior for non-enrolled codes is no narrowing.
 		Set<EpipulseSubjectCode> narrowed =
-			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE, EpipulseSubjectCode.SALM);
+			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE, EpipulseSubjectCode.SALM,
+			EpipulseSubjectCode.SHIG);
 
 		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
 			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));

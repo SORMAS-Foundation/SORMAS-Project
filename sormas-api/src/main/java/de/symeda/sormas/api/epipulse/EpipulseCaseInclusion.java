@@ -83,6 +83,8 @@ public final class EpipulseCaseInclusion {
 		notified.put(EpipulseSubjectCode.DENGUE, CONFIRMED_PROBABLE);
 		// SALM's CaseClassification value set in metadata is CONF and PROB only.
 		notified.put(EpipulseSubjectCode.SALM, CONFIRMED_PROBABLE);
+		// SHIG's CaseClassification value set in metadata is CONF and PROB only.
+		notified.put(EpipulseSubjectCode.SHIG, CONFIRMED_PROBABLE);
 		// MALA's CaseClassification value set in metadata is CONF only.
 		notified.put(EpipulseSubjectCode.MALA, CONFIRMED);
 		// MEAS's CaseClassification value set in metadata is CONF, PROB, POSS and DISCARDED.
