@@ -61,6 +61,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUSPECTED_VEHICLE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -72,12 +73,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
@@ -530,6 +533,33 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 	}
 
 	// ---------------------------------------------------------------------------------------
+	// which cases are in the file
+	// ---------------------------------------------------------------------------------------
+
+	@Test
+	@DisplayName("confirmed and probable cases are notified, and nothing else is")
+	public void onlyConfirmedAndProbableCasesAreExported() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String confirmedUnknownSymptoms = classifiedCase(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+
+		// SALM has no POSS, and neither an unclassified nor a ruled-out case is notifiable.
+		classifiedCase(CaseClassification.SUSPECT);
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+		classifiedCase(CaseClassification.NO_CASE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.SALM, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, confirmedUnknownSymptoms, probable));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+	}
+
+	// ---------------------------------------------------------------------------------------
 	// assertions
 	// ---------------------------------------------------------------------------------------
 
@@ -573,6 +603,10 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 
 	private PersonReferenceDto newPerson() {
 		return creator.createPerson().toReference();
+	}
+
+	private String classifiedCase(CaseClassification classification) {
+		return fixture.caze(newPerson(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
 	}
 
 	private CaseDataDto caseWith(Consumer<CaseDataDto> extraConfig) {

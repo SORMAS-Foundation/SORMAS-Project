@@ -64,25 +64,29 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
-	@DisplayName("DENGUE notifies confirmed and probable cases only")
-	public void dengueNotifiesConfirmedAndProbable() {
+	@DisplayName("DENGUE and SALM notify confirmed and probable cases only")
+	public void dengueAndSalmNotifyConfirmedAndProbable() {
 
-		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.DENGUE);
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.SALM)) {
 
-		assertThat(
-			notified,
-			containsInAnyOrder(
-				CaseClassification.CONFIRMED,
-				CaseClassification.CONFIRMED_NO_SYMPTOMS,
-				CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
-				CaseClassification.PROBABLE));
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
 
-		// The metadata value set has no POSS for DENGUE.
-		assertThat(notified.contains(CaseClassification.SUSPECT), is(false));
-		assertThat(notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
-		assertThat(notified.contains(CaseClassification.NO_CASE), is(false));
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(
+					CaseClassification.CONFIRMED,
+					CaseClassification.CONFIRMED_NO_SYMPTOMS,
+					CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+					CaseClassification.PROBABLE));
 
-		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.DENGUE), is(true));
+			// The metadata value set has no POSS for either code.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.SUSPECT), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NO_CASE), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
 	}
 
 	@Test
@@ -154,7 +158,7 @@ public class EpipulseCaseInclusionTest {
 
 		// Default behavior for non-enrolled codes is no narrowing.
 		Set<EpipulseSubjectCode> narrowed =
-			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE);
+			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE, EpipulseSubjectCode.SALM);
 
 		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
 			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
