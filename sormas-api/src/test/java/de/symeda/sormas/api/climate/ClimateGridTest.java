@@ -87,7 +87,7 @@ class ClimateGridTest {
 	}
 
 	/**
-	 * Climate rights go only to ADMIN, ADMIN_SUPERVISOR and NATIONAL_USER by default, matching migration 677; deployments
+	 * Climate rights go only to ADMIN, ADMIN_SUPERVISOR and NATIONAL_USER by default, matching migration 684; deployments
 	 * grant them to other roles themselves.
 	 */
 	@Test
