@@ -18058,6 +18058,139 @@ ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS avidityinterpretation 
 
 INSERT INTO schema_version (version_number, comment) VALUES (683, '#14288 - Add IgG avidity to pathogen tests');
 
+-- Climate feature phase 1, item 1: climate locations and observations, climate columns, settings and rights
+CREATE TABLE IF NOT EXISTS climatelocation (
+    id bigint NOT NULL,
+    uuid varchar(36) NOT NULL UNIQUE,
+    changedate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationdate timestamp(3) NOT NULL DEFAULT NOW(),
+    change_user_id bigint,
+    sys_period tstzrange NOT NULL,
+    gridsize double precision,
+    latindex integer,
+    lonindex integer,
+    latitude double precision,
+    longitude double precision,
+    PRIMARY KEY (id)
+);
+ALTER TABLE climatelocation ADD CONSTRAINT fk_climatelocation_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_climatelocation_cell ON climatelocation (gridsize, latindex, lonindex);
+ALTER TABLE climatelocation OWNER TO sormas_user;
+
+CREATE TABLE IF NOT EXISTS climateobservation (
+    id bigint NOT NULL,
+    uuid varchar(36) NOT NULL UNIQUE,
+    changedate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationdate timestamp(3) NOT NULL DEFAULT NOW(),
+    change_user_id bigint,
+    sys_period tstzrange NOT NULL,
+    climatelocation_id bigint NOT NULL,
+    observationdate date NOT NULL,
+    temperaturemin double precision,
+    temperaturemax double precision,
+    temperaturemean double precision,
+    rainfall double precision,
+    relativehumidity double precision,
+    humiditymeasure varchar(255),
+    source varchar(255) NOT NULL,
+    sourcedetail varchar(512),
+    reportinguser_id bigint,
+    PRIMARY KEY (id)
+);
+ALTER TABLE climateobservation ADD CONSTRAINT fk_climateobservation_climatelocation_id FOREIGN KEY (climatelocation_id) REFERENCES climatelocation (id);
+ALTER TABLE climateobservation ADD CONSTRAINT fk_climateobservation_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
+ALTER TABLE climateobservation ADD CONSTRAINT fk_climateobservation_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_climateobservation_location_date ON climateobservation (climatelocation_id, observationdate);
+ALTER TABLE climateobservation OWNER TO sormas_user;
+
+-- history tables + triggers
+CREATE TABLE climatelocation_history (LIKE climatelocation);
+DROP TRIGGER IF EXISTS versioning_trigger ON climatelocation;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON climatelocation
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'climatelocation_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON climatelocation;
+CREATE TRIGGER delete_history_trigger AFTER DELETE ON climatelocation
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('climatelocation_history', 'id');
+ALTER TABLE climatelocation_history OWNER TO sormas_user;
+
+CREATE TABLE climateobservation_history (LIKE climateobservation);
+DROP TRIGGER IF EXISTS versioning_trigger ON climateobservation;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON climateobservation
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'climateobservation_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON climateobservation;
+CREATE TRIGGER delete_history_trigger AFTER DELETE ON climateobservation
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('climateobservation_history', 'id');
+ALTER TABLE climateobservation_history OWNER TO sormas_user;
+
+-- climate columns on existing tables
+ALTER TABLE district ADD COLUMN IF NOT EXISTS climatelatitude double precision;
+ALTER TABLE district ADD COLUMN IF NOT EXISTS climatelongitude double precision;
+ALTER TABLE district ADD COLUMN IF NOT EXISTS climatelocation_id bigint;
+ALTER TABLE district ADD CONSTRAINT fk_district_climatelocation_id FOREIGN KEY (climatelocation_id) REFERENCES climatelocation (id);
+CREATE INDEX IF NOT EXISTS idx_district_climatelocation_id ON district (climatelocation_id);
+ALTER TABLE district_history ADD COLUMN IF NOT EXISTS climatelatitude double precision;
+ALTER TABLE district_history ADD COLUMN IF NOT EXISTS climatelongitude double precision;
+ALTER TABLE district_history ADD COLUMN IF NOT EXISTS climatelocation_id bigint;
+
+ALTER TABLE environments ADD COLUMN IF NOT EXISTS climatelocation_id bigint;
+ALTER TABLE environments ADD CONSTRAINT fk_environments_climatelocation_id FOREIGN KEY (climatelocation_id) REFERENCES climatelocation (id);
+CREATE INDEX IF NOT EXISTS idx_environments_climatelocation_id ON environments (climatelocation_id);
+ALTER TABLE environments_history ADD COLUMN IF NOT EXISTS climatelocation_id bigint;
+
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS climatesensitive boolean;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS usualrangeexcludedyears text;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS climatesensitive boolean;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS usualrangeexcludedyears text;
+
+-- climate settings (System Configuration, category CLIMATE)
+DO $$
+DECLARE
+    climate_category_id BIGINT;
+    setting             RECORD;
+BEGIN
+    SELECT id INTO climate_category_id FROM systemconfigurationcategory WHERE name = 'CLIMATE';
+
+    IF climate_category_id IS NULL THEN
+        INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description)
+        VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CLIMATE',
+                'i18n/Climate/categoryClimate', 'i18n/Climate/categoryClimate')
+        RETURNING id INTO climate_category_id;
+    END IF;
+
+    FOR setting IN
+        SELECT * FROM (VALUES
+            ('CLIMATE_DAILY_SOURCE',           'OPENWEATHER', false, 'OPENWEATHER|EXTERNAL',          false, 'de.symeda.sormas.api.climate.ClimateDailySourceProvider',   'climateSettingOption',                 'ClimateDailySource'),
+            ('CLIMATE_HISTORY_SOURCE',         'NONE',        false, 'NONE|OPENWEATHER|EXTERNAL',     false, 'de.symeda.sormas.api.climate.ClimateHistorySourceProvider', 'climateSettingOption',                 'ClimateHistorySource'),
+            ('CLIMATE_OPENWEATHER_API_KEY',    '',            true,  '',                              true,  null,                                                        'systemConfigurationValueInvalidValue', 'ClimateOpenWeatherApiKey'),
+            ('CLIMATE_GRID_SIZE',              '0.05',        false, '0\.01|0\.025|0\.05|0\.1|0\.25', false, 'de.symeda.sormas.api.climate.ClimateGridSizeProvider',      'climateSettingOption',                 'ClimateGridSize'),
+            ('CLIMATE_FETCH_CATCHUP_DAYS',     '9',           false, '[0-9]',                         false, null,                                                        'climateSettingCatchupDays',            'ClimateFetchCatchupDays'),
+            ('CLIMATE_HISTORY_YEARS',          '5',           false, '[1-9]|10',                      false, null,                                                        'climateSettingYears',                  'ClimateHistoryYears'),
+            ('CLIMATE_MIN_HISTORY_YEARS',      '3',           false, '[1-9]|10',                      false, null,                                                        'climateSettingYears',                  'ClimateMinHistoryYears'),
+            ('CLIMATE_RAINFALL_MIN_MM',        '60',          false, '\d+(\.\d+)?',                   false, null,                                                        'climateSettingDecimal',                'ClimateRainfallMinMm'),
+            ('CLIMATE_CASE_MIN_HISTORY_YEARS', '3',           false, '[1-9]|10',                      false, null,                                                        'climateSettingYears',                  'ClimateCaseMinHistoryYears'),
+            ('CLIMATE_CASE_MIN_WEEKLY_CASES',  '5',           false, '\d+',                           false, null,                                                        'climateSettingWholeNumber',            'ClimateCaseMinWeeklyCases')
+        ) AS t(config_key, config_value, value_optional, value_pattern, value_encrypt, data_provider, validation_key, description_suffix)
+    LOOP
+        INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional,
+                                             value_pattern, value_encrypt, data_provider, validation_message,
+                                             changedate, creationdate, id, uuid)
+        VALUES (setting.config_key, setting.config_value,
+                'i18n/infoSystemConfigurationValueDescription' || setting.description_suffix,
+                climate_category_id, setting.value_optional, setting.value_pattern, setting.value_encrypt,
+                setting.data_provider, 'i18n/' || setting.validation_key,
+                now(), now(), nextval('entity_seq'), generate_base32_uuid())
+        ON CONFLICT (config_key) DO NOTHING;
+    END LOOP;
+END $$
+LANGUAGE plpgsql;
+
+-- climate user rights for existing default-linked roles
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, r.userright FROM public.userroles,
+    (VALUES ('CLIMATE_VIEW'), ('CLIMATE_EDIT'), ('CLIMATE_IMPORT'), ('CLIMATE_EXPORT'), ('CLIMATE_MANAGE_SOURCES'), ('DASHBOARD_CLIMATE_VIEW')) AS r(userright)
+    WHERE userroles.linkeddefaultuserrole IN ('ADMIN', 'NATIONAL_USER', 'ADMIN_SUPERVISOR') ON CONFLICT (userrole_id, userright) DO NOTHING;
+
+INSERT INTO schema_version (version_number, comment) VALUES (684, '#14382 - Climate feature: climate locations and observations, climate columns, settings and user rights');
+
 -- Climate feature phase 1, item 2: climate jobs (fetch, backfill, top-up, relink) and their schedules
 CREATE TABLE IF NOT EXISTS climatejob (
     id bigint NOT NULL,
@@ -18121,7 +18254,7 @@ FROM (VALUES
       WHERE config_key = 'CRON.SEND_NEW_AND_DUE_TASK_MESSAGES') AS cron
 ON CONFLICT (config_key) DO NOTHING;
 
-INSERT INTO schema_version (version_number, comment) VALUES (678, 'Climate feature: climate jobs and their schedules');
+INSERT INTO schema_version (version_number, comment) VALUES (685, '#14382 - Climate feature: climate jobs and their schedules');
 
 CREATE TABLE IF NOT EXISTS siteclimatereading (
     id bigint NOT NULL,
@@ -18155,6 +18288,6 @@ CREATE TRIGGER delete_history_trigger AFTER DELETE ON siteclimatereading
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('siteclimatereading_history', 'id');
 ALTER TABLE siteclimatereading_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (679, '#14382 - Climate feature: site climate readings');
+INSERT INTO schema_version (version_number, comment) VALUES (686, '#14382 - Climate feature: site climate readings');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
