@@ -105,37 +105,42 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
-	@DisplayName("MEAS notifies confirmed, probable, possible and discarded cases")
-	public void measNotifiesEveryClassifiedCaseIncludingDiscarded() {
+	@DisplayName("MEAS and RUBE notify confirmed, probable, possible and discarded cases")
+	public void measAndRubeNotifyEveryClassifiedCaseIncludingDiscarded() {
 
-		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.MEAS);
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE)) {
 
-		assertThat(
-			notified,
-			containsInAnyOrder(
-				CaseClassification.CONFIRMED,
-				CaseClassification.CONFIRMED_NO_SYMPTOMS,
-				CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
-				CaseClassification.PROBABLE,
-				CaseClassification.SUSPECT,
-				CaseClassification.NO_CASE));
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
 
-		// An unclassified case is still not a notification.
-		assertThat(notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(
+					CaseClassification.CONFIRMED,
+					CaseClassification.CONFIRMED_NO_SYMPTOMS,
+					CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+					CaseClassification.PROBABLE,
+					CaseClassification.SUSPECT,
+					CaseClassification.NO_CASE));
 
-		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.MEAS), is(true));
+			// An unclassified case is still not a notification.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
 	}
 
 	@Test
 	@DisplayName("DISCARDED is reported only by a code that declares it")
 	public void discardedIsReportedOnlyWhereDeclared() {
 
-		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.MEAS, EpipulseCaseClassificationRef.DISCARDED), is(true));
+		Set<EpipulseSubjectCode> declaring = EnumSet.of(EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE);
 
 		for (EpipulseSubjectCode subjectCode : EpipulseSubjectCode.values()) {
-			if (subjectCode != EpipulseSubjectCode.MEAS) {
-				assertThat(subjectCode.name(), EpipulseCaseInclusion.reports(subjectCode, EpipulseCaseClassificationRef.DISCARDED), is(false));
-			}
+			assertThat(
+				subjectCode.name(),
+				EpipulseCaseInclusion.reports(subjectCode, EpipulseCaseClassificationRef.DISCARDED),
+				is(declaring.contains(subjectCode)));
 		}
 		assertThat(EpipulseCaseInclusion.reports(null, EpipulseCaseClassificationRef.DISCARDED), is(false));
 
@@ -149,7 +154,7 @@ public class EpipulseCaseInclusionTest {
 
 		// Default behavior for non-enrolled codes is no narrowing.
 		Set<EpipulseSubjectCode> narrowed =
-			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS);
+			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE);
 
 		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
 			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));

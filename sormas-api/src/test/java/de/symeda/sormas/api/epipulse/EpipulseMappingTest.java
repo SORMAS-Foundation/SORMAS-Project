@@ -543,10 +543,11 @@ public class EpipulseMappingTest {
 	}
 
 	@Test
-	@DisplayName("a ruled-out case reports DISCARDED for MEAS, and blank for a code without it")
+	@DisplayName("a ruled-out case reports DISCARDED for MEAS and RUBE, and blank for a code without it")
 	public void ruledOutReportsDiscardedOnlyWhereDeclared() {
 
 		assertEquals("DISCARDED", classification(EpipulseSubjectCode.MEAS, CaseClassification.NO_CASE));
+		assertEquals("DISCARDED", classification(EpipulseSubjectCode.RUBE, CaseClassification.NO_CASE));
 		assertEquals("POSS", classification(EpipulseSubjectCode.MEAS, CaseClassification.SUSPECT));
 		assertNull(classification(EpipulseSubjectCode.MEAS, CaseClassification.NOT_CLASSIFIED));
 

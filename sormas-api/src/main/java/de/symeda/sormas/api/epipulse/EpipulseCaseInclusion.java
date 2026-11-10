@@ -85,6 +85,8 @@ public final class EpipulseCaseInclusion {
 		notified.put(EpipulseSubjectCode.MALA, CONFIRMED);
 		// MEAS's CaseClassification value set in metadata is CONF, PROB, POSS and DISCARDED.
 		notified.put(EpipulseSubjectCode.MEAS, CONFIRMED_PROBABLE_POSSIBLE_DISCARDED);
+		// RUBE's CaseClassification value set in metadata is the same as MEAS's.
+		notified.put(EpipulseSubjectCode.RUBE, CONFIRMED_PROBABLE_POSSIBLE_DISCARDED);
 
 		return Collections.unmodifiableMap(notified);
 	}
