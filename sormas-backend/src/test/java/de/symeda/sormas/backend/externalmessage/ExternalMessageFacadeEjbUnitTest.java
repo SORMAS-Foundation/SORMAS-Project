@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.externalmessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,6 +53,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
+import de.symeda.sormas.backend.therapy.TreatmentService;
 
 @ExtendWith(MockitoExtension.class)
 public class ExternalMessageFacadeEjbUnitTest {
@@ -48,6 +64,8 @@ public class ExternalMessageFacadeEjbUnitTest {
 	private ExternalMessageService externalMessageService;
 	@Mock
 	private SurveillanceReportService surveillanceReportService;
+	@Mock
+	private TreatmentService treatmentService;
 	@Mock
 	private CountryService countryService;
 	@Mock
@@ -113,7 +131,7 @@ public class ExternalMessageFacadeEjbUnitTest {
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);
 		when(countryService.getByReferenceDto(null)).thenReturn(null);
 		when(facilityService.getByReferenceDto(null)).thenReturn(null);
-		
+
 		final SymptomsDto symptomsDto = new SymptomsDto();
 		externalMessageDto.setCaseSymptoms(symptomsDto);
 

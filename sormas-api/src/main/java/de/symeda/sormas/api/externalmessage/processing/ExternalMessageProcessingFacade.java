@@ -67,6 +67,8 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
+import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.utils.dataprocessing.AbstractProcessingFacade;
 
 public abstract class ExternalMessageProcessingFacade extends AbstractProcessingFacade {
@@ -83,6 +85,7 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 	private final CountryFacade countryFacade;
 	private final SurveillanceReportFacade surveillanceReportFacade;
 	private final NotifierFacade notifierFacade;
+	private final TreatmentFacade treatmentFacade;
 
 	public ExternalMessageProcessingFacade(
 		ExternalMessageFacade externalMessageFacade,
@@ -102,7 +105,8 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		CustomizableEnumFacade customizableEnumFacade,
 		CountryFacade countryFacade,
 		SurveillanceReportFacade surveillanceReportFacade,
-		NotifierFacade notifierFacade) {
+		NotifierFacade notifierFacade,
+		TreatmentFacade treatmentFacade) {
 		super(featureConfigurationFacade, caseFacade, contactFacade, regionFacade, districtFacade, communityFacade);
 		this.externalMessageFacade = externalMessageFacade;
 		this.configFacade = configFacade;
@@ -116,6 +120,7 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		this.countryFacade = countryFacade;
 		this.surveillanceReportFacade = surveillanceReportFacade;
 		this.notifierFacade = notifierFacade;
+		this.treatmentFacade = treatmentFacade;
 	}
 
 	public boolean existsForwardedExternalMessageWith(String reportId) {
@@ -232,6 +237,10 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 
 	public CaseDataDto saveCase(CaseDataDto caseDto) {
 		return caseFacade.save(caseDto);
+	}
+
+	public TreatmentDto saveTreatment(TreatmentDto treatment) {
+		return treatmentFacade.saveTreatment(treatment);
 	}
 
 	public List<SampleDto> getSamplesByLabSampleId(String labSampleId) {

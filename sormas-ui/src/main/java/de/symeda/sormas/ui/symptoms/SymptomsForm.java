@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -743,6 +743,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					field.setEnabled(!noConcurrentSti);
 				});
 			});
+		}
+
+		// Respiratory with and without membrane exclude each other: setting one to YES sets the other to NO
+		Field<?> respiratoryWithMembraneField = getField(RESPIRATORY_WITH_MEMBRANE);
+		Field<?> respiratoryWithoutMembraneField = getField(RESPIRATORY_WITHOUT_MEMBRANE);
+		if (respiratoryWithMembraneField instanceof NullableOptionGroup && respiratoryWithoutMembraneField instanceof NullableOptionGroup) {
+			setupMutuallyExclusiveFields((NullableOptionGroup) respiratoryWithMembraneField, (NullableOptionGroup) respiratoryWithoutMembraneField);
 		}
 
 		monkeypoxImageFieldIds = Arrays.asList(LESIONS_RESEMBLE_IMG1, LESIONS_RESEMBLE_IMG2, LESIONS_RESEMBLE_IMG3, LESIONS_RESEMBLE_IMG4);

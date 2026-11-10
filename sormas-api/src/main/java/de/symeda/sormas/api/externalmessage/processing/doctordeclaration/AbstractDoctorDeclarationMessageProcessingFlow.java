@@ -40,6 +40,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -61,7 +62,10 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsComparisonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.therapy.TreatmentReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.DtoUserDefinedValuesHelper;
@@ -150,9 +154,70 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		if (surveillanceReport != null) {
 			externalMessage.setSurveillanceReport(surveillanceReport.toReference());
 		}
+
+		final CaseDataDto caze = result.getData() != null ? result.getData().getCase() : null;
+		if (caze != null) {
+			saveTreatments(caze, externalMessage);
+		}
+
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		externalMessage.setChangeDate(new Date());
 		getExternalMessageProcessingFacade().saveExternalMessage(externalMessage);
+	}
+
+	/**
+	 * Saves the treatments of the external message on the therapy of the case and links the first one to the external message.
+	 * A treatment needs the case therapy, so it can only be created once the case exists.
+	 *
+	 * @param caze
+	 *            The case the external message was processed into.
+	 * @param externalMessage
+	 *            The external message containing the treatments as JSON.
+	 */
+	protected void saveTreatments(CaseDataDto caze, ExternalMessageDto externalMessage) {
+
+		if (isEmptyJson(externalMessage.getTreatments()) || externalMessage.getTreatment() != null) {
+			return;
+		}
+
+		if (caze.getTherapy() == null) {
+			logger.warn("[SAVE TREATMENTS] Case with UUID {} has no therapy, treatments are not saved.", caze.getUuid());
+			return;
+		}
+
+		if (!getExternalMessageProcessingFacade().hasAllUserRights(UserRight.TREATMENT_CREATE)) {
+			logger
+				.warn("[SAVE TREATMENTS] User is not allowed to create treatments, treatments are not saved for case with UUID {}.", caze.getUuid());
+			return;
+		}
+
+		final List<TreatmentDto> treatments;
+		try {
+			treatments = deserializeEmbeddedList(externalMessage.getTreatments(), new TypeReference<List<TreatmentDto>>() {
+			});
+		} catch (JsonProcessingException e) {
+			throw new IllegalStateException("Failed to process treatments for case with UUID " + caze.getUuid(), e);
+		}
+
+		for (TreatmentDto treatment : treatments) {
+			final TreatmentDto newTreatment = TreatmentDto.build(caze.getTherapy().toReference());
+			newTreatment.setTreatmentType(treatment.getTreatmentType());
+			newTreatment.setTreatmentDetails(treatment.getTreatmentDetails());
+			newTreatment.setTypeOfDrug(treatment.getTypeOfDrug());
+			newTreatment.setDose(treatment.getDose());
+			newTreatment.setRoute(treatment.getRoute());
+			newTreatment.setRouteDetails(treatment.getRouteDetails());
+			newTreatment.setExecutingClinician(treatment.getExecutingClinician());
+			newTreatment.setAdditionalNotes(treatment.getAdditionalNotes());
+			if (treatment.getTreatmentDateTime() != null) {
+				newTreatment.setTreatmentDateTime(treatment.getTreatmentDateTime());
+			}
+
+			final TreatmentDto savedTreatment = getExternalMessageProcessingFacade().saveTreatment(newTreatment);
+			if (externalMessage.getTreatment() == null) {
+				externalMessage.setTreatment(new TreatmentReferenceDto(savedTreatment.getUuid()));
+			}
+		}
 	}
 
 	/**
@@ -221,6 +286,13 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		caseDto.setTreatmentStarted(externalMessageDto.getTreatmentStarted());
 		caseDto.setTreatmentStartDate(externalMessageDto.getTreatmentStartedDate());
 		caseDto.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessageDto.getTreatmentNotApplicable()));
+
+		if (externalMessageDto.getCasePregnant() != null) {
+			caseDto.setPregnant(externalMessageDto.getCasePregnant());
+		}
+		if (externalMessageDto.getCaseTrimester() != null) {
+			caseDto.setTrimester(externalMessageDto.getCaseTrimester());
+		}
 
 	}
 
@@ -415,7 +487,9 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			|| StringUtils.isNotBlank(externalMessage.getOtherDiagnosticCriteria())
 			|| externalMessage.getTreatmentStarted() != null
 			|| externalMessage.getTreatmentStartedDate() != null
-			|| externalMessage.getTreatmentNotApplicable() != null;
+			|| externalMessage.getTreatmentNotApplicable() != null
+			|| externalMessage.getCasePregnant() != null
+			|| externalMessage.getCaseTrimester() != null;
 	}
 
 	private boolean hasExternalHealthConditionsData(ExternalMessageDto externalMessage) {
@@ -470,7 +544,9 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			|| StringUtils.isNotBlank(caze.getOtherDiagnosticCriteria())
 			|| (caze.getTreatmentStarted() != null && caze.getTreatmentStarted() != YesNoUnknown.UNKNOWN)
 			|| caze.getTreatmentStartDate() != null
-			|| caze.isTreatmentNotApplicable();
+			|| caze.isTreatmentNotApplicable()
+			|| (caze.getPregnant() != null && caze.getPregnant() != YesNoUnknown.UNKNOWN)
+			|| (caze.getTrimester() != null && caze.getTrimester() != Trimester.UNKNOWN);
 	}
 
 	private boolean hasAnyUserDefinedCaseHealthConditionsValues(CaseDataDto caze, ExternalMessageDto externalMessage) {
