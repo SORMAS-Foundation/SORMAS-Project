@@ -74,6 +74,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
@@ -187,6 +188,7 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 			c.setInvestigatedDate(INVESTIGATED);
 			c.setClinicalConfirmation(YesNoUnknown.YES);
 			c.setPregnant(YesNoUnknown.YES);
+			c.setTrimester(Trimester.THIRD);
 			c.getSymptoms().setArthritis(SymptomState.YES);
 			c.getSymptoms().setEncephalitis(SymptomState.YES);
 			c.getEpiData().setClusterRelated(true);
@@ -245,9 +247,10 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		// worked out from the tests: the earliest positive verified one is on the 12th
 		assertThat(export.value(entry, DATE_USED_FOR_STATISTICS), is("2024-06-12"));
 
-		// the pregnancy block: one column derived, one blank for want of a field that measures it
+		// the pregnancy block: the trimester as EpiPulse's week band, not the person's gestational
+		// age at birth (16, which would be W13-20)
 		assertThat(export.value(entry, PREGNANCY), is("true"));
-		assertThat(export.value(entry, WEEK_OF_GESTATION), is(blankOrNullString()));
+		assertThat(export.value(entry, WEEK_OF_GESTATION), is("W20+"));
 
 		// from the person and their address
 		assertThat(export.value(entry, GENDER), is("F"));
@@ -282,8 +285,8 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	@Test
-	@DisplayName("Pregnancy reports nothing for UNKNOWN, and WeekOfGestation nothing at all")
-	public void pregnancyIsReportedAndWeekOfGestationIsNot() {
+	@DisplayName("Pregnancy reports nothing for UNKNOWN, and WeekOfGestation never reads the gestational age at birth")
+	public void pregnancyIsReportedAndWeekOfGestationIgnoresGestationAgeAtBirth() {
 
 		// Four cases in one export rather than four tests: the database is truncated after every
 		// method, so another case inside one costs almost nothing. Each person carries a different
@@ -303,11 +306,11 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(export.entryFor(unknown.getUuid()), PREGNANCY), is(blankOrNullString()));
 		assertThat(export.value(export.entryFor(unanswered.getUuid()), PREGNANCY), is(blankOrNullString()));
 
-		// WeekOfGestation is blank for all four, including the three whose person records a
-		// gestational age at birth in each of the three bands EpiPulse offers. That field measures
-		// the gestational age of the person at their own birth, not of the patient's pregnancy when
-		// she was infected, so a value here would be the wrong measurement rather than a missing
-		// one. This is the assertion that fails if the column is ever wired back to it.
+		// None above recordtrimester, so WeekOfGestation is blank for all, including
+		// the three whose person records a gestational age at birth in each of the three bands
+		// EpiPulse offers. That field measures the person at their own birth, not the patient's
+		// pregnancy when she was infected. This is the assertion that fails if the column is ever
+		// wired to it.
 		for (CaseDataDto caze : new CaseDataDto[] {
 			pregnant,
 			notPregnant,
@@ -319,6 +322,29 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 				export.value(export.entryFor(caze.getUuid()), WEEK_OF_GESTATION),
 				is(blankOrNullString()));
 		}
+	}
+
+	@Test
+	@DisplayName("WeekOfGestation reports the first and third trimester's band, and nothing for the second, UNKNOWN or none")
+	public void weekOfGestationReportsTheTrimesterBand() {
+
+		CaseDataDto first = trimesterCase(Trimester.FIRST);
+		// Second is ambiguous given the available bands
+		CaseDataDto second = trimesterCase(Trimester.SECOND);
+		CaseDataDto third = trimesterCase(Trimester.THIRD);
+		CaseDataDto unknown = trimesterCase(Trimester.UNKNOWN);
+		CaseDataDto none = trimesterCase(null);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.RUBE, PERIOD_START, PERIOD_END);
+
+		// weeks 1-12 and 28 or later each fall inside one band
+		assertThat(export.value(export.entryFor(first.getUuid()), WEEK_OF_GESTATION), is("W1-12"));
+		assertThat(export.value(export.entryFor(third.getUuid()), WEEK_OF_GESTATION), is("W20+"));
+		// weeks 13-27 straddle W13-20 and W20+, and the doctor's declaration stores both its
+		// "13 to 20" and its "20 and more" as SECOND, so neither band can be claimed
+		assertThat(export.value(export.entryFor(second.getUuid()), WEEK_OF_GESTATION), is(blankOrNullString()));
+		assertThat(export.value(export.entryFor(unknown.getUuid()), WEEK_OF_GESTATION), is(blankOrNullString()));
+		assertThat(export.value(export.entryFor(none.getUuid()), WEEK_OF_GESTATION), is(blankOrNullString()));
 	}
 
 	@Test
@@ -629,6 +655,16 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 			creator.createPerson("Anna", "Bauer", Sex.FEMALE, 1990, 6, 15, p -> p.setGestationAgeAtBirth(gestationWeeks)).toReference();
 
 		return fixture.caze(person, ONSET, caze -> caze.setPregnant(pregnant));
+	}
+
+	private CaseDataDto trimesterCase(Trimester trimester) {
+
+		PersonReferenceDto person = creator.createPerson("Anna", "Bauer", Sex.FEMALE, 1990, 6, 15).toReference();
+
+		return fixture.caze(person, ONSET, caze -> {
+			caze.setPregnant(YesNoUnknown.YES);
+			caze.setTrimester(trimester);
+		});
 	}
 
 	private CaseDataDto iggCase(PathogenTestResultType result, Consumer<PathogenTestDto> flags) {

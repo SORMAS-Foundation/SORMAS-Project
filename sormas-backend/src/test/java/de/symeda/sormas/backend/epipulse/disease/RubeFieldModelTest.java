@@ -36,6 +36,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
 import de.symeda.sormas.api.epipulse.EpipulseMapping;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.epipulse.EpipulseVariable;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseClusterSettingRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseMeaslesGenotypeRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseRubellaGenotypeRef;
+import de.symeda.sormas.api.epipulse.referencevalue.EpipulseWeekOfGestationRef;
 import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.backend.epipulse.fieldmodel.EpipulseValues;
 import de.symeda.sormas.backend.epipulse.fieldmodel.FieldModel;
@@ -219,28 +221,41 @@ public class RubeFieldModelTest {
 	}
 
 	@Test
-	@DisplayName("the two columns SORMAS cannot answer are declared and blank, not missing")
-	public void theTwoColumnsSormasCannotAnswerAreDeclaredAndBlank() {
+	@DisplayName("the column SORMAS cannot answer is declared and blank, not missing")
+	public void theColumnSormasCannotAnswerIsDeclaredAndBlank() {
 
-		// EpiPulse validates against the declared column set, so these columns must be present but
-		// must not carry a value. IgGAvidityTest has no SORMAS field. WeekOfGestation's near neighbour,
-		// PersonDto.gestationAgeAtBirth, measures a different pregnancy, and reporting it would assert a
-		// gestational age at infection the record does not support. The set assertion above proves the
-		// columns are declared; this proves they stay empty when every other value is filled.
+		// EpiPulse validates against the declared column set, so this column must be present but
+		// must not carry a value: IgGAvidityTest has no SORMAS field. The set assertion above proves
+		// the column is declared; this proves it stays empty when the pregnancy block is filled.
 		EpipulseValues values = new EpipulseValues(fieldModel());
 
 		EpipulseDiseaseExportEntryDto entry = new EpipulseDiseaseExportEntryDto();
 		entry.setSubjectCode(EpipulseSubjectCode.RUBE);
 		entry.setPregnancy(Boolean.TRUE);
+		entry.setTrimester(Trimester.THIRD);
 
-		assertThat(values.emits(EpipulseVariable.WEEK_OF_GESTATION), is(true));
 		assertThat(values.emits(EpipulseVariable.IG_G_AVIDITY_TEST), is(true));
-		assertThat(values.value(entry, EpipulseVariable.WEEK_OF_GESTATION), is(""));
 		assertThat(values.value(entry, EpipulseVariable.IG_G_AVIDITY_TEST), is(""));
 
-		// and the column that shares its block with WeekOfGestation is derived, so the blank above
-		// is this one column's property and not the whole pregnancy block being unwired
 		assertThat(values.value(entry, EpipulseVariable.PREGNANCY), is("true"));
+		assertThat(values.value(entry, EpipulseVariable.WEEK_OF_GESTATION), is("W20+"));
+	}
+
+	@Test
+	@DisplayName("WeekOfGestation maps the first and third trimester to their band, and the second, UNKNOWN or none to blank")
+	public void weekOfGestationMapsTheTrimester() {
+
+		assertThat(EpipulseWeekOfGestationRef.codeFor(Trimester.FIRST), is("W1-12"));
+		// weeks 13-27 straddle W13-20 and W20+
+		assertThat(EpipulseWeekOfGestationRef.codeFor(Trimester.SECOND), is((String) null));
+		assertThat(EpipulseWeekOfGestationRef.codeFor(Trimester.THIRD), is("W20+"));
+		assertThat(EpipulseWeekOfGestationRef.codeFor(Trimester.UNKNOWN), is((String) null));
+		assertThat(EpipulseWeekOfGestationRef.codeFor(null), is((String) null));
+
+		// the three codes are EpiPulse's whole value set for RUBE WeekOfGestation, in its own order
+		assertThat(
+			Arrays.stream(EpipulseWeekOfGestationRef.values()).map(EpipulseWeekOfGestationRef::getCode).collect(Collectors.toList()),
+			contains("W1-12", "W13-20", "W20+"));
 	}
 
 	// ---------------------------------------------------------------------------------------

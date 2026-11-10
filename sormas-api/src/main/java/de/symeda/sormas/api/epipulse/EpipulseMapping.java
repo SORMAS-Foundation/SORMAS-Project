@@ -34,6 +34,7 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulsePathogenTestTypeRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulsePneumococcalSerotypingMethodRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseStatusRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseVaccinationStatusRef;
+import de.symeda.sormas.api.epipulse.referencevalue.EpipulseWeekOfGestationRef;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.sample.SerotypingMethod;
@@ -655,6 +656,11 @@ public final class EpipulseMapping {
 	/** {@code Pregnancy} BOOL at infection time. */
 	public static String pregnancy(EpipulseDiseaseExportEntryDto entry) {
 		return text(entry.getPregnancy());
+	}
+
+	/** {@code WeekOfGestation} band from the trimester; blank for SECOND, {@code UNKNOWN} or none recorded. */
+	public static String weekOfGestation(EpipulseDiseaseExportEntryDto entry) {
+		return EpipulseWeekOfGestationRef.codeFor(entry.getTrimester());
 	}
 
 	// --- antimicrobial susceptibility testing ---

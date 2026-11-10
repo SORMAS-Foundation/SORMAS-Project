@@ -60,8 +60,8 @@ public final class RubeSql {
 	 * <p>
 	 * {@code PlaceOfInfection}, hospitalization, and vaccination are merged from shared fragments.
 	 * {@code ComplicationDiagnosis} and {@code Pregnancy} are already available from common-query
-	 * joins/columns. {@code WeekOfGestation} and {@code IgGAvidityTest} stay blank by design (no
-	 * matching SORMAS data field).
+	 * joins/columns, as is {@code WeekOfGestation} (from {@code c.trimester}). {@code IgGAvidityTest}
+	 * stays blank by design (no matching SORMAS data field).
 	 */
 	public static SqlQueryModel spec() {
 

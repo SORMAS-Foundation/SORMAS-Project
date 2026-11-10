@@ -154,6 +154,7 @@ public final class EpipulseCommonSql {
 		   .append("                               c.healthconditions_id,")
 		   .append("                               c.investigateddate,")
 		   .append("                               c.pregnant,")
+		   .append("                               c.trimester,")
 		   .append("                               c.postmortem,")
 		   .append("                               c.clinicalconfirmation")
 		   .append("                        FROM cases c")

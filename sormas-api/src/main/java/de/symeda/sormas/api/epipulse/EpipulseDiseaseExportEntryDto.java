@@ -20,6 +20,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SerotypingMethod;
@@ -223,6 +224,7 @@ public class EpipulseDiseaseExportEntryDto {
 	// -- RUBE (Rubella) --
 
 	private Boolean pregnancy; // CaseDataDto.pregnant
+	private Trimester trimester; // CaseDataDto.trimester, RUBE WeekOfGestation
 
 	// -- TUBE (Tuberculosis) --
 	// hivStatus/pathogen are reused with TUBE-specific value sets and source mapping.
@@ -1128,6 +1130,14 @@ public class EpipulseDiseaseExportEntryDto {
 
 	public void setPregnancy(Boolean pregnancy) {
 		this.pregnancy = pregnancy;
+	}
+
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
 	}
 
 	public Date getDateOfEntry() {
