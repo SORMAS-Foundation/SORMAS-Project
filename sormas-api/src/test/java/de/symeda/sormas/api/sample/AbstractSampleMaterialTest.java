@@ -35,7 +35,7 @@ public abstract class AbstractSampleMaterialTest extends AbstractUnitTest {
 		SampleMaterial[] forbiddenSampleMaterials = ArrayUtils.removeElements(SampleMaterial.values(), getAllowedSampleMaterial());
 
 		Assertions.assertAll(Arrays.stream(forbiddenSampleMaterials).map((type) -> (Executable) () -> {
-			assertFalse(checker.isVisible(PathogenTestType.class, type.name()), toReadableString(type) + " must not be visible for " + getDisease());
+			assertFalse(checker.isVisible(SampleMaterial.class, type.name()), toReadableString(type) + " must not be visible for " + getDisease());
 		}).collect(Collectors.toList()));
 	}
 

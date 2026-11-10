@@ -36,6 +36,7 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseVaccinationStatusRef
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 /**
@@ -872,6 +873,195 @@ public final class EpipulseMapping {
 	 */
 	private static String micValue(Double value) {
 		return value == null ? "" : BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
+	}
+
+	// --- TUBE (Tuberculosis) ---
+
+	/**
+	 * {@code BornReportingCountry} BOOL: whether the patient originates from the reporting country.
+	 *
+	 * <p>
+	 * Place of birth decides; citizenship is fallback when birth country is missing. Blank when
+	 * neither is known.
+	 */
+	public static String bornReportingCountry(EpipulseDiseaseExportEntryDto entry) {
+		return isReportingCountry(entry, firstPopulated(entry.getBirthCountryNutsCode(), entry.getCitizenshipCountryNutsCode()));
+	}
+
+	/** {@code NationalityReportingCountry} BOOL, from citizenship alone. Unknown stays blank. */
+	public static String nationalityReportingCountry(EpipulseDiseaseExportEntryDto entry) {
+		return isReportingCountry(entry, entry.getCitizenshipCountryNutsCode());
+	}
+
+	/**
+	 * Compares a country NUTS code against the exporting server's own, as the two
+	 * {@code *ReportingCountry} booleans do.
+	 */
+	private static String isReportingCountry(EpipulseDiseaseExportEntryDto entry, String countryNutsCode) {
+
+		String reportingCountryNutsCode = entry.getServerCountryNutsCode();
+
+		if (countryNutsCode == null || countryNutsCode.isEmpty() || reportingCountryNutsCode == null || reportingCountryNutsCode.isEmpty()) {
+			return "";
+		}
+
+		return String.valueOf(countryNutsCode.equals(reportingCountryNutsCode));
+	}
+
+	/** {@code DateOfEntry}: when a patient of foreign origin entered the reporting country. */
+	public static String dateOfEntry(EpipulseDiseaseExportEntryDto entry) {
+		return formatDate(entry.getDateOfEntry());
+	}
+
+	/** {@code MajorSiteOfTB} code; see {@code EpipulseTubeSiteOfTbRef}. */
+	public static String majorSiteOfTB(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getMajorSiteOfTB();
+	}
+
+	/** {@code MinorSiteOfTB} code; unlike major site, never {@code PULMONARY}. */
+	public static String minorSiteOfTB(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getMinorSiteOfTB();
+	}
+
+	/**
+	 * {@code DiagnosedAnteMortem} BOOL, the negation of {@code CaseDataDto.postMortem}.
+	 *
+	 * <p>
+	 * Source is primitive {@code boolean}, so the derived value is never null.
+	 */
+	public static String diagnosedAnteMortem(EpipulseDiseaseExportEntryDto entry) {
+		return text(entry.getDiagnosedAnteMortem());
+	}
+
+	/**
+	 * {@code PrevDiagnosis} BOOL: tuberculosis diagnosed in an earlier calendar year.
+	 *
+	 * <p>
+	 * Derived from infection year only; value is {@code true} or blank (never {@code false}).
+	 */
+	public static String prevDiagnosis(EpipulseDiseaseExportEntryDto entry) {
+
+		Integer year = previousDiagnosisYear(entry);
+
+		return year == null ? "" : String.valueOf(true);
+	}
+
+	/** {@code PrevDiagnosisYear}, blank unless it is earlier than {@code DateUsedForStatistics}. */
+	public static String prevDiagnosisYear(EpipulseDiseaseExportEntryDto entry) {
+		return text(previousDiagnosisYear(entry));
+	}
+
+	/**
+	 * The recorded year of an earlier episode, or {@code null} where there is none EpiPulse would
+	 * accept.
+	 *
+	 * <p>
+	 * EpiPulse requires the year to precede {@code DateUsedForStatistics}; a year equal to or later
+	 * than the reporting year describes this episode, not a previous one.
+	 *
+	 * <p>
+	 * Non-positive year means unanswered ({@code int8 default 0} source), not a valid episode year.
+	 */
+	private static Integer previousDiagnosisYear(EpipulseDiseaseExportEntryDto entry) {
+
+		Integer year = entry.getTuberculosisInfectionYear();
+		Date dateUsedForStatistics = EpipulseCaseDates.dateUsedForStatistics(entry);
+
+		if (year == null || year <= 0 || dateUsedForStatistics == null) {
+			return null;
+		}
+
+		return year < UtilDate.toLocalDate(dateUsedForStatistics).getYear() ? year : null;
+	}
+
+	/** {@code PrevTreatment} BOOL. Unknown stays blank. */
+	public static String prevTreatment(EpipulseDiseaseExportEntryDto entry) {
+		return text(entry.getPrevTreatment());
+	}
+
+	/** {@code PrevTreatmentCompletion} code; see {@code EpipulseTubePrevTreatmentCompletionRef}. */
+	public static String prevTreatmentCompletion(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getPrevTreatmentCompletion();
+	}
+
+	/** {@code ResultCulture}: {@code POS}, {@code NEG} or {@code NOTEST}. */
+	public static String resultCulture(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getResultCulture();
+	}
+
+	/** {@code ResultMicroscopyAFB}: {@code POS}, {@code NEG} or {@code NOTEST}. */
+	public static String resultMicroscopyAFB(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getResultMicroscopyAFB();
+	}
+
+	/** {@code ResultOtherTest}: nucleic acid and histopathology findings, or {@code NOTEST}. */
+	public static String resultOtherTest(EpipulseDiseaseExportEntryDto entry) {
+		return EpipulseLaboratoryMapper.mapOtherTestResult(entry.getHistopathologyResult(), entry.getNucleicAcidResult());
+	}
+
+	/** {@code SIR_AMK}: susceptibility to Amikacin. */
+	public static String sir_AMK(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_AMK();
+	}
+
+	/** {@code SIR_BDQ}: susceptibility to Bedaquiline. */
+	public static String sir_BDQ(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_BDQ();
+	}
+
+	/** {@code SIR_CLF}: susceptibility to Clofazimine. */
+	public static String sir_CLF(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_CLF();
+	}
+
+	/** {@code SIR_DLM}: susceptibility to Delamanid. */
+	public static String sir_DLM(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_DLM();
+	}
+
+	/** {@code SIR_ETH}: susceptibility to Ethambutol. */
+	public static String sir_ETH(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_ETH();
+	}
+
+	/** {@code SIR_ETI}: susceptibility to Ethionamide. */
+	public static String sir_ETI(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_ETI();
+	}
+
+	/** {@code SIR_INH}: susceptibility to Isoniazid. */
+	public static String sir_INH(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_INH();
+	}
+
+	/** {@code SIR_LNZ}: susceptibility to Linezolid. */
+	public static String sir_LNZ(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_LNZ();
+	}
+
+	/** {@code SIR_LVX}: susceptibility to Levofloxacin. */
+	public static String sir_LVX(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_LVX();
+	}
+
+	/** {@code SIR_MFX}: susceptibility to Moxifloxacin. */
+	public static String sir_MFX(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_MFX();
+	}
+
+	/** {@code SIR_PTM}: susceptibility to Pretomanid. */
+	public static String sir_PTM(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_PTM();
+	}
+
+	/** {@code SIR_PZA}: susceptibility to Pyrazinamide. */
+	public static String sir_PZA(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_PZA();
+	}
+
+	/** {@code SIR_STR}: susceptibility to Streptomycin. */
+	public static String sir_STR(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_STR();
 	}
 
 	/** Converts nullable value to export text. */

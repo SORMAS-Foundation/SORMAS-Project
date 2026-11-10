@@ -299,7 +299,8 @@ public class CronService {
 		}
 	}
 
-	public void sofDeleteOldNegativeSamples() {
+	@Deprecated
+	public void softDeleteOldNegativeSamples() {
 		sampleService.cleanupOldCovidSamples();
 	}
 }

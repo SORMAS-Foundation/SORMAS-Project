@@ -18015,17 +18015,9 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS linezolidmethod varchar(
 
 INSERT INTO schema_version (version_number, comment) VALUES (679, '#14385 - Tuberculosis drug susceptibility fields');
 
--- 2026-10-02 External personal data provider configuration
+-- 2026-11-03 Retire the COVID negative-sample cleanup job #13818
+DELETE FROM systemconfigurationvalue WHERE config_key = 'CRON.SOFT_DELETE_OLD_NEGATIVE_SAMPLES';
 
-INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
-                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id, uuid)
-SELECT 'EXTERNAL_PERSON_DATA_PROVIDER_ENABLED', 'false', id, false, '^true|false$',
-       false, 'de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider',
-       'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid()
-FROM systemconfigurationcategory
-WHERE name = 'GENERAL_CATEGORY';
-
-INSERT INTO schema_version (version_number, comment) VALUES (680, 'Add external person data provider configuration');
-
+INSERT INTO schema_version (version_number, comment) VALUES (680, 'Retire the COVID negative-sample cleanup job #13818');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

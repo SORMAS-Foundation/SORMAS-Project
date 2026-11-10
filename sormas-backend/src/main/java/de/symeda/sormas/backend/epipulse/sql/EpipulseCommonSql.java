@@ -18,7 +18,13 @@
 
 package de.symeda.sormas.backend.epipulse.sql;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.epipulse.EpipulseCaseInclusion;
 import de.symeda.sormas.api.epipulse.EpipulseCaseSubset;
+import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 
 /**
  * SQL shared by all EpiPulse disease exports.
@@ -45,10 +51,11 @@ public final class EpipulseCommonSql {
 	 *
 	 * @param excludeNonReportableCases
 	 *            whether to exclude cases flagged {@code excludefromreporting}
-	 * @param caseSubset
-	 *            optional subset discriminator for subject codes that split one disease
+	 * @param subjectCode
+	 *            the code being exported, which decides both the subset of its disease it reports
+	 *            and the classifications it notifies
 	 */
-	public static SqlQueryModel spec(boolean excludeNonReportableCases, EpipulseCaseSubset caseSubset) {
+	public static SqlQueryModel spec(boolean excludeNonReportableCases, EpipulseSubjectCode subjectCode) {
 
 		SqlQueryModel aggregates = SqlQueryModel.builder()
 			.ctes(buildCaseReferenceDatesCte())
@@ -68,17 +75,17 @@ public final class EpipulseCommonSql {
 				"LEFT JOIN case_reference_dates ON (c.id = case_reference_dates.case_id)")
 			.build();
 
-		return baseCtes(excludeNonReportableCases, caseSubset).plus(aggregates);
+		return baseCtes(excludeNonReportableCases, subjectCode).plus(aggregates);
 	}
 
 	/**
 	 * Builds the base CTE set used by all other common and disease CTEs:
 	 * {@code variables}, {@code config_data}, and {@code filtered_cases}.
 	 */
-	public static SqlQueryModel baseCtes(boolean excludeNonReportableCases, EpipulseCaseSubset caseSubset) {
+	public static SqlQueryModel baseCtes(boolean excludeNonReportableCases, EpipulseSubjectCode subjectCode) {
 
 		return SqlQueryModel.builder()
-			.ctes(buildVariablesCte(), buildConfigDataCte(), buildFilteredCasesCte(excludeNonReportableCases, caseSubset))
+			.ctes(buildVariablesCte(), buildConfigDataCte(), buildFilteredCasesCte(excludeNonReportableCases, subjectCode))
 			.build();
 	}
 
@@ -129,7 +136,8 @@ public final class EpipulseCommonSql {
 	 * If {@code caseSubset} is provided, an enum-provided case column is interpolated and compared
 	 * against bound value {@code :caseSubset}.
 	 */
-	private static String buildFilteredCasesCte(boolean excludeNonReportableCases, EpipulseCaseSubset caseSubset) {
+	private static String buildFilteredCasesCte(boolean excludeNonReportableCases, EpipulseSubjectCode subjectCode) {
+		EpipulseCaseSubset caseSubset = subjectCode.getCaseSubset();
 		StringBuilder cte = new StringBuilder();
 		//@formatter:off
 		cte.append("filtered_cases AS (SELECT c.id,")
@@ -148,6 +156,7 @@ public final class EpipulseCommonSql {
 		   .append("                               c.healthconditions_id,")
 		   .append("                               c.investigateddate,")
 		   .append("                               c.pregnant,")
+		   .append("                               c.postmortem,")
 		   .append("                               c.clinicalconfirmation")
 		   .append("                        FROM cases c")
 		   .append("                                 CROSS JOIN variables v")
@@ -160,6 +169,7 @@ public final class EpipulseCommonSql {
 			cte.append("                          AND c.").append(caseSubset.getCaseColumn()).append(" = :caseSubset");
 		}
 
+		appendNotifiedClassificationsClause(cte, subjectCode);
 		appendReportingExclusionClauseIfAdequate(cte, excludeNonReportableCases);
 		//@formatter:on
 
@@ -167,9 +177,27 @@ public final class EpipulseCommonSql {
 	}
 
 	/**
-	 * Finalizes {@code filtered_cases}, optionally adding exclusion of
-	 * {@code excludefromreporting = true}.
+	 * Keeps only the classifications this subject code notifies, where it notifies a subset of
+	 * them; a code that reports every case of its disease adds no clause.
+	 *
+	 * <p>
+	 * The names are inlined rather than bound, as every other enum-valued predicate in the module
+	 * is: they come from a Java enum, not from anything a user typed. A case whose classification
+	 * is in no EpiPulse code's list - unclassified, or ruled out - is excluded by the same clause,
+	 * because it would otherwise be exported with the column blank and rejected on arrival.
 	 */
+	private static void appendNotifiedClassificationsClause(StringBuilder cte, EpipulseSubjectCode subjectCode) {
+
+		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
+		if (notified.isEmpty()) {
+			return;
+		}
+
+		String classifications = notified.stream().map(classification -> "'" + classification.name() + "'").collect(Collectors.joining(", "));
+
+		cte.append("                          AND c.caseclassification IN (").append(classifications).append(")");
+	}
+
 	private static void appendReportingExclusionClauseIfAdequate(StringBuilder cte, boolean excludeNonReportableCases) {
 
 		if (excludeNonReportableCases) {

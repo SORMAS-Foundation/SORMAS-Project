@@ -21,6 +21,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -82,6 +83,14 @@ public class ManualMessageLogService extends BaseAdoService<ManualMessageLog> {
 		cq.orderBy(cb.desc(manualMessageLogRoot.get(ManualMessageLog.SENT_DATE)));
 
 		return em.createQuery(cq).setMaxResults(MANUAL_MESSAGE_LOG_LIMIT).getResultList();
+	}
+
+	public void deleteByCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<ManualMessageLog> cd = cb.createCriteriaDelete(ManualMessageLog.class);
+		Root<ManualMessageLog> root = cd.from(ManualMessageLog.class);
+		cd.where(cb.equal(root.get(ManualMessageLog.CASE), caze));
+		em.createQuery(cd).executeUpdate();
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaQuery<?> cq, CriteriaBuilder cb, Root<ManualMessageLog> root) {

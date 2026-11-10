@@ -1249,6 +1249,11 @@
         <group-name>EPIPULSE_EXPORT_DELETE</group-name>
     </security-role-mapping>
 
+    <security-role-mapping>
+        <role-name>EXTERNAL_PERSON_DATA_PROVIDER_ACCESS</role-name>
+        <group-name>EXTERNAL_PERSON_DATA_PROVIDER_ACCESS</group-name>
+    </security-role-mapping>
+
     <!-- SYSTEM ROLE -->
     <security-role-mapping>
         <role-name>SYSTEM</role-name>

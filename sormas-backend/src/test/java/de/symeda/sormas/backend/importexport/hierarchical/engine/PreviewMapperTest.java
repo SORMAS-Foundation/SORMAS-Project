@@ -23,7 +23,6 @@ class PreviewMapperTest {
 	void mapsBlocksWithLabelsLineRangesAndOperations() {
 		ToyDefinition toy = new ToyDefinition();
 		ImportPreviewDto preview = PreviewMapper.toPreview(
-			toy,
 			new Planner().plan(toy, SheetFixtures.table(ToyDefinition.HEADER, "| P1 | Alpha | C1 | 1 | |", "| | | C2 | 2 | |", "| | | | | x |"), null));
 
 		BlockPreviewDto block = preview.getBlocks().get(0);
@@ -40,7 +39,7 @@ class PreviewMapperTest {
 		ToyDefinition toy = new ToyDefinition().withParent("P1", "Alpha", V1);
 		ImportPlan plan = new Planner().plan(toy, SheetFixtures.table("| parent.key | child.code | child.amount |", "| P1 | C9 | 2 |"), null);
 
-		List<RecordOperationDto> operations = PreviewMapper.toPreview(toy, plan).getBlocks().get(0).getOperations();
+		List<RecordOperationDto> operations = PreviewMapper.toPreview(plan).getBlocks().get(0).getOperations();
 
 		assertEquals(MatchReason.BY_ID, operations.get(0).getMatchReason());
 		assertNull(operations.get(1).getMatchReason());
@@ -50,7 +49,7 @@ class PreviewMapperTest {
 	void aBlockRangeIncludesATrailingOrphanRow() {
 		ToyDefinition toy = new ToyDefinition();
 		ImportPreviewDto preview = PreviewMapper
-			.toPreview(toy, new Planner().plan(toy, SheetFixtures.table(ToyDefinition.HEADER, "| P1 | Alpha | | | |", "| | | | | stray |"), null));
+			.toPreview(new Planner().plan(toy, SheetFixtures.table(ToyDefinition.HEADER, "| P1 | Alpha | | | |", "| | | | | stray |"), null));
 
 		assertEquals(3, preview.getBlocks().get(0).getLastLine());
 	}

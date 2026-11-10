@@ -469,40 +469,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void patch_referenceData_countryByExternalId() {
-		// PREPARE
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
-
-		CountryDto dto = new CountryDto();
-		dto.setIsoCode("DEU");
-		dto.setExternalId("DE");
-		dto.setDefaultName("Germany");
-		CountryDto germanyReferenceDto = getCountryFacade().save(dto);
-
-		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
-
-		// External IDs are matched ignoring whitespace and case.
-		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", " de    ");
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(patchDictionary);
-
-		// EXECUTE
-		DataPatchResponse response = victim().patch(request);
-
-		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
-
-		// CHECK
-
-		Assertions.assertAll(
-			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
-
-			() -> Assertions.assertEquals(
-				new CountryReferenceDto(germanyReferenceDto.getUuid(), germanyReferenceDto.getIsoCode()),
-				actualPerson.getBirthCountry()));
-	}
-
-	@Test
 	void patch_referenceData_country_external_id() {
 		// PREPARE
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
