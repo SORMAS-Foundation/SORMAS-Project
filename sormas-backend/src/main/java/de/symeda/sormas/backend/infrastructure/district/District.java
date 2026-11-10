@@ -34,6 +34,7 @@ import javax.persistence.OrderBy;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import de.symeda.sormas.backend.climate.ClimateLocation;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.infrastructure.InfrastructureAdoWithDefault;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -56,6 +57,9 @@ public class District extends InfrastructureAdoWithDefault {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String FEATURE_CONFIGURATIONS = "featureConfigurations";
 	public static final String NUTS_CODE = "nutsCode";
+	public static final String CLIMATE_LATITUDE = "climateLatitude";
+	public static final String CLIMATE_LONGITUDE = "climateLongitude";
+	public static final String CLIMATE_LOCATION = "climateLocation";
 
 	private String name;
 	private Region region;
@@ -64,6 +68,9 @@ public class District extends InfrastructureAdoWithDefault {
 	private Float growthRate;
 	private String externalID;
 	private String nutsCode;
+	private Double climateLatitude;
+	private Double climateLongitude;
+	private ClimateLocation climateLocation;
 
 	private List<FeatureConfiguration> featureConfigurations;
 
@@ -136,5 +143,36 @@ public class District extends InfrastructureAdoWithDefault {
 
 	public void setNutsCode(String nutsCode) {
 		this.nutsCode = nutsCode;
+	}
+
+	/**
+	 * Point used to fetch this district's climate data; used for climate data only.
+	 */
+	public Double getClimateLatitude() {
+		return climateLatitude;
+	}
+
+	public void setClimateLatitude(Double climateLatitude) {
+		this.climateLatitude = climateLatitude;
+	}
+
+	public Double getClimateLongitude() {
+		return climateLongitude;
+	}
+
+	public void setClimateLongitude(Double climateLongitude) {
+		this.climateLongitude = climateLongitude;
+	}
+
+	/**
+	 * The climate location this district's climate data is stored on; set by the climate linking, not by the district form.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	public ClimateLocation getClimateLocation() {
+		return climateLocation;
+	}
+
+	public void setClimateLocation(ClimateLocation climateLocation) {
+		this.climateLocation = climateLocation;
 	}
 }

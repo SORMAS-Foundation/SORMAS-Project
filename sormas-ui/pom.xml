@@ -169,6 +169,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- GeoShapeProviderEjb (injected by the climate linking) references JTS geometry classes -->
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>

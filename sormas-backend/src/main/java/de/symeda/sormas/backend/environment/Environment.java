@@ -33,6 +33,7 @@ import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.VectorType;
 import de.symeda.sormas.api.environment.WaterType;
 import de.symeda.sormas.api.environment.WaterUse;
+import de.symeda.sormas.backend.climate.ClimateLocation;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.event.Event;
@@ -65,6 +66,7 @@ public class Environment extends CoreAdo {
 	public static final String ENVIRONMENT_SAMPLES = "environmentSamples";
 	public static final String VECTOR_TYPE = "vectorType";
 	public static final String EVENTS = "events";
+	public static final String CLIMATE_LOCATION = "climateLocation";
 
 	private Date reportDate;
 	private User reportingUser;
@@ -84,6 +86,7 @@ public class Environment extends CoreAdo {
 	private List<Event> events = new ArrayList<>();
 	private Set<EnvironmentSample> environmentSamples = new HashSet<>();
 	private VectorType vectorType;
+	private ClimateLocation climateLocation;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
@@ -260,5 +263,18 @@ public class Environment extends CoreAdo {
 		} else {
 			this.events = new ArrayList<>();
 		}
+	}
+
+	/**
+	 * The climate location for this environment's GPS; empty when the GPS is not usable, in which case its district's climate
+	 * data is shown. Set by the climate linking on save.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	public ClimateLocation getClimateLocation() {
+		return climateLocation;
+	}
+
+	public void setClimateLocation(ClimateLocation climateLocation) {
+		this.climateLocation = climateLocation;
 	}
 }

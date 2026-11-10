@@ -109,6 +109,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "views/configuration.scss";
 @import "views/statistics.scss";
 @import "views/classification.scss";
+@import "views/climate.scss";
 
 @import "../valo/valo.scss";
 
@@ -170,6 +171,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 
   @include sormas-about-view;
   @include sormas-classification-view;
+  @include sormas-climate-view;
   @include sormas-configuration-view;
   @include sormas-dashboard-view;
   @include sormas-disease-styles;

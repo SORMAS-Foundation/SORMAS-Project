@@ -83,7 +83,9 @@ public class UserProvider {
 	public boolean hasConfigurationAccess() {
 		Set<UserRight> currentUserRights = getUserRights();
 		return UserRight.getUserRightsOfGroup(UserRightGroup.CONFIGURATION).stream().anyMatch(currentUserRights::contains)
-			|| UserRight.getUserRightsOfGroup(UserRightGroup.INFRASTRUCTURE).stream().anyMatch(currentUserRights::contains);
+			|| UserRight.getUserRightsOfGroup(UserRightGroup.INFRASTRUCTURE).stream().anyMatch(currentUserRights::contains)
+			// the Climate data screen lives under Configuration
+			|| UserRight.getUserRightsOfGroup(UserRightGroup.CLIMATE).stream().anyMatch(currentUserRights::contains);
 	}
 
 	public boolean hasUserAccess() {

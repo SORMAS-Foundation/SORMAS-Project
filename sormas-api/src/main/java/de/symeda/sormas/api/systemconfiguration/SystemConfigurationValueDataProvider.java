@@ -67,4 +67,15 @@ public interface SystemConfigurationValueDataProvider extends Serializable {
      */
     public Map<String, String> getMappedValues(@Nonnull SystemConfigurationValueDto dto);
 
+    /**
+     * Retrieves the caption shown for an option value, for example in a dropdown.
+     *
+     * @param optionValue
+     *            one of the values of {@link #getOptions()}.
+     * @return the caption; by default the option value itself.
+     */
+    default String getOptionCaption(String optionValue) {
+        return optionValue;
+    }
+
 }

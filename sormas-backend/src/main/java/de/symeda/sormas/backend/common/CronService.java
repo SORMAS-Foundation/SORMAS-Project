@@ -39,6 +39,8 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.climate.ClimateJobProcessor;
+import de.symeda.sormas.backend.climate.ClimateNightlyRun;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
@@ -99,6 +101,10 @@ public class CronService {
 	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private ClimateNightlyRun climateNightlyRun;
+	@EJB
+	private ClimateJobProcessor climateJobProcessor;
 
 	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();
@@ -302,5 +308,13 @@ public class CronService {
 	@Deprecated
 	public void softDeleteOldNegativeSamples() {
 		sampleService.cleanupOldCovidSamples();
+	}
+
+	public void fetchClimateData() {
+		climateNightlyRun.run();
+	}
+
+	public void processClimateJobs() {
+		climateJobProcessor.processJobs();
 	}
 }

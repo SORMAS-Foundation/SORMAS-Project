@@ -331,6 +331,8 @@ public abstract class DataImporter {
 				lineCounter++;
 			}
 
+			finishImport();
+
 			if (logger.isDebugEnabled()) {
 				logger.debug("runImport - done");
 				long dt = System.currentTimeMillis() - t0;
@@ -357,6 +359,13 @@ public abstract class DataImporter {
 
 	public void cancelImport() {
 		cancelAfterCurrent = true;
+	}
+
+	/**
+	 * Called after the last line has been read (or the import was cancelled), before the result is worked out. Importers that
+	 * save lines in batches save the last batch here; errors written now still count.
+	 */
+	protected void finishImport() throws IOException, InterruptedException {
 	}
 
 	protected Writer createErrorReportWriter() throws IOException {

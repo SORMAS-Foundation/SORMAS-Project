@@ -209,6 +209,18 @@ public final class CssStyles {
 	public static final String ALIGN_CENTER = "align-center";
 	public static final String ALIGN_RIGHT = "align-right";
 
+	public static final String CLIMATE_NEARBY_FILTERS = "climate-nearby-filters";
+	public static final String CLIMATE_GRID = "climate-grid";
+	public static final String CLIMATE_CHART_DATES = "climate-chart-dates";
+	public static final String CLIMATE_CHART_STATUS = "climate-chart-status";
+	public static final String CLIMATE_ACTION = "climate-action";
+	public static final String CLIMATE_CARDS = "climate-cards";
+	public static final String CLIMATE_CARD = "climate-card";
+	public static final String CLIMATE_DASHBOARD_EMPTY = "climate-dashboard-empty";
+	public static final String CLIMATE_DASHBOARD_SPLIT = "climate-dashboard-split";
+	public static final String CLIMATE_DASHBOARD_SIDE = "climate-dashboard-side";
+	public static final String CLIMATE_DASHBOARD_NOTE = "climate-dashboard-note";
+
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
 	public static final String OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL = "horizontal-switch-critical";
@@ -261,6 +273,7 @@ public final class CssStyles {
 	public static final String ROOT_COMPONENT = "root-component";
 	public static final String MAIN_COMPONENT = "main-component";
 	public static final String SIDE_COMPONENT = "side-component";
+	public static final String SIDE_COMPONENT_FLUID = "side-component-fluid";
 
 	// Statistics layout
 	public static final String STATISTICS_TITLE_BOX = "title-box";
