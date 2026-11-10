@@ -34,6 +34,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.symptoms.ClinicalManifestation;
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DateHelper;
 
 /**
@@ -351,6 +353,45 @@ public class EpipulseMappingTest {
 				assertEquals("", maternal(bornOn(2023, 6, 1, immunization(means, BEFORE))), means.name());
 			}
 		}
+	}
+
+	// --- DENGUE ClinicalCriteria ---
+
+	@Test
+	@DisplayName("DENGUE ClinicalCriteria maps each clinical manifestation with an EpiPulse code")
+	public void dengueClinicalCriteriaMapsTheManifestation() {
+
+		assertEquals("ASY", dengueCriteria(null, ClinicalManifestation.ASYMPTOMATIC));
+		assertEquals("NSEV", dengueCriteria(null, ClinicalManifestation.NO_SIGN_OF_SEVERITY));
+		assertEquals("SEV", dengueCriteria(null, ClinicalManifestation.SIGN_OF_SEVERITY));
+
+		// no claim about severity, so no code
+		assertNull(dengueCriteria(null, ClinicalManifestation.UNKNOWN));
+		assertNull(dengueCriteria(null, ClinicalManifestation.OTHER));
+		assertNull(dengueCriteria(null, null));
+	}
+
+	@Test
+	@DisplayName("DENGUE ClinicalCriteria reports ASY for the asymptomatic flag, whatever the manifestation says")
+	public void dengueAsymptomaticFlagDecidesFirst() {
+
+		assertEquals("ASY", dengueCriteria(SymptomState.YES, null));
+		// the flag is what blank DateOfOnset, so the criterion follows it
+		assertEquals("ASY", dengueCriteria(SymptomState.YES, ClinicalManifestation.SIGN_OF_SEVERITY));
+
+		// a flag that is not YES leaves the manifestation to decide
+		assertEquals("SEV", dengueCriteria(SymptomState.NO, ClinicalManifestation.SIGN_OF_SEVERITY));
+		assertEquals("NSEV", dengueCriteria(SymptomState.UNKNOWN, ClinicalManifestation.NO_SIGN_OF_SEVERITY));
+		assertNull(dengueCriteria(SymptomState.NO, null));
+	}
+
+	private static String dengueCriteria(SymptomState asymptomatic, ClinicalManifestation manifestation) {
+
+		EpipulseDiseaseExportEntryDto entry = new EpipulseDiseaseExportEntryDto();
+		entry.setAsymptomatic(asymptomatic);
+		entry.setClinicalManifestation(manifestation);
+
+		return EpipulseMapping.dengueClinicalCriteria(entry);
 	}
 
 	// --- PathogenDetectionMethod ---

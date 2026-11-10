@@ -23,6 +23,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.symptoms.ClinicalManifestation;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -50,6 +51,7 @@ public class EpipulseDiseaseExportEntryDto {
 	private Integer dayOfBirth;
 	private Date symptomOnsetDate;
 	private SymptomState asymptomatic;
+	private ClinicalManifestation clinicalManifestation; // SymptomsDto.clinicalManifestation, DENGUE ClinicalCriteria
 	private Sex sex;
 	private String addressCommunityNutsCode;
 	private String addressDistrictNutsCode;
@@ -545,6 +547,14 @@ public class EpipulseDiseaseExportEntryDto {
 
 	public void setAsymptomatic(SymptomState asymptomatic) {
 		this.asymptomatic = asymptomatic;
+	}
+
+	public ClinicalManifestation getClinicalManifestation() {
+		return clinicalManifestation;
+	}
+
+	public void setClinicalManifestation(ClinicalManifestation clinicalManifestation) {
+		this.clinicalManifestation = clinicalManifestation;
 	}
 
 	// Phase 3: Getters and setters for clinical and epidemiology fields

@@ -27,6 +27,7 @@ import java.util.TreeSet;
 
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseOutcomeRef;
+import de.symeda.sormas.api.epipulse.referencevalue.EpipulseDengueClinicalCriteriaRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseDiseaseRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseGenderRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulsePathogenTestTypeRef;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseVaccinationStatusRef
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -239,6 +241,28 @@ public final class EpipulseMapping {
 
 	public static String clinicalCriteriaStatus(EpipulseDiseaseExportEntryDto entry) {
 		return text(entry.getClinicalCriteriaStatus());
+	}
+
+	/**
+	 * Resolves {@code ClinicalCriteria} for DENGUE to one of {@code ASY}, {@code NSEV} or {@code SEV}.
+	 * Evaluate in this order:
+	 *
+	 * <ol>
+	 * <li>If {@code symptoms.asymptomatic} is {@code YES}, return {@code ASY}. This ASY is ruled out
+	 * first because setting it also blanks {@code DateOfOnset}.
+	 * <li>Otherwise map {@code symptoms.clinicalManifestation} through
+	 * {@link EpipulseDengueClinicalCriteriaRef}. {@code UNKNOWN}, {@code OTHER}, or no answer
+	 * resolves to blank.</li>
+	 * </ol>
+	 *
+	 */
+	public static String dengueClinicalCriteria(EpipulseDiseaseExportEntryDto entry) {
+
+		if (entry.getAsymptomatic() == SymptomState.YES) {
+			return EpipulseDengueClinicalCriteriaRef.ASY.name();
+		}
+
+		return EpipulseDengueClinicalCriteriaRef.codeFor(entry.getClinicalManifestation());
 	}
 
 	// ==================== Syphilis ====================
