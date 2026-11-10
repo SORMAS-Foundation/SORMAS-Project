@@ -44,6 +44,11 @@ public final class EpipulseCaseInclusion {
 		.unmodifiableSet(EnumSet.of(EpipulseCaseClassificationRef.CONF, EpipulseCaseClassificationRef.PROB, EpipulseCaseClassificationRef.POSS));
 
 	/**
+	 * Confirmed classification code only.
+	 */
+	private static final Set<EpipulseCaseClassificationRef> CONFIRMED = Collections.unmodifiableSet(EnumSet.of(EpipulseCaseClassificationRef.CONF));
+
+	/**
 	 * Confirmed and probable classification codes.
 	 */
 	private static final Set<EpipulseCaseClassificationRef> CONFIRMED_PROBABLE =
@@ -62,6 +67,8 @@ public final class EpipulseCaseInclusion {
 		notified.put(EpipulseSubjectCode.TUBE, CONFIRMED_PROBABLE_POSSIBLE);
 		// DENGUE's CaseClassification value set in metadata is CONF and PROB only.
 		notified.put(EpipulseSubjectCode.DENGUE, CONFIRMED_PROBABLE);
+		// MALA's CaseClassification value set in metadata is CONF only.
+		notified.put(EpipulseSubjectCode.MALA, CONFIRMED);
 
 		return Collections.unmodifiableMap(notified);
 	}

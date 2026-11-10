@@ -45,6 +45,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.STATUS;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -55,6 +56,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -479,20 +481,23 @@ public class MalariaEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	@Test
-	@DisplayName("CaseClassification is written as recorded, including the two values MALA's value set will reject")
-	public void caseClassificationIsWrittenAsRecorded() {
+	@DisplayName("only confirmed cases are notified, as MALA's value set has CONF alone")
+	public void onlyConfirmedCasesAreExported() {
 
-		// MALA's value set only accepts CONF; POSS and PROB below are rejected by EpiPulse.
-		// Proper answer: filter suspected cases out per subject code, not blank classification.
-		String confirmed = fixture.caze(newPerson(), ONSET).getUuid();
-		String suspected = classifiedCase(CaseClassification.SUSPECT);
-		String probable = classifiedCase(CaseClassification.PROBABLE);
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String confirmedUnknownSymptoms = classifiedCase(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+
+		// MALA has neither PROB nor POSS, and an unclassified or ruled-out case is never notifiable.
+		classifiedCase(CaseClassification.PROBABLE);
+		classifiedCase(CaseClassification.SUSPECT);
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+		classifiedCase(CaseClassification.NO_CASE);
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.MALA, PERIOD_START, PERIOD_END);
 
-		assertThat(export.value(export.entryFor(confirmed), CASE_CLASSIFICATION), is("CONF"));
-		assertThat(export.value(export.entryFor(suspected), CASE_CLASSIFICATION), is("POSS"));
-		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(exportedCases(export), containsInAnyOrder(confirmed, confirmedNoSymptoms, confirmedUnknownSymptoms));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
 	}
 
 	// ---
@@ -577,6 +582,10 @@ public class MalariaEpipulseExportTest extends AbstractEpipulseExportTest {
 
 	private String classifiedCase(CaseClassification classification) {
 		return fixture.caze(newPerson(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
+	}
+
+	private static List<String> exportedCases(ExportedEntries export) {
+		return export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList());
 	}
 
 	private String caseWithOccupation(String occupationType) {
