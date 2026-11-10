@@ -1179,6 +1179,23 @@ paths:
           description: default response
       tags:
       - Classification Controller
+  /climateobservations/push:
+    post:
+      operationId: postClimateObservations
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ClimateObservationEntryDto'
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8: {}
+          description: default response
+      tags:
+      - Climate Observation Controller
   /clinicalvisits/all/{since}:
     get:
       operationId: getAllVisits
@@ -7633,6 +7650,12 @@ paths:
                   - ENVIRONMENT_PATHOGEN_TEST_CREATE
                   - ENVIRONMENT_PATHOGEN_TEST_EDIT
                   - ENVIRONMENT_PATHOGEN_TEST_DELETE
+                  - CLIMATE_VIEW
+                  - CLIMATE_EDIT
+                  - CLIMATE_IMPORT
+                  - CLIMATE_EXPORT
+                  - CLIMATE_MANAGE_SOURCES
+                  - DASHBOARD_CLIMATE_VIEW
                   - SELF_REPORT_VIEW
                   - SELF_REPORT_CREATE
                   - SELF_REPORT_EDIT
@@ -7903,6 +7926,12 @@ paths:
                   - ENVIRONMENT_PATHOGEN_TEST_CREATE
                   - ENVIRONMENT_PATHOGEN_TEST_EDIT
                   - ENVIRONMENT_PATHOGEN_TEST_DELETE
+                  - CLIMATE_VIEW
+                  - CLIMATE_EDIT
+                  - CLIMATE_IMPORT
+                  - CLIMATE_EXPORT
+                  - CLIMATE_MANAGE_SOURCES
+                  - DASHBOARD_CLIMATE_VIEW
                   - SELF_REPORT_VIEW
                   - SELF_REPORT_CREATE
                   - SELF_REPORT_EDIT
@@ -12036,6 +12065,42 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ClassificationCriteriaDto'
+    ClimateObservationEntryDto:
+      type: object
+      properties:
+        climateLocationUuid:
+          type: string
+        date:
+          type: string
+        districtExternalId:
+          type: string
+        districtUuid:
+          type: string
+        environmentUuid:
+          type: string
+        humidityMeasure:
+          type: string
+          enum:
+          - DAILY_MEAN
+          - NOON_READING
+          - OTHER
+        rainfall:
+          type: number
+          format: double
+        relativeHumidity:
+          type: number
+          format: double
+        sourceDetail:
+          type: string
+        temperatureMax:
+          type: number
+          format: double
+        temperatureMean:
+          type: number
+          format: double
+        temperatureMin:
+          type: number
+          format: double
     ClinicalCourseDto:
       type: object
       properties:
@@ -15416,6 +15481,8 @@ components:
         changeDate:
           type: string
           format: date-time
+        climateSensitive:
+          type: boolean
         creationDate:
           type: string
           format: date-time
@@ -15549,6 +15616,12 @@ components:
           format: int32
         primaryDisease:
           type: boolean
+        usualRangeExcludedYears:
+          type: array
+          items:
+            type: integer
+            format: int32
+          uniqueItems: true
         uuid:
           type: string
           maxLength: 36
@@ -15596,6 +15669,16 @@ components:
         changeDate:
           type: string
           format: date-time
+        climateLatitude:
+          type: number
+          format: double
+          maximum: 90
+          minimum: -90
+        climateLongitude:
+          type: number
+          format: double
+          maximum: 180
+          minimum: -180
         creationDate:
           type: string
           format: date-time
@@ -20967,6 +21050,7 @@ components:
             - DASHBOARD_SAMPLES
             - LIMITED_SYNCHRONIZATION
             - ENVIRONMENT_MANAGEMENT
+            - CLIMATE_MANAGEMENT
             - SELF_REPORTING
             - SURVEYS
             - ASSIGN_TASKS_TO_HIGHER_LEVEL
@@ -21137,6 +21221,7 @@ components:
           - DASHBOARD_SAMPLES
           - LIMITED_SYNCHRONIZATION
           - ENVIRONMENT_MANAGEMENT
+          - CLIMATE_MANAGEMENT
           - SELF_REPORTING
           - SURVEYS
           - ASSIGN_TASKS_TO_HIGHER_LEVEL
@@ -32151,6 +32236,12 @@ components:
             - ENVIRONMENT_PATHOGEN_TEST_CREATE
             - ENVIRONMENT_PATHOGEN_TEST_EDIT
             - ENVIRONMENT_PATHOGEN_TEST_DELETE
+            - CLIMATE_VIEW
+            - CLIMATE_EDIT
+            - CLIMATE_IMPORT
+            - CLIMATE_EXPORT
+            - CLIMATE_MANAGE_SOURCES
+            - DASHBOARD_CLIMATE_VIEW
             - SELF_REPORT_VIEW
             - SELF_REPORT_CREATE
             - SELF_REPORT_EDIT
