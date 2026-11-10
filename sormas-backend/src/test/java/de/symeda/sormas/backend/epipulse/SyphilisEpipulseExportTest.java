@@ -55,6 +55,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.STATUS;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -64,6 +65,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -554,6 +556,52 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// PROB. A suspect case reports its classification and nothing here.
 		assertThat(export.value(export.entryFor(suspect), CASE_CLASSIFICATION), is("POSS"));
 		assertThat(export.value(export.entryFor(suspect), PATHOGEN_DETECTION_RESULT), is(""));
+	}
+
+	@Test
+	@DisplayName("SYPH notifies every case but a ruled-out one, an unclassified one blank; CONSYPH only classified ones")
+	public void syphAndConsyphNotifyTheirOwnClassifications() {
+
+		String confirmed = acquiredCaseClassified(CaseClassification.CONFIRMED).getUuid();
+		String confirmedNoSymptoms = acquiredCaseClassified(CaseClassification.CONFIRMED_NO_SYMPTOMS).getUuid();
+		String probable = acquiredCaseClassified(CaseClassification.PROBABLE).getUuid();
+		String possible = acquiredCaseClassified(CaseClassification.SUSPECT).getUuid();
+		// "leave empty until case definitions are met"
+		String unclassified = acquiredCaseClassified(CaseClassification.NOT_CLASSIFIED).getUuid();
+
+		// a ruled-out case is not notifiable
+		acquiredCaseClassified(CaseClassification.NO_CASE);
+
+		// CONSYPH has the same value set but no empty column: an unclassified case is left out too
+		String congenitalConfirmed = congenitalCaseClassified(CaseClassification.CONFIRMED);
+		String congenitalProbable = congenitalCaseClassified(CaseClassification.PROBABLE);
+		String congenitalPossible = congenitalCaseClassified(CaseClassification.SUSPECT);
+		congenitalCaseClassified(CaseClassification.NOT_CLASSIFIED);
+		congenitalCaseClassified(CaseClassification.NO_CASE);
+
+		ExportedEntries acquired = runExport(EpipulseSubjectCode.SYPH, PERIOD_START, PERIOD_END);
+		ExportedEntries congenital = runExport(EpipulseSubjectCode.CONSYPH, PERIOD_START, PERIOD_END);
+
+		assertThat(nationalRecordIds(acquired), containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible, unclassified));
+		assertThat(acquired.value(acquired.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(acquired.value(acquired.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(acquired.value(acquired.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+		assertThat(acquired.value(acquired.entryFor(unclassified), CASE_CLASSIFICATION), is(""));
+
+		assertThat(nationalRecordIds(congenital), containsInAnyOrder(congenitalConfirmed, congenitalProbable, congenitalPossible));
+		assertThat(congenital.value(congenital.entryFor(congenitalPossible), CASE_CLASSIFICATION), is("POSS"));
+	}
+
+	private String congenitalCaseClassified(CaseClassification classification) {
+
+		return fixture.caze(newPerson(), ONSET, caze -> {
+			caze.setSyphilisPresentation(SyphilisPresentation.CONGENITAL);
+			caze.setCaseClassification(classification);
+		}).getUuid();
+	}
+
+	private static List<String> nationalRecordIds(ExportedEntries export) {
+		return export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList());
 	}
 
 	// ---------------------------------------------------------------------------------------

@@ -70,6 +70,13 @@ public final class EpipulseCaseInclusion {
 
 	private static final Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> NOTIFIED_CODES = notifiedCodes();
 
+	/**
+	 * Subject codes whose rule also notifies a case not yet classified, with the
+	 * {@code CaseClassification} column left blank. Only for a code whose EpiPulse description allows
+	 * the column to be empty: SYPH's says it can "leave empty until case definitions are met".
+	 */
+	private static final Set<EpipulseSubjectCode> NOTIFIES_UNCLASSIFIED = Collections.unmodifiableSet(EnumSet.of(EpipulseSubjectCode.SYPH));
+
 	private EpipulseCaseInclusion() {
 	}
 
@@ -79,6 +86,12 @@ public final class EpipulseCaseInclusion {
 
 		// TUBE has no CaseClassification column in metadata; rule comes from TB specification.
 		notified.put(EpipulseSubjectCode.TUBE, CONFIRMED_PROBABLE_POSSIBLE);
+		// SYPH's CaseClassification value set in metadata is CONF, PROB and POSS. EpiPulse expects
+		// CONF at EU level, but accepts the other two until national case definitions catch up, and
+		// an empty column for a case not yet classified (see NOTIFIES_UNCLASSIFIED).
+		notified.put(EpipulseSubjectCode.SYPH, CONFIRMED_PROBABLE_POSSIBLE);
+		// CONSYPH's value set is the same as SYPH's, but its description allows no empty column.
+		notified.put(EpipulseSubjectCode.CONSYPH, CONFIRMED_PROBABLE_POSSIBLE);
 		// DENGUE's CaseClassification value set in metadata is CONF and PROB only.
 		notified.put(EpipulseSubjectCode.DENGUE, CONFIRMED_PROBABLE);
 		// SALM's CaseClassification value set in metadata is CONF and PROB only.
@@ -103,8 +116,16 @@ public final class EpipulseCaseInclusion {
 	public static Set<CaseClassification> notifiedBy(EpipulseSubjectCode subjectCode) {
 
 		Set<EpipulseCaseClassificationRef> codes = NOTIFIED_CODES.get(subjectCode);
+		if (codes == null) {
+			return Collections.emptySet();
+		}
 
-		return codes == null ? Collections.emptySet() : EpipulseCaseClassificationRef.caseClassificationsOf(codes);
+		Set<CaseClassification> classifications = EnumSet.copyOf(EpipulseCaseClassificationRef.caseClassificationsOf(codes));
+		if (NOTIFIES_UNCLASSIFIED.contains(subjectCode)) {
+			classifications.add(CaseClassification.NOT_CLASSIFIED);
+		}
+
+		return Collections.unmodifiableSet(classifications);
 	}
 
 	/**

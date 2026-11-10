@@ -42,11 +42,38 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRe
 public class EpipulseCaseInclusionTest {
 
 	@Test
-	@DisplayName("TUBE notifies confirmed, probable and possible cases only")
-	public void tubeNotifiesConfirmedProbableAndPossible() {
+	@DisplayName("TUBE and CONSYPH notify confirmed, probable and possible cases only")
+	public void tubeAndConsyphNotifyConfirmedProbableAndPossible() {
 
-		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.TUBE);
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.CONSYPH)) {
 
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
+
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(
+					CaseClassification.CONFIRMED,
+					CaseClassification.CONFIRMED_NO_SYMPTOMS,
+					CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+					CaseClassification.PROBABLE,
+					CaseClassification.SUSPECT));
+
+			// Unclassified and ruled-out cases are not notifications.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NO_CASE), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
+	}
+
+	@Test
+	@DisplayName("SYPH notifies confirmed, probable, possible and not yet classified cases")
+	public void syphNotifiesClassifiedAndUnclassifiedCases() {
+
+		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.SYPH);
+
+		// "leave empty until case definitions are met": an unclassified case is sent, blank.
 		assertThat(
 			notified,
 			containsInAnyOrder(
@@ -54,13 +81,16 @@ public class EpipulseCaseInclusionTest {
 				CaseClassification.CONFIRMED_NO_SYMPTOMS,
 				CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
 				CaseClassification.PROBABLE,
-				CaseClassification.SUSPECT));
+				CaseClassification.SUSPECT,
+				CaseClassification.NOT_CLASSIFIED));
 
-		// Unclassified and ruled-out cases are not notifications.
-		assertThat(notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+		// A ruled-out case is still not a notification.
 		assertThat(notified.contains(CaseClassification.NO_CASE), is(false));
 
-		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.TUBE), is(true));
+		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.SYPH), is(true));
+
+		// CONSYPH shares the disease and the value set, but not the empty column.
+		assertThat(EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.CONSYPH).contains(CaseClassification.NOT_CLASSIFIED), is(false));
 	}
 
 	@Test
@@ -159,7 +189,9 @@ public class EpipulseCaseInclusionTest {
 		// Default behavior for non-enrolled codes is no narrowing.
 		Set<EpipulseSubjectCode> narrowed =
 			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE, EpipulseSubjectCode.SALM,
-			EpipulseSubjectCode.SHIG);
+			EpipulseSubjectCode.SHIG,
+			EpipulseSubjectCode.SYPH,
+			EpipulseSubjectCode.CONSYPH);
 
 		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
 			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
