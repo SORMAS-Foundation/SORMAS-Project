@@ -59,16 +59,19 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.WEEK_OF_GESTATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Date;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
@@ -584,6 +587,35 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		// and ComplicationDiagnosis is there without a floor, because it is never empty
 		assertThat(export.header().contains(COMPLICATION_DIAGNOSIS.getVariableName()), is(true));
 		assertThat(export.values(export.only(), COMPLICATION_DIAGNOSIS), contains("NONE"));
+	}
+
+	@Test
+	@DisplayName("every classified case is notified, a ruled-out one as DISCARDED, and an unclassified one is not")
+	public void classifiedCasesAreNotifiedAndRuledOutOnesAreDiscarded() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+		String possible = classifiedCase(CaseClassification.SUSPECT);
+		String discarded = classifiedCase(CaseClassification.NO_CASE);
+
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.RUBE, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible, discarded));
+
+		assertThat(export.value(export.entryFor(confirmed), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(export.value(export.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+		assertThat(export.value(export.entryFor(discarded), CASE_CLASSIFICATION), is("DISCARDED"));
+	}
+
+	private String classifiedCase(CaseClassification classification) {
+		return fixture.caze(creator.createPerson().toReference(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
 	}
 
 	/**
