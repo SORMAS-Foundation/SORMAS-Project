@@ -25,6 +25,7 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation;
+import de.symeda.sormas.backend.climate.ClimateJob;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
@@ -76,7 +77,9 @@ public class DatabaseExportServiceTest {
 		EpipulseExport.class,
 		EpipulseSubjectcodeConfiguration.class,
 		EpipulseDatasourceConfiguration.class,
-		EpipulseLocationConfiguration.class);
+		EpipulseLocationConfiguration.class,
+		// the climate job queue holds run state, not data; its climate data is exported through the other climate tables
+		ClimateJob.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {
