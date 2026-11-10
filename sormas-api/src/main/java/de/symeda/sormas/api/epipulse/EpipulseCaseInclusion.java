@@ -92,6 +92,8 @@ public final class EpipulseCaseInclusion {
 		notified.put(EpipulseSubjectCode.SYPH, CONFIRMED_PROBABLE_POSSIBLE);
 		// CONSYPH's value set is the same as SYPH's, but its description allows no empty column.
 		notified.put(EpipulseSubjectCode.CONSYPH, CONFIRMED_PROBABLE_POSSIBLE);
+		// PERT's CaseClassification value set in metadata is CONF, PROB and POSS.
+		notified.put(EpipulseSubjectCode.PERT, CONFIRMED_PROBABLE_POSSIBLE);
 		// DENGUE's CaseClassification value set in metadata is CONF and PROB only.
 		notified.put(EpipulseSubjectCode.DENGUE, CONFIRMED_PROBABLE);
 		// SALM's CaseClassification value set in metadata is CONF and PROB only.

@@ -551,8 +551,8 @@ public class EpipulseMappingTest {
 		assertEquals("POSS", classification(EpipulseSubjectCode.MEAS, CaseClassification.SUSPECT));
 		assertNull(classification(EpipulseSubjectCode.MEAS, CaseClassification.NOT_CLASSIFIED));
 
-		// PERT's value set has no DISCARDED, and it does not narrow its cases.
-		assertNull(classification(EpipulseSubjectCode.PERT, CaseClassification.NO_CASE));
+		// CHIK's value set has no DISCARDED, and it does not narrow its cases.
+		assertNull(classification(EpipulseSubjectCode.CHIK, CaseClassification.NO_CASE));
 	}
 
 	private static String classification(CaseClassification value) {

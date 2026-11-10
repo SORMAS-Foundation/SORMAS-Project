@@ -51,14 +51,17 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
 import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.api.epipulse.EpipulseVariable;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
@@ -382,9 +385,36 @@ public class PertussisEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is("LU1010"));
 	}
 
+	@Test
+	@DisplayName("confirmed, probable and possible cases are notified, and nothing else is")
+	public void onlyClassifiedCasesAreExported() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+		String possible = classifiedCase(CaseClassification.SUSPECT);
+
+		// neither an unclassified nor a ruled-out case is notifiable
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+		classifiedCase(CaseClassification.NO_CASE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.PERT, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(export.value(export.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+	}
+
 	// ---------------------------------------------------------------------------------------
 	// fixture - everything shared lives on CaseFixture; what is left is Pertussis shorthand
 	// ---------------------------------------------------------------------------------------
+
+	private String classifiedCase(CaseClassification classification) {
+		return fixture.caze(creator.createPerson().toReference(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
+	}
 
 	private CaseDataDto hospitalisedCase(PersonReferenceDto person) {
 		return fixture.caze(person, ONSET, hospitalisedForTheReportedDisease().andThen(caze -> caze.setOutcome(CaseOutcome.RECOVERED)));

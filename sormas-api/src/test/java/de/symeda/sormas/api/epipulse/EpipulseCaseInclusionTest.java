@@ -42,10 +42,10 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRe
 public class EpipulseCaseInclusionTest {
 
 	@Test
-	@DisplayName("TUBE and CONSYPH notify confirmed, probable and possible cases only")
-	public void tubeAndConsyphNotifyConfirmedProbableAndPossible() {
+	@DisplayName("TUBE, CONSYPH and PERT notify confirmed, probable and possible cases only")
+	public void tubeConsyphAndPertNotifyConfirmedProbableAndPossible() {
 
-		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.CONSYPH)) {
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.CONSYPH, EpipulseSubjectCode.PERT)) {
 
 			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
 
@@ -183,7 +183,7 @@ public class EpipulseCaseInclusionTest {
 		assertThat(EpipulseCaseInclusion.reports(null, EpipulseCaseClassificationRef.DISCARDED), is(false));
 
 		// A code with no rule keeps the three it always reported.
-		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.PERT, EpipulseCaseClassificationRef.POSS), is(true));
+		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.CHIK, EpipulseCaseClassificationRef.POSS), is(true));
 	}
 
 	@Test
@@ -196,7 +196,8 @@ public class EpipulseCaseInclusionTest {
 			EpipulseSubjectCode.SHIG,
 			EpipulseSubjectCode.SYPH,
 			EpipulseSubjectCode.CONSYPH,
-			EpipulseSubjectCode.PNEU);
+			EpipulseSubjectCode.PNEU,
+			EpipulseSubjectCode.PERT);
 
 		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
 			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
