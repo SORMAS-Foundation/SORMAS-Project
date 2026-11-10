@@ -69,26 +69,30 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
-	@DisplayName("SYPH notifies confirmed, probable, possible and not yet classified cases")
-	public void syphNotifiesClassifiedAndUnclassifiedCases() {
+	@DisplayName("SYPH and GONO notify confirmed, probable, possible and not yet classified cases")
+	public void syphAndGonoNotifyClassifiedAndUnclassifiedCases() {
 
-		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.SYPH);
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.SYPH, EpipulseSubjectCode.GONO)) {
 
-		// "leave empty until case definitions are met": an unclassified case is sent, blank.
-		assertThat(
-			notified,
-			containsInAnyOrder(
-				CaseClassification.CONFIRMED,
-				CaseClassification.CONFIRMED_NO_SYMPTOMS,
-				CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
-				CaseClassification.PROBABLE,
-				CaseClassification.SUSPECT,
-				CaseClassification.NOT_CLASSIFIED));
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
 
-		// A ruled-out case is still not a notification.
-		assertThat(notified.contains(CaseClassification.NO_CASE), is(false));
+			// "leave empty until case definitions are met": an unclassified case is sent, blank.
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(
+					CaseClassification.CONFIRMED,
+					CaseClassification.CONFIRMED_NO_SYMPTOMS,
+					CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+					CaseClassification.PROBABLE,
+					CaseClassification.SUSPECT,
+					CaseClassification.NOT_CLASSIFIED));
 
-		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.SYPH), is(true));
+			// A ruled-out case is still not a notification.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NO_CASE), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
 
 		// CONSYPH shares the disease and the value set, but not the empty column.
 		assertThat(EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.CONSYPH).contains(CaseClassification.NOT_CLASSIFIED), is(false));
@@ -199,7 +203,8 @@ public class EpipulseCaseInclusionTest {
 			EpipulseSubjectCode.CONSYPH,
 			EpipulseSubjectCode.PNEU,
 			EpipulseSubjectCode.PERT,
-			EpipulseSubjectCode.MENI);
+			EpipulseSubjectCode.MENI,
+			EpipulseSubjectCode.GONO);
 
 		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
 			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));

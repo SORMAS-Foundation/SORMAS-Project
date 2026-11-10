@@ -50,6 +50,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.STATUS;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -61,12 +62,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.clinicalcourse.HivStatus;
@@ -438,6 +441,35 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	// ---
+	// Which cases are in the file
+	// ---
+
+	@Test
+	@DisplayName("every case but a ruled-out one is notified, an unclassified one with the column blank")
+	public void ruledOutCasesAreNotExported() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+		String possible = classifiedCase(CaseClassification.SUSPECT);
+		// "leave empty until case definitions are met"
+		String unclassified = classifiedCase(CaseClassification.NOT_CLASSIFIED);
+
+		// a ruled-out case is not notifiable
+		classifiedCase(CaseClassification.NO_CASE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.GONO, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible, unclassified));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(export.value(export.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+		assertThat(export.value(export.entryFor(unclassified), CASE_CLASSIFICATION), is(""));
+	}
+
+	// ---
 	// Assertions
 	// ---
 
@@ -474,6 +506,25 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 	// ---
 	// Fixture
 	// ---
+
+	/**
+	 * SORMAS sets every new gonococcal infection case to CONFIRMED on creation
+	 * ({@code CaseFacadeEjb.CONFIRMED_CASE_CLASSIFICATION_DISEASES}), and a later save recomputes it,
+	 * so the classification under test is written to the row directly.
+	 */
+	private String classifiedCase(CaseClassification classification) {
+
+		String uuid = fixture.caze(newPerson(), ONSET).getUuid();
+
+		executeInTransaction(em -> {
+			em.createNativeQuery("UPDATE cases SET caseclassification = :classification WHERE uuid = :uuid")
+				.setParameter("classification", classification.name())
+				.setParameter("uuid", uuid)
+				.executeUpdate();
+		});
+
+		return uuid;
+	}
 
 	private PersonReferenceDto newPerson() {
 		return creator.createPerson().toReference();

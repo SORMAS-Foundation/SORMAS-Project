@@ -73,9 +73,10 @@ public final class EpipulseCaseInclusion {
 	/**
 	 * Subject codes whose rule also notifies a case not yet classified, with the
 	 * {@code CaseClassification} column left blank. Only for a code whose EpiPulse description allows
-	 * the column to be empty: SYPH's says it can "leave empty until case definitions are met".
+	 * the column to be empty: SYPH's and GONO's say it can "leave empty until case definitions are met".
 	 */
-	private static final Set<EpipulseSubjectCode> NOTIFIES_UNCLASSIFIED = Collections.unmodifiableSet(EnumSet.of(EpipulseSubjectCode.SYPH));
+	private static final Set<EpipulseSubjectCode> NOTIFIES_UNCLASSIFIED =
+		Collections.unmodifiableSet(EnumSet.of(EpipulseSubjectCode.SYPH, EpipulseSubjectCode.GONO));
 
 	private EpipulseCaseInclusion() {
 	}
@@ -92,6 +93,8 @@ public final class EpipulseCaseInclusion {
 		notified.put(EpipulseSubjectCode.SYPH, CONFIRMED_PROBABLE_POSSIBLE);
 		// CONSYPH's value set is the same as SYPH's, but its description allows no empty column.
 		notified.put(EpipulseSubjectCode.CONSYPH, CONFIRMED_PROBABLE_POSSIBLE);
+		// GONO's value set and description are the same as SYPH's, empty column included.
+		notified.put(EpipulseSubjectCode.GONO, CONFIRMED_PROBABLE_POSSIBLE);
 		// PERT's CaseClassification value set in metadata is CONF, PROB and POSS.
 		notified.put(EpipulseSubjectCode.PERT, CONFIRMED_PROBABLE_POSSIBLE);
 		// MENI's CaseClassification value set in metadata is CONF, PROB and POSS.
