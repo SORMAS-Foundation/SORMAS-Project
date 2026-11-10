@@ -22823,6 +22823,17 @@
             "maxLength" : 512,
             "minLength" : 0
           },
+          "avidityIndex" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "avidityInterpretation" : {
+            "type" : "string",
+            "enum" : [ "LOW", "INTERMEDIATE", "HIGH" ]
+          },
+          "avidityPerformed" : {
+            "type" : "boolean"
+          },
           "biotype" : {
             "type" : "string",
             "enum" : [ "YERSINIOSIS_1", "YERSINIOSIS_1A", "YERSINIOSIS_1B", "YERSINIOSIS_2", "YERSINIOSIS_3", "YERSINIOSIS_4", "YERSINIOSIS_5", "NOT_APP", "NOT_UND_SUR", "OTHER", "VAR_BELF", "VAR_GRAV", "VAR_INTE", "VAR_MITI", "UNKNOWN" ]
