@@ -177,7 +177,7 @@ public class EpipulseCaseInclusionTest {
 	@DisplayName("DISCARDED is reported only by a code that declares it")
 	public void discardedIsReportedOnlyWhereDeclared() {
 
-		Set<EpipulseSubjectCode> declaring = EnumSet.of(EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE);
+		Set<EpipulseSubjectCode> declaring = EnumSet.of(EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE, EpipulseSubjectCode.DIPH);
 
 		for (EpipulseSubjectCode subjectCode : EpipulseSubjectCode.values()) {
 			assertThat(
@@ -187,8 +187,9 @@ public class EpipulseCaseInclusionTest {
 		}
 		assertThat(EpipulseCaseInclusion.reports(null, EpipulseCaseClassificationRef.DISCARDED), is(false));
 
-		// A code with no rule keeps the three it always reported.
-		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.CHIK, EpipulseCaseClassificationRef.POSS), is(true));
+		// A code with no rule still writes only its own value set: CHIK has no POSS.
+		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.CHIK, EpipulseCaseClassificationRef.POSS), is(false));
+		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.MUMP, EpipulseCaseClassificationRef.POSS), is(true));
 	}
 
 	@Test

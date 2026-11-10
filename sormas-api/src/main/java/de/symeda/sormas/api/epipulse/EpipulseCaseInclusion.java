@@ -118,6 +118,25 @@ public final class EpipulseCaseInclusion {
 	}
 
 	/**
+	 * The {@code CaseClassification} value set of each subject code without a rule above. These
+	 * export every case of their disease; the column writes a code only where it is in the set.
+	 */
+	private static final Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> UNFILTERED_VALUE_SETS = unfilteredValueSets();
+
+	private static Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> unfilteredValueSets() {
+
+		Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> valueSets = new EnumMap<>(EpipulseSubjectCode.class);
+
+		valueSets.put(EpipulseSubjectCode.CHIK, CONFIRMED_PROBABLE);
+		valueSets.put(EpipulseSubjectCode.WNF, CONFIRMED_PROBABLE);
+		valueSets.put(EpipulseSubjectCode.MUMP, CONFIRMED_PROBABLE_POSSIBLE);
+		valueSets.put(EpipulseSubjectCode.POLI, CONFIRMED_PROBABLE_POSSIBLE);
+		valueSets.put(EpipulseSubjectCode.DIPH, CONFIRMED_PROBABLE_POSSIBLE_DISCARDED);
+
+		return Collections.unmodifiableMap(valueSets);
+	}
+
+	/**
 	 * The SORMAS classifications this subject code notifies.
 	 *
 	 * @return classifications to keep; empty means no narrowing for that subject code
@@ -138,11 +157,15 @@ public final class EpipulseCaseInclusion {
 	}
 
 	/**
-	 * Whether this subject code writes the given code in its {@code CaseClassification} column.
+	 * Whether this subject code writes the given code in its {@code CaseClassification} column:
+	 * only a code in its value set, from its rule or from {@link #UNFILTERED_VALUE_SETS}.
 	 */
 	public static boolean reports(EpipulseSubjectCode subjectCode, EpipulseCaseClassificationRef code) {
 
-		Set<EpipulseCaseClassificationRef> codes = subjectCode == null ? null : NOTIFIED_CODES.get(subjectCode);
+		Set<EpipulseCaseClassificationRef> codes = null;
+		if (subjectCode != null) {
+			codes = NOTIFIED_CODES.containsKey(subjectCode) ? NOTIFIED_CODES.get(subjectCode) : UNFILTERED_VALUE_SETS.get(subjectCode);
+		}
 
 		return (codes == null ? CONFIRMED_PROBABLE_POSSIBLE : codes).contains(code);
 	}

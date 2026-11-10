@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.backend.epipulse;
 
+import static de.symeda.sormas.api.epipulse.EpipulseVariable.CASE_CLASSIFICATION;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.DISEASE;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.GENDER;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.HOSPITALISATION;
@@ -29,6 +30,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.VACCINATION_STATUS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.blankOrNullString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -72,7 +74,11 @@ public class DefaultEpipulseExportTest extends AbstractEpipulseExportTest {
 	@BeforeEach
 	public void setUpDefaultExport() {
 
-		configureLuxembourgFor(SUBJECT_CODE_UNDER_TEST, SUBJECT_CODE_OMITTING_HOSPITALISATION, SUBJECT_CODE_OMITTING_VACCINATION);
+		configureLuxembourgFor(
+			SUBJECT_CODE_UNDER_TEST,
+			SUBJECT_CODE_OMITTING_HOSPITALISATION,
+			SUBJECT_CODE_OMITTING_VACCINATION,
+			EpipulseSubjectCode.DIPH);
 
 		rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		surveillanceSupervisor = creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_SUPERVISOR);
@@ -145,6 +151,51 @@ public class DefaultEpipulseExportTest extends AbstractEpipulseExportTest {
 		// see the note in DefaultFieldModel.
 		assertThat(declaresBoth.emits(SEROGROUP), is(false));
 		assertThat(declaresBoth.emits(PATHOGEN_DETECTION_METHOD), is(false));
+	}
+
+	@Test
+	@DisplayName("every case is exported, and CaseClassification is blank where the code's value set has no match")
+	public void caseClassificationFollowsTheCodesOwnValueSet() {
+
+		// CHIK's value set is CONF and PROB: no POSS, no DISCARDED
+		String chikConfirmed = classifiedCase(EpipulseSubjectCode.CHIK, CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String chikProbable = classifiedCase(EpipulseSubjectCode.CHIK, CaseClassification.PROBABLE);
+		String chikSuspect = classifiedCase(EpipulseSubjectCode.CHIK, CaseClassification.SUSPECT);
+		String chikRuledOut = classifiedCase(EpipulseSubjectCode.CHIK, CaseClassification.NO_CASE);
+		String chikUnclassified = classifiedCase(EpipulseSubjectCode.CHIK, CaseClassification.NOT_CLASSIFIED);
+
+		// DIPH's value set has POSS and DISCARDED too
+		String diphSuspect = classifiedCase(EpipulseSubjectCode.DIPH, CaseClassification.SUSPECT);
+		String diphRuledOut = classifiedCase(EpipulseSubjectCode.DIPH, CaseClassification.NO_CASE);
+
+		ExportedEntries chik = runExport(EpipulseSubjectCode.CHIK, periodStart, periodEnd);
+		ExportedEntries diph = runExport(EpipulseSubjectCode.DIPH, periodStart, periodEnd);
+
+		// no filter: every case is in the file
+		assertThat(chik.all(), hasSize(5));
+		assertThat(chik.value(chik.entryFor(chikConfirmed), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(chik.value(chik.entryFor(chikProbable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(chik.value(chik.entryFor(chikSuspect), CASE_CLASSIFICATION), is(""));
+		assertThat(chik.value(chik.entryFor(chikRuledOut), CASE_CLASSIFICATION), is(""));
+		assertThat(chik.value(chik.entryFor(chikUnclassified), CASE_CLASSIFICATION), is(""));
+
+		assertThat(diph.all(), hasSize(2));
+		assertThat(diph.value(diph.entryFor(diphSuspect), CASE_CLASSIFICATION), is("POSS"));
+		assertThat(diph.value(diph.entryFor(diphRuledOut), CASE_CLASSIFICATION), is("DISCARDED"));
+	}
+
+	private String classifiedCase(EpipulseSubjectCode subjectCode, CaseClassification classification) {
+
+		return creator
+			.createCase(
+				surveillanceSupervisor.toReference(),
+				creator.createPerson().toReference(),
+				subjectCode.getDisease(),
+				classification,
+				InvestigationStatus.DONE,
+				reportDate,
+				rdcf)
+			.getUuid();
 	}
 
 	private CaseDataDto createCase(String firstName, String lastName) {
