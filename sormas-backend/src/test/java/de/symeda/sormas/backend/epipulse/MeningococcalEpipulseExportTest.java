@@ -72,12 +72,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
@@ -651,9 +653,36 @@ public class MeningococcalEpipulseExportTest extends AbstractEpipulseExportTest 
 		assertThat(export.all(), hasSize(2));
 	}
 
+	@Test
+	@DisplayName("confirmed, probable and possible cases are notified, and nothing else is")
+	public void onlyClassifiedCasesAreExported() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+		String possible = classifiedCase(CaseClassification.SUSPECT);
+
+		// neither an unclassified nor a ruled-out case is notifiable
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+		classifiedCase(CaseClassification.NO_CASE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.MENI, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(export.value(export.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+	}
+
 	// ---------------------------------------------------------------------------------------
 	// Fixture helpers: common logic on CaseFixture, MENI-specific shortcuts below
 	// ---------------------------------------------------------------------------------------
+
+	private String classifiedCase(CaseClassification classification) {
+		return fixture.caze(creator.createPerson().toReference(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
+	}
 
 	private Scenario scenario(String label, String expectedCode, Consumer<SymptomsDto> symptoms) {
 		return new Scenario(

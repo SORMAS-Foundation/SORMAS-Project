@@ -42,10 +42,11 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRe
 public class EpipulseCaseInclusionTest {
 
 	@Test
-	@DisplayName("TUBE, CONSYPH and PERT notify confirmed, probable and possible cases only")
-	public void tubeConsyphAndPertNotifyConfirmedProbableAndPossible() {
+	@DisplayName("TUBE, CONSYPH, PERT and MENI notify confirmed, probable and possible cases only")
+	public void codesNotifyingConfirmedProbableAndPossible() {
 
-		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.CONSYPH, EpipulseSubjectCode.PERT)) {
+		for (EpipulseSubjectCode subjectCode : EnumSet
+			.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.CONSYPH, EpipulseSubjectCode.PERT, EpipulseSubjectCode.MENI)) {
 
 			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
 
@@ -197,7 +198,8 @@ public class EpipulseCaseInclusionTest {
 			EpipulseSubjectCode.SYPH,
 			EpipulseSubjectCode.CONSYPH,
 			EpipulseSubjectCode.PNEU,
-			EpipulseSubjectCode.PERT);
+			EpipulseSubjectCode.PERT,
+			EpipulseSubjectCode.MENI);
 
 		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
 			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
