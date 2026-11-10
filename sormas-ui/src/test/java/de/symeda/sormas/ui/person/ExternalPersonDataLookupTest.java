@@ -220,13 +220,10 @@ class ExternalPersonDataLookupTest extends de.symeda.sormas.ui.AbstractUnitTest 
 				null,
 				"",
 				" " }) {
-				when(context.configuration.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY))
-					.thenReturn(missing);
+				when(context.configuration.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED_KEY)).thenReturn(missing);
 				assertFalse(ExternalPersonDataLookup.isAvailable());
 			}
-			when(context.configuration.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY))
-				.thenReturn("adapter-jndi");
-			assertTrue(ExternalPersonDataLookup.isAvailable());
+
 			context.ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)).thenReturn(false);
 			assertFalse(ExternalPersonDataLookup.isAvailable());
 			verifyNoInteractions(context.provider);

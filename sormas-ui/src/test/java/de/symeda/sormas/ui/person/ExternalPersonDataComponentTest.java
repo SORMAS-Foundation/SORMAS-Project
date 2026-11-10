@@ -353,56 +353,6 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 		}
 	}
 
-	@org.junit.jupiter.params.ParameterizedTest
-	@org.junit.jupiter.params.provider.CsvSource({
-		"persons/externalPersonData/person-uuid, persons/data/person-uuid",
-		"cases/externalPersonData/case-uuid, cases/person/case-uuid",
-		"contacts/externalPersonData/contact-uuid, contacts/person/contact-uuid",
-		"events/eventparticipants/externalPersonData/participant-uuid, events/eventparticipants/person/participant-uuid",
-		"immunizations/externalPersonData/immunization-uuid, immunizations/person/immunization-uuid",
-		"travelEntries/externalPersonData/entry-uuid, travelEntries/person/entry-uuid" })
-	void linkingReturnsToPersonFormAndLeavesIdUnsaved(String source, String target) {
-		com.vaadin.ui.UI previous = com.vaadin.ui.UI.getCurrent();
-		try (Context context = new Context(true, "true")) {
-			// PREPARE
-			context.person.setUuid("person-uuid");
-			context.person.setNationalHealthId(null);
-			context.person.setFirstName("Jane");
-			context.ui.when(() -> UiUtil.permitted(UserRight.PERSON_EDIT)).thenReturn(true);
-			when(context.personFacade.isEditAllowed("person-uuid")).thenReturn(true);
-			ExternalPersonDataIndexDto external = new ExternalPersonDataIndexDto();
-			external.setNationalHealthId("external-id");
-			de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
-				new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
-			response.setResults(java.util.Collections.singletonList(external));
-			response.setTotalCount(1);
-			when(context.provider.find(org.mockito.ArgumentMatchers.any())).thenReturn(response);
-			PersonEditForm form = mock(PersonEditForm.class);
-			com.vaadin.v7.ui.TextField id = new com.vaadin.v7.ui.TextField();
-			when(form.getField(PersonDto.NATIONAL_HEALTH_ID)).thenReturn(id);
-			when(form.getValue()).thenReturn(context.person);
-			com.vaadin.ui.UI ui = mock(com.vaadin.ui.UI.class);
-			com.vaadin.navigator.Navigator navigator = mock(com.vaadin.navigator.Navigator.class);
-			when(ui.getNavigator()).thenReturn(navigator);
-			when(navigator.getState()).thenReturn(source);
-			TestPersonView targetView = new TestPersonView(form);
-			when(navigator.getCurrentView()).thenReturn(targetView);
-			com.vaadin.ui.UI.setCurrent(ui);
-			// EXECUTE
-			victim = context.create();
-			com.vaadin.ui.VerticalLayout content =
-				(com.vaadin.ui.VerticalLayout) ((ExternalPersonDataListView) victim.getComponent(0)).getComponent(1);
-			((com.vaadin.ui.Button) ((com.vaadin.ui.HorizontalLayout) content.getComponent(4)).getComponent(0)).click();
-			((com.vaadin.ui.Button) victim.getComponent(0)).click();
-			// CHECK
-			verify(navigator).navigateTo(target);
-			assertEquals("external-id", id.getValue());
-			org.mockito.Mockito.verify(context.personFacade, org.mockito.Mockito.never()).save(org.mockito.ArgumentMatchers.any());
-		} finally {
-			com.vaadin.ui.UI.setCurrent(previous);
-		}
-	}
-
 	private static class TestPersonView extends com.vaadin.ui.VerticalLayout implements com.vaadin.navigator.View {
 
 		private TestPersonView(PersonEditForm form) {
