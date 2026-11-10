@@ -3,6 +3,9 @@ package de.symeda.sormas.api.externalpersondata;
 import java.io.Serializable;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public class ExternalPersonDataForDisplayDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -47,5 +47,5 @@ public interface ExternalPersonDataProviderFacade {
 	LocationDto findAppropriateDocumentAddressFor(@NotNull ExternalPersonDataAddressRequestDto request);
 
 	@NotNull
-	ExternalPersonDataSearchResponse search(@NotNull ExternalPersonDataSearchRequest request);
+	ExternalPersonDataSearchResponse find(@NotNull ExternalPersonDataSearchRequest request);
 }

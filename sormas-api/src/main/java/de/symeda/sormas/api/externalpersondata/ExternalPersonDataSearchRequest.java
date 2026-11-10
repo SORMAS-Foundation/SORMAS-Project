@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.Sex;
 
 /**
  * Search criteria to filter / find entries in the tool implementing {@link ExternalPersonDataProviderFacade}.
  */
+@AuditedClass
 public class ExternalPersonDataSearchRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;

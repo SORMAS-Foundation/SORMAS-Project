@@ -269,7 +269,7 @@ public class ExternalPersonDataListView extends AbstractView {
 		try {
 			request.setOffset(0);
 			request.setLimit(PAGE_SIZE);
-			ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().search(request);
+			ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().find(request);
 			List<ExternalPersonDataIndexDto> results = response.getResults() == null ? Collections.emptyList() : response.getResults();
 			state.results = new ArrayList<>(results);
 			state.searchRequest = request;
@@ -304,7 +304,7 @@ public class ExternalPersonDataListView extends AbstractView {
 		request.setOffset(offset);
 		request.setLimit(limit);
 		try {
-			ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().search(request);
+			ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().find(request);
 			return response.getResults() == null ? Collections.emptyList() : response.getResults();
 		} catch (RuntimeException e) {
 			logger.error("Could not load external persons page", e);

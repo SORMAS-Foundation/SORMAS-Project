@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.externalpersondata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -29,9 +28,8 @@ class ExternalPersonDataForDisplayDtoTest extends AbstractUnitTest {
 		ExternalPersonDataForDisplayDto restored = mapper.treeToValue(json, ExternalPersonDataForDisplayDto.class);
 
 		// CHECK
-		assertTrue(json.has("externalPersonDataSummary"));
-		assertFalse(json.has("personalDataSummary"));
-		assertEquals("Jane", json.get("externalPersonDataSummary").get("firstName").asText());
+		assertTrue(json.has("summary"));
+		assertEquals("Jane", json.get("summary").get("firstName").asText());
 		assertEquals(victim, restored);
 	}
 }

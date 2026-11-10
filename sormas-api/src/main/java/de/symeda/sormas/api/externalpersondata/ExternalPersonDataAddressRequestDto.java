@@ -3,9 +3,11 @@ package de.symeda.sormas.api.externalpersondata;
 import java.io.Serializable;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 
+@AuditedClass
 public class ExternalPersonDataAddressRequestDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;

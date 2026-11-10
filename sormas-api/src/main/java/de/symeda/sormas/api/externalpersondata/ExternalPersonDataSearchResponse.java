@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public class ExternalPersonDataSearchResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;

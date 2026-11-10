@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.LivingStatus;
 import de.symeda.sormas.api.person.Sex;
 
+@AuditedClass
 public class ExternalPersonDataIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -109,10 +109,10 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 	}
 
 	@Override
-	public ExternalPersonDataSearchResponse search(ExternalPersonDataSearchRequest request) {
+	public ExternalPersonDataSearchResponse find(ExternalPersonDataSearchRequest request) {
 		auditLogger.logExternalSystemCall(buildAuditRequestWithDetails("search", Map.of("ExternalPersonDataSearchRequest", request)));
 
-		return getExternalPersonDataProvider().search(request);
+		return getExternalPersonDataProvider().find(request);
 	}
 
 	private ExternalPersonDataProviderAdapterFacade getExternalPersonDataProvider() {

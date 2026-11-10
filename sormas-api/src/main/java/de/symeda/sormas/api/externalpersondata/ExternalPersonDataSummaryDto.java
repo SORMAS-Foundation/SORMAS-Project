@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.Sex;
 
+@AuditedClass
 public class ExternalPersonDataSummaryDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
