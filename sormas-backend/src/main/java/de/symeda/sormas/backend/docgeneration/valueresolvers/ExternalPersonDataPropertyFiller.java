@@ -41,16 +41,16 @@ public class ExternalPersonDataPropertyFiller extends AbstractRootValuePropertyF
 			return address;
 		}
 
-		logger.info("Address is going to be fetched");
+		logger.debug("External address is going to be fetched");
 
 		ExternalPersonDataAddressRequestDto request = new ExternalPersonDataAddressRequestDto();
 		request.setCaseData((CaseDataDto) entities.getEntity(RootEntityType.ROOT_CASE));
 
-		logger.info("Request.case: [{}]", request.getCaseData());
+		logger.debug("Request.case: [{}]", request.getCaseData());
 
 		address = externalPersonDataProviderFacade.findAppropriateDocumentAddressFor(request);
 
-		logger.info("Retrieve address: [{}]", address);
+		logger.debug("Retrieved address: [{}]", address);
 
 		return address;
 	}

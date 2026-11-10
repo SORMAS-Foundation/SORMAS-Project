@@ -526,7 +526,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 			.thenReturn(new ExternalMessageResult<>(List.of(surveyResponse), new Date(), true, ""));
 
 		// EXECUTE
-		List<ExternalMessageDto> saved = getExternalMessageFacade().saveAndProcessSurveyResponsesForCron(new Date());
+		List<ExternalMessageDto> saved = getExternalMessageFacade().saveAndProcessSurveyResponses(new Date());
 
 		// CHECK
 		// Note: getByUuid is intentionally avoided — the jsonb Hibernate type double-encodes when read back via H2.
@@ -581,7 +581,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 			.thenReturn(new ExternalMessageResult<>(List.of(surveyResponse), new Date(), true, ""));
 
 		// EXECUTE
-		List<ExternalMessageDto> saved = getExternalMessageFacade().saveAndProcessSurveyResponsesForCron(new Date());
+		List<ExternalMessageDto> saved = getExternalMessageFacade().saveAndProcessSurveyResponses(new Date());
 
 		// CHECK — message was processed
 		// Note: getByUuid is intentionally avoided — the jsonb Hibernate type double-encodes when read back via H2.

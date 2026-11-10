@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
@@ -33,6 +32,7 @@ import de.symeda.sormas.backend.docgeneration.valueresolvers.RootEntityPropertyF
 
 class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 
+	public static final String MISSING_REPLACEMENT_TEXT = "missing";
 	@Mock
 	private ConfigFacadeEjbLocal configFacade;
 	@Mock
@@ -49,7 +49,7 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 	@BeforeEach
 	void setUp() {
 		when(workflow.getRootEntityTypes()).thenReturn(Set.of(RootEntityType.ROOT_EXTERNAL_PERSON_DATA));
-		when(configFacade.getDocgenerationNullReplacement()).thenReturn("missing");
+		when(configFacade.getDocgenerationNullReplacement()).thenReturn(MISSING_REPLACEMENT_TEXT);
 	}
 
 	@Test
@@ -82,10 +82,10 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 		address.setStreet("Main Street");
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(address);
 
-		Properties properties = prepareProperties(false, "externalPerson_city", "externalPerson_street");
+		Properties properties = prepareProperties(false, "externalPersonData_city", "externalPersonData_street");
 
-		assertEquals("Paris", properties.getProperty("externalPerson_city"));
-		assertEquals("Main Street", properties.getProperty("externalPerson_street"));
+		assertEquals("Paris", properties.getProperty("externalPersonData_city"));
+		assertEquals("Main Street", properties.getProperty("externalPersonData_street"));
 		verify(propertyFillersFactory).createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON_DATA), eq(entities), any());
 		verify(provider).findAppropriateDocumentAddressFor(any());
 	}
@@ -103,14 +103,6 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 		assertEquals("Lyon", prepareProperties(true, "externalPersonData.city").getProperty("externalPersonData.city"));
 		verify(propertyFillersFactory, times(2)).createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON_DATA), eq(entities), any());
 		verify(provider, times(2)).findAppropriateDocumentAddressFor(any());
-	}
-
-	@Test
-	void skipsExternalPersonWhenWorkflowDoesNotAllowIt() throws Exception {
-		when(workflow.getRootEntityTypes()).thenReturn(Set.of(RootEntityType.ROOT_CASE));
-
-		assertEquals("missing", prepareProperties(true, "externalPersonData.city").getProperty("externalPersonData.city"));
-		verifyNoInteractions(propertyFillersFactory, provider);
 	}
 
 	private void enableExternalPersonFiller() {

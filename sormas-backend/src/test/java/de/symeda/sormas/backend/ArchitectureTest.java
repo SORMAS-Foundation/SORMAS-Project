@@ -302,7 +302,7 @@ public class ArchitectureTest {
 				"executeSurveyProcessing",
 				"overwriteSurveyResponse",
 				"reAttemptSurveyProcessing",
-				"saveAndProcessSurveyResponses"),
+				"saveAndProcessSurveyResponsesForCron"),
 			classes);
 	}
 

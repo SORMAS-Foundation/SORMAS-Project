@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.docgeneration.valueresolvers;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,9 +10,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -26,7 +33,21 @@ class RootEntityPropertyFillersFactoryTest extends AbstractUnitTest {
 	private ExternalPersonDataProviderFacadeEJBLocal provider;
 
 	@InjectMocks
-	private RootEntityPropertyFillersFactory factory;
+	private RootEntityPropertyFillersFactory victim;
+
+	@Test
+	void makeSureRootEntityTypesAreImplemented() {
+		List<Executable> fillerExistForTypeAssertions = Arrays.stream(RootEntityType.values())
+			.filter(Predicate.not(RootEntityType::isDataModelEntity))
+			.filter(type -> type != RootEntityType.ROOT_GENERAL)
+			.map(
+				type -> (Executable) () -> assertNotNull(
+					victim.createPropertyFiller(type, new DocumentTemplateEntities(), referenceDto -> null),
+					"Expected not null, but was for: " + type))
+			.collect(Collectors.toList());
+
+		assertAll(fillerExistForTypeAssertions);
+	}
 
 	@Test
 	void createsIndependentFillersForSeparateDocuments() {
@@ -36,9 +57,9 @@ class RootEntityPropertyFillersFactoryTest extends AbstractUnitTest {
 		secondAddress.setCity("Lyon");
 		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(firstAddress, secondAddress);
 		RootEntityPropertyFiller first =
-			factory.createPropertyFiller(RootEntityType.ROOT_EXTERNAL_PERSON_DATA, new DocumentTemplateEntities(), reference -> null);
+			victim.createPropertyFiller(RootEntityType.ROOT_EXTERNAL_PERSON_DATA, new DocumentTemplateEntities(), reference -> null);
 		RootEntityPropertyFiller second =
-			factory.createPropertyFiller(RootEntityType.ROOT_EXTERNAL_PERSON_DATA, new DocumentTemplateEntities(), reference -> null);
+			victim.createPropertyFiller(RootEntityType.ROOT_EXTERNAL_PERSON_DATA, new DocumentTemplateEntities(), reference -> null);
 		Properties firstProperties = new Properties();
 		Properties secondProperties = new Properties();
 
@@ -56,13 +77,13 @@ class RootEntityPropertyFillersFactoryTest extends AbstractUnitTest {
 	void rejectsDataModelEntities() {
 		assertThrows(
 			IllegalStateException.class,
-			() -> factory.createPropertyFiller(RootEntityType.ROOT_CASE, new DocumentTemplateEntities(), reference -> null));
+			() -> victim.createPropertyFiller(RootEntityType.ROOT_CASE, new DocumentTemplateEntities(), reference -> null));
 	}
 
 	@Test
 	void rejectsUnsupportedSyntheticEntities() {
 		assertThrows(
 			IllegalStateException.class,
-			() -> factory.createPropertyFiller(RootEntityType.ROOT_GENERAL, new DocumentTemplateEntities(), reference -> null));
+			() -> victim.createPropertyFiller(RootEntityType.ROOT_GENERAL, new DocumentTemplateEntities(), reference -> null));
 	}
 }

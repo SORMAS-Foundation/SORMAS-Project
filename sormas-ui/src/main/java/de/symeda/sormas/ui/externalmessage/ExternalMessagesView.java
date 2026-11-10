@@ -328,7 +328,7 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private void fetchSurveyMessages(Date since) {
-		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponsesForCron(since);
+		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses(since);
 
 		grid.reload();
 	}
