@@ -19517,11 +19517,24 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        casePregnant:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         caseReportDate:
           type: string
           format: date-time
         caseSymptoms:
           $ref: '#/components/schemas/SymptomsDto'
+        caseTrimester:
+          type: string
+          enum:
+          - FIRST
+          - SECOND
+          - THIRD
+          - UNKNOWN
         causeOfDeath:
           type: string
           enum:
@@ -20103,6 +20116,8 @@ components:
           enum:
           - ACQUIRED
           - CONGENITAL
+        treatment:
+          $ref: '#/components/schemas/TreatmentReferenceDto'
         treatmentNotApplicable:
           type: boolean
         treatmentStarted:
@@ -20114,6 +20129,8 @@ components:
         treatmentStartedDate:
           type: string
           format: date-time
+        treatments:
+          type: string
         tuberculosis:
           type: string
           enum:
@@ -31579,6 +31596,16 @@ components:
           - ANTIVIRAL
           - ANTIBIOTIC
           - OTHER
+    TreatmentReferenceDto:
+      type: object
+      properties:
+        caption:
+          type: string
+        uuid:
+          type: string
+          pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     UserCriteria:
       type: object
       properties:
