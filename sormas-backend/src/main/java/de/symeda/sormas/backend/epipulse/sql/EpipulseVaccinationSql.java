@@ -22,15 +22,22 @@ import static de.symeda.sormas.backend.epipulse.sql.EpipulseAggregateFormat.SQL_
 import static de.symeda.sormas.backend.epipulse.sql.EpipulseAggregateFormat.SQL_DATE_FORMAT;
 import static de.symeda.sormas.backend.epipulse.sql.EpipulseAggregateFormat.SQL_RECORD_SEPARATOR;
 
-import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.epipulse.EpipulseMapping;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 
 /**
- * Shared SQL fragment for {@code DateOfLastVaccination} and {@code VaccinationStatus}.
+ * Shared SQL fragment for {@code DateOfLastVaccination} and {@code VaccinationStatus}, and for
+ * {@code VaccinationStatusMaternal} where a subject code declares it.
  *
  * <p>
  * Opt-in fragment for vaccine-preventable subject codes; models should add matching vaccination
  * fields together with this SQL.
+ *
  */
 public final class EpipulseVaccinationSql {
 
@@ -38,7 +45,8 @@ public final class EpipulseVaccinationSql {
 	}
 
 	/**
-	 * Provides dose and immunization aggregates used by vaccination status/last-date mapping.
+	 * Provides the dose and immunization aggregates {@code VaccinationStatus} and
+	 * {@code DateOfLastVaccination} are derived from.
 	 */
 	public static SqlQueryModel spec() {
 
@@ -51,15 +59,15 @@ public final class EpipulseVaccinationSql {
 	}
 
 	/**
-	 * Aggregates vaccinations per person, newest first, for last-vaccination derivation.
+	 * Every dose the patient received for the disease, newest first: one record per dose, whatever
+	 * immunization it was recorded under, provided that immunization's means holds doses.
 	 */
 	private static String buildVaccinationsCte() {
 		//@formatter:off
 		return "case_all_vaccinations AS (SELECT i.person_id," +
 			   "                                      STRING_AGG(CONCAT_WS(" + SQL_RECORD_SEPARATOR + "," +
 			   "                                                           COALESCE(to_char(v.vaccinationdate, " + SQL_DATE_FORMAT + "), '')," +
-			   "                                                           COALESCE(to_char(v.reportdate, " + SQL_DATE_FORMAT + "), '')," +
-			   "                                                           CAST(i.id AS text)), " + SQL_COLLECTION_SEPARATOR +
+			   "                                                           COALESCE(to_char(v.reportdate, " + SQL_DATE_FORMAT + "), '')), " + SQL_COLLECTION_SEPARATOR +
 			   "                                                 ORDER BY COALESCE(v.vaccinationdate, v.reportdate) DESC)" +
 			   "                                          as all_vaccinations_from_latest" +
 			   "                               FROM immunization i" +
@@ -68,32 +76,50 @@ public final class EpipulseVaccinationSql {
 			   "                               WHERE i.person_id IN (SELECT person_id FROM filtered_cases)" +
 			   "                                 and i.disease = variables.disease" +
 			   "                                 and i.deleted = false" +
-			   "                                 and i.meansofimmunization IN ('" + MeansOfImmunization.VACCINATION.name() + "', '" + MeansOfImmunization.VACCINATION_RECOVERY.name() + "')" +
+			   "                                 and i.meansofimmunization IN (" + inlined(EpipulseMapping.VACCINATION_DOSE_MEANS) + ")" +
 			   "                               GROUP BY i.person_id)";
 		//@formatter:on
 	}
 
 	/**
-	 * Aggregates acquired immunization courses per person for vaccination-status derivation.
+	 * The patient's immunizations for the disease that dose rows cannot account for. This covers
+	 * three cases:
+	 * <ul>
+	 * <li>Vaccinations with no doses entered under them.</li>
+	 * <li>Explicit {@code NOT_IMMUNIZED} records.</li>
+	 * <li>{@code MATERNAL_VACCINATION} records, which feed {@code VaccinationStatusMaternal}.</li>
+	 * </ul>
+	 *
+	 * <p>
+	 * Each rule in {@code EpipulseMapping} reads only the means it names, so a status code that
+	 * does not reference the maternal column is unaffected by maternal records.
 	 */
 	private static String buildImmunizationsCte() {
+
+		Set<MeansOfImmunization> means = EnumSet.copyOf(EpipulseMapping.VACCINATION_DOSE_MEANS);
+		means.add(MeansOfImmunization.NOT_IMMUNIZED);
+		means.add(MeansOfImmunization.MATERNAL_VACCINATION);
+
 		//@formatter:off
 		return "case_all_immunizations AS (SELECT i.person_id," +
 			   "                                      STRING_AGG(CONCAT_WS(" + SQL_RECORD_SEPARATOR + "," +
-			   "                                                           CAST(i.id AS text)," +
-			   "                                                           COALESCE(to_char(i.validfrom, " + SQL_DATE_FORMAT + "), '')," +
-			   "                                                           COALESCE(to_char(i.validuntil, " + SQL_DATE_FORMAT + "), '')," +
-			   "                                                           COALESCE(CAST(i.numberofdoses AS text), '')), " + SQL_COLLECTION_SEPARATOR +
-			   "                                                 ORDER BY i.validfrom DESC)" +
+			   "                                                           i.meansofimmunization," +
+			   "                                                           COALESCE(to_char(i.startdate, " + SQL_DATE_FORMAT + "), '')," +
+			   "                                                           COALESCE(to_char(i.reportdate, " + SQL_DATE_FORMAT + "), '')), " + SQL_COLLECTION_SEPARATOR +
+			   "                                                 ORDER BY i.reportdate DESC)" +
 			   "                                          as all_immunizations_from_latest" +
 			   "                               FROM immunization i" +
 			   "                                        CROSS JOIN variables" +
 			   "                               WHERE i.person_id IN (SELECT person_id FROM filtered_cases)" +
 			   "                                 and i.disease = variables.disease" +
 			   "                                 and i.deleted = false" +
-			   "                                 and i.immunizationstatus = '" + ImmunizationStatus.ACQUIRED.name() + "'" +
-			   "                                 and i.meansofimmunization IN ('" + MeansOfImmunization.VACCINATION.name() + "', '" + MeansOfImmunization.VACCINATION_RECOVERY.name() + "')" +
+			   "                                 and i.meansofimmunization IN (" + inlined(means) + ")" +
 			   "                               GROUP BY i.person_id)";
 		//@formatter:on
+	}
+
+	/** Enum names as an SQL list, in declaration order */
+	private static String inlined(Collection<MeansOfImmunization> means) {
+		return means.stream().sorted().map(m -> "'" + m.name() + "'").collect(Collectors.joining(", "));
 	}
 }

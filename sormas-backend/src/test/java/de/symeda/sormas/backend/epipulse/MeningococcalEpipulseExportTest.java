@@ -86,7 +86,7 @@ import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.api.epipulse.EpipulseVariable;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -243,9 +243,10 @@ public class MeningococcalEpipulseExportTest extends AbstractEpipulseExportTest 
 		assertThat(export.value(entry, IMPORTED_STATUS), is("IMP"));
 		assertThat(export.values(entry, PLACE_OF_INFECTION), contains("FR"));
 
-		// the vaccination summary pair
-		assertThat(export.value(entry, VACCINATION_STATUS), is("2DOSE"));
-		assertThat(export.value(entry, DATE_OF_LAST_VACCINATION), is("2023-06-15"));
+		// the vaccination pair is blank although the patient has a recorded course: both columns
+		// ask about the infecting serogroup, which no SORMAS vaccine record can speak to
+		assertThat(export.value(entry, VACCINATION_STATUS), is(blankOrNullString()));
+		assertThat(export.value(entry, DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
 
 		// MENI's own laboratory columns
 		assertThat(export.value(entry, SEROGROUP), is("NEIMENI_B"));
@@ -502,37 +503,30 @@ public class MeningococcalEpipulseExportTest extends AbstractEpipulseExportTest 
 	}
 
 	@Test
-	@DisplayName("VaccinationStatus stops at 4DOSE, which is as high as EpiPulse counts for MENI")
-	public void vaccinationStatusStopsAtFourDoses() {
+	@DisplayName("the vaccination pair is blank whatever is recorded, because it asks about the serogroup")
+	public void theVaccinationPairIsBlankWhateverIsRecorded() {
 
-		/**
-		 * VaccinationStatus caps at 4DOSE, the maximum EpiPulse counts for MENI.
-		 * Six doses report 4DOSE, not higher codes EpiPulse would reject.
-		 */
+		// Each of these reports a value under every other vaccine-preventable code: a dose count,
+		// UNKDOSE and NOTVACC. MENI asks whether the patient was vaccinated against the serogroup
+		// that infected them, and SORMAS's vaccine catalogue holds no meningococcal vaccine to tell.
 		PersonReferenceDto sixDoses = creator.createPerson().toReference();
-		CaseDataDto capped = fixture.caze(sixDoses, ONSET);
-		courseCoveringOnset(sixDoses, 6);
+		CaseDataDto counted = fixture.caze(sixDoses, ONSET);
+		fixture.completedCourse(sixDoses, 6, COURSE_VALID_FROM, COURSE_VALID_UNTIL, doseDates(6));
 
-		PersonReferenceDto threeDoses = creator.createPerson().toReference();
-		CaseDataDto belowTheCap = fixture.caze(threeDoses, ONSET);
-		courseCoveringOnset(threeDoses, 3);
+		PersonReferenceDto noDosesEntered = creator.createPerson().toReference();
+		CaseDataDto unknownDoses = fixture.caze(noDosesEntered, ONSET);
+		fixture.immunization(noDosesEntered, MeansOfImmunization.VACCINATION, FIRST_DOSE);
 
-		PersonReferenceDto noCount = creator.createPerson().toReference();
-		CaseDataDto unknownDoses = fixture.caze(noCount, ONSET);
-		courseWithNoDoseCount(noCount);
-
-		CaseDataDto neverVaccinated = fixture.caze(creator.createPerson().toReference(), ONSET);
+		PersonReferenceDto notImmunized = creator.createPerson().toReference();
+		CaseDataDto recordedNotImmunized = fixture.caze(notImmunized, ONSET);
+		fixture.immunization(notImmunized, MeansOfImmunization.NOT_IMMUNIZED, FIRST_DOSE);
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.MENI, PERIOD_START, PERIOD_END);
 
-		assertThat(export.value(export.entryFor(capped.getUuid()), VACCINATION_STATUS), is("4DOSE"));
-		assertThat(export.value(export.entryFor(belowTheCap.getUuid()), VACCINATION_STATUS), is("3DOSE"));
-		assertThat(export.value(export.entryFor(unknownDoses.getUuid()), VACCINATION_STATUS), is("UNKDOSE"));
-		assertThat(export.value(export.entryFor(neverVaccinated.getUuid()), VACCINATION_STATUS), is("NOTVACC"));
-
-		// the last dose comes from the course VaccinationStatus reports, so it follows it
-		assertThat(export.value(export.entryFor(capped.getUuid()), DATE_OF_LAST_VACCINATION), is("2023-06-15"));
-		assertThat(export.value(export.entryFor(neverVaccinated.getUuid()), DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
+		for (CaseDataDto caze : Arrays.asList(counted, unknownDoses, recordedNotImmunized)) {
+			assertThat(export.value(export.entryFor(caze.getUuid()), VACCINATION_STATUS), is(blankOrNullString()));
+			assertThat(export.value(export.entryFor(caze.getUuid()), DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
+		}
 	}
 
 	@Test
@@ -696,28 +690,6 @@ public class MeningococcalEpipulseExportTest extends AbstractEpipulseExportTest 
 			c.getEpiData().setCaseImportedStatus(importedStatus);
 			c.getEpiData().getExposures().add(travelTo(france));
 		});
-	}
-
-	/**
-	 * Vaccination course with protection window containing onset.
-	 * Reports declared dose count; last dose is always LAST_DOSE.
-	 */
-	private void courseCoveringOnset(PersonReferenceDto person, int numberOfDoses) {
-		fixture.completedCourse(person, numberOfDoses, COURSE_VALID_FROM, COURSE_VALID_UNTIL, doseDates(numberOfDoses));
-	}
-
-	/**
-	 * Acquired course with no dose count (reports UNKDOSE).
-	 * Created in two steps: declared count for acquisition, then cleared.
-	 * Simulates imported course without dose count.
-	 */
-	private void courseWithNoDoseCount(PersonReferenceDto person) {
-
-		ImmunizationDto course = fixture.completedCourse(person, 2, COURSE_VALID_FROM, COURSE_VALID_UNTIL, doseDates(2));
-
-		ImmunizationDto acquired = getImmunizationFacade().getByUuid(course.getUuid());
-		acquired.setNumberOfDoses(null);
-		getImmunizationFacade().save(acquired);
 	}
 
 	/** {@code numberOfDoses} dose dates, one month apart, last date is LAST_DOSE. */

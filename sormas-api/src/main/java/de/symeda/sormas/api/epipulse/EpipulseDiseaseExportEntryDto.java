@@ -462,7 +462,11 @@ public class EpipulseDiseaseExportEntryDto {
 		this.vaccinations = vaccinations;
 	}
 
-	/** The acquired vaccination courses {@code VaccinationStatus} chooses one of. */
+	/**
+	 * The patient's vaccination and {@code NOT_IMMUNIZED} immunizations.
+	 * Used by {@code VaccinationStatus} only where no dose decides it.
+	 * Used by {@code VaccinationStatusMaternal} for {@code MATERNAL_VACCINATION} immunizations,
+	 */
 	public List<EpipulseImmunizationCheckDto> getImmunizations() {
 		return immunizations;
 	}

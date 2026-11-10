@@ -27,15 +27,15 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseMeningococcalSerogro
 import de.symeda.sormas.backend.epipulse.fieldmodel.FieldModel;
 import de.symeda.sormas.backend.epipulse.fieldmodel.ValueDef;
 import de.symeda.sormas.backend.epipulse.sql.EpipulsePlaceOfInfectionSql;
-import de.symeda.sormas.backend.epipulse.sql.EpipulseVaccinationSql;
 import de.symeda.sormas.backend.epipulse.sql.MeniSql;
 
 /**
- * MENI (Invasive Meningococcal Infection) - four disease CTEs, vaccination/place-of-infection, AST panel.
+ * MENI (Invasive Meningococcal Infection) - four disease CTEs, place-of-infection, AST panel.
  * 
- * PlaceOfInfection floored (unlike MEAS groups). Five blank columns: MainPathogenDetectionMethod
+ * PlaceOfInfection floored (unlike MEAS groups). Seven blank columns: MainPathogenDetectionMethod
  * (specimen rank not recordable), SecondPathogenDetectionMethod (same), IsolateId (sample ID is not isolate),
- * ReportedEMERTII (no submission tracking), ResultMLST.
+ * ReportedEMERTII (no submission tracking), ResultMLST, and DateOfLastVaccination and VaccinationStatus
+ * (both ask about the infecting serogroup, which no SORMAS vaccine record can speak to).
  */
 final class MeniFieldModel {
 
@@ -50,16 +50,13 @@ final class MeniFieldModel {
 	static FieldModel create() {
 		return new FieldModel(
 			fields(),
-			MeniSql.spec()
-				.plus(EpipulseVaccinationSql.spec())
-				.plus(EpipulsePlaceOfInfectionSql.spec(EpipulsePlaceOfInfectionSql.Rule.IMPORTED_COUNTRY)),
+			MeniSql.spec().plus(EpipulsePlaceOfInfectionSql.spec(EpipulsePlaceOfInfectionSql.Rule.IMPORTED_COUNTRY)),
 			0);
 	}
 
 	private static List<ValueDef> fields() {
 
 		List<ValueDef> fields = CommonFields.defs();
-		VaccinationFields.addVaccinationFields(fields);
 
 		fields.add(CommonFields.DATE_OF_ONSET);
 
@@ -113,8 +110,17 @@ final class MeniFieldModel {
 		PlaceOfInfectionFields.addPlaceOfInfectionSource(fields);
 		fields.add(ValueDef.repeated(EpipulseVariable.PLACE_OF_INFECTION, dto -> ValueDef.atLeastOneColumn(EpipulseMapping.placeOfInfection(dto))));
 
-		fields.add(CommonFields.DATE_OF_LAST_VACCINATION);
-		fields.add(CommonFields.vaccinationStatus(4));
+		// REVIEW - DateOfLastVaccination: "the date when the last dose of vaccine against the
+		// serogroup of meningococcus that was the cause of infection was given before disease onset".
+		// SORMAS records which vaccine a dose was but its vaccine catalogue holds no meningococcal
+		// vaccine, so no dose can be shown to cover the infecting serogroup; dating any dose would
+		// report a MenB dose against a MenW infection.
+		fields.add(ValueDef.blank(EpipulseVariable.DATE_OF_LAST_VACCINATION));
+		// REVIEW - VaccinationStatus: "vaccinated against the serogroup of meningococcus that was the
+		// cause of infection and number of vaccine doses received". The same gap: counting every
+		// meningococcal dose would read as vaccine failure for a patient never vaccinated against
+		// the serogroup that infected them.
+		fields.add(ValueDef.blank(EpipulseVariable.VACCINATION_STATUS));
 
 		AstFields.addMic(
 			fields,

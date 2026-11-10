@@ -62,6 +62,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.api.epipulse.EpipulseVariable;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -96,6 +97,9 @@ public class PertussisEpipulseExportTest extends AbstractEpipulseExportTest {
 	private static final Date FIRST_DOSE = DateHelper.getDateZero(2023, 0, 15);
 	private static final Date SECOND_DOSE = DateHelper.getDateZero(2023, 5, 15);
 	private static final Date LAST_DOSE = DateHelper.getDateZero(2023, 11, 15);
+
+	/** Two months before the infant of the maternal-vaccination test was born. */
+	private static final Date BEFORE_BIRTH = DateHelper.getDateZero(2022, 10, 15);
 
 	private TestDataCreator.RDCF rdcf;
 	private CaseFixture fixture;
@@ -154,9 +158,9 @@ public class PertussisEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(entry, DATE_OF_LAST_VACCINATION), is("2023-12-15"));
 		assertThat(export.values(entry, PATHOGEN_DETECTION_METHOD), contains("CULT"));
 
-		// The maternal pair: declared by EpiPulse and unanswerable from SORMAS, so columns that are
-		// present and empty rather than absent. The fully populated case is where that is worth
-		// asserting, because nothing on it could have filled either column by accident.
+		// The maternal pair, present and empty rather than absent. GestationalAgeAtVaccination is
+		// unanswerable from SORMAS; VaccinationStatusMaternal is answered only below two years, and
+		// this patient is an adult - see aMaternalVaccinationIsReportedBelowTwoYears.
 		for (EpipulseVariable declaredAndBlank : new EpipulseVariable[] {
 			VACCINATION_STATUS_MATERNAL,
 			GESTATIONAL_AGE_AT_VACCINATION }) {
@@ -165,6 +169,41 @@ public class PertussisEpipulseExportTest extends AbstractEpipulseExportTest {
 			assertThat(export.value(entry, declaredAndBlank), is(blankOrNullString()));
 			assertThat(export.header(), hasItem(declaredAndBlank.getVariableName()));
 		}
+	}
+
+	@Test
+	@DisplayName("a maternal vaccination is reported below two years, and is not a dose of the patient's own")
+	public void aMaternalVaccinationIsReportedBelowTwoYears() {
+
+		// born 2023-01-15, one year old at onset. The mother's dose is recorded under the child's
+		// immunization, which is where SORMAS keeps it - and it is no dose of the child's.
+		PersonReferenceDto infant = creator.createPerson("Greta", "Huber", Sex.FEMALE, 2023, 1, 15).toReference();
+		hospitalisedCase(infant);
+		fixture.immunization(infant, MeansOfImmunization.MATERNAL_VACCINATION, BEFORE_BIRTH, BEFORE_BIRTH);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.PERT, PERIOD_START, PERIOD_END);
+
+		var entry = export.only();
+		assertThat(export.value(entry, VACCINATION_STATUS_MATERNAL), is("true"));
+		assertThat(export.value(entry, VACCINATION_STATUS), is(blankOrNullString()));
+		assertThat(export.value(entry, DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
+		assertThat(export.value(entry, GESTATIONAL_AGE_AT_VACCINATION), is(blankOrNullString()));
+	}
+
+	@Test
+	@DisplayName("a maternal vaccination is not reported from two years on")
+	public void aMaternalVaccinationIsNotReportedFromTwoYears() {
+
+		// born 2022-06-10, two years old on the onset day
+		PersonReferenceDto toddler = creator.createPerson("Hugo", "Imhof", Sex.MALE, 2022, 6, 10).toReference();
+		hospitalisedCase(toddler);
+		fixture.immunization(toddler, MeansOfImmunization.MATERNAL_VACCINATION, DateHelper.getDateZero(2022, 3, 1));
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.PERT, PERIOD_START, PERIOD_END);
+
+		var entry = export.only();
+		assertThat(export.value(entry, AGE), is("2"));
+		assertThat(export.value(entry, VACCINATION_STATUS_MATERNAL), is(blankOrNullString()));
 	}
 
 	@Test
@@ -190,22 +229,22 @@ public class PertussisEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	@Test
-	@DisplayName("VaccinationStatus is NOTVACC when the cours does not cover the onset date")
-	public void vaccinationStatusIsNotVaccWhenTheCourseDoesNotCoverOnset() {
+	@DisplayName("a course whose protection lapsed before onset still reports the doses it delivered")
+	public void aLapsedCourseStillReportsItsDoses() {
 
 		PersonReferenceDto person = creator.createPerson("Carla", "Dupont", Sex.FEMALE, 1990, 6, 15).toReference();
 		hospitalisedCase(person);
 
-		// a complete course by every other measure, but protection had lapsed by the onset date
+		// protection had lapsed by the onset date. EpiPulse asks how many doses were received, not
+		// whether they still protected, so this used to report NOTVACC and now reports the course.
 		fixture
 			.completedCourse(person, 3, DateHelper.getDateZero(2023, 0, 10), DateHelper.getDateZero(2024, 0, 10), FIRST_DOSE, SECOND_DOSE, LAST_DOSE);
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.PERT, PERIOD_START, PERIOD_END);
 
 		var entry = export.only();
-		assertThat(export.value(entry, VACCINATION_STATUS), is("NOTVACC"));
-		// no course was selected, so there is no course to take a last dose from
-		assertThat(export.value(entry, DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
+		assertThat(export.value(entry, VACCINATION_STATUS), is("3DOSE"));
+		assertThat(export.value(entry, DATE_OF_LAST_VACCINATION), is("2023-12-15"));
 	}
 
 	@Test

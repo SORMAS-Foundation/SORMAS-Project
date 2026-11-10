@@ -67,6 +67,7 @@ import static org.hamcrest.Matchers.not;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,8 @@ import de.symeda.sormas.api.epipulse.EpipulseVariable;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
@@ -159,6 +162,9 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 
 	private static final Date FIRST_DOSE = DateHelper.getDateZero(2023, 0, 15);
 	private static final Date LAST_DOSE = DateHelper.getDateZero(2023, 5, 15);
+
+	/** A dose given after the case fell ill, which neither vaccination column may count. */
+	private static final Date AFTER_ONSET = DateHelper.getDateZero(2024, 5, 15);
 
 	// Wide enough to contain onset, which makes vaccination count for a case
 	private static final Date COURSE_VALID_FROM = DateHelper.getDateZero(2023, 0, 10);
@@ -750,43 +756,126 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	/**
-	 * Vaccination pair reads from the same course.
-	 * Dose scale is shared and unit-tested in {@code VaccinationFieldsTest}.
+	 * The vaccination pair counts the doses the patient received up to the onset day. The rule is
+	 * unit-tested in {@code EpipulseMappingTest}; checked here is what only the database can show -
+	 * that the SQL loads every dose whatever the state of the course it was recorded under.
 	 */
 	@Test
-	@DisplayName("VaccinationStatus and DateOfLastVaccination are read from the same course")
-	public void theVaccinationColumnsAreReadFromTheSameCourse() {
+	@DisplayName("VaccinationStatus counts the doses received, whatever the course's status")
+	public void vaccinationStatusCountsDosesWhateverTheCourseStatus() {
 
-		PersonReferenceDto vaccinated = creator.createPerson().toReference();
-		CaseDataDto twoDoses = fixture.caze(vaccinated, ONSET);
-		fixture.completedCourse(vaccinated, 2, COURSE_VALID_FROM, COURSE_VALID_UNTIL, FIRST_DOSE, LAST_DOSE);
+		PersonReferenceDto complete = creator.createPerson().toReference();
+		CaseDataDto completeCourse = fixture.caze(complete, ONSET);
+		fixture.completedCourse(complete, 2, COURSE_VALID_FROM, COURSE_VALID_UNTIL, FIRST_DOSE, LAST_DOSE);
 
-		PersonReferenceDto unknownDoses = creator.createPerson().toReference();
-		CaseDataDto noDoseCount = fixture.caze(unknownDoses, ONSET);
-		courseWithNoDoseCount(unknownDoses);
+		// one dose of a planned three: SORMAS does not call the course acquired, and the export
+		// used to report NOTVACC for it
+		PersonReferenceDto partial = creator.createPerson().toReference();
+		CaseDataDto partialCourse = fixture.caze(partial, ONSET);
+		ImmunizationDto pending = fixture.completedCourse(partial, 3, COURSE_VALID_FROM, COURSE_VALID_UNTIL, FIRST_DOSE);
 
-		// Course ended before onset: neither column reports it
+		// protection lapsed before onset; the dose was still received
 		PersonReferenceDto lapsed = creator.createPerson().toReference();
-		CaseDataDto courseEndedFirst = fixture.caze(lapsed, ONSET);
+		CaseDataDto lapsedCourse = fixture.caze(lapsed, ONSET);
 		fixture.completedCourse(lapsed, 1, COURSE_VALID_FROM, DateHelper.getDateZero(2023, 11, 31), FIRST_DOSE);
 
-		CaseDataDto neverVaccinated = fixture.caze(creator.createPerson().toReference(), ONSET);
+		// a dose on the onset day counts; one after it does not
+		PersonReferenceDto aroundOnset = creator.createPerson().toReference();
+		CaseDataDto dosesAroundOnset = fixture.caze(aroundOnset, ONSET);
+		fixture.immunization(aroundOnset, MeansOfImmunization.VACCINATION, FIRST_DOSE, FIRST_DOSE, ONSET, AFTER_ONSET);
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.MEAS, PERIOD_START, PERIOD_END);
 
-		EpipulseDiseaseExportEntryDto two = export.entryFor(twoDoses.getUuid());
+		// the precondition the second case depends on
+		assertThat(pending.getImmunizationStatus(), is(not(ImmunizationStatus.ACQUIRED)));
 
-		assertThat(export.value(two, VACCINATION_STATUS), is("2DOSE"));
-		assertThat(export.value(two, DATE_OF_LAST_VACCINATION), is("2023-06-15"));
+		assertThat(export.value(export.entryFor(completeCourse.getUuid()), VACCINATION_STATUS), is("2DOSE"));
+		assertThat(export.value(export.entryFor(completeCourse.getUuid()), DATE_OF_LAST_VACCINATION), is("2023-06-15"));
 
-		assertThat(export.value(export.entryFor(noDoseCount.getUuid()), VACCINATION_STATUS), is("UNKDOSE"));
+		assertThat(export.value(export.entryFor(partialCourse.getUuid()), VACCINATION_STATUS), is("1DOSE"));
+		assertThat(export.value(export.entryFor(partialCourse.getUuid()), DATE_OF_LAST_VACCINATION), is("2023-01-15"));
 
-		EpipulseDiseaseExportEntryDto lapsedEntry = export.entryFor(courseEndedFirst.getUuid());
+		assertThat(export.value(export.entryFor(lapsedCourse.getUuid()), VACCINATION_STATUS), is("1DOSE"));
+		assertThat(export.value(export.entryFor(lapsedCourse.getUuid()), DATE_OF_LAST_VACCINATION), is("2023-01-15"));
 
-		assertThat(export.value(lapsedEntry, VACCINATION_STATUS), is("NOTVACC"));
-		assertThat(export.value(lapsedEntry, DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
+		assertThat(export.value(export.entryFor(dosesAroundOnset.getUuid()), VACCINATION_STATUS), is("2DOSE"));
+		assertThat(export.value(export.entryFor(dosesAroundOnset.getUuid()), DATE_OF_LAST_VACCINATION), is("2024-06-10"));
+	}
 
-		assertThat(export.value(export.entryFor(neverVaccinated.getUuid()), VACCINATION_STATUS), is("NOTVACC"));
+	@Test
+	@DisplayName("with no dose up to onset, VaccinationStatus reports only what the records show")
+	public void withoutADoseVaccinationStatusReportsWhatTheRecordsShow() {
+
+		// doses on record, all given after onset: the dates show none had been given
+		PersonReferenceDto vaccinatedLater = creator.createPerson().toReference();
+		CaseDataDto dosesAfterOnset = fixture.caze(vaccinatedLater, ONSET);
+		fixture.immunization(vaccinatedLater, MeansOfImmunization.VACCINATION, AFTER_ONSET, AFTER_ONSET);
+
+		// a vaccination recorded before onset with no doses entered
+		PersonReferenceDto noDosesEntered = creator.createPerson().toReference();
+		CaseDataDto unknownDoses = fixture.caze(noDosesEntered, ONSET);
+		fixture.immunization(noDosesEntered, MeansOfImmunization.VACCINATION, FIRST_DOSE);
+
+		// an explicit record that the patient is not immunized
+		PersonReferenceDto notImmunized = creator.createPerson().toReference();
+		CaseDataDto recordedNotImmunized = fixture.caze(notImmunized, ONSET);
+		fixture.immunization(notImmunized, MeansOfImmunization.NOT_IMMUNIZED, FIRST_DOSE);
+
+		CaseDataDto nothingRecorded = fixture.caze(creator.createPerson().toReference(), ONSET);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.MEAS, PERIOD_START, PERIOD_END);
+
+		assertThat(export.value(export.entryFor(dosesAfterOnset.getUuid()), VACCINATION_STATUS), is("NOTVACC"));
+		assertThat(export.value(export.entryFor(unknownDoses.getUuid()), VACCINATION_STATUS), is("UNKDOSE"));
+		assertThat(export.value(export.entryFor(recordedNotImmunized.getUuid()), VACCINATION_STATUS), is("NOTVACC"));
+		// no record is not evidence of non-vaccination
+		assertThat(export.value(export.entryFor(nothingRecorded.getUuid()), VACCINATION_STATUS), is(blankOrNullString()));
+
+		// no dose was counted for any of them, so none has a date to report
+		for (CaseDataDto caze : Arrays.asList(dosesAfterOnset, unknownDoses, recordedNotImmunized, nothingRecorded)) {
+			assertThat(export.value(export.entryFor(caze.getUuid()), DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
+		}
+	}
+
+	@Test
+	@DisplayName("doses count only under a vaccination or vaccination-recovery immunization")
+	public void dosesCountOnlyUnderAVaccinationImmunization() {
+
+		// SORMAS's form only takes doses under a vaccination, but changing an immunization's means
+		// keeps the doses already recorded, and the API does not go through the form. Every dose
+		// below is dated before onset and none may count.
+		Map<MeansOfImmunization, CaseDataDto> withDoses = new EnumMap<>(MeansOfImmunization.class);
+		for (MeansOfImmunization means : Arrays.asList(
+			MeansOfImmunization.RECOVERY,
+			MeansOfImmunization.OTHER,
+			MeansOfImmunization.MATERNAL_VACCINATION,
+			MeansOfImmunization.NOT_IMMUNIZED)) {
+
+			PersonReferenceDto person = creator.createPerson().toReference();
+			withDoses.put(means, fixture.caze(person, ONSET));
+			fixture.immunization(person, means, FIRST_DOSE, FIRST_DOSE, LAST_DOSE);
+		}
+
+		// nor is an immunization by other means, without doses, read as a vaccination without them
+		PersonReferenceDto recovered = creator.createPerson().toReference();
+		CaseDataDto recoveredWithoutDoses = fixture.caze(recovered, ONSET);
+		fixture.immunization(recovered, MeansOfImmunization.RECOVERY, FIRST_DOSE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.MEAS, PERIOD_START, PERIOD_END);
+
+		for (MeansOfImmunization means : Arrays
+			.asList(MeansOfImmunization.RECOVERY, MeansOfImmunization.OTHER, MeansOfImmunization.MATERNAL_VACCINATION)) {
+			EpipulseDiseaseExportEntryDto entry = export.entryFor(withDoses.get(means).getUuid());
+			assertThat(means.name(), export.value(entry, VACCINATION_STATUS), is(blankOrNullString()));
+			assertThat(means.name(), export.value(entry, DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
+		}
+
+		// the doses under it are ignored, and the record still says what it says
+		EpipulseDiseaseExportEntryDto notImmunized = export.entryFor(withDoses.get(MeansOfImmunization.NOT_IMMUNIZED).getUuid());
+		assertThat(export.value(notImmunized, VACCINATION_STATUS), is("NOTVACC"));
+		assertThat(export.value(notImmunized, DATE_OF_LAST_VACCINATION), is(blankOrNullString()));
+
+		assertThat(export.value(export.entryFor(recoveredWithoutDoses.getUuid()), VACCINATION_STATUS), is(blankOrNullString()));
 	}
 
 	/**
@@ -971,18 +1060,6 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 			caze.getEpiData().setCaseImportedStatus(importedStatus);
 			caze.getEpiData().getExposures().add(travelTo(france));
 		});
-	}
-
-	/** Acquired course with no dose count (reports UNKDOSE). */
-	private void courseWithNoDoseCount(PersonReferenceDto person) {
-
-		// Course must declare dose count to be settled as ACQUIRED, then count is cleared
-		// via facade (simulates imported course without dose count)
-		ImmunizationDto course = fixture.completedCourse(person, 1, COURSE_VALID_FROM, COURSE_VALID_UNTIL, LAST_DOSE);
-
-		ImmunizationDto acquired = getImmunizationFacade().getByUuid(course.getUuid());
-		acquired.setNumberOfDoses(null);
-		getImmunizationFacade().save(acquired);
 	}
 
 	private ExposureDto travelTo(CountryReferenceDto country) {

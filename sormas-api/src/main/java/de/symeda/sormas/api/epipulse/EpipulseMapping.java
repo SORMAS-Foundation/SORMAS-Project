@@ -19,8 +19,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseOutcomeRef;
@@ -31,6 +34,7 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulsePneumococcalSerotypi
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseStatusRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseVaccinationStatusRef;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
@@ -712,12 +716,28 @@ public final class EpipulseMapping {
 	// --- vaccination ---
 
 	/**
-	 * {@code DateOfLastVaccination}: latest dose date before onset from the same selected course used
-	 * by {@code VaccinationStatus}.
+	 * The set of {@link MeansOfImmunization} values whose doses count toward the patient's own
+	 * dose total.
 	 *
 	 * <p>
-	 * Dose date uses administration date with report-date fallback
-	 * ({@link EpipulseCaseDates#vaccinationDate}); same-day-or-later doses are excluded.
+	 * This is deliberately not {@link MeansOfImmunization#isVaccination}, which would also admit:
+	 * <ul>
+	 * <li>{@code MATERNAL_VACCINATION} - these doses were given to the mother and are described by
+	 * {@code VaccinationStatusMaternal}; they never count toward the patient's own total</li>
+	 * <li>{@code MONOCLONAL_ANTIBODY} - not a vaccine</li>
+	 * </ul>
+	 * 
+	 */
+	public static final Set<MeansOfImmunization> VACCINATION_DOSE_MEANS =
+		Collections.unmodifiableSet(EnumSet.of(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY));
+
+	/**
+	 * {@code DateOfLastVaccination}: the latest of the doses {@link #vaccinationStatus} counts.
+	 *
+	 * <p>
+	 * Read from exactly the same doses, so the two columns can never describe different
+	 * vaccinations: blank whenever the status is not a dose count. A dose on the onset day counts,
+	 * as it does for the status, although EpiPulse words this column "before disease onset".
 	 */
 	public static String dateOfLastVaccination(EpipulseDiseaseExportEntryDto entry) {
 
@@ -726,43 +746,31 @@ public final class EpipulseMapping {
 			return "";
 		}
 
-		Date onsetDay = DateHelper.getStartOfDay(onset);
-		EpipulseImmunizationCheckDto course = relevantImmunization(entry, onsetDay);
-		if (course == null || entry.getVaccinations() == null) {
-			return "";
-		}
+		SortedSet<Date> doseDays = doseDaysUpTo(entry, DateHelper.getStartOfDay(onset));
 
-		Date latest = null;
-		for (EpipulseVaccinationCheckDto vaccination : entry.getVaccinations()) {
-
-			if (!Objects.equals(vaccination.getImmunizationId(), course.getId())) {
-				continue;
-			}
-
-			Date administered = EpipulseCaseDates.vaccinationDate(vaccination);
-			if (administered == null || !administered.before(onsetDay)) {
-				continue;
-			}
-
-			if (latest == null || administered.after(latest)) {
-				latest = administered;
-			}
-		}
-
-		return formatDate(latest);
+		return doseDays.isEmpty() ? "" : formatDate(doseDays.last());
 	}
 
 	/**
-	 * {@code VaccinationStatus} as EpiPulse dose code from the relevant immunization course.
+	 * {@code VaccinationStatus}: the number of vaccine doses the patient received up to and
+	 * including the onset day.
 	 *
 	 * <p>
-	 * There is no fallback date usage, the vaccination status is derived based of onset date or none at all.
-	 * 
-	 * <p>
-	 * Selection follows onset-based BR0010-BR0012 logic (shared with
-	 * {@code ImmunizationService.deriveVaccinationStatus}): course must be valid at onset and latest
-	 * by {@code validFrom}. No qualifying course -> {@code NOTVACC}; missing dose count ->
-	 * {@code UNKDOSE}. Dose value is capped by {@code maxDoses} per subject code.
+	 * Counts doses, not courses: every dose recorded under a same-disease immunization whose means
+	 * is in {@link #VACCINATION_DOSE_MEANS}, whatever the immunization's status - a pending, failed
+	 * or expired course still delivered its doses. Doses on the same day count once, so a dose
+	 * recorded under two immunizations is not counted twice. The first rule that applies wins:
+	 *
+	 * <ol>
+	 * <li>no onset date - blank: there is no date to have been vaccinated by</li>
+	 * <li>at least one dose up to the onset day - that count, capped at {@code maxDoses}</li>
+	 * <li>doses on record, all after onset - {@code NOTVACC}: the dates show none had been given</li>
+	 * <li>no doses on record at all, but a vaccination immunization recorded up to the onset day
+	 * ({@link EpipulseCaseDates#immunizationDate}) - {@code UNKDOSE}: vaccinated, the doses not
+	 * entered. Its planned number of doses is not a count of doses given, so it is not used</li>
+	 * <li>an explicit {@code NOT_IMMUNIZED} immunization - {@code NOTVACC}</li>
+	 * <li>nothing recorded - blank: the absence of a record is not evidence of non-vaccination</li>
+	 * </ol>
 	 */
 	public static String vaccinationStatus(EpipulseDiseaseExportEntryDto entry, int maxDoses) {
 
@@ -771,44 +779,116 @@ public final class EpipulseMapping {
 			return "";
 		}
 
-		EpipulseImmunizationCheckDto reported = relevantImmunization(entry, DateHelper.getStartOfDay(onset));
-		if (reported == null) {
+		Date onsetDay = DateHelper.getStartOfDay(onset);
+
+		SortedSet<Date> doseDays = doseDaysUpTo(entry, onsetDay);
+		if (!doseDays.isEmpty()) {
+			return doseCountCode(Math.min(doseDays.size(), maxDoses));
+		}
+
+		if (hasDoses(entry)) {
 			return EpipulseVaccinationStatusRef.NOTVACC.getCode();
 		}
 
-		Integer doses = reported.getNumberOfDoses();
+		if (hasVaccinationImmunizationUpTo(entry, onsetDay)) {
+			return EpipulseVaccinationStatusRef.UNKDOSE.getCode();
+		}
 
-		return doses == null ? EpipulseVaccinationStatusRef.UNKDOSE.getCode() : doseCountCode(Math.min(doses, maxDoses));
+		if (hasNotImmunizedRecord(entry)) {
+			return EpipulseVaccinationStatusRef.NOTVACC.getCode();
+		}
+
+		return "";
 	}
 
 	/**
-	 * Selects the single immunization course shared by vaccination status/date-of-last-dose logic.
-	 * Requires validity window to include onset day and chooses latest {@code validFrom}.
+	 * The distinct days a dose was given on, up to and including the onset day. A dose with no date
+	 * at all cannot be placed before or after onset and is left out.
 	 */
-	private static EpipulseImmunizationCheckDto relevantImmunization(EpipulseDiseaseExportEntryDto entry, Date onsetDay) {
+	private static SortedSet<Date> doseDaysUpTo(EpipulseDiseaseExportEntryDto entry, Date onsetDay) {
+
+		SortedSet<Date> doseDays = new TreeSet<>();
+		if (entry.getVaccinations() == null) {
+			return doseDays;
+		}
+
+		for (EpipulseVaccinationCheckDto vaccination : entry.getVaccinations()) {
+
+			Date administered = EpipulseCaseDates.vaccinationDate(vaccination);
+			if (administered == null) {
+				continue;
+			}
+
+			Date day = DateHelper.getStartOfDay(administered);
+			if (!day.after(onsetDay)) {
+				doseDays.add(day);
+			}
+		}
+
+		return doseDays;
+	}
+
+	private static boolean hasDoses(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getVaccinations() != null && !entry.getVaccinations().isEmpty();
+	}
+
+	private static boolean hasVaccinationImmunizationUpTo(EpipulseDiseaseExportEntryDto entry, Date onsetDay) {
 
 		if (entry.getImmunizations() == null) {
-			return null;
+			return false;
 		}
 
-		EpipulseImmunizationCheckDto relevant = null;
 		for (EpipulseImmunizationCheckDto immunization : entry.getImmunizations()) {
 
-			if (immunization.getValidFrom() == null || immunization.getValidUntil() == null) {
+			if (!VACCINATION_DOSE_MEANS.contains(immunization.getMeansOfImmunization())) {
 				continue;
 			}
 
-			Date validFrom = DateHelper.getStartOfDay(immunization.getValidFrom());
-			if (validFrom.after(onsetDay) || DateHelper.getStartOfDay(immunization.getValidUntil()).before(onsetDay)) {
-				continue;
-			}
-
-			if (relevant == null || validFrom.after(DateHelper.getStartOfDay(relevant.getValidFrom()))) {
-				relevant = immunization;
+			Date recorded = EpipulseCaseDates.immunizationDate(immunization);
+			if (recorded != null && !DateHelper.getStartOfDay(recorded).after(onsetDay)) {
+				return true;
 			}
 		}
 
-		return relevant;
+		return false;
+	}
+
+	private static boolean hasNotImmunizedRecord(EpipulseDiseaseExportEntryDto entry) {
+
+		return entry.getImmunizations() != null
+			&& entry.getImmunizations().stream().anyMatch(immunization -> immunization.getMeansOfImmunization() == MeansOfImmunization.NOT_IMMUNIZED);
+	}
+
+	/**
+	 * {@code VaccinationStatusMaternal} BOOL: whether the mother was vaccinated during pregnancy,
+	 * for patients under 2 at onset.
+	 *
+	 * <p>
+	 * SORMAS records this on the patient, not on the mother: a same-disease immunization whose means
+	 * is {@code MATERNAL_VACCINATION} - the protection the child received through the mother. Such a
+	 * record makes the value {@code true}, whatever its status or dates: a maternal vaccination
+	 * precedes birth, so it always precedes onset. The value is never {@code false}: the absence of
+	 * the record is not evidence that the mother was not vaccinated, and {@code NOT_IMMUNIZED}
+	 * describes the patient, not the mother.
+	 *
+	 * <p>
+	 * "Under 2" is the {@code Age} column's own reading - completed years at
+	 * {@link EpipulseCaseDates#ageReferenceDate} - so the two columns cannot disagree. Blank when the
+	 * age is unknown or 2 or more.
+	 */
+	public static String vaccinationStatusMaternal(EpipulseDiseaseExportEntryDto entry) {
+
+		Integer years = EpipulseCaseDates.ageYears(entry);
+		if (years == null || years >= 2) {
+			return "";
+		}
+
+		boolean maternalVaccination = entry.getImmunizations() != null
+			&& entry.getImmunizations()
+				.stream()
+				.anyMatch(immunization -> immunization.getMeansOfImmunization() == MeansOfImmunization.MATERNAL_VACCINATION);
+
+		return maternalVaccination ? String.valueOf(true) : "";
 	}
 
 	// --- shared helpers ---

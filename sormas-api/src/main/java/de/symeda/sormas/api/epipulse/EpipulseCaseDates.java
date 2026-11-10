@@ -119,6 +119,19 @@ public final class EpipulseCaseDates {
 	}
 
 	/**
+	 * For deciding whether a vaccination with no doses on record preceded the onset.
+	 * The date of immunization counts as having been recorded from fields:
+	 * <ol>
+	 * <li>{@code Immunization.startDate}</li>
+	 * <li>{@code Immunization.reportDate}</li>
+	 * </ol>
+	 */
+	public static Date immunizationDate(EpipulseImmunizationCheckDto immunization) {
+
+		return immunization.getStartDate() != null ? immunization.getStartDate() : immunization.getReportDate();
+	}
+
+	/**
 	 * The date {@code Age} and {@code AgeMonth} are measured against.
 	 *
 	 * <ol>

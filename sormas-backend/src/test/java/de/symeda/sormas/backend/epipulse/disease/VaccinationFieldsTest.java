@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.epipulse.EpipulseImmunizationCheckDto;
 import de.symeda.sormas.api.epipulse.EpipulseVaccinationCheckDto;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 
 /**
  * The seam between the two vaccination aggregates and the rules that read them.
@@ -40,99 +41,75 @@ public class VaccinationFieldsTest {
 	// --- doses ---
 
 	@Test
-	@DisplayName("a full dose record parses into all three fields")
+	@DisplayName("a full dose record parses into both dates")
 	public void aFullDoseRecordParses() {
 
-		List<EpipulseVaccinationCheckDto> doses = VaccinationFields.parseVaccinations("2023-05-01|2023-05-03|417");
+		List<EpipulseVaccinationCheckDto> doses = VaccinationFields.parseVaccinations("2023-05-01|2023-05-03");
 
 		assertEquals(1, doses.size());
 		assertEquals("2023-05-01", onDay(doses.get(0).getVaccinationDate()));
 		assertEquals("2023-05-03", onDay(doses.get(0).getReportDate()));
-		assertEquals(Long.valueOf(417), doses.get(0).getImmunizationId());
 	}
 
 	@Test
-	@DisplayName("a dose with nothing but a date and its course still parses")
-	public void aSparseDoseRecordParses() {
+	@DisplayName("a dose with no date of administration keeps its report date")
+	public void aDoseWithoutAnAdministrationDateParses() {
 
-		// a dose administered on a known date but never separately reported
-		List<EpipulseVaccinationCheckDto> doses = VaccinationFields.parseVaccinations("2023-05-01||417");
+		List<EpipulseVaccinationCheckDto> doses = VaccinationFields.parseVaccinations("|2023-05-03");
 
 		assertEquals(1, doses.size());
-		assertEquals("2023-05-01", onDay(doses.get(0).getVaccinationDate()));
-		assertNull(doses.get(0).getReportDate());
-		assertEquals(Long.valueOf(417), doses.get(0).getImmunizationId());
+		assertNull(doses.get(0).getVaccinationDate());
+		assertEquals("2023-05-03", onDay(doses.get(0).getReportDate()));
 	}
 
 	@Test
-	@DisplayName("doses keep the course they were given under")
-	public void dosesKeepTheirCourse() {
+	@DisplayName("several doses come back separately, in the order the aggregate wrote them")
+	public void severalDosesStaySeparate() {
 
-		// the flat list says nothing about courses on its own; this is what groups the first two
-		// doses under one and the third under another
-		List<EpipulseVaccinationCheckDto> doses = VaccinationFields.parseVaccinations("2023-07-01||12#2020-02-01||11#2020-01-01||11");
+		List<EpipulseVaccinationCheckDto> doses = VaccinationFields.parseVaccinations("2023-07-01|2023-07-01#2020-02-01|#2020-01-01|");
 
 		assertEquals(3, doses.size());
-		assertEquals(Long.valueOf(12), doses.get(0).getImmunizationId());
-		assertEquals(Long.valueOf(11), doses.get(1).getImmunizationId());
-		assertEquals(Long.valueOf(11), doses.get(2).getImmunizationId());
 		assertEquals("2023-07-01", onDay(doses.get(0).getVaccinationDate()));
+		assertEquals("2020-02-01", onDay(doses.get(1).getVaccinationDate()));
+		assertEquals("2020-01-01", onDay(doses.get(2).getVaccinationDate()));
 	}
 
-	// --- courses ---
+	// --- immunizations ---
 
 	@Test
-	@DisplayName("a full course record parses into all three fields")
-	public void aFullCourseRecordParses() {
+	@DisplayName("a full immunization record parses into its means and both dates")
+	public void aFullImmunizationRecordParses() {
 
-		List<EpipulseImmunizationCheckDto> courses = VaccinationFields.parseImmunizations("417|2024-02-01|9999-12-31|2");
+		List<EpipulseImmunizationCheckDto> immunizations = VaccinationFields.parseImmunizations("VACCINATION|2024-02-01|2024-02-03");
 
-		assertEquals(1, courses.size());
-		assertEquals(Long.valueOf(417), courses.get(0).getId());
-		assertEquals("2024-02-01", onDay(courses.get(0).getValidFrom()));
-		assertEquals("9999-12-31", onDay(courses.get(0).getValidUntil()));
-		assertEquals(Integer.valueOf(2), courses.get(0).getNumberOfDoses());
-	}
-
-	@Test
-	@DisplayName("a course with no dose count keeps its trailing empty field")
-	public void aCourseWithoutADoseCountParses() {
-
-		// this is the record that becomes UNKDOSE, so it must survive the split rather than be
-		// dropped one field short
-		List<EpipulseImmunizationCheckDto> courses = VaccinationFields.parseImmunizations("417|2024-02-01|9999-12-31|");
-
-		assertEquals(1, courses.size());
-		assertEquals("2024-02-01", onDay(courses.get(0).getValidFrom()));
-		assertNull(courses.get(0).getNumberOfDoses());
+		assertEquals(1, immunizations.size());
+		assertEquals(MeansOfImmunization.VACCINATION, immunizations.get(0).getMeansOfImmunization());
+		assertEquals("2024-02-01", onDay(immunizations.get(0).getStartDate()));
+		assertEquals("2024-02-03", onDay(immunizations.get(0).getReportDate()));
 	}
 
 	@Test
-	@DisplayName("a course with no validity period parses, and is rejected later by the rule")
-	public void aCourseWithoutAValidityPeriodParses() {
+	@DisplayName("an immunization with no start date keeps its trailing report date")
+	public void anImmunizationWithoutAStartDateParses() {
 
-		// parsing and qualifying are separate jobs: the record is read faithfully here and
-		// discarded by vaccinationStatus, where the reason can be stated
-		List<EpipulseImmunizationCheckDto> courses = VaccinationFields.parseImmunizations("417|||3");
+		List<EpipulseImmunizationCheckDto> immunizations = VaccinationFields.parseImmunizations("NOT_IMMUNIZED||2024-02-03");
 
-		assertEquals(1, courses.size());
-		assertEquals(Long.valueOf(417), courses.get(0).getId());
-		assertNull(courses.get(0).getValidFrom());
-		assertNull(courses.get(0).getValidUntil());
-		assertEquals(Integer.valueOf(3), courses.get(0).getNumberOfDoses());
+		assertEquals(1, immunizations.size());
+		assertEquals(MeansOfImmunization.NOT_IMMUNIZED, immunizations.get(0).getMeansOfImmunization());
+		assertNull(immunizations.get(0).getStartDate());
+		assertEquals("2024-02-03", onDay(immunizations.get(0).getReportDate()));
 	}
 
 	@Test
-	@DisplayName("several courses come back separately rather than merged")
-	public void severalCoursesStaySeparate() {
+	@DisplayName("several immunizations come back separately rather than merged")
+	public void severalImmunizationsStaySeparate() {
 
-		List<EpipulseImmunizationCheckDto> courses = VaccinationFields.parseImmunizations("12|2024-02-01|9999-12-31|1#11|2019-06-01|9999-12-31|3");
+		List<EpipulseImmunizationCheckDto> immunizations =
+			VaccinationFields.parseImmunizations("VACCINATION_RECOVERY|2024-02-01|2024-02-01#NOT_IMMUNIZED||2019-06-01");
 
-		assertEquals(2, courses.size());
-		assertEquals(Long.valueOf(12), courses.get(0).getId());
-		assertEquals(Integer.valueOf(1), courses.get(0).getNumberOfDoses());
-		assertEquals(Long.valueOf(11), courses.get(1).getId());
-		assertEquals(Integer.valueOf(3), courses.get(1).getNumberOfDoses());
+		assertEquals(2, immunizations.size());
+		assertEquals(MeansOfImmunization.VACCINATION_RECOVERY, immunizations.get(0).getMeansOfImmunization());
+		assertEquals(MeansOfImmunization.NOT_IMMUNIZED, immunizations.get(1).getMeansOfImmunization());
 	}
 
 	@Test

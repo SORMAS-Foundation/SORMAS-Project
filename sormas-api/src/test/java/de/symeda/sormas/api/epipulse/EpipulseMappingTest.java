@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.epipulse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,142 +24,169 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.DateHelper;
 
 /**
- * Tests for the multi-tier rules: which vaccination course the two vaccination columns report, how
- * its dose count is encoded and which dose is dated, which detection methods a case's tests amount
- * to for a given subject code, and which NUTS code the two place columns report.
+ * Tests for the multi-tier rules: which doses the two vaccination columns count and date and what
+ * they report when there are none, which detection methods a case's tests amount to for a given
+ * subject code, and which NUTS code the two place columns report.
  */
 public class EpipulseMappingTest {
 
-	/** The onset date every case below is measured against. */
+	/** The onset date every case below is measured against: 2024-03-10. */
 	private static final Date REFERENCE = DateHelper.getDateZero(2024, 2, 10);
 
 	private static final Date BEFORE = DateHelper.getDateZero(2023, 5, 1);
 	private static final Date DOSE_OLDEST = DateHelper.getDateZero(2022, 5, 1);
 	private static final Date DOSE_OLDER = DateHelper.getDateZero(2023, 0, 5);
 	private static final Date DOSE_LATEST = DateHelper.getDateZero(2024, 1, 20);
-	private static final Date LONG_BEFORE = DateHelper.getDateZero(2019, 5, 1);
 	private static final Date AFTER = DateHelper.getDateZero(2024, 6, 1);
-
-	/** How SORMAS stores lifelong protection, per {@code ImmunizationValidityCalculator}. */
-	private static final Date LIFELONG = DateHelper.getDateZero(9999, 11, 31);
 
 	private static final int STANDARD = 10;
 	private static final int MENI = 4;
 	private static final int MPOX = 3;
 
-	@Test
-	@DisplayName("an acquired course in force at onset reports the doses recorded on it")
-	public void aCourseInForceReportsItsDoses() {
+	// --- VaccinationStatus and DateOfLastVaccination, in the order the rules apply ---
 
-		// the course carries the number; nothing counts the doses under it, because SORMAS only
-		// marks a course acquired once its vaccinations have reached that number
-		assertEquals("2DOSE", status(entry(course(BEFORE, AFTER, 2)), STANDARD));
+	@Test
+	@DisplayName("only vaccination and vaccination-recovery immunizations hold the patient's doses")
+	public void onlyVaccinationMeansHoldDoses() {
+
+		assertEquals(EnumSet.of(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY), EpipulseMapping.VACCINATION_DOSE_MEANS);
+
+		for (MeansOfImmunization notTheirs : new MeansOfImmunization[] {
+			MeansOfImmunization.MATERNAL_VACCINATION,
+			MeansOfImmunization.MONOCLONAL_ANTIBODY }) {
+
+			assertTrue(MeansOfImmunization.isVaccination(notTheirs), notTheirs.name());
+			assertFalse(EpipulseMapping.VACCINATION_DOSE_MEANS.contains(notTheirs), notTheirs.name());
+		}
+	}
+
+	// rule 1: no onset
+
+	@Test
+	@DisplayName("a case with no onset date reports both columns blank, whatever is on record")
+	public void noOnsetReportsBlank() {
+
+		// with no onset there is no date to have been vaccinated by; NOTVACC would assert the
+		// patient was never vaccinated
+		for (EpipulseDiseaseExportEntryDto entry : Arrays.asList(
+			withDoses(entry(), dose(DOSE_OLDER)),
+			entry(immunization(MeansOfImmunization.VACCINATION, BEFORE)),
+			entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE)))) {
+
+			entry.setSymptomOnsetDate(null);
+
+			assertEquals("", status(entry, STANDARD));
+			assertEquals("", lastVaccination(entry));
+		}
+	}
+
+	// rule 2: doses up to the onset day
+
+	@Test
+	@DisplayName("the status is the number of doses received, and the date is the last of them")
+	public void dosesAreCountedAndTheLastIsDated() {
+
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(DOSE_LATEST), dose(DOSE_OLDEST));
+
+		assertEquals("3DOSE", status(entry, STANDARD));
+		assertEquals("2024-02-20", lastVaccination(entry));
 	}
 
 	@Test
-	@DisplayName("a patient with no acquired course in force is NOTVACC")
-	public void noQualifyingCourseIsNotVacc() {
-		assertEquals("NOTVACC", status(entry(), STANDARD));
+	@DisplayName("a dose given on the onset day counts, and is the last vaccination")
+	public void aDoseOnTheOnsetDayCounts() {
+
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(REFERENCE));
+
+		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("2024-03-10", lastVaccination(entry));
 	}
 
 	@Test
-	@DisplayName("the window is inclusive at both ends")
-	public void theWindowIsInclusive() {
-
-		// protection that starts the day symptoms begin, and protection that ends that day, both
-		// covered the patient on the day in question
-		assertEquals("1DOSE", status(entry(course(REFERENCE, AFTER, 1)), STANDARD));
-		assertEquals("1DOSE", status(entry(course(BEFORE, REFERENCE, 1)), STANDARD));
-	}
-
-	@Test
-	@DisplayName("a course that had not started, or had expired, does not count")
-	public void aCourseOutsideTheWindowDoesNotCount() {
-
-		assertEquals("NOTVACC", status(entry(course(AFTER, LIFELONG, 3)), STANDARD));
-		assertEquals("NOTVACC", status(entry(course(LONG_BEFORE, BEFORE, 3)), STANDARD));
-	}
-
-	@Test
-	@DisplayName("a course with no validity period recorded does not count")
-	public void aCourseWithoutAValidityPeriodDoesNotCount() {
-
-		// SORMAS reads a blank validUntil as no match rather than as unbounded (BR0012), and a
-		// blank validFrom cannot be shown to precede the onset. Lifelong protection is a date in
-		// the year 9999, not a blank, so nothing real is lost by requiring both.
-		assertEquals("NOTVACC", status(entry(course(BEFORE, null, 2)), STANDARD));
-		assertEquals("NOTVACC", status(entry(course(null, AFTER, 2)), STANDARD));
-		assertEquals("2DOSE", status(entry(course(BEFORE, LIFELONG, 2)), STANDARD));
-	}
-
-	@Test
-	@DisplayName("of several courses in force, the one that started most recently is reported")
-	public void theLatestCourseInForceIsReported() {
-
-		// the older course is the longer one and still loses: among courses that all covered the
-		// patient, the most recent is the protection they were actually under
-		EpipulseDiseaseExportEntryDto entry = entry(course(LONG_BEFORE, LIFELONG, 4), course(BEFORE, LIFELONG, 1));
-
-		assertEquals("1DOSE", status(entry, STANDARD));
-	}
-
-	@Test
-	@DisplayName("a course outside the window never wins, however recent")
-	public void aLaterCourseOutsideTheWindowDoesNotWin() {
+	@DisplayName("a dose after the onset day is neither counted nor dated")
+	public void aDoseAfterOnsetIsIgnored() {
 
 		// vaccinated again after falling ill: real, but not their status when they fell ill
-		EpipulseDiseaseExportEntryDto entry = entry(course(BEFORE, LIFELONG, 2), course(AFTER, LIFELONG, 3));
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(DOSE_LATEST), dose(AFTER));
+
+		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("2024-02-20", lastVaccination(entry));
+	}
+
+	@Test
+	@DisplayName("doses under different immunizations are added together")
+	public void dosesUnderDifferentImmunizationsAreAdded() {
+
+		// The doses arrive flat, whatever immunization they were recorded under: a course followed
+		// by another shot recorded separately is still three doses received.
+		EpipulseDiseaseExportEntryDto entry = withDoses(
+			entry(immunization(MeansOfImmunization.VACCINATION, DOSE_OLDEST), immunization(MeansOfImmunization.VACCINATION, DOSE_LATEST)),
+			dose(DOSE_OLDEST),
+			dose(DOSE_OLDER),
+			dose(DOSE_LATEST));
+
+		assertEquals("3DOSE", status(entry, STANDARD));
+	}
+
+	@Test
+	@DisplayName("two doses on the same day count once")
+	public void dosesOnTheSameDayCountOnce() {
+
+		// Guard against the same dose recorded under two immunizations.
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(DOSE_LATEST), dose(DOSE_LATEST));
 
 		assertEquals("2DOSE", status(entry, STANDARD));
 	}
 
 	@Test
-	@DisplayName("separate courses are never added together")
-	public void separateCoursesAreNeverAddedTogether() {
+	@DisplayName("a dose with no date of administration is dated by its report date")
+	public void anUndatedDoseUsesItsReportDate() {
 
-		// two two-dose courses is not a four-dose patient. Summing the patient's doses was the
-		// previous behavior and produced a number nobody ever received.
-		EpipulseDiseaseExportEntryDto entry = entry(course(LONG_BEFORE, LIFELONG, 2), course(BEFORE, LIFELONG, 2));
+		EpipulseVaccinationCheckDto undated = new EpipulseVaccinationCheckDto();
+		undated.setReportDate(DOSE_LATEST);
+
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), undated);
 
 		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("2024-02-20", lastVaccination(entry));
 	}
 
 	@Test
-	@DisplayName("a course in force with no dose count is UNKDOSE")
-	public void aCourseWithoutADoseCountIsUnknown() {
+	@DisplayName("a dose with neither date is skipped rather than blanking the columns")
+	public void aDoseWithNoDatesIsSkipped() {
 
-		// exactly what UNKDOSE is for: vaccinated, number of doses unknown. Counting doses could
-		// never produce it, so the value was unreachable until the course became the source.
-		assertEquals("UNKDOSE", status(entry(course(BEFORE, AFTER, null)), STANDARD));
-	}
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), new EpipulseVaccinationCheckDto(), dose(DOSE_LATEST));
 
-	@Test
-	@DisplayName("a course recording zero doses reports the number that was entered")
-	public void aCourseRecordingZeroDosesIsNotVacc() {
-
-		// contradictory data, acquired, but no doses, and the column reports what was recorded
-		// rather than deciding which half to believe
-		assertEquals("NOTVACC", status(entry(course(BEFORE, AFTER, 0)), STANDARD));
+		assertEquals("1DOSE", status(entry, STANDARD));
+		assertEquals("2024-02-20", lastVaccination(entry));
 	}
 
 	@Test
 	@DisplayName("a count above the subject code's scale reports that code's highest value")
 	public void countAboveTheScaleReportsTheCap() {
 
-		EpipulseDiseaseExportEntryDto fiveDoses = entry(course(BEFORE, AFTER, 5));
+		EpipulseDiseaseExportEntryDto fiveDoses = withDoses(
+			entry(),
+			dose(DateHelper.getDateZero(2020, 0, 1)),
+			dose(DateHelper.getDateZero(2020, 1, 1)),
+			dose(DateHelper.getDateZero(2020, 2, 1)),
+			dose(DateHelper.getDateZero(2020, 3, 1)),
+			dose(DateHelper.getDateZero(2020, 4, 1)));
 
-		// the same course under three scales: the cap is the only thing that differs between
+		// the same doses under three scales: the cap is the only thing that differs between
 		// diseases, which is why they share one method
 		assertEquals("5DOSE", status(fiveDoses, STANDARD));
 		assertEquals("4DOSE", status(fiveDoses, MENI));
@@ -168,127 +196,161 @@ public class EpipulseMappingTest {
 	@Test
 	@DisplayName("a count at the cap is reported as itself, not as an overflow")
 	public void countAtTheCapIsExact() {
-		assertEquals("4DOSE", status(entry(course(BEFORE, AFTER, 4)), MENI));
+
+		EpipulseDiseaseExportEntryDto fourDoses = withDoses(
+			entry(),
+			dose(DateHelper.getDateZero(2020, 0, 1)),
+			dose(DateHelper.getDateZero(2020, 1, 1)),
+			dose(DateHelper.getDateZero(2020, 2, 1)),
+			dose(DateHelper.getDateZero(2020, 3, 1)));
+
+		assertEquals("4DOSE", status(fourDoses, MENI));
 	}
 
-	@Test
-	@DisplayName("a case with no onset date reports blank, not NOTVACC")
-	public void noOnsetReportsBlank() {
-
-		EpipulseDiseaseExportEntryDto entry = entry(course(BEFORE, AFTER, 2));
-		entry.setSymptomOnsetDate(null);
-
-		// with no onset there is no date to have been vaccinated by, and NOTVACC would assert the
-		// patient was never vaccinated
-		assertEquals("", status(entry, STANDARD));
-	}
+	// rule 3: doses on record, all after onset
 
 	@Test
-	@DisplayName("doses on record do not make a patient vaccinated on their own")
-	public void dosesAloneDoNotMakeAPatientVaccinated() {
+	@DisplayName("doses on record that all came after onset make the patient NOTVACC")
+	public void dosesOnlyAfterOnsetAreNotVacc() {
 
-		// DateOfLastVaccination would report this dose; VaccinationStatus does not, because no
-		// course SORMAS considers acquired was in force. The two columns answer different
-		// questions and are allowed to disagree.
-		assertEquals("NOTVACC", status(withDoses(entry(), dose(1L, BEFORE)), STANDARD));
-	}
-
-	// --- DateOfLastVaccination ---
-
-	@Test
-	@DisplayName("DateOfLastVaccination is the last dose of the reported course before onset")
-	public void lastVaccinationIsTheLastDoseOfTheReportedCourse() {
-
-		EpipulseDiseaseExportEntryDto entry =
-			withDoses(entry(course(11L, LONG_BEFORE, LIFELONG, 2)), dose(11L, DOSE_OLDER), dose(11L, DOSE_LATEST), dose(11L, DOSE_OLDEST));
-
-		assertEquals("2024-02-20", lastVaccination(entry));
-	}
-
-	@Test
-	@DisplayName("a dose under another course is not reported, however recent")
-	public void aDoseFromAnotherCourseIsNotReported() {
-
-		// course 12 was not in force at onset, so neither its dose count nor its dates describe
-		// this case. Reporting its date beside course 11's count would describe neither course.
-		EpipulseDiseaseExportEntryDto entry =
-			withDoses(entry(course(11L, LONG_BEFORE, LIFELONG, 2), course(12L, AFTER, LIFELONG, 1)), dose(11L, DOSE_OLDER), dose(12L, DOSE_LATEST));
-
-		assertEquals("2DOSE", status(entry, STANDARD));
-		assertEquals("2023-01-05", lastVaccination(entry));
-	}
-
-	@Test
-	@DisplayName("a dose on or after the onset date is not the last vaccination")
-	public void aDoseOnOrAfterOnsetIsNotReported() {
-
-		// strictly before: a dose given the day symptoms began counts towards the course's doses
-		// without being eligible to be the last one, because it did not precede the illness
-		EpipulseDiseaseExportEntryDto onTheDay = withDoses(entry(course(11L, LONG_BEFORE, LIFELONG, 2)), dose(11L, DOSE_OLDER), dose(11L, REFERENCE));
-
-		assertEquals("2023-01-05", lastVaccination(onTheDay));
-
-		EpipulseDiseaseExportEntryDto after = withDoses(entry(course(11L, LONG_BEFORE, LIFELONG, 2)), dose(11L, DOSE_OLDER), dose(11L, AFTER));
-
-		assertEquals("2023-01-05", lastVaccination(after));
-	}
-
-	@Test
-	@DisplayName("a dose with no date of administration is dated by its report date")
-	public void anUndatedDoseUsesItsReportDate() {
-
-		EpipulseVaccinationCheckDto undated = new EpipulseVaccinationCheckDto();
-		undated.setImmunizationId(11L);
-		undated.setReportDate(DOSE_LATEST);
-
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(course(11L, LONG_BEFORE, LIFELONG, 2)), dose(11L, DOSE_OLDER), undated);
-
-		assertEquals("2024-02-20", lastVaccination(entry));
-	}
-
-	@Test
-	@DisplayName("a dose with neither date is skipped rather than blanking the column")
-	public void aDoseWithNoDatesIsSkipped() {
-
-		EpipulseVaccinationCheckDto dateless = new EpipulseVaccinationCheckDto();
-		dateless.setImmunizationId(11L);
-
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(course(11L, LONG_BEFORE, LIFELONG, 2)), dateless, dose(11L, DOSE_LATEST));
-
-		assertEquals("2024-02-20", lastVaccination(entry));
-	}
-
-	@Test
-	@DisplayName("no qualifying course means no date, whatever doses are on record")
-	public void noQualifyingCourseMeansNoDate() {
-
-		// the pair stays consistent: NOTVACC and a blank date, rather than a date that belongs to
-		// no course the export reported
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(course(11L, LONG_BEFORE, BEFORE, 2)), dose(11L, DOSE_OLDER));
+		// the dates themselves show no dose had been given by onset: evidence, not a missing record
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(immunization(MeansOfImmunization.VACCINATION, AFTER)), dose(AFTER));
 
 		assertEquals("NOTVACC", status(entry, STANDARD));
 		assertEquals("", lastVaccination(entry));
 	}
 
 	@Test
-	@DisplayName("a course whose doses carry no dates reports its count with a blank date")
-	public void aCourseWithUndatedDosesStillReportsItsCount() {
+	@DisplayName("any dose on record rules out UNKDOSE, even one given after onset")
+	public void anyDoseRulesOutUnknownDose() {
 
-		// numberOfDoses is written on the course, so it survives doses that cannot be dated
-		EpipulseDiseaseExportEntryDto entry = entry(course(11L, LONG_BEFORE, LIFELONG, 2));
+		// UNKDOSE is for a vaccination recorded with no doses entered at all. Here doses were
+		// entered; they just came later.
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(immunization(MeansOfImmunization.VACCINATION, BEFORE)), dose(AFTER));
 
-		assertEquals("2DOSE", status(entry, STANDARD));
-		assertEquals("", lastVaccination(entry));
+		assertEquals("NOTVACC", status(entry, STANDARD));
+	}
+
+	// rule 4: a vaccination recorded with no doses
+
+	@Test
+	@DisplayName("a vaccination recorded up to onset with no doses entered is UNKDOSE")
+	public void aVaccinationWithoutDosesIsUnknownDose() {
+
+		// exactly what UNKDOSE is for: vaccinated, number of doses unknown
+		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION, BEFORE)), STANDARD));
+		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION_RECOVERY, BEFORE)), STANDARD));
+		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION, REFERENCE)), STANDARD));
+
+		assertEquals("", lastVaccination(entry(immunization(MeansOfImmunization.VACCINATION, BEFORE))));
 	}
 
 	@Test
-	@DisplayName("a case with no onset date reports no last vaccination")
-	public void noOnsetMeansNoLastVaccination() {
+	@DisplayName("a vaccination recorded after onset with no doses entered says nothing")
+	public void aVaccinationAfterOnsetWithoutDosesIsBlank() {
 
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(course(11L, LONG_BEFORE, LIFELONG, 2)), dose(11L, DOSE_OLDER));
-		entry.setSymptomOnsetDate(null);
+		// it may well be vaccination given after the illness, so it is no evidence either way
+		assertEquals("", status(entry(immunization(MeansOfImmunization.VACCINATION, AFTER)), STANDARD));
+	}
 
-		assertEquals("", lastVaccination(entry));
+	@Test
+	@DisplayName("a vaccination is dated by its start date, and by its report date only without one")
+	public void aVaccinationIsDatedByItsStartDate() {
+
+		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION, null, BEFORE)), STANDARD));
+
+		// started after onset, recorded before it: the start date is the one that matters
+		assertEquals("", status(entry(immunization(MeansOfImmunization.VACCINATION, AFTER, BEFORE)), STANDARD));
+	}
+
+	@Test
+	@DisplayName("an immunization by other means is never read as a vaccination")
+	public void otherMeansAreNotVaccinations() {
+
+		for (MeansOfImmunization means : new MeansOfImmunization[] {
+			MeansOfImmunization.RECOVERY,
+			MeansOfImmunization.OTHER,
+			MeansOfImmunization.MATERNAL_VACCINATION,
+			MeansOfImmunization.MONOCLONAL_ANTIBODY }) {
+
+			assertEquals("", status(entry(immunization(means, BEFORE)), STANDARD), means.name());
+		}
+	}
+
+	// rule 5: an explicit record of no immunization
+
+	@Test
+	@DisplayName("a NOT_IMMUNIZED record makes the patient NOTVACC, whenever it was recorded")
+	public void notImmunizedIsNotVacc() {
+
+		assertEquals("NOTVACC", status(entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE)), STANDARD));
+		assertEquals("NOTVACC", status(entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, AFTER)), STANDARD));
+	}
+
+	@Test
+	@DisplayName("recorded doses and recorded vaccinations outweigh a NOT_IMMUNIZED record")
+	public void evidenceOfVaccinationOutweighsNotImmunized() {
+
+		EpipulseDiseaseExportEntryDto withDose = withDoses(entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE)), dose(DOSE_OLDER));
+		assertEquals("1DOSE", status(withDose, STANDARD));
+
+		EpipulseDiseaseExportEntryDto withVaccination =
+			entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE), immunization(MeansOfImmunization.VACCINATION, BEFORE));
+		assertEquals("UNKDOSE", status(withVaccination, STANDARD));
+	}
+
+	// rule 6: nothing recorded
+
+	@Test
+	@DisplayName("a patient with nothing recorded reports blank, not NOTVACC")
+	public void nothingRecordedIsBlank() {
+
+		// the absence of a record is not evidence of non-vaccination - the same reading SORMAS
+		// applies for Luxembourg (BR0080LU)
+		assertEquals("", status(entry(), STANDARD));
+		assertEquals("", lastVaccination(entry()));
+	}
+
+	// --- VaccinationStatusMaternal ---
+
+	@Test
+	@DisplayName("a MATERNAL_VACCINATION record reports true for a patient under 2")
+	public void maternalVaccinationIsTrueUnderTwo() {
+
+		// the record's dates are not checked: a maternal vaccination precedes birth, so it always
+		// precedes onset
+		assertEquals("true", maternal(bornOn(2023, 6, 1, immunization(MeansOfImmunization.MATERNAL_VACCINATION, BEFORE))));
+		assertEquals("true", maternal(bornOn(2023, 6, 1, immunization(MeansOfImmunization.MATERNAL_VACCINATION, AFTER))));
+		assertEquals("true", maternal(bornOn(2023, 6, 1, immunization(MeansOfImmunization.MATERNAL_VACCINATION, null, null))));
+	}
+
+	@Test
+	@DisplayName("VaccinationStatusMaternal is blank from the second birthday, measured as Age measures it")
+	public void maternalVaccinationIsBlankFromTwo() {
+
+		// REFERENCE (the onset) is 2024-03-10: born a day later than two years before is still 1
+		assertEquals("true", maternal(bornOn(2022, 3, 11, immunization(MeansOfImmunization.MATERNAL_VACCINATION, BEFORE))));
+		assertEquals("", maternal(bornOn(2022, 3, 10, immunization(MeansOfImmunization.MATERNAL_VACCINATION, BEFORE))));
+		assertEquals("", maternal(bornOn(1990, 6, 15, immunization(MeansOfImmunization.MATERNAL_VACCINATION, BEFORE))));
+	}
+
+	@Test
+	@DisplayName("VaccinationStatusMaternal is blank when the age cannot be established")
+	public void maternalVaccinationNeedsAnAge() {
+		assertEquals("", maternal(entry(immunization(MeansOfImmunization.MATERNAL_VACCINATION, BEFORE))));
+	}
+
+	@Test
+	@DisplayName("VaccinationStatusMaternal is never false: no other record speaks for the mother")
+	public void maternalVaccinationIsNeverFalse() {
+
+		assertEquals("", maternal(bornOn(2023, 6, 1)));
+
+		for (MeansOfImmunization means : MeansOfImmunization.values()) {
+			if (means != MeansOfImmunization.MATERNAL_VACCINATION) {
+				assertEquals("", maternal(bornOn(2023, 6, 1, immunization(means, BEFORE))), means.name());
+			}
+		}
 	}
 
 	// --- PathogenDetectionMethod ---
@@ -517,6 +579,21 @@ public class EpipulseMappingTest {
 		return EpipulseMapping.dateOfLastVaccination(entry);
 	}
 
+	private static String maternal(EpipulseDiseaseExportEntryDto entry) {
+		return EpipulseMapping.vaccinationStatusMaternal(entry);
+	}
+
+	/** An {@link #entry} for a patient born on the given day (month 1-12). */
+	private static EpipulseDiseaseExportEntryDto bornOn(int year, int month, int day, EpipulseImmunizationCheckDto... immunizations) {
+
+		EpipulseDiseaseExportEntryDto entry = entry(immunizations);
+		entry.setYearOfBirth(year);
+		entry.setMonthOfBirth(month);
+		entry.setDayOfBirth(day);
+
+		return entry;
+	}
+
 	private static EpipulseDiseaseExportEntryDto entry(EpipulseImmunizationCheckDto... immunizations) {
 
 		EpipulseDiseaseExportEntryDto entry = new EpipulseDiseaseExportEntryDto();
@@ -526,28 +603,25 @@ public class EpipulseMappingTest {
 		return entry;
 	}
 
-	/** One acquired vaccination course: when it started protecting, when it stops, how many doses. */
-	private static EpipulseImmunizationCheckDto course(Date validFrom, Date validUntil, Integer doses) {
-		return course(1L, validFrom, validUntil, doses);
+	/** One immunization started - and recorded - on the given date. */
+	private static EpipulseImmunizationCheckDto immunization(MeansOfImmunization means, Date started) {
+		return immunization(means, started, started);
 	}
 
-	/** The same, identified, for the cases where doses have to be attached to a named course. */
-	private static EpipulseImmunizationCheckDto course(long id, Date validFrom, Date validUntil, Integer doses) {
+	private static EpipulseImmunizationCheckDto immunization(MeansOfImmunization means, Date started, Date reported) {
 
 		EpipulseImmunizationCheckDto immunization = new EpipulseImmunizationCheckDto();
-		immunization.setId(id);
-		immunization.setValidFrom(validFrom);
-		immunization.setValidUntil(validUntil);
-		immunization.setNumberOfDoses(doses);
+		immunization.setMeansOfImmunization(means);
+		immunization.setStartDate(started);
+		immunization.setReportDate(reported);
 
 		return immunization;
 	}
 
-	/** One dose under a named course, dated. */
-	private static EpipulseVaccinationCheckDto dose(long course, Date administered) {
+	/** One dose, dated. Which immunization it was given under does not matter to the rule. */
+	private static EpipulseVaccinationCheckDto dose(Date administered) {
 
 		EpipulseVaccinationCheckDto vaccination = new EpipulseVaccinationCheckDto();
-		vaccination.setImmunizationId(course);
 		vaccination.setVaccinationDate(administered);
 
 		return vaccination;

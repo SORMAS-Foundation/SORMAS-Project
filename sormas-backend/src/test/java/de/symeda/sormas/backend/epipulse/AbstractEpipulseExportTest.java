@@ -321,6 +321,31 @@ public abstract class AbstractEpipulseExportTest extends AbstractBeanTest {
 			return getImmunizationFacade().save(getImmunizationFacade().getByUuid(immunization.getUuid()));
 		}
 
+		/**
+		 * Builds test immunization with the given person and one dose per date, started and recorded on
+		 * {@code startDate}. It is saved once and never resaved, so its status is whatever SORMAS derives
+		 * on creation — never {@code ACQUIRED}. That is intentional: the export is meant to ignore
+		 * immunizations whose status is not {@code ACQUIRED}.
+		 *
+		 * <p>
+		 * Both the start and recorded dates are set to today, because the test creator records an
+		 * immunization as reported today, and today is later than every fixed onset used in these suites.
+		 */
+		public ImmunizationDto immunization(PersonReferenceDto person, MeansOfImmunization means, Date startDate, Date... doseDates) {
+
+			ImmunizationDto immunization = creator.createImmunization(disease, person, reportingUser, rdcf, i -> {
+				i.setMeansOfImmunization(means);
+				i.setStartDate(startDate);
+				i.setReportDate(startDate);
+			});
+
+			for (Date doseDate : doseDates) {
+				creator.createVaccination(reportingUser, immunization.toReference(), new HealthConditionsDto(), doseDate, null, null);
+			}
+
+			return immunization;
+		}
+
 		/** A test on a sample of its own, so several can sit on one case. */
 		public void pathogenTest(CaseDataDto caze, PathogenTestType testType, PathogenTestResultType result, boolean verified, Date testDate) {
 			pathogenTest(caze, testType, result, verified, testDate, null);
