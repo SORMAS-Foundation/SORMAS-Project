@@ -69,8 +69,7 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 
 	private static final String LOC_USUAL_RANGE_INFO = "locUsualRangeInfo";
 
-	public static final String CLIMATE_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.CLIMATE_SENSITIVE)
-			+ fluidRowLocs(DiseaseConfigurationDto.USUAL_RANGE_EXCLUDED_YEARS)
+	public static final String CLIMATE_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.USUAL_RANGE_EXCLUDED_YEARS)
 			+ loc(LOC_USUAL_RANGE_INFO);
 
 	public static final String GENERAL_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.UUID)
@@ -196,7 +195,6 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 
 		CustomLayout climateLayout = new CustomLayout();
 		climateLayout.setTemplateContents(CLIMATE_HTML_LAYOUT);
-		addField(climateLayout, DiseaseConfigurationDto.CLIMATE_SENSITIVE, CheckBox.class);
 		addUsualRangeExcludedYearsField(climateLayout);
 		if (UiUtil.enabled(FeatureType.CLIMATE_MANAGEMENT)) {
 			accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationClimate), false, climateLayout);

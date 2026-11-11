@@ -1008,7 +1008,9 @@ public interface Captions {
 	String climateDashboardChart = "climateDashboardChart";
 	String climateDashboardClassification = "climateDashboardClassification";
 	String climateDashboardClimate = "climateDashboardClimate";
+	String climateDashboardAddDisease = "climateDashboardAddDisease";
 	String climateDashboardDiseases = "climateDashboardDiseases";
+	String climateDashboardRemoveDisease = "climateDashboardRemoveDisease";
 	String climateDashboardDisplay = "climateDashboardDisplay";
 	String climateDashboardExport = "climateDashboardExport";
 	String ClimateDashboardExport_district = "ClimateDashboardExport.district";
@@ -1674,7 +1676,6 @@ public interface Captions {
 	String DiseaseConfiguration_automaticSampleAssignmentThreshold = "DiseaseConfiguration.automaticSampleAssignmentThreshold";
 	String DiseaseConfiguration_caseFollowUpDuration = "DiseaseConfiguration.caseFollowUpDuration";
 	String DiseaseConfiguration_caseSurveillanceEnabled = "DiseaseConfiguration.caseSurveillanceEnabled";
-	String DiseaseConfiguration_climateSensitive = "DiseaseConfiguration.climateSensitive";
 	String DiseaseConfiguration_disease = "DiseaseConfiguration.disease";
 	String DiseaseConfiguration_eventParticipantFollowUpDuration = "DiseaseConfiguration.eventParticipantFollowUpDuration";
 	String DiseaseConfiguration_exposureCategories = "DiseaseConfiguration.exposureCategories";

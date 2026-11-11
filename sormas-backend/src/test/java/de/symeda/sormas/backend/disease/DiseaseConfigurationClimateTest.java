@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.disease;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,30 +32,13 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 class DiseaseConfigurationClimateTest extends AbstractBeanTest {
 
 	@Test
-	void testNoDiseaseIsClimateSensitiveUntilAnAdminMarksIt() {
-
-		getDiseaseConfigurationFacade().loadData();
-
-		// no shipped list (decision 138)
-		assertFalse(getDiseaseConfigurationFacade().isClimateSensitive(Disease.MALARIA));
-		assertFalse(getDiseaseConfigurationFacade().isClimateSensitive(Disease.CHOLERA));
-		assertTrue(getDiseaseConfigurationFacade().getAllClimateSensitiveDiseases().isEmpty());
-
-		DiseaseConfigurationDto malaria = getDiseaseConfigurationFacade().getDiseaseConfiguration(Disease.MALARIA);
-		DiseaseConfigurationDto byUuid = getDiseaseConfigurationFacade().getByUuid(malaria.getUuid());
-		assertEquals(Boolean.FALSE, byUuid.getClimateSensitive(), "an empty flag is shown unticked");
-	}
-
-	@Test
-	void testClimateSettingsAreSavedAndCached() {
+	void testExcludedYearsAreSavedAndCached() {
 
 		DiseaseConfigurationDto measles = getDiseaseConfigurationFacade().getDiseaseConfiguration(Disease.MEASLES);
-		measles.setClimateSensitive(true);
 		measles.setUsualRangeExcludedYears(new TreeSet<>(Set.of(2024, 2019)));
 		getDiseaseConfigurationFacade().saveDiseaseConfiguration(measles);
 		getDiseaseConfigurationFacade().loadData();
 
-		assertTrue(getDiseaseConfigurationFacade().isClimateSensitive(Disease.MEASLES));
 		assertEquals(Set.of(2019, 2024), getDiseaseConfigurationFacade().getUsualRangeExcludedYears(Disease.MEASLES));
 		assertTrue(getDiseaseConfigurationFacade().getUsualRangeExcludedYears(Disease.CHOLERA).isEmpty());
 	}

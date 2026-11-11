@@ -44,7 +44,7 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 
 /**
- * The Climate dashboard's CSV (decision 128): one row per region or district and epi week, the cases of each ticked
+ * The Climate dashboard's CSV (decision 128): one row per region or district and epi week, the cases of each chosen
  * disease in a group of columns, then the week's climate; never shifted by the lag.
  */
 final class ClimateDashboardExport {

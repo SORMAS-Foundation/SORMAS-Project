@@ -159,7 +159,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 		dates.setValue(String.format(I18nProperties.getString(Strings.climateDashboardDates), weekLabel(selection.getFrom()), weekLabel(selection.getTo())));
 		status.setValue(status(climate));
-		// the layout draws only with at least one disease ticked (decision 137), so there is always a panel
+		// the layout draws only with at least one disease chosen (decision 137), so there is always a panel
 		credit.setVisible(!variables.isEmpty() && climate.isOpenWeatherData());
 		lastScript = script(selection, climate, cases, variables, shading, measure, lag, heatmap);
 		chart.setHeight(chartHeight, Unit.PIXELS);

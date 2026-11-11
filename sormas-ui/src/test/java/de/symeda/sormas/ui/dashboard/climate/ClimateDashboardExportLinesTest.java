@@ -70,7 +70,6 @@ class ClimateDashboardExportLinesTest extends AbstractUiBeanTest {
 		liberiaPlace = new TestDataCreator.RDCF(new TestDataCreator.RDCFEntities(region, liberiaDistrict, community, facility));
 		user = useNationalAdminLogin();
 		lastWeek = DateHelper.getPreviousEpiWeek(new Date());
-		ClimateDashboardLayoutTest.markClimateSensitive(getDiseaseConfigurationFacade(), Disease.DENGUE, Disease.CHOLERA);
 	}
 
 	@Test
@@ -88,7 +87,7 @@ class ClimateDashboardExportLinesTest extends AbstractUiBeanTest {
 		ClimateDashboardLayout layout = new ClimateDashboardLayout(UserDto.build(), JurisdictionLevel.NATION);
 		layout.getRegionFilter().setValue(rdcf.region);
 		layout.apply();
-		layout.getDiseaseGroup().setValue(new java.util.HashSet<>(java.util.Arrays.asList(Disease.DENGUE, Disease.CHOLERA)));
+		layout.getDiseasePicker().setValue(new java.util.HashSet<>(java.util.Arrays.asList(Disease.DENGUE, Disease.CHOLERA)));
 
 		layout.getLagSlider().setValue(5d);
 
