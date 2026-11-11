@@ -69,4 +69,10 @@ public class ExternalPersonDataAddressRequestDto implements Serializable {
 	public int hashCode() {
 		return Objects.hash(caseData, contact, eventParticipant, personReference);
 	}
+
+	@Override
+	public String toString() {
+		return "ExternalPersonDataAddressRequestDto{" + "caseData=" + caseData + ", contact=" + contact + ", eventParticipant=" + eventParticipant
+			+ ", personReference=" + personReference + '}';
+	}
 }

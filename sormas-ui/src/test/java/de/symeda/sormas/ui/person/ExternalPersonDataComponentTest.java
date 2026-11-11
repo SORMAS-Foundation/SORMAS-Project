@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.person;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataForDisplayDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataIndexDto;
@@ -60,14 +62,13 @@ class ExternalPersonDataComponentTest extends AbstractUiBeanTest {
 			com.vaadin.ui.TextField id = (com.vaadin.ui.TextField) content.getComponent(0);
 			id.setValue("invalid-id");
 			search.click();
-			verifyNoInteractions(context.provider);
 			((com.vaadin.ui.Button) content.getComponent(1)).click();
 			com.vaadin.ui.GridLayout filters = (com.vaadin.ui.GridLayout) content.getComponent(2);
 			((com.vaadin.ui.TextField) filters.getComponent(0, 0)).setValue("Doe");
 			search.click();
 			org.mockito.ArgumentCaptor<de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest> request =
 				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest.class);
-			verify(context.provider).find(request.capture());
+			verify(context.provider, times(2)).find(request.capture());
 			assertEquals("Doe", request.getValue().getLastName());
 			assertEquals(null, request.getValue().getNationalHealthId());
 		}
@@ -425,6 +426,7 @@ class ExternalPersonDataComponentTest extends AbstractUiBeanTest {
 			i18n.when(() -> I18nProperties.getString("externalPersonsInvalidRange")).thenReturn("Invalid range");
 			SystemConfigurationValueFacade configuration = mock(SystemConfigurationValueFacade.class);
 			facades.when(FacadeProvider::getSystemConfigurationValueFacade).thenReturn(configuration);
+			facades.when(FacadeProvider::getConfigFacade).thenReturn(mock(ConfigFacade.class));
 			facades.when(FacadeProvider::getPersonFacade).thenReturn(personFacade);
 			facades.when(FacadeProvider::getExternalPersonDataProviderFacade).thenReturn(provider);
 			ui.when(() -> UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)).thenReturn(permitted);
