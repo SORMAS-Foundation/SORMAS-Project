@@ -25,11 +25,12 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataListView;
 
-class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTest {
+class ExternalPersonDataComponentTest extends AbstractUiBeanTest {
 
 	private ExternalPersonDataComponent victim;
 

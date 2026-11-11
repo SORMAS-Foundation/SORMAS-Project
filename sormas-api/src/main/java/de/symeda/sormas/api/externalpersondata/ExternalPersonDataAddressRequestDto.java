@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 
@@ -16,7 +16,7 @@ public class ExternalPersonDataAddressRequestDto implements Serializable {
 
 	private CaseDataDto caseData;
 
-	private ContactReferenceDto contact;
+	private ContactDto contact;
 
 	private EventParticipantDto eventParticipant;
 
@@ -30,11 +30,11 @@ public class ExternalPersonDataAddressRequestDto implements Serializable {
 		this.caseData = caseData;
 	}
 
-	public ContactReferenceDto getContact() {
+	public ContactDto getContact() {
 		return contact;
 	}
 
-	public void setContact(ContactReferenceDto contact) {
+	public void setContact(ContactDto contact) {
 		this.contact = contact;
 	}
 

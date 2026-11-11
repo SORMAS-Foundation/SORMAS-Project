@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -50,7 +50,7 @@ public class ExternalPersonDataPropertyFiller extends AbstractRootValuePropertyF
 
 		ExternalPersonDataAddressRequestDto request = new ExternalPersonDataAddressRequestDto();
 		request.setCaseData((CaseDataDto) entities.getEntity(RootEntityType.ROOT_CASE));
-		request.setContact((ContactReferenceDto) entities.getEntity(RootEntityType.ROOT_CONTACT));
+		request.setContact((ContactDto) entities.getEntity(RootEntityType.ROOT_CONTACT));
 		request.setPersonReference((PersonReferenceDto) entities.getEntity(RootEntityType.ROOT_PERSON));
 		request.setEventParticipant((EventParticipantDto) entities.getEntity(RootEntityType.ROOT_EVENT_PARTICIPANT));
 
