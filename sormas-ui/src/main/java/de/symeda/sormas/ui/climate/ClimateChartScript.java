@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.climate;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Locale;
 
 import de.symeda.sormas.api.utils.DateFormatHelper;
@@ -60,6 +61,22 @@ public final class ClimateChartScript {
 	 */
 	public static String number(Double value) {
 		return value != null ? String.format(Locale.ROOT, "%.2f", value) : "null";
+	}
+
+	/**
+	 * The marker of a lone point on a line: the lines have no markers (decision 143), and a value whose neighbours are both
+	 * missing has no segment to draw, so without it the value would not be seen (decision 148).
+	 */
+	public static final String LONE_MARKER = "marker:{enabled:true,radius:3}";
+
+	/**
+	 * @return true when the value at the index is there and neither neighbour is (the first and last values have one
+	 *         neighbour): a line draws nothing for it, so it needs {@link #LONE_MARKER}
+	 */
+	public static boolean isLone(List<Double> values, int index) {
+		return values.get(index) != null
+			&& (index == 0 || values.get(index - 1) == null)
+			&& (index == values.size() - 1 || values.get(index + 1) == null);
 	}
 
 	/**

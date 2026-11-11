@@ -425,20 +425,23 @@ public class ClimateDashboardChart extends VerticalLayout {
 				.append(",color:'")
 				.append(color)
 				.append("',lineWidth:2,zIndex:1,data:[");
+			List<Double> values = new ArrayList<>();
 			for (int i = 0; i < count; i++) {
 				ClimateWeekValueDto week = value.apply(i);
-				js.append(number(week != null ? week.getValue() : null)).append(',');
+				values.add(week != null ? week.getValue() : null);
 			}
+			// a week between two weeks without data gets a dot on a line, or it would not be seen (decision 148)
+			js.append(variable == ClimateVariable.RAINFALL ? columnData(values) : lineData(values));
 			js.append("]},");
 
 			// before normal ranges exist: the same week last year as a dashed grey line (decision 124)
 			boolean anyLastYear = false;
-			StringBuilder lastYear = new StringBuilder();
+			List<Double> lastYear = new ArrayList<>();
 			for (int i = 0; i < count; i++) {
 				ClimateWeekValueDto week = value.apply(i);
 				Double previous = week != null && week.getNormal() == null ? week.getLastYear() : null;
 				anyLastYear |= previous != null;
-				lastYear.append(number(previous)).append(',');
+				lastYear.add(previous);
 			}
 			if (anyLastYear) {
 				js.append("{type:'line',yAxis:").append(axis).append(",color:'#888888',dashStyle:'Dash',lineWidth:1.5,zIndex:2,");
@@ -448,7 +451,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 				} else {
 					js.append("linkedTo:'lastYear',");
 				}
-				js.append("data:[").append(lastYear).append("]},");
+				js.append("data:[").append(lineData(lastYear)).append("]},");
 			}
 			axis++;
 		}
@@ -463,6 +466,26 @@ public class ClimateDashboardChart extends VerticalLayout {
 		}
 		js.append("]};");
 		return js.toString();
+	}
+
+	/**
+	 * @return the values of a line, a lone value (no value on either side) with a dot, since the lines have no markers
+	 *         (decisions 143, 148)
+	 */
+	static String lineData(List<Double> values) {
+		StringBuilder data = new StringBuilder();
+		for (int i = 0; i < values.size(); i++) {
+			if (ClimateChartScript.isLone(values, i)) {
+				data.append("{y:").append(number(values.get(i))).append(',').append(ClimateChartScript.LONE_MARKER).append("},");
+			} else {
+				data.append(number(values.get(i))).append(',');
+			}
+		}
+		return data.toString();
+	}
+
+	private static String columnData(List<Double> values) {
+		return values.stream().map(v -> number(v) + ",").collect(Collectors.joining());
 	}
 
 	/**
