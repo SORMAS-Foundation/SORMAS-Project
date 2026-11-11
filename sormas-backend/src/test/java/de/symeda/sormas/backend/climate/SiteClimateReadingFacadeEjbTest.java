@@ -197,9 +197,10 @@ class SiteClimateReadingFacadeEjbTest extends AbstractBeanTest {
 			getEnvironmentService().deletePermanent(entity);
 		});
 
-		Long left = executeInTransaction(em -> {
-			return em.createQuery("SELECT COUNT(r) FROM " + SiteClimateReading.TABLE_NAME + " r", Long.class).getSingleResult();
-		});
+		Long left = executeInTransaction(
+			em -> {
+				return em.createQuery("SELECT COUNT(r) FROM " + SiteClimateReading.TABLE_NAME + " r", Long.class).getSingleResult();
+			});
 		assertEquals(0L, left);
 	}
 

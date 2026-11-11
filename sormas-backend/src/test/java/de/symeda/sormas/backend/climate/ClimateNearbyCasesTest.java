@@ -104,25 +104,13 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 		String home = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
 		String farHome = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.83, SITE_LONGITUDE, null, rdcf.community).getUuid();
 		// a report point near the site is not used: without a home point the case is matched by community
-		String reported = createCase(
-			Disease.DENGUE,
-			CaseClassification.PROBABLE,
-			null,
-			null,
-			new double[] {
-				6.805,
-				3.505 },
-			rdcf.community).getUuid();
+		String reported = createCase(Disease.DENGUE, CaseClassification.PROBABLE, null, null, new double[] {
+			6.805,
+			3.505 }, rdcf.community).getUuid();
 		// a far home address is not overridden by a report point at the site
-		createCase(
-			Disease.DENGUE,
-			CaseClassification.SUSPECT,
-			6.90,
-			SITE_LONGITUDE,
-			new double[] {
-				SITE_LATITUDE,
-				SITE_LONGITUDE },
-			rdcf.community);
+		createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.90, SITE_LONGITUDE, new double[] {
+			SITE_LATITUDE,
+			SITE_LONGITUDE }, rdcf.community);
 		String sameCommunity = createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, rdcf.community).getUuid();
 		createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, CommunityFacadeEjb.toReferenceDto(otherCommunity));
 		createCase(Disease.DENGUE, CaseClassification.NO_CASE, SITE_LATITUDE, SITE_LONGITUDE, null, rdcf.community);
@@ -203,8 +191,10 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 	}
 
 	private ClimateNearbyCasesWeekDto weekOf(ClimateNearbyCasesDto nearby) {
-		List<ClimateNearbyCasesWeekDto> weeks =
-			nearby.getWeeks().stream().filter(week -> week.getWeek().equals(ClimateStatistics.epiWeekOf(day))).collect(Collectors.toList());
+		List<ClimateNearbyCasesWeekDto> weeks = nearby.getWeeks()
+			.stream()
+			.filter(week -> week.getWeek().equals(ClimateStatistics.epiWeekOf(day)))
+			.collect(Collectors.toList());
 		assertEquals(1, weeks.size());
 		return weeks.get(0);
 	}

@@ -94,10 +94,7 @@ class EnvironmentClimateEditTest extends AbstractUiBeanTest {
 
 		assertTrue(layout.isManualEntryAllowed());
 		assertTrue(layout.isSiteReadingEditAllowed());
-		assertEquals(
-			Arrays.asList("Add site reading", "Add daily values", "Export daily values"),
-			buttonCaptions(layout.getActions()),
-			"stacked in the actions card");
+		assertEquals(Arrays.asList("Add site reading", "Add daily values", "Export daily values"), buttonCaptions(layout.getActions()), "stacked in the actions card");
 		assertEquals(8, layout.getDays().getGrid().getColumns().size(), "values, source and the edit action");
 		assertEquals(7, layout.getSiteReadings().getGrid().getColumns().size(), "values and the edit and delete actions");
 

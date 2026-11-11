@@ -222,9 +222,11 @@ class ClimateWeeklySeriesTest extends AbstractBeanTest {
 		assertEquals(19.6, p90(criteria), DELTA, "an update that leaves the change date alone is not seen");
 		Thread.sleep(10);
 		executeInTransaction(em -> {
-			ClimateObservation row = em.createQuery(
-				"SELECT o FROM climateobservation o WHERE o.climateLocation.id = :location AND o.observationDate = :day",
-				ClimateObservation.class).setParameter("location", location).setParameter("day", ClimateCalendar.toDate(day)).getSingleResult();
+			ClimateObservation row = em
+				.createQuery("SELECT o FROM climateobservation o WHERE o.climateLocation.id = :location AND o.observationDate = :day", ClimateObservation.class)
+				.setParameter("location", location)
+				.setParameter("day", ClimateCalendar.toDate(day))
+				.getSingleResult();
 			row.setRainfall(100.0);
 		});
 		assertEquals(97.2, p90(criteria), DELTA, "118 mm in that week now: 14 + 0.8 × 104");

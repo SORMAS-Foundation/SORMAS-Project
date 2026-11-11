@@ -189,10 +189,7 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 
 		saveDistrictClimatePoint(rdcf.district.getUuid(), 6.61, 3.34);
 
-		assertEquals(
-			environmentLocation.getId(),
-			getDistrictClimateLocation(rdcf.district.getUuid()).getId(),
-			"the district joins the cell's location");
+		assertEquals(environmentLocation.getId(), getDistrictClimateLocation(rdcf.district.getUuid()).getId(), "the district joins the cell's location");
 		assertEquals(12.0, getObservationsByDay(environmentLocation).get(day.getTime()).getRainfall(), "imported rows are copied across");
 		assertFalse(getLocation(withoutCoordinates.getId()).hasCoordinates(), "the old location is left unchanged");
 	}
@@ -452,7 +449,8 @@ class ClimateLinkingServiceTest extends AbstractBeanTest {
 
 	private Map<Long, ClimateObservation> getObservationsByDay(ClimateLocation location) {
 		return executeInTransaction(em -> {
-			List<ClimateObservation> rows = getBean(ClimateObservationService.class).getByLocation(em.find(ClimateLocation.class, location.getId()));
+			List<ClimateObservation> rows =
+				getBean(ClimateObservationService.class).getByLocation(em.find(ClimateLocation.class, location.getId()));
 			return rows.stream().collect(Collectors.toMap(o -> o.getObservationDate().getTime(), o -> o));
 		});
 	}

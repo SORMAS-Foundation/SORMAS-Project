@@ -65,8 +65,7 @@ class ClimateDashboardExportLinesTest extends AbstractUiBeanTest {
 		de.symeda.sormas.backend.infrastructure.region.Region region = getBean(RegionService.class).getByUuid(rdcf.region.getUuid());
 		District liberiaDistrict = creator.createDistrict("Liberia", region);
 		de.symeda.sormas.backend.infrastructure.community.Community community = creator.createCommunity("Cañas Dulces", liberiaDistrict);
-		de.symeda.sormas.backend.infrastructure.facility.Facility facility =
-			creator.createFacility("Hospital Liberia", region, liberiaDistrict, community);
+		de.symeda.sormas.backend.infrastructure.facility.Facility facility = creator.createFacility("Hospital Liberia", region, liberiaDistrict, community);
 		liberia = DistrictFacadeEjb.toReferenceDto(liberiaDistrict);
 		liberiaPlace = new TestDataCreator.RDCF(new TestDataCreator.RDCFEntities(region, liberiaDistrict, community, facility));
 		user = useNationalAdminLogin();
@@ -100,8 +99,10 @@ class ClimateDashboardExportLinesTest extends AbstractUiBeanTest {
 		assertEquals(5 + 6 * layout.selectedDiseases().size() + 21 + 1, header.size());
 		assertTrue(header.contains(Disease.DENGUE + " cases"), header.toString());
 		assertTrue(header.contains("Rainfall same week last year (mm)"));
-		de.symeda.sormas.api.climate.ClimateDashboardExportDto lastBagacesWeek =
-			exportRows.stream().filter(r -> rdcf.district.equals(r.getDistrict()) && r.getClimate().getWeek().equals(lastWeek)).findFirst().get();
+		de.symeda.sormas.api.climate.ClimateDashboardExportDto lastBagacesWeek = exportRows.stream()
+			.filter(r -> rdcf.district.equals(r.getDistrict()) && r.getClimate().getWeek().equals(lastWeek))
+			.findFirst()
+			.get();
 		List<String> line = ClimateDashboardExport.line(lastBagacesWeek, layout.selectedDiseases());
 		assertEquals(header.size(), line.size());
 		assertEquals("Bagaces", line.get(1));

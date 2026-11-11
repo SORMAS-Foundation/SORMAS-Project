@@ -85,8 +85,7 @@ class ClimateCaptionsTest {
 		coverage.addDays(2023, ClimateDataSource.IMPORT, 300, LocalDate.of(2023, 1, 1));
 		coverage.addDays(2023, ClimateDataSource.OPENWEATHER, 65, LocalDate.of(2023, 10, 28));
 		assertEquals(
-			"2021–2022 " + ClimateDataSource.IMPORT + " · 2023 " + ClimateDataSource.IMPORT + " 300 days, " + ClimateDataSource.OPENWEATHER
-				+ " 65 days",
+			"2021–2022 " + ClimateDataSource.IMPORT + " · 2023 " + ClimateDataSource.IMPORT + " 300 days, " + ClimateDataSource.OPENWEATHER + " 65 days",
 			ClimateCaptions.sources(coverage));
 	}
 

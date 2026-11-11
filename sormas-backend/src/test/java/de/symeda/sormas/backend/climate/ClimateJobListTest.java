@@ -233,16 +233,16 @@ class ClimateJobListTest extends AbstractBeanTest {
 
 		SystemConfigurationValueFacade facade = getBean(SystemConfigurationValueFacade.class);
 		List<String> uuids = facade.getAllUuids();
-		SystemConfigurationValueDto setting =
-			uuids.isEmpty() ? null : facade.getByUuids(uuids).stream().filter(v -> key.equals(v.getKey())).findFirst().orElse(null);
+		SystemConfigurationValueDto setting = uuids.isEmpty()
+			? null
+			: facade.getByUuids(uuids).stream().filter(v -> key.equals(v.getKey())).findFirst().orElse(null);
 		if (setting == null) {
 			setting = SystemConfigurationValueDto.build();
 			setting.setKey(key);
 			SystemConfigurationCategoryDto category = SystemConfigurationCategoryDto.build();
 			category.setName(ClimateConfiguration.CATEGORY_NAME);
 			category.setCaption("Climate");
-			setting.setCategory(
-				getSystemConfigurationCategoryFacade().getReferenceByUuid(getSystemConfigurationCategoryFacade().save(category).getUuid()));
+			setting.setCategory(getSystemConfigurationCategoryFacade().getReferenceByUuid(getSystemConfigurationCategoryFacade().save(category).getUuid()));
 			setting.setOptional(true);
 			setting.setEncrypt(false);
 		}

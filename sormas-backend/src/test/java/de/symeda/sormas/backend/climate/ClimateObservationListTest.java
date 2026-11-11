@@ -116,7 +116,8 @@ class ClimateObservationListTest extends AbstractBeanTest {
 		assertEquals(
 			Collections.singletonList(2.0),
 			rainfall(
-				new ClimateObservationCriteria().dateBetween(ClimateCalendar.toDate(DAY.minusDays(5)), ClimateCalendar.toDate(DAY.minusDays(1)))));
+				new ClimateObservationCriteria()
+					.dateBetween(ClimateCalendar.toDate(DAY.minusDays(5)), ClimateCalendar.toDate(DAY.minusDays(1)))));
 		assertEquals(3, facade.count(new ClimateObservationCriteria()));
 		assertEquals(5, facade.count(new ClimateObservationCriteria().placeType(ClimatePlaceType.ALL)));
 	}
@@ -214,9 +215,7 @@ class ClimateObservationListTest extends AbstractBeanTest {
 		getDistrictLocationId(rdcf.district.getUuid());
 
 		List<ClimateDistrictDto> withoutPoint = facade.getDistrictsWithoutPoint();
-		assertEquals(
-			Collections.singletonList(rdcf.district.getUuid()),
-			withoutPoint.stream().map(d -> d.getDistrict().getUuid()).collect(Collectors.toList()));
+		assertEquals(Collections.singletonList(rdcf.district.getUuid()), withoutPoint.stream().map(d -> d.getDistrict().getUuid()).collect(Collectors.toList()));
 		assertEquals(rdcf.region.getUuid(), withoutPoint.get(0).getRegion().getUuid());
 	}
 
@@ -233,9 +232,7 @@ class ClimateObservationListTest extends AbstractBeanTest {
 		creator.createDistrict("Accra", getRegionService().getByUuid(abroad.getUuid()));
 
 		List<ClimateDistrictDto> withoutPoint = facade.getDistrictsWithoutPoint();
-		assertEquals(
-			Collections.singletonList(rdcf.district.getUuid()),
-			withoutPoint.stream().map(d -> d.getDistrict().getUuid()).collect(Collectors.toList()));
+		assertEquals(Collections.singletonList(rdcf.district.getUuid()), withoutPoint.stream().map(d -> d.getDistrict().getUuid()).collect(Collectors.toList()));
 		assertEquals(1, getBean(ClimateJobFacadeEjbLocal.class).getSummary().getDistrictsWithoutPoint());
 	}
 
@@ -255,8 +252,7 @@ class ClimateObservationListTest extends AbstractBeanTest {
 
 		List<ClimateHistoryCoverageDto> coverage = facade.getHistoryCoverage(rdcf.region);
 		assertEquals(2, coverage.size());
-		ClimateHistoryCoverageDto district =
-			coverage.stream().filter(c -> c.getDistrict().getUuid().equals(rdcf.district.getUuid())).findFirst().get();
+		ClimateHistoryCoverageDto district = coverage.stream().filter(c -> c.getDistrict().getUuid().equals(rdcf.district.getUuid())).findFirst().get();
 		assertTrue(district.isHasPoint());
 		assertEquals(firstDay, district.getHistoryFrom());
 		assertEquals(5, district.getDaysHeld());

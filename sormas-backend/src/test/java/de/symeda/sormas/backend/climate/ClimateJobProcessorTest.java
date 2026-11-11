@@ -349,10 +349,7 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		ClimateLocation relinked = getBean(ClimateLocationService.class).getById(getDistrictLocationId(rdcf.district.getUuid()));
 		assertEquals(0.1, relinked.getGridSize());
 		assertEquals(66, relinked.getLatIndex());
-		assertEquals(
-			1,
-			getObservations(relinked.getId()).stream().filter(o -> o.getSource() == ClimateDataSource.IMPORT).count(),
-			"imported rows are copied");
+		assertEquals(1, getObservations(relinked.getId()).stream().filter(o -> o.getSource() == ClimateDataSource.IMPORT).count(), "imported rows are copied");
 		Long environmentLocation = getEnvironmentLocationId(environment.getUuid());
 		assertEquals(0.1, getBean(ClimateLocationService.class).getById(environmentLocation).getGridSize());
 		assertEquals(
@@ -378,7 +375,9 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 
 		assertNull(locations.getById(unused));
 		assertNotNull(locations.getById(withData), "a location with data is kept");
-		assertNotNull(locations.getByCell(0.05, 60, 60), "a deleted environment can be restored, so its location is kept");
+		assertNotNull(
+			locations.getByCell(0.05, 60, 60),
+			"a deleted environment can be restored, so its location is kept");
 	}
 
 	@Test
@@ -388,8 +387,7 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 		LocalDate from = LocalDate.now().minusDays(30);
 		LocalDate to = from.plusDays(2);
 		ClimateJobFacadeEjbLocal facade = getBean(ClimateJobFacadeEjbLocal.class);
-		ClimateCallEstimateDto fetchEstimate =
-			facade.calculateFetchCalls(null, null, false, ClimateCalendar.toDate(from), ClimateCalendar.toDate(to));
+		ClimateCallEstimateDto fetchEstimate = facade.calculateFetchCalls(null, null, false, ClimateCalendar.toDate(from), ClimateCalendar.toDate(to));
 		assertEquals(1, fetchEstimate.getCalls());
 		assertEquals(3, fetchEstimate.getDays());
 
@@ -461,8 +459,9 @@ class ClimateJobProcessorTest extends AbstractBeanTest {
 
 		SystemConfigurationValueFacade facade = getBean(SystemConfigurationValueFacade.class);
 		List<String> uuids = facade.getAllUuids();
-		SystemConfigurationValueDto setting =
-			uuids.isEmpty() ? null : facade.getByUuids(uuids).stream().filter(v -> key.equals(v.getKey())).findFirst().orElse(null);
+		SystemConfigurationValueDto setting = uuids.isEmpty()
+			? null
+			: facade.getByUuids(uuids).stream().filter(v -> key.equals(v.getKey())).findFirst().orElse(null);
 		if (setting == null) {
 			setting = SystemConfigurationValueDto.build();
 			setting.setKey(key);

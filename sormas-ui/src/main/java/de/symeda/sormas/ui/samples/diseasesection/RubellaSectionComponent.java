@@ -79,7 +79,8 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 		binder.forField(avidityIndexTextField)
 			.withConverter(new StringToFloatNullableConverter(avidityIndexTextField.getCaption()))
 			.bind(PathogenTestDto::getAvidityIndex, PathogenTestDto::setAvidityIndex);
-		binder.forField(avidityInterpretationComboBox).bind(PathogenTestDto::getAvidityInterpretation, PathogenTestDto::setAvidityInterpretation);
+		binder.forField(avidityInterpretationComboBox)
+			.bind(PathogenTestDto::getAvidityInterpretation, PathogenTestDto::setAvidityInterpretation);
 	}
 
 	@Override

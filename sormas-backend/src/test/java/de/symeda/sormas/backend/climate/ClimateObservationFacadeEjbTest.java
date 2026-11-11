@@ -203,8 +203,7 @@ class ClimateObservationFacadeEjbTest extends AbstractBeanTest {
 		}
 		assertThrows(ValidationRuntimeException.class, () -> facade.importEntries(entries, true, new Date()));
 
-		List<ClimateImportRowResult> results =
-			facade.importEntries(entries.subList(0, ClimateObservationFacade.MAX_IMPORT_ENTRIES), true, new Date());
+		List<ClimateImportRowResult> results = facade.importEntries(entries.subList(0, ClimateObservationFacade.MAX_IMPORT_ENTRIES), true, new Date());
 		assertTrue(results.stream().allMatch(r -> r.getStatus() == Status.SAVED));
 		assertEquals(ClimateObservationFacade.MAX_IMPORT_ENTRIES, getDistrictRows().size());
 	}

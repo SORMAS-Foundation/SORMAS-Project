@@ -106,9 +106,7 @@ class EnvironmentClimateChartTest {
 		assertFalse(script.contains("samples-"));
 		assertFalse(script.contains("id:'events'"));
 		assertFalse(script.contains("plotBands:"), "no lanes");
-		assertTrue(
-			EnvironmentClimateChart.status(series).startsWith("Building climate history for normal ranges: "),
-			EnvironmentClimateChart.status(series));
+		assertTrue(EnvironmentClimateChart.status(series).startsWith("Building climate history for normal ranges: "), EnvironmentClimateChart.status(series));
 	}
 
 	@Test
@@ -192,8 +190,7 @@ class EnvironmentClimateChartTest {
 		String withReading = EnvironmentClimateChart.details(day, Collections.singletonList(reading), null, null);
 		assertTrue(
 			withReading.contains(
-				ClimateIcon.RAINFALL.html() + " 0 mm in 2 h · " + ClimateIcon.TEMPERATURE.html() + " 7.2 °C · " + ClimateIcon.HUMIDITY.html()
-					+ " 58 %"),
+				ClimateIcon.RAINFALL.html() + " 0 mm in 2 h · " + ClimateIcon.TEMPERATURE.html() + " 7.2 °C · " + ClimateIcon.HUMIDITY.html() + " 58 %"),
 			withReading);
 
 		ClimateDayDto gap = new ClimateDayDto(TO);

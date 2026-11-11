@@ -81,8 +81,7 @@ class EnvironmentNearbyCasesPanelTest extends AbstractUiBeanTest {
 		assertFalse(panel.getScript().toLowerCase().contains("risk"), "no wording that suggests cause");
 
 		// written for a render check in a browser with the bundled Highcharts files
-		java.nio.file.Files
-			.write(java.nio.file.Paths.get("target", "climate-nearby-test.js"), panel.getScript().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+		java.nio.file.Files.write(java.nio.file.Paths.get("target", "climate-nearby-test.js"), panel.getScript().getBytes(java.nio.charset.StandardCharsets.UTF_8));
 
 		List<EnvironmentNearbyCasesWindow.Row> rows = EnvironmentNearbyCasesWindow.rows(week);
 		assertEquals(1, rows.size());

@@ -173,8 +173,8 @@ class OpenWeatherProviderTest {
 	void testRefusedKeyStopsWithoutShowingTheKey() {
 
 		stubFor(
-			get(urlPathEqualTo(PATH))
-				.willReturn(aResponse().withStatus(401).withBody("{\"cod\":401,\"message\":\"Invalid API key " + KEY + ". Please see the FAQ.\"}")));
+			get(urlPathEqualTo(PATH)).willReturn(
+				aResponse().withStatus(401).withBody("{\"cod\":401,\"message\":\"Invalid API key " + KEY + ". Please see the FAQ.\"}")));
 
 		ClimateProviderException e = assertThrows(ClimateProviderException.class, () -> provider.fetchWindow(10.53, -85.25, FIRST_DAY));
 

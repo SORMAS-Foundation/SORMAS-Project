@@ -130,11 +130,8 @@ class ClimateCaseSeriesTest extends AbstractBeanTest {
 		assertEquals(1, series.getRecentWeeks());
 		assertEquals(1, series.getRecentWeeksAbove());
 
-		ClimateCaseWeekDto confirmed =
-			facade.getCaseSeries(criteria().district(rdcf.district).classification(ClimateCaseClassificationFilter.CONFIRMED))
-				.get(0)
-				.getWeeks()
-				.get(0);
+		ClimateCaseWeekDto confirmed = facade.getCaseSeries(
+			criteria().district(rdcf.district).classification(ClimateCaseClassificationFilter.CONFIRMED)).get(0).getWeeks().get(0);
 		assertEquals(2, confirmed.getCount());
 	}
 
