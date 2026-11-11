@@ -289,18 +289,15 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		int lastYear = LocalDate.now().getYear() - 1;
 		int firstYear = lastYear - historyYears + 1;
 
-		Set<Integer> ticked =
-			usualRangeExcludedYearsField.getValue() != null ? (Set<Integer>) usualRangeExcludedYearsField.getValue() : Collections.emptySet();
+		Set<Integer> ticked = usualRangeExcludedYearsField.getValue() != null ? (Set<Integer>) usualRangeExcludedYearsField.getValue() : Collections.emptySet();
 		List<Integer> excluded = ticked.stream().filter(year -> year >= firstYear && year <= lastYear).sorted().collect(Collectors.toList());
 		int remaining = historyYears - excluded.size();
 		String period = firstYear == lastYear ? String.valueOf(lastYear) : firstYear + "–" + lastYear;
 
 		if (remaining < minimumYears) {
-			usualRangeInfoLabel
-				.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeNotShown), remaining, historyYears, minimumYears));
+			usualRangeInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeNotShown), remaining, historyYears, minimumYears));
 		} else if (excluded.isEmpty()) {
-			usualRangeInfoLabel
-				.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeYears), remaining, historyYears, period));
+			usualRangeInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeYears), remaining, historyYears, period));
 		} else {
 			usualRangeInfoLabel.setValue(
 				String.format(

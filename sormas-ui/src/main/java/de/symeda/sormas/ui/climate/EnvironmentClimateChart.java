@@ -321,8 +321,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 
 		js.append("tooltip:{shared:true,useHTML:true,shadow:false,borderWidth:0,backgroundColor:'rgba(255,255,255,0.96)',")
 			.append("positioner:function(){return {x:this.chart.plotLeft,y:0};},")
-			.append(
-				"formatter:function(){var d=details[this.x];var c=(this.points?this.points[0]:this).series.chart;return d?'<div style=\"white-space:normal;width:'+c.plotWidth+'px\">'+d+'</div>':false;}},");
+			.append("formatter:function(){var d=details[this.x];var c=(this.points?this.points[0]:this).series.chart;return d?'<div style=\"white-space:normal;width:'+c.plotWidth+'px\">'+d+'</div>':false;}},");
 
 		// on hover, a circle on each line and no marker on the bands, so no shape suggests a meaning (decision 143)
 		js.append("plotOptions:{series:{animation:false,states:{inactive:{opacity:1}},point:{events:{click:")
@@ -344,18 +343,11 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		int humidityAxis = axis;
 
 		// normal bands: one legend entry for all three
-		js.append(
-			band("normal", I18nProperties.getString(Strings.climateSeriesNormalRange), series, ClimateDayDto::getRainfallNormal, rainAxis, null));
+		js.append(band("normal", I18nProperties.getString(Strings.climateSeriesNormalRange), series, ClimateDayDto::getRainfallNormal, rainAxis, null));
 		js.append(column(I18nProperties.getString(Strings.climateSeriesRainfall), series, ClimateDayDto::getRainfall, rainAxis));
 		js.append(band(null, null, series, ClimateDayDto::getTemperatureNormal, temperatureAxis, "normal"));
 		js.append(minMax(series, temperatureAxis));
-		js.append(
-			line(
-				I18nProperties.getString(Strings.climateSeriesTemperatureMean),
-				"#d35400",
-				series,
-				ClimateDayDto::getTemperatureMean,
-				temperatureAxis));
+		js.append(line(I18nProperties.getString(Strings.climateSeriesTemperatureMean), "#d35400", series, ClimateDayDto::getTemperatureMean, temperatureAxis));
 		js.append(band(null, null, series, ClimateDayDto::getHumidityNormal, humidityAxis, "normal"));
 		js.append(line(I18nProperties.getString(Strings.climateSeriesHumidity), "#1f6f8b", series, ClimateDayDto::getRelativeHumidity, humidityAxis));
 
@@ -459,11 +451,10 @@ public class EnvironmentClimateChart extends VerticalLayout {
 	}
 
 	private static String minMax(ClimateDailySeriesDto series, int axis) {
-		StringBuilder js =
-			new StringBuilder("{type:'arearange',name:").append(string(I18nProperties.getString(Strings.climateSeriesTemperatureRange)))
-				.append(",yAxis:")
-				.append(axis)
-				.append(",color:'#bdbdbd',fillOpacity:0.5,zIndex:1,data:[");
+		StringBuilder js = new StringBuilder("{type:'arearange',name:").append(string(I18nProperties.getString(Strings.climateSeriesTemperatureRange)))
+			.append(",yAxis:")
+			.append(axis)
+			.append(",color:'#bdbdbd',fillOpacity:0.5,zIndex:1,data:[");
 		series.getDays()
 			.forEach(
 				day -> js.append('[')
@@ -536,10 +527,12 @@ public class EnvironmentClimateChart extends VerticalLayout {
 					+ normal(day.getRainfallNormal(), " mm"));
 			String temperature = String.format(I18nProperties.getString(Strings.climateDetailTemperature), value(day.getTemperatureMean(), " °C"));
 			if (day.getTemperatureMin() != null || day.getTemperatureMax() != null) {
-				temperature += " (" + String.format(
-					I18nProperties.getString(Strings.climateDetailMinMax),
-					value(day.getTemperatureMin(), ""),
-					value(day.getTemperatureMax(), "")) + ")";
+				temperature += " ("
+					+ String.format(
+						I18nProperties.getString(Strings.climateDetailMinMax),
+						value(day.getTemperatureMin(), ""),
+						value(day.getTemperatureMax(), ""))
+					+ ")";
 			}
 			parts.add(ClimateIcon.TEMPERATURE.html() + " " + temperature + normal(day.getTemperatureNormal(), " °C"));
 			String humidity = String.format(I18nProperties.getString(Strings.climateDetailHumidity), value(day.getRelativeHumidity(), " %"));
@@ -573,9 +566,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 							I18nProperties.getString(Strings.climateDetailEvents),
 							eventsByDay.get(dayX)
 								.stream()
-								.map(
-									e -> StringUtils.defaultIfBlank(e.getEventTitle(), DataHelper.getShortUuid(e.getUuid())) + " ("
-										+ e.getEventStatus() + ")")
+								.map(e -> StringUtils.defaultIfBlank(e.getEventTitle(), DataHelper.getShortUuid(e.getUuid())) + " (" + e.getEventStatus() + ")")
 								.collect(Collectors.joining(", ")))));
 		}
 		return html.toString();
@@ -634,10 +625,11 @@ public class EnvironmentClimateChart extends VerticalLayout {
 		if (range == null) {
 			return "";
 		}
-		return " " + String.format(
-			I18nProperties.getString(Strings.climateDetailNormal),
-			ClimateCaptions.oneDecimal(range.getP10()),
-			ClimateCaptions.oneDecimal(range.getP90()) + unit);
+		return " "
+			+ String.format(
+				I18nProperties.getString(Strings.climateDetailNormal),
+				ClimateCaptions.oneDecimal(range.getP10()),
+				ClimateCaptions.oneDecimal(range.getP90()) + unit);
 	}
 
 	private static Date eventDate(EventIndexDto event) {
@@ -675,10 +667,7 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			if (samples.size() == 1) {
 				ControllerProvider.getEnvironmentSampleController().navigateToSample(samples.get(0).getUuid());
 			} else {
-				choose(
-					samples,
-					EnvironmentClimateChart::sample,
-					s -> ControllerProvider.getEnvironmentSampleController().navigateToSample(s.getUuid()));
+				choose(samples, EnvironmentClimateChart::sample, s -> ControllerProvider.getEnvironmentSampleController().navigateToSample(s.getUuid()));
 			}
 		} else if (EVENTS.equals(seriesId) && eventsByDay != null && eventsByDay.containsKey(day)) {
 			List<EventIndexDto> events = eventsByDay.get(day);

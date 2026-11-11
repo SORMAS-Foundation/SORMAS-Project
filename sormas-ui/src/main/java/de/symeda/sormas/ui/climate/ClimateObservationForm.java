@@ -94,8 +94,8 @@ public class ClimateObservationForm extends VerticalLayout {
 	private final ComboBox<HumidityMeasure> humidityMeasure = new ComboBox<>(
 		I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.HUMIDITY_MEASURE),
 		Arrays.asList(HumidityMeasure.values()));
-	private final TextField sourceDetail =
-		new TextField(I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.SOURCE_DETAIL));
+	private final TextField sourceDetail = new TextField(
+		I18nProperties.getPrefixCaption(ClimateObservationEntryDto.I18N_PREFIX, ClimateObservationEntryDto.SOURCE_DETAIL));
 	private final Grid<ClimateEarlierValueDto> earlierValues = new Grid<>();
 	private final Button deleteButton;
 
@@ -137,8 +137,9 @@ public class ClimateObservationForm extends VerticalLayout {
 				return;
 			}
 		}
-		form.window = VaadinUiUtil
-			.showPopupWindow(form, I18nProperties.getString(day == null ? Strings.headingClimateNewObservation : Strings.headingClimateObservation));
+		form.window = VaadinUiUtil.showPopupWindow(
+			form,
+			I18nProperties.getString(day == null ? Strings.headingClimateNewObservation : Strings.headingClimateObservation));
 	}
 
 	private ClimateObservationForm(Runnable onChanged, boolean newEntry, EnvironmentReferenceDto fixedEnvironment) {
@@ -300,8 +301,7 @@ public class ClimateObservationForm extends VerticalLayout {
 		} else {
 			place = ClimateCaptions.place(observation);
 			if (observation.isShared()) {
-				notes.add(
-					String.format(I18nProperties.getString(Strings.climateSharedBy), String.join(", ", ClimateCaptions.placeNames(observation))));
+				notes.add(String.format(I18nProperties.getString(Strings.climateSharedBy), String.join(", ", ClimateCaptions.placeNames(observation))));
 			}
 		}
 		if (observation.getSource() != null && observation.getSource() != ClimateDataSource.MANUAL) {
@@ -317,16 +317,14 @@ public class ClimateObservationForm extends VerticalLayout {
 		humidityMeasure.setValue(observation.getHumidityMeasure());
 		sourceDetail.setValue(StringUtils.defaultString(observation.getSourceDetail()));
 
-		List<ClimateEarlierValueDto> earlier = observation.getUuid() != null
-			? FacadeProvider.getClimateObservationFacade().getEarlierValues(observation.getUuid())
-			: Collections.emptyList();
+		List<ClimateEarlierValueDto> earlier =
+			observation.getUuid() != null ? FacadeProvider.getClimateObservationFacade().getEarlierValues(observation.getUuid()) : Collections.emptyList();
 		earlierValues.setItems(earlier);
 		earlierValues.setVisible(!earlier.isEmpty());
 		earlierValues.setHeightByRows(Math.max(1, Math.min(earlier.size(), 5)));
 
 		deleteButton.setVisible(
-			observation.getUuid() != null
-				&& (observation.getSource() == ClimateDataSource.MANUAL || observation.getSource() == ClimateDataSource.IMPORT));
+			observation.getUuid() != null && (observation.getSource() == ClimateDataSource.MANUAL || observation.getSource() == ClimateDataSource.IMPORT));
 	}
 
 	/**
@@ -353,12 +351,10 @@ public class ClimateObservationForm extends VerticalLayout {
 		earlierValues.addColumn(v -> DateFormatHelper.formatLocalDateTime(v.getChangeDate()))
 			.setCaption(earlierCaption(ClimateEarlierValueDto.CHANGE_DATE));
 		earlierValues.addColumn(ClimateEarlierValueDto::getSource).setCaption(earlierCaption(ClimateEarlierValueDto.SOURCE));
-		earlierValues.addColumn(v -> ClimateCaptions.number(v.getTemperatureMin()))
-			.setCaption(earlierCaption(ClimateEarlierValueDto.TEMPERATURE_MIN));
+		earlierValues.addColumn(v -> ClimateCaptions.number(v.getTemperatureMin())).setCaption(earlierCaption(ClimateEarlierValueDto.TEMPERATURE_MIN));
 		earlierValues.addColumn(v -> ClimateCaptions.number(v.getTemperatureMean()))
 			.setCaption(earlierCaption(ClimateEarlierValueDto.TEMPERATURE_MEAN));
-		earlierValues.addColumn(v -> ClimateCaptions.number(v.getTemperatureMax()))
-			.setCaption(earlierCaption(ClimateEarlierValueDto.TEMPERATURE_MAX));
+		earlierValues.addColumn(v -> ClimateCaptions.number(v.getTemperatureMax())).setCaption(earlierCaption(ClimateEarlierValueDto.TEMPERATURE_MAX));
 		earlierValues.addColumn(v -> ClimateCaptions.number(v.getRainfall())).setCaption(earlierCaption(ClimateEarlierValueDto.RAINFALL));
 		earlierValues.addColumn(v -> ClimateCaptions.number(v.getRelativeHumidity()))
 			.setCaption(earlierCaption(ClimateEarlierValueDto.RELATIVE_HUMIDITY));

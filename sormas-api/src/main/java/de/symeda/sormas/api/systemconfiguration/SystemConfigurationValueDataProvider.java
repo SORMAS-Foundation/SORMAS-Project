@@ -28,54 +28,54 @@ import javax.annotation.Nonnull;
  */
 public interface SystemConfigurationValueDataProvider extends Serializable {
 
-	/**
-	 * Retrieves the set of keys for the provided options.
-	 * Key names could be used for example in selects.
-	 *
-	 * @return a set of key names.
-	 */
-	public Set<String> getKeys();
+    /**
+     * Retrieves the set of keys for the provided options.
+     * Key names could be used for example in selects.
+     *
+     * @return a set of key names.
+     */
+    public Set<String> getKeys();
 
-	/**
-	 * Retrieves the available options for the provided data.
-	 * Each key name should have an corresponding value that will be used at selection.
-	 *
-	 * @return a map of options where the key is the option name and the value is the option value.
-	 */
-	public Map<String, String> getOptions();
+    /**
+     * Retrieves the available options for the provided data.
+     * Each key name should have an corresponding value that will be used at selection.
+     *
+     * @return a map of options where the key is the option name and the value is the option value.
+     */
+    public Map<String, String> getOptions();
 
-	/**
-	 * Applies the provided values to the system configuration.
-	 * With this method any conversion necessary should be performed.
-	 * For ex. a set of options converted to comma separated value.
-	 *
-	 * @param values
-	 *            a map of values to be applied where the key is the configuration key and the value is the configuration value.
-	 * @param dto
-	 *            the data transfer object containing the system configuration values.
-	 */
-	public void applyValues(@Nonnull Map<String, String> values, @Nonnull SystemConfigurationValueDto dto);
+    /**
+     * Applies the provided values to the system configuration.
+     * With this method any conversion necessary should be performed.
+     * For ex. a set of options converted to comma separated value.
+     *
+     * @param values
+     *            a map of values to be applied where the key is the configuration key and the value is the configuration value.
+     * @param dto
+     *            the data transfer object containing the system configuration values.
+     */
+    public void applyValues(@Nonnull Map<String, String> values, @Nonnull SystemConfigurationValueDto dto);
 
-	/**
-	 * Retrieves the current values from the system configuration.
-	 * This method should return the values that are currently set in the system configuration.
-	 * The values should be mapped in the same way as {@link #getOptions()}.
-	 *
-	 * @param dto
-	 *            the data transfer object containing the system configuration value.
-	 * @return a map where the key is the mapped keyname and the value is the corresponding option value.
-	 */
-	public Map<String, String> getMappedValues(@Nonnull SystemConfigurationValueDto dto);
+    /**
+     * Retrieves the current values from the system configuration.
+     * This method should return the values that are currently set in the system configuration.
+     * The values should be mapped in the same way as {@link #getOptions()}.
+     *
+     * @param dto
+     *            the data transfer object containing the system configuration value.
+     * @return a map where the key is the mapped keyname and the value is the corresponding option value.
+     */
+    public Map<String, String> getMappedValues(@Nonnull SystemConfigurationValueDto dto);
 
-	/**
-	 * Retrieves the caption shown for an option value, for example in a dropdown.
-	 *
-	 * @param optionValue
-	 *            one of the values of {@link #getOptions()}.
-	 * @return the caption; by default the option value itself.
-	 */
-	default String getOptionCaption(String optionValue) {
-		return optionValue;
-	}
+    /**
+     * Retrieves the caption shown for an option value, for example in a dropdown.
+     *
+     * @param optionValue
+     *            one of the values of {@link #getOptions()}.
+     * @return the caption; by default the option value itself.
+     */
+    default String getOptionCaption(String optionValue) {
+        return optionValue;
+    }
 
 }

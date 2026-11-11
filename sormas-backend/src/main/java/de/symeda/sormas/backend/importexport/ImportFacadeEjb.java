@@ -236,7 +236,10 @@ public class ImportFacadeEjb implements ImportFacade {
 	public void generateCaseImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
 
 		createExportDirectoryIfNecessary();
-		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), CaseTemplateCaptions.apply(caseImportColumns(featureConfigurations)), true);
+		writeTemplate(
+			Paths.get(getCaseImportTemplateFilePath()),
+			CaseTemplateCaptions.apply(caseImportColumns(featureConfigurations)),
+			true);
 	}
 
 	public List<ImportColumn> caseImportColumns(List<FeatureConfigurationDto> featureConfigurations) {

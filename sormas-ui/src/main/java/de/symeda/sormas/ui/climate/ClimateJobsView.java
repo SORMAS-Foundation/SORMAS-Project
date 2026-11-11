@@ -111,7 +111,12 @@ public class ClimateJobsView extends AbstractClimateDataView {
 		configureCoverageGrid();
 
 		createJobFilters();
-		contentLayout.addComponents(heading(Captions.climateJobs), jobsGrid, heading(Captions.climateHistoryCoverage), coverageRegion, coverageGrid);
+		contentLayout.addComponents(
+			heading(Captions.climateJobs),
+			jobsGrid,
+			heading(Captions.climateHistoryCoverage),
+			coverageRegion,
+			coverageGrid);
 
 		addAttachListener(e -> startPolling());
 		addDetachListener(e -> stopPolling());
@@ -170,8 +175,7 @@ public class ClimateJobsView extends AbstractClimateDataView {
 			.setCaption(coverageCaption(ClimateHistoryCoverageDto.HAS_POINT));
 		coverageGrid.addColumn(c -> c.getHistoryFrom() != null ? DateFormatHelper.formatDate(toDate(c.getHistoryFrom())) : "")
 			.setCaption(coverageCaption(ClimateHistoryCoverageDto.HISTORY_FROM));
-		coverageGrid.addColumn(c -> ClimateSummaryStrip.formatCount(c.getDaysHeld()))
-			.setCaption(coverageCaption(ClimateHistoryCoverageDto.DAYS_HELD));
+		coverageGrid.addColumn(c -> ClimateSummaryStrip.formatCount(c.getDaysHeld())).setCaption(coverageCaption(ClimateHistoryCoverageDto.DAYS_HELD));
 		coverageGrid.addColumn(c -> {
 			Double completeness = c.getCompleteness(LocalDate.now());
 			return completeness != null ? Math.round(completeness * 100) + " %" : "";

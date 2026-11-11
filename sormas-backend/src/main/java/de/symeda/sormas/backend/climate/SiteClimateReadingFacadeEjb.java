@@ -62,8 +62,7 @@ public class SiteClimateReadingFacadeEjb implements SiteClimateReadingFacade {
 		}
 		Environment environment = environmentService.getByUuid(environmentRef.getUuid());
 		if (environment == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(Validations.climateEntryEnvironmentNotFound, environmentRef.getUuid()));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.climateEntryEnvironmentNotFound, environmentRef.getUuid()));
 		}
 		return siteClimateReadingService.getByEnvironment(environment, from, to)
 			.stream()

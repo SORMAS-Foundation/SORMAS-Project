@@ -147,9 +147,11 @@ public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
 			Map<LocalDate, ClimateObservation> rows = rowsByLocation.get(locationId);
 			ClimateObservation row = rows.get(day);
 
-			boolean writtenThisRun =
-				writtenNow.containsKey(key) || (row != null && row.getSource() == ClimateDataSource.IMPORT && row.getChangeDate() != null
-				// strictly after: a row an earlier import wrote in the same millisecond is not this import's
+			boolean writtenThisRun = writtenNow.containsKey(key)
+				|| (row != null
+					&& row.getSource() == ClimateDataSource.IMPORT
+					&& row.getChangeDate() != null
+					// strictly after: a row an earlier import wrote in the same millisecond is not this import's
 					&& row.getChangeDate().getTime() > runStart);
 
 			if (row != null && row.getSource() == ClimateDataSource.MANUAL) {
@@ -333,7 +335,8 @@ public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
 	public List<EnvironmentReferenceDto> getEnvironmentsWithClimateLocation(RegionReferenceDto region, DistrictReferenceDto district) {
 
 		List<EnvironmentReferenceDto> environments = new ArrayList<>();
-		climateLocationService.getEnvironmentsWithLocation(region != null ? region.getUuid() : null, district != null ? district.getUuid() : null)
+		climateLocationService
+			.getEnvironmentsWithLocation(region != null ? region.getUuid() : null, district != null ? district.getUuid() : null)
 			.forEach(row -> environments.add(new EnvironmentReferenceDto((String) row[0], (String) row[1])));
 		return environments;
 	}
@@ -406,8 +409,7 @@ public class ClimateObservationFacadeEjb implements ClimateObservationFacade {
 		row.setRelativeHumidity(entry.getRelativeHumidity());
 		row.setHumidityMeasure(entry.getRelativeHumidity() != null ? entry.getHumidityMeasure() : null);
 		row.setSource(source);
-		String sourceDetail =
-			StringUtils.isNotBlank(entry.getSourceDetail()) ? entry.getSourceDetail().trim() : user != null ? user.getUserName() : null;
+		String sourceDetail = StringUtils.isNotBlank(entry.getSourceDetail()) ? entry.getSourceDetail().trim() : user != null ? user.getUserName() : null;
 		row.setSourceDetail(StringUtils.truncate(sourceDetail, CHARACTER_LIMIT_DEFAULT));
 		row.setReportingUser(user);
 	}

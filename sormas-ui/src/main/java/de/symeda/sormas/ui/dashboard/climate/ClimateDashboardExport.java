@@ -57,9 +57,8 @@ final class ClimateDashboardExport {
 	static StreamResource resource(Supplier<List<ClimateDashboardExportDto>> rows, Supplier<List<Disease>> diseases) {
 		return new StreamResource(() -> {
 			try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
-				try (CSVWriter writer = CSVUtils.createCSVWriter(
-					new OutputStreamWriter(bytes, StandardCharsets.UTF_8.name()),
-					FacadeProvider.getConfigFacade().getCsvSeparator())) {
+				try (CSVWriter writer = CSVUtils
+					.createCSVWriter(new OutputStreamWriter(bytes, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
 					List<Disease> exported = diseases.get();
 					writer.writeNext(header(exported).toArray(new String[0]));
 					for (ClimateDashboardExportDto row : rows.get()) {

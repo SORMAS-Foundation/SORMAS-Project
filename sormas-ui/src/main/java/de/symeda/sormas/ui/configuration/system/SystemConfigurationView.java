@@ -42,141 +42,141 @@ import de.symeda.sormas.ui.utils.CssStyles;
  */
 public class SystemConfigurationView extends AbstractConfigurationView {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/systemConfiguration";
+    public static final String VIEW_NAME = ROOT_VIEW_NAME + "/systemConfiguration";
 
-	private final SystemConfigurationValueCriteria criteria;
+    private final SystemConfigurationValueCriteria criteria;
 
-	private SearchField searchField;
-	private final SystemConfigurationValuesGrid grid;
+    private SearchField searchField;
+    private final SystemConfigurationValuesGrid grid;
 
-	/**
-	 * Constructor for SystemConfigurationView.
-	 */
-	public SystemConfigurationView() {
+    /**
+     * Constructor for SystemConfigurationView.
+     */
+    public SystemConfigurationView() {
 
-		super(VIEW_NAME);
+        super(VIEW_NAME);
 
-		criteria =
-			ViewModelProviders.of(SystemConfigurationView.class).get(SystemConfigurationValueCriteria.class, new SystemConfigurationValueCriteria());
-		grid = new SystemConfigurationValuesGrid(criteria);
-		final VerticalLayout gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(grid);
-		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
-		gridLayout.setExpandRatio(grid, 1);
-		gridLayout.setSizeFull();
-		gridLayout.setStyleName("crud-main-layout");
+        criteria =
+            ViewModelProviders.of(SystemConfigurationView.class).get(SystemConfigurationValueCriteria.class, new SystemConfigurationValueCriteria());
+        grid = new SystemConfigurationValuesGrid(criteria);
+        final VerticalLayout gridLayout = new VerticalLayout();
+        gridLayout.addComponent(createFilterBar());
+        gridLayout.addComponent(grid);
+        gridLayout.setMargin(true);
+        gridLayout.setSpacing(false);
+        gridLayout.setExpandRatio(grid, 1);
+        gridLayout.setSizeFull();
+        gridLayout.setStyleName("crud-main-layout");
 
-		addComponent(gridLayout);
+        addComponent(gridLayout);
 
-	}
+    }
 
-	/**
-	 * Creates the filter bar layout.
-	 *
-	 * @return the filter bar layout
-	 */
-	private HorizontalLayout createFilterBar() {
+    /**
+     * Creates the filter bar layout.
+     *
+     * @return the filter bar layout
+     */
+    private HorizontalLayout createFilterBar() {
 
-		final ComboBox<SystemConfigurationCategoryDto> categoryFilter;
+        final ComboBox<SystemConfigurationCategoryDto> categoryFilter;
 
-		final HorizontalLayout filterLayout = new HorizontalLayout();
-		filterLayout.setMargin(false);
-		filterLayout.setSpacing(true);
+        final HorizontalLayout filterLayout = new HorizontalLayout();
+        filterLayout.setMargin(false);
+        filterLayout.setSpacing(true);
 
-		searchField = new SearchField();
-		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSystemConfigurationSearchField));
-		searchField.addTextChangeListener(e -> {
-			criteria.freeTextFilter(e.getText());
-			grid.reload();
-		});
-		filterLayout.addComponent(searchField);
+        searchField = new SearchField();
+        searchField.setInputPrompt(I18nProperties.getString(Strings.promptSystemConfigurationSearchField));
+        searchField.addTextChangeListener(e -> {
+            criteria.freeTextFilter(e.getText());
+            grid.reload();
+        });
+        filterLayout.addComponent(searchField);
 
-		categoryFilter = new ComboBox<>(
-			I18nProperties.getPrefixCaption(SystemConfigurationValueDto.I18N_PREFIX, SystemConfigurationValueDto.CATEGORY_PROPERTY_NAME),
-			FacadeProvider.getSystemConfigurationCategoryFacade()
-				.getAllAfter(null)
-				.stream()
-				.filter(category -> !CronJobFacade.CRON_CONFIGURATION_CATEGORY.equals(category.getName()))
-				.collect(Collectors.toList()));
+        categoryFilter = new ComboBox<>(
+            I18nProperties.getPrefixCaption(SystemConfigurationValueDto.I18N_PREFIX, SystemConfigurationValueDto.CATEGORY_PROPERTY_NAME),
+            FacadeProvider.getSystemConfigurationCategoryFacade()
+                .getAllAfter(null)
+                .stream()
+                .filter(category -> !CronJobFacade.CRON_CONFIGURATION_CATEGORY.equals(category.getName()))
+                .collect(Collectors.toList()));
 
-		categoryFilter.setItemCaptionGenerator(v -> {
-			final StringBuilder caption = new StringBuilder();
-			SystemConfigurationI18nHelper.processI18nString(
-				v.getCaption(),
-				(defaultName, key) -> caption.append(I18nProperties.getPrefixCaption(SystemConfigurationValueDto.I18N_PREFIX, key, defaultName)));
-			if (caption.length() == 0) {
-				caption.append(v.getCaption());
-			}
-			return caption.toString();
-		});
+        categoryFilter.setItemCaptionGenerator(v -> {
+            final StringBuilder caption = new StringBuilder();
+            SystemConfigurationI18nHelper.processI18nString(
+                v.getCaption(),
+                (defaultName, key) -> caption.append(I18nProperties.getPrefixCaption(SystemConfigurationValueDto.I18N_PREFIX, key, defaultName)));
+            if (caption.length() == 0) {
+                caption.append(v.getCaption());
+            }
+            return caption.toString();
+        });
 
-		// a category chosen before navigating here (the Climate data screen links to its category)
-		if (criteria.getCategory() != null) {
-			categoryFilter.getDataProvider()
-				.fetch(new Query<>())
-				.filter(category -> category.getUuid().equals(criteria.getCategory().getUuid()))
-				.findFirst()
-				.ifPresent(categoryFilter::setValue);
-		}
+        // a category chosen before navigating here (the Climate data screen links to its category)
+        if (criteria.getCategory() != null) {
+            categoryFilter.getDataProvider()
+                .fetch(new Query<>())
+                .filter(category -> category.getUuid().equals(criteria.getCategory().getUuid()))
+                .findFirst()
+                .ifPresent(categoryFilter::setValue);
+        }
 
-		categoryFilter.addValueChangeListener(e -> {
-			final SystemConfigurationCategoryDto category = e.getValue();
-			if (category == null) {
-				criteria.setCategory(null);
-				grid.reload();
-				return;
-			}
-			criteria.setCategory(FacadeProvider.getSystemConfigurationCategoryFacade().getReferenceByUuid(e.getValue().getUuid()));
-			grid.reload();
-		});
-		filterLayout.addComponent(categoryFilter);
+        categoryFilter.addValueChangeListener(e -> {
+            final SystemConfigurationCategoryDto category = e.getValue();
+            if (category == null) {
+                criteria.setCategory(null);
+                grid.reload();
+                return;
+            }
+            criteria.setCategory(FacadeProvider.getSystemConfigurationCategoryFacade().getReferenceByUuid(e.getValue().getUuid()));
+            grid.reload();
+        });
+        filterLayout.addComponent(categoryFilter);
 
-		filterLayout.addComponent(ButtonHelper.createButton(Captions.actionResetFilters, event -> {
-			ViewModelProviders.of(SystemConfigurationView.class).remove(SystemConfigurationValueCriteria.class);
-			navigateTo(null);
-		}, CssStyles.FORCE_CAPTION));
+        filterLayout.addComponent(ButtonHelper.createButton(Captions.actionResetFilters, event -> {
+            ViewModelProviders.of(SystemConfigurationView.class).remove(SystemConfigurationValueCriteria.class);
+            navigateTo(null);
+        }, CssStyles.FORCE_CAPTION));
 
-		return filterLayout;
-	}
+        return filterLayout;
+    }
 
-	/**
-	 * Called when the view is entered.
-	 *
-	 * @param event
-	 *            the view change event
-	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
+    /**
+     * Called when the view is entered.
+     *
+     * @param event
+     *            the view change event
+     */
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
 
-		super.enter(event);
-		String params = event.getParameters().trim();
-		if (params.startsWith("?")) {
-			params = params.substring(1);
-			criteria.fromUrlParams(params);
-		}
-		updateFilterComponents();
-		grid.reload();
-	}
+        super.enter(event);
+        String params = event.getParameters().trim();
+        if (params.startsWith("?")) {
+            params = params.substring(1);
+            criteria.fromUrlParams(params);
+        }
+        updateFilterComponents();
+        grid.reload();
+    }
 
-	/**
-	 * Updates the filter components based on the criteria.
-	 */
-	public void updateFilterComponents() {
+    /**
+     * Updates the filter components based on the criteria.
+     */
+    public void updateFilterComponents() {
 
-		applyingCriteria = true;
-		searchField.setValue(criteria.getFreeTextFilter());
-		applyingCriteria = false;
-	}
+        applyingCriteria = true;
+        searchField.setValue(criteria.getFreeTextFilter());
+        applyingCriteria = false;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
 
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

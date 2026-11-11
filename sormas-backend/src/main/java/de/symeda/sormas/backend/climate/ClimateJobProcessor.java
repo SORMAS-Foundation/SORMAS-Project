@@ -310,16 +310,15 @@ public class ClimateJobProcessor {
 					windows.add(day);
 				}
 			} else if (!start.isAfter(to)) {
-				windows =
-					ClimateCalendar.windowStarts(start, to, climateObservationService.getHeldDays(locationId, start, to), provider.maxDaysPerCall());
+				windows = ClimateCalendar.windowStarts(start, to, climateObservationService.getHeldDays(locationId, start, to), provider.maxDaysPerCall());
 			}
 
 			for (int i = 0; i < windows.size(); i++) {
 				LocalDate window = windows.get(i);
 				if (clock.millis() >= deadline) {
 					// remember where this location got to; the next run carries on from here
-					state = climateJobService
-						.recordWindow(job.getId(), locationId, Collections.emptyList(), provider.source(), updateExisting, 0, window);
+					state =
+						climateJobService.recordWindow(job.getId(), locationId, Collections.emptyList(), provider.source(), updateExisting, 0, window);
 					return Next.STOP_RUN;
 				}
 
@@ -336,8 +335,7 @@ public class ClimateJobProcessor {
 					days = days.stream().filter(d -> !d.getDate().isBefore(from) && !d.getDate().isAfter(to)).collect(Collectors.toList());
 				}
 				LocalDate nextWindow = i + 1 < windows.size() ? windows.get(i + 1) : null;
-				state =
-					climateJobService.recordWindow(job.getId(), locationId, days, provider.source(), updateExisting, result.getCalls(), nextWindow);
+				state = climateJobService.recordWindow(job.getId(), locationId, days, provider.source(), updateExisting, result.getCalls(), nextWindow);
 			}
 
 			unavailableInARow = 0;

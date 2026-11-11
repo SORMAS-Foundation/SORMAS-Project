@@ -64,8 +64,8 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -76,10 +76,10 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
 import de.symeda.sormas.backend.environment.EnvironmentService;
-import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.infrastructure.PopulationData;
 import de.symeda.sormas.backend.infrastructure.PopulationDataService;
@@ -164,10 +164,14 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 			.filter(district -> populations.get(district) == null)
 			.map(DistrictFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
-		Integer regionPopulation = withoutPopulation.isEmpty() && !districts.isEmpty() ? districts.stream().mapToInt(populations::get).sum() : null;
+		Integer regionPopulation =
+			withoutPopulation.isEmpty() && !districts.isEmpty() ? districts.stream().mapToInt(populations::get).sum() : null;
 
-		SeriesSettings settings =
-			new SeriesSettings(shownWeeks, referenceYears, climateSettings.getCaseMinHistoryYears(), climateSettings.getCaseMinWeeklyCases());
+		SeriesSettings settings = new SeriesSettings(
+			shownWeeks,
+			referenceYears,
+			climateSettings.getCaseMinHistoryYears(),
+			climateSettings.getCaseMinWeeklyCases());
 
 		List<ClimateCaseSeriesDto> result = new ArrayList<>();
 		for (Disease disease : criteria.getDiseases()) {
@@ -200,8 +204,14 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 				sum[0] += count[0];
 				sum[1] += count[1];
 			}));
-			ClimateCaseSeriesDto regionSeries =
-				series(years, RegionFacadeEjb.toReferenceDto(region), null, regionCounts, regionPopulation, withoutPopulation, settings);
+			ClimateCaseSeriesDto regionSeries = series(
+				years,
+				RegionFacadeEjb.toReferenceDto(region),
+				null,
+				regionCounts,
+				regionPopulation,
+				withoutPopulation,
+				settings);
 			if (criteria.isIncludeDistricts()) {
 				for (District district : districts) {
 					regionSeries.getDistrictSeries()
@@ -275,11 +285,7 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 			ClimateDashboardExportDto row =
 				new ClimateDashboardExportDto(climate.getRegion(), climate.getDistrict(), week, climate.isOpenWeatherData(), population);
 			for (ClimateCaseSeriesDto series : cases) {
-				series.getWeeks()
-					.stream()
-					.filter(w -> w.getWeek().equals(week.getWeek()))
-					.findFirst()
-					.ifPresent(w -> row.putCases(series.getDisease(), w));
+				series.getWeeks().stream().filter(w -> w.getWeek().equals(week.getWeek())).findFirst().ifPresent(w -> row.putCases(series.getDisease(), w));
 			}
 			rows.add(row);
 		}
@@ -288,12 +294,7 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 
 	@Override
 	@RightsAllowed(UserRight._CLIMATE_VIEW)
-	public ClimateNearbyCasesDto getNearbyCases(
-		EnvironmentReferenceDto environmentRef,
-		Disease disease,
-		double radiusKm,
-		LocalDate from,
-		LocalDate to) {
+	public ClimateNearbyCasesDto getNearbyCases(EnvironmentReferenceDto environmentRef, Disease disease, double radiusKm, LocalDate from, LocalDate to) {
 
 		if (environmentRef == null || from == null || to == null || from.isAfter(to) || radiusKm <= 0) {
 			throw new IllegalArgumentException("Nearby cases need an environment, a radius and a period");
@@ -397,11 +398,9 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 			double[] infection = infectionPoints.get((Long) row[5]);
 			double[] point = infection != null
 				? infection
-				: isUsablePoint((Double) row[3], (Double) row[4])
-					? new double[] {
-						(Double) row[3],
-						(Double) row[4] }
-					: null;
+				: isUsablePoint((Double) row[3], (Double) row[4]) ? new double[] {
+					(Double) row[3],
+					(Double) row[4] } : null;
 			if (point == null) {
 				week.getCommunityCaseUuids().add(uuid);
 			} else if (distanceKm(site.getLatitude(), site.getLongitude(), point[0], point[1]) <= radiusKm) {
@@ -426,11 +425,14 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 			if (batch.isEmpty()) {
 				continue;
 			}
-			List<Object[]> exposures = em.createQuery(
-				"SELECT e." + Exposure.EPI_DATA + ".id, e." + ExposureDto.START_DATE + ", l." + Location.LATITUDE + ", l." + Location.LONGITUDE
-					+ " FROM " + Exposure.TABLE_NAME + " e JOIN e." + Exposure.LOCATION + " l WHERE e." + Exposure.EPI_DATA + ".id IN :epiData AND e."
-					+ ExposureDto.PROBABLE_INFECTION_ENVIRONMENT + " = true ORDER BY e.id",
-				Object[].class).setParameter("epiData", batch).getResultList();
+			List<Object[]> exposures = em
+				.createQuery(
+					"SELECT e." + Exposure.EPI_DATA + ".id, e." + ExposureDto.START_DATE + ", l." + Location.LATITUDE + ", l." + Location.LONGITUDE
+						+ " FROM " + Exposure.TABLE_NAME + " e JOIN e." + Exposure.LOCATION + " l WHERE e." + Exposure.EPI_DATA + ".id IN :epiData AND e."
+						+ ExposureDto.PROBABLE_INFECTION_ENVIRONMENT + " = true ORDER BY e.id",
+					Object[].class)
+				.setParameter("epiData", batch)
+				.getResultList();
 			for (Object[] exposure : exposures) {
 				Long epiData = (Long) exposure[0];
 				Date start = (Date) exposure[1];
@@ -439,11 +441,9 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 				}
 				Date latest = startDates.get(epiData);
 				if (!points.containsKey(epiData) || (start != null && (latest == null || !start.before(latest)))) {
-					points.put(
-						epiData,
-						new double[] {
-							(Double) exposure[2],
-							(Double) exposure[3] });
+					points.put(epiData, new double[] {
+						(Double) exposure[2],
+						(Double) exposure[3] });
 					startDates.put(epiData, start);
 				}
 			}
@@ -519,8 +519,9 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 			weeks);
 
 		LocalDate today = LocalDate.now();
-		List<ClimateCaseWeekDto> complete =
-			weeks.stream().filter(week -> ClimateStatistics.firstDay(week.getWeek()).plusDays(6).isBefore(today)).collect(Collectors.toList());
+		List<ClimateCaseWeekDto> complete = weeks.stream()
+			.filter(week -> ClimateStatistics.firstDay(week.getWeek()).plusDays(6).isBefore(today))
+			.collect(Collectors.toList());
 		List<ClimateCaseWeekDto> recent = complete.subList(Math.max(0, complete.size() - ClimateCaseSeriesDto.RECENT_WEEKS), complete.size());
 		series.setRecentWeeks(recent.size(), (int) recent.stream().filter(ClimateCaseWeekDto::isAboveUsualRange).count());
 		return series;

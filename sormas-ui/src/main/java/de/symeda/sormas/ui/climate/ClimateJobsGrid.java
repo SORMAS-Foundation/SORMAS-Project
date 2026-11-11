@@ -134,10 +134,7 @@ public class ClimateJobsGrid extends FilteredGrid<ClimateJobIndexDto, ClimateJob
 				formatCount(job.getLocationsDone()),
 				formatCount(job.getLocationsTotal()),
 				formatCount(job.getLocationsFailed()))
-			: String.format(
-				I18nProperties.getString(Strings.climateJobLocations),
-				formatCount(job.getLocationsDone()),
-				formatCount(job.getLocationsTotal()));
+			: String.format(I18nProperties.getString(Strings.climateJobLocations), formatCount(job.getLocationsDone()), formatCount(job.getLocationsTotal()));
 	}
 
 	/**
@@ -175,8 +172,7 @@ public class ClimateJobsGrid extends FilteredGrid<ClimateJobIndexDto, ClimateJob
 		actions.setMargin(false);
 		if (job.getJobType() == ClimateJobType.RELINK && job.getRowsSkipped() > 0) {
 			actions.addComponent(
-				ButtonHelper
-					.createButton(Captions.climateShowDays, e -> ClimateRelinkDaysWindow.open(job), ValoTheme.BUTTON_SMALL, ValoTheme.BUTTON_LINK));
+				ButtonHelper.createButton(Captions.climateShowDays, e -> ClimateRelinkDaysWindow.open(job), ValoTheme.BUTTON_SMALL, ValoTheme.BUTTON_LINK));
 		}
 		if (UiUtil.permitted(UserRight.CLIMATE_MANAGE_SOURCES)) {
 			if (job.isCancellable()) {

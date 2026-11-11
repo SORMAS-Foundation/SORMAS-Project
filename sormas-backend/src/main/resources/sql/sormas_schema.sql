@@ -17953,6 +17953,7 @@ ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS infectionsourcetext
 
 INSERT INTO schema_version (version_number, comment) VALUES (678, '#14342 - Diphtheria lab message process: infection source on external messages');
 
+
 -- 2026-11-04 Tuberculosis drug susceptibility fields #14385
 
 ALTER TABLE drugsusceptibility ADD COLUMN IF NOT EXISTS clofaziminemic varchar(512);

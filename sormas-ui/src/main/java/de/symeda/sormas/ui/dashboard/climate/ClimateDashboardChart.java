@@ -157,8 +157,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 		this.windowHeight = windowHeight;
 
-		dates.setValue(
-			String.format(I18nProperties.getString(Strings.climateDashboardDates), weekLabel(selection.getFrom()), weekLabel(selection.getTo())));
+		dates.setValue(String.format(I18nProperties.getString(Strings.climateDashboardDates), weekLabel(selection.getFrom()), weekLabel(selection.getTo())));
 		status.setValue(status(climate));
 		// the layout draws only with at least one disease ticked (decision 137), so there is always a panel
 		credit.setVisible(!variables.isEmpty() && climate.isOpenWeatherData());
@@ -192,12 +191,10 @@ public class ClimateDashboardChart extends VerticalLayout {
 	static String status(ClimateWeeklySeriesDto climate) {
 
 		if (Arrays.stream(ClimateVariable.values()).anyMatch(climate::hasNormals)) {
-			return String
-				.format(I18nProperties.getString(Strings.climateNormalRange), climate.getFirstReferenceYear(), climate.getLastReferenceYear());
+			return String.format(I18nProperties.getString(Strings.climateNormalRange), climate.getFirstReferenceYear(), climate.getLastReferenceYear());
 		}
 		if (climate.getHistoryFrom() == null) {
-			return climate.getDistrict() == null
-				&& !climate.getDistrictSeries().isEmpty()
+			return climate.getDistrict() == null && !climate.getDistrictSeries().isEmpty()
 				&& climate.getDistrictSeries().stream().anyMatch(d -> d.getHistoryFrom() != null)
 					? I18nProperties.getString(Strings.climateDashboardHistoryIncomplete)
 					: I18nProperties.getString(Strings.climateHistoryNone);
@@ -283,10 +280,9 @@ public class ClimateDashboardChart extends VerticalLayout {
 			variables.size(),
 			fillHeight(windowHeight))) {
 			y += TITLE_BAND;
-			rows.add(
-				new int[] {
-					y,
-					height });
+			rows.add(new int[] {
+				y,
+				height });
 			y += height + PANEL_GAP;
 		}
 		chartHeight = y - PANEL_GAP + MARGIN_BOTTOM;
@@ -335,13 +331,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 				ClimateWeekDto shifted = shiftedWeek(climate, i, lag);
 				if (shifted != null && shifted.get(shading).isUnusual()) {
 					anyShaded = true;
-					js.append("{from:")
-						.append(i - 0.5)
-						.append(",to:")
-						.append(i + 0.5)
-						.append(",color:'")
-						.append(SHADING_COLOR)
-						.append("',zIndex:0},");
+					js.append("{from:").append(i - 0.5).append(",to:").append(i + 0.5).append(",color:'").append(SHADING_COLOR).append("',zIndex:0},");
 				}
 			}
 		}
@@ -363,11 +353,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 		}
 		for (ClimateVariable variable : orderedVariables(variables)) {
 			String title = climateTitle(variable, lag) + climateNote(selection, climate, variable);
-			appendAxis(
-				js,
-				rows.get(row++),
-				title,
-				variable == ClimateVariable.HUMIDITY ? ",min:0,max:100,tickAmount:3" : variable == ClimateVariable.RAINFALL ? ",min:0" : "");
+			appendAxis(js, rows.get(row++), title, variable == ClimateVariable.HUMIDITY ? ",min:0,max:100,tickAmount:3" : variable == ClimateVariable.RAINFALL ? ",min:0" : "");
 		}
 		js.append("],");
 
@@ -375,8 +361,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 			// the details line sits at the top of the part of the chart in view, so it stays visible when the page is
 			// scrolled; when the pointer is right under it, it moves to the bottom of that part (decision 136)
 			.append("positioner:function(w,h){var c=this.chart;var r=c.container.getBoundingClientRect();")
-			.append(
-				"var top=Math.max(0,-r.top);var bottom=Math.min(c.chartHeight,(window.innerHeight||document.documentElement.clientHeight)-r.top);")
+			.append("var top=Math.max(0,-r.top);var bottom=Math.min(c.chartHeight,(window.innerHeight||document.documentElement.clientHeight)-r.top);")
 			.append("var y=top;if(c.pointerY!==undefined&&c.pointerY<top+h+8){y=Math.max(top,bottom-h);}")
 			.append("return {x:c.plotLeft,y:y};},")
 			.append("formatter:function(){var p=this.points?this.points[0]:this;var c=p.series.chart;var d=details[p.point.x];")
@@ -384,13 +369,12 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 		if (heatmap) {
 			// the colour scale of the heatmap only; the other series keep their own colours
-			js.append(
-				"colorAxis:{min:0,max:1,minColor:'#f4ecf7',maxColor:'#4a235a',labels:{formatter:function(){return Math.round(this.value*100)+'%';}}},");
+			js.append("colorAxis:{min:0,max:1,minColor:'#f4ecf7',maxColor:'#4a235a',labels:{formatter:function(){return Math.round(this.value*100)+'%';}}},");
 		}
 		// on hover, a circle on each line and no marker on the bands, so no shape suggests a meaning (decision 143)
-		js.append(
-			"plotOptions:{series:{animation:false,states:{inactive:{opacity:1}}" + (heatmap ? ",colorAxis:false" : "")
-				+ "},column:{pointPadding:0.05,groupPadding:0,borderWidth:0},")
+		js.append("plotOptions:{series:{animation:false,states:{inactive:{opacity:1}}"
+			+ (heatmap ? ",colorAxis:false" : "")
+			+ "},column:{pointPadding:0.05,groupPadding:0,borderWidth:0},")
 			.append("arearange:{lineWidth:0,marker:{enabled:false,states:{hover:{enabled:false}}}},line:{marker:{enabled:false,symbol:'circle'}}},");
 
 		js.append("series:[");
@@ -606,8 +590,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 		return html(
 			String.format(
 				I18nProperties.getString(Strings.climateDashboardHeatmapTitle),
-				I18nProperties
-					.getCaption(measure == Measure.INCIDENCE ? Captions.climateDashboardMeasureIncidence : Captions.climateDashboardMeasureCount)
+				I18nProperties.getCaption(measure == Measure.INCIDENCE ? Captions.climateDashboardMeasureIncidence : Captions.climateDashboardMeasureCount)
 					.toLowerCase()));
 	}
 
@@ -634,8 +617,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 		String title = "<b>" + html(
 			String.format(
 				I18nProperties.getString(measure == Measure.INCIDENCE ? Strings.climateDashboardPanelIncidence : Strings.climateDashboardPanelCount),
-				series.getDisease().toString()))
-			+ "</b>";
+				series.getDisease().toString())) + "</b>";
 		if (series.countWeeksWithUsualRange() == 0) {
 			Set<ClimateUsualRangeMissing> reasons = series.getWeeks()
 				.stream()
@@ -644,7 +626,8 @@ public class ClimateDashboardChart extends VerticalLayout {
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 			if (!reasons.isEmpty()) {
 				title += " <span style=\"color:#888888\">· "
-					+ html(reasons.stream().sorted().map(ClimateUsualRangeMissing::toString).collect(Collectors.joining("; "))) + "</span>";
+					+ html(reasons.stream().sorted().map(ClimateUsualRangeMissing::toString).collect(Collectors.joining("; ")))
+					+ "</span>";
 			}
 		}
 		return title;
@@ -652,8 +635,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 	static String usualRangeName(ClimateCaseSeriesDto series) {
 		if (series.getExcludedYears().isEmpty()) {
-			return String
-				.format(I18nProperties.getString(Strings.climateDashboardUsualRange), series.getFirstReferenceYear(), series.getLastReferenceYear());
+			return String.format(I18nProperties.getString(Strings.climateDashboardUsualRange), series.getFirstReferenceYear(), series.getLastReferenceYear());
 		}
 		return String.format(
 			I18nProperties.getString(Strings.climateDashboardUsualRangeExcluded),
@@ -790,18 +772,16 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 	static String caseDetail(ClimateCaseSeriesDto series, ClimateCaseWeekDto week, Measure measure) {
 
-		String detail =
-			measure == Measure.INCIDENCE && week.getIncidence() != null
-				? String.format(
-					I18nProperties
-						.getString(week.getCount() == 1 ? Strings.climateDashboardDetailIncidenceOne : Strings.climateDashboardDetailIncidence),
-					series.getDisease().toString(),
-					ClimateCaptions.oneDecimal(week.getIncidence()),
-					week.getCount())
-				: String.format(
-					I18nProperties.getString(week.getCount() == 1 ? Strings.climateDashboardDetailCountOne : Strings.climateDashboardDetailCount),
-					series.getDisease().toString(),
-					week.getCount());
+		String detail = measure == Measure.INCIDENCE && week.getIncidence() != null
+			? String.format(
+				I18nProperties.getString(week.getCount() == 1 ? Strings.climateDashboardDetailIncidenceOne : Strings.climateDashboardDetailIncidence),
+				series.getDisease().toString(),
+				ClimateCaptions.oneDecimal(week.getIncidence()),
+				week.getCount())
+			: String.format(
+				I18nProperties.getString(week.getCount() == 1 ? Strings.climateDashboardDetailCountOne : Strings.climateDashboardDetailCount),
+				series.getDisease().toString(),
+				week.getCount());
 		if (week.getReportDateCount() > 0) {
 			detail += " " + String.format(I18nProperties.getString(Strings.climateDashboardDetailReportDate), week.getReportDateCount());
 		}
@@ -839,25 +819,27 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 		String text = String.format(I18nProperties.getString(format), ClimateCaptions.oneDecimal(value.getValue()) + unit);
 		if (variable == ClimateVariable.TEMPERATURE && (week.getTemperatureMin() != null || week.getTemperatureMax() != null)) {
-			text += " (" + String.format(
-				I18nProperties.getString(Strings.climateDetailMinMax),
-				week.getTemperatureMin() != null ? ClimateCaptions.oneDecimal(week.getTemperatureMin()) : "–",
-				week.getTemperatureMax() != null ? ClimateCaptions.oneDecimal(week.getTemperatureMax()) : "–") + ")";
+			text += " ("
+				+ String.format(
+					I18nProperties.getString(Strings.climateDetailMinMax),
+					week.getTemperatureMin() != null ? ClimateCaptions.oneDecimal(week.getTemperatureMin()) : "–",
+					week.getTemperatureMax() != null ? ClimateCaptions.oneDecimal(week.getTemperatureMax()) : "–")
+				+ ")";
 		}
 		if (variable == ClimateVariable.HUMIDITY && week.getHumidityMeasure() == HumidityMeasure.NOON_READING) {
 			text += " " + I18nProperties.getString(Strings.climateDetailNoonReading);
 		}
 		if (value.getNormal() != null) {
-			text += " " + String.format(
-				I18nProperties.getString(Strings.climateDetailNormal),
-				ClimateCaptions.oneDecimal(value.getNormal().getP10()),
-				ClimateCaptions.oneDecimal(value.getNormal().getP90()) + unit);
+			text += " "
+				+ String.format(
+					I18nProperties.getString(Strings.climateDetailNormal),
+					ClimateCaptions.oneDecimal(value.getNormal().getP10()),
+					ClimateCaptions.oneDecimal(value.getNormal().getP90()) + unit);
 			if (value.isUnusual()) {
 				text += " · " + I18nProperties.getString(Strings.climateDashboardAboveNormal);
 			}
 		} else if (value.getLastYear() != null) {
-			text += " " + String
-				.format(I18nProperties.getString(Strings.climateDashboardDetailLastYear), ClimateCaptions.oneDecimal(value.getLastYear()) + unit);
+			text += " " + String.format(I18nProperties.getString(Strings.climateDashboardDetailLastYear), ClimateCaptions.oneDecimal(value.getLastYear()) + unit);
 		}
 		return ClimateIcon.of(variable).html() + " " + html(text);
 	}

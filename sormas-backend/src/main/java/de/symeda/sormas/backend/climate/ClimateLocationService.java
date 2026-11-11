@@ -140,9 +140,14 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 	 */
 	public boolean isInUse(Long locationId) {
 
-		boolean byDistrict = !em.createQuery(
-			"SELECT d.id FROM District d WHERE d." + District.CLIMATE_LOCATION + ".id = :location AND d." + District.ARCHIVED + " = false",
-			Long.class).setParameter("location", locationId).setMaxResults(1).getResultList().isEmpty();
+		boolean byDistrict = !em
+			.createQuery(
+				"SELECT d.id FROM District d WHERE d." + District.CLIMATE_LOCATION + ".id = :location AND d." + District.ARCHIVED + " = false",
+				Long.class)
+			.setParameter("location", locationId)
+			.setMaxResults(1)
+			.getResultList()
+			.isEmpty();
 		return byDistrict
 			|| !em
 				.createQuery(
@@ -182,8 +187,8 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 	public List<String> getOtherEnvironmentNames(Long locationId, Long environmentId) {
 		return em
 			.createQuery(
-				"SELECT e." + Environment.ENVIRONMENT_NAME + " FROM environments e WHERE e." + Environment.CLIMATE_LOCATION
-					+ ".id = :location AND e.id <> :environment AND e." + Environment.DELETED + " = false ORDER BY e." + Environment.ENVIRONMENT_NAME,
+				"SELECT e." + Environment.ENVIRONMENT_NAME + " FROM environments e WHERE e." + Environment.CLIMATE_LOCATION + ".id = :location AND e.id <> :environment AND e."
+					+ Environment.DELETED + " = false ORDER BY e." + Environment.ENVIRONMENT_NAME,
 				String.class)
 			.setParameter("location", locationId)
 			.setParameter("environment", environmentId)
@@ -228,9 +233,9 @@ public class ClimateLocationService extends BaseAdoService<ClimateLocation> {
 
 		CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 		TypedQuery<Object[]> query = em.createQuery(
-			"SELECT r." + Region.UUID + ", r." + Region.NAME + ", d." + District.UUID + ", d." + District.NAME + ", l.id, l."
-				+ ClimateLocation.LATITUDE + " FROM District d JOIN d." + District.REGION + " r LEFT JOIN r." + Region.COUNTRY + " c LEFT JOIN d."
-				+ District.CLIMATE_LOCATION + " l WHERE d." + District.ARCHIVED + " = false" + (regionId != null ? " AND r.id = :region" : "")
+			"SELECT r." + Region.UUID + ", r." + Region.NAME + ", d." + District.UUID + ", d." + District.NAME + ", l.id, l." + ClimateLocation.LATITUDE
+				+ " FROM District d JOIN d." + District.REGION + " r LEFT JOIN r." + Region.COUNTRY + " c LEFT JOIN d." + District.CLIMATE_LOCATION
+				+ " l WHERE d." + District.ARCHIVED + " = false" + (regionId != null ? " AND r.id = :region" : "")
 				+ (serverCountry != null ? " AND (c IS NULL OR c.uuid = :country)" : "") + " ORDER BY r." + Region.NAME + ", d." + District.NAME,
 			Object[].class);
 		if (regionId != null) {

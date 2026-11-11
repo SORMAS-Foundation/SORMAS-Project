@@ -296,9 +296,13 @@ public class ClimateJobService extends BaseAdoService<ClimateJob> {
 	 * @return the most recently created nightly fetch, or null
 	 */
 	public ClimateJob getLatestDailyFetch() {
-		List<ClimateJob> jobs = em.createQuery(
-			"SELECT j FROM " + ClimateJob.TABLE_NAME + " j WHERE j." + ClimateJob.JOB_TYPE + " = :type ORDER BY j.creationDate DESC, j.id DESC",
-			ClimateJob.class).setParameter("type", ClimateJobType.DAILY_FETCH).setMaxResults(1).getResultList();
+		List<ClimateJob> jobs = em
+			.createQuery(
+				"SELECT j FROM " + ClimateJob.TABLE_NAME + " j WHERE j." + ClimateJob.JOB_TYPE + " = :type ORDER BY j.creationDate DESC, j.id DESC",
+				ClimateJob.class)
+			.setParameter("type", ClimateJobType.DAILY_FETCH)
+			.setMaxResults(1)
+			.getResultList();
 		return jobs.isEmpty() ? null : jobs.get(0);
 	}
 

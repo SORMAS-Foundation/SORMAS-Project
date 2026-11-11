@@ -98,10 +98,7 @@ public class EnvironmentClimateCards extends VerticalLayout {
 						series.getFirstReferenceYear(),
 						series.getLastReferenceYear(),
 						series.getDistrict().getCaption())
-					: String.format(
-						I18nProperties.getString(Strings.climateCardsNormalFrom),
-						series.getFirstReferenceYear(),
-						series.getLastReferenceYear()));
+					: String.format(I18nProperties.getString(Strings.climateCardsNormalFrom), series.getFirstReferenceYear(), series.getLastReferenceYear()));
 		}
 
 		for (ClimateSummaryCardDto card : cardData) {
@@ -220,8 +217,7 @@ public class EnvironmentClimateCards extends VerticalLayout {
 			}
 		} else if (card.getVariable() == ClimateVariable.TEMPERATURE || !normal) {
 			if (card.getDifference() != null) {
-				String unit =
-					card.getVariable() == ClimateVariable.TEMPERATURE ? " °C" : " " + I18nProperties.getString(Strings.climatePercentagePoints);
+				String unit = card.getVariable() == ClimateVariable.TEMPERATURE ? " °C" : " " + I18nProperties.getString(Strings.climatePercentagePoints);
 				String difference = String.format(Locale.ROOT, "%+.1f", card.getDifference()) + unit;
 				lines.add(
 					String.format(

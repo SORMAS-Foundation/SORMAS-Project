@@ -58,11 +58,7 @@ public final class ClimateSummaryCards {
 		return cards;
 	}
 
-	private static ClimateSummaryCardDto card(
-		ClimateVariable variable,
-		LocalDate lastDay,
-		Map<LocalDate, ClimateDay> days,
-		ClimateDailyNormals normals) {
+	private static ClimateSummaryCardDto card(ClimateVariable variable, LocalDate lastDay, Map<LocalDate, ClimateDay> days, ClimateDailyNormals normals) {
 
 		LocalDate firstDay = lastDay.minusDays(CARD_DAYS - 1);
 		ClimateSummaryCardDto card = new ClimateSummaryCardDto(variable, firstDay, lastDay);
@@ -103,9 +99,7 @@ public final class ClimateSummaryCards {
 			card.setComparison(ClimateComparison.NORMAL);
 			card.setNormal(normal);
 			card.setPosition(
-				current > normal.getP90()
-					? ClimateRangePosition.ABOVE
-					: current < normal.getP10() ? ClimateRangePosition.BELOW : ClimateRangePosition.WITHIN);
+				current > normal.getP90() ? ClimateRangePosition.ABOVE : current < normal.getP10() ? ClimateRangePosition.BELOW : ClimateRangePosition.WITHIN);
 			compare(card, variable, current, normal.getP50());
 			return card;
 		}

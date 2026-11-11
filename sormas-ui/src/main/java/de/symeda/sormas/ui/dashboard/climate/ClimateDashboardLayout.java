@@ -136,12 +136,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		private final EpiWeek to;
 		private final ClimateCaseClassificationFilter classification;
 
-		Selection(
-			RegionReferenceDto region,
-			DistrictReferenceDto district,
-			EpiWeek from,
-			EpiWeek to,
-			ClimateCaseClassificationFilter classification) {
+		Selection(RegionReferenceDto region, DistrictReferenceDto district, EpiWeek from, EpiWeek to, ClimateCaseClassificationFilter classification) {
 			this.region = region;
 			this.district = district;
 			this.from = from;
@@ -305,8 +300,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		regionFilter.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
-			districtFilter
-				.setItems(region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : Collections.emptyList());
+			districtFilter.setItems(region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : Collections.emptyList());
 			if (!updating) {
 				districtFilter.clear();
 			}
@@ -364,8 +358,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		updateDiseaseNote();
 
 		filterCard.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
-		filterCard.addComponent(
-			stack(regionFilter, districtFilter, classificationFilter, weeks, withNote(diseaseGroup, diseaseNote), buttons, jurisdictionNote));
+		filterCard.addComponent(stack(regionFilter, districtFilter, classificationFilter, weeks, withNote(diseaseGroup, diseaseNote), buttons, jurisdictionNote));
 		return filterCard;
 	}
 
@@ -399,8 +392,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			updating = true;
 			try {
 				// back to separate panels with more ticked than the cap: the first 4 stay
-				List<Disease> kept =
-					offeredDiseases.stream().filter(diseaseGroup.getValue()::contains).limit(diseaseCap()).collect(Collectors.toList());
+				List<Disease> kept = offeredDiseases.stream().filter(diseaseGroup.getValue()::contains).limit(diseaseCap()).collect(Collectors.toList());
 				diseaseGroup.setValue(new LinkedHashSet<>(kept));
 				diseaseGroup.getDataProvider().refreshAll();
 			} finally {
@@ -645,21 +637,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 					withoutPopulation.stream().map(DistrictReferenceDto::getCaption).collect(Collectors.joining(", "))));
 		setNote(
 			shadeNote,
-			shadeSelect.isEnabled()
-				? null
-				: String.format(I18nProperties.getString(Strings.climateDashboardShadeNoNormals), climate.getMinHistoryYears()));
+			shadeSelect.isEnabled() ? null : String.format(I18nProperties.getString(Strings.climateDashboardShadeNoNormals), climate.getMinHistoryYears()));
 
 		drawnForHeight = windowHeight();
-		chart.update(
-			selection,
-			climate,
-			selectedCaseSeries(),
-			selectedVariables(),
-			shadeSelect.getValue(),
-			measureGroup.getValue(),
-			getLag(),
-			viewGroup.getValue() == View.HEATMAP,
-			drawnForHeight);
+		chart.update(selection, climate, selectedCaseSeries(), selectedVariables(), shadeSelect.getValue(), measureGroup.getValue(), getLag(), viewGroup.getValue() == View.HEATMAP, drawnForHeight);
 	}
 
 	/**

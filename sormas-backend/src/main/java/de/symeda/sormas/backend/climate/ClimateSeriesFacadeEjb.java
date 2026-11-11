@@ -35,8 +35,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.climate.ClimateDailyExportDto;
-import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
 import de.symeda.sormas.api.climate.ClimateDataSource;
+import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
 import de.symeda.sormas.api.climate.ClimateDayDto;
 import de.symeda.sormas.api.climate.ClimateEnvironmentContextDto;
 import de.symeda.sormas.api.climate.ClimateJobType;
@@ -136,8 +136,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 		ClimateLocation location = own != null ? own : districtLocation;
 
 		int currentYear = LocalDate.now().getYear();
-		List<Integer> referenceYears =
-			IntStream.range(currentYear - climateSettings.getHistoryYears(), currentYear).boxed().collect(Collectors.toList());
+		List<Integer> referenceYears = IntStream.range(currentYear - climateSettings.getHistoryYears(), currentYear).boxed().collect(Collectors.toList());
 		int minYears = climateSettings.getMinHistoryYears();
 
 		ClimateDailyNormals normals = location != null ? dailyNormals(location.getId(), referenceYears, minYears) : null;
@@ -211,9 +210,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 
 		if (own != null) {
 			context.getSharedDistricts()
-				.addAll(
-					climateLocationService.getDistrictNamesByLocation(Collections.singleton(own.getId()))
-						.getOrDefault(own.getId(), Collections.emptyList()));
+				.addAll(climateLocationService.getDistrictNamesByLocation(Collections.singleton(own.getId())).getOrDefault(own.getId(), Collections.emptyList()));
 			context.getSharedEnvironments().addAll(climateLocationService.getOtherEnvironmentNames(own.getId(), environment.getId()));
 			if (district != null && address.getLatitude() != null && address.getLongitude() != null) {
 				DistrictReferenceDto districtRef = DistrictFacadeEjb.toReferenceDto(district);
@@ -273,8 +270,9 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 		ClimateLocation location = shownLocation(environment);
 		Map<LocalDate, ClimateObservation> rows =
 			location != null ? climateObservationService.getByLocationAndPeriod(location, from, to) : Collections.emptyMap();
-		String normalsFrom =
-			series.isDistrictNormals() && series.getDistrict() != null ? series.getDistrict().getCaption() : environment.getEnvironmentName();
+		String normalsFrom = series.isDistrictNormals() && series.getDistrict() != null
+			? series.getDistrict().getCaption()
+			: environment.getEnvironmentName();
 
 		List<ClimateDailyExportDto> export = new ArrayList<>(series.getDays().size());
 		for (ClimateDayDto day : series.getDays()) {
@@ -433,10 +431,8 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 		ClimateWeeklySeriesDto districtSeries(District district) {
 
 			Long location = locationId(district);
-			Map<EpiWeek, ClimateWeekFigures> figures =
-				location != null ? shownFigures.getOrDefault(location, Collections.emptyMap()) : Collections.emptyMap();
-			ClimateWeeklyNormals normals =
-				location != null ? districtNormals(location) : ClimateWeeklyNormals.compute(Collections.emptyMap(), referenceYears, minYears);
+			Map<EpiWeek, ClimateWeekFigures> figures = location != null ? shownFigures.getOrDefault(location, Collections.emptyMap()) : Collections.emptyMap();
+			ClimateWeeklyNormals normals = location != null ? districtNormals(location) : ClimateWeeklyNormals.compute(Collections.emptyMap(), referenceYears, minYears);
 			ClimateWeeklySeriesDto series = new ClimateWeeklySeriesDto(
 				RegionFacadeEjb.toReferenceDto(district.getRegion()),
 				DistrictFacadeEjb.toReferenceDto(district),
@@ -447,7 +443,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 				referenceYears.get(referenceYears.size() - 1),
 				weeks(figures, normals, false));
 			series.setLeadWeeks(leadWeeks);
-			series.setOpenWeatherData(openWeatherData(location != null ? Collections.singleton(location) : Collections.<Long> emptySet()));
+			series.setOpenWeatherData(openWeatherData(location != null ? Collections.singleton(location) : Collections.<Long>emptySet()));
 			Map<LocalDate, ClimateDay> days = location != null ? shownDays.getOrDefault(location, Collections.emptyMap()) : Collections.emptyMap();
 			for (ClimateVariable variable : ClimateVariable.values()) {
 				series.setCompleteness(variable, completeness(days, variable));
@@ -457,9 +453,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 
 		ClimateWeeklySeriesDto regionSeries() {
 
-			Map<EpiWeek, ClimateWeekFigures> figures = combine(
-				shownFigures,
-				ClimateStatistics.weeksBetween(ClimateStatistics.epiWeekOf(leadFrom.minusWeeks(53)), shownWeeks.get(shownWeeks.size() - 1)));
+			Map<EpiWeek, ClimateWeekFigures> figures = combine(shownFigures, ClimateStatistics.weeksBetween(ClimateStatistics.epiWeekOf(leadFrom.minusWeeks(53)), shownWeeks.get(shownWeeks.size() - 1)));
 			String key = "W|R|" + districts.stream().map(district -> String.valueOf(locationId(district))).collect(Collectors.joining(",")) + "|"
 				+ referenceYears + "|" + minYears;
 			ClimateWeeklyNormals normals = normalsCache.get(
@@ -492,9 +486,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 			for (ClimateVariable variable : ClimateVariable.values()) {
 				List<Double> shares = districts.stream().map(district -> {
 					Long location = locationId(district);
-					return completeness(
-						location != null ? shownDays.getOrDefault(location, Collections.emptyMap()) : Collections.emptyMap(),
-						variable);
+					return completeness(location != null ? shownDays.getOrDefault(location, Collections.emptyMap()) : Collections.emptyMap(), variable);
 				}).filter(Objects::nonNull).collect(Collectors.toList());
 				series.setCompleteness(variable, shares.isEmpty() || shares.size() < districts.size() ? null : ClimateStatistics.mean(shares));
 			}
@@ -534,10 +526,7 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 		}
 
 		private Set<Long> locationIds() {
-			return districts.stream()
-				.map(ClimateSeriesFacadeEjb::locationId)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toCollection(LinkedHashSet::new));
+			return districts.stream().map(ClimateSeriesFacadeEjb::locationId).filter(Objects::nonNull).collect(Collectors.toCollection(LinkedHashSet::new));
 		}
 
 		private Map<EpiWeek, ClimateWeekFigures> combine(Map<Long, Map<EpiWeek, ClimateWeekFigures>> figuresByLocation, List<EpiWeek> weeks) {
@@ -584,8 +573,9 @@ public class ClimateSeriesFacadeEjb implements ClimateSeriesFacade {
 				ClimateWeekFigures lastYear = lastYearWeek != null ? figures.get(lastYearWeek) : null;
 				int number = week.getWeek();
 
-				HumidityMeasure measure =
-					current != null && current.getHumidityMeasure() != null ? current.getHumidityMeasure() : normals.getHumidityMeasureForGap(number);
+				HumidityMeasure measure = current != null && current.getHumidityMeasure() != null
+					? current.getHumidityMeasure()
+					: normals.getHumidityMeasureForGap(number);
 				Double lastYearHumidity = lastYear != null && lastYear.getHumidityMeasure() == measure ? lastYear.getHumidity() : null;
 
 				ClimateRangeDto rainfallNormal = normals.getRainfall(number);

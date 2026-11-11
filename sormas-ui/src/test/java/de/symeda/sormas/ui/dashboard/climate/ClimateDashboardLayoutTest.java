@@ -94,12 +94,8 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertTrue(isInside(layout.getDiseaseGroup(), layout.getFilterCard()), "the diseases are chosen with the place and period");
 		assertFalse(layout.getContent().isVisible(), "no blank chart before a region is chosen");
 		assertFalse(layout.getDisplayCard().isVisible(), "no display controls before a region is applied: they would change nothing");
-		assertFalse(
-			layout.getDiseaseGroup().getStyleName().contains(com.vaadin.ui.themes.ValoTheme.OPTIONGROUP_HORIZONTAL),
-			"one disease checkbox per line");
-		assertTrue(
-			layout.getRegionFilter().getStyleName().contains(de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE),
-			"compact cards: no margin under the fields");
+		assertFalse(layout.getDiseaseGroup().getStyleName().contains(com.vaadin.ui.themes.ValoTheme.OPTIONGROUP_HORIZONTAL), "one disease checkbox per line");
+		assertTrue(layout.getRegionFilter().getStyleName().contains(de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE), "compact cards: no margin under the fields");
 		assertTrue(layout.getRegionFilter().isEnabled());
 		assertTrue(layout.getDistrictFilter().isEnabled());
 		assertEquals(lastWeek, layout.getToFilter().getValue(), "the default period ends with the last complete week");
@@ -358,15 +354,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		List<EpiWeek> shown = layout.getClimate().getShownWeeks().stream().map(w -> w.getWeek()).collect(Collectors.toList());
 		EpiWeek leadStart = layout.getClimate().getWeeks().get(0).getWeek();
 		assertTrue(
-			ClimateDashboardChart
-				.details(
-					shown.get(0),
-					0,
-					layout.getClimate(),
-					java.util.Collections.emptyList(),
-					java.util.EnumSet.allOf(ClimateVariable.class),
-					Measure.COUNT,
-					12)
+			ClimateDashboardChart.details(shown.get(0), 0, layout.getClimate(), java.util.Collections.emptyList(), java.util.EnumSet.allOf(ClimateVariable.class), Measure.COUNT, 12)
 				.contains(String.format("Climate of week %d/%d (12 weeks earlier):", leadStart.getWeek(), leadStart.getYear())),
 			"the first week still has climate: 12 weeks are loaded before the period");
 		assertEquals(52, layout.getClimate().getShownWeeks().size(), "no new request: the same series");
@@ -399,12 +387,8 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		List<Disease> offered = layout.getOfferedDiseases();
 
 		layout.getViewGroup().setValue(ClimateDashboardLayout.View.HEATMAP);
-		layout.getDiseaseGroup()
-			.setValue(new java.util.HashSet<>(offered.subList(0, Math.min(offered.size(), ClimateDashboardLayout.HEATMAP_DISEASE_CAP))));
-		assertEquals(
-			Math.min(offered.size(), ClimateDashboardLayout.HEATMAP_DISEASE_CAP),
-			layout.selectedDiseases().size(),
-			"up to 10 in the heatmap");
+		layout.getDiseaseGroup().setValue(new java.util.HashSet<>(offered.subList(0, Math.min(offered.size(), ClimateDashboardLayout.HEATMAP_DISEASE_CAP))));
+		assertEquals(Math.min(offered.size(), ClimateDashboardLayout.HEATMAP_DISEASE_CAP), layout.selectedDiseases().size(), "up to 10 in the heatmap");
 		String script = layout.getChart().getScript();
 		dump("dashboard-heatmap.js", script);
 		assertTrue(script.contains("type:'heatmap'"), "one heatmap row per disease");
@@ -434,9 +418,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 
 		assertTrue(layout.getChart().getScript().contains("No climate data for Bagaces: the district has no point."));
 		assertFalse(layout.getShadeSelect().isEnabled(), "no normals, no shading");
-		assertTrue(
-			text(layout.getDisplayCard()).contains("Shading needs normal ranges (3 years of climate history)."),
-			text(layout.getDisplayCard()));
+		assertTrue(text(layout.getDisplayCard()).contains("Shading needs normal ranges (3 years of climate history)."), text(layout.getDisplayCard()));
 		assertEquals("No climate data yet", layout.getChart().getStatus().getValue());
 	}
 
@@ -473,11 +455,8 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	 *         and the room for the axis and legend
 	 */
 	private static int chartHeight(int[] panels) {
-		return ClimateDashboardChart.PLOT_TOP
-			+ java.util.Arrays.stream(panels).sum()
-			+ panels.length * ClimateDashboardChart.TITLE_BAND
-			+ (panels.length - 1) * ClimateDashboardChart.PANEL_GAP
-			+ ClimateDashboardChart.MARGIN_BOTTOM;
+		return ClimateDashboardChart.PLOT_TOP + java.util.Arrays.stream(panels).sum() + panels.length * ClimateDashboardChart.TITLE_BAND
+			+ (panels.length - 1) * ClimateDashboardChart.PANEL_GAP + ClimateDashboardChart.MARGIN_BOTTOM;
 	}
 
 	/**

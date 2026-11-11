@@ -58,6 +58,7 @@ import de.symeda.sormas.ui.IgnoreCancelDownloader;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.RowCount;
@@ -170,8 +171,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		updateDistricts();
 		districtFilter.setValue(criteria.getDistrict());
 		placeTypeFilter = new ComboBox<>(null, Arrays.asList(ClimatePlaceType.values()));
-		placeTypeFilter
-			.setDescription(I18nProperties.getPrefixCaption(ClimateObservationIndexDto.I18N_PREFIX, ClimateObservationCriteria.PLACE_TYPE));
+		placeTypeFilter.setDescription(I18nProperties.getPrefixCaption(ClimateObservationIndexDto.I18N_PREFIX, ClimateObservationCriteria.PLACE_TYPE));
 		placeTypeFilter.setEmptySelectionAllowed(false);
 		placeTypeFilter.setValue(criteria.getPlaceType());
 		environmentFilter = new ComboBox<>();
@@ -297,8 +297,7 @@ public class ClimateObservationsView extends AbstractClimateDataView {
 		list.setItems(districts);
 		list.setWidthFull();
 		list.setHeightByRows(Math.max(1, Math.min(districts.size(), 12)));
-		list.addColumn(d -> d.getRegion().getCaption())
-			.setCaption(I18nProperties.getPrefixCaption(ClimateDistrictDto.I18N_PREFIX, ClimateDistrictDto.REGION));
+		list.addColumn(d -> d.getRegion().getCaption()).setCaption(I18nProperties.getPrefixCaption(ClimateDistrictDto.I18N_PREFIX, ClimateDistrictDto.REGION));
 		list.addColumn(d -> d.getDistrict().getCaption())
 			.setCaption(I18nProperties.getPrefixCaption(ClimateDistrictDto.I18N_PREFIX, ClimateDistrictDto.DISTRICT));
 		if (UiUtil.permitted(UserRight.INFRASTRUCTURE_EDIT)) {

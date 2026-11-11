@@ -96,12 +96,7 @@ public class ClimateJobFacadeEjb implements ClimateJobFacade {
 	}
 
 	@Override
-	public String startBackfill(
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		boolean includeEnvironments,
-		int years,
-		long confirmedCalls) {
+	public String startBackfill(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, int years, long confirmedCalls) {
 
 		checkAvailable(climateSettings.isHistoryFromOpenWeather(), Validations.climateBackfillOff);
 		ClimateJob job = buildJob(ClimateJobType.BACKFILL, region, district, includeEnvironments);
@@ -244,9 +239,7 @@ public class ClimateJobFacadeEjb implements ClimateJobFacade {
 			ClimateObservation districtRow = districtRows.get(day);
 			ClimateObservation keptRow = keptRows.get(day);
 			// an external row that the new location's row of equal or higher rank kept out
-			if (keptRow == null
-				|| districtRow.getSource() == ClimateDataSource.OPENWEATHER
-				|| districtRow.getSource().outranks(keptRow.getSource())) {
+			if (keptRow == null || districtRow.getSource() == ClimateDataSource.OPENWEATHER || districtRow.getSource().outranks(keptRow.getSource())) {
 				return;
 			}
 			ClimateRelinkDayDto relinkDay = new ClimateRelinkDayDto(

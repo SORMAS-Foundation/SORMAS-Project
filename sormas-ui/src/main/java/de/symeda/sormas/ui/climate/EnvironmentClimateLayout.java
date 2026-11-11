@@ -32,9 +32,15 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.climate.ClimateDailyExportDto;
 import de.symeda.sormas.api.climate.ClimateDailySeriesDto;
-import de.symeda.sormas.api.climate.ClimateEnvironmentContextDto;
 import de.symeda.sormas.api.climate.ClimateObservationExportDto;
 import de.symeda.sormas.api.climate.ClimateObservationIndexDto;
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.ui.IgnoreCancelDownloader;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.api.climate.ClimateEnvironmentContextDto;
 import de.symeda.sormas.api.climate.SiteClimateReadingDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
@@ -43,17 +49,11 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Descriptions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateFormatHelper;
-import de.symeda.sormas.ui.IgnoreCancelDownloader;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
@@ -136,7 +136,8 @@ public class EnvironmentClimateLayout extends CustomLayout {
 		addStyleName(CssStyles.ROOT_COMPONENT);
 		setWidthFull();
 		setHeightUndefined();
-		setTemplateContents(LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, MAIN_LOC), LayoutUtil.fluidColumnLoc(4, 0, 12, 0, SIDE_LOC)));
+		setTemplateContents(
+			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, MAIN_LOC), LayoutUtil.fluidColumnLoc(4, 0, 12, 0, SIDE_LOC)));
 
 		VerticalLayout main = new VerticalLayout();
 		main.setMargin(false);
@@ -203,9 +204,7 @@ public class EnvironmentClimateLayout extends CustomLayout {
 					Captions.climateNewSiteReading,
 					VaadinIcons.PLUS_CIRCLE,
 					e -> SiteClimateReadingForm.openNew(environment, this::reload),
-					ValoTheme.BUTTON_LINK,
-					CssStyles.BUTTON_COMPACT,
-					CssStyles.CLIMATE_ACTION));
+					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT, CssStyles.CLIMATE_ACTION));
 		}
 		if (isManualEntryAllowed()) {
 			buttons.add(
@@ -213,18 +212,10 @@ public class EnvironmentClimateLayout extends CustomLayout {
 					Captions.climateManualEntry,
 					VaadinIcons.PLUS_CIRCLE,
 					e -> ClimateObservationForm.openForEnvironment(environment, null, this::reload),
-					ValoTheme.BUTTON_LINK,
-					CssStyles.BUTTON_COMPACT,
-					CssStyles.CLIMATE_ACTION));
+					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT, CssStyles.CLIMATE_ACTION));
 		}
 		if (UiUtil.permitted(UserRight.CLIMATE_EXPORT)) {
-			Button export = ButtonHelper.createIconButton(
-				Captions.climateExportDailyValues,
-				VaadinIcons.TABLE,
-				null,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT,
-				CssStyles.CLIMATE_ACTION);
+			Button export = ButtonHelper.createIconButton(Captions.climateExportDailyValues, VaadinIcons.TABLE, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT, CssStyles.CLIMATE_ACTION);
 			export.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			StreamResource resource = DownloadUtil.createCsvExportStreamResource(
 				ClimateDailyExportDto.class,

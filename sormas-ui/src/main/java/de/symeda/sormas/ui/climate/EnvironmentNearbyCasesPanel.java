@@ -180,8 +180,7 @@ public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 			.append("tooltip:{useHTML:true,formatter:function(){return details[this.point.i];}},")
 			.append("plotOptions:{column:{stacking:'normal',pointRange:")
 			.append(WEEK)
-			.append(
-				",pointPadding:0.08,groupPadding:0,borderWidth:0,cursor:'pointer',animation:false,states:{inactive:{opacity:1}},point:{events:{click:")
+			.append(",pointPadding:0.08,groupPadding:0,borderWidth:0,cursor:'pointer',animation:false,states:{inactive:{opacity:1}},point:{events:{click:")
 			.append(ClimateChart.clickHandler())
 			.append("}}}},series:[");
 		if (!nearby.isByCommunityOnly()) {

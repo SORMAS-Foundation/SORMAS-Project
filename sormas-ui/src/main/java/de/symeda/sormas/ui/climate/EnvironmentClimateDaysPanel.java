@@ -96,9 +96,7 @@ public class EnvironmentClimateDaysPanel extends VerticalLayout {
 			return "";
 		}
 		String value = ClimateCaptions.number(day.getRelativeHumidity());
-		return day.getHumidityMeasure() == HumidityMeasure.NOON_READING
-			? value + " " + I18nProperties.getString(Strings.climateDetailNoonReading)
-			: value;
+		return day.getHumidityMeasure() == HumidityMeasure.NOON_READING ? value + " " + I18nProperties.getString(Strings.climateDetailNoonReading) : value;
 	}
 
 	/**

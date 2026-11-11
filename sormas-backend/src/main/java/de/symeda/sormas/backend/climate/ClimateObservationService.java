@@ -90,7 +90,8 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 		List<Date> days = em
 			.createQuery(
 				"SELECT o." + ClimateObservation.OBSERVATION_DATE + " FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
-					+ ClimateObservation.CLIMATE_LOCATION + ".id = :location AND o." + ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to",
+					+ ClimateObservation.CLIMATE_LOCATION + ".id = :location AND o." + ClimateObservation.OBSERVATION_DATE
+					+ " BETWEEN :from AND :to",
 				Date.class)
 			.setParameter("location", locationId)
 			.setParameter("from", ClimateCalendar.toDate(from))
@@ -106,10 +107,13 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 	 * @return the earliest day held by the location, from any source, or null when it holds nothing
 	 */
 	public LocalDate getEarliestDay(Long locationId) {
-		Date earliest = em.createQuery(
-			"SELECT MIN(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
-				+ ClimateObservation.CLIMATE_LOCATION + ".id = :location",
-			Date.class).setParameter("location", locationId).getSingleResult();
+		Date earliest = em
+			.createQuery(
+				"SELECT MIN(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
+					+ ClimateObservation.CLIMATE_LOCATION + ".id = :location",
+				Date.class)
+			.setParameter("location", locationId)
+			.getSingleResult();
 		return ClimateCalendar.toLocalDate(earliest);
 	}
 
@@ -117,10 +121,14 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 	 * @return the latest day up to {@code upTo} that the location holds a row for, or null when it holds none
 	 */
 	public LocalDate getLatestDay(Long locationId, LocalDate upTo) {
-		Date latest = em.createQuery(
-			"SELECT MAX(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
-				+ ClimateObservation.CLIMATE_LOCATION + ".id = :location AND o." + ClimateObservation.OBSERVATION_DATE + " <= :upTo",
-			Date.class).setParameter("location", locationId).setParameter("upTo", ClimateCalendar.toDate(upTo)).getSingleResult();
+		Date latest = em
+			.createQuery(
+				"SELECT MAX(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
+					+ ClimateObservation.CLIMATE_LOCATION + ".id = :location AND o." + ClimateObservation.OBSERVATION_DATE + " <= :upTo",
+				Date.class)
+			.setParameter("location", locationId)
+			.setParameter("upTo", ClimateCalendar.toDate(upTo))
+			.getSingleResult();
 		return ClimateCalendar.toLocalDate(latest);
 	}
 
@@ -129,11 +137,13 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 	 *         Automatic top-ups fill new locations back to this day, so all locations share the same reference years.
 	 */
 	public LocalDate getEarliestDistrictDay() {
-		Date earliest = em.createQuery(
-			"SELECT MIN(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
-				+ ClimateObservation.CLIMATE_LOCATION + " IN (SELECT d." + District.CLIMATE_LOCATION + " FROM District d WHERE d." + District.ARCHIVED
-				+ " = false)",
-			Date.class).getSingleResult();
+		Date earliest = em
+			.createQuery(
+				"SELECT MIN(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
+					+ ClimateObservation.CLIMATE_LOCATION + " IN (SELECT d." + District.CLIMATE_LOCATION + " FROM District d WHERE d."
+					+ District.ARCHIVED + " = false)",
+				Date.class)
+			.getSingleResult();
 		return ClimateCalendar.toLocalDate(earliest);
 	}
 
@@ -342,11 +352,7 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 	 * deleted), or both; an environment selects its own location. All places without a region or district selects every
 	 * location, including those nothing links to any more.
 	 */
-	private Predicate buildCriteriaFilter(
-		ClimateObservationCriteria criteria,
-		CriteriaBuilder cb,
-		CriteriaQuery<?> cq,
-		Root<ClimateObservation> root) {
+	private Predicate buildCriteriaFilter(ClimateObservationCriteria criteria, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<ClimateObservation> root) {
 
 		Predicate filter = null;
 		Path<Long> locationId = root.get(ClimateObservation.CLIMATE_LOCATION).get(ClimateLocation.ID);
@@ -370,8 +376,10 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 		}
 
 		if (criteria.getDateFrom() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.greaterThanOrEqualTo(root.get(ClimateObservation.OBSERVATION_DATE), startOfDay(criteria.getDateFrom())));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(root.get(ClimateObservation.OBSERVATION_DATE), startOfDay(criteria.getDateFrom())));
 		}
 		if (criteria.getDateTo() != null) {
 			filter = CriteriaBuilderHelper
@@ -423,9 +431,10 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 	public List<ClimateEarlierValueDto> getEarlierValues(String uuid, int max) {
 
 		@SuppressWarnings("unchecked")
-		List<Object[]> rows = em.createNativeQuery(
-			"SELECT changedate, temperaturemin, temperaturemean, temperaturemax, rainfall, relativehumidity, humiditymeasure, source, sourcedetail"
-				+ " FROM " + ClimateObservation.TABLE_NAME + "_history WHERE uuid = :uuid ORDER BY changedate DESC")
+		List<Object[]> rows = em
+			.createNativeQuery(
+				"SELECT changedate, temperaturemin, temperaturemean, temperaturemax, rainfall, relativehumidity, humiditymeasure, source, sourcedetail"
+					+ " FROM " + ClimateObservation.TABLE_NAME + "_history WHERE uuid = :uuid ORDER BY changedate DESC")
 			.setParameter("uuid", uuid)
 			.setMaxResults(max)
 			.getResultList();
@@ -460,9 +469,9 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 		TypedQuery<Object[]> query = em.createQuery(
 			"SELECT o." + ClimateObservation.CLIMATE_LOCATION + ".id, YEAR(o." + ClimateObservation.OBSERVATION_DATE + "), o."
 				+ ClimateObservation.SOURCE + ", COUNT(o), MIN(o." + ClimateObservation.OBSERVATION_DATE + ") FROM " + ClimateObservation.TABLE_NAME
-				+ " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + ".id IN (SELECT d." + District.CLIMATE_LOCATION
-				+ ".id FROM District d WHERE d." + District.ARCHIVED + " = false" + region + ") GROUP BY o." + ClimateObservation.CLIMATE_LOCATION
-				+ ".id, YEAR(o." + ClimateObservation.OBSERVATION_DATE + "), o." + ClimateObservation.SOURCE,
+				+ " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + ".id IN (SELECT d." + District.CLIMATE_LOCATION + ".id FROM District d WHERE d."
+				+ District.ARCHIVED + " = false" + region + ") GROUP BY o." + ClimateObservation.CLIMATE_LOCATION + ".id, YEAR(o."
+				+ ClimateObservation.OBSERVATION_DATE + "), o." + ClimateObservation.SOURCE,
 			Object[].class);
 		if (regionId != null) {
 			query.setParameter("region", regionId);
@@ -484,10 +493,9 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 			em.createQuery(
 				"SELECT o." + ClimateObservation.CLIMATE_LOCATION + ".id, o." + ClimateObservation.OBSERVATION_DATE + ", o."
 					+ ClimateObservation.TEMPERATURE_MIN + ", o." + ClimateObservation.TEMPERATURE_MAX + ", o." + ClimateObservation.TEMPERATURE_MEAN
-					+ ", o." + ClimateObservation.RAINFALL + ", o." + ClimateObservation.RELATIVE_HUMIDITY + ", o."
-					+ ClimateObservation.HUMIDITY_MEASURE + " FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
-					+ ClimateObservation.CLIMATE_LOCATION + ".id IN :locations AND o." + ClimateObservation.OBSERVATION_DATE
-					+ " BETWEEN :from AND :to",
+					+ ", o." + ClimateObservation.RAINFALL + ", o." + ClimateObservation.RELATIVE_HUMIDITY + ", o." + ClimateObservation.HUMIDITY_MEASURE
+					+ " FROM " + ClimateObservation.TABLE_NAME + " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + ".id IN :locations AND o."
+					+ ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to",
 				Object[].class)
 				.setParameter("locations", batch)
 				.setParameter("from", ClimateCalendar.toDate(from))
@@ -520,9 +528,8 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 		for (List<Long> batch : ListUtils.partition(new ArrayList<>(locationIds), ModelConstants.PARAMETER_LIMIT)) {
 			boolean found = !em
 				.createQuery(
-					"SELECT o.id FROM " + ClimateObservation.TABLE_NAME + " o WHERE o." + ClimateObservation.CLIMATE_LOCATION
-						+ ".id IN :locations AND o." + ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to AND o."
-						+ ClimateObservation.SOURCE + " = :source",
+					"SELECT o.id FROM " + ClimateObservation.TABLE_NAME + " o WHERE o." + ClimateObservation.CLIMATE_LOCATION + ".id IN :locations AND o."
+						+ ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to AND o." + ClimateObservation.SOURCE + " = :source",
 					Long.class)
 				.setParameter("locations", batch)
 				.setParameter("from", ClimateCalendar.toDate(from))
@@ -550,8 +557,7 @@ public class ClimateObservationService extends BaseAdoService<ClimateObservation
 			Object[] row = em
 				.createQuery(
 					"SELECT COUNT(o), MAX(o." + ClimateObservation.CHANGE_DATE + ") FROM " + ClimateObservation.TABLE_NAME + " o WHERE o."
-						+ ClimateObservation.CLIMATE_LOCATION + ".id IN :locations AND o." + ClimateObservation.OBSERVATION_DATE
-						+ " BETWEEN :from AND :to",
+						+ ClimateObservation.CLIMATE_LOCATION + ".id IN :locations AND o." + ClimateObservation.OBSERVATION_DATE + " BETWEEN :from AND :to",
 					Object[].class)
 				.setParameter("locations", batch)
 				.setParameter("from", ClimateCalendar.toDate(from))

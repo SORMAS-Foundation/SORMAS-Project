@@ -55,9 +55,9 @@ public abstract class AbstractClimateDataView extends AbstractConfigurationView 
 	 * one below the other. The row and the main column take the full height left, so a list can fill it and scroll inside
 	 * itself. Half the usual gutter between the two columns, so the lists get the width.
 	 */
-	private static final String COLUMNS_TEMPLATE =
-		"<div class='row' style='height: 100%'>" + "<div class='col-lg-8 col-xs-12' style='height: 100%; padding-right: 8px' location='" + MAIN_LOC
-			+ "'></div>" + "<div class='col-lg-4 col-xs-12' style='padding-left: 7px' location='" + SIDE_LOC + "'></div></div>";
+	private static final String COLUMNS_TEMPLATE = "<div class='row' style='height: 100%'>"
+		+ "<div class='col-lg-8 col-xs-12' style='height: 100%; padding-right: 8px' location='" + MAIN_LOC + "'></div>"
+		+ "<div class='col-lg-4 col-xs-12' style='padding-left: 7px' location='" + SIDE_LOC + "'></div></div>";
 
 	private final CustomLayout filterRow;
 	/** The lists. */

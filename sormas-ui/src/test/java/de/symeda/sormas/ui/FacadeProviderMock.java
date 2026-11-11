@@ -22,13 +22,19 @@ import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
-import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.climate.ClimateCaseFacade;
 import de.symeda.sormas.api.climate.ClimateJobFacade;
 import de.symeda.sormas.api.climate.ClimateObservationFacade;
 import de.symeda.sormas.api.climate.ClimateSeriesFacade;
 import de.symeda.sormas.api.climate.SiteClimateReadingFacade;
+import de.symeda.sormas.backend.climate.ClimateCaseFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateJobFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateObservationFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateSeriesFacadeEjb;
+import de.symeda.sormas.backend.climate.SiteClimateReadingFacadeEjb;
+import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
+import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
+import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
@@ -50,7 +56,6 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
-import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.continent.ContinentFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryFacade;
@@ -66,7 +71,6 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.selfreport.SelfReportImportFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
@@ -80,12 +84,8 @@ import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.hierarchical.HierarchicalImportFacadeEjb.HierarchicalImportFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
-import de.symeda.sormas.backend.climate.ClimateCaseFacadeEjb;
-import de.symeda.sormas.backend.climate.ClimateJobFacadeEjb;
-import de.symeda.sormas.backend.climate.ClimateObservationFacadeEjb;
-import de.symeda.sormas.backend.climate.ClimateSeriesFacadeEjb;
-import de.symeda.sormas.backend.climate.SiteClimateReadingFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
@@ -109,7 +109,6 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.Hospita
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb.ExportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
-import de.symeda.sormas.backend.importexport.hierarchical.HierarchicalImportFacadeEjb.HierarchicalImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
@@ -125,7 +124,6 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.selfreport.SelfReportImportFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.travelentryimport.TravelEntryImportFacadeEjb;
@@ -269,8 +267,6 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(ClimateCaseFacadeEjb.ClimateCaseFacadeEjbLocal.class);
 		} else if (SiteClimateReadingFacade.class == clazz) {
 			return (P) beanTest.getBean(SiteClimateReadingFacadeEjb.SiteClimateReadingFacadeEjbLocal.class);
-		} else if (SystemConfigurationValueFacade.class == clazz) {
-			return (P) beanTest.getBean(SystemConfigurationValueEjb.class);
 		}
 
 		return null;

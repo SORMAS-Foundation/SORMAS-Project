@@ -142,8 +142,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS, Disease.DIPHTHERIA, Disease.RUBELLA));
 	private static final List<Disease> INFECTION_SOURCE_BY_TRANSMISSION_DISEASES =
 		List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS);
-	private static final List<Disease> IMPORTED_CASE_COUNTRY_DISEASES =
-		List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS, Disease.RUBELLA);
+	private static final List<Disease> IMPORTED_CASE_COUNTRY_DISEASES = List.of(
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.GIARDIASIS,
+		Disease.SHIGELLOSIS,
+		Disease.MUMPS,
+		Disease.SALMONELLOSIS,
+		Disease.RUBELLA);
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =

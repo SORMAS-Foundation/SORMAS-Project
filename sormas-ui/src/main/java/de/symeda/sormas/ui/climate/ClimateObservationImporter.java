@@ -60,7 +60,8 @@ public class ClimateObservationImporter extends DataImporter {
 	private final List<ClimateObservationEntryDto> batch = new ArrayList<>();
 	private final List<String[]> batchLines = new ArrayList<>();
 
-	public ClimateObservationImporter(File inputFile, UserDto currentUser, ValueSeparator csvSeparator, boolean overwriteImports) throws IOException {
+	public ClimateObservationImporter(File inputFile, UserDto currentUser, ValueSeparator csvSeparator, boolean overwriteImports)
+		throws IOException {
 		super(inputFile, false, currentUser, csvSeparator);
 		this.overwriteImports = overwriteImports;
 	}
@@ -123,8 +124,7 @@ public class ClimateObservationImporter extends DataImporter {
 			if (districtUuid == null) {
 				String message = entry.getDistrictExternalId() != null
 					? I18nProperties.getValidationError(Validations.climateEntryLocationKey)
-					: I18nProperties
-						.getValidationError(Validations.climateEntryDistrictNotFound, region != null ? region + " / " + district : district);
+					: I18nProperties.getValidationError(Validations.climateEntryDistrictNotFound, region != null ? region + " / " + district : district);
 				writeImportError(values, message);
 				return ImportLineResult.ERROR;
 			}

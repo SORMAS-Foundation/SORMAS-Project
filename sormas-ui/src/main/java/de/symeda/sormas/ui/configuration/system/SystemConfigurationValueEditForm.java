@@ -24,6 +24,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.PasswordField;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -72,14 +73,16 @@ public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemCon
 		setWidth(640, Unit.PIXELS);
 		setValue(value);
 
+
 		if (value.getDescription() != null && !value.getDescription().isEmpty()) {
 			descriptionLabel = new Label(value.getDescription());
 
 			descriptionLabel.setWidth(600, Unit.PIXELS);
 			descriptionLabel.addStyleName(ValoTheme.LABEL_H3);
 
-			SystemConfigurationI18nHelper
-				.processI18nString(value.getDescription(), (key) -> descriptionLabel.setValue(I18nProperties.getString(key)));
+			SystemConfigurationI18nHelper.processI18nString(
+				value.getDescription(),
+				(key) -> descriptionLabel.setValue(I18nProperties.getString(key)));
 
 			getContent().addComponent(descriptionLabel, SystemConfigurationValueDto.DESCRIPTION_PROPERTY_NAME);
 		}

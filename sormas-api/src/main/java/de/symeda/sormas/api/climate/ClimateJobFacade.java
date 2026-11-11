@@ -51,12 +51,7 @@ public interface ClimateJobFacade {
 	/**
 	 * @return the locations, days and calls fetching the period again would make (one call per 10 days per location)
 	 */
-	ClimateCallEstimateDto calculateFetchCalls(
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		boolean includeEnvironments,
-		Date from,
-		Date to);
+	ClimateCallEstimateDto calculateFetchCalls(RegionReferenceDto region, DistrictReferenceDto district, boolean includeEnvironments, Date from, Date to);
 
 	/**
 	 * Queues a fetch of the period ("fetch now"), which runs at once and updates OpenWeather rows whose values changed.

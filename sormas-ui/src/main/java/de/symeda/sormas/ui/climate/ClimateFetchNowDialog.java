@@ -95,12 +95,7 @@ public class ClimateFetchNowDialog extends AbstractClimateCallDialog {
 	@Override
 	protected ClimateCallEstimateDto calculateEstimate() {
 		return FacadeProvider.getClimateJobFacade()
-			.calculateFetchCalls(
-				region.getValue(),
-				district.getValue(),
-				includeEnvironments.getValue(),
-				toDate(from.getValue()),
-				toDate(to.getValue()));
+			.calculateFetchCalls(region.getValue(), district.getValue(), includeEnvironments.getValue(), toDate(from.getValue()), toDate(to.getValue()));
 	}
 
 	@Override
