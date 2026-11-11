@@ -16836,9 +16836,6 @@
             "type" : "string",
             "format" : "date-time"
           },
-          "climateSensitive" : {
-            "type" : "boolean"
-          },
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
