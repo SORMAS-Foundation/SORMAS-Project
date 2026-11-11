@@ -221,6 +221,7 @@ public final class CssStyles {
 	public static final String CLIMATE_DASHBOARD_SIDE = "climate-dashboard-side";
 	public static final String CLIMATE_DASHBOARD_NOTE = "climate-dashboard-note";
 	public static final String CLIMATE_DISEASE_PICKER = "climate-disease-picker";
+	public static final String CLIMATE_DISEASE_CHOSEN = "climate-disease-chosen";
 
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";

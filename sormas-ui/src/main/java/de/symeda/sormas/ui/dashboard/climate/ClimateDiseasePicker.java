@@ -29,7 +29,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ItemCaptionGenerator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -152,7 +151,7 @@ public class ClimateDiseasePicker extends CustomField<Set<Disease>> {
 	 */
 	List<String> getChosenCaptions() {
 		List<String> lines = new ArrayList<>();
-		chosenLayout.forEach(row -> lines.add(((Label) ((HorizontalLayout) row).getComponent(0)).getValue()));
+		chosenLayout.forEach(row -> lines.add(((Label) ((CssLayout) row).getComponent(0)).getValue()));
 		return lines;
 	}
 
@@ -165,16 +164,14 @@ public class ClimateDiseasePicker extends CustomField<Set<Disease>> {
 		chosenLayout.removeAllComponents();
 		for (Disease disease : chosen) {
 			Label name = new Label(captions.apply(disease));
-			name.setWidthFull();
+			name.setWidthUndefined();
 			Button remove = new Button(VaadinIcons.CLOSE_SMALL, e -> deselect(disease));
 			remove.addStyleNames(ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_SMALL);
 			remove.setDescription(I18nProperties.getCaption(Captions.climateDashboardRemoveDisease));
-			HorizontalLayout row = new HorizontalLayout(name, remove);
-			row.setMargin(false);
-			row.setSpacing(false);
+			// the remove button right after the name, so it is next to the disease it removes (decision 149)
+			CssLayout row = new CssLayout(name, remove);
 			row.setWidthFull();
-			row.setExpandRatio(name, 1);
-			row.setComponentAlignment(name, com.vaadin.ui.Alignment.MIDDLE_LEFT);
+			row.addStyleName(CssStyles.CLIMATE_DISEASE_CHOSEN);
 			chosenLayout.addComponent(row);
 		}
 		chosenLayout.setVisible(!chosen.isEmpty());
