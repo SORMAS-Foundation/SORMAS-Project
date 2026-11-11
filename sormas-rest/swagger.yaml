@@ -1192,10 +1192,10 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8: { }
+            application/json; charset=UTF-8: {}
           description: default response
       tags:
-        - Climate Observation Controller
+      - Climate Observation Controller
   /clinicalvisits/all/{since}:
     get:
       operationId: getAllVisits
@@ -12081,9 +12081,9 @@ components:
         humidityMeasure:
           type: string
           enum:
-            - DAILY_MEAN
-            - NOON_READING
-            - OTHER
+          - DAILY_MEAN
+          - NOON_READING
+          - OTHER
         rainfall:
           type: number
           format: double
@@ -19603,9 +19603,9 @@ components:
         casePregnant:
           type: string
           enum:
-            - "YES"
-            - "NO"
-            - UNKNOWN
+          - "YES"
+          - "NO"
+          - UNKNOWN
         caseReportDate:
           type: string
           format: date-time
@@ -19614,10 +19614,10 @@ components:
         caseTrimester:
           type: string
           enum:
-            - FIRST
-            - SECOND
-            - THIRD
-            - UNKNOWN
+          - FIRST
+          - SECOND
+          - THIRD
+          - UNKNOWN
         causeOfDeath:
           type: string
           enum:
@@ -23944,9 +23944,9 @@ components:
         avidityInterpretation:
           type: string
           enum:
-            - LOW
-            - INTERMEDIATE
-            - HIGH
+          - LOW
+          - INTERMEDIATE
+          - HIGH
         avidityPerformed:
           type: boolean
         biotype:
@@ -31701,7 +31701,7 @@ components:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
       required:
-        - uuid
+      - uuid
     UserCriteria:
       type: object
       properties:
