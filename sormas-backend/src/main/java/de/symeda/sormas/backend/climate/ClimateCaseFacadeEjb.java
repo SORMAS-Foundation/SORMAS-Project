@@ -17,11 +17,13 @@ package de.symeda.sormas.backend.climate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,6 +49,7 @@ import org.apache.commons.collections4.ListUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.climate.ClimateCaseCountSource;
 import de.symeda.sormas.api.climate.ClimateCaseCriteria;
 import de.symeda.sormas.api.climate.ClimateCaseFacade;
 import de.symeda.sormas.api.climate.ClimateCaseSeriesDto;
@@ -87,11 +90,15 @@ import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.report.AggregateReport;
+import de.symeda.sormas.backend.report.AggregateReportService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -116,6 +123,8 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 	private DistrictService districtService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private AggregateReportService aggregateReportService;
 	@EJB
 	private CurrentUserService currentUserService;
 	@EJB
@@ -175,14 +184,35 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 
 		List<ClimateCaseSeriesDto> result = new ArrayList<>();
 		for (Disease disease : criteria.getDiseases()) {
-			Map<Long, Map<EpiWeek, int[]>> counts =
-				countCases(disease, districts, criteria.getClassification().getClassifications(), loadFrom, loadTo);
+			// a disease with case surveillance is counted from its cases, even with aggregate reporting on; otherwise from the
+			// lab-confirmed counts of its aggregate reports, where a week without a report has no value (decision 147)
+			ClimateCaseCountSource source = diseaseConfigurationFacade.isCaseSurveillanceEnabled(disease)
+				? ClimateCaseCountSource.CASES
+				: ClimateCaseCountSource.AGGREGATE_LAB_CONFIRMED;
+			Map<Long, Map<EpiWeek, int[]>> counts;
+			Map<EpiWeek, int[]> regionCounts;
+			if (source == ClimateCaseCountSource.CASES) {
+				counts = countCases(disease, districts, criteria.getClassification().getClassifications(), loadFrom, loadTo);
+				Map<EpiWeek, int[]> sums = new HashMap<>();
+				for (Map<EpiWeek, int[]> byWeek : counts.values()) {
+					byWeek.forEach((week, count) -> {
+						int[] sum = sums.computeIfAbsent(week, w -> new int[2]);
+						sum[0] += count[0];
+						sum[1] += count[1];
+					});
+				}
+				regionCounts = sums;
+			} else {
+				AggregateCounts aggregate = countAggregateReports(disease, region, districts, loadFrom, loadTo);
+				counts = aggregate.byDistrict;
+				regionCounts = aggregate.region;
+			}
 			Set<Integer> excludedYears = diseaseConfigurationFacade.getUsualRangeExcludedYears(disease);
 			List<Integer> yearsWithCases = referenceYears.stream()
 				.filter(year -> !excludedYears.contains(year))
-				.filter(year -> hasCases(disease, year))
+				.filter(year -> source == ClimateCaseCountSource.CASES ? hasCases(disease, year) : hasAggregateReports(disease, year))
 				.collect(Collectors.toList());
-			DiseaseYears years = new DiseaseYears(disease, excludedYears, yearsWithCases);
+			DiseaseYears years = new DiseaseYears(disease, source, excludedYears, yearsWithCases);
 
 			if (criteria.getDistrict() != null) {
 				District district = districts.get(0);
@@ -198,12 +228,6 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 				continue;
 			}
 
-			Map<EpiWeek, int[]> regionCounts = new HashMap<>();
-			counts.values().forEach(byWeek -> byWeek.forEach((week, count) -> {
-				int[] sum = regionCounts.computeIfAbsent(week, w -> new int[2]);
-				sum[0] += count[0];
-				sum[1] += count[1];
-			}));
 			ClimateCaseSeriesDto regionSeries = series(
 				years,
 				RegionFacadeEjb.toReferenceDto(region),
@@ -285,7 +309,11 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 			ClimateDashboardExportDto row =
 				new ClimateDashboardExportDto(climate.getRegion(), climate.getDistrict(), week, climate.isOpenWeatherData(), population);
 			for (ClimateCaseSeriesDto series : cases) {
-				series.getWeeks().stream().filter(w -> w.getWeek().equals(week.getWeek())).findFirst().ifPresent(w -> row.putCases(series.getDisease(), w));
+				series.getWeeks()
+					.stream()
+					.filter(w -> w.getWeek().equals(week.getWeek()))
+					.findFirst()
+					.ifPresent(w -> row.putCases(series.getDisease(), series.getCountSource(), w));
 			}
 			rows.add(row);
 		}
@@ -491,8 +519,10 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 		for (EpiWeek week : settings.shownWeeks) {
 			int number = week.getWeek();
 			if (!ranges.containsKey(number) && !missing.containsKey(number)) {
-				usualRange(number, counts, years.yearsWithCases, settings, ranges, missing);
+				usualRange(number, counts, years, settings, ranges, missing);
 			}
+			// cases: a week without cases is 0; aggregate reports: a week without a report has no value (decision 147)
+			boolean reported = years.source == ClimateCaseCountSource.CASES || counts.containsKey(week);
 			int[] count = counts.getOrDefault(week, new int[2]);
 			ClimateRangeDto range = ranges.get(number);
 			weeks.add(
@@ -500,14 +530,16 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 					week,
 					count[0],
 					count[1],
-					perCase != null ? count[0] * perCase : null,
+					reported && perCase != null ? count[0] * perCase : null,
 					range,
 					range != null && perCase != null ? range.scaled(perCase) : null,
-					missing.get(number)));
+					missing.get(number),
+					reported));
 		}
 
 		ClimateCaseSeriesDto series = new ClimateCaseSeriesDto(
 			years.disease,
+			years.source,
 			region,
 			district,
 			population,
@@ -530,26 +562,38 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 	/**
 	 * The usual range for a week number (decision 75): weekly counts of the week and its neighbours in each reference year
 	 * with cases of the disease (a week without cases counts as 0), when there are enough such years and their median is
-	 * at least the minimum weekly count.
+	 * at least the minimum weekly count. For aggregate reports a week without a report is left out, and a year counts only
+	 * when its window has at least one report (decision 147).
 	 */
 	private static void usualRange(
 		int week,
 		Map<EpiWeek, int[]> counts,
-		List<Integer> yearsWithCases,
+		DiseaseYears years,
 		SeriesSettings settings,
 		Map<Integer, ClimateRangeDto> ranges,
 		Map<Integer, ClimateUsualRangeMissing> missing) {
 
-		if (yearsWithCases.size() < settings.minYears) {
+		if (years.yearsWithCases.size() < settings.minYears) {
 			missing.put(week, ClimateUsualRangeMissing.NOT_ENOUGH_HISTORY);
 			return;
 		}
-		ClimateStatistics.PooledValues pooled =
-			ClimateStatistics.poolWeeks(week, yearsWithCases, epiWeek -> (double) counts.getOrDefault(epiWeek, new int[2])[0]);
-		if (ClimateStatistics.percentile(pooled.getValues(), 0.5) < settings.minWeeklyCases) {
+		boolean cases = years.source == ClimateCaseCountSource.CASES;
+		ClimateStatistics.PooledValues pooled = ClimateStatistics.poolWeeks(
+			week,
+			years.yearsWithCases,
+			epiWeek -> {
+				if (counts.containsKey(epiWeek)) {
+					return Double.valueOf(counts.get(epiWeek)[0]);
+				}
+				return cases ? Double.valueOf(0) : null;
+			});
+		ClimateRangeDto range = pooled.toRange(settings.minYears);
+		if (range == null) {
+			missing.put(week, ClimateUsualRangeMissing.NOT_ENOUGH_HISTORY);
+		} else if (ClimateStatistics.percentile(pooled.getValues(), 0.5) < settings.minWeeklyCases) {
 			missing.put(week, ClimateUsualRangeMissing.TOO_FEW_CASES);
 		} else {
-			ranges.put(week, pooled.toRange(settings.minYears));
+			ranges.put(week, range);
 		}
 	}
 
@@ -624,6 +668,135 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 	}
 
 	/**
+	 * Counts the lab-confirmed aggregate reports of a disease without case surveillance (decision 147), within the user's
+	 * jurisdiction, by district and epi week, and for the region. They are added up as SORMAS's aggregate report screen
+	 * does: of several reports for the same place, week and age group the latest counts; a report for a whole district
+	 * replaces its facilities' and points of entry's for that week and age group, and a report for the whole region its
+	 * districts'; reports of the same level are added. A region-level report counts only for the region. A week without
+	 * any report is left out of the maps: it has no value, not 0.
+	 */
+	private AggregateCounts countAggregateReports(Disease disease, Region region, Collection<District> districts, LocalDate from, LocalDate to) {
+
+		AggregateCounts result = new AggregateCounts();
+		if (districts.isEmpty()) {
+			return result;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<AggregateReport> report = cq.from(AggregateReport.class);
+		Join<AggregateReport, District> district = report.join(AggregateReport.DISTRICT, JoinType.LEFT);
+		Join<AggregateReport, Facility> facility = report.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT);
+		Join<AggregateReport, PointOfEntry> pointOfEntry = report.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
+		// epi years can start in the calendar year before, so one year more on each side; the weeks are checked below
+		Predicate filter = cb.and(
+			cb.equal(report.get(AggregateReport.DISEASE), disease),
+			cb.equal(report.get(AggregateReport.REGION), region),
+			cb.between(report.get(AggregateReport.YEAR), from.getYear() - 1, to.getYear() + 1));
+		filter = CriteriaBuilderHelper.and(cb, filter, aggregateReportService.createUserFilter(cb, cq, report));
+		cq.multiselect(
+			district.get(District.ID),
+			facility.get(Facility.ID),
+			pointOfEntry.get(PointOfEntry.ID),
+			report.get(AggregateReport.YEAR),
+			report.get(AggregateReport.EPI_WEEK),
+			report.get(AggregateReport.AGE_GROUP),
+			report.get(AggregateReport.LAB_CONFIRMATIONS),
+			report.get(AggregateReport.CHANGE_DATE));
+		cq.where(filter);
+
+		// the latest report per place, week and age group
+		Map<List<Object>, Object[]> latest = new HashMap<>();
+		for (Object[] row : em.createQuery(cq).getResultList()) {
+			if (row[3] == null || row[4] == null) {
+				continue;
+			}
+			EpiWeek week = new EpiWeek((Integer) row[3], (Integer) row[4]);
+			LocalDate firstDay = ClimateStatistics.firstDay(week);
+			if (firstDay.isBefore(from) || firstDay.isAfter(to)) {
+				continue;
+			}
+			List<Object> key = Arrays.asList(row[0], row[1], row[2], week, row[5]);
+			Object[] known = latest.get(key);
+			if (known == null || ((Date) row[7]).after((Date) known[7])) {
+				latest.put(key, row);
+			}
+		}
+
+		// per district, week and age group: the district's own report, else the sum of its facilities' and points of entry's
+		Map<Long, Map<EpiWeek, Map<String, LevelCount>>> byDistrict = new HashMap<>();
+		Map<EpiWeek, Map<String, Integer>> regionLevel = new HashMap<>();
+		latest.forEach((key, row) -> {
+			EpiWeek week = (EpiWeek) key.get(3);
+			String ageGroup = (String) row[5];
+			int labConfirmed = row[6] != null ? (Integer) row[6] : 0;
+			if (row[0] == null) {
+				regionLevel.computeIfAbsent(week, w -> new HashMap<>()).merge(ageGroup, labConfirmed, Integer::sum);
+				return;
+			}
+			LevelCount count = byDistrict.computeIfAbsent((Long) row[0], id -> new HashMap<>())
+				.computeIfAbsent(week, w -> new HashMap<>())
+				.computeIfAbsent(ageGroup, g -> new LevelCount());
+			if (row[1] == null && row[2] == null) {
+				count.own = (count.own != null ? count.own : 0) + labConfirmed;
+			} else {
+				count.lower += labConfirmed;
+			}
+		});
+
+		Set<Long> districtIds = districts.stream().map(District::getId).collect(Collectors.toSet());
+		Map<EpiWeek, Map<String, Integer>> districtsByAgeGroup = new HashMap<>();
+		byDistrict.forEach((districtId, weeks) -> {
+			if (!districtIds.contains(districtId)) {
+				return;
+			}
+			weeks.forEach((week, ageGroups) -> {
+				int sum = 0;
+				for (Map.Entry<String, LevelCount> ageGroup : ageGroups.entrySet()) {
+					int value = ageGroup.getValue().value();
+					sum += value;
+					districtsByAgeGroup.computeIfAbsent(week, w -> new HashMap<>()).merge(ageGroup.getKey(), value, Integer::sum);
+				}
+				result.byDistrict.computeIfAbsent(districtId, id -> new HashMap<>()).put(week, new int[] {
+					sum,
+					0 });
+			});
+		});
+
+		// the region: its own report per age group, else the sum of its districts'
+		Set<EpiWeek> weeks = new HashSet<>(regionLevel.keySet());
+		weeks.addAll(districtsByAgeGroup.keySet());
+		for (EpiWeek week : weeks) {
+			Map<String, Integer> own = regionLevel.getOrDefault(week, Collections.emptyMap());
+			Map<String, Integer> fromDistricts = districtsByAgeGroup.getOrDefault(week, Collections.emptyMap());
+			Set<String> ageGroups = new HashSet<>(own.keySet());
+			ageGroups.addAll(fromDistricts.keySet());
+			int sum = 0;
+			for (String ageGroup : ageGroups) {
+				sum += own.containsKey(ageGroup) ? own.get(ageGroup) : fromDistricts.get(ageGroup);
+			}
+			result.region.put(week, new int[] {
+				sum,
+				0 });
+		}
+		return result;
+	}
+
+	/**
+	 * @return true when the deployment holds at least one aggregate report of the disease in the epi year, anywhere: the
+	 *         year counts for the usual range, as {@link #hasCases(Disease, int)} for cases
+	 */
+	private boolean hasAggregateReports(Disease disease, int year) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<AggregateReport> report = cq.from(AggregateReport.class);
+		cq.select(report.get(AggregateReport.ID));
+		cq.where(cb.equal(report.get(AggregateReport.DISEASE), disease), cb.equal(report.get(AggregateReport.YEAR), year));
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+	}
+
+	/**
 	 * @return the district's population projected with its growth rate, or null when it has no population data
 	 */
 	private Integer getProjectedPopulation(District district) {
@@ -662,14 +835,40 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 		}
 	}
 
+	/**
+	 * Aggregate counts by district and week, and the region's; index 0 of each array is the lab-confirmed count, index 1 is
+	 * always 0 (aggregate reports have no report-date fallback).
+	 */
+	private static final class AggregateCounts {
+
+		private final Map<Long, Map<EpiWeek, int[]>> byDistrict = new HashMap<>();
+		private final Map<EpiWeek, int[]> region = new HashMap<>();
+	}
+
+	/**
+	 * One district's aggregate count for a week and age group: its own report, if any, else the sum of its facilities' and
+	 * points of entry's.
+	 */
+	private static final class LevelCount {
+
+		private Integer own;
+		private int lower;
+
+		private int value() {
+			return own != null ? own : lower;
+		}
+	}
+
 	private static final class DiseaseYears {
 
 		private final Disease disease;
+		private final ClimateCaseCountSource source;
 		private final Set<Integer> excludedYears;
 		private final List<Integer> yearsWithCases;
 
-		private DiseaseYears(Disease disease, Set<Integer> excludedYears, List<Integer> yearsWithCases) {
+		private DiseaseYears(Disease disease, ClimateCaseCountSource source, Set<Integer> excludedYears, List<Integer> yearsWithCases) {
 			this.disease = disease;
+			this.source = source;
 			this.excludedYears = excludedYears;
 			this.yearsWithCases = yearsWithCases;
 		}

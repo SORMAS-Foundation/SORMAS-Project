@@ -72,12 +72,10 @@ public interface DiseaseConfigurationFacade {
 	boolean usesExtendedClassificationMulti(Disease disease);
 
 	/**
-	 * @return active diseases flagged as climate-sensitive (or in the default list when the flag is empty), shown on the
-	 *         Climate dashboard
+	 * @return true when case surveillance is switched on for the disease; the Climate dashboard then counts its cases, and
+	 *         otherwise its lab-confirmed aggregate reports (decision 147)
 	 */
-	List<Disease> getAllClimateSensitiveDiseases();
-
-	boolean isClimateSensitive(Disease disease);
+	boolean isCaseSurveillanceEnabled(Disease disease);
 
 	/**
 	 * @return years left out of the case usual range for this disease; empty when none

@@ -110,6 +110,7 @@ public interface Strings {
 	String climateDashboardAboveUsual = "climateDashboardAboveUsual";
 	String climateDashboardChooseDisease = "climateDashboardChooseDisease";
 	String climateDashboardChooseRegion = "climateDashboardChooseRegion";
+	String climateDashboardClassificationNote = "climateDashboardClassificationNote";
 	String climateDashboardCountsNoPopulation = "climateDashboardCountsNoPopulation";
 	String climateDashboardDates = "climateDashboardDates";
 	String climateDashboardDetailCount = "climateDashboardDetailCount";
@@ -117,10 +118,14 @@ public interface Strings {
 	String climateDashboardDetailDays = "climateDashboardDetailDays";
 	String climateDashboardDetailIncidence = "climateDashboardDetailIncidence";
 	String climateDashboardDetailIncidenceOne = "climateDashboardDetailIncidenceOne";
+	String climateDashboardDetailLabConfirmed = "climateDashboardDetailLabConfirmed";
+	String climateDashboardDetailLabConfirmedIncidence = "climateDashboardDetailLabConfirmedIncidence";
 	String climateDashboardDetailLastYear = "climateDashboardDetailLastYear";
 	String climateDashboardDetailNoDistricts = "climateDashboardDetailNoDistricts";
+	String climateDashboardDetailNoReport = "climateDashboardDetailNoReport";
 	String climateDashboardDetailReportDate = "climateDashboardDetailReportDate";
 	String climateDashboardDetailUsual = "climateDashboardDetailUsual";
+	String climateDashboardDiseaseAggregate = "climateDashboardDiseaseAggregate";
 	String climateDashboardDiseaseCap = "climateDashboardDiseaseCap";
 	String climateDashboardHeatmapTitle = "climateDashboardHeatmapTitle";
 	String climateDashboardHint = "climateDashboardHint";
@@ -133,6 +138,8 @@ public interface Strings {
 	String climateDashboardNoPoint = "climateDashboardNoPoint";
 	String climateDashboardPanelCount = "climateDashboardPanelCount";
 	String climateDashboardPanelIncidence = "climateDashboardPanelIncidence";
+	String climateDashboardPanelLabConfirmed = "climateDashboardPanelLabConfirmed";
+	String climateDashboardPanelLabConfirmedIncidence = "climateDashboardPanelLabConfirmedIncidence";
 	String climateDashboardPanelShifted = "climateDashboardPanelShifted";
 	String climateDashboardPanelShiftedOne = "climateDashboardPanelShiftedOne";
 	String climateDashboardPeriodOrder = "climateDashboardPeriodOrder";
@@ -163,6 +170,7 @@ public interface Strings {
 	String climateExportAboveUsual = "climateExportAboveUsual";
 	String climateExportCases = "climateExportCases";
 	String climateExportIncidence = "climateExportIncidence";
+	String climateExportLabConfirmed = "climateExportLabConfirmed";
 	String climateExportReportDateCases = "climateExportReportDateCases";
 	String climateExportUsualP10 = "climateExportUsualP10";
 	String climateExportUsualP90 = "climateExportUsualP90";

@@ -35,6 +35,7 @@ public class ClimateCaseWeekDto implements Serializable {
 	private final ClimateRangeDto usualRange;
 	private final ClimateRangeDto usualRangeIncidence;
 	private final ClimateUsualRangeMissing usualRangeMissing;
+	private final boolean reported;
 
 	public ClimateCaseWeekDto(
 		EpiWeek week,
@@ -43,7 +44,8 @@ public class ClimateCaseWeekDto implements Serializable {
 		Double incidence,
 		ClimateRangeDto usualRange,
 		ClimateRangeDto usualRangeIncidence,
-		ClimateUsualRangeMissing usualRangeMissing) {
+		ClimateUsualRangeMissing usualRangeMissing,
+		boolean reported) {
 
 		this.week = week;
 		this.count = count;
@@ -52,6 +54,7 @@ public class ClimateCaseWeekDto implements Serializable {
 		this.usualRange = usualRange;
 		this.usualRangeIncidence = usualRangeIncidence;
 		this.usualRangeMissing = usualRangeMissing;
+		this.reported = reported;
 	}
 
 	public EpiWeek getWeek() {
@@ -59,7 +62,9 @@ public class ClimateCaseWeekDto implements Serializable {
 	}
 
 	/**
-	 * @return the cases whose onset date, or report date when onset is missing, falls in the week; 0 when there were none
+	 * @return the cases whose onset date, or report date when onset is missing, falls in the week, 0 when there were none;
+	 *         for a disease counted from aggregate reports the week's lab-confirmed count, 0 when it has no report (see
+	 *         {@link #isReported()})
 	 */
 	public int getCount() {
 		return count;
@@ -98,9 +103,17 @@ public class ClimateCaseWeekDto implements Serializable {
 	}
 
 	/**
+	 * @return false for a week of aggregate reports without any report: it has no value and is drawn as a gap, not as 0
+	 *         (decision 147); always true for cases
+	 */
+	public boolean isReported() {
+		return reported;
+	}
+
+	/**
 	 * @return true when the week is above its usual range; the same for counts and incidence
 	 */
 	public boolean isAboveUsualRange() {
-		return usualRange != null && usualRange.isAbove(count);
+		return reported && usualRange != null && usualRange.isAbove(count);
 	}
 }

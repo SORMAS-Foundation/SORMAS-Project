@@ -1005,6 +1005,7 @@ public interface Captions {
 	String ClimateDailyExport_temperatureP50 = "ClimateDailyExport.temperatureP50";
 	String ClimateDailyExport_temperatureP90 = "ClimateDailyExport.temperatureP90";
 	String climateDailyValues = "climateDailyValues";
+	String climateDashboardAddDisease = "climateDashboardAddDisease";
 	String climateDashboardChart = "climateDashboardChart";
 	String climateDashboardClassification = "climateDashboardClassification";
 	String climateDashboardClimate = "climateDashboardClimate";
@@ -1042,6 +1043,7 @@ public interface Captions {
 	String climateDashboardMeasureCount = "climateDashboardMeasureCount";
 	String climateDashboardMeasureIncidence = "climateDashboardMeasureIncidence";
 	String climateDashboardPlacePeriodDiseases = "climateDashboardPlacePeriodDiseases";
+	String climateDashboardRemoveDisease = "climateDashboardRemoveDisease";
 	String climateDashboardShade = "climateDashboardShade";
 	String climateDashboardShadeNone = "climateDashboardShadeNone";
 	String climateDashboardTo = "climateDashboardTo";
@@ -1674,7 +1676,6 @@ public interface Captions {
 	String DiseaseConfiguration_automaticSampleAssignmentThreshold = "DiseaseConfiguration.automaticSampleAssignmentThreshold";
 	String DiseaseConfiguration_caseFollowUpDuration = "DiseaseConfiguration.caseFollowUpDuration";
 	String DiseaseConfiguration_caseSurveillanceEnabled = "DiseaseConfiguration.caseSurveillanceEnabled";
-	String DiseaseConfiguration_climateSensitive = "DiseaseConfiguration.climateSensitive";
 	String DiseaseConfiguration_disease = "DiseaseConfiguration.disease";
 	String DiseaseConfiguration_eventParticipantFollowUpDuration = "DiseaseConfiguration.eventParticipantFollowUpDuration";
 	String DiseaseConfiguration_exposureCategories = "DiseaseConfiguration.exposureCategories";

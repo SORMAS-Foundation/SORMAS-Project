@@ -33,6 +33,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.climate.ClimateCaseCountSource;
 import de.symeda.sormas.api.climate.ClimateCaseSeriesDto;
 import de.symeda.sormas.api.climate.ClimateCaseWeekDto;
 import de.symeda.sormas.api.climate.ClimateObservationExportDto;
@@ -159,7 +160,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 		dates.setValue(String.format(I18nProperties.getString(Strings.climateDashboardDates), weekLabel(selection.getFrom()), weekLabel(selection.getTo())));
 		status.setValue(status(climate));
-		// the layout draws only with at least one disease ticked (decision 137), so there is always a panel
+		// the layout draws only with at least one disease chosen (decision 137), so there is always a panel
 		credit.setVisible(!variables.isEmpty() && climate.isOpenWeatherData());
 		lastScript = script(selection, climate, cases, variables, shading, measure, lag, heatmap);
 		chart.setHeight(chartHeight, Unit.PIXELS);
@@ -424,20 +425,23 @@ public class ClimateDashboardChart extends VerticalLayout {
 				.append(",color:'")
 				.append(color)
 				.append("',lineWidth:2,zIndex:1,data:[");
+			List<Double> values = new ArrayList<>();
 			for (int i = 0; i < count; i++) {
 				ClimateWeekValueDto week = value.apply(i);
-				js.append(number(week != null ? week.getValue() : null)).append(',');
+				values.add(week != null ? week.getValue() : null);
 			}
+			// a week between two weeks without data gets a dot on a line, or it would not be seen (decision 148)
+			js.append(variable == ClimateVariable.RAINFALL ? columnData(values) : lineData(values));
 			js.append("]},");
 
 			// before normal ranges exist: the same week last year as a dashed grey line (decision 124)
 			boolean anyLastYear = false;
-			StringBuilder lastYear = new StringBuilder();
+			List<Double> lastYear = new ArrayList<>();
 			for (int i = 0; i < count; i++) {
 				ClimateWeekValueDto week = value.apply(i);
 				Double previous = week != null && week.getNormal() == null ? week.getLastYear() : null;
 				anyLastYear |= previous != null;
-				lastYear.append(number(previous)).append(',');
+				lastYear.add(previous);
 			}
 			if (anyLastYear) {
 				js.append("{type:'line',yAxis:").append(axis).append(",color:'#888888',dashStyle:'Dash',lineWidth:1.5,zIndex:2,");
@@ -447,7 +451,7 @@ public class ClimateDashboardChart extends VerticalLayout {
 				} else {
 					js.append("linkedTo:'lastYear',");
 				}
-				js.append("data:[").append(lastYear).append("]},");
+				js.append("data:[").append(lineData(lastYear)).append("]},");
 			}
 			axis++;
 		}
@@ -462,6 +466,26 @@ public class ClimateDashboardChart extends VerticalLayout {
 		}
 		js.append("]};");
 		return js.toString();
+	}
+
+	/**
+	 * @return the values of a line, a lone value (no value on either side) with a dot, since the lines have no markers
+	 *         (decisions 143, 148)
+	 */
+	static String lineData(List<Double> values) {
+		StringBuilder data = new StringBuilder();
+		for (int i = 0; i < values.size(); i++) {
+			if (ClimateChartScript.isLone(values, i)) {
+				data.append("{y:").append(number(values.get(i))).append(',').append(ClimateChartScript.LONE_MARKER).append("},");
+			} else {
+				data.append(number(values.get(i))).append(',');
+			}
+		}
+		return data.toString();
+	}
+
+	private static String columnData(List<Double> values) {
+		return values.stream().map(v -> number(v) + ",").collect(Collectors.joining());
 	}
 
 	/**
@@ -547,7 +571,8 @@ public class ClimateDashboardChart extends VerticalLayout {
 			for (int i = 0; i < count; i++) {
 				ClimateCaseWeekDto week = series.getWeeks().get(i);
 				Double value = caseValue(week, measure);
-				double share = peak > 0 && value != null ? value / peak : 0;
+				// a week without an aggregate report has no value: an empty cell, not a pale one (decision 147)
+				Double share = value == null ? null : peak > 0 ? value / peak : 0;
 				ClimateWeekDto shifted = shading != null ? shiftedWeek(climate, i, lag) : null;
 				js.append("{x:").append(i).append(",y:").append(d).append(",value:").append(number(share)).append("},");
 				if (shifted != null && shifted.get(shading).isUnusual()) {
@@ -614,10 +639,12 @@ public class ClimateDashboardChart extends VerticalLayout {
 	 * @return the disease panel's name as HTML, with the reason when it has no usual range (decision 123)
 	 */
 	static String diseaseTitle(ClimateCaseSeriesDto series, Measure measure) {
-		String title = "<b>" + html(
-			String.format(
-				I18nProperties.getString(measure == Measure.INCIDENCE ? Strings.climateDashboardPanelIncidence : Strings.climateDashboardPanelCount),
-				series.getDisease().toString())) + "</b>";
+		// a disease without case surveillance shows its lab-confirmed aggregate reports, and says so (decision 147)
+		boolean aggregate = series.getCountSource() == ClimateCaseCountSource.AGGREGATE_LAB_CONFIRMED;
+		String format = measure == Measure.INCIDENCE
+			? aggregate ? Strings.climateDashboardPanelLabConfirmedIncidence : Strings.climateDashboardPanelIncidence
+			: aggregate ? Strings.climateDashboardPanelLabConfirmed : Strings.climateDashboardPanelCount;
+		String title = "<b>" + html(String.format(I18nProperties.getString(format), series.getDisease().toString())) + "</b>";
 		if (series.countWeeksWithUsualRange() == 0) {
 			Set<ClimateUsualRangeMissing> reasons = series.getWeeks()
 				.stream()
@@ -703,7 +730,13 @@ public class ClimateDashboardChart extends VerticalLayout {
 		}
 	}
 
+	/**
+	 * @return the week's count or incidence, or null for a week without an aggregate report: a gap, not 0 (decision 147)
+	 */
 	static Double caseValue(ClimateCaseWeekDto week, Measure measure) {
+		if (!week.isReported()) {
+			return null;
+		}
 		return measure == Measure.INCIDENCE ? week.getIncidence() : Double.valueOf(week.getCount());
 	}
 
@@ -772,18 +805,34 @@ public class ClimateDashboardChart extends VerticalLayout {
 
 	static String caseDetail(ClimateCaseSeriesDto series, ClimateCaseWeekDto week, Measure measure) {
 
-		String detail = measure == Measure.INCIDENCE && week.getIncidence() != null
-			? String.format(
-				I18nProperties.getString(week.getCount() == 1 ? Strings.climateDashboardDetailIncidenceOne : Strings.climateDashboardDetailIncidence),
-				series.getDisease().toString(),
-				ClimateCaptions.oneDecimal(week.getIncidence()),
-				week.getCount())
-			: String.format(
-				I18nProperties.getString(week.getCount() == 1 ? Strings.climateDashboardDetailCountOne : Strings.climateDashboardDetailCount),
-				series.getDisease().toString(),
-				week.getCount());
-		if (week.getReportDateCount() > 0) {
-			detail += " " + String.format(I18nProperties.getString(Strings.climateDashboardDetailReportDate), week.getReportDateCount());
+		String disease = series.getDisease().toString();
+		String detail;
+		if (series.getCountSource() == ClimateCaseCountSource.AGGREGATE_LAB_CONFIRMED) {
+			// lab-confirmed aggregate reports, or that the week has none (decision 147)
+			if (!week.isReported()) {
+				return html(String.format(I18nProperties.getString(Strings.climateDashboardDetailNoReport), disease));
+			}
+			detail = measure == Measure.INCIDENCE && week.getIncidence() != null
+				? String.format(
+					I18nProperties.getString(Strings.climateDashboardDetailLabConfirmedIncidence),
+					disease,
+					ClimateCaptions.oneDecimal(week.getIncidence()),
+					week.getCount())
+				: String.format(I18nProperties.getString(Strings.climateDashboardDetailLabConfirmed), disease, week.getCount());
+		} else {
+			detail = measure == Measure.INCIDENCE && week.getIncidence() != null
+				? String.format(
+					I18nProperties.getString(week.getCount() == 1 ? Strings.climateDashboardDetailIncidenceOne : Strings.climateDashboardDetailIncidence),
+					disease,
+					ClimateCaptions.oneDecimal(week.getIncidence()),
+					week.getCount())
+				: String.format(
+					I18nProperties.getString(week.getCount() == 1 ? Strings.climateDashboardDetailCountOne : Strings.climateDashboardDetailCount),
+					disease,
+					week.getCount());
+			if (week.getReportDateCount() > 0) {
+				detail += " " + String.format(I18nProperties.getString(Strings.climateDashboardDetailReportDate), week.getReportDateCount());
+			}
 		}
 		ClimateRangeDto range = usualRange(week, measure);
 		if (range != null) {

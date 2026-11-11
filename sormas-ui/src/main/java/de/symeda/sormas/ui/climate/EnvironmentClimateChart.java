@@ -474,7 +474,18 @@ public class EnvironmentClimateChart extends VerticalLayout {
 			.append(",color:'")
 			.append(color)
 			.append("',lineWidth:2,zIndex:2,data:[");
-		series.getDays().forEach(day -> js.append('[').append(x(day.getDate())).append(',').append(number(value.apply(day))).append("],"));
+		List<ClimateDayDto> days = series.getDays();
+		List<Double> values = days.stream().map(value).collect(Collectors.toList());
+		for (int i = 0; i < days.size(); i++) {
+			long x = x(days.get(i).getDate());
+			String y = number(values.get(i));
+			if (ClimateChartScript.isLone(values, i)) {
+				// a day between two days without data gets a dot, or it would not be seen (decision 148)
+				js.append("{x:").append(x).append(",y:").append(y).append(',').append(ClimateChartScript.LONE_MARKER).append("},");
+			} else {
+				js.append('[').append(x).append(',').append(y).append("],");
+			}
+		}
 		return js.append("]},").toString();
 	}
 
