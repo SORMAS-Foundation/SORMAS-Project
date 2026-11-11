@@ -30,6 +30,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.ItemCaptionGenerator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -56,6 +57,7 @@ public class ClimateDiseasePicker extends CustomField<Set<Disease>> {
 	private List<Disease> offered = Collections.emptyList();
 	private Set<Disease> chosen = new LinkedHashSet<>();
 	private int cap = Integer.MAX_VALUE;
+	private ItemCaptionGenerator<Disease> captions = Disease::toString;
 
 	public ClimateDiseasePicker() {
 
@@ -66,7 +68,7 @@ public class ClimateDiseasePicker extends CustomField<Set<Disease>> {
 
 		addBox.setWidthFull();
 		addBox.setPlaceholder(I18nProperties.getCaption(Captions.climateDashboardAddDisease));
-		addBox.setItemCaptionGenerator(Disease::toString);
+		addBox.setItemCaptionGenerator(disease -> captions.apply(disease));
 		addBox.setEmptySelectionAllowed(false);
 		addBox.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
@@ -101,6 +103,14 @@ public class ClimateDiseasePicker extends CustomField<Set<Disease>> {
 	public void setItems(List<Disease> offered) {
 		this.offered = new ArrayList<>(offered);
 		setValue(ordered(chosen));
+	}
+
+	/**
+	 * Sets the caption of each disease, in the dropdown and in the list of chosen diseases.
+	 */
+	public void setItemCaptionGenerator(ItemCaptionGenerator<Disease> captions) {
+		this.captions = captions;
+		refresh();
 	}
 
 	/**
@@ -141,9 +151,9 @@ public class ClimateDiseasePicker extends CustomField<Set<Disease>> {
 	 * @return the captions of the chosen lines, in order
 	 */
 	List<String> getChosenCaptions() {
-		List<String> captions = new ArrayList<>();
-		chosenLayout.forEach(row -> captions.add(((Label) ((HorizontalLayout) row).getComponent(0)).getValue()));
-		return captions;
+		List<String> lines = new ArrayList<>();
+		chosenLayout.forEach(row -> lines.add(((Label) ((HorizontalLayout) row).getComponent(0)).getValue()));
+		return lines;
 	}
 
 	private Set<Disease> ordered(Collection<Disease> diseases) {
@@ -154,7 +164,7 @@ public class ClimateDiseasePicker extends CustomField<Set<Disease>> {
 
 		chosenLayout.removeAllComponents();
 		for (Disease disease : chosen) {
-			Label name = new Label(disease.toString());
+			Label name = new Label(captions.apply(disease));
 			name.setWidthFull();
 			Button remove = new Button(VaadinIcons.CLOSE_SMALL, e -> deselect(disease));
 			remove.addStyleNames(ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_SMALL);

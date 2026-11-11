@@ -72,6 +72,12 @@ public interface DiseaseConfigurationFacade {
 	boolean usesExtendedClassificationMulti(Disease disease);
 
 	/**
+	 * @return true when case surveillance is switched on for the disease; the Climate dashboard then counts its cases, and
+	 *         otherwise its lab-confirmed aggregate reports (decision 147)
+	 */
+	boolean isCaseSurveillanceEnabled(Disease disease);
+
+	/**
 	 * @return years left out of the case usual range for this disease; empty when none
 	 */
 	Set<Integer> getUsualRangeExcludedYears(Disease disease);

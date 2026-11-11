@@ -404,6 +404,12 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	@PermitAll
+	public boolean isCaseSurveillanceEnabled(Disease disease) {
+		return caseSurveillanceDiseases.contains(disease);
+	}
+
+	@Override
+	@PermitAll
 	public Set<Integer> getUsualRangeExcludedYears(Disease disease) {
 		return usualRangeExcludedYears.getOrDefault(disease, Collections.emptySet());
 	}

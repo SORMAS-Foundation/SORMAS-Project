@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -196,7 +197,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertEquals(ClimateDashboardLayout.PANELS_DISEASE_CAP, layout.getCases().size());
 		Disease fifth = offered.get(ClimateDashboardLayout.PANELS_DISEASE_CAP);
 		assertEquals(
-			offeredCaptions(offered.subList(0, ClimateDashboardLayout.PANELS_DISEASE_CAP)),
+			offered.subList(0, ClimateDashboardLayout.PANELS_DISEASE_CAP).stream().map(layout::diseaseCaption).collect(Collectors.toList()),
 			layout.getDiseasePicker().getChosenCaptions(),
 			"only the chosen diseases are listed, in the offered order");
 		assertFalse(layout.getDiseasePicker().getAddBox().isEnabled(), "the dropdown is disabled at the cap");
@@ -218,18 +219,19 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	}
 
 	@Test
-	void testNoActiveDiseaseWithCaseSurveillance() {
+	void testNoActiveDiseaseWithCaseSurveillanceOrAggregateReporting() {
 
-		for (Disease disease : getDiseaseConfigurationFacade().getAllDiseases(true, null, true)) {
+		for (Disease disease : getDiseaseConfigurationFacade().getAllDiseases(true, null, true, true)) {
 			de.symeda.sormas.api.disease.DiseaseConfigurationDto configuration = getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
 			configuration.setCaseSurveillanceEnabled(false);
+			configuration.setAggregateReportingEnabled(false);
 			getDiseaseConfigurationFacade().saveDiseaseConfiguration(configuration);
 		}
 		getDiseaseConfigurationFacade().loadData();
 
 		ClimateDashboardLayout layout = new ClimateDashboardLayout(nationalUser(), JurisdictionLevel.NATION);
-		assertTrue(layout.getOfferedDiseases().isEmpty(), "every active disease with case surveillance is offered, and here there is none (decision 146)");
-		String note = "No active diseases with case surveillance are configured.";
+		assertTrue(layout.getOfferedDiseases().isEmpty(), "every active disease with case surveillance or aggregate reporting is offered, and here there is none (decisions 146, 147)");
+		String note = "No active diseases with case surveillance or aggregate reporting are configured.";
 		assertTrue(layout.getDiseasePicker().isVisible(), "the Diseases caption stays, with the note under it");
 		assertFalse(layout.getDiseasePicker().getAddBox().isEnabled(), "nothing to add");
 		assertTrue(text(layout.getFilterCard()).contains(note), text(layout.getFilterCard()));
@@ -238,6 +240,35 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		layout.apply();
 		assertEquals(note, layout.getEmptyCard().getValue());
 		assertFalse(layout.getContent().isVisible());
+	}
+
+	@Test
+	void testAggregateOnlyDisease() {
+
+		de.symeda.sormas.api.disease.DiseaseConfigurationDto measles = getDiseaseConfigurationFacade().getDiseaseConfiguration(Disease.MEASLES);
+		measles.setActive(true);
+		measles.setCaseSurveillanceEnabled(false);
+		measles.setAggregateReportingEnabled(true);
+		getDiseaseConfigurationFacade().saveDiseaseConfiguration(measles);
+		getDiseaseConfigurationFacade().loadData();
+
+		ClimateDashboardLayout layout = regionLayout();
+		assertTrue(layout.getOfferedDiseases().contains(Disease.MEASLES), "a disease with aggregate reporting only is offered (decision 147)");
+		assertEquals(Disease.MEASLES + " (aggregate)", layout.diseaseCaption(Disease.MEASLES));
+		assertEquals(Disease.DENGUE.toString(), layout.diseaseCaption(Disease.DENGUE));
+		assertTrue(
+			text(layout.getFilterCard())
+				.contains("Applies to diseases with case surveillance. Diseases with aggregate reporting only show lab-confirmed counts."),
+			"the note under the classification");
+
+		layout.getDiseasePicker().select(Disease.MEASLES);
+		assertEquals(Arrays.asList(Disease.DENGUE.toString(), Disease.MEASLES + " (aggregate)"), layout.getDiseasePicker().getChosenCaptions());
+		String script = layout.getChart().getScript();
+		assertTrue(script.contains(Disease.MEASLES + " (lab-confirmed, aggregate)"), "the panel says what is counted");
+		assertTrue(script.contains(Disease.MEASLES + " no aggregate report"), "a week without a report is a gap, not 0");
+		assertTrue(
+			ClimateDashboardExport.header(Arrays.asList(Disease.DENGUE, Disease.MEASLES)).contains(Disease.MEASLES + " lab-confirmed (aggregate)"),
+			"the export column says what is counted");
 	}
 
 	@Test
@@ -390,7 +421,12 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		List<Disease> offered = layout.getOfferedDiseases();
 
 		layout.getViewGroup().setValue(ClimateDashboardLayout.View.HEATMAP);
-		layout.getDiseasePicker().setValue(new java.util.HashSet<>(offered.subList(0, Math.min(offered.size(), ClimateDashboardLayout.HEATMAP_DISEASE_CAP))));
+		// dengue, which has cases, and the first others offered, up to 10
+		java.util.Set<Disease> chosen = new java.util.HashSet<>();
+		chosen.add(Disease.DENGUE);
+		offered.stream().filter(d -> d != Disease.DENGUE).limit(ClimateDashboardLayout.HEATMAP_DISEASE_CAP - 1L).forEach(chosen::add);
+		List<Disease> chosenInOrder = offered.stream().filter(chosen::contains).collect(Collectors.toList());
+		layout.getDiseasePicker().setValue(chosen);
 		assertEquals(Math.min(offered.size(), ClimateDashboardLayout.HEATMAP_DISEASE_CAP), layout.selectedDiseases().size(), "up to 10 in the heatmap");
 		String script = layout.getChart().getScript();
 		dump("dashboard-heatmap.js", script);
@@ -407,7 +443,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertEquals(chartHeight(heatmapHeights), layout.getChart().getChartHeight());
 
 		layout.getViewGroup().setValue(ClimateDashboardLayout.View.PANELS);
-		assertEquals(offered.subList(0, ClimateDashboardLayout.PANELS_DISEASE_CAP), layout.selectedDiseases(), "back to panels keeps the first 4");
+		assertEquals(chosenInOrder.subList(0, ClimateDashboardLayout.PANELS_DISEASE_CAP), layout.selectedDiseases(), "back to panels keeps the first 4");
 		assertEquals(ClimateDashboardLayout.PANELS_DISEASE_CAP, layout.getDiseasePicker().getValue().size());
 		assertFalse(layout.getChart().getScript().contains("type:'heatmap'"));
 	}
@@ -460,10 +496,6 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 	private static int chartHeight(int[] panels) {
 		return ClimateDashboardChart.PLOT_TOP + java.util.Arrays.stream(panels).sum() + panels.length * ClimateDashboardChart.TITLE_BAND
 			+ (panels.length - 1) * ClimateDashboardChart.PANEL_GAP + ClimateDashboardChart.MARGIN_BOTTOM;
-	}
-
-	private static List<String> offeredCaptions(List<Disease> diseases) {
-		return diseases.stream().map(Disease::toString).collect(java.util.stream.Collectors.toList());
 	}
 
 	/**

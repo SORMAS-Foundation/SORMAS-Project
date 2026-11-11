@@ -175,6 +175,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final DistrictReferenceDto userDistrict;
 	private final List<EpiWeek> offeredWeeks;
 	private final List<Disease> offeredDiseases;
+	/** The offered diseases without case surveillance, counted from their lab-confirmed aggregate reports (decision 147). */
+	private final Set<Disease> aggregateDiseases;
 
 	private final ComboBox<RegionReferenceDto> regionFilter = new ComboBox<>();
 	private final ComboBox<DistrictReferenceDto> districtFilter = new ComboBox<>();
@@ -190,6 +192,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final RadioButtonGroup<Measure> measureGroup = new RadioButtonGroup<>();
 	private final Slider lagSlider = new Slider(0, MAX_LAG);
 	private final Label jurisdictionNote = note(Strings.climateDashboardJurisdiction);
+	private final Label classificationNote = note(null);
 	private final Label diseaseNote = note(null);
 	private final Label shadeNote = note(null);
 	private final Label measureNote = note(null);
@@ -222,12 +225,15 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		userRegion = user != null ? user.getRegion() : null;
 		userDistrict = user != null && userRegion != null ? user.getDistrict() : null;
 		offeredWeeks = offeredWeeks(new Date());
-		// every active disease with case surveillance, no climate-sensitive flag (decision 146)
+		// every active disease with case surveillance or aggregate reporting, no climate-sensitive flag (decisions 146, 147)
 		offeredDiseases = FacadeProvider.getDiseaseConfigurationFacade()
-			.getAllDiseases(true, null, true)
+			.getAllDiseases(true, null, true, true)
 			.stream()
 			.sorted(Comparator.comparing(Disease::toString, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
+		aggregateDiseases = offeredDiseases.stream()
+			.filter(disease -> !FacadeProvider.getDiseaseConfigurationFacade().isCaseSurveillanceEnabled(disease))
+			.collect(Collectors.toSet());
 
 		// 8 columns of chart and 4 of cards, as on the environment Climate data tab, capped at 1600 px instead of its 1280 px
 		// and left-aligned like it (climate.scss, decision 140), so a 5-year chart has room without stretching on large
@@ -311,6 +317,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		classificationFilter.setCaption(I18nProperties.getCaption(Captions.climateDashboardClassification));
 		classificationFilter.setItems(ClimateCaseClassificationFilter.values());
 		classificationFilter.setEmptySelectionAllowed(false);
+		// the classification applies only to diseases counted from cases (decision 147)
+		if (!aggregateDiseases.isEmpty()) {
+			setNote(classificationNote, I18nProperties.getString(Strings.climateDashboardClassificationNote));
+		}
 
 		for (ComboBox<EpiWeek> weekFilter : Arrays.asList(fromFilter, toFilter)) {
 			weekFilter.setItems(offeredWeeks);
@@ -341,6 +351,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		// in a dropdown with only the chosen ones listed under it, so the card stays short (decision 146)
 		diseasePicker.setCaption(I18nProperties.getCaption(Captions.climateDashboardDiseases));
 		diseasePicker.setWidthFull();
+		// a disease without case surveillance is marked, since its counts are lab-confirmed aggregate reports (decision 147)
+		diseasePicker.setItemCaptionGenerator(this::diseaseCaption);
 		diseasePicker.setItems(offeredDiseases);
 		diseasePicker.setCap(diseaseCap());
 		diseasePicker.addStyleName(CssStyles.VSPACE_NONE);
@@ -355,7 +367,14 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		updateDiseaseNote();
 
 		filterCard.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
-		filterCard.addComponent(stack(regionFilter, districtFilter, classificationFilter, weeks, withNote(diseasePicker, diseaseNote), buttons, jurisdictionNote));
+		filterCard.addComponent(stack(
+				regionFilter,
+				districtFilter,
+				withNote(classificationFilter, classificationNote),
+				weeks,
+				withNote(diseasePicker, diseaseNote),
+				buttons,
+				jurisdictionNote));
 		return filterCard;
 	}
 
@@ -451,6 +470,15 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		stack.setMargin(false);
 		stack.setWidthFull();
 		return stack;
+	}
+
+	/**
+	 * @return the disease's name, with "(aggregate)" for a disease counted from its aggregate reports (decision 147)
+	 */
+	String diseaseCaption(Disease disease) {
+		return aggregateDiseases.contains(disease)
+			? String.format(I18nProperties.getString(Strings.climateDashboardDiseaseAggregate), disease.toString())
+			: disease.toString();
 	}
 
 	/**

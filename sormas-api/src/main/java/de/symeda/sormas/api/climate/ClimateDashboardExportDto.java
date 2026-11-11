@@ -41,6 +41,7 @@ public class ClimateDashboardExportDto implements Serializable {
 	private final boolean openWeatherData;
 	private final Integer population;
 	private final Map<Disease, ClimateCaseWeekDto> cases = new EnumMap<>(Disease.class);
+	private final Map<Disease, ClimateCaseCountSource> countSources = new EnumMap<>(Disease.class);
 
 	public ClimateDashboardExportDto(
 		RegionReferenceDto region,
@@ -95,7 +96,16 @@ public class ClimateDashboardExportDto implements Serializable {
 		return Collections.unmodifiableMap(cases);
 	}
 
-	public void putCases(Disease disease, ClimateCaseWeekDto week) {
+	public void putCases(Disease disease, ClimateCaseCountSource countSource, ClimateCaseWeekDto week) {
 		cases.put(disease, week);
+		countSources.put(disease, countSource);
+	}
+
+	/**
+	 * @return what the disease's columns count: cases, or lab-confirmed aggregate reports (decision 147); null when the row
+	 *         has no figures for it
+	 */
+	public ClimateCaseCountSource getCountSource(Disease disease) {
+		return countSources.get(disease);
 	}
 }
