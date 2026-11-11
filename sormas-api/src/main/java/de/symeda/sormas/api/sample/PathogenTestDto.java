@@ -147,6 +147,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String WESTERN_BLOT_INTERPRETATION = "westernBlotInterpretation";
 	public static final String SEQUENCE_ID = "sequenceId";
 	public static final String SERO_CONVERSION = "seroConversion";
+	public static final String AVIDITY_PERFORMED = "avidityPerformed";
+	public static final String AVIDITY_INDEX = "avidityIndex";
+	public static final String AVIDITY_INTERPRETATION = "avidityInterpretation";
 	public static final String TARGET_TEST = "targetTest";
 	public static final String TARGET_TEST_TEXT = "targetTestText";
 	public static final String TEST_RUN_STATUS = "testRunStatus";
@@ -421,6 +424,18 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String sequenceId;
 	private Boolean seroConversion;
+	@Diseases({
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
+	private Boolean avidityPerformed;
+	@Diseases({
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
+	private Float avidityIndex;
+	@Diseases({
+		Disease.RUBELLA,
+		Disease.CONGENITAL_RUBELLA })
+	private AvidityInterpretation avidityInterpretation;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
@@ -1251,6 +1266,30 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSeroConversion(Boolean seroConversion) {
 		this.seroConversion = seroConversion;
+	}
+
+	public Boolean getAvidityPerformed() {
+		return avidityPerformed;
+	}
+
+	public void setAvidityPerformed(Boolean avidityPerformed) {
+		this.avidityPerformed = avidityPerformed;
+	}
+
+	public Float getAvidityIndex() {
+		return avidityIndex;
+	}
+
+	public void setAvidityIndex(Float avidityIndex) {
+		this.avidityIndex = avidityIndex;
+	}
+
+	public AvidityInterpretation getAvidityInterpretation() {
+		return avidityInterpretation;
+	}
+
+	public void setAvidityInterpretation(AvidityInterpretation avidityInterpretation) {
+		this.avidityInterpretation = avidityInterpretation;
 	}
 
 	public TargetTest getTargetTest() {

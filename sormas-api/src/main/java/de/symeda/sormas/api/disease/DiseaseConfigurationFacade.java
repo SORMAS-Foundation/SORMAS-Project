@@ -2,6 +2,7 @@ package de.symeda.sormas.api.disease;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -69,6 +70,19 @@ public interface DiseaseConfigurationFacade {
 	boolean usesExtendedClassification(Disease disease);
 
 	boolean usesExtendedClassificationMulti(Disease disease);
+
+	/**
+	 * @return active diseases flagged as climate-sensitive (or in the default list when the flag is empty), shown on the
+	 *         Climate dashboard
+	 */
+	List<Disease> getAllClimateSensitiveDiseases();
+
+	boolean isClimateSensitive(Disease disease);
+
+	/**
+	 * @return years left out of the case usual range for this disease; empty when none
+	 */
+	Set<Integer> getUsualRangeExcludedYears(Disease disease);
 
 	long count(DiseaseConfigurationCriteria criteria);
 

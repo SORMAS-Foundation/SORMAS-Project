@@ -26,6 +26,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataIndexDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest;
@@ -92,12 +93,17 @@ public class ExternalPersonDataListView extends AbstractView {
 			state.criteria = personCriteria(person, false);
 		}
 
-		idBinder.forField(nationalHealthId)
-			.withValidator(
+		Binder.BindingBuilder<ExternalPersonDataSearchRequest, String> nationalHealthIdFieldBuilder =
+			idBinder.forField(nationalHealthId).withConverter(StringUtils::trimToNull, value -> value == null ? "" : value);
+
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			nationalHealthIdFieldBuilder = nationalHealthIdFieldBuilder.withValidator(
 				value -> StringUtils.isBlank(value) || !LuxembourgNationalHealthIdValidator.isValidWithCause(value.trim()).isPresent(),
-				I18nProperties.getValidationError(Validations.invalidNationalHealthId))
-			.withConverter(StringUtils::trimToNull, value -> value == null ? "" : value)
-			.bind("nationalHealthId");
+				I18nProperties.getValidationError(Validations.invalidNationalHealthId));
+		}
+
+		nationalHealthIdFieldBuilder.bind("nationalHealthId");
+
 		textFilter(ExternalPersonDataSearchRequest.LAST_NAME, Captions.ExternalPersons_lastName);
 		textFilter(ExternalPersonDataSearchRequest.FIRST_NAME, Captions.ExternalPersons_firstName);
 		ComboBox<Sex> sex = new ComboBox<>(I18nProperties.getCaption(Captions.ExternalPersons_sex));
@@ -300,12 +306,19 @@ public class ExternalPersonDataListView extends AbstractView {
 		if (end <= state.results.size()) {
 			return state.results.subList(offset, end);
 		}
-		ExternalPersonDataSearchRequest request = SerializationUtils.clone(state.searchRequest);
-		request.setOffset(offset);
-		request.setLimit(limit);
 		try {
-			ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().find(request);
-			return response.getResults() == null ? Collections.emptyList() : response.getResults();
+			while (state.results.size() < end) {
+				ExternalPersonDataSearchRequest request = SerializationUtils.clone(state.searchRequest);
+				request.setOffset(state.results.size());
+				request.setLimit(Math.min(PAGE_SIZE, end - state.results.size()));
+				ExternalPersonDataSearchResponse response = FacadeProvider.getExternalPersonDataProviderFacade().find(request);
+				List<ExternalPersonDataIndexDto> results = response.getResults();
+				if (results == null || results.isEmpty()) {
+					break;
+				}
+				state.results.addAll(results.subList(0, Math.min(request.getLimit(), results.size())));
+			}
+			return offset >= state.results.size() ? Collections.emptyList() : state.results.subList(offset, Math.min(end, state.results.size()));
 		} catch (RuntimeException e) {
 			logger.error("Could not load external persons page", e);
 			setMessage(I18nProperties.getString(Strings.errorExternalPersonDataLoad));

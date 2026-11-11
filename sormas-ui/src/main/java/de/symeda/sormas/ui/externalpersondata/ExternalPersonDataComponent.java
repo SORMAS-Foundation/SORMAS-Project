@@ -16,13 +16,13 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataForDisplayDto;
-import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.person.PersonsView;
@@ -35,10 +35,7 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataComponent.class);
 
 	public static boolean isAvailable() {
-		return UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)
-			&& Boolean.parseBoolean(
-				FacadeProvider.getSystemConfigurationValueFacade()
-					.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED_KEY));
+		return ExternalPersonDataUtils.isExternalPersonProviderEnabled();
 	}
 
 	public ExternalPersonDataComponent(PersonReferenceDto personReference) {
@@ -110,7 +107,7 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 			return;
 		}
 
-		Label html = new Label(displayData.getHtml(), ContentMode.HTML);
+		Label html = new Label(HtmlHelper.cleanHtml(displayData.getHtml()), ContentMode.HTML);
 		html.setWidth(100, Unit.PERCENTAGE);
 		Panel panel = new Panel(html);
 		panel.setSizeFull();

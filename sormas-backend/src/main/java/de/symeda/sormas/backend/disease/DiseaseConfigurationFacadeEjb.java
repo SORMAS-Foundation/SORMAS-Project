@@ -19,6 +19,7 @@ import static de.symeda.sormas.backend.util.QueryHelper.getResultList;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
@@ -57,6 +60,7 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationIndexDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.sort.EntitySortUtils;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -87,6 +91,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private DiseaseConfigurationService service;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	private static final List<Disease> activeDiseases = new ArrayList<>();
 	private static final List<Disease> inactiveDiseases = new ArrayList<>();
@@ -97,6 +103,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private static final List<Disease> followUpEnabledDiseases = new ArrayList<>();
 	private static final List<Disease> incubationEnabledDiseases = new ArrayList<>();
 	private static final List<Disease> contagiousEnabledDiseases = new ArrayList<>();
+	private static final List<Disease> climateSensitiveDiseases = new ArrayList<>();
+	private static final Map<Disease, Set<Integer>> usualRangeExcludedYears = new EnumMap<>(Disease.class);
 
 	private static final Map<Disease, Boolean> extendedClassificationDiseases = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Boolean> extendedClassificationMultiDiseases = new EnumMap<>(Disease.class);
@@ -307,6 +315,10 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		if (dto.getExtendedClassificationMulti() == null) {
 			dto.setExtendedClassificationMulti(dto.getDisease().isDefaultExtendedClassificationMulti());
 		}
+		// no shipped list: a disease is climate-sensitive only when an admin marks it (decision 138)
+		if (dto.getClimateSensitive() == null) {
+			dto.setClimateSensitive(false);
+		}
 		if (dto.getIncubationPeriodEnabled() == null) {
 			dto.setIncubationPeriodEnabled(dto.getDisease().isDefaultIncubationPeriodEnabled());
 		}
@@ -396,6 +408,24 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
+	@PermitAll
+	public List<Disease> getAllClimateSensitiveDiseases() {
+		return climateSensitiveDiseases.stream().filter(activeDiseases::contains).collect(Collectors.toList());
+	}
+
+	@Override
+	@PermitAll
+	public boolean isClimateSensitive(Disease disease) {
+		return climateSensitiveDiseases.contains(disease);
+	}
+
+	@Override
+	@PermitAll
+	public Set<Integer> getUsualRangeExcludedYears(Disease disease) {
+		return usualRangeExcludedYears.getOrDefault(disease, Collections.emptySet());
+	}
+
+	@Override
 	public List<Disease> getAllActiveDiseases() {
 		return activeDiseases;
 	}
@@ -456,6 +486,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setAgeGroups(source.getAgeGroups());
 		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
 		target.setExposureCategories(source.getExposureCategories());
+		target.setClimateSensitive(source.getClimateSensitive());
+		target.setUsualRangeExcludedYears(source.getUsualRangeExcludedYears());
 
 		return target;
 	}
@@ -550,11 +582,41 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setIsContagious(source.getIsContagious());
 		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());
 		target.setMinContagiousPeriod(source.getMinContagiousPeriod());
+		target.setClimateSensitive(source.getClimateSensitive());
+		target.setUsualRangeExcludedYears(source.getUsualRangeExcludedYears());
 
 		//update changedate: required for mobile app to be aware of changes
 		target.setChangeDate(new Timestamp((new Date()).getTime()));
 
 		return target;
+	}
+
+	public void presetLuxembourgRubellaConfiguration() {
+		if (!configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			return;
+		}
+
+		DiseaseConfiguration rubella =
+			Optional.ofNullable(service.getDiseaseConfiguration(Disease.RUBELLA)).orElseGet(() -> DiseaseConfiguration.build(Disease.RUBELLA));
+		rubella.setActive(true);
+		rubella.setPrimaryDisease(true);
+		rubella.setCaseSurveillanceEnabled(true);
+		rubella.setExposureCategories(withRespiratoryAndVerticalPathways(rubella.getExposureCategories()));
+		rubella.setChangeDate(new Timestamp(new Date().getTime()));
+		service.ensurePersisted(rubella);
+
+		loadData();
+	}
+
+	private static Set<ExposureCategory> withRespiratoryAndVerticalPathways(Set<ExposureCategory> exposureCategories) {
+		Set<ExposureCategory> pathways = EnumSet.noneOf(ExposureCategory.class);
+		if (exposureCategories != null) {
+			pathways.addAll(exposureCategories);
+		}
+		pathways.remove(ExposureCategory.AIR_BORNE);
+		pathways.add(ExposureCategory.RESPIRATORY);
+		pathways.add(ExposureCategory.VERTICAL_TRANSMISSION);
+		return pathways;
 	}
 
 	@PostConstruct
@@ -578,9 +640,18 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		minContagiousPeriod.clear();
 		maxContagiousPeriod.clear();
 		automaticSampleAssignmentThresholds.clear();
+		climateSensitiveDiseases.clear();
+		usualRangeExcludedYears.clear();
 
 		for (DiseaseConfiguration configuration : service.getAll()) {
 			Disease disease = configuration.getDisease();
+
+			if (isTrue(configuration.getClimateSensitive())) {
+				climateSensitiveDiseases.add(disease);
+			}
+			if (configuration.getUsualRangeExcludedYears() != null && !configuration.getUsualRangeExcludedYears().isEmpty()) {
+				usualRangeExcludedYears.put(disease, Collections.unmodifiableSet(new TreeSet<>(configuration.getUsualRangeExcludedYears())));
+			}
 
 			if (enabled(configuration.getActive(), disease.isDefaultActive())) {
 				activeDiseases.add(disease);

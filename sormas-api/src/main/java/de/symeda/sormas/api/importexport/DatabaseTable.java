@@ -70,6 +70,10 @@ public enum DatabaseTable {
 	ENVIRONMENTS(DatabaseTableType.SORMAS, "environments", dependingOnFeature(FeatureType.ENVIRONMENT_MANAGEMENT)),
 	EVENT_ENVIRONMENTS(DatabaseTableType.SORMAS, ENVIRONMENTS, "events_environments"),
 
+	CLIMATE_LOCATIONS(DatabaseTableType.SORMAS, "climate_locations", dependingOnFeature(FeatureType.CLIMATE_MANAGEMENT)),
+	CLIMATE_OBSERVATIONS(DatabaseTableType.SORMAS, CLIMATE_LOCATIONS, "climate_observations"),
+	SITE_CLIMATE_READINGS(DatabaseTableType.SORMAS, "site_climate_readings", dependingOnFeature(FeatureType.CLIMATE_MANAGEMENT)),
+
 	TRAVEL_ENTRIES(DatabaseTableType.SORMAS, "travel_entries", dependingOnFeature(FeatureType.TRAVEL_ENTRIES)),
 
 	IMMUNIZATIONS(DatabaseTableType.SORMAS, "immunizations", dependingOnFeature(FeatureType.IMMUNIZATION_MANAGEMENT)),

@@ -45,7 +45,9 @@ public enum CronJob {
 	DELETE_EXPIRED_SPECIAL_CASE_ACCESSES("0 30 2 * * *", CronService::deleteExpiredSpecialCaseAccesses),
 	SYNC_USERS_FROM_AUTH_PROVIDER("0 35 2 * * *", CronService::syncUsersFromAuthenticationProvider),
 	@Deprecated
-	SOFT_DELETE_OLD_NEGATIVE_SAMPLES("0 40 2 * * *", CronService::softDeleteOldNegativeSamples);
+	SOFT_DELETE_OLD_NEGATIVE_SAMPLES("0 40 2 * * *", CronService::softDeleteOldNegativeSamples),
+	FETCH_CLIMATE_DATA("0 30 3 * * *", CronService::fetchClimateData),
+	PROCESS_CLIMATE_JOBS("0 */5 * * * *", CronService::processClimateJobs);
 
 	public static final String CONFIG_KEY_PREFIX = "CRON.";
 

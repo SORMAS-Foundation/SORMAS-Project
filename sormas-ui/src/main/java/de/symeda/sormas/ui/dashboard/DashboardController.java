@@ -27,6 +27,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
+import de.symeda.sormas.ui.dashboard.climate.ClimateDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.gis.GisDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
@@ -69,6 +70,10 @@ public class DashboardController {
 				UserRight.DASHBOARD_SAMPLES_VIEW,
 				UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW })) {
 			navigator.addView(GisDashboardView.VIEW_NAME, GisDashboardView.class);
+		}
+
+		if (ClimateDashboardView.permitted()) {
+			navigator.addView(ClimateDashboardView.VIEW_NAME, ClimateDashboardView.class);
 		}
 	}
 }

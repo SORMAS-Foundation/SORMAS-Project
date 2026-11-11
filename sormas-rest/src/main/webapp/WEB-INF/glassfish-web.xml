@@ -1042,6 +1042,36 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CLIMATE_VIEW</role-name>
+        <group-name>CLIMATE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLIMATE_EDIT</role-name>
+        <group-name>CLIMATE_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLIMATE_IMPORT</role-name>
+        <group-name>CLIMATE_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLIMATE_EXPORT</role-name>
+        <group-name>CLIMATE_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLIMATE_MANAGE_SOURCES</role-name>
+        <group-name>CLIMATE_MANAGE_SOURCES</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DASHBOARD_CLIMATE_VIEW</role-name>
+        <group-name>DASHBOARD_CLIMATE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>SELF_REPORT_VIEW</role-name>
         <group-name>SELF_REPORT_VIEW</group-name>
     </security-role-mapping>

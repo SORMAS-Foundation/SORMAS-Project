@@ -45,288 +45,289 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
  */
 public class SystemConfigurationValueDynamicInput extends CustomField<SystemConfigurationValueDto> {
 
-    /**
-     * Enum representing the types of input values.
-     */
-    public enum ValueTypes {
-        TEXT,
-        PASSWORD,
-        DROPDOWN,
-        CHECKBOX_GRID
-    }
-    /**
-     * Interface for listening to value change events.
-     */
-    public interface ValueChangeListener {
+	/**
+	 * Enum representing the types of input values.
+	 */
+	public enum ValueTypes {
+		TEXT,
+		PASSWORD,
+		DROPDOWN,
+		CHECKBOX_GRID
+	}
+	/**
+	 * Interface for listening to value change events.
+	 */
+	public interface ValueChangeListener {
 
-        Method VALUE_CHANGE_METHOD = ReflectTools.findMethod(ValueChangeListener.class, "valueChange", ValueChangeEvent.class);
+		Method VALUE_CHANGE_METHOD = ReflectTools.findMethod(ValueChangeListener.class, "valueChange", ValueChangeEvent.class);
 
-        /**
-         * Called when the value changes.
-         *
-         * @param event
-         *            the value change event
-         */
-        void valueChange(ValueChangeEvent event);
-    }
-    /**
-     * Event representing a change in value.
-     */
-    public static class ValueChangeEvent extends Component.Event {
+		/**
+		 * Called when the value changes.
+		 *
+		 * @param event
+		 *            the value change event
+		 */
+		void valueChange(ValueChangeEvent event);
+	}
+	/**
+	 * Event representing a change in value.
+	 */
+	public static class ValueChangeEvent extends Component.Event {
 
-        /**
-         * Constructs a new ValueChangeEvent.
-         *
-         * @param source
-         *            the source component
-         */
-        public ValueChangeEvent(final Component source) {
-            super(source);
-        }
-    }
+		/**
+		 * Constructs a new ValueChangeEvent.
+		 *
+		 * @param source
+		 *            the source component
+		 */
+		public ValueChangeEvent(final Component source) {
+			super(source);
+		}
+	}
 
-    private static final String STYLE_NAME_DYNAMIC_INPUT = "system-configuration-dynamic-input";
+	private static final String STYLE_NAME_DYNAMIC_INPUT = "system-configuration-dynamic-input";
 
-    private static final String STYLE_NAME_DYNAMIC_INPUT_FIXED_SIZE = "system-configuration-dynamic-input-fixed-size";
+	private static final String STYLE_NAME_DYNAMIC_INPUT_FIXED_SIZE = "system-configuration-dynamic-input-fixed-size";
 
-    private static final String STYLE_NAME_TOGGLE_PASSWORD = "toggle-password";
+	private static final String STYLE_NAME_TOGGLE_PASSWORD = "toggle-password";
 
-    private static final String STYLE_NAME_WRAPPING_CHECKBOX_GROUP = "wrapping-checkbox-group";
+	private static final String STYLE_NAME_WRAPPING_CHECKBOX_GROUP = "wrapping-checkbox-group";
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private SystemConfigurationValueDto value;
+	private SystemConfigurationValueDto value;
 
-    @Override
-    public SystemConfigurationValueDto getValue() {
-        return value;
-    }
+	@Override
+	public SystemConfigurationValueDto getValue() {
+		return value;
+	}
 
-    @Override
-    public void doSetValue(final SystemConfigurationValueDto newFieldValue) {
+	@Override
+	public void doSetValue(final SystemConfigurationValueDto newFieldValue) {
 
-        Objects.requireNonNull(newFieldValue);
-        this.value = newFieldValue;
-    }
+		Objects.requireNonNull(newFieldValue);
+		this.value = newFieldValue;
+	}
 
-    /**
-     * Adds a value change listener.
-     *
-     * @param listener
-     *            the listener to add
-     */
-    public void addValueChangeListener(final ValueChangeListener listener) {
-        addListener(ValueChangeEvent.class, listener, ValueChangeListener.VALUE_CHANGE_METHOD);
-    }
+	/**
+	 * Adds a value change listener.
+	 *
+	 * @param listener
+	 *            the listener to add
+	 */
+	public void addValueChangeListener(final ValueChangeListener listener) {
+		addListener(ValueChangeEvent.class, listener, ValueChangeListener.VALUE_CHANGE_METHOD);
+	}
 
-    /**
-     * Determines the type of value input.
-     *
-     * @return the value type
-     */
-    public ValueTypes getValueType() {
+	/**
+	 * Determines the type of value input.
+	 *
+	 * @return the value type
+	 */
+	public ValueTypes getValueType() {
 
-        final var dataProvider = getValue().getDataProvider();
+		final var dataProvider = getValue().getDataProvider();
 
-        if (null != dataProvider) {
+		if (null != dataProvider) {
 
-            final var options = dataProvider.getOptions().values();
-            final var keys = dataProvider.getKeys();
+			final var options = dataProvider.getOptions().values();
+			final var keys = dataProvider.getKeys();
 
-            if (keys.size() > 1) {
-                return ValueTypes.CHECKBOX_GRID;
-            }
+			if (keys.size() > 1) {
+				return ValueTypes.CHECKBOX_GRID;
+			}
 
-            if (keys.size() == 1 && options.size() > 1) {
-                return ValueTypes.DROPDOWN;
-            }
-        }
+			if (keys.size() == 1 && options.size() > 1) {
+				return ValueTypes.DROPDOWN;
+			}
+		}
 
-        if (Boolean.TRUE.equals(getValue().getEncrypt())) {
-            return ValueTypes.PASSWORD;
-        }
+		if (Boolean.TRUE.equals(getValue().getEncrypt())) {
+			return ValueTypes.PASSWORD;
+		}
 
-        return ValueTypes.TEXT;
-    }
+		return ValueTypes.TEXT;
+	}
 
-    @Override
-    public boolean equals(final Object obj) {
-        return super.equals(obj);
-    }
+	@Override
+	public boolean equals(final Object obj) {
+		return super.equals(obj);
+	}
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 
-    @Override
-    protected Component initContent() {
+	@Override
+	protected Component initContent() {
 
-        addStyleName(STYLE_NAME_DYNAMIC_INPUT);
+		addStyleName(STYLE_NAME_DYNAMIC_INPUT);
 
-        final var mainLayout = new VerticalLayout();
+		final var mainLayout = new VerticalLayout();
 
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(false);
-        mainLayout.setSizeUndefined();
-        mainLayout.setWidthFull();
+		mainLayout.setSpacing(true);
+		mainLayout.setMargin(false);
+		mainLayout.setSizeUndefined();
+		mainLayout.setWidthFull();
 
-        switch (getValueType()) {
-        case DROPDOWN:
-            mainLayout.addComponent(createDropdown());
-            break;
-        case CHECKBOX_GRID:
-            mainLayout.addComponent(createCheckboxGrid());
-            mainLayout.addStyleName(STYLE_NAME_DYNAMIC_INPUT_FIXED_SIZE);
-            break;
-        case PASSWORD:
-            mainLayout.addComponent(createPasswordField());
-            break;
-        default:
-            mainLayout.addComponent(createTextField());
-        }
+		switch (getValueType()) {
+		case DROPDOWN:
+			mainLayout.addComponent(createDropdown());
+			break;
+		case CHECKBOX_GRID:
+			mainLayout.addComponent(createCheckboxGrid());
+			mainLayout.addStyleName(STYLE_NAME_DYNAMIC_INPUT_FIXED_SIZE);
+			break;
+		case PASSWORD:
+			mainLayout.addComponent(createPasswordField());
+			break;
+		default:
+			mainLayout.addComponent(createTextField());
+		}
 
-        return mainLayout;
-    }
+		return mainLayout;
+	}
 
-    /**
-     * Creates a text field for input.
-     *
-     * @return the text field
-     */
-    private TextField createTextField() {
+	/**
+	 * Creates a text field for input.
+	 *
+	 * @return the text field
+	 */
+	private TextField createTextField() {
 
-        final var field = new TextField();
-        field.setValue(getValue().getValue());
-        field.addValueChangeListener(event -> fireValueChange(field));
-        field.setWidthFull();
-        return field;
-    }
+		final var field = new TextField();
+		field.setValue(getValue().getValue());
+		field.addValueChangeListener(event -> fireValueChange(field));
+		field.setWidthFull();
+		return field;
+	}
 
-    /**
-     * Creates a password field for input.
-     *
-     * @return the password field
-     */
-    private Component createPasswordField() {
+	/**
+	 * Creates a password field for input.
+	 *
+	 * @return the password field
+	 */
+	private Component createPasswordField() {
 
-        final var layout = new HorizontalLayout();
-        layout.setWidthFull();
-        layout.addStyleName(STYLE_NAME_TOGGLE_PASSWORD);
-        final var passwordField = new PasswordField();
-        passwordField.setValue(getValue().getValue());
-        passwordField.setWidthFull();
+		final var layout = new HorizontalLayout();
+		layout.setWidthFull();
+		layout.addStyleName(STYLE_NAME_TOGGLE_PASSWORD);
+		final var passwordField = new PasswordField();
+		passwordField.setValue(getValue().getValue());
+		passwordField.setWidthFull();
 
-        final var textField = new TextField();
-        textField.setValue(getValue().getValue());
-        textField.setWidthFull();
-        textField.setVisible(false);
-        passwordField.setValue(getValue().getValue());
+		final var textField = new TextField();
+		textField.setValue(getValue().getValue());
+		textField.setWidthFull();
+		textField.setVisible(false);
+		passwordField.setValue(getValue().getValue());
 
-        final var toggleButton = new Button();
-        toggleButton.setIcon(VaadinIcons.EYE_SLASH);
+		final var toggleButton = new Button();
+		toggleButton.setIcon(VaadinIcons.EYE_SLASH);
 
-        passwordField.addValueChangeListener(event -> {
-            textField.setValue(passwordField.getValue());
-            fireValueChange(passwordField);
-        });
-        textField.addValueChangeListener(event -> {
-            passwordField.setValue(event.getValue());
-            fireValueChange(passwordField);
-        });
+		passwordField.addValueChangeListener(event -> {
+			textField.setValue(passwordField.getValue());
+			fireValueChange(passwordField);
+		});
+		textField.addValueChangeListener(event -> {
+			passwordField.setValue(event.getValue());
+			fireValueChange(passwordField);
+		});
 
-        toggleButton.addClickListener(event -> {
-            if (passwordField.isVisible()) {
-                passwordField.setVisible(false);
-                textField.setVisible(true);
-                textField.setValue(passwordField.getValue());
-                toggleButton.setIcon(VaadinIcons.EYE);
-            } else {
-                passwordField.setVisible(true);
-                textField.setVisible(false);
-                passwordField.setValue(textField.getValue());
-                toggleButton.setIcon(VaadinIcons.EYE_SLASH);
-            }
-        });
+		toggleButton.addClickListener(event -> {
+			if (passwordField.isVisible()) {
+				passwordField.setVisible(false);
+				textField.setVisible(true);
+				textField.setValue(passwordField.getValue());
+				toggleButton.setIcon(VaadinIcons.EYE);
+			} else {
+				passwordField.setVisible(true);
+				textField.setVisible(false);
+				passwordField.setValue(textField.getValue());
+				toggleButton.setIcon(VaadinIcons.EYE_SLASH);
+			}
+		});
 
-        layout.addComponents(passwordField, textField, toggleButton);
-        return layout;
-    }
+		layout.addComponents(passwordField, textField, toggleButton);
+		return layout;
+	}
 
-    /**
-     * Creates a dropdown for input.
-     *
-     * @return the dropdown
-     */
-    private ComboBox<String> createDropdown() {
+	/**
+	 * Creates a dropdown for input.
+	 *
+	 * @return the dropdown
+	 */
+	private ComboBox<String> createDropdown() {
 
-        final var combo = new ComboBox<String>();
-        combo.setEmptySelectionAllowed(false);
-        combo.setItems(getValue().getDataProvider().getOptions().values());
-        combo.setSelectedItem(getValue().getValue());
-        combo.addValueChangeListener(event -> fireValueChange(combo));
-        combo.setWidthFull();
-        return combo;
-    }
+		final var combo = new ComboBox<String>();
+		combo.setEmptySelectionAllowed(false);
+		combo.setItems(getValue().getDataProvider().getOptions().values());
+		combo.setItemCaptionGenerator(getValue().getDataProvider()::getOptionCaption);
+		combo.setSelectedItem(getValue().getValue());
+		combo.addValueChangeListener(event -> fireValueChange(combo));
+		combo.setWidthFull();
+		return combo;
+	}
 
-    /**
-     * Creates a checkbox grid for input.
-     *
-     * @return the checkbox grid
-     */
-    private CheckBoxGroup<String> createCheckboxGrid() {
+	/**
+	 * Creates a checkbox grid for input.
+	 *
+	 * @return the checkbox grid
+	 */
+	private CheckBoxGroup<String> createCheckboxGrid() {
 
-        final var cbg = new CheckBoxGroup<String>();
-        ArrayList<String> values = new ArrayList<>(getValue().getDataProvider().getOptions().values());
-        values.sort(Comparator.naturalOrder());
-        cbg.setItems(values);
-        cbg.select(getValue().getDataProvider().getMappedValues(getValue()).values().toArray(new String[] {}));
-        cbg.addValueChangeListener(event -> fireValueChange(cbg));
-        cbg.addStyleName(STYLE_NAME_WRAPPING_CHECKBOX_GROUP);
-        cbg.setWidthFull();
-        return cbg;
-    }
+		final var cbg = new CheckBoxGroup<String>();
+		ArrayList<String> values = new ArrayList<>(getValue().getDataProvider().getOptions().values());
+		values.sort(Comparator.naturalOrder());
+		cbg.setItems(values);
+		cbg.select(getValue().getDataProvider().getMappedValues(getValue()).values().toArray(new String[] {}));
+		cbg.addValueChangeListener(event -> fireValueChange(cbg));
+		cbg.addStyleName(STYLE_NAME_WRAPPING_CHECKBOX_GROUP);
+		cbg.setWidthFull();
+		return cbg;
+	}
 
-    /**
-     * Fires a value change event.
-     *
-     * @param source
-     *            the source component
-     */
-    @SuppressWarnings("unchecked")
-    private void fireValueChange(final Component source) {
+	/**
+	 * Fires a value change event.
+	 *
+	 * @param source
+	 *            the source component
+	 */
+	@SuppressWarnings("unchecked")
+	private void fireValueChange(final Component source) {
 
-        if (source instanceof TextField) {
-            getValue().setValue(((TextField) source).getValue());
-        }
+		if (source instanceof TextField) {
+			getValue().setValue(((TextField) source).getValue());
+		}
 
-        if (source instanceof PasswordField) {
-            getValue().setValue(((PasswordField) source).getValue());
-        }
+		if (source instanceof PasswordField) {
+			getValue().setValue(((PasswordField) source).getValue());
+		}
 
-        if (source instanceof ComboBox) {
-            getValue().getDataProvider().getKeys().stream().findFirst().ifPresent(k -> {
-                final HashMap<String, String> values = new HashMap<>(1);
-                values.put(k, ((ComboBox<String>) source).getValue());
-                getValue().getDataProvider().applyValues(values, getValue());
-            });
-        }
+		if (source instanceof ComboBox) {
+			getValue().getDataProvider().getKeys().stream().findFirst().ifPresent(k -> {
+				final HashMap<String, String> values = new HashMap<>(1);
+				values.put(k, ((ComboBox<String>) source).getValue());
+				getValue().getDataProvider().applyValues(values, getValue());
+			});
+		}
 
-        if (source instanceof CheckBoxGroup) {
-            final HashMap<String, String> selectedValues = new HashMap<>(getValue().getDataProvider().getKeys().size());
-            ((CheckBoxGroup<String>) source).getSelectedItems()
-                .forEach(
-                    v -> getValue().getDataProvider()
-                        .getOptions()
-                        .entrySet()
-                        .stream()
-                        .filter(e -> e.getValue().equals(v))
-                        .map(Map.Entry::getKey)
-                        .findFirst()
-                        .ifPresent(k -> selectedValues.put(k, v)));
-            getValue().getDataProvider().applyValues(selectedValues, getValue());
-        }
+		if (source instanceof CheckBoxGroup) {
+			final HashMap<String, String> selectedValues = new HashMap<>(getValue().getDataProvider().getKeys().size());
+			((CheckBoxGroup<String>) source).getSelectedItems()
+				.forEach(
+					v -> getValue().getDataProvider()
+						.getOptions()
+						.entrySet()
+						.stream()
+						.filter(e -> e.getValue().equals(v))
+						.map(Map.Entry::getKey)
+						.findFirst()
+						.ifPresent(k -> selectedValues.put(k, v)));
+			getValue().getDataProvider().applyValues(selectedValues, getValue());
+		}
 
-        fireEvent(new ValueChangeEvent(this));
-    }
+		fireEvent(new ValueChangeEvent(this));
+	}
 }

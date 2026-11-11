@@ -29,6 +29,8 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.climate.ClimateJobsView;
+import de.symeda.sormas.ui.climate.ClimateObservationsView;
 import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumValuesView;
 import de.symeda.sormas.ui.configuration.customizablefield.CustomizableFieldsView;
 import de.symeda.sormas.ui.configuration.disease.DiseaseConfigurationView;
@@ -135,6 +137,12 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		if (UiUtil.permitted(UserRight.DISEASE_MANAGEMENT)) {
 			navigator.addView(DiseaseConfigurationView.VIEW_NAME, DiseaseConfigurationView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DiseaseConfigurationView.class;
+		}
+
+		if (UiUtil.permitted(FeatureType.CLIMATE_MANAGEMENT, UserRight.CLIMATE_VIEW)) {
+			navigator.addView(ClimateObservationsView.VIEW_NAME, ClimateObservationsView.class);
+			navigator.addView(ClimateJobsView.VIEW_NAME, ClimateJobsView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : ClimateObservationsView.class;
 		}
 
 		if (UiUtil.permitted(UserRight.SYSTEM_CONFIGURATION)) {
@@ -283,6 +291,14 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(
 				DiseaseConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DiseaseConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+		}
+
+		if (UiUtil.permitted(FeatureType.CLIMATE_MANAGEMENT, UserRight.CLIMATE_VIEW)) {
+			menu.addView(
+				ClimateObservationsView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", ClimateObservationsView.VIEW_NAME.replace("/", ".") + ".short", ""),
 				null,
 				false);
 		}

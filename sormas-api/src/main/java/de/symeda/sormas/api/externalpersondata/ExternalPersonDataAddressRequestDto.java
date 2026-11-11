@@ -5,7 +5,9 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 
 @AuditedClass
 public class ExternalPersonDataAddressRequestDto implements Serializable {
@@ -14,7 +16,11 @@ public class ExternalPersonDataAddressRequestDto implements Serializable {
 
 	private CaseDataDto caseData;
 
-	private ContactDto contact;
+	private ContactReferenceDto contact;
+
+	private EventParticipantDto eventParticipant;
+
+	private PersonReferenceDto personReference;
 
 	public CaseDataDto getCaseData() {
 		return caseData;
@@ -24,12 +30,28 @@ public class ExternalPersonDataAddressRequestDto implements Serializable {
 		this.caseData = caseData;
 	}
 
-	public ContactDto getContact() {
+	public ContactReferenceDto getContact() {
 		return contact;
 	}
 
-	public void setContact(ContactDto contact) {
+	public void setContact(ContactReferenceDto contact) {
 		this.contact = contact;
+	}
+
+	public EventParticipantDto getEventParticipant() {
+		return eventParticipant;
+	}
+
+	public void setEventParticipant(EventParticipantDto eventParticipant) {
+		this.eventParticipant = eventParticipant;
+	}
+
+	public PersonReferenceDto getPersonReference() {
+		return personReference;
+	}
+
+	public void setPersonReference(PersonReferenceDto personReference) {
+		this.personReference = personReference;
 	}
 
 	@Override
@@ -37,11 +59,14 @@ public class ExternalPersonDataAddressRequestDto implements Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ExternalPersonDataAddressRequestDto that = (ExternalPersonDataAddressRequestDto) o;
-		return Objects.equals(caseData, that.caseData) && Objects.equals(contact, that.contact);
+		return Objects.equals(caseData, that.caseData)
+			&& Objects.equals(contact, that.contact)
+			&& Objects.equals(eventParticipant, that.eventParticipant)
+			&& Objects.equals(personReference, that.personReference);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(caseData, contact);
+		return Objects.hash(caseData, contact, eventParticipant, personReference);
 	}
 }

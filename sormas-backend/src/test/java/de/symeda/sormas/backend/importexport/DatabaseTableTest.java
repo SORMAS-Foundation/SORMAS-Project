@@ -92,6 +92,19 @@ public class DatabaseTableTest {
 	}
 
 	@Test
+	public void testClimateTablesEnabled() {
+
+		List<FeatureConfigurationDto> climateOn = Collections.singletonList(getFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true));
+		List<FeatureConfigurationDto> climateOff = Collections.singletonList(getFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, false));
+
+		for (DatabaseTable table : Arrays
+			.asList(DatabaseTable.CLIMATE_LOCATIONS, DatabaseTable.CLIMATE_OBSERVATIONS, DatabaseTable.SITE_CLIMATE_READINGS)) {
+			assertThat(table.name(), table.isEnabled(climateOn, new ConfigFacadeEjb()), is(true));
+			assertThat(table.name(), table.isEnabled(climateOff, new ConfigFacadeEjb()), is(false));
+		}
+	}
+
+	@Test
 	public void testInfrastructureTablesEnabled() {
 
 		Arrays.stream(DatabaseTable.values()).filter(t -> t.getDatabaseTableType() == DatabaseTableType.INFRASTRUCTURE).forEach(table -> {

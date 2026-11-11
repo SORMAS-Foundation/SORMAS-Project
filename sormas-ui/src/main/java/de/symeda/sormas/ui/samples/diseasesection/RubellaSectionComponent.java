@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.sample.AvidityInterpretation;
 import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -28,12 +30,17 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
 import de.symeda.sormas.ui.samples.events.TestResultChangedEvent;
 import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
+import de.symeda.sormas.ui.utils.StringToFloatNullableConverter;
 
 public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 
 	private ComboBox<GenoType> genoTypeField;
 	private TextField genoTypeTextField;
 	private Label genoTypeTextSpacer;
+	private TextField sequenceIdTextField;
+	private CheckBox avidityPerformedCheckBox;
+	private TextField avidityIndexTextField;
+	private ComboBox<AvidityInterpretation> avidityInterpretationComboBox;
 
 	private PathogenTestType currentTestType;
 	private PathogenTestResultType currentResult;
@@ -51,8 +58,28 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 		genoTypeTextSpacer = createSpacer();
 		addToggleRow(genoTypeField, genoTypeTextField, genoTypeTextSpacer);
 
+		sequenceIdTextField = createTextField(PathogenTestDto.SEQUENCE_ID);
+		sequenceIdTextField.setVisible(false);
+		addRow(sequenceIdTextField);
+
+		avidityPerformedCheckBox = createCheckBox(PathogenTestDto.AVIDITY_PERFORMED);
+		avidityIndexTextField = createTextField(PathogenTestDto.AVIDITY_INDEX);
+		avidityInterpretationComboBox = createComboBox(PathogenTestDto.AVIDITY_INTERPRETATION);
+		avidityInterpretationComboBox.setItems(AvidityInterpretation.values());
+		avidityInterpretationComboBox.setItemCaptionGenerator(AvidityInterpretation::toString);
+		avidityPerformedCheckBox.setVisible(false);
+		avidityIndexTextField.setVisible(false);
+		avidityInterpretationComboBox.setVisible(false);
+		addRow(avidityPerformedCheckBox, avidityIndexTextField, avidityInterpretationComboBox);
+
 		binder.forField(genoTypeField).bind(PathogenTestDto::getGenoType, PathogenTestDto::setGenoType);
 		binder.forField(genoTypeTextField).bind(PathogenTestDto::getGenoTypeText, PathogenTestDto::setGenoTypeText);
+		binder.forField(sequenceIdTextField).bind(PathogenTestDto::getSequenceId, PathogenTestDto::setSequenceId);
+		binder.forField(avidityPerformedCheckBox).bind(PathogenTestDto::getAvidityPerformed, PathogenTestDto::setAvidityPerformed);
+		binder.forField(avidityIndexTextField)
+			.withConverter(new StringToFloatNullableConverter(avidityIndexTextField.getCaption()))
+			.bind(PathogenTestDto::getAvidityIndex, PathogenTestDto::setAvidityIndex);
+		binder.forField(avidityInterpretationComboBox).bind(PathogenTestDto::getAvidityInterpretation, PathogenTestDto::setAvidityInterpretation);
 	}
 
 	@Override
@@ -65,6 +92,8 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 				genoTypeTextField.clear();
 			}
 		}));
+
+		track(avidityPerformedCheckBox.addValueChangeListener(e -> updateAvidityDetailsVisibility()));
 
 		track(eventBus.on(TestTypeChangedEvent.class, event -> {
 			currentTestType = event.getTestType();
@@ -88,10 +117,25 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 	private void updateVisibility() {
 		boolean visible = currentTestType == PathogenTestType.GENOTYPING && currentResult == PathogenTestResultType.POSITIVE;
 		genoTypeField.setVisible(visible);
+		sequenceIdTextField.setVisible(visible);
 		if (!visible) {
-			genoTypeField.clear();
-			genoTypeTextField.setVisible(false);
-			genoTypeTextField.clear();
+			setVisibleClear(false, genoTypeField, genoTypeTextField, sequenceIdTextField);
+		}
+
+		boolean positiveIgg = currentTestType == PathogenTestType.IGG_SERUM_ANTIBODY && currentResult == PathogenTestResultType.POSITIVE;
+		avidityPerformedCheckBox.setVisible(positiveIgg);
+		if (!positiveIgg) {
+			setVisibleClear(false, avidityPerformedCheckBox);
+		}
+		updateAvidityDetailsVisibility();
+	}
+
+	private void updateAvidityDetailsVisibility() {
+		boolean avidityPerformed = avidityPerformedCheckBox.isVisible() && Boolean.TRUE.equals(avidityPerformedCheckBox.getValue());
+		avidityIndexTextField.setVisible(avidityPerformed);
+		avidityInterpretationComboBox.setVisible(avidityPerformed);
+		if (!avidityPerformed) {
+			setVisibleClear(false, avidityIndexTextField, avidityInterpretationComboBox);
 		}
 		updateRowAndSelfVisibility();
 	}
@@ -104,6 +148,26 @@ public class RubellaSectionComponent extends AbstractDiseaseSectionComponent {
 		}
 		dto.setGenoType(null);
 		dto.setGenoTypeText(null);
+		dto.setSequenceId(null);
+		dto.setAvidityPerformed(null);
+		dto.setAvidityIndex(null);
+		dto.setAvidityInterpretation(null);
+	}
+
+	TextField sequenceIdField() {
+		return sequenceIdTextField;
+	}
+
+	CheckBox avidityPerformedField() {
+		return avidityPerformedCheckBox;
+	}
+
+	TextField avidityIndexField() {
+		return avidityIndexTextField;
+	}
+
+	ComboBox<AvidityInterpretation> avidityInterpretationField() {
+		return avidityInterpretationComboBox;
 	}
 
 	private void updateGenoTypeItems() {

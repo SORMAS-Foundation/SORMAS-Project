@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.docgeneration.valueresolvers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -88,6 +89,22 @@ class ExternalPersonDataPropertyFillerTest extends AbstractUnitTest {
 		// CHECK
 		assertEquals("Paris", properties.getProperty("externalPersonData.city"));
 		assertEquals("Main Street", properties.getProperty("externalPersonData.street"));
+		verify(provider).findAppropriateDocumentAddressFor(any());
+		verifyNoMoreInteractions(provider);
+	}
+
+	@Test
+	void fetchesAddressOnlyOnceWhenProviderReturnsNull() {
+		// PREPARE
+		when(provider.findAppropriateDocumentAddressFor(any())).thenReturn(null);
+
+		// EXECUTE
+		LocationDto firstAddress = (LocationDto) victim.getEntity();
+		LocationDto secondAddress = (LocationDto) victim.getEntity();
+
+		// CHECK
+		assertNull(firstAddress);
+		assertNull(secondAddress);
 		verify(provider).findAppropriateDocumentAddressFor(any());
 		verifyNoMoreInteractions(provider);
 	}

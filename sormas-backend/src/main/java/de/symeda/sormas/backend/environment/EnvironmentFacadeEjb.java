@@ -48,6 +48,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
+import de.symeda.sormas.backend.climate.ClimateLinkingService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
@@ -88,6 +89,9 @@ public class EnvironmentFacadeEjb
 	@EJB
 	private LocationFacadeEjb.LocationFacadeEjbLocal locationFacade;
 
+	@EJB
+	private ClimateLinkingService climateLinkingService;
+
 	@Override
 	@RightsAllowed({
 		UserRight._ENVIRONMENT_EDIT,
@@ -108,6 +112,11 @@ public class EnvironmentFacadeEjb
 		validate(dto);
 		Environment environment = fillOrBuildEntity(dto, existingEnvironment, checkChangeDate);
 		service.ensurePersisted(environment);
+
+		// idempotent: only changes the link when the environment is new, its GPS moved to another cell or became unusable
+		if (climateLinkingService.isClimateEnabled()) {
+			climateLinkingService.linkEnvironment(environment);
+		}
 
 		return toDto(environment);
 	}

@@ -20,8 +20,6 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.BaseFacade;
 
 /**
@@ -60,10 +58,7 @@ public interface SystemConfigurationValueFacade
 	 */
 	String getValue(String key);
 
-	default String getValueOrDefaultTo(String key, String defaultValue) {
-		String value = getValue(key);
-		return StringUtils.isNotBlank(value) ? value : defaultValue;
-	}
+	String getValueOrDefaultTo(String key, String defaultValue);
 
 	/**
 	 * Checks if a configuration value exists for the given key.

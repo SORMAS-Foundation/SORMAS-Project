@@ -21,14 +21,11 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSummaryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -48,10 +45,8 @@ public class ExternalPersonDataLookup extends VerticalLayout {
 	private boolean automaticallyApplied;
 
 	public static boolean isAvailable() {
-		return UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)
-			&& Boolean.parseBoolean(
-				FacadeProvider.getSystemConfigurationValueFacade()
-					.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED_KEY));
+		return ExternalPersonDataUtils.isExternalPersonProviderEnabled();
+
 	}
 
 	public ExternalPersonDataLookup(

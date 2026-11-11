@@ -38,6 +38,11 @@ import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateCaseFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateJobFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateObservationFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateSeriesFacadeEjb;
+import de.symeda.sormas.backend.climate.SiteClimateReadingFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -534,6 +539,36 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testNotifierEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(NotifierEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testClimateJobFacadeEjbAuthorization(JavaClasses classes) {
+		// managing sources at class level; the read methods the screen needs only CLIMATE_VIEW
+		assertFacadeEjbAnnotated(
+			ClimateJobFacadeEjb.class,
+			AuthMode.CLASS_ONLY,
+			Arrays.asList("getIndexList", "count", "getSummary", "getRelinkDays"),
+			classes);
+	}
+
+	@ArchTest
+	public void testClimateObservationFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ClimateObservationFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testClimateSeriesFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ClimateSeriesFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSiteClimateReadingFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SiteClimateReadingFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testClimateCaseFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ClimateCaseFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

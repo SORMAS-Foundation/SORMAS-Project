@@ -1,133 +1,138 @@
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
-	version="2.1">
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
 
-	<persistence-unit name="SormasPU" transaction-type="JTA">
+    <persistence-unit name="SormasPU" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-		<jta-data-source>jdbc/sormasDataPool</jta-data-source>
-        
-		<class>de.symeda.sormas.backend.action.Action</class>
-		<class>de.symeda.sormas.backend.caze.Case</class>
-		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
-		<class>de.symeda.sormas.backend.common.DeletableAdo</class>
-		<class>de.symeda.sormas.backend.common.CoreAdo</class>
-		<class>de.symeda.sormas.backend.contact.Contact</class>
-		<class>de.symeda.sormas.backend.epidata.EpiData</class>
-		<class>de.symeda.sormas.backend.environment.Environment</class>
-		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
-		<class>de.symeda.sormas.backend.event.Event</class>
-		<class>de.symeda.sormas.backend.event.EventParticipant</class>
-		<class>de.symeda.sormas.backend.event.EventGroup</class>
-		<class>de.symeda.sormas.backend.infrastructure.facility.Facility</class>
-		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
-		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
-		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Assessment</class>
-		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Bottleneck</class>
-		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Enabler</class>
-		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717CorrectiveAction</class>
-		<class>de.symeda.sormas.backend.location.Location</class>
-		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
-		<class>de.symeda.sormas.backend.person.Person</class>
-		<class>de.symeda.sormas.backend.infrastructure.community.Community</class>
-		<class>de.symeda.sormas.backend.infrastructure.district.District</class>
-		<class>de.symeda.sormas.backend.infrastructure.region.Region</class>
-		<class>de.symeda.sormas.backend.infrastructure.country.Country</class>
-		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
-		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
-		<class>de.symeda.sormas.backend.sample.Sample</class>
-		<class>de.symeda.sormas.backend.sample.PathogenTest</class>
-		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
-		<class>de.symeda.sormas.backend.task.Task</class>
-		<class>de.symeda.sormas.backend.user.User</class>
-		<class>de.symeda.sormas.backend.user.UserReference</class>
-		<class>de.symeda.sormas.backend.user.UserRole</class>
-		<class>de.symeda.sormas.backend.visit.Visit</class>
-		<class>de.symeda.sormas.backend.therapy.Therapy</class>
-		<class>de.symeda.sormas.backend.therapy.Treatment</class>
-		<class>de.symeda.sormas.backend.therapy.Prescription</class>
-		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalCourse</class>
-		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalVisit</class>
-		<class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
-		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
-		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
-		<class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
-		<class>de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry</class>
-		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
-		<class>de.symeda.sormas.backend.importexport.ExportConfiguration</class>
-		<class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
-		<class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
-		<class>de.symeda.sormas.backend.report.AggregateReport</class>
-		<class>de.symeda.sormas.backend.campaign.Campaign</class>
-		<class>de.symeda.sormas.backend.campaign.form.CampaignFormMeta</class>
-		<class>de.symeda.sormas.backend.infrastructure.area.Area</class>
-		<class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
-		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
-		<class>de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo</class>
-		<class>de.symeda.sormas.backend.document.Document</class>
-		<class>de.symeda.sormas.backend.document.DocumentRelatedEntity</class>
-		<class>de.symeda.sormas.backend.exposure.Exposure</class>
-		<class>de.symeda.sormas.backend.manualmessagelog.ManualMessageLog</class>
-		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
-		<class>de.symeda.sormas.backend.externalmessage.ExternalMessage</class>
-		<class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>
-		<class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
-		<class>de.symeda.sormas.backend.share.ExternalShareInfo</class>
-		<class>de.symeda.sormas.backend.person.PersonContactDetail</class>
-		<class>de.symeda.sormas.backend.infrastructure.continent.Continent</class>
-		<class>de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequest</class>
-		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
-		<class>de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadata</class>
-		<class>de.symeda.sormas.backend.customizablefield.CustomizableFieldValue</class>
-		<class>de.symeda.sormas.backend.immunization.entity.BaseImmunization</class>
-		<class>de.symeda.sormas.backend.immunization.entity.Immunization</class>
-		<class>de.symeda.sormas.backend.immunization.entity.DirectoryImmunization</class>
-		<class>de.symeda.sormas.backend.travelentry.TravelEntry</class>
-		<class>de.symeda.sormas.backend.vaccination.Vaccination</class>
-		<class>de.symeda.sormas.backend.vaccination.LastVaccineType</class>
-		<class>de.symeda.sormas.backend.vaccination.LastVaccinationDate</class>
-		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
-		<class>de.symeda.sormas.backend.externalmessage.labmessage.TestReport</class>
-		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
-		<class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
-		<class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi</class>
-		<class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents</class>
-		<class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation</class>
-		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
-		<class>de.symeda.sormas.backend.selfreport.SelfReport</class>
-		<class>de.symeda.sormas.backend.docgeneration.DocumentTemplate</class>
-		<class>de.symeda.sormas.backend.survey.Survey</class>
-		<class>de.symeda.sormas.backend.survey.SurveyToken</class>
-		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue</class>
-		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory</class>
-		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
-		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
-		<class>de.symeda.sormas.backend.epipulse.EpipulseExport</class>
+        <jta-data-source>jdbc/sormasDataPool</jta-data-source>
+
+        <class>de.symeda.sormas.backend.action.Action</class>
+        <class>de.symeda.sormas.backend.caze.Case</class>
+        <class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
+        <class>de.symeda.sormas.backend.common.DeletableAdo</class>
+        <class>de.symeda.sormas.backend.common.CoreAdo</class>
+        <class>de.symeda.sormas.backend.contact.Contact</class>
+        <class>de.symeda.sormas.backend.epidata.EpiData</class>
+        <class>de.symeda.sormas.backend.environment.Environment</class>
+        <class>de.symeda.sormas.backend.climate.ClimateLocation</class>
+        <class>de.symeda.sormas.backend.climate.ClimateObservation</class>
+        <class>de.symeda.sormas.backend.climate.ClimateJob</class>
+        <class>de.symeda.sormas.backend.climate.SiteClimateReading</class>
+        <class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
+        <class>de.symeda.sormas.backend.event.Event</class>
+        <class>de.symeda.sormas.backend.event.EventParticipant</class>
+        <class>de.symeda.sormas.backend.event.EventGroup</class>
+        <class>de.symeda.sormas.backend.infrastructure.facility.Facility</class>
+        <class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
+        <class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
+        <class>de.symeda.sormas.backend.event.sevenoneseven.Event717Assessment</class>
+        <class>de.symeda.sormas.backend.event.sevenoneseven.Event717Bottleneck</class>
+        <class>de.symeda.sormas.backend.event.sevenoneseven.Event717Enabler</class>
+        <class>de.symeda.sormas.backend.event.sevenoneseven.Event717CorrectiveAction</class>
+        <class>de.symeda.sormas.backend.location.Location</class>
+        <class>de.symeda.sormas.backend.outbreak.Outbreak</class>
+        <class>de.symeda.sormas.backend.person.Person</class>
+        <class>de.symeda.sormas.backend.infrastructure.community.Community</class>
+        <class>de.symeda.sormas.backend.infrastructure.district.District</class>
+        <class>de.symeda.sormas.backend.infrastructure.region.Region</class>
+        <class>de.symeda.sormas.backend.infrastructure.country.Country</class>
+        <class>de.symeda.sormas.backend.report.WeeklyReport</class>
+        <class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
+        <class>de.symeda.sormas.backend.sample.Sample</class>
+        <class>de.symeda.sormas.backend.sample.PathogenTest</class>
+        <class>de.symeda.sormas.backend.symptoms.Symptoms</class>
+        <class>de.symeda.sormas.backend.task.Task</class>
+        <class>de.symeda.sormas.backend.user.User</class>
+        <class>de.symeda.sormas.backend.user.UserReference</class>
+        <class>de.symeda.sormas.backend.user.UserRole</class>
+        <class>de.symeda.sormas.backend.visit.Visit</class>
+        <class>de.symeda.sormas.backend.therapy.Therapy</class>
+        <class>de.symeda.sormas.backend.therapy.Treatment</class>
+        <class>de.symeda.sormas.backend.therapy.Prescription</class>
+        <class>de.symeda.sormas.backend.clinicalcourse.ClinicalCourse</class>
+        <class>de.symeda.sormas.backend.clinicalcourse.ClinicalVisit</class>
+        <class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
+        <class>de.symeda.sormas.backend.sample.AdditionalTest</class>
+        <class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
+        <class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
+        <class>de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry</class>
+        <class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
+        <class>de.symeda.sormas.backend.importexport.ExportConfiguration</class>
+        <class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
+        <class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
+        <class>de.symeda.sormas.backend.report.AggregateReport</class>
+        <class>de.symeda.sormas.backend.campaign.Campaign</class>
+        <class>de.symeda.sormas.backend.campaign.form.CampaignFormMeta</class>
+        <class>de.symeda.sormas.backend.infrastructure.area.Area</class>
+        <class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
+        <class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
+        <class>de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo</class>
+        <class>de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo</class>
+        <class>de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo</class>
+        <class>de.symeda.sormas.backend.document.Document</class>
+        <class>de.symeda.sormas.backend.document.DocumentRelatedEntity</class>
+        <class>de.symeda.sormas.backend.exposure.Exposure</class>
+        <class>de.symeda.sormas.backend.manualmessagelog.ManualMessageLog</class>
+        <class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
+        <class>de.symeda.sormas.backend.externalmessage.ExternalMessage</class>
+        <class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>
+        <class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
+        <class>de.symeda.sormas.backend.share.ExternalShareInfo</class>
+        <class>de.symeda.sormas.backend.person.PersonContactDetail</class>
+        <class>de.symeda.sormas.backend.infrastructure.continent.Continent</class>
+        <class>de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent</class>
+        <class>de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequest</class>
+        <class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
+        <class>de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadata</class>
+        <class>de.symeda.sormas.backend.customizablefield.CustomizableFieldValue</class>
+        <class>de.symeda.sormas.backend.immunization.entity.BaseImmunization</class>
+        <class>de.symeda.sormas.backend.immunization.entity.Immunization</class>
+        <class>de.symeda.sormas.backend.immunization.entity.DirectoryImmunization</class>
+        <class>de.symeda.sormas.backend.travelentry.TravelEntry</class>
+        <class>de.symeda.sormas.backend.vaccination.Vaccination</class>
+        <class>de.symeda.sormas.backend.vaccination.LastVaccineType</class>
+        <class>de.symeda.sormas.backend.vaccination.LastVaccinationDate</class>
+        <class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
+        <class>de.symeda.sormas.backend.externalmessage.labmessage.TestReport</class>
+        <class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
+        <class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
+        <class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi</class>
+        <class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents</class>
+        <class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation</class>
+        <class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
+        <class>de.symeda.sormas.backend.selfreport.SelfReport</class>
+        <class>de.symeda.sormas.backend.docgeneration.DocumentTemplate</class>
+        <class>de.symeda.sormas.backend.survey.Survey</class>
+        <class>de.symeda.sormas.backend.survey.SurveyToken</class>
+        <class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue</class>
+        <class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory</class>
+        <class>de.symeda.sormas.backend.person.notifier.Notifier</class>
+        <class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
+        <class>de.symeda.sormas.backend.epipulse.EpipulseExport</class>
         <class>de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration</class>
         <class>de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration</class>
         <class>de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
-		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-		<validation-mode>CALLBACK</validation-mode>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+        <validation-mode>CALLBACK</validation-mode>
 
-		<properties>
-			<property name="hibernate.dialect" value="de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect"/>
-			<property name="hibernate.criteria.literal_handling_mode" value="bind"/>
-			<property name="hibernate.transaction.jta.platform"
-					  value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-			<property name="hibernate.show_sql" value="false"/>
-			<property name="hibernate.format_sql" value="false"/>
+        <properties>
+            <property name="hibernate.dialect" value="de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect"/>
+            <property name="hibernate.criteria.literal_handling_mode" value="bind"/>
+            <property name="hibernate.transaction.jta.platform"
+                      value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
 
-			<property name="hibernate.cache.use_second_level_cache" value="true"/>
-			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.internal.SingletonEhcacheRegionFactory"/>
-			<!-- don't validate on release, otherwise the automatic db update won't work
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.region.factory_class"
+                      value="org.hibernate.cache.ehcache.internal.SingletonEhcacheRegionFactory"/>
+            <!-- don't validate on release, otherwise the automatic db update won't work
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
              -->
-		</properties>
+        </properties>
 
-	</persistence-unit>
+    </persistence-unit>
 </persistence>

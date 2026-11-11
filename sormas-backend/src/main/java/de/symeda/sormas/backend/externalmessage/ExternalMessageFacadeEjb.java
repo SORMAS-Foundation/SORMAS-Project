@@ -355,8 +355,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	@PermitAll
-	public List<ExternalMessageDto> saveAndProcessSurveyResponsesForCron() {
+	@RightsAllowed({
+		UserRight._SYSTEM,
+		UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS })
+	public List<ExternalMessageDto> saveAndProcessSurveyResponses() {
 		return saveAndProcessSurveyResponses(null);
 	}
 

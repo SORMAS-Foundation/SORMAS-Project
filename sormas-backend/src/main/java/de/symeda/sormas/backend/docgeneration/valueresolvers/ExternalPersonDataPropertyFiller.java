@@ -4,11 +4,14 @@ import javax.annotation.Nullable;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataAddressRequestDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 /**
@@ -22,6 +25,8 @@ public class ExternalPersonDataPropertyFiller extends AbstractRootValuePropertyF
 	 */
 	@Nullable
 	private LocationDto address;
+
+	private boolean fetched;
 
 	private final DocumentTemplateEntities entities;
 
@@ -37,7 +42,7 @@ public class ExternalPersonDataPropertyFiller extends AbstractRootValuePropertyF
 	}
 
 	private LocationDto getAddress() {
-		if (address != null) {
+		if (fetched) {
 			return address;
 		}
 
@@ -45,10 +50,14 @@ public class ExternalPersonDataPropertyFiller extends AbstractRootValuePropertyF
 
 		ExternalPersonDataAddressRequestDto request = new ExternalPersonDataAddressRequestDto();
 		request.setCaseData((CaseDataDto) entities.getEntity(RootEntityType.ROOT_CASE));
+		request.setContact((ContactReferenceDto) entities.getEntity(RootEntityType.ROOT_CONTACT));
+		request.setPersonReference((PersonReferenceDto) entities.getEntity(RootEntityType.ROOT_PERSON));
+		request.setEventParticipant((EventParticipantDto) entities.getEntity(RootEntityType.ROOT_EVENT_PARTICIPANT));
 
 		logger.debug("Request.case: [{}]", request.getCaseData());
 
 		address = externalPersonDataProviderFacade.findAppropriateDocumentAddressFor(request);
+		fetched = true;
 
 		logger.debug("Retrieved address: [{}]", address);
 

@@ -1103,6 +1103,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@PermitAll
+	@AuditIgnore
 	public String getCurrentAccessToken() {
 		return currentUserService.getCurrentAccessToken().orElse(null);
 	}

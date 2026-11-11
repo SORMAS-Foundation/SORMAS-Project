@@ -30,11 +30,16 @@ import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataSummaryDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.audit.AuditLoggerEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ExternalPersonDataProviderFacade")
+@RightsAllowed({
+	UserRight._SYSTEM,
+	UserRight._EXTERNAL_PERSON_DATA_PROVIDER_ACCESS })
 public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataProviderFacade {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataProviderFacadeEJB.class);
@@ -78,16 +83,12 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 		if (MapUtils.isNotEmpty(details)) {
 			ObjectMapper mapper = ObjectMapperProvider.getInstance();
 
-			request.setDetails(details.entrySet().stream().filter(entry -> entry.getValue() != null).map(entry -> {
-				Object entryValue = entry.getValue();
-				String typedValue;
-				if (entryValue instanceof String) {
-					typedValue = (String) entryValue;
-				} else {
-					typedValue = ObjectMapperProvider.writeValueAsStringFailSafe(entryValue);
-				}
-				return Tuple.of(entry.getKey(), typedValue);
-			}).collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond)));
+			request.setDetails(
+				details.entrySet()
+					.stream()
+					.filter(entry -> entry.getValue() != null)
+					.map(entry -> Tuple.of(entry.getKey(), entry.getValue().toString()))
+					.collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond)));
 		}
 
 		return request;

@@ -1,11 +1,14 @@
 package de.symeda.sormas.api.audit;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
 @AuditedClass
-public class ExternalSystemCallAuditRequest {
+public class ExternalSystemCallAuditRequest implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String systemName;
 	private String actionType;

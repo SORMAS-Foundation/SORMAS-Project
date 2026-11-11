@@ -41,6 +41,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.disease.PathogenConverter;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.sample.AvidityInterpretation;
 import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
@@ -220,6 +221,9 @@ public class PathogenTest extends DeletableAdo {
 	private WesternBlotInterpretation westernBlotInterpretation;
 	private String sequenceId;
 	private Boolean seroConversion;
+	private Boolean avidityPerformed;
+	private Float avidityIndex;
+	private AvidityInterpretation avidityInterpretation;
 	private TargetTest targetTest;
 	private String targetTestText;
 	private TestRunStatus testRunStatus;
@@ -1012,6 +1016,31 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setSeroConversion(Boolean seroConversion) {
 		this.seroConversion = seroConversion;
+	}
+
+	public Boolean getAvidityPerformed() {
+		return avidityPerformed;
+	}
+
+	public void setAvidityPerformed(Boolean avidityPerformed) {
+		this.avidityPerformed = avidityPerformed;
+	}
+
+	public Float getAvidityIndex() {
+		return avidityIndex;
+	}
+
+	public void setAvidityIndex(Float avidityIndex) {
+		this.avidityIndex = avidityIndex;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AvidityInterpretation getAvidityInterpretation() {
+		return avidityInterpretation;
+	}
+
+	public void setAvidityInterpretation(AvidityInterpretation avidityInterpretation) {
+		this.avidityInterpretation = avidityInterpretation;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

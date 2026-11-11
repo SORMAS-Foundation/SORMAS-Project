@@ -72,8 +72,11 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 		}
 	}
 
-	@Test
-	void loadsRequestedRangesBeyondOneHundredUsingSubmittedCriteria() {
+	@org.junit.jupiter.params.ParameterizedTest
+	@org.junit.jupiter.params.provider.ValueSource(booleans = {
+		false,
+		true })
+	void loadsRequestedRangesBeyondOneHundredUsingSubmittedCriteria(boolean oversizedPages) {
 		try (Context context = new Context(true, "true")) {
 			// PREPARE
 			context.person.setNationalHealthId(null);
@@ -87,7 +90,8 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 				de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse response =
 					new de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchResponse();
 				response.setTotalCount(people.size());
-				response.setResults(people.subList(request.getOffset(), Math.min(request.getOffset() + request.getLimit(), people.size())));
+				int limit = request.getLimit() + (oversizedPages && request.getOffset() > 0 ? 50 : 0);
+				response.setResults(people.subList(request.getOffset(), Math.min(request.getOffset() + limit, people.size())));
 				return response;
 			});
 			victim = context.create();
@@ -111,18 +115,28 @@ class ExternalPersonDataComponentTest extends de.symeda.sormas.ui.AbstractUnitTe
 			java.util.List<?> lastResult = grid.getDataProvider()
 				.fetch(new com.vaadin.data.provider.Query<>(124, 50, java.util.Collections.emptyList(), null, null))
 				.collect(java.util.stream.Collectors.toList());
+			java.util.List<?> overlappingPage = grid.getDataProvider()
+				.fetch(new com.vaadin.data.provider.Query<>(40, 50, java.util.Collections.emptyList(), null, null))
+				.collect(java.util.stream.Collectors.toList());
+			java.util.List<?> repeatedPage = grid.getDataProvider()
+				.fetch(new com.vaadin.data.provider.Query<>(100, 10, java.util.Collections.emptyList(), null, null))
+				.collect(java.util.stream.Collectors.toList());
 
 			// CHECK
 			assertEquals(125, grid.getDataProvider().size(new com.vaadin.data.provider.Query<>()));
 			assertEquals(people.subList(0, 50), firstPage);
 			assertEquals(people.subList(100, 125), lastPage);
 			assertEquals(people.subList(124, 125), lastResult);
+			assertEquals(people.subList(40, 90), overlappingPage);
+			assertEquals(people.subList(100, 110), repeatedPage);
 			org.mockito.ArgumentCaptor<de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest> requests =
 				org.mockito.ArgumentCaptor.forClass(de.symeda.sormas.api.externalpersondata.ExternalPersonDataSearchRequest.class);
 			verify(context.provider, org.mockito.Mockito.times(3)).find(requests.capture());
 			assertEquals(0, requests.getAllValues().get(0).getOffset());
-			assertEquals(100, requests.getAllValues().get(1).getOffset());
+			assertEquals(50, requests.getAllValues().get(1).getOffset());
 			assertEquals(50, requests.getAllValues().get(1).getLimit());
+			assertEquals(100, requests.getAllValues().get(2).getOffset());
+			assertEquals(25, requests.getAllValues().get(2).getLimit());
 			assertEquals("Doe", requests.getAllValues().get(1).getLastName());
 			org.mockito.Mockito.verify(context.provider, org.mockito.Mockito.never())
 				.findDisplayDataByNationalHealthId(org.mockito.ArgumentMatchers.any());

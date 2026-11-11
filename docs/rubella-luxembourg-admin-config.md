@@ -1,14 +1,13 @@
 # Rubella Luxembourg admin configuration
 
-Perform these steps against Luxembourg's SORMAS server admin UI (Configuration > Disease Configuration) before any manual QA on this branch's other changes.
+Perform these steps against Luxembourg's SORMAS server admin UI (Configuration > Disease Configuration) before any
+manual QA on this branch's other changes.
 
 ## Disease.RUBELLA (#14288)
 
-- Set `primaryDisease` to true. Without it Rubella will not appear in the disease dropdown when
-  adding a new case: `CaseCreateForm` builds that field with `addDiseaseField(DISEASE, showNonPrimaryDiseases=false, ...)`,
-  so it lists active **and primary** diseases only. `Disease.RUBELLA`'s enum defaults ship with both
-  `primaryDisease` and `caseSurveillanceEnabled` false, unlike Measles, Mumps, Syphilis and Congenital Rubella.
-- Set `caseSurveillanceEnabled` to true.
+- Active, primary and case surveillance come preset on Luxembourg servers. The first startup after the
+  upgrade to schema 682 sets them once (`DiseaseConfigurationFacadeEjb.presetLuxembourgRubellaConfiguration`),
+  overwriting whatever was stored, and later admin changes are kept. Servers in other countries are not touched.
 - Set `incubationPeriodEnabled` to true.
 - Set `minIncubationPeriod` to 12.
 - Set `maxIncubationPeriod` to 23.
@@ -35,13 +34,25 @@ Perform these steps against Luxembourg's SORMAS server admin UI (Configuration >
 
 ## Exposure and travel history (#14292)
 
-- Set `DiseaseConfigurationDto.exposureCategories` for Rubella to Air-Borne and Vertical transmission. "Vertical transmission" is the caption SORMAS uses for
-  mother-to-child transmission - there is no exposure category literally named "Mother-to-child".
-- Confirm the "Hospital" caption on `ClusterType.NOSOCOMIAL` reads correctly for Luxembourg's ECDC report - no enum change needed, caption only.
-- Confirm in the running UI that the four Activities-as-a-case TYPE OF PLACE values (School, Education and childcare, Nursing home, Asylum seekers shelter) are available for Rubella cases - already true for Luxembourg, no code change.
-- "Place of residence of patient at time of disease onset" uses the existing free-text `residenceAtOnset` field - confirmed 2026-08-27, no country dropdown needed. No admin action, recorded here for reference only.
+- The exposure categories come preset with the same one-time startup step: Respiratory and Vertical transmission, with
+  the
+  deprecated Air-Borne removed (#14299 replaced it with Respiratory, and the UI hides deprecated categories). "Vertical
+  transmission" is the caption SORMAS uses for mother-to-child transmission.
+- Confirm the "Hospital" caption on `ClusterType.NOSOCOMIAL` reads correctly for Luxembourg's ECDC report - no enum
+  change needed, caption only.
+- Confirm in the running UI that the four Activities-as-a-case TYPE OF PLACE values (School, Education and childcare,
+  Nursing home, Asylum seekers shelter) are available for Rubella cases - already true for Luxembourg, no code change.
+- "Place of residence of patient at time of disease onset" uses the existing free-text `residenceAtOnset` field -
+  confirmed 2026-08-27, no country dropdown needed. No admin action, recorded here for reference only.
 
 ## Classification limits and rollout warning (#14296)
 
-- CRS confirmation by persistent infant rubella IgG between 6 and 12 months of age (ECDC CRS laboratory criterion 4) is not automated. The registered CRS ruleset only evaluates isolation, PCR/genotyping and IgM serum antibody, so a case that meets only the persistent-IgG criterion must be classified manually by the epidemiologist.
-- Registering the Rubella and CRS rulesets changes how already existing cases classify. Automatic case classification is on by default (`caseclassificationcalculation.all` falls back to MANUAL_AND_AUTOMATIC), so the next save of any pre-existing Rubella or CRS case recomputes `systemCaseClassification`. Where the recomputed value differs from the stored `caseClassification`, SORMAS overwrites `caseClassification` and clears `classificationUser`, discarding an earlier manual classification. This is inherent to adding any ruleset - put it in the release notes rather than letting Luxembourg discover it in production.
+- CRS confirmation by persistent infant rubella IgG between 6 and 12 months of age (ECDC CRS laboratory criterion 4) is
+  not automated. The registered CRS ruleset only evaluates isolation, PCR/genotyping and IgM serum antibody, so a case
+  that meets only the persistent-IgG criterion must be classified manually by the epidemiologist.
+- Registering the Rubella and CRS rulesets changes how already existing cases classify. Automatic case classification is
+  on by default (`caseclassificationcalculation.all` falls back to MANUAL_AND_AUTOMATIC), so the next save of any
+  pre-existing Rubella or CRS case recomputes `systemCaseClassification`. Where the recomputed value differs from the
+  stored `caseClassification`, SORMAS overwrites `caseClassification` and clears `classificationUser`, discarding an
+  earlier manual classification. This is inherent to adding any ruleset - put it in the release notes rather than
+  letting Luxembourg discover it in production.

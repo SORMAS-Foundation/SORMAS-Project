@@ -23,8 +23,12 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
-import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
+import de.symeda.sormas.api.climate.ClimateCaseFacade;
+import de.symeda.sormas.api.climate.ClimateJobFacade;
+import de.symeda.sormas.api.climate.ClimateObservationFacade;
+import de.symeda.sormas.api.climate.ClimateSeriesFacade;
+import de.symeda.sormas.api.climate.SiteClimateReadingFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
@@ -46,6 +50,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.importexport.hierarchical.HierarchicalImportFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.continent.ContinentFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryFacade;
@@ -74,8 +79,12 @@ import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
-import de.symeda.sormas.backend.importexport.hierarchical.HierarchicalImportFacadeEjb.HierarchicalImportFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
+import de.symeda.sormas.backend.climate.ClimateCaseFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateJobFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateObservationFacadeEjb;
+import de.symeda.sormas.backend.climate.ClimateSeriesFacadeEjb;
+import de.symeda.sormas.backend.climate.SiteClimateReadingFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
@@ -99,6 +108,7 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.Hospita
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb.ExportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.hierarchical.HierarchicalImportFacadeEjb.HierarchicalImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
@@ -247,6 +257,16 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(CustomizableEnumFacadeEjbLocal.class);
 		} else if (ExternalSurveillanceToolFacade.class == clazz) {
 			return (P) beanTest.getBean(ExternalSurveillanceToolGatewayFacadeEjbLocal.class);
+		} else if (ClimateObservationFacade.class == clazz) {
+			return (P) beanTest.getBean(ClimateObservationFacadeEjb.ClimateObservationFacadeEjbLocal.class);
+		} else if (ClimateJobFacade.class == clazz) {
+			return (P) beanTest.getBean(ClimateJobFacadeEjb.ClimateJobFacadeEjbLocal.class);
+		} else if (ClimateSeriesFacade.class == clazz) {
+			return (P) beanTest.getBean(ClimateSeriesFacadeEjb.ClimateSeriesFacadeEjbLocal.class);
+		} else if (ClimateCaseFacade.class == clazz) {
+			return (P) beanTest.getBean(ClimateCaseFacadeEjb.ClimateCaseFacadeEjbLocal.class);
+		} else if (SiteClimateReadingFacade.class == clazz) {
+			return (P) beanTest.getBean(SiteClimateReadingFacadeEjb.SiteClimateReadingFacadeEjbLocal.class);
 		}
 
 		return null;

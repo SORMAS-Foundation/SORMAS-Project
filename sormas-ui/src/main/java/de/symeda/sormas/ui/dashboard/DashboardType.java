@@ -26,7 +26,8 @@ public enum DashboardType {
 	CAMPAIGNS,
 	SAMPLES,
 	ADVERSE_EVENTS,
-	GIS;
+	GIS,
+	CLIMATE;
 
 	@Override
 	public String toString() {

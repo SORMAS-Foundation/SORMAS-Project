@@ -34,7 +34,7 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 	 */
 	List<ExternalMessageDto> saveAndProcessSurveyResponses(@Nullable Date since);
 
-	default List<ExternalMessageDto> saveAndProcessSurveyResponsesForCron() {
+	default List<ExternalMessageDto> saveAndProcessSurveyResponses() {
 		return saveAndProcessSurveyResponses(null);
 	}
 
