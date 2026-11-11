@@ -117,7 +117,7 @@ class ClimateDashboardExportLinesTest extends AbstractUiBeanTest {
 		TestDataCreator.RDCF place = district.equals(liberia) ? liberiaPlace : rdcf;
 		creator.createCase(user.toReference(), place, c -> {
 			c.setDisease(disease);
-			c.setCaseClassification(CaseClassification.SUSPECT);
+			c.setCaseClassification(CaseClassification.CONFIRMED);
 			c.setReportDate(DateHelper.getEpiWeekStart(lastWeek));
 			c.getSymptoms().setOnsetDate(DateHelper.getEpiWeekStart(lastWeek));
 		});

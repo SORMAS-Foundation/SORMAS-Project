@@ -489,8 +489,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	/**
-	 * Sets the filters to their defaults: the user's region and district (fixed when their jurisdiction sets them), all
-	 * but not a case, and the last 52 complete weeks.
+	 * Sets the filters to their defaults: the user's region and district (fixed when their jurisdiction sets them), confirmed
+	 * cases only, and the last 52 complete weeks.
 	 */
 	void resetFilters() {
 
@@ -500,7 +500,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			regionFilter.setEnabled(userRegion == null);
 			districtFilter.setValue(userDistrict);
 			districtFilter.setEnabled(userDistrict == null);
-			classificationFilter.setValue(ClimateCaseClassificationFilter.ALL_BUT_NOT_A_CASE);
+			// confirmed cases by default (decision 145)
+			classificationFilter.setValue(ClimateCaseClassificationFilter.CONFIRMED);
 			// offeredWeeks.get(0) is the current week, not yet complete
 			EpiWeek to = offeredWeeks.get(1);
 			toFilter.setValue(to);
@@ -749,6 +750,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 
 	ComboBox<DistrictReferenceDto> getDistrictFilter() {
 		return districtFilter;
+	}
+
+	ComboBox<ClimateCaseClassificationFilter> getClassificationFilter() {
+		return classificationFilter;
 	}
 
 	ComboBox<EpiWeek> getFromFilter() {

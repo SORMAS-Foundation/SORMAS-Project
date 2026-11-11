@@ -34,6 +34,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.climate.ClimateCaseClassificationFilter;
 import de.symeda.sormas.api.climate.ClimateDataSource;
 import de.symeda.sormas.api.climate.ClimateVariable;
 import de.symeda.sormas.api.climate.HumidityMeasure;
@@ -139,6 +140,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		assertFalse(layout.getRegionFilter().isEnabled());
 		assertFalse(layout.getDistrictFilter().isEnabled());
 		assertEquals(rdcf.district, layout.getDistrictFilter().getValue());
+		assertEquals(ClimateCaseClassificationFilter.CONFIRMED, layout.getClassificationFilter().getValue(), "confirmed cases by default (decision 145)");
 		assertNotNull(layout.getSelection(), "applied on opening");
 		assertEquals(rdcf.district, layout.getSelection().getDistrict());
 		assertTrue(layout.getClimate().getDistrictSeries().isEmpty());
@@ -273,7 +275,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		fillWeek(location, lastWeek, 1.0);
 		creator.createCase(user.toReference(), rdcf, c -> {
 			c.setDisease(Disease.DENGUE);
-			c.setCaseClassification(CaseClassification.SUSPECT);
+			c.setCaseClassification(CaseClassification.CONFIRMED);
 			c.setReportDate(DateHelper.getEpiWeekStart(lastWeek));
 			c.getSymptoms().setOnsetDate(null);
 		});
@@ -375,7 +377,7 @@ class ClimateDashboardLayoutTest extends AbstractUiBeanTest {
 		for (int i = 0; i < 4; i++) {
 			creator.createCase(user.toReference(), rdcf, c -> {
 				c.setDisease(Disease.DENGUE);
-				c.setCaseClassification(CaseClassification.SUSPECT);
+				c.setCaseClassification(CaseClassification.CONFIRMED);
 				c.setReportDate(DateHelper.getEpiWeekStart(lastWeek));
 				c.getSymptoms().setOnsetDate(DateHelper.getEpiWeekStart(lastWeek));
 			});

@@ -93,7 +93,7 @@ class ClimateDashboardExportTest extends AbstractBeanTest {
 		creator.createPopulationData(rdcf.region, rdcf.district, 100_000, new Date());
 		creator.createCase(user.toReference(), rdcf, c -> {
 			c.setDisease(Disease.DENGUE);
-			c.setCaseClassification(CaseClassification.SUSPECT);
+			c.setCaseClassification(CaseClassification.CONFIRMED);
 			c.setReportDate(ClimateCalendar.toDate(monday.plusDays(2)));
 			c.getSymptoms().setOnsetDate(ClimateCalendar.toDate(monday.plusDays(2)));
 		});
