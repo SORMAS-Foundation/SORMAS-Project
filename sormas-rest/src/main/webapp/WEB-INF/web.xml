@@ -837,6 +837,30 @@
     </security-role>
 
     <security-role>
+        <role-name>CLIMATE_VIEW</role-name>
+    </security-role>
+
+    <security-role>
+        <role-name>CLIMATE_EDIT</role-name>
+    </security-role>
+
+    <security-role>
+        <role-name>CLIMATE_IMPORT</role-name>
+    </security-role>
+
+    <security-role>
+        <role-name>CLIMATE_EXPORT</role-name>
+    </security-role>
+
+    <security-role>
+        <role-name>CLIMATE_MANAGE_SOURCES</role-name>
+    </security-role>
+
+    <security-role>
+        <role-name>DASHBOARD_CLIMATE_VIEW</role-name>
+    </security-role>
+
+    <security-role>
         <role-name>SELF_REPORT_VIEW</role-name>
     </security-role>
 
