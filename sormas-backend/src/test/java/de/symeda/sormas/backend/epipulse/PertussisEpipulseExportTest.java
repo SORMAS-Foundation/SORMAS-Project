@@ -359,6 +359,24 @@ public class PertussisEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	@Test
+	@DisplayName("an asymptomatic case has its vaccination measured at the notification date")
+	public void anAsymptomaticCaseIsVaccinationCheckedAtTheNotificationDate() {
+
+		PersonReferenceDto person = creator.createPerson("Jon", "Kahn", Sex.MALE, 1992, 8, 30).toReference();
+
+		// no onset for the vaccination columns either, so the notification date stands in for it
+		fixture.caze(person, ONSET, caze -> caze.getSymptoms().setAsymptomatic(SymptomState.YES));
+		courseCoveringOnset(person, 3, FIRST_DOSE, SECOND_DOSE, LAST_DOSE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.PERT, PERIOD_START, PERIOD_END);
+
+		var entry = export.only();
+		assertThat(export.value(entry, DATE_OF_ONSET), is(blankOrNullString()));
+		assertThat(export.value(entry, VACCINATION_STATUS), is("3DOSE"));
+		assertThat(export.value(entry, DATE_OF_LAST_VACCINATION), is("2023-12-15"));
+	}
+
+	@Test
 	@DisplayName("the place columns report the most specific NUTS code each jurisdiction carries")
 	public void thePlaceColumnsReportTheMostSpecificNutsCode() {
 

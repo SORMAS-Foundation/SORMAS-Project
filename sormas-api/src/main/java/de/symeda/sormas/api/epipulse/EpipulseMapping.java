@@ -769,25 +769,29 @@ public final class EpipulseMapping {
 	 * {@code DateOfLastVaccination}: the latest of the doses {@link #vaccinationStatus} counts.
 	 *
 	 * <p>
-	 * Read from exactly the same doses, so the two columns can never describe different
-	 * vaccinations: blank whenever the status is not a dose count. A dose on the onset day counts,
-	 * as it does for the status, although EpiPulse words this column "before disease onset".
+	 * Read from exactly the same doses, up to the same reference date
+	 * ({@link EpipulseCaseDates#vaccinationReferenceDate}: onset, else notification), so the two
+	 * columns can never describe different vaccinations: blank whenever the status is not a dose
+	 * count. A dose on the reference day counts, as it does for the status, although EpiPulse words
+	 * this column "before disease onset".
 	 */
 	public static String dateOfLastVaccination(EpipulseDiseaseExportEntryDto entry) {
 
-		Date onset = EpipulseCaseDates.dateOfOnset(entry);
-		if (onset == null) {
+		Date reference = EpipulseCaseDates.vaccinationReferenceDate(entry);
+		if (reference == null) {
 			return "";
 		}
 
-		SortedSet<Date> doseDays = doseDaysUpTo(entry, DateHelper.getStartOfDay(onset));
+		SortedSet<Date> doseDays = doseDaysUpTo(entry, DateHelper.getStartOfDay(reference));
 
 		return doseDays.isEmpty() ? "" : formatDate(doseDays.last());
 	}
 
 	/**
 	 * {@code VaccinationStatus}: the number of vaccine doses the patient received up to and
-	 * including the onset day.
+	 * including the reference day - the onset, or for a case without one (asymptomatic included)
+	 * the notification date ({@link EpipulseCaseDates#vaccinationReferenceDate}). "Onset" below
+	 * means that reference day.
 	 *
 	 * <p>
 	 * Counts doses, not courses: every dose recorded under a same-disease immunization whose means
@@ -796,7 +800,7 @@ public final class EpipulseMapping {
 	 * recorded under two immunizations is not counted twice. The first rule that applies wins:
 	 *
 	 * <ol>
-	 * <li>no onset date - blank: there is no date to have been vaccinated by</li>
+	 * <li>no onset and no notification date - blank: there is no date to have been vaccinated by</li>
 	 * <li>at least one dose up to the onset day - that count, capped at {@code maxDoses}</li>
 	 * <li>doses on record, all after onset - {@code NOTVACC}: the dates show none had been given</li>
 	 * <li>no doses on record at all, but a vaccination immunization recorded up to the onset day
@@ -808,12 +812,12 @@ public final class EpipulseMapping {
 	 */
 	public static String vaccinationStatus(EpipulseDiseaseExportEntryDto entry, int maxDoses) {
 
-		Date onset = EpipulseCaseDates.dateOfOnset(entry);
-		if (onset == null) {
+		Date reference = EpipulseCaseDates.vaccinationReferenceDate(entry);
+		if (reference == null) {
 			return "";
 		}
 
-		Date onsetDay = DateHelper.getStartOfDay(onset);
+		Date onsetDay = DateHelper.getStartOfDay(reference);
 
 		SortedSet<Date> doseDays = doseDaysUpTo(entry, onsetDay);
 		if (!doseDays.isEmpty()) {

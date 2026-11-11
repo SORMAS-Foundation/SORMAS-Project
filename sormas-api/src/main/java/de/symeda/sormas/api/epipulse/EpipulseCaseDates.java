@@ -132,6 +132,27 @@ public final class EpipulseCaseDates {
 	}
 
 	/**
+	 * The date {@code VaccinationStatus} and {@code DateOfLastVaccination} are measured against.
+	 *
+	 * <ol>
+	 * <li>{@link #dateOfOnset} - so an asymptomatic case falls through to the next</li>
+	 * <li>{@code DateOfNotification}, i.e. {@code Case.reportDate}</li>
+	 * </ol>
+	 *
+	 * <p>
+	 * Not {@link #ageReferenceDate}: that falls back to {@link #dateUsedForStatistics} instead.
+	 */
+	public static Date vaccinationReferenceDate(EpipulseDiseaseExportEntryDto entry) {
+
+		Date onset = dateOfOnset(entry);
+		if (onset != null) {
+			return onset;
+		}
+
+		return entry.getReportDate();
+	}
+
+	/**
 	 * The date {@code Age} and {@code AgeMonth} are measured against.
 	 *
 	 * <ol>
