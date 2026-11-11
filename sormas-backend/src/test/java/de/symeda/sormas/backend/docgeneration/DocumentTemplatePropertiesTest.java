@@ -16,8 +16,11 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
@@ -48,8 +51,8 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 
 	@BeforeEach
 	void setUp() {
-		when(workflow.getRootEntityTypes()).thenReturn(Set.of(RootEntityType.ROOT_EXTERNAL_PERSON_DATA));
-		when(configFacade.getDocgenerationNullReplacement()).thenReturn(MISSING_REPLACEMENT_TEXT);
+		Mockito.lenient().when(workflow.getRootEntityTypes()).thenReturn(Set.of(RootEntityType.ROOT_EXTERNAL_PERSON_DATA));
+		Mockito.lenient().when(configFacade.getDocgenerationNullReplacement()).thenReturn(MISSING_REPLACEMENT_TEXT);
 	}
 
 	@Test
@@ -103,6 +106,13 @@ class DocumentTemplatePropertiesTest extends AbstractUnitTest {
 		assertEquals("Lyon", prepareProperties(true, "externalPersonData.city").getProperty("externalPersonData.city"));
 		verify(propertyFillersFactory, times(2)).createPropertyFiller(eq(RootEntityType.ROOT_EXTERNAL_PERSON_DATA), eq(entities), any());
 		verify(provider, times(2)).findAppropriateDocumentAddressFor(any());
+	}
+
+	@ParameterizedTest
+	@EnumSource(DocumentWorkflow.class)
+	void isResolvableEntityFor_rootEntityMissing(DocumentWorkflow workflow) {
+		boolean generalExpected = workflow.getRootEntityTypes().contains(RootEntityType.ROOT_GENERAL);
+		assertEquals(generalExpected, facade.isResolvableEntityFor(workflow, RootEntityType.ROOT_GENERAL.getEntityName()));
 	}
 
 	private void enableExternalPersonFiller() {

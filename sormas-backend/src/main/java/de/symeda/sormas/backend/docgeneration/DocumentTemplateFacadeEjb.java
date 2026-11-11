@@ -510,13 +510,15 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return templateEngine.extractTemplateVariablesTxt(templateFile);
 	}
 
-	private boolean isResolvableEntityFor(DocumentWorkflow documentWorkflow, String propertyKey) {
+	boolean isResolvableEntityFor(DocumentWorkflow documentWorkflow, String propertyKey) {
 		if (propertyKey == null) {
 			return false;
 		}
 		String basename = getVariableBaseName(propertyKey);
 		return Stream
-			.concat(documentWorkflow.getRootEntityTypes().stream(), Arrays.stream(RootEntityType.values()).filter(type -> !type.isDataModelEntity()))
+			.concat(
+				documentWorkflow.getRootEntityTypes().stream(),
+				Arrays.stream(RootEntityType.values()).filter(type -> !type.isDataModelEntity()).filter(type -> type != RootEntityType.ROOT_GENERAL))
 			.map(RootEntityType::getEntityName)
 			.anyMatch(basename::equalsIgnoreCase);
 	}
