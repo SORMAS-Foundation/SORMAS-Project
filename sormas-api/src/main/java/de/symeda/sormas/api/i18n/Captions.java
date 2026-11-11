@@ -1005,12 +1005,11 @@ public interface Captions {
 	String ClimateDailyExport_temperatureP50 = "ClimateDailyExport.temperatureP50";
 	String ClimateDailyExport_temperatureP90 = "ClimateDailyExport.temperatureP90";
 	String climateDailyValues = "climateDailyValues";
+	String climateDashboardAddDisease = "climateDashboardAddDisease";
 	String climateDashboardChart = "climateDashboardChart";
 	String climateDashboardClassification = "climateDashboardClassification";
 	String climateDashboardClimate = "climateDashboardClimate";
-	String climateDashboardAddDisease = "climateDashboardAddDisease";
 	String climateDashboardDiseases = "climateDashboardDiseases";
-	String climateDashboardRemoveDisease = "climateDashboardRemoveDisease";
 	String climateDashboardDisplay = "climateDashboardDisplay";
 	String climateDashboardExport = "climateDashboardExport";
 	String ClimateDashboardExport_district = "ClimateDashboardExport.district";
@@ -1044,6 +1043,7 @@ public interface Captions {
 	String climateDashboardMeasureCount = "climateDashboardMeasureCount";
 	String climateDashboardMeasureIncidence = "climateDashboardMeasureIncidence";
 	String climateDashboardPlacePeriodDiseases = "climateDashboardPlacePeriodDiseases";
+	String climateDashboardRemoveDisease = "climateDashboardRemoveDisease";
 	String climateDashboardShade = "climateDashboardShade";
 	String climateDashboardShadeNone = "climateDashboardShadeNone";
 	String climateDashboardTo = "climateDashboardTo";
