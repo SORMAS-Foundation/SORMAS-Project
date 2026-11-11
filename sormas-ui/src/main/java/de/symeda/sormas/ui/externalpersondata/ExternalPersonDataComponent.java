@@ -22,7 +22,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.person.PersonsView;
@@ -107,7 +106,7 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 			return;
 		}
 
-		Label html = new Label(HtmlHelper.cleanHtml(displayData.getHtml()), ContentMode.HTML);
+		Label html = new Label(displayData.getHtml(), ContentMode.HTML);
 		html.setWidth(100, Unit.PERCENTAGE);
 		Panel panel = new Panel(html);
 		panel.setSizeFull();
