@@ -18290,4 +18290,10 @@ ALTER TABLE siteclimatereading_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (686, '#14382 - Climate feature: site climate readings');
 
+-- #14382 - Climate feature: remove the climate-sensitive flag from disease configuration
+ALTER TABLE diseaseconfiguration DROP COLUMN IF EXISTS climatesensitive;
+ALTER TABLE diseaseconfiguration_history DROP COLUMN IF EXISTS climatesensitive;
+
+INSERT INTO schema_version (version_number, comment) VALUES (687, '#14382 - Climate feature: remove the climate-sensitive flag from disease configuration');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
