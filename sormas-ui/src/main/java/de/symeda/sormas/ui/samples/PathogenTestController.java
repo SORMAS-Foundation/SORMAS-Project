@@ -78,7 +78,17 @@ public class PathogenTestController {
 
 	// Antibiotic susceptibility test is applicable for TB(Lux), IMI, IPI, Shigellosis, Diphtheria and Gonococcal infection. For others it should be null.
 	private static final List<Disease> AST_ALLOWED_DISEASES = Arrays
-		.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.SHIGELLOSIS, Disease.GONOCOCCAL_INFECTION, Disease.DIPHTHERIA);
+		.asList(
+			Disease.TUBERCULOSIS,
+			Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+			Disease.SHIGELLOSIS,
+			Disease.GONOCOCCAL_INFECTION,
+			Disease.DIPHTHERIA);
+
+	static boolean shouldClearDrugSusceptibility(PathogenTestType testType, Disease disease) {
+		return testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY && !AST_ALLOWED_DISEASES.contains(disease);
+	}
 
 	public PathogenTestController() {
 	}
@@ -343,10 +353,8 @@ public class PathogenTestController {
 
 		pathogenTests.forEach(p -> {
 			p.setSample(sampleRef);
-			boolean luxTB = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-				&& Disease.TUBERCULOSIS == p.getTestedDisease();
 			//the susceptibility test is applicable only for LUX TB and all-countries invasive disease
-			if (PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY == p.getTestType() && !luxTB && !AST_ALLOWED_DISEASES.contains(p.getTestedDisease())) {
+			if (shouldClearDrugSusceptibility(p.getTestType(), p.getTestedDisease())) {
 				p.setDrugSusceptibility(null);
 			}
 
