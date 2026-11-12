@@ -24,6 +24,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseCountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
 
@@ -31,6 +32,11 @@ public class FieldVisibilityCheckers implements Serializable {
 
 	private List<FieldNameBaseChecker> fieldNameBasedCheckers = new ArrayList<>();
 	private List<FieldBasedChecker> fieldBasedCheckers = new ArrayList<>();
+	private boolean hasDisease;
+	private Disease disease;
+	private boolean hasCountry;
+	private String countryLocale;
+	private boolean hasDiseaseCountryRule;
 
 	public FieldVisibilityCheckers() {
 	}
@@ -95,11 +101,25 @@ public class FieldVisibilityCheckers implements Serializable {
 	}
 
 	public FieldVisibilityCheckers andWithCountry(String countryLocale) {
-		return add(new CountryFieldVisibilityChecker(countryLocale));
+		add(new CountryFieldVisibilityChecker(countryLocale));
+		this.hasCountry = true;
+		this.countryLocale = countryLocale;
+		return addDiseaseCountryRuleOnceBothAreKnown();
 	}
 
 	public FieldVisibilityCheckers andWithDisease(Disease disease) {
-		return add(new DiseaseFieldVisibilityChecker(disease));
+		add(new DiseaseFieldVisibilityChecker(disease));
+		this.hasDisease = true;
+		this.disease = disease;
+		return addDiseaseCountryRuleOnceBothAreKnown();
+	}
+
+	private FieldVisibilityCheckers addDiseaseCountryRuleOnceBothAreKnown() {
+		if (hasDisease && hasCountry && !hasDiseaseCountryRule) {
+			hasDiseaseCountryRule = true;
+			add(new DiseaseCountryFieldVisibilityChecker(disease, countryLocale));
+		}
+		return this;
 	}
 
 	public FieldVisibilityCheckers andWithFeatureType(List<FeatureConfigurationDto> featureConfigurations) {
@@ -139,11 +159,11 @@ public class FieldVisibilityCheckers implements Serializable {
 	}
 
 	public static FieldVisibilityCheckers withDisease(Disease disease) {
-		return withCheckers(new DiseaseFieldVisibilityChecker(disease));
+		return new FieldVisibilityCheckers().andWithDisease(disease);
 	}
 
 	public static FieldVisibilityCheckers withCountry(String countryLocale) {
-		return withCheckers(new CountryFieldVisibilityChecker(countryLocale));
+		return new FieldVisibilityCheckers().andWithCountry(countryLocale);
 	}
 
 	public static FieldVisibilityCheckers withFeatureTypes(List<FeatureConfigurationDto> featureConfigurations) {
