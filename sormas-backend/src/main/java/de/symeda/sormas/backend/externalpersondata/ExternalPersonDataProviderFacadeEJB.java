@@ -2,7 +2,10 @@ package de.symeda.sormas.backend.externalpersondata;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -18,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.audit.ExternalSystemCallAuditRequest;
@@ -42,8 +47,14 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 	UserRight._EXTERNAL_PERSON_DATA_PROVIDER_ACCESS })
 public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataProviderFacade {
 
-	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataProviderFacadeEJB.class);
 	public static final String EXTERNAL_PERSON_DATA_PROVIDER = "EXTERNAL_PERSON_DATA_PROVIDER";
+
+	private static final String STYLE_HTML_ATTRIBUTE_NAME = "style";
+
+	private static final Map<String, Set<String>> DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG = Stream.of("dt", "dl", "dd", "h3", "section", "div")
+		.collect(Collectors.toMap(Function.identity(), ignored -> Set.of(STYLE_HTML_ATTRIBUTE_NAME)));
+
+	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataProviderFacadeEJB.class);
 
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
@@ -116,7 +127,31 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 		return getExternalPersonDataProvider().find(request);
 	}
 
+	@Override
+	public Map<String, Set<String>> getAllowedAttributesByTag() {
+		String htmlSanitizationConfigJson = systemConfigurationValueFacade.getValue(EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY);
+
+		if (StringUtils.isBlank(htmlSanitizationConfigJson)) {
+			return DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG;
+		}
+
+		try {
+			return ObjectMapperProvider.getInstance().readValue(htmlSanitizationConfigJson, new TypeReference<>() {
+			});
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private ExternalPersonDataProviderAdapterFacade getExternalPersonDataProvider() {
+
+		if (!Boolean
+			.parseBoolean(systemConfigurationValueFacade.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_PROVIDER_ENABLED_KEY))) {
+
+			throw new IllegalStateException(
+				String.format("System configuration [%s] is not marked as true (enabled)", EXTERNAL_PERSON_DATA_PROVIDER_ENABLED_KEY));
+		}
+
 		String externalPersonDataProviderJndi = systemConfigurationValueFacade.getValue(EXTERNAL_PERSON_DATA_PROVIDER_ADAPTER_JNDI_CONFIG_KEY);
 
 		if (StringUtils.isBlank(externalPersonDataProviderJndi)) {

@@ -2,6 +2,7 @@ package de.symeda.sormas.api.externalpersondata;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.ejb.Remote;
@@ -27,6 +28,8 @@ public interface ExternalPersonDataProviderFacade {
 
 	String EXTERNAL_PERSON_DATA_DIRECTORY_NAME_KEY = "EXTERNAL_PERSON_DATA_DIRECTORY_NAME";
 
+	String EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY = "EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY";
+
 	@Nullable
 	ExternalPersonDataSummaryDto findDataByNationalHealthId(@NotNull String nationalHealthId);
 
@@ -48,4 +51,10 @@ public interface ExternalPersonDataProviderFacade {
 
 	@NotNull
 	ExternalPersonDataSearchResponse find(@NotNull ExternalPersonDataSearchRequest request);
+
+	/**
+	 * @return dictionary with key being the tag, value being the attribute(s) (if no comma, single attribute, otherwise multiples)
+	 */
+	@NotNull
+	Map<String, Set<String>> getAllowedAttributesByTag();
 }

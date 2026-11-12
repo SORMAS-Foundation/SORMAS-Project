@@ -1,5 +1,9 @@
 package de.symeda.sormas.ui.externalpersondata;
 
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.safety.Safelist;
@@ -118,15 +122,17 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 	}
 
 	private static @NotNull String extractCleanHtml(ExternalPersonDataForDisplayDto displayData) {
-		return HtmlHelper.cleanHtml(
-			displayData.getHtml(),
-			Safelist.basic()
-				.addAttributes("dt", "style")
-				.addAttributes("dl", "style")
-				.addAttributes("dd", "style")
-				.addAttributes("h3", "style")
-				.addAttributes("section", "style")
-				.addAttributes("div", "style"));
+		Safelist safelist = Safelist.basic();
+
+		Map<String, Set<String>> allowedTagsAndAttributes = FacadeProvider.getExternalPersonDataProviderFacade().getAllowedAttributesByTag();
+
+		if (MapUtils.isNotEmpty(allowedTagsAndAttributes)) {
+			for (Map.Entry<String, Set<String>> entry : allowedTagsAndAttributes.entrySet()) {
+				safelist = safelist.addAttributes(entry.getKey(), entry.getValue().toArray(String[]::new));
+			}
+		}
+
+		return HtmlHelper.cleanHtml(displayData.getHtml(), safelist);
 	}
 
 	private static void applyNationalHealthId(Component component, String personUuid, String nationalHealthId) {
