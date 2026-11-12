@@ -85,12 +85,14 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 
 	private Supplier<Date> testDateSampleDateSupplier;
 	private String testDateValidationError;
+	private final String countryLocale;
 
 	public TestMethodComponent(FormEventBus eventBus, Supplier<Date> sampleDateSupplier, Disease initialDisease) {
 		super(PathogenTestDto.class);
 		this.eventBus = eventBus;
 		this.sampleDateSupplier = sampleDateSupplier;
 		this.currentDisease = initialDisease;
+		this.countryLocale = FacadeProvider.getConfigFacade().getCountryLocale();
 		buildLayout();
 		bindFields();
 		wireEvents();
@@ -309,7 +311,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	}
 
 	private FieldVisibilityCheckers testTypeCheckers(Disease disease) {
-		return FieldVisibilityCheckers.withDisease(disease);
+		return FieldVisibilityCheckers.withDisease(disease).andWithCountry(countryLocale);
 	}
 
 	private void updateTestTypeItems(Disease disease) {

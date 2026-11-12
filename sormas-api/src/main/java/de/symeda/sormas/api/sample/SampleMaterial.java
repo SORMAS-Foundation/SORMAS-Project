@@ -31,6 +31,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForDiseasesInCountries;
+import de.symeda.sormas.api.utils.HideForDiseasesInCountriesExcept;
 
 public enum SampleMaterial {
 
@@ -693,7 +695,9 @@ public enum SampleMaterial {
 	@Diseases({})
 	CATHETER_EXIT_SITE,
 
-	@Diseases({})
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION })
+	@HideForDiseasesInCountriesExcept(diseases = Disease.GONOCOCCAL_INFECTION, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	EYE,
 
 	@Diseases({
@@ -829,6 +833,7 @@ public enum SampleMaterial {
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
+	@HideForDiseasesInCountries(diseases = Disease.GONOCOCCAL_INFECTION, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {
@@ -985,6 +990,7 @@ public enum SampleMaterial {
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
+	@HideForDiseasesInCountries(diseases = Disease.NEW_INFLUENZA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	LUNG_TISSUE,
 
 	@Diseases(value = {

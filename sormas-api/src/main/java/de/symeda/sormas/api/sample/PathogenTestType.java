@@ -24,10 +24,13 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForDiseasesInCountries;
+import de.symeda.sormas.api.utils.HideForDiseasesInCountriesExcept;
 import de.symeda.sormas.api.utils.LegacyEnumHelper;
 import de.symeda.sormas.api.utils.LegacyEnumNames;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -421,12 +424,12 @@ public enum PathogenTestType {
 		Disease.SYPHILIS,
 		Disease.MALARIA,
 		Disease.GONOCOCCAL_INFECTION,
-		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
+	@HideForDiseasesInCountries(diseases = Disease.RUBELLA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	SANGER_SEQUENCING,
 
 	@Diseases(value = {
@@ -441,6 +444,7 @@ public enum PathogenTestType {
 		Disease.DIPHTHERIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
+	@HideForDiseasesInCountries(diseases = Disease.MALARIA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	WHOLE_GENOME_SEQUENCING,
 
 	@Diseases(value = {
@@ -626,7 +630,6 @@ public enum PathogenTestType {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -641,6 +644,7 @@ public enum PathogenTestType {
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
 		ResultValueType.WESTERN_BLOT })
+	@HideForDiseasesInCountriesExcept(diseases = Disease.INFLUENZA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	WESTERN_BLOT,
 
 	@Diseases(value = {
@@ -677,6 +681,7 @@ public enum PathogenTestType {
 		Disease.CONGENITAL_RUBELLA })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	@HideForDiseasesInCountries(diseases = Disease.MALARIA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	INDIRECT_FLUORESCENT_ANTIBODY,
 
 	@Diseases(value = {
@@ -919,7 +924,6 @@ public enum PathogenTestType {
 		Disease.CORONAVIRUS,
 		Disease.MALARIA,
 		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
@@ -935,6 +939,7 @@ public enum PathogenTestType {
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
+	@HideForDiseasesInCountriesExcept(diseases = Disease.LATENT_TUBERCULOSIS, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	MALDI_TOF,
 
 	// ----------------------------------------------------------------------------------------------
@@ -1216,6 +1221,7 @@ public enum PathogenTestType {
 		ResultValueType.QUALITATIVE,
 		ResultValueType.TEXT,
 		ResultValueType.NUMERIC })
+	@HideForDiseasesInCountries(diseases = Disease.MALARIA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	QUANTITATIVE_BUFFY_COAT,
 
 	@Diseases({
