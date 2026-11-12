@@ -49,10 +49,10 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 
 	public static final String EXTERNAL_PERSON_DATA_PROVIDER = "EXTERNAL_PERSON_DATA_PROVIDER";
 
-	private static final String STYLE_HTML_ATTRIBUTE_NAME = "style";
+	public static final Set<String> STYLE_HTML_ATTRIBUTE_NAME = Set.of("style");
 
-	private static final Map<String, Set<String>> DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG = Stream.of("dt", "dl", "dd", "h3", "section", "div")
-		.collect(Collectors.toMap(Function.identity(), ignored -> Set.of(STYLE_HTML_ATTRIBUTE_NAME)));
+	private static final Map<String, Set<String>> DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG =
+		Stream.of("dt", "dl", "dd", "h3", "section", "div").collect(Collectors.toMap(Function.identity(), ignored -> STYLE_HTML_ATTRIBUTE_NAME));
 
 	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataProviderFacadeEJB.class);
 
