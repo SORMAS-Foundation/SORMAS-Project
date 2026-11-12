@@ -784,10 +784,15 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				entry -> entry);
 		}
 		if (StringUtils.isNotEmpty(caseCriteria.getPersonCity())) {
-			extendFilterBuilderWithLike(caseFilterBuilder, Location.TABLE_NAME, Location.CITY, caseCriteria.getPersonCity());
+			extendFilterBuilderWithLike(caseFilterBuilder, filterBuilderParameters, Location.TABLE_NAME, Location.CITY, caseCriteria.getPersonCity());
 		}
 		if (StringUtils.isNotEmpty(caseCriteria.getPersonPostcode())) {
-			extendFilterBuilderWithLike(caseFilterBuilder, Location.TABLE_NAME, Location.POSTAL_CODE, caseCriteria.getPersonPostcode());
+			extendFilterBuilderWithLike(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				Location.TABLE_NAME,
+				Location.POSTAL_CODE,
+				caseCriteria.getPersonPostcode());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getSexes()) || caseCriteria.isSexUnknown() != null) {
@@ -1391,13 +1396,20 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		return null;
 	}
 
-	private void extendFilterBuilderWithLike(StringBuilder filterBuilder, String tableName, String fieldName, String filterValue) {
+	private void extendFilterBuilderWithLike(
+		StringBuilder filterBuilder,
+		List<Object> filterBuilderParameters,
+		String tableName,
+		String fieldName,
+		String filterValue) {
 
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append(tableName).append(".").append(fieldName).append(" LIKE ").append("'%").append(filterValue).append("%'");
+		// bind the value as a parameter - never concatenate user input into the SQL string
+		filterBuilderParameters.add("%" + filterValue + "%");
+		filterBuilder.append(tableName).append(".").append(fieldName).append(" LIKE ?").append(filterBuilderParameters.size());
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithSimpleValue(

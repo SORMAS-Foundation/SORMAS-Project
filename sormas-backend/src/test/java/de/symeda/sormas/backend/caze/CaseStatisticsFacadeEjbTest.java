@@ -86,6 +86,71 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testQueryCaseCountPersonCityAndPostcodeFilter() {
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		PersonDto berlinPerson = creator.createPerson("Berlin", "Person");
+		berlinPerson.getAddress().setCity("Berlin");
+		berlinPerson.getAddress().setPostalCode("10115");
+		berlinPerson = getPersonFacade().save(berlinPerson);
+		creator.createCase(
+			user.toReference(),
+			berlinPerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto hamburgPerson = creator.createPerson("Hamburg", "Person");
+		hamburgPerson.getAddress().setCity("Hamburg");
+		hamburgPerson.getAddress().setPostalCode("20095");
+		hamburgPerson = getPersonFacade().save(hamburgPerson);
+		creator.createCase(
+			user.toReference(),
+			hamburgPerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		// regular "contains" filtering, combined with another parameterized filter
+		assertEquals(1, countCases(cityCriteria(rdcf, "erli")));
+		assertEquals(1, countCases(postcodeCriteria(rdcf, "011")));
+		assertEquals(0, countCases(cityCriteria(rdcf, "Munich")));
+		assertEquals(1, countCases(cityCriteria(rdcf, "Berlin").setPersonPostcode("10115")));
+		assertEquals(0, countCases(cityCriteria(rdcf, "Berlin").setPersonPostcode("20095")));
+
+		// SQL injection payloads must be treated as literal values (GHSA-9prr-h86w-fccg)
+		assertEquals(0, countCases(cityCriteria(rdcf, "x%' OR 1=1-- ")));
+		assertEquals(0, countCases(cityCriteria(rdcf, "x' OR '1'='1")));
+		assertEquals(0, countCases(postcodeCriteria(rdcf, "x%' OR 1=1-- ")));
+		assertEquals(0, countCases(postcodeCriteria(rdcf, "x' OR '1'='1")));
+	}
+
+	private StatisticsCaseCriteria cityCriteria(RDCF rdcf, String city) {
+		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
+		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid(), null, null)));
+		return criteria.setPersonCity(city);
+	}
+
+	private StatisticsCaseCriteria postcodeCriteria(RDCF rdcf, String postcode) {
+		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
+		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid(), null, null)));
+		return criteria.setPersonPostcode(postcode);
+	}
+
+	private int countCases(StatisticsCaseCriteria criteria) {
+		return getCaseStatisticsFacade().queryCaseCount(criteria, null, null, null, null, false, false, null)
+			.stream()
+			.mapToInt(StatisticsCaseCountDto::getCaseCount)
+			.sum();
+	}
+
+	@Test
 	public void testQueryCaseCountZeroValues() {
 
 		RDCF rdcf = creator.createRDCF();
