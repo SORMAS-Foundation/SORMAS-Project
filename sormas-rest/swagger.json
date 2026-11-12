@@ -18148,6 +18148,10 @@
           "environment" : {
             "$ref" : "#/components/schemas/EnvironmentReferenceDto"
           },
+          "event717AssessedEventStatus" : {
+            "type" : "string",
+            "enum" : [ "SIGNAL", "EVENT", "SCREENING", "CLUSTER", "DROPPED" ]
+          },
           "event717DetectionStatus" : {
             "type" : "string",
             "enum" : [ "WITHIN_TARGET", "OVER_TARGET", "MISSING", "INCOMPLETE", "DATA_ERROR" ]

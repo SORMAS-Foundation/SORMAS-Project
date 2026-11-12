@@ -17389,6 +17389,14 @@ components:
           $ref: '#/components/schemas/DistrictReferenceDto'
         environment:
           $ref: '#/components/schemas/EnvironmentReferenceDto'
+        event717AssessedEventStatus:
+          type: string
+          enum:
+          - SIGNAL
+          - EVENT
+          - SCREENING
+          - CLUSTER
+          - DROPPED
         event717DetectionStatus:
           type: string
           enum:
