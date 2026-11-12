@@ -394,11 +394,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
-		requestedPathogenTestsField.addItems(
-			Arrays.stream(PathogenTestType.values())
-				.filter(c -> fieldVisibilityCheckers.isVisible(PathogenTestType.class, c.name()))
-				.collect(Collectors.toList()));
-		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
+		requestedPathogenTestsField.addItems(PathogenTestType.requestableMethods(fieldVisibilityCheckers, Collections.emptySet()));
 		requestedPathogenTestsField.setCaption(null);
 
 		OptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, OptionGroup.class);

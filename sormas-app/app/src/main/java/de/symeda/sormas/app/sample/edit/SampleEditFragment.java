@@ -337,7 +337,13 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			}
 		} else {
 			contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
-			contentBinding.sampleRequestedPathogenTests.removeItem(PathogenTestType.OTHER);
+			List<PathogenTestType> requestable =
+				PathogenTestType.requestableMethods(getFieldVisibilityCheckers(), record.getRequestedPathogenTests());
+			for (PathogenTestType type : PathogenTestType.values()) {
+				if (!requestable.contains(type) && contentBinding.sampleRequestedPathogenTests.getCheckBox(type) != null) {
+					contentBinding.sampleRequestedPathogenTests.removeItem(type);
+				}
+			}
 			contentBinding.sampleRequestedAdditionalTestsTags.setVisibility(GONE);
 		}
 

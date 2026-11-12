@@ -18,6 +18,8 @@
 package de.symeda.sormas.api.sample;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -1478,6 +1480,16 @@ public enum PathogenTestType {
 			return DEFAULT_RESULT_VALUE_TYPES;
 		}
 		return RESULT_VALUE_TYPES_BY_METHOD.getOrDefault(testType, DEFAULT_RESULT_VALUE_TYPES);
+	}
+
+	public static List<PathogenTestType> requestableMethods(FieldVisibilityCheckers checkers, Collection<PathogenTestType> savedRequests) {
+		Collection<PathogenTestType> saved = savedRequests != null ? savedRequests : Collections.emptySet();
+		return Arrays.stream(values())
+			.filter(
+				type -> saved.contains(type)
+					|| type != OTHER && isSelectableForNewTests(type) && checkers.isVisible(PathogenTestType.class, type.name()))
+			.sorted(Comparator.comparing(PathogenTestType::toString, String.CASE_INSENSITIVE_ORDER))
+			.collect(Collectors.toList());
 	}
 
 	public static List<PathogenTestType> selectableMethods(FieldVisibilityCheckers checkers, PathogenTestType retainType) {
