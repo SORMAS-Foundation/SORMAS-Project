@@ -564,6 +564,7 @@ public interface Strings {
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalEmailAttachmentCannotEncrypt = "errorExternalEmailAttachmentCannotEncrypt";
 	String errorExternalEmailMissingPersonEmailAddress = "errorExternalEmailMissingPersonEmailAddress";
+	String errorExternalPersonDataLoad = "errorExternalPersonDataLoad";
 	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
@@ -583,6 +584,7 @@ public interface Strings {
 	String errorInvalidValue = "errorInvalidValue";
 	String errorLabResultsAdapterNotFound = "errorLabResultsAdapterNotFound";
 	String errorNoAccessToWeb = "errorNoAccessToWeb";
+	String errorNoNationalHealthIdInContext = "errorNoNationalHealthIdInContext";
 	String errorNoPopulationDataFound = "errorNoPopulationDataFound";
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNoRightsForChangingField = "errorNoRightsForChangingField";
@@ -631,6 +633,10 @@ public interface Strings {
 	String exposureEndDate = "exposureEndDate";
 	String exposureStartDate = "exposureStartDate";
 	String externalMessageMultipleSampleReports = "externalMessageMultipleSampleReports";
+	String externalPersonsEnterCriteria = "externalPersonsEnterCriteria";
+	String externalPersonsFirst100Results = "externalPersonsFirst100Results";
+	String externalPersonsInvalidRange = "externalPersonsInvalidRange";
+	String externalPersonsLinkSearchExplanation = "externalPersonsLinkSearchExplanation";
 	String ExternalSurveillanceToolGateway_confirmDeleteCase = "ExternalSurveillanceToolGateway.confirmDeleteCase";
 	String ExternalSurveillanceToolGateway_confirmDeleteEvent = "ExternalSurveillanceToolGateway.confirmDeleteEvent";
 	String ExternalSurveillanceToolGateway_confirmSendCase = "ExternalSurveillanceToolGateway.confirmSendCase";
@@ -1422,6 +1428,7 @@ public interface Strings {
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";
+	String infoNoExternalPersonData = "infoNoExternalPersonData";
 	String infoNoImmunizationAdverseEvents = "infoNoImmunizationAdverseEvents";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";

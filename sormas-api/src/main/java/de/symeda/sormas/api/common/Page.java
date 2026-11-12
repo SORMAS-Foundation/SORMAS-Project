@@ -1,21 +1,21 @@
 package de.symeda.sormas.api.common;
 
-import de.symeda.sormas.api.audit.AuditedClass;
-
 import java.io.Serializable;
 import java.util.List;
+
+import de.symeda.sormas.api.audit.AuditedClass;
 
 @AuditedClass
 public class Page<T> implements Serializable {
 
-	List<T> elements;
-	int offset = 0;
-	int size = 50;
-	long totalElementCount = 0;
-	boolean hasNext = false;
+	private List<T> elements;
+	private int offset = 0;
+	private int size = 50;
+	private long totalElementCount = 0;
+	private boolean hasNext = false;
 
-	public static Page emptyResults() {
-		return new Page();
+	public static <T> Page<T> emptyResults() {
+		return new Page<>();
 	}
 
 	private Page() {

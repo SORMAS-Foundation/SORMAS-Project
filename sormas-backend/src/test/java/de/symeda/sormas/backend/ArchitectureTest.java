@@ -307,7 +307,8 @@ public class ArchitectureTest {
 				"executeSurveyProcessing",
 				"overwriteSurveyResponse",
 				"reAttemptSurveyProcessing",
-				"saveAndProcessSurveyResponses"),
+				"saveAndProcessSurveyResponses",
+				"saveAndProcessSurveyResponsesForCron"),
 			classes);
 	}
 

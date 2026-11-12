@@ -355,6 +355,14 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._SYSTEM,
+		UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS })
+	public List<ExternalMessageDto> saveAndProcessSurveyResponses() {
+		return saveAndProcessSurveyResponses(null);
+	}
+
+	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 

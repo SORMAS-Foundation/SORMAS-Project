@@ -97,7 +97,8 @@ public class DatabaseTableTest {
 		List<FeatureConfigurationDto> climateOn = Collections.singletonList(getFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, true));
 		List<FeatureConfigurationDto> climateOff = Collections.singletonList(getFeatureConfiguration(FeatureType.CLIMATE_MANAGEMENT, false));
 
-		for (DatabaseTable table : Arrays.asList(DatabaseTable.CLIMATE_LOCATIONS, DatabaseTable.CLIMATE_OBSERVATIONS, DatabaseTable.SITE_CLIMATE_READINGS)) {
+		for (DatabaseTable table : Arrays
+			.asList(DatabaseTable.CLIMATE_LOCATIONS, DatabaseTable.CLIMATE_OBSERVATIONS, DatabaseTable.SITE_CLIMATE_READINGS)) {
 			assertThat(table.name(), table.isEnabled(climateOn, new ConfigFacadeEjb()), is(true));
 			assertThat(table.name(), table.isEnabled(climateOff, new ConfigFacadeEjb()), is(false));
 		}
