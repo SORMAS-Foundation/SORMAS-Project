@@ -181,7 +181,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 				testTypeList = DataUtils.toItems(
 					PathogenTestType.selectableMethods(
 						FieldVisibilityCheckers.withDisease((Disease) field.getValue()).andWithCountry(ConfigProvider.getServerCountryCode()),
-						record.getTestType()),
+						TestTypeOnDiseaseChange.methodToKeep(currentDisease, (Disease) field.getValue(), record.getTestType())),
 					true);
 				contentBinding.pathogenTestTestType.setSpinnerData(testTypeList);
 			}
