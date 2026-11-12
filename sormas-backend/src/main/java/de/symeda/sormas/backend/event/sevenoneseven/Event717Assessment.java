@@ -34,6 +34,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.event.sevenoneseven.Event717TimelinessStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -51,6 +52,7 @@ public class Event717Assessment extends AbstractDomainObject {
 	public static final String TABLE_NAME = "event717assessment";
 
 	public static final String EVENT = "event";
+	public static final String ASSESSED_EVENT_STATUS = "assessedEventStatus";
 	public static final String DATE_OF_EMERGENCE = "dateOfEmergence";
 	public static final String EMERGENCE_NARRATIVE = "emergenceNarrative";
 	public static final String DATE_OF_DETECTION = "dateOfDetection";
@@ -104,6 +106,8 @@ public class Event717Assessment extends AbstractDomainObject {
 	public static final String TIMELINESS_STATUS = "timelinessStatus";
 
 	private Event event;
+	// the status of the event when the assessment was created; not changed afterwards
+	private EventStatus assessedEventStatus;
 	private Date dateOfEmergence;
 	private String emergenceNarrative;
 	private Date dateOfDetection;
@@ -165,6 +169,15 @@ public class Event717Assessment extends AbstractDomainObject {
 
 	public void setEvent(Event event) {
 		this.event = event;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public EventStatus getAssessedEventStatus() {
+		return assessedEventStatus;
+	}
+
+	public void setAssessedEventStatus(EventStatus assessedEventStatus) {
+		this.assessedEventStatus = assessedEventStatus;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

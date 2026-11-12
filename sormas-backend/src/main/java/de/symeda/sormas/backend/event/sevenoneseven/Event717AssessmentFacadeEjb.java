@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentFacade;
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckCategory;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckReferenceDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717CorrectiveActionDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EnablerDto;
+import de.symeda.sormas.api.event.sevenoneseven.Event717EventStatusesProvider;
 import de.symeda.sormas.api.event.sevenoneseven.Event717ExportDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717Interval;
@@ -54,6 +56,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -86,6 +89,8 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private SystemConfigurationValueFacade systemConfigurationValueFacade;
 
 	@Override
 	public Event717AssessmentDto getByEventUuid(String eventUuid) {
@@ -139,6 +144,10 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 		}
 
 		restorePseudonymizedDto(dto, existingAssessment, event);
+		if (existingAssessment == null) {
+			// existing assessments stay editable, whatever the current event status and setting
+			validateApplicable(event);
+		}
 		validate(dto);
 
 		// the completion date and the timeliness are always derived from the milestone and early response action dates
@@ -148,6 +157,10 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 		Event717Assessment assessment = fillOrBuildEntity(dto, existingAssessment, true);
 		applyTimeliness(assessment, timeliness);
 		assessment.setEvent(event);
+		if (existingAssessment == null) {
+			// recorded once; later changes of the event status do not affect the assessment
+			assessment.setAssessedEventStatus(event.getEventStatus());
+		}
 		service.ensurePersisted(assessment);
 
 		return toPseudonymizedDto(assessment);
@@ -291,6 +304,40 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 			return EditPermissionType.REFUSED;
 		}
 		return eventService.getEditPermissionType(event);
+	}
+
+	@Override
+	public Set<EventStatus> getApplicableEventStatuses() {
+		return Event717EventStatusesProvider.parse(systemConfigurationValueFacade.getValue(Event717EventStatusesProvider.CONFIG_KEY));
+	}
+
+	@Override
+	public boolean isAvailableForEvent(String eventUuid) {
+
+		checkFeatureEnabled();
+		Event event = getAccessibleEvent(eventUuid);
+		return getApplicableEventStatuses().contains(event.getEventStatus()) || service.getByEventUuid(eventUuid) != null;
+	}
+
+	@Override
+	public List<EventStatus> getAssessedEventStatuses() {
+
+		checkFeatureEnabled();
+		return service.getAssessedEventStatuses();
+	}
+
+	/**
+	 * A new assessment can only be created for the {@link #getApplicableEventStatuses() applicable event statuses}.
+	 */
+	private void validateApplicable(Event event) {
+
+		Set<EventStatus> applicableStatuses = getApplicableEventStatuses();
+		if (!applicableStatuses.contains(event.getEventStatus())) {
+			throw new ValidationRuntimeException(
+				String.format(
+					I18nProperties.getString(Strings.infoEvent717NotApplicable),
+					applicableStatuses.stream().map(EventStatus::toString).collect(Collectors.joining(", "))));
+		}
 	}
 
 	private void validateBottlenecks(List<Event717BottleneckDto> bottlenecks) {
@@ -623,6 +670,7 @@ public class Event717AssessmentFacadeEjb implements Event717AssessmentFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setAssessedEventStatus(source.getAssessedEventStatus());
 		target.setDateOfEmergence(source.getDateOfEmergence());
 		target.setEmergenceNarrative(source.getEmergenceNarrative());
 		target.setDateOfDetection(source.getDateOfDetection());

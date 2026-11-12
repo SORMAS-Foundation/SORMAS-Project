@@ -15,6 +15,7 @@
 package de.symeda.sormas.api.event.sevenoneseven;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -22,6 +23,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -56,6 +58,24 @@ public interface Event717AssessmentFacade {
 	EditPermissionType getEditPermissionType(String eventUuid);
 
 	/**
+	 * @return The event statuses for which a new assessment can be created, as configured by
+	 *         {@link Event717EventStatusesProvider#CONFIG_KEY}. Existing assessments are not affected by this setting.
+	 */
+	Set<EventStatus> getApplicableEventStatuses();
+
+	/**
+	 * @return Whether the 7-1-7 assessment is available for the event: it already has an assessment, whatever its current status, or a
+	 *         new one can be created because its current status is one of the {@link #getApplicableEventStatuses() applicable
+	 *         statuses}.
+	 */
+	boolean isAvailableForEvent(String eventUuid);
+
+	/**
+	 * @return The event statuses recorded on the existing assessments when they were created, in the order of the enum.
+	 */
+	List<EventStatus> getAssessedEventStatuses();
+
+	/**
 	 * @return The stored timeliness of the 7-1-7 assessments of the events matching the criteria; events without an assessment are
 	 *         not included.
 	 */
@@ -66,7 +86,8 @@ public interface Event717AssessmentFacade {
 	List<Event717ExportDto> getExportList(EventCriteria criteria, Integer first, Integer max);
 
 	/**
-	 * @return The 7-1-7 performance of the assessed events matching the criteria.
+	 * @return The 7-1-7 performance of the assessed events matching the criteria. Events that are currently dropped are never
+	 *         counted.
 	 */
 	Event717SummaryDto getSummary(EventCriteria criteria);
 }

@@ -1342,6 +1342,7 @@ public interface Strings {
 	String infoEvent717AllTargets = "infoEvent717AllTargets";
 	String infoEvent717AllTargetsMet = "infoEvent717AllTargetsMet";
 	String infoEvent717AssessedEvents = "infoEvent717AssessedEvents";
+	String infoEvent717AssessedEventStatusFilter = "infoEvent717AssessedEventStatusFilter";
 	String infoEvent717Assessment = "infoEvent717Assessment";
 	String infoEvent717DateFilter = "infoEvent717DateFilter";
 	String infoEvent717EarlyResponseActionPending = "infoEvent717EarlyResponseActionPending";
@@ -1355,6 +1356,7 @@ public interface Strings {
 	String infoEvent717MeetTarget = "infoEvent717MeetTarget";
 	String infoEvent717NoEvaluable = "infoEvent717NoEvaluable";
 	String infoEvent717NotAllTargetsMet = "infoEvent717NotAllTargetsMet";
+	String infoEvent717NotApplicable = "infoEvent717NotApplicable";
 	String infoEvent717NotAssessed = "infoEvent717NotAssessed";
 	String infoEvent717SampleSize = "infoEvent717SampleSize";
 	String infoEvent717SummaryExport = "infoEvent717SummaryExport";
@@ -1534,6 +1536,7 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses = "infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses";
 	String infoSystemConfigurationValueDescriptionEmailSenderAddress = "infoSystemConfigurationValueDescriptionEmailSenderAddress";
 	String infoSystemConfigurationValueDescriptionEmailSenderName = "infoSystemConfigurationValueDescriptionEmailSenderName";
+	String infoSystemConfigurationValueDescriptionEvent717ApplicableEventStatuses = "infoSystemConfigurationValueDescriptionEvent717ApplicableEventStatuses";
 	String infoSystemConfigurationValueDescriptionMenuBackgroundColor = "infoSystemConfigurationValueDescriptionMenuBackgroundColor";
 	String infoSystemConfigurationValueDescriptionSmsAuthKey = "infoSystemConfigurationValueDescriptionSmsAuthKey";
 	String infoSystemConfigurationValueDescriptionSmsAuthSecret = "infoSystemConfigurationValueDescriptionSmsAuthSecret";

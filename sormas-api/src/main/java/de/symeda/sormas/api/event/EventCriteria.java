@@ -69,6 +69,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	public static final String EVENT_717_DETECTION_STATUS = "event717DetectionStatus";
 	public static final String EVENT_717_NOTIFICATION_STATUS = "event717NotificationStatus";
 	public static final String EVENT_717_RESPONSE_STATUS = "event717ResponseStatus";
+	public static final String EVENT_717_ASSESSED_EVENT_STATUS = "event717AssessedEventStatus";
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -124,6 +125,8 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private Event717TimelinessStatus event717DetectionStatus;
 	private Event717TimelinessStatus event717NotificationStatus;
 	private Event717TimelinessStatus event717ResponseStatus;
+	// the event status recorded on the assessment when it was created, unlike eventStatus, which is the current status
+	private EventStatus event717AssessedEventStatus;
 
 	public EventCriteria() {
 		super(EventCriteriaDateType.class);
@@ -529,6 +532,19 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public EventCriteria event717ResponseStatus(Event717TimelinessStatus event717ResponseStatus) {
 		setEvent717ResponseStatus(event717ResponseStatus);
+		return this;
+	}
+
+	public EventStatus getEvent717AssessedEventStatus() {
+		return event717AssessedEventStatus;
+	}
+
+	public void setEvent717AssessedEventStatus(EventStatus event717AssessedEventStatus) {
+		this.event717AssessedEventStatus = event717AssessedEventStatus;
+	}
+
+	public EventCriteria event717AssessedEventStatus(EventStatus event717AssessedEventStatus) {
+		setEvent717AssessedEventStatus(event717AssessedEventStatus);
 		return this;
 	}
 
