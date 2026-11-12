@@ -688,7 +688,7 @@ public enum PathogenTestType {
 		Disease.NEW_INFLUENZA,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
-	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
 
@@ -755,6 +755,7 @@ public enum PathogenTestType {
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	@NotSelectableForNewTests
 	IMMUNOFLUORESCENCE_ASSAY,
 
 	@Diseases(value = {
@@ -812,7 +813,7 @@ public enum PathogenTestType {
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
-	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	// Positive/Negative interpretation plus the reciprocal titre (#14105): TEXT alone rendered no result
 	// field. The titre ('1:160') is kept as text, not a Float numeric value, like NEUTRALIZING_ANTIBODIES.
 	@ResultValueTypeRel({
