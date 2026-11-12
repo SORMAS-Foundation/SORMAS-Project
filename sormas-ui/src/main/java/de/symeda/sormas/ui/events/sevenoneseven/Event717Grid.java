@@ -64,6 +64,10 @@ public class Event717Grid extends FilteredGrid<Event717IndexDto, EventCriteria> 
 		columnIds.add(Event717IndexDto.REGION);
 		columnIds.add(Event717IndexDto.DISTRICT);
 		columnIds.add(Event717IndexDto.COMMUNITY);
+		// the current status shows which assessments the summary leaves out (dropped events); the recorded one is what the summary
+		// filters on
+		columnIds.add(Event717IndexDto.EVENT_STATUS);
+		columnIds.add(Event717IndexDto.ASSESSED_EVENT_STATUS);
 		columnIds.add(addIntervalColumn(Event717IndexDto.DETECTION_DAYS, Event717IndexDto::getDetectionDays, Event717IndexDto::getDetectionStatus));
 		columnIds.add(
 			addIntervalColumn(Event717IndexDto.NOTIFICATION_DAYS, Event717IndexDto::getNotificationDays, Event717IndexDto::getNotificationStatus));

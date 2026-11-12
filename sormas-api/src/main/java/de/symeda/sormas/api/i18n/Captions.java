@@ -1962,6 +1962,7 @@ public interface Captions {
 	String event717AssessedEvents = "event717AssessedEvents";
 	String Event717Assessment = "Event717Assessment";
 	String Event717Assessment_applicable = "Event717Assessment.applicable";
+	String Event717Assessment_assessedEventStatus = "Event717Assessment.assessedEventStatus";
 	String Event717Assessment_bottlenecks = "Event717Assessment.bottlenecks";
 	String Event717Assessment_caseManagementDate = "Event717Assessment.caseManagementDate";
 	String Event717Assessment_caseManagementNarrative = "Event717Assessment.caseManagementNarrative";
@@ -2040,6 +2041,7 @@ public interface Captions {
 	String Event717Export_responseStatus = "Event717Export.responseStatus";
 	String Event717Export_riskCommunicationDays = "Event717Export.riskCommunicationDays";
 	String event717ExportSummary = "event717ExportSummary";
+	String Event717Index_assessedEventStatus = "Event717Index.assessedEventStatus";
 	String Event717Index_caseManagementDays = "Event717Index.caseManagementDays";
 	String Event717Index_community = "Event717Index.community";
 	String Event717Index_coordinationDays = "Event717Index.coordinationDays";
@@ -2050,6 +2052,7 @@ public interface Captions {
 	String Event717Index_district = "Event717Index.district";
 	String Event717Index_epiAnalysisDays = "Event717Index.epiAnalysisDays";
 	String Event717Index_eventDisease = "Event717Index.eventDisease";
+	String Event717Index_eventStatus = "Event717Index.eventStatus";
 	String Event717Index_eventTitle = "Event717Index.eventTitle";
 	String Event717Index_eventUuid = "Event717Index.eventUuid";
 	String Event717Index_investigationDays = "Event717Index.investigationDays";

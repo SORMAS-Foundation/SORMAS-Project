@@ -32,7 +32,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 /**
- * Side component on the event data view summarizing the 7-1-7 timeliness of the event.
+ * Side component on the event data view summarizing the 7-1-7 timeliness of the event. Only added when
+ * {@link Event717AssessmentView#isAvailableForEvent(String)}.
  */
 @SuppressWarnings("serial")
 public class Event717AssessmentSideComponent extends SideComponent {

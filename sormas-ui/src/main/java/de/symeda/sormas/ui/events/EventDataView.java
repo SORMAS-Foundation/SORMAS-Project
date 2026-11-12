@@ -135,7 +135,7 @@ public class EventDataView extends AbstractEventView {
 			layout.addSidePanelComponent(environmentList, ENVIRONMENT_LOC);
 		}
 
-		if (Event717AssessmentView.isAvailable()) {
+		if (Event717AssessmentView.isAvailableForEvent(getEventRef().getUuid())) {
 			Event717AssessmentSideComponent event717Assessment = new Event717AssessmentSideComponent(getEventRef(), this::showUnsavedChangesPopup);
 			event717Assessment.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(event717Assessment, EVENT_717_ASSESSMENT_LOC);

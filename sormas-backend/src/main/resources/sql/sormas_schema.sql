@@ -18296,4 +18296,29 @@ ALTER TABLE diseaseconfiguration_history DROP COLUMN IF EXISTS climatesensitive;
 
 INSERT INTO schema_version (version_number, comment) VALUES (687, '#14382 - Climate feature: remove the climate-sensitive flag from disease configuration');
 
+-- 2026-11-12 7-1-7: applicable event statuses and event status at assessment
+ALTER TABLE event717assessment ADD COLUMN IF NOT EXISTS assessedeventstatus varchar(255);
+ALTER TABLE event717assessment_history ADD COLUMN IF NOT EXISTS assessedeventstatus varchar(255);
+
+-- existing assessments: record the current event status
+UPDATE event717assessment a SET assessedeventstatus = e.eventstatus
+FROM events e WHERE e.id = a.event_id AND a.assessedeventstatus IS NULL;
+
+DO $$
+DECLARE general_category_id bigint;
+BEGIN
+    SELECT id INTO general_category_id FROM systemconfigurationcategory WHERE name = 'GENERAL_CATEGORY';
+
+    INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
+                                         value_encrypt, data_provider, validation_message, changedate, creationdate, id, uuid)
+    VALUES ('EVENT_717_APPLICABLE_EVENT_STATUSES', 'EVENT|CLUSTER',
+            'i18n/infoSystemConfigurationValueDescriptionEvent717ApplicableEventStatuses', general_category_id, false, '', false,
+            'de.symeda.sormas.api.event.sevenoneseven.Event717EventStatusesProvider',
+            'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid())
+    ON CONFLICT (config_key) DO NOTHING;
+END $$
+LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (688, '7-1-7: applicable event statuses and event status at assessment');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
