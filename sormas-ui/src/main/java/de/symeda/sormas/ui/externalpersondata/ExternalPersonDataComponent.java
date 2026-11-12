@@ -1,6 +1,8 @@
 package de.symeda.sormas.ui.externalpersondata;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.person.PersonsView;
@@ -106,12 +109,24 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 			return;
 		}
 
-		Label html = new Label(displayData.getHtml(), ContentMode.HTML);
+		Label html = new Label(extractCleanHtml(displayData), ContentMode.HTML);
 		html.setWidth(100, Unit.PERCENTAGE);
 		Panel panel = new Panel(html);
 		panel.setSizeFull();
 		addComponent(panel);
 		setExpandRatio(panel, 1);
+	}
+
+	private static @NotNull String extractCleanHtml(ExternalPersonDataForDisplayDto displayData) {
+		return HtmlHelper.cleanHtml(
+			displayData.getHtml(),
+			Safelist.basic()
+				.addAttributes("dt", "style")
+				.addAttributes("dl", "style")
+				.addAttributes("dd", "style")
+				.addAttributes("h3", "style")
+				.addAttributes("section", "style")
+				.addAttributes("div", "style"));
 	}
 
 	private static void applyNationalHealthId(Component component, String personUuid, String nationalHealthId) {
