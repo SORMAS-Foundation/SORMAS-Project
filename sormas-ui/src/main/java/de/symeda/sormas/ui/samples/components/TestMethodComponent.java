@@ -104,14 +104,14 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		testCategoryField.setRequiredIndicatorVisible(true);
 		CssStyles.style(testCategoryField, CssStyles.CAPTION_ON_TOP);
 		testCategoryField.setWidth(100, Unit.PERCENTAGE);
-		testCategoryField.setItems(getVisibleTestCategories(currentDisease));
+		testCategoryField.setItems(getVisibleTestCategories(testTypeCheckers(currentDisease)));
 		testCategoryField.setItemCaptionGenerator(PathogenTestCategory::toString);
 		trackValidationField(testCategoryField);
 		addRow(testCategoryField);
 
 		// Test type
 		testTypeField = createComboBox(PathogenTestDto.TEST_TYPE, PathogenTestDto.I18N_PREFIX);
-		updateTestTypeItemsByCategory(testTypeField, currentDisease, null);
+		updateTestTypeItemsByCategory(testTypeField, testTypeCheckers(currentDisease), null);
 		testTypeField.setItemCaptionGenerator(PathogenTestType::toString);
 
 		testTypeTextField = createTextField(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
@@ -199,7 +199,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 			if (selectedType != null && e.getValue() != null && PathogenTestType.getCategory(selectedType) != e.getValue()) {
 				testTypeField.clear();
 			}
-			updateTestTypeItemsByCategory(testTypeField, currentDisease, e.getValue());
+			updateTestTypeItemsByCategory(testTypeField, testTypeCheckers(currentDisease), e.getValue());
 			updateTestCategoryValidationState();
 		}));
 
@@ -308,13 +308,17 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		testTimeField.setValue(totalMinutes);
 	}
 
+	private FieldVisibilityCheckers testTypeCheckers(Disease disease) {
+		return FieldVisibilityCheckers.withDisease(disease);
+	}
+
 	private void updateTestTypeItems(Disease disease) {
 		// Changing disease starts the test-type selection fresh: clear category (which leaves the method
 		// unscoped) and the method, mirroring how the method already resets when it no longer fits.
-		testCategoryField.setItems(getVisibleTestCategories(disease));
+		testCategoryField.setItems(getVisibleTestCategories(testTypeCheckers(disease)));
 		testCategoryField.clear();
 		testTypeField.clear();
-		updateTestTypeItemsByCategory(testTypeField, disease, null);
+		updateTestTypeItemsByCategory(testTypeField, testTypeCheckers(disease), null);
 	}
 
 	private void updatePcrTestSpecVisibility(PathogenTestType testType) {
@@ -420,12 +424,12 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		PathogenTestCategory savedCategory = PathogenTestType.getCategory(savedType);
 		// A legacy/hidden saved method's category may not be among the scoped categories; include it so
 		// the selection is a member of the combo's items (Vaadin 8 won't display a value outside them).
-		testCategoryField.setItems(getVisibleTestCategories(currentDisease, savedCategory));
+		testCategoryField.setItems(getVisibleTestCategories(testTypeCheckers(currentDisease), savedCategory));
 		testCategoryField.setValue(savedCategory);
 		// Make the saved method selectable but DON'T pre-select it — let binder.setBean set the value so
 		// the value-change fires TestTypeChangedEvent, which the disease sections rely on to show their
 		// fields when an existing test is opened.
-		updateTestTypeItemsByCategory(testTypeField, currentDisease, savedCategory, savedType, false);
+		updateTestTypeItemsByCategory(testTypeField, testTypeCheckers(currentDisease), savedCategory, savedType, false);
 		super.setDto(dto);
 		updateTestCategoryValidationState();
 		updateTestDateValidationState();

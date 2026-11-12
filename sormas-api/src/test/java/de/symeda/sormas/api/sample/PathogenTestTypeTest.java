@@ -55,15 +55,14 @@ public class PathogenTestTypeTest {
 	public void everySelectableMethodHasACategory() {
 		List<PathogenTestType> orphans = Arrays.stream(PathogenTestType.values())
 			.filter(PathogenTestType::isSelectableForNewTests)
-			.filter(t -> t != PathogenTestType.OTHER)
 			.filter(t -> PathogenTestType.getCategory(t) == null)
 			.collect(Collectors.toList());
-		assertThat("every selectable method (except OTHER) must declare a category", orphans, is(empty()));
+		assertThat("every selectable method must declare a category", orphans, is(empty()));
 	}
 
 	@Test
-	public void otherHasNoCategoryAndIsNotCategorised() {
-		assertNull(PathogenTestType.getCategory(PathogenTestType.OTHER));
+	public void otherHasTheOtherCategory() {
+		assertThat(PathogenTestType.getCategory(PathogenTestType.OTHER), is(PathogenTestCategory.OTHER));
 		assertNull(PathogenTestType.getCategory(null));
 	}
 
@@ -112,7 +111,7 @@ public class PathogenTestTypeTest {
 	}
 
 	@Test
-	public void allSevenCategoriesAreRepresentedBySelectableMethods() {
+	public void everyCategoryIsRepresentedBySelectableMethods() {
 		Set<PathogenTestCategory> represented = Arrays.stream(PathogenTestType.values())
 			.filter(PathogenTestType::isSelectableForNewTests)
 			.map(PathogenTestType::getCategory)

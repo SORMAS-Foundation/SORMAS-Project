@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import de.symeda.sormas.api.Disease;
@@ -25,6 +30,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.LegacyEnumHelper;
 import de.symeda.sormas.api.utils.LegacyEnumNames;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 public enum PathogenTestType {
 
@@ -1335,6 +1341,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.OTHER)
 	OTHER;
 
 	/**
@@ -1464,6 +1471,13 @@ public enum PathogenTestType {
 			return DEFAULT_RESULT_VALUE_TYPES;
 		}
 		return RESULT_VALUE_TYPES_BY_METHOD.getOrDefault(testType, DEFAULT_RESULT_VALUE_TYPES);
+	}
+
+	public static List<PathogenTestType> selectableMethods(FieldVisibilityCheckers checkers, PathogenTestType retainType) {
+		return Arrays.stream(values())
+			.filter(type -> type == retainType || isSelectableForNewTests(type) && checkers.isVisible(PathogenTestType.class, type.name()))
+			.sorted(Comparator.comparing(PathogenTestType::toString, String.CASE_INSENSITIVE_ORDER))
+			.collect(Collectors.toList());
 	}
 
 	/**

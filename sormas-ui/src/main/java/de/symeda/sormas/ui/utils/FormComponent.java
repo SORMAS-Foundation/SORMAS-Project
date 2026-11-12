@@ -294,7 +294,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	protected static <E extends Enum<E>> void updateComboBoxByDisease(ComboBox<E> comboBox, Class<E> enumClass, Disease disease) {
 		E currentValue = comboBox.getValue();
 		List<E> filtered = Diseases.DiseasesConfiguration.getVisibleValues(enumClass, disease);
-		filtered.sort(Comparator.comparing(Object::toString));
+		filtered.sort(Comparator.comparing(Object::toString, String.CASE_INSENSITIVE_ORDER));
 		comboBox.setItems(filtered);
 		if (currentValue != null && filtered.contains(currentValue)) {
 			comboBox.setValue(currentValue);
@@ -324,7 +324,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 			} catch (NoSuchFieldException e) {
 				return true;
 			}
-		}).sorted(Comparator.comparing(Object::toString)).collect(Collectors.toList());
+		}).sorted(Comparator.comparing(Object::toString, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
 		comboBox.setItems(filtered);
 		if (currentValue != null && filtered.contains(currentValue)) {
 			comboBox.setValue(currentValue);
@@ -339,21 +339,24 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	 * selectable, disease-visible methods. The currently saved value is always kept selectable so an
 	 * existing test recorded with a now-hidden method can still be edited. Sorted alphabetically.
 	 */
-	protected static void updateTestTypeItemsByCategory(ComboBox<PathogenTestType> comboBox, Disease disease, PathogenTestCategory category) {
-		updateTestTypeItemsByCategory(comboBox, disease, category, comboBox.getValue());
+	protected static void updateTestTypeItemsByCategory(
+		ComboBox<PathogenTestType> comboBox,
+		FieldVisibilityCheckers checkers,
+		PathogenTestCategory category) {
+		updateTestTypeItemsByCategory(comboBox, checkers, category, comboBox.getValue());
 	}
 
 	/**
-	 * As {@link #updateTestTypeItemsByCategory(ComboBox, Disease, PathogenTestCategory)} but with an
+	 * As {@link #updateTestTypeItemsByCategory(ComboBox, FieldVisibilityCheckers, PathogenTestCategory)} but with an
 	 * explicit {@code retainType} that is always kept in the list (and its category honoured) even if it
 	 * is hidden or not selectable — used when loading an existing test whose method may be legacy.
 	 */
 	protected static void updateTestTypeItemsByCategory(
 		ComboBox<PathogenTestType> comboBox,
-		Disease disease,
+		FieldVisibilityCheckers checkers,
 		PathogenTestCategory category,
 		PathogenTestType retainType) {
-		updateTestTypeItemsByCategory(comboBox, disease, category, retainType, true);
+		updateTestTypeItemsByCategory(comboBox, checkers, category, retainType, true);
 	}
 
 	/**
@@ -364,25 +367,17 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	 */
 	protected static void updateTestTypeItemsByCategory(
 		ComboBox<PathogenTestType> comboBox,
-		Disease disease,
+		FieldVisibilityCheckers checkers,
 		PathogenTestCategory category,
 		PathogenTestType retainType,
 		boolean selectRetainType) {
 
-		List<PathogenTestType> filtered = Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease)
+		List<PathogenTestType> filtered = PathogenTestType.selectableMethods(checkers, retainType)
 			.stream()
-			.filter(type -> type == retainType || PathogenTestType.isSelectableForNewTests(type))
 			.filter(type -> type == retainType || category == null || PathogenTestType.getCategory(type) == category)
 			.collect(Collectors.toList());
-		// getVisibleValues drops values marked @Diseases(hide = true) for this disease, so the
-		// type == retainType guards above cannot re-add a saved legacy method that is hidden here.
-		// Add it explicitly so an existing test recorded with such a method still loads and displays.
-		if (retainType != null && !filtered.contains(retainType)) {
-			filtered.add(retainType);
-		}
-		filtered.sort(Comparator.comparing(Object::toString));
 		comboBox.setItems(filtered);
-		if (selectRetainType && retainType != null && filtered.contains(retainType)) {
+		if (selectRetainType && retainType != null) {
 			comboBox.setValue(retainType);
 		}
 	}
@@ -391,19 +386,18 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	 * Lists the {@link PathogenTestCategory} values that have at least one selectable method visible
 	 * for the given disease, so empty categories are not offered. Sorted alphabetically.
 	 */
-	protected static List<PathogenTestCategory> getVisibleTestCategories(Disease disease) {
-		return getVisibleTestCategories(disease, null);
+	protected static List<PathogenTestCategory> getVisibleTestCategories(FieldVisibilityCheckers checkers) {
+		return getVisibleTestCategories(checkers, null);
 	}
 
 	/**
-	 * As {@link #getVisibleTestCategories(Disease)} but additionally includes {@code retainCategory}
+	 * As {@link #getVisibleTestCategories(FieldVisibilityCheckers)} but additionally includes {@code retainCategory}
 	 * even when no selectable, disease-visible method maps to it — used when loading an existing test
 	 * whose (possibly legacy/hidden) method's category would otherwise be absent from the selector.
 	 */
-	protected static List<PathogenTestCategory> getVisibleTestCategories(Disease disease, PathogenTestCategory retainCategory) {
-		List<PathogenTestCategory> categories = Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease)
+	protected static List<PathogenTestCategory> getVisibleTestCategories(FieldVisibilityCheckers checkers, PathogenTestCategory retainCategory) {
+		List<PathogenTestCategory> categories = PathogenTestType.selectableMethods(checkers, null)
 			.stream()
-			.filter(PathogenTestType::isSelectableForNewTests)
 			.map(PathogenTestType::getCategory)
 			.filter(java.util.Objects::nonNull)
 			.distinct()
@@ -411,7 +405,9 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		if (retainCategory != null && !categories.contains(retainCategory)) {
 			categories.add(retainCategory);
 		}
-		categories.sort(Comparator.comparing(Object::toString));
+		categories.sort(
+			Comparator.comparing((PathogenTestCategory category) -> category == PathogenTestCategory.OTHER)
+				.thenComparing(Object::toString, String.CASE_INSENSITIVE_ORDER));
 		return categories;
 	}
 
