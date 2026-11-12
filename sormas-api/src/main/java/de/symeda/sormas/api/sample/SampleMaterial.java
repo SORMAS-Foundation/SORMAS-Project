@@ -416,8 +416,6 @@ public enum SampleMaterial {
 		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ENDOTRACHEAL_ASPIRATE,
 
 	@Diseases(value = {
@@ -577,7 +575,6 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.SALMONELLOSIS,
-		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS }, hide = true)
 	OROPHARYNGEAL_SWAB,
@@ -678,8 +675,7 @@ public enum SampleMaterial {
 	EDTA_WHOLE_BLOOD,
 
 	@Diseases(value = {
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.TUBERCULOSIS })
+		Disease.CRYPTOSPORIDIOSIS })
 	INTESTINAL_FLUID,
 
 	@Diseases(value = {
@@ -756,8 +752,7 @@ public enum SampleMaterial {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ABSCESS_SWAB,
@@ -1037,8 +1032,7 @@ public enum SampleMaterial {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ULCER_SWAB,
@@ -1060,7 +1054,11 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION }, hide = true)
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.SYPHILIS,
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.DIPHTHERIA }, hide = true)
 	UNKNOWN,
 
 	@Diseases(value = {

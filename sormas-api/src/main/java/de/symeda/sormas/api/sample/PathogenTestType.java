@@ -1238,11 +1238,9 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
-		Disease.CRYPTOSPORIDIOSIS,
         Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
