@@ -208,17 +208,13 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
 		final SampleMaterial currentMaterial = record.getSampleMaterial();
 
-		return DataUtils.getEnumItems(SampleMaterial.class, true, getFieldVisibilityCheckers())
-			.stream()
-			.filter(item -> {
-				SampleMaterial material = (SampleMaterial) item.getValue();
-				if (material == null || material == currentMaterial) {
-					return true;
-				}
-				return !material.isDeprecated();
-			})
-			.sorted(Comparator.comparing(Item::getKey, String.CASE_INSENSITIVE_ORDER))
+		List<SampleMaterial> materials = Arrays.stream(SampleMaterial.values())
+			.filter(
+				material -> material == currentMaterial
+					|| (!material.isDeprecated() && getFieldVisibilityCheckers().isVisible(SampleMaterial.class, material.name())))
+			.sorted(Comparator.comparing(SampleMaterial::toString, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
+		return DataUtils.toItems(materials, true);
 	}
 
 	@Override

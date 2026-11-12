@@ -94,7 +94,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
 		sample = record.getSample();
-		testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true, getFieldVisibilityCheckers());
+		testTypeList = DataUtils.toItems(PathogenTestType.selectableMethods(getFieldVisibilityCheckers(), record.getTestType()), true);
 		pcrTestSpecificationList = DataUtils.getEnumItems(PCRTestSpecification.class, true);
 
 		List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
@@ -179,10 +179,10 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 				updateDiseaseVariantsField(contentBinding);
 
 				testTypeList = DataUtils.toItems(
-					Arrays.asList(PathogenTestType.values()),
-					true,
-					FieldVisibilityCheckers.withDisease((Disease) field.getValue()),
-					PathogenTestType.class);
+					PathogenTestType.selectableMethods(
+						FieldVisibilityCheckers.withDisease((Disease) field.getValue()).andWithCountry(ConfigProvider.getServerCountryCode()),
+						record.getTestType()),
+					true);
 				contentBinding.pathogenTestTestType.setSpinnerData(testTypeList);
 			}
 		});
