@@ -7694,6 +7694,7 @@ paths:
                   - EXTERNAL_MESSAGE_LABORATORY_DELETE
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
                   - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
+                  - EXTERNAL_PERSON_DATA_PROVIDER_ACCESS
                   - SURVEY_VIEW
                   - SURVEY_CREATE
                   - SURVEY_EDIT
@@ -7970,6 +7971,7 @@ paths:
                   - EXTERNAL_MESSAGE_LABORATORY_DELETE
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
                   - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
+                  - EXTERNAL_PERSON_DATA_PROVIDER_ACCESS
                   - SURVEY_VIEW
                   - SURVEY_CREATE
                   - SURVEY_EDIT
@@ -32278,6 +32280,7 @@ components:
             - EXTERNAL_MESSAGE_LABORATORY_DELETE
             - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
             - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
+            - EXTERNAL_PERSON_DATA_PROVIDER_ACCESS
             - SURVEY_VIEW
             - SURVEY_CREATE
             - SURVEY_EDIT
