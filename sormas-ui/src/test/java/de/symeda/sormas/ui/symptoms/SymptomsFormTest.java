@@ -350,6 +350,44 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 	}
 
 	@Test
+	void shouldUseRubellaSpecificCaptionsForRubella() {
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		SymptomsForm form = createForm(Disease.RUBELLA);
+
+		assertEquals(
+			I18nProperties.getCaption(Captions.Symptoms_lymphadenopathyCervical_RUBELLA),
+			form.getField(SymptomsDto.LYMPHADENOPATHY_CERVICAL).getCaption());
+		assertEquals(I18nProperties.getCaption(Captions.Symptoms_skinRash_RUBELLA), form.getField(SymptomsDto.SKIN_RASH).getCaption());
+		assertEquals(I18nProperties.getCaption(Captions.Symptoms_arthritis_RUBELLA), form.getField(SymptomsDto.ARTHRITIS).getCaption());
+		assertEquals(
+			I18nProperties.getCaption(Captions.Symptoms_otherNeurologicalSymptoms_RUBELLA),
+			form.getField(SymptomsDto.OTHER_NEUROLOGICAL_SYMPTOMS).getCaption());
+		assertEquals(
+			I18nProperties.getCaption(Captions.Symptoms_otherNeurologicalSymptomsText_RUBELLA),
+			form.getField(SymptomsDto.OTHER_NEUROLOGICAL_SYMPTOMS_TEXT).getCaption());
+	}
+
+	@Test
+	void shouldKeepGenericOtherNeurologicalSymptomsCaptionForDengue() {
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		SymptomsForm form = createForm(Disease.DENGUE);
+
+		assertEquals(
+			I18nProperties.getCaption(Captions.Symptoms_otherNeurologicalSymptoms),
+			form.getField(SymptomsDto.OTHER_NEUROLOGICAL_SYMPTOMS).getCaption());
+	}
+
+	@Test
+	void shouldKeepGenericCervicalLymphadenopathyCaptionForOtherDiseases() {
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		SymptomsForm form = createForm(Disease.MEASLES);
+
+		assertEquals(
+			I18nProperties.getCaption(Captions.Symptoms_lymphadenopathyCervical),
+			form.getField(SymptomsDto.LYMPHADENOPATHY_CERVICAL).getCaption());
+	}
+
+	@Test
 	void shouldNeverShowSkinRashOnsetDateOutsideLuxembourg() {
 		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_FRANCE);
 		SymptomsForm form = createForm(Disease.MEASLES);

@@ -1248,6 +1248,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_imi_pneumoniaClinicalOrRadiologic));
 		} else if (Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease) {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_ipi_pneumoniaClinicalOrRadiologic));
+		} else if (Disease.RUBELLA == disease) {
+			getField(ARTHRITIS).setCaption(I18nProperties.getCaption(Captions.Symptoms_arthritis_RUBELLA));
+			getField(SKIN_RASH).setCaption(I18nProperties.getCaption(Captions.Symptoms_skinRash_RUBELLA));
+			getField(LYMPHADENOPATHY_CERVICAL).setCaption(I18nProperties.getCaption(Captions.Symptoms_lymphadenopathyCervical_RUBELLA));
+			getField(OTHER_NEUROLOGICAL_SYMPTOMS).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherNeurologicalSymptoms_RUBELLA));
+			getField(OTHER_NEUROLOGICAL_SYMPTOMS_TEXT)
+				.setCaption(I18nProperties.getCaption(Captions.Symptoms_otherNeurologicalSymptomsText_RUBELLA));
 		}
 
 		if (symptomsContext == SymptomsContext.CASE && caze != null && caze.getDisease() == Disease.PLAGUE) {
