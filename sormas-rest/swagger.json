@@ -17934,7 +17934,12 @@
           },
           "contactWithSexWorker" : {
             "type" : "string",
-            "enum" : [ "YES", "NO", "UNKNOWN" ]
+            "enum" : [ "YES", "NO", "UNKNOWN", "OTHER" ]
+          },
+          "contactWithSexWorkerOther" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
           },
           "contactWithSourceCaseKnown" : {
             "type" : "string",
@@ -18019,6 +18024,11 @@
             "type" : "string",
             "enum" : [ "HETEROSEXUAL_CONTACT", "MSM_HOMO_OR_BISEXUAL_MALE", "MOTHER_TO_CHILD_TRANSMISSION", "OTHER", "UNKNOWN" ]
           },
+          "probableRouteOfTransmissionOther" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
           "pseudonymized" : {
             "type" : "boolean"
           },
@@ -18029,7 +18039,12 @@
           },
           "sexWorker" : {
             "type" : "string",
-            "enum" : [ "YES", "NO", "UNKNOWN" ]
+            "enum" : [ "YES", "NO", "UNKNOWN", "OTHER" ]
+          },
+          "sexWorkerOther" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
           },
           "typeOfClinicalService" : {
             "type" : "string",
@@ -19763,7 +19778,12 @@
           },
           "contactWithSexWorker" : {
             "type" : "string",
-            "enum" : [ "YES", "NO", "UNKNOWN" ]
+            "enum" : [ "YES", "NO", "UNKNOWN", "OTHER" ]
+          },
+          "contactWithSexWorkerOther" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
           },
           "creationDate" : {
             "type" : "string",
@@ -20044,6 +20064,11 @@
             "type" : "string",
             "enum" : [ "HETEROSEXUAL_CONTACT", "MSM_HOMO_OR_BISEXUAL_MALE", "MOTHER_TO_CHILD_TRANSMISSION", "OTHER", "UNKNOWN" ]
           },
+          "probableRouteOfTransmissionOther" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
           "pseudonymized" : {
             "type" : "boolean"
           },
@@ -20096,6 +20121,15 @@
             "items" : {
               "$ref" : "#/components/schemas/SampleReportDto"
             }
+          },
+          "sexWorker" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN", "OTHER" ]
+          },
+          "sexWorkerOther" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
           },
           "sormasToSormasOriginInfo" : {
             "$ref" : "#/components/schemas/SormasToSormasOriginInfoDto"
@@ -27321,6 +27355,11 @@
           "syphilisInfectionSite" : {
             "type" : "string",
             "enum" : [ "GENITAL", "ANORECTAL", "PHARYNGEAL", "UNKNOWN", "OTHER" ]
+          },
+          "syphilisInfectionSiteOther" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
           },
           "syphilisInfectiousness" : {
             "type" : "string",

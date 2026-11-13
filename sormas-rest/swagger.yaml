@@ -16945,6 +16945,11 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+          - OTHER
+        contactWithSexWorkerOther:
+          type: string
+          maxLength: 512
+          minLength: 0
         contactWithSourceCaseKnown:
           type: string
           enum:
@@ -17095,6 +17100,10 @@ components:
           - MOTHER_TO_CHILD_TRANSMISSION
           - OTHER
           - UNKNOWN
+        probableRouteOfTransmissionOther:
+          type: string
+          maxLength: 512
+          minLength: 0
         pseudonymized:
           type: boolean
         residenceAtOnset:
@@ -17107,6 +17116,11 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+          - OTHER
+        sexWorkerOther:
+          type: string
+          maxLength: 512
+          minLength: 0
         typeOfClinicalService:
           type: string
           enum:
@@ -19797,6 +19811,11 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+          - OTHER
+        contactWithSexWorkerOther:
+          type: string
+          maxLength: 512
+          minLength: 0
         creationDate:
           type: string
           format: date-time
@@ -20187,6 +20206,10 @@ components:
           - MOTHER_TO_CHILD_TRANSMISSION
           - OTHER
           - UNKNOWN
+        probableRouteOfTransmissionOther:
+          type: string
+          maxLength: 512
+          minLength: 0
         pseudonymized:
           type: boolean
         radiographyCompatibility:
@@ -20228,6 +20251,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SampleReportDto'
+        sexWorker:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+          - OTHER
+        sexWorkerOther:
+          type: string
+          maxLength: 512
+          minLength: 0
         sormasToSormasOriginInfo:
           $ref: '#/components/schemas/SormasToSormasOriginInfoDto'
         status:
@@ -29800,6 +29834,10 @@ components:
           - PHARYNGEAL
           - UNKNOWN
           - OTHER
+        syphilisInfectionSiteOther:
+          type: string
+          maxLength: 512
+          minLength: 0
         syphilisInfectiousness:
           type: string
           enum:
