@@ -52,7 +52,7 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 
 	public static final Set<String> STYLE_HTML_ATTRIBUTE_NAME = Set.of("style");
 
-	private static final AllowedHtmlTagsAndAttributesDto DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG = AllowedHtmlTagsAndAttributesDto
+	public static final AllowedHtmlTagsAndAttributesDto DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG = AllowedHtmlTagsAndAttributesDto
 		.of(Stream.of("dt", "dl", "dd", "h3", "section", "div").collect(Collectors.toMap(Function.identity(), ignored -> STYLE_HTML_ATTRIBUTE_NAME)));
 
 	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataProviderFacadeEJB.class);

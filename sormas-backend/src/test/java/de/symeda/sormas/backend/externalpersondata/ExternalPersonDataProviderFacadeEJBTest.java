@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.externalpersondata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -22,8 +21,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.symeda.sormas.api.audit.ExternalSystemCallAuditRequest;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataAddressRequestDto;
@@ -233,7 +230,7 @@ class ExternalPersonDataProviderFacadeEJBTest extends AbstractBeanTest {
 	void readsConfiguredHtmlAttributes() {
 		// PREPARE
 		when(systemConfigurationValueFacade.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY))
-			.thenReturn("{\"a\":[\"href\",\"title\"]");
+			.thenReturn("{\"a\":[\"href\",\"title\"]}");
 
 		// EXECUTE
 		Map<String, Set<String>> result = getAllowedAttributesByTag();
@@ -256,16 +253,14 @@ class ExternalPersonDataProviderFacadeEJBTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void rejectsMalformedHtmlAttributeConfiguration() {
+	void malformedHtmlAttributeConfiguration_returns_default() {
 		// PREPARE
 		when(systemConfigurationValueFacade.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY))
 			.thenReturn("invalid json");
 
-		// EXECUTE
-		RuntimeException exception = assertThrows(RuntimeException.class, () -> getAllowedAttributesByTag());
+		// EXECUTE & CHECK
+		assertSame(ExternalPersonDataProviderFacadeEJB.DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG, victim.getAllowedAttributesByTag());
 
-		// CHECK
-		assertInstanceOf(JsonProcessingException.class, exception.getCause());
 	}
 
 	@Test
