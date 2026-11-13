@@ -272,26 +272,30 @@ public class VaccinationFacadeEjb
 			return true;
 		}
 
-		// Case 2: Search for an immunization with start date < vaccination date < end date
+		// Case 2: Search for an immunization with period start < vaccination date < period end
+		// (start/end date for legacy immunizations, otherwise the validity period)
 		Optional<Immunization> immunization = immunizations.stream()
 			.filter(
-				i -> i.getStartDate() != null
-					&& i.getEndDate() != null
-					&& DateHelper.isBetween(vaccination.getVaccinationDate(), i.getStartDate(), i.getEndDate()))
+				i -> ImmunizationEntityHelper.getPeriodStart(i) != null
+					&& ImmunizationEntityHelper.getPeriodEnd(i) != null
+					&& DateHelper.isBetween(
+						vaccination.getVaccinationDate(),
+						ImmunizationEntityHelper.getPeriodStart(i),
+						ImmunizationEntityHelper.getPeriodEnd(i)))
 			.findFirst();
 		if (immunization.isPresent()) {
 			vaccination.setImmunization(immunization.get());
 			return true;
 		}
 
-		// Case 3: Search for the immunization with the nearest end or start date to the vaccination date
-		immunization = immunizations.stream().filter(i -> i.getEndDate() != null || i.getStartDate() != null).min((i1, i2) -> {
-			Integer i1Interval =
-				Math.abs(DateHelper.getDaysBetween(i1.getEndDate() != null ? i1.getEndDate() : i1.getStartDate(), vaccination.getVaccinationDate()));
-			Integer i2Interval =
-				Math.abs(DateHelper.getDaysBetween(i2.getEndDate() != null ? i2.getEndDate() : i2.getStartDate(), vaccination.getVaccinationDate()));
-			return i1Interval.compareTo(i2Interval);
-		});
+		// Case 3: Search for the immunization with the nearest period end or start date to the vaccination date
+		immunization = immunizations.stream()
+			.filter(i -> ImmunizationEntityHelper.getPeriodEnd(i) != null || ImmunizationEntityHelper.getPeriodStart(i) != null)
+			.min((i1, i2) -> {
+				Integer i1Interval = Math.abs(DateHelper.getDaysBetween(getNearestPeriodDate(i1), vaccination.getVaccinationDate()));
+				Integer i2Interval = Math.abs(DateHelper.getDaysBetween(getNearestPeriodDate(i2), vaccination.getVaccinationDate()));
+				return i1Interval.compareTo(i2Interval);
+			});
 		if (immunization.isPresent()) {
 			vaccination.setImmunization(immunization.get());
 			return true;
@@ -309,6 +313,11 @@ public class VaccinationFacadeEjb
 		}
 
 		return false;
+	}
+
+	private static Date getNearestPeriodDate(Immunization immunization) {
+		Date periodEnd = ImmunizationEntityHelper.getPeriodEnd(immunization);
+		return periodEnd != null ? periodEnd : ImmunizationEntityHelper.getPeriodStart(immunization);
 	}
 
 	@Override

@@ -63,6 +63,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 	public static final String COUNTRY = "country";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	/** @deprecated Superseded by the validity period fields {@link #VALID_FROM} and {@link #VALID_UNTIL}. */
+	@Deprecated
 	public static final String END_DATE = "endDate";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String FACILITY_TYPE = "facilityType";
@@ -86,6 +88,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	/** @deprecated Superseded by the validity period fields {@link #VALID_FROM} and {@link #VALID_UNTIL}. */
+	@Deprecated
 	public static final String START_DATE = "startDate";
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
@@ -143,7 +147,11 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
+	/** @deprecated Superseded by {@link #validFrom}. */
+	@Deprecated
 	private Date startDate;
+	/** @deprecated Superseded by {@link #validUntil}. */
+	@Deprecated
 	private Date endDate;
 	private Integer numberOfDoses;
 	private String numberOfDosesDetails;
@@ -299,18 +307,26 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
+	/** @deprecated Superseded by the validity period, see {@link #getValidFrom()}. */
+	@Deprecated
 	public Date getStartDate() {
 		return startDate;
 	}
 
+	/** @deprecated Superseded by the validity period, see {@link #setValidFrom(Date)}. */
+	@Deprecated
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
+	/** @deprecated Superseded by the validity period, see {@link #getValidUntil()}. */
+	@Deprecated
 	public Date getEndDate() {
 		return endDate;
 	}
 
+	/** @deprecated Superseded by the validity period, see {@link #setValidUntil(Date)}. */
+	@Deprecated
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}

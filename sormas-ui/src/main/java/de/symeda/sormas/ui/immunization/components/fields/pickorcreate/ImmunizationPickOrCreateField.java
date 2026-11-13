@@ -15,6 +15,13 @@ import de.symeda.sormas.ui.immunization.components.fields.info.ImmunizationInfo;
 import de.symeda.sormas.ui.immunization.components.fields.info.InfoLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
+/**
+ * Lets the user pick an existing similar immunization or create a new one, with similarity based on start and end date.
+ *
+ * @deprecated Start and end date were superseded by the validity period fields (valid from / valid until) and are no longer
+ *             shown in the immunization forms. Kept for now in case the similarity check is revised and needed again.
+ */
+@Deprecated
 public class ImmunizationPickOrCreateField extends CustomField<String> {
 
 	public static final String KEEP_IMMUNIZATION = "keepImmunization";

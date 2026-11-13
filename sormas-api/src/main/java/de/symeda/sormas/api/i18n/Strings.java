@@ -857,6 +857,7 @@ public interface Strings {
 	String headingDiagnosisCriteria = "headingDiagnosisCriteria";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
+	String headingDiseaseConfigurationImmunizationValidity = "headingDiseaseConfigurationImmunizationValidity";
 	String headingDistrictClimatePointChanged = "headingDistrictClimatePointChanged";
 	String headingDocumentCreated = "headingDocumentCreated";
 	String headingDoseCount = "headingDoseCount";
@@ -1323,6 +1324,8 @@ public interface Strings {
 	String infoDeveloperOptionsContactGeneration = "infoDeveloperOptionsContactGeneration";
 	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
 	String infoDiseaseConfigurationEpipulseDatasource = "infoDiseaseConfigurationEpipulseDatasource";
+	String infoDiseaseConfigurationImmunizationValidity = "infoDiseaseConfigurationImmunizationValidity";
+	String infoDiseaseConfigurationImmunizationValidityDetails = "infoDiseaseConfigurationImmunizationValidityDetails";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDistrictClimatePoint = "infoDistrictClimatePoint";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
@@ -1397,6 +1400,14 @@ public interface Strings {
 	String infoHeadingSampleDashboardMap = "infoHeadingSampleDashboardMap";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoHowToMergeContacts = "infoHowToMergeContacts";
+	String infoImmunizationMatchedForVaccinationStatus = "infoImmunizationMatchedForVaccinationStatus";
+	String infoImmunizationNotMatchedCloserNotImmunizedReportDate = "infoImmunizationNotMatchedCloserNotImmunizedReportDate";
+	String infoImmunizationNotMatchedMissingReportDate = "infoImmunizationNotMatchedMissingReportDate";
+	String infoImmunizationNotMatchedSuperseded = "infoImmunizationNotMatchedSuperseded";
+	String infoImmunizationNotMatchedValidFromAfterReferencePeriod = "infoImmunizationNotMatchedValidFromAfterReferencePeriod";
+	String infoImmunizationNotMatchedValidFromMissing = "infoImmunizationNotMatchedValidFromMissing";
+	String infoImmunizationNotMatchedValidUntilBeforeReferencePeriod = "infoImmunizationNotMatchedValidUntilBeforeReferencePeriod";
+	String infoImmunizationNotMatchedValidUntilMissing = "infoImmunizationNotMatchedValidUntilMissing";
 	String infoImmunizationPeriod = "infoImmunizationPeriod";
 	String infoImmunizationStatusAcquired = "infoImmunizationStatusAcquired";
 	String infoImmunizationValidFromClosest = "infoImmunizationValidFromClosest";

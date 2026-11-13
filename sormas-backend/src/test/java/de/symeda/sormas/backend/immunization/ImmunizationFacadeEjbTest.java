@@ -40,11 +40,17 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -58,7 +64,9 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -118,13 +126,40 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		getUserFacade().saveUser(covidLimitedDistrictUser, false);
 	}
 
+	private ImmunizationListEntryDto getImmunizationListEntryByUuid(List<ImmunizationListEntryDto> entries, String uuid) {
+		return entries.stream().filter(entry -> uuid.equals(entry.getUuid())).findFirst().orElseThrow(AssertionError::new);
+	}
+
+	private void configureImmunizationValidityOverrides(
+		Disease disease,
+		Integer vaccinationStartOffsetDays,
+		Integer requiredDoses,
+		Integer vaccinationDurationDays,
+		Boolean vaccinationLifelong,
+		Integer recoveryStartOffsetDays,
+		Integer recoveryDurationDays,
+		Boolean recoveryLifelong) {
+
+		DiseaseConfigurationDto configuration = getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
+		configuration.setVaccinationProtectionStartOffsetDays(vaccinationStartOffsetDays);
+		configuration.setVaccinationProtectionRequiredDoses(requiredDoses);
+		configuration.setVaccinationProtectionDurationDays(vaccinationDurationDays);
+		configuration.setVaccinationProtectionLifelong(vaccinationLifelong);
+		configuration.setRecoveryProtectionStartOffsetDays(recoveryStartOffsetDays);
+		configuration.setRecoveryProtectionDurationDays(recoveryDurationDays);
+		configuration.setRecoveryProtectionLifelong(recoveryLifelong);
+		getDiseaseConfigurationFacade().saveDiseaseConfiguration(configuration);
+		getDiseaseConfigurationFacade().loadData();
+	}
+
 	@Test
-	public void testSuggestValidFromAndValidUntilUseCountrySpecificCalculator() {
+	public void testSuggestValidFromAndValidUntilUseConfiguredValidityOverrides() {
 		loginWith(nationalUser);
 
 		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
 		try {
 			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+			configureImmunizationValidityOverrides(Disease.MEASLES, 14, 2, null, true, 0, null, true);
 			Date validFrom = getImmunizationFacade()
 				.getSuggestedValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
 			assertEquals(UtilDate.from(LocalDate.of(2026, 1, 15)), validFrom);
@@ -142,12 +177,19 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		String originalLocale2 = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
 		try {
 			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
+			// the disease configuration applies independent of the server country
+			assertEquals(
+				UtilDate.from(LocalDate.of(2026, 1, 15)),
+				getImmunizationFacade()
+					.getSuggestedValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2));
+
+			// without a configuration for the disease, the default applies: valid from the dose date, valid lifelong
 			Date defaultValidFrom = getImmunizationFacade()
-				.getSuggestedValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
+				.getSuggestedValidFrom(Disease.CHOLERA, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
 			assertEquals(UtilDate.from(LocalDate.of(2026, 1, 1)), defaultValidFrom);
 			assertEquals(
 				UtilDate.from(LocalDate.of(9999, 12, 31)),
-				getImmunizationFacade().getSuggestedValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, defaultValidFrom, 2));
+				getImmunizationFacade().getSuggestedValidUntil(Disease.CHOLERA, MeansOfImmunization.VACCINATION, defaultValidFrom, 2));
 		} finally {
 			if (originalLocale2 != null) {
 				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale2);
@@ -164,6 +206,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
 		try {
 			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+			configureImmunizationValidityOverrides(Disease.MEASLES, 14, 2, null, true, 0, null, true);
 
 			PersonDto person = creator.createPerson("Quick", "Immunization");
 			ImmunizationDto dto = ImmunizationDto.build(person.toReference());
@@ -188,6 +231,198 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
 			}
 		}
+	}
+
+	@Test
+	public void testGetEntriesListMarksRelevantAndSupersededImmunizations() {
+		loginWith(nationalUser);
+
+		PersonDto person = creator.createPerson("Match", "Status");
+		Date referenceDate = UtilDate.from(LocalDate.of(2026, 1, 15));
+
+		ImmunizationDto olderImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		olderImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 20));
+		olderImmunization.setValidUntil(DateHelper.addDays(referenceDate, 30));
+		olderImmunization = getImmunizationFacade().save(olderImmunization);
+
+		ImmunizationDto matchedImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		matchedImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 5));
+		matchedImmunization.setValidUntil(DateHelper.addDays(referenceDate, 30));
+		matchedImmunization = getImmunizationFacade().save(matchedImmunization);
+
+		ImmunizationDto futureImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		futureImmunization.setValidFrom(DateHelper.addDays(referenceDate, 2));
+		futureImmunization.setValidUntil(DateHelper.addDays(referenceDate, 30));
+		futureImmunization = getImmunizationFacade().save(futureImmunization);
+
+		ImmunizationDto pendingImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf1);
+		pendingImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 2));
+		pendingImmunization.setValidUntil(DateHelper.addDays(referenceDate, 30));
+		pendingImmunization = getImmunizationFacade().save(pendingImmunization);
+
+		List<ImmunizationListEntryDto> entries = getImmunizationFacade().getEntriesList(
+			new ImmunizationListCriteria.Builder(person.toReference()).withDisease(Disease.MEASLES)
+				.withReferencePeriod(referenceDate, referenceDate)
+				.build(),
+			0,
+			20);
+
+		assertEquals(Boolean.TRUE, getImmunizationListEntryByUuid(entries, matchedImmunization.getUuid()).getRelevantForVaccinationStatus());
+		assertEquals(
+			String.format(
+				I18nProperties.getString(Strings.infoImmunizationNotMatchedSuperseded),
+				DateFormatHelper.formatLocalDate(olderImmunization.getValidFrom()),
+				DateFormatHelper.formatLocalDate(matchedImmunization.getValidFrom()),
+				DateFormatHelper.buildPeriodString(referenceDate, referenceDate)),
+			getImmunizationListEntryByUuid(entries, olderImmunization.getUuid()).getNonRelevantMessage());
+		assertEquals(
+			String.format(
+				I18nProperties.getString(Strings.infoImmunizationNotMatchedValidFromAfterReferencePeriod),
+				DateFormatHelper.formatLocalDate(futureImmunization.getValidFrom()),
+				DateFormatHelper.formatLocalDate(referenceDate)),
+			getImmunizationListEntryByUuid(entries, futureImmunization.getUuid()).getNonRelevantMessage());
+		assertEquals(
+			String.format(I18nProperties.getString(Strings.infoImmunizationStatusAcquired), pendingImmunization.getImmunizationStatus()),
+			getImmunizationListEntryByUuid(entries, pendingImmunization.getUuid()).getNonRelevantMessage());
+	}
+
+	@Test
+	public void testGetEntriesListUsesReferencePeriodEndForValidUntilChecks() {
+		loginWith(nationalUser);
+
+		PersonDto person = creator.createPerson("Range", "Status");
+		Date referencePeriodFrom = UtilDate.from(LocalDate.of(2026, 1, 10));
+		Date referencePeriodTo = UtilDate.from(LocalDate.of(2026, 1, 20));
+
+		ImmunizationDto matchedImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		matchedImmunization.setValidFrom(DateHelper.subtractDays(referencePeriodFrom, 5));
+		matchedImmunization.setValidUntil(DateHelper.addDays(referencePeriodTo, 5));
+		matchedImmunization = getImmunizationFacade().save(matchedImmunization);
+
+		ImmunizationDto expiredImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		expiredImmunization.setValidFrom(DateHelper.subtractDays(referencePeriodFrom, 10));
+		expiredImmunization.setValidUntil(DateHelper.subtractDays(referencePeriodTo, 1));
+		expiredImmunization = getImmunizationFacade().save(expiredImmunization);
+
+		ImmunizationDto missingValidUntilImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		missingValidUntilImmunization.setValidFrom(DateHelper.subtractDays(referencePeriodFrom, 3));
+		missingValidUntilImmunization.setValidUntil(null);
+		missingValidUntilImmunization = getImmunizationFacade().save(missingValidUntilImmunization);
+
+		List<ImmunizationListEntryDto> entries = getImmunizationFacade().getEntriesList(
+			new ImmunizationListCriteria.Builder(person.toReference()).withDisease(Disease.MEASLES)
+				.withReferencePeriod(referencePeriodFrom, referencePeriodTo)
+				.build(),
+			0,
+			20);
+
+		assertEquals(Boolean.TRUE, getImmunizationListEntryByUuid(entries, matchedImmunization.getUuid()).getRelevantForVaccinationStatus());
+		assertEquals(
+			String.format(
+				I18nProperties.getString(Strings.infoImmunizationNotMatchedValidUntilBeforeReferencePeriod),
+				DateFormatHelper.formatLocalDate(expiredImmunization.getValidUntil()),
+				DateFormatHelper.formatLocalDate(referencePeriodTo)),
+			getImmunizationListEntryByUuid(entries, expiredImmunization.getUuid()).getNonRelevantMessage());
+		assertEquals(
+			String.format(
+				I18nProperties.getString(Strings.infoImmunizationNotMatchedValidUntilMissing),
+				DateFormatHelper.formatLocalDate(referencePeriodTo)),
+			getImmunizationListEntryByUuid(entries, missingValidUntilImmunization.getUuid()).getNonRelevantMessage());
+	}
+
+	@Test
+	public void testGetEntriesListExplainsNotImmunizedReportDateSelection() {
+		loginWith(nationalUser);
+
+		PersonDto person = creator.createPerson("No", "ImmunizedEntries");
+		Date referenceDate = UtilDate.from(LocalDate.of(2026, 3, 15));
+
+		ImmunizationDto matchedNotImmunized = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.NOT_IMMUNIZED,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		matchedNotImmunized.setReportDate(DateHelper.subtractDays(referenceDate, 1));
+		matchedNotImmunized = getImmunizationFacade().save(matchedNotImmunized);
+
+		ImmunizationDto olderNotImmunized = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.NOT_IMMUNIZED,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		olderNotImmunized.setReportDate(DateHelper.subtractDays(referenceDate, 7));
+		olderNotImmunized = getImmunizationFacade().save(olderNotImmunized);
+
+		List<ImmunizationListEntryDto> entries = getImmunizationFacade().getEntriesList(
+			new ImmunizationListCriteria.Builder(person.toReference()).withDisease(Disease.CORONAVIRUS)
+				.withReferencePeriod(referenceDate, referenceDate)
+				.build(),
+			0,
+			20);
+
+		assertEquals(Boolean.TRUE, getImmunizationListEntryByUuid(entries, matchedNotImmunized.getUuid()).getRelevantForVaccinationStatus());
+		assertEquals(
+			String.format(
+				I18nProperties.getString(Strings.infoImmunizationNotMatchedCloserNotImmunizedReportDate),
+				DateFormatHelper.formatLocalDate(olderNotImmunized.getReportDate()),
+				DateFormatHelper.formatLocalDate(referenceDate),
+				DateFormatHelper.formatLocalDate(matchedNotImmunized.getReportDate())),
+			getImmunizationListEntryByUuid(entries, olderNotImmunized.getUuid()).getNonRelevantMessage());
 	}
 
 	@Test
@@ -537,6 +772,93 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		immunizationCriteria.setOnlyPersonsWithOverdueImmunization(false);
 		final List<ImmunizationIndexDto> allImmunizations = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(2, allImmunizations.size());
+	}
+
+	@Test
+	public void testOverdueImmunizationsFilterFallsBackToValidUntil() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final ImmunizationDto validityEndedYesterday = createOngoingImmunization(person, null, UtilDate.yesterday());
+		createOngoingImmunization(person, null, UtilDate.tomorrow());
+		// legacy immunization: the end date takes precedence over valid until
+		createOngoingImmunization(person, UtilDate.tomorrow(), UtilDate.yesterday());
+
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setOnlyPersonsWithOverdueImmunization(true);
+		final List<ImmunizationIndexDto> onlyOverdueImmunizations = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(1, onlyOverdueImmunizations.size());
+		assertEquals(validityEndedYesterday.getUuid(), onlyOverdueImmunizations.get(0).getUuid());
+	}
+
+	@Test
+	public void testImmunizationEndDateTypeFilterFallsBackToValidUntil() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date inRange = UtilDate.from(LocalDate.now().minusDays(5));
+		final Date outOfRange = UtilDate.from(LocalDate.now().minusDays(30));
+		final ImmunizationDto validityInRange = createOngoingImmunization(person, null, inRange);
+		final ImmunizationDto legacyEndInRange = createOngoingImmunization(person, inRange, outOfRange);
+		createOngoingImmunization(person, null, outOfRange);
+		// legacy immunization: the end date takes precedence over valid until
+		createOngoingImmunization(person, outOfRange, inRange);
+
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setImmunizationDateType(ImmunizationDateType.IMMUNIZATION_END);
+		immunizationCriteria.setFromDate(UtilDate.from(LocalDate.now().minusDays(10)));
+		immunizationCriteria.setToDate(new Date());
+		final List<String> uuids = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null)
+			.stream()
+			.map(ImmunizationIndexDto::getUuid)
+			.collect(Collectors.toList());
+		assertEquals(2, uuids.size());
+		assertTrue(uuids.contains(validityInRange.getUuid()));
+		assertTrue(uuids.contains(legacyEndInRange.getUuid()));
+	}
+
+	@Test
+	public void testIndexListContainsAndSortsByValidityPeriod() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date validFrom = UtilDate.from(LocalDate.now().minusDays(20));
+		final ImmunizationDto validUntilTomorrow = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf2,
+			null,
+			null,
+			validFrom,
+			UtilDate.tomorrow());
+		final ImmunizationDto validUntilYesterday = createOngoingImmunization(person, null, UtilDate.yesterday());
+
+		final List<ImmunizationIndexDto> sorted = getImmunizationFacade()
+			.getIndexList(new ImmunizationCriteria(), 0, 100, Collections.singletonList(new SortProperty(ImmunizationIndexDto.VALID_UNTIL, true)));
+		assertEquals(2, sorted.size());
+		assertEquals(validUntilYesterday.getUuid(), sorted.get(0).getUuid());
+		assertEquals(validUntilTomorrow.getUuid(), sorted.get(1).getUuid());
+		assertEquals(DateHelper.getStartOfDay(validFrom), DateHelper.getStartOfDay(sorted.get(1).getValidFrom()));
+		assertEquals(DateHelper.getStartOfDay(UtilDate.tomorrow()), DateHelper.getStartOfDay(sorted.get(1).getValidUntil()));
+	}
+
+	private ImmunizationDto createOngoingImmunization(PersonDto person, Date endDate, Date validUntil) {
+		return creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf2,
+			null,
+			endDate,
+			null,
+			validUntil);
 	}
 
 	private ImmunizationDto createOngoingImmunizationWithEndDate(PersonDto person, Date endDate) {

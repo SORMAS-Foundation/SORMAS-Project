@@ -61,6 +61,20 @@ public interface DiseaseConfigurationFacade {
 
 	Integer getAutomaticSampleAssignmentThreshold(Disease disease);
 
+	Integer getVaccinationProtectionStartOffsetDays(Disease disease);
+
+	Integer getVaccinationProtectionRequiredDoses(Disease disease);
+
+	Integer getVaccinationProtectionDurationDays(Disease disease);
+
+	boolean isVaccinationProtectionLifelong(Disease disease);
+
+	Integer getRecoveryProtectionStartOffsetDays(Disease disease);
+
+	Integer getRecoveryProtectionDurationDays(Disease disease);
+
+	boolean isRecoveryProtectionLifelong(Disease disease);
+
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
 
 	Disease getDefaultDisease();

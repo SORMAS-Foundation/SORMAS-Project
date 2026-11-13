@@ -48,6 +48,13 @@ public class DiseaseConfigurationDto extends EntityDto {
 	public static final String IS_CONTAGIOUS = "isContagious";
 	public static final String MIN_CONTAGIOUS_PERIOD = "minContagiousPeriod";
 	public static final String MAX_CONTAGIOUS_PERIOD = "maxContagiousPeriod";
+	public static final String VACCINATION_PROTECTION_START_OFFSET_DAYS = "vaccinationProtectionStartOffsetDays";
+	public static final String VACCINATION_PROTECTION_REQUIRED_DOSES = "vaccinationProtectionRequiredDoses";
+	public static final String VACCINATION_PROTECTION_DURATION_DAYS = "vaccinationProtectionDurationDays";
+	public static final String VACCINATION_PROTECTION_LIFELONG = "vaccinationProtectionLifelong";
+	public static final String RECOVERY_PROTECTION_START_OFFSET_DAYS = "recoveryProtectionStartOffsetDays";
+	public static final String RECOVERY_PROTECTION_DURATION_DAYS = "recoveryProtectionDurationDays";
+	public static final String RECOVERY_PROTECTION_LIFELONG = "recoveryProtectionLifelong";
 	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
 	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
 	public static final String AGE_GROUPS = "ageGroups";
@@ -82,6 +89,13 @@ public class DiseaseConfigurationDto extends EntityDto {
 	private Boolean isContagious;
 	private Integer minContagiousPeriod;
 	private Integer maxContagiousPeriod;
+	private Integer vaccinationProtectionStartOffsetDays;
+	private Integer vaccinationProtectionRequiredDoses;
+	private Integer vaccinationProtectionDurationDays;
+	private Boolean vaccinationProtectionLifelong;
+	private Integer recoveryProtectionStartOffsetDays;
+	private Integer recoveryProtectionDurationDays;
+	private Boolean recoveryProtectionLifelong;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
@@ -282,6 +296,62 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	public void setUsualRangeExcludedYears(Set<Integer> usualRangeExcludedYears) {
 		this.usualRangeExcludedYears = usualRangeExcludedYears;
+	}
+
+	public Integer getVaccinationProtectionStartOffsetDays() {
+		return vaccinationProtectionStartOffsetDays;
+	}
+
+	public void setVaccinationProtectionStartOffsetDays(Integer vaccinationProtectionStartOffsetDays) {
+		this.vaccinationProtectionStartOffsetDays = vaccinationProtectionStartOffsetDays;
+	}
+
+	public Integer getVaccinationProtectionRequiredDoses() {
+		return vaccinationProtectionRequiredDoses;
+	}
+
+	public void setVaccinationProtectionRequiredDoses(Integer vaccinationProtectionRequiredDoses) {
+		this.vaccinationProtectionRequiredDoses = vaccinationProtectionRequiredDoses;
+	}
+
+	public Integer getVaccinationProtectionDurationDays() {
+		return vaccinationProtectionDurationDays;
+	}
+
+	public void setVaccinationProtectionDurationDays(Integer vaccinationProtectionDurationDays) {
+		this.vaccinationProtectionDurationDays = vaccinationProtectionDurationDays;
+	}
+
+	public Boolean getVaccinationProtectionLifelong() {
+		return vaccinationProtectionLifelong;
+	}
+
+	public void setVaccinationProtectionLifelong(Boolean vaccinationProtectionLifelong) {
+		this.vaccinationProtectionLifelong = vaccinationProtectionLifelong;
+	}
+
+	public Integer getRecoveryProtectionStartOffsetDays() {
+		return recoveryProtectionStartOffsetDays;
+	}
+
+	public void setRecoveryProtectionStartOffsetDays(Integer recoveryProtectionStartOffsetDays) {
+		this.recoveryProtectionStartOffsetDays = recoveryProtectionStartOffsetDays;
+	}
+
+	public Integer getRecoveryProtectionDurationDays() {
+		return recoveryProtectionDurationDays;
+	}
+
+	public void setRecoveryProtectionDurationDays(Integer recoveryProtectionDurationDays) {
+		this.recoveryProtectionDurationDays = recoveryProtectionDurationDays;
+	}
+
+	public Boolean getRecoveryProtectionLifelong() {
+		return recoveryProtectionLifelong;
+	}
+
+	public void setRecoveryProtectionLifelong(Boolean recoveryProtectionLifelong) {
+		this.recoveryProtectionLifelong = recoveryProtectionLifelong;
 	}
 
 }

@@ -15,16 +15,31 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
 	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	public static final String START_DATE = "startDate";
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	public static final String END_DATE = "endDate";
 	public static final String IMMUNIZATION_PERIOD = "immunizationPeriod";
+	public static final String VALID_FROM = "validFrom";
+	public static final String VALID_UNTIL = "validUntil";
+	public static final String VALIDITY_PERIOD = "validityPeriod";
 
 	private Disease disease;
 	private MeansOfImmunization meansOfImmunization;
 	private ImmunizationStatus immunizationStatus;
 	private ImmunizationManagementStatus immunizationManagementStatus;
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	private Date startDate;
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	private Date endDate;
+	private Date validFrom;
+	private Date validUntil;
+	private Boolean relevantForVaccinationStatus;
+	private String nonRelevantMessage;
 
 	public ImmunizationListEntryDto(
 		String uuid,
@@ -76,20 +91,60 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 		this.immunizationManagementStatus = immunizationManagementStatus;
 	}
 
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	public Date getStartDate() {
 		return startDate;
 	}
 
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	public Date getEndDate() {
 		return endDate;
 	}
 
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public Date getValidFrom() {
+		return validFrom;
+	}
+
+	public void setValidFrom(Date validFrom) {
+		this.validFrom = validFrom;
+	}
+
+	public Date getValidUntil() {
+		return validUntil;
+	}
+
+	public void setValidUntil(Date validUntil) {
+		this.validUntil = validUntil;
+	}
+
+	public Boolean getRelevantForVaccinationStatus() {
+		return relevantForVaccinationStatus;
+	}
+
+	public void setRelevantForVaccinationStatus(Boolean relevantForVaccinationStatus) {
+		this.relevantForVaccinationStatus = relevantForVaccinationStatus;
+	}
+
+	public String getNonRelevantMessage() {
+		return nonRelevantMessage;
+	}
+
+	public void setNonRelevantMessage(String nonRelevantMessage) {
+		this.nonRelevantMessage = nonRelevantMessage;
 	}
 
 	@Override
