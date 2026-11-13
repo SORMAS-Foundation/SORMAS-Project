@@ -60,6 +60,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 
 @AuditedClass
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
@@ -146,7 +147,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 	public static final String HIV_STATUS = "hivStatus";
 	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION_OTHER = "probableRouteOfTransmissionOther";
+	public static final String SEX_WORKER = "sexWorker";
+	public static final String SEX_WORKER_OTHER = "sexWorkerOther";
 	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String CONTACT_WITH_SEX_WORKER_OTHER = "contactWithSexWorkerOther";
 	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
 	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
 
@@ -357,7 +362,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	private HivStatus hivStatus;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
-	private YesNoUnknown contactWithSexWorker;
+	private YesNoUnknownOther sexWorker;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String contactWithSexWorkerOther;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String sexWorkerOther;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String probableRouteOfTransmissionOther;
+	private YesNoUnknownOther contactWithSexWorker;
 	private CountryReferenceDto motherCountryOfBirth;
 	private CountryReferenceDto motherCitizenship;
 
@@ -1213,11 +1225,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.probableRouteOfTransmission = probableRouteOfTransmission;
 	}
 
-	public YesNoUnknown getContactWithSexWorker() {
+	public YesNoUnknownOther getContactWithSexWorker() {
 		return contactWithSexWorker;
 	}
 
-	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+	public void setContactWithSexWorker(YesNoUnknownOther contactWithSexWorker) {
 		this.contactWithSexWorker = contactWithSexWorker;
 	}
 
@@ -1295,4 +1307,35 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.infectionSourceText = infectionSourceText;
 	}
 
+	public String getProbableRouteOfTransmissionOther() {
+		return probableRouteOfTransmissionOther;
+	}
+
+	public void setProbableRouteOfTransmissionOther(String probableRouteOfTransmissionOther) {
+		this.probableRouteOfTransmissionOther = probableRouteOfTransmissionOther;
+	}
+
+	public String getSexWorkerOther() {
+		return sexWorkerOther;
+	}
+
+	public void setSexWorkerOther(String sexWorkerOther) {
+		this.sexWorkerOther = sexWorkerOther;
+	}
+
+	public String getContactWithSexWorkerOther() {
+		return contactWithSexWorkerOther;
+	}
+
+	public void setContactWithSexWorkerOther(String contactWithSexWorkerOther) {
+		this.contactWithSexWorkerOther = contactWithSexWorkerOther;
+	}
+
+	public YesNoUnknownOther getSexWorker() {
+		return sexWorker;
+	}
+
+	public void setSexWorker(YesNoUnknownOther sexWorker) {
+		this.sexWorker = sexWorker;
+	}
 }

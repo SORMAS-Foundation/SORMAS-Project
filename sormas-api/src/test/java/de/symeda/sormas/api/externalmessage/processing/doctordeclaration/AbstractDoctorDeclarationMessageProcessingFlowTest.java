@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -19,8 +20,12 @@ import java.util.concurrent.CompletionStage;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+import de.symeda.sormas.api.AbstractUnitTest;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
@@ -30,6 +35,7 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
@@ -49,11 +55,46 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 
-class AbstractDoctorDeclarationMessageProcessingFlowTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+class AbstractDoctorDeclarationMessageProcessingFlowTest extends AbstractUnitTest {
+
+	private TestDoctorDeclarationFlow victim;
+
+	@ParameterizedTest
+	@EnumSource(YesNoUnknownOther.class)
+	void preparesCaseWithStiDetailsWithoutAnExposureList(YesNoUnknownOther answer) {
+		// PREPARE
+		ExternalMessageDto message = ExternalMessageDto.build();
+		message.setDisease(Disease.SYPHILIS);
+		message.setProbableRouteOfTransmission(ProbableRouteOfTransmission.OTHER);
+		message.setProbableRouteOfTransmissionOther("Transmission details");
+		message.setSexWorker(answer);
+		message.setSexWorkerOther("Sex worker details");
+		message.setContactWithSexWorker(answer);
+		message.setContactWithSexWorkerOther("Contact details");
+		ExternalMessageProcessingFacade processingFacade = mock(ExternalMessageProcessingFacade.class);
+		when(processingFacade.saveCase(any(CaseDataDto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		victim = new TestDoctorDeclarationFlow(message, processingFacade);
+		CaseDataDto caze = CaseDataDto.build(mock(PersonReferenceDto.class), Disease.SYPHILIS);
+
+		// EXECUTE
+		CaseDataDto result = victim.exposePrepareSelectedCase(caze, message);
+
+		// CHECK
+		assertTrue(victim.wasPostBuildExposureCalled());
+		assertEquals(message.getProbableRouteOfTransmission(), result.getEpiData().getProbableRouteOfTransmission());
+		assertEquals(message.getProbableRouteOfTransmissionOther(), result.getEpiData().getProbableRouteOfTransmissionOther());
+		assertEquals(answer, result.getEpiData().getSexWorker());
+		assertEquals(message.getSexWorkerOther(), result.getEpiData().getSexWorkerOther());
+		assertEquals(answer, result.getEpiData().getContactWithSexWorker());
+		assertEquals(message.getContactWithSexWorkerOther(), result.getEpiData().getContactWithSexWorkerOther());
+		verify(processingFacade).saveCase(caze);
+	}
 
 	@Test
 	void prepareSelectedCaseSyncsAndSavesUntouchedCaseData() {
@@ -489,8 +530,8 @@ class AbstractDoctorDeclarationMessageProcessingFlowTest {
 
 	private ExternalMessageDto mockExternalMessage() {
 		ExternalMessageDto externalMessage = mock(ExternalMessageDto.class);
-		when(externalMessage.getTreatmentStarted()).thenReturn(null);
-		when(externalMessage.getTreatmentNotApplicable()).thenReturn(null);
+		lenient().when(externalMessage.getTreatmentStarted()).thenReturn(null);
+		lenient().when(externalMessage.getTreatmentNotApplicable()).thenReturn(null);
 		return externalMessage;
 	}
 

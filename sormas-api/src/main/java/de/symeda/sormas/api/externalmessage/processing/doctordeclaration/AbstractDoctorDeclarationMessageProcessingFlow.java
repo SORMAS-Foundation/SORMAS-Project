@@ -527,7 +527,15 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			|| hasAirportWorker
 			|| hasHealthCareProfessional
 			|| hasModeOfTransmission
-			|| hasModeOfTransmissionType;
+			|| hasModeOfTransmissionType
+			|| externalMessage.getProbableRouteOfTransmission() != null
+			|| StringUtils.isNotBlank(externalMessage.getProbableRouteOfTransmissionOther())
+			|| externalMessage.getSexWorker() != null
+			|| StringUtils.isNotBlank(externalMessage.getSexWorkerOther())
+			|| externalMessage.getContactWithSexWorker() != null
+			|| StringUtils.isNotBlank(externalMessage.getContactWithSexWorkerOther())
+			|| externalMessage.getMotherCountryOfBirth() != null
+			|| externalMessage.getMotherCitizenship() != null;
 	}
 
 	protected boolean hasExternalActivitiesAsCaseData(ExternalMessageDto externalMessage) {
@@ -714,6 +722,10 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
 		epiData.setProbableRouteOfTransmission(externalMessageDto.getProbableRouteOfTransmission());
 		epiData.setContactWithSexWorker(externalMessageDto.getContactWithSexWorker());
+		epiData.setContactWithSexWorkerOther(externalMessageDto.getContactWithSexWorkerOther());
+		epiData.setSexWorkerOther(externalMessageDto.getSexWorkerOther());
+		epiData.setSexWorker(externalMessageDto.getSexWorker());
+		epiData.setProbableRouteOfTransmissionOther(externalMessageDto.getProbableRouteOfTransmissionOther());
 		epiData.setMotherCitizenship(externalMessageDto.getMotherCitizenship());
 		epiData.setMotherCountryOfBirth(externalMessageDto.getMotherCountryOfBirth());
 		epiData.setInfectionSource(externalMessageDto.getInfectionSource());

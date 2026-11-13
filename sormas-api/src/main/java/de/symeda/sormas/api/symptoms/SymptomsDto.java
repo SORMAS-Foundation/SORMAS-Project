@@ -435,6 +435,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String MALNUTRITION = "malnutrition";
 	public static final String NEPHROTIC_SYNDROME = "nephroticSyndrome";
 	public static final String SYPHILIS_INFECTION_SITE = "syphilisInfectionSite";
+	public static final String SYPHILIS_INFECTION_SITE_OTHER = "syphilisInfectionSiteOther";
 	public static final String SYPHILIS_STAGE = "syphilisStage";
 	public static final String SYPHILIS_INFECTIOUSNESS = "syphilisInfectiousness";
 	public static final String CLINICAL_CRITERIA_MET = "clinicalCriteriaMet";
@@ -3557,6 +3558,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.SKIN)
 	@DependantOn(CHANCRE)
 	private SyphilisInfectionSite syphilisInfectionSite;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	@DependantOn(SYPHILIS_INFECTION_SITE)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String syphilisInfectionSiteOther;
 
 	@Diseases({
 		SYPHILIS })
@@ -6916,4 +6924,11 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.unknownComplicationDiagnosis = unknownComplicationDiagnosis;
 	}
 
+	public String getSyphilisInfectionSiteOther() {
+		return syphilisInfectionSiteOther;
+	}
+
+	public void setSyphilisInfectionSiteOther(String syphilisInfectionSiteOther) {
+		this.syphilisInfectionSiteOther = syphilisInfectionSiteOther;
+	}
 }

@@ -100,6 +100,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 
@@ -249,12 +250,12 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 			c.getSymptoms().setSyphilisInfectionSite(SyphilisInfectionSite.PHARYNGEAL);
 			c.getSymptoms().setSyphilisInfectiousness(SyphilisInfectiousness.INFECTIOUS);
 			c.getSymptoms().setSyphilisStage(SyphilisStage.EARLY_LATENT_SYPHILIS);
-			c.getEpiData().setSexWorker(YesNoUnknown.YES);
+			c.getEpiData().setSexWorker(YesNoUnknownOther.YES);
 			c.getEpiData().getExposures().add(travelTo(france));
 			// the STI risk and service block, shared with gonorrhoea
 			c.getEpiData().setTypeOfClinicalService(TypeOfClinicalService.DERMATOLOGY_VENEREOLOGY_CLINIC);
 			c.getEpiData().setProbableRouteOfTransmission(ProbableRouteOfTransmission.HETEROSEXUAL_CONTACT);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.NO);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.NO);
 			c.getHealthConditions().setHivStatus(HivStatus.NEW_DIAGNOSIS);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.NO);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.YES);
@@ -459,9 +460,9 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 	@DisplayName("SexWorker reports nothing when the answer was not established")
 	public void sexWorkerReportsNothingWhenNotEstablished() {
 
-		String yes = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknown.YES)).getUuid();
-		String no = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknown.NO)).getUuid();
-		String unknown = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknown.UNKNOWN)).getUuid();
+		String yes = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknownOther.YES)).getUuid();
+		String no = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknownOther.NO)).getUuid();
+		String unknown = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknownOther.UNKNOWN)).getUuid();
 		String unanswered = syphilisCase(SyphilisPresentation.ACQUIRED).getUuid();
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.SYPH, PERIOD_START, PERIOD_END);
@@ -485,7 +486,7 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		String recorded = acquiredCaseWith(c -> {
 			c.getEpiData().setTypeOfClinicalService(TypeOfClinicalService.YOUTH_CLINIC);
 			c.getEpiData().setProbableRouteOfTransmission(ProbableRouteOfTransmission.MSM_HOMO_OR_BISEXUAL_MALE);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.YES);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.YES);
 			c.getHealthConditions().setHivStatus(HivStatus.KNOWN_POSITIVE);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.YES);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.NO);

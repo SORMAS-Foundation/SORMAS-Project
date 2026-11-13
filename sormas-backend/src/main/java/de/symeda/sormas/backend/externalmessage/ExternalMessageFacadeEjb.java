@@ -311,7 +311,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		target.setHivStatus(source.getHivStatus());
 		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setContactWithSexWorkerOther(source.getContactWithSexWorkerOther());
+		target.setSexWorkerOther(source.getSexWorkerOther());
+		target.setProbableRouteOfTransmissionOther(source.getProbableRouteOfTransmissionOther());
 		target.setContactWithSexWorker(source.getContactWithSexWorker());
+		target.setSexWorker(source.getSexWorker());
 		target.setMotherCountryOfBirth(countryService.getByReferenceDto(source.getMotherCountryOfBirth()));
 		target.setMotherCitizenship(countryService.getByReferenceDto(source.getMotherCitizenship()));
 		target.setClusterIdentifier(source.getClusterIdentifier());
@@ -678,7 +682,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setInfectionSourceText(source.getInfectionSourceText());
 		target.setHivStatus(source.getHivStatus());
 		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setContactWithSexWorkerOther(source.getContactWithSexWorkerOther());
+		target.setSexWorkerOther(source.getSexWorkerOther());
+		target.setProbableRouteOfTransmissionOther(source.getProbableRouteOfTransmissionOther());
 		target.setContactWithSexWorker(source.getContactWithSexWorker());
+		target.setSexWorker(source.getSexWorker());
 		target.setMotherCountryOfBirth(CountryFacadeEjb.toReferenceDto(source.getMotherCountryOfBirth()));
 		target.setMotherCitizenship(CountryFacadeEjb.toReferenceDto(source.getMotherCitizenship()));
 

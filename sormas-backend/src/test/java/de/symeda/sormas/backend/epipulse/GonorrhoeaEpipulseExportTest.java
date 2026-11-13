@@ -91,6 +91,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 
@@ -165,8 +166,8 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 			c.getEpiData().getExposures().add(travelTo(italy));
 			c.getEpiData().setTypeOfClinicalService(TypeOfClinicalService.DEDICATED_STI_CLINIC);
 			c.getEpiData().setProbableRouteOfTransmission(ProbableRouteOfTransmission.MSM_HOMO_OR_BISEXUAL_MALE);
-			c.getEpiData().setSexWorker(YesNoUnknown.NO);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.YES);
+			c.getEpiData().setSexWorker(YesNoUnknownOther.NO);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.YES);
 			c.getHealthConditions().setHivStatus(HivStatus.KNOWN_POSITIVE);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.YES);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.NO);
@@ -345,15 +346,15 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 
 		// Four columns share one reader: test all four in one case (false = recorded; empty = unknown)
 		String answered = caseWith(c -> {
-			c.getEpiData().setSexWorker(YesNoUnknown.NO);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.NO);
+			c.getEpiData().setSexWorker(YesNoUnknownOther.NO);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.NO);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.NO);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.NO);
 		});
 
 		String notEstablished = caseWith(c -> {
-			c.getEpiData().setSexWorker(YesNoUnknown.UNKNOWN);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.UNKNOWN);
+			c.getEpiData().setSexWorker(YesNoUnknownOther.UNKNOWN);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.UNKNOWN);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.UNKNOWN);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.UNKNOWN);
 		});

@@ -66,6 +66,7 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.InfectionSourceSetConverter;
@@ -161,7 +162,11 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 	public static final String HIV_STATUS = "hivStatus";
 	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION_OTHER = "probableRouteOfTransmissionOther";
+	public static final String SEX_WORKER = "sexWorker";
+	public static final String SEX_WORKER_OTHER = "sexWorkerOther";
 	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String CONTACT_WITH_SEX_WORKER_OTHER = "contactWithSexWorkerOther";
 	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
 	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
 
@@ -290,7 +295,11 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private HivStatus hivStatus;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
-	private YesNoUnknown contactWithSexWorker;
+	private YesNoUnknownOther sexWorker;
+	private String contactWithSexWorkerOther;
+	private String sexWorkerOther;
+	private String probableRouteOfTransmissionOther;
+	private YesNoUnknownOther contactWithSexWorker;
 	private Country motherCountryOfBirth;
 	private Country motherCitizenship;
 
@@ -1270,11 +1279,11 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getContactWithSexWorker() {
+	public YesNoUnknownOther getContactWithSexWorker() {
 		return contactWithSexWorker;
 	}
 
-	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+	public void setContactWithSexWorker(YesNoUnknownOther contactWithSexWorker) {
 		this.contactWithSexWorker = contactWithSexWorker;
 	}
 
@@ -1296,4 +1305,39 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.motherCitizenship = motherCitizenship;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getProbableRouteOfTransmissionOther() {
+		return probableRouteOfTransmissionOther;
+	}
+
+	public void setProbableRouteOfTransmissionOther(String probableRouteOfTransmissionOther) {
+		this.probableRouteOfTransmissionOther = probableRouteOfTransmissionOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSexWorkerOther() {
+		return sexWorkerOther;
+	}
+
+	public void setSexWorkerOther(String sexWorkerOther) {
+		this.sexWorkerOther = sexWorkerOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getContactWithSexWorkerOther() {
+		return contactWithSexWorkerOther;
+	}
+
+	public void setContactWithSexWorkerOther(String contactWithSexWorkerOther) {
+		this.contactWithSexWorkerOther = contactWithSexWorkerOther;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknownOther getSexWorker() {
+		return sexWorker;
+	}
+
+	public void setSexWorker(YesNoUnknownOther sexWorker) {
+		this.sexWorker = sexWorker;
+	}
 }

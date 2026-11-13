@@ -1850,6 +1850,7 @@ public interface Captions {
 	String EpiData_clusterType = "EpiData.clusterType";
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
 	String EpiData_contactWithSexWorker = "EpiData.contactWithSexWorker";
+	String EpiData_contactWithSexWorkerOther = "EpiData.contactWithSexWorkerOther";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_country = "EpiData.country";
 	String EpiData_country_SHIG = "EpiData.country.SHIG";
@@ -1871,8 +1872,10 @@ public interface Captions {
 	String EpiData_patientIllLocation = "EpiData.patientIllLocation";
 	String EpiData_placeOfInfection = "EpiData.placeOfInfection";
 	String EpiData_probableRouteOfTransmission = "EpiData.probableRouteOfTransmission";
+	String EpiData_probableRouteOfTransmissionOther = "EpiData.probableRouteOfTransmissionOther";
 	String EpiData_residenceAtOnset = "EpiData.residenceAtOnset";
 	String EpiData_sexWorker = "EpiData.sexWorker";
+	String EpiData_sexWorkerOther = "EpiData.sexWorkerOther";
 	String EpiData_typeOfClinicalService = "EpiData.typeOfClinicalService";
 	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
 	String epipulseActiveExports = "epipulseActiveExports";
@@ -2345,6 +2348,7 @@ public interface Captions {
 	String ExternalMessage_assignee = "ExternalMessage.assignee";
 	String ExternalMessage_caseReportDate = "ExternalMessage.caseReportDate";
 	String ExternalMessage_contactWithSexWorker = "ExternalMessage.contactWithSexWorker";
+	String ExternalMessage_contactWithSexWorkerOther = "ExternalMessage.contactWithSexWorkerOther";
 	String externalMessage_deleteNewlyCreatedCase = "externalMessage.deleteNewlyCreatedCase";
 	String externalMessage_deleteNewlyCreatedContact = "externalMessage.deleteNewlyCreatedContact";
 	String externalMessage_deleteNewlyCreatedEventParticipant = "externalMessage.deleteNewlyCreatedEventParticipant";
@@ -2375,6 +2379,7 @@ public interface Captions {
 	String ExternalMessage_personSex = "ExternalMessage.personSex";
 	String ExternalMessage_personStreet = "ExternalMessage.personStreet";
 	String ExternalMessage_probableRouteOfTransmission = "ExternalMessage.probableRouteOfTransmission";
+	String ExternalMessage_probableRouteOfTransmissionOther = "ExternalMessage.probableRouteOfTransmissionOther";
 	String ExternalMessage_reporterCity = "ExternalMessage.reporterCity";
 	String ExternalMessage_reporterName = "ExternalMessage.reporterName";
 	String ExternalMessage_reporterPostalCode = "ExternalMessage.reporterPostalCode";
@@ -2384,6 +2389,8 @@ public interface Captions {
 	String ExternalMessage_sampleMaterial = "ExternalMessage.sampleMaterial";
 	String ExternalMessage_sampleOverallTestResult = "ExternalMessage.sampleOverallTestResult";
 	String ExternalMessage_sampleReceivedDate = "ExternalMessage.sampleReceivedDate";
+	String ExternalMessage_sexWorker = "ExternalMessage.sexWorker";
+	String ExternalMessage_sexWorkerOther = "ExternalMessage.sexWorkerOther";
 	String ExternalMessage_specimenCondition = "ExternalMessage.specimenCondition";
 	String ExternalMessage_status = "ExternalMessage.status";
 	String externalMessage_structuredView = "externalMessage.structuredView";
@@ -3819,6 +3826,7 @@ public interface Captions {
 	String Symptoms_symptomsUnknownOccurred = "Symptoms.symptomsUnknownOccurred";
 	String Symptoms_syndromicFlu = "Symptoms.syndromicFlu";
 	String Symptoms_syphilisInfectionSite = "Symptoms.syphilisInfectionSite";
+	String Symptoms_syphilisInfectionSiteOther = "Symptoms.syphilisInfectionSiteOther";
 	String Symptoms_syphilisInfectiousness = "Symptoms.syphilisInfectiousness";
 	String Symptoms_syphilisStage = "Symptoms.syphilisStage";
 	String Symptoms_temperature = "Symptoms.temperature";
