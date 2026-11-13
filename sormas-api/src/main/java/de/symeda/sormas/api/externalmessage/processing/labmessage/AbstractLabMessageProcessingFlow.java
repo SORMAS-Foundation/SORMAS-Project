@@ -182,6 +182,10 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 		if (externalMessageDto.getHivStatus() != null) {
 			caseDto.getHealthConditions().setHivStatus(externalMessageDto.getHivStatus());
 		}
+		if (externalMessageDto.getDisease() == Disease.GONOCOCCAL_INFECTION) {
+			caseDto.setCaseClassification(
+				externalMessageDto.getCaseClassification() != null ? externalMessageDto.getCaseClassification() : CaseClassification.CONFIRMED);
+		}
 		if (getExternalMessageProcessingFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			postBuildCaseLuxembourg(caseDto, externalMessageDto);
 		}
@@ -218,9 +222,6 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			// for regular tuberculosis the case classification should be handled in the external message pre-processing
 			break;
 		case GONOCOCCAL_INFECTION:
-			caseClassification = externalMessageDto.getCaseClassification() != null
-				? externalMessageDto.getCaseClassification()
-				: CaseClassification.CONFIRMED;
 			break;
 		case CORONAVIRUS:
 			// case classification is handled in the external message pre-processing

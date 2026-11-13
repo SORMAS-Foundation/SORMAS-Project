@@ -457,14 +457,14 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCreateCaseKeepsDefaultsWhenMessageHasNoClassificationOrHivStatus() throws ExecutionException, InterruptedException {
+	public void testCreateGonococcalCaseDefaultsToConfirmedAndLeavesHivNullWhenMessageHasNeither() throws ExecutionException, InterruptedException {
 
 		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.GONOCOCCAL_INFECTION, "test-report-id", ExternalMessageStatus.UNPROCESSED);
 		runFlow(labMessage);
 
-		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.NOT_CLASSIFIED));
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.CONFIRMED));
 		assertThat(caseCaptor.getValue().getHealthConditions().getHivStatus(), is(nullValue()));
 	}
 

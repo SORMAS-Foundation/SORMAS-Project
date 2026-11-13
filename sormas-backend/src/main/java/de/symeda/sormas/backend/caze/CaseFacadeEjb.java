@@ -1527,8 +1527,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		Case caze = service.getByUuid(saved.getUuid());
 		caze.setCaseClassification(dto.getCaseClassification());
-		caze.setClassificationDate(caze.getReportDate());
-		caze.setClassificationUser(caze.getReportingUser());
+		boolean classified = dto.getCaseClassification() != CaseClassification.NOT_CLASSIFIED;
+		caze.setClassificationDate(classified ? caze.getReportDate() : null);
+		caze.setClassificationUser(classified ? caze.getReportingUser() : null);
 		service.ensurePersisted(caze);
 		return toPseudonymizedDto(caze);
 	}

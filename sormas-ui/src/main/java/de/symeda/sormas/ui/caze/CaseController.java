@@ -677,10 +677,11 @@ public class CaseController {
 		assert (unrelatedDisease == null || (convertedEventParticipant == null && convertedTravelEntry == null));
 
 		final boolean createdByProcessing = createdFromLabMessage || createdFromSelfReport;
+		final boolean fromLabMessageOnly = createdFromLabMessage && !createdFromSelfReport;
 
 		CaseCreateForm createForm;
 		if (createdByProcessing) {
-			createForm = createdFromLabMessage ? CaseCreateForm.forProcessing() : CaseCreateForm.forSelfReport();
+			createForm = fromLabMessageOnly ? CaseCreateForm.forProcessing() : CaseCreateForm.forSelfReport();
 		} else {
 			createForm = convertedContact == null && convertedEventParticipant == null && convertedTravelEntry == null && unrelatedDisease == null
 				? new CaseCreateForm()
@@ -866,12 +867,12 @@ public class CaseController {
 						FacadeProvider.getPersonFacade().save(personDto);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						dto.setPerson(personDto.toReference());
-						saveCase(dto, createdFromLabMessage);
+						saveCase(dto, fromLabMessageOnly);
 					} else {
 						transferDataToPerson(createForm, dbPerson);
 						FacadeProvider.getPersonFacade().save(dbPerson);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-						saveCase(dto, createdFromLabMessage);
+						saveCase(dto, fromLabMessageOnly);
 					}
 				} else {
 					PersonDto searchedPerson = createForm.getSearchedPerson();

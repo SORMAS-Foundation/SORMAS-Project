@@ -3661,7 +3661,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		CaseDataDto notClassified =
 			getCaseFacade().saveFromExternalMessage(buildNewCase(Disease.GONOCOCCAL_INFECTION, CaseClassification.NOT_CLASSIFIED));
-		assertEquals(CaseClassification.NOT_CLASSIFIED, getCaseFacade().getCaseDataByUuid(notClassified.getUuid()).getCaseClassification());
+		CaseDataDto storedNotClassified = getCaseFacade().getCaseDataByUuid(notClassified.getUuid());
+		assertEquals(CaseClassification.NOT_CLASSIFIED, storedNotClassified.getCaseClassification());
+		assertNull(storedNotClassified.getClassificationDate());
+		assertNull(storedNotClassified.getClassificationUser());
+	}
+
+	@Test
+	public void testSaveFromExternalMessageOnExistingGonococcalCaseBehavesLikePlainSave() {
+		CaseDataDto viaExternalMessage = getCaseFacade().save(buildNewCase(Disease.GONOCOCCAL_INFECTION, CaseClassification.NOT_CLASSIFIED));
+		CaseDataDto viaPlainSave = getCaseFacade().save(buildNewCase(Disease.GONOCOCCAL_INFECTION, CaseClassification.NOT_CLASSIFIED));
+
+		viaExternalMessage.setCaseClassification(CaseClassification.NO_CASE);
+		viaPlainSave.setCaseClassification(CaseClassification.NO_CASE);
+		getCaseFacade().saveFromExternalMessage(viaExternalMessage);
+		getCaseFacade().save(viaPlainSave);
+
+		assertEquals(
+			getCaseFacade().getCaseDataByUuid(viaPlainSave.getUuid()).getCaseClassification(),
+			getCaseFacade().getCaseDataByUuid(viaExternalMessage.getUuid()).getCaseClassification());
 	}
 
 	@Test
