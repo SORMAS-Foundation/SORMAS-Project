@@ -15371,15 +15371,30 @@
             "maxLength" : 255,
             "minLength" : 0
           },
+          "epipulseLocationCode" : {
+            "type" : "string",
+            "maxLength" : 10,
+            "minLength" : 0
+          },
           "externalId" : {
             "type" : "string",
             "maxLength" : 255,
             "minLength" : 0
           },
+          "iso2Code" : {
+            "type" : "string",
+            "maxLength" : 2,
+            "minLength" : 2
+          },
           "isoCode" : {
             "type" : "string",
             "maxLength" : 3,
             "minLength" : 2
+          },
+          "isoNumericCode" : {
+            "type" : "string",
+            "maxLength" : 3,
+            "minLength" : 3
           },
           "nutsCode" : {
             "type" : "string"
@@ -15420,10 +15435,19 @@
           "displayName" : {
             "type" : "string"
           },
+          "epipulseLocationCode" : {
+            "type" : "string"
+          },
           "externalId" : {
             "type" : "string"
           },
+          "iso2Code" : {
+            "type" : "string"
+          },
           "isoCode" : {
+            "type" : "string"
+          },
+          "isoNumericCode" : {
             "type" : "string"
           },
           "nutsCode" : {
@@ -16843,6 +16867,16 @@
           "disease" : {
             "type" : "string",
             "enum" : [ "AFP", "CHOLERA", "CONGENITAL_RUBELLA", "CSM", "DENGUE", "EVD", "GUINEA_WORM", "LASSA", "MEASLES", "MONKEYPOX", "NEW_INFLUENZA", "PLAGUE", "POLIO", "UNSPECIFIED_VHF", "WEST_NILE_FEVER", "YELLOW_FEVER", "RABIES", "ANTHRAX", "CORONAVIRUS", "PNEUMONIA", "MALARIA", "TYPHOID_FEVER", "ACUTE_VIRAL_HEPATITIS", "NON_NEONATAL_TETANUS", "HIV", "SCHISTOSOMIASIS", "SOIL_TRANSMITTED_HELMINTHS", "TRYPANOSOMIASIS", "DIARRHEA_DEHYDRATION", "DIARRHEA_BLOOD", "SNAKE_BITE", "RUBELLA", "TUBERCULOSIS", "LATENT_TUBERCULOSIS", "LEPROSY", "LYMPHATIC_FILARIASIS", "BURULI_ULCER", "PERTUSSIS", "NEONATAL_TETANUS", "ONCHOCERCIASIS", "DIPHTHERIA", "TRACHOMA", "YAWS_ENDEMIC_SYPHILIS", "MATERNAL_DEATHS", "PERINATAL_DEATHS", "INFLUENZA", "INFLUENZA_A", "INFLUENZA_B", "H_METAPNEUMOVIRUS", "RESPIRATORY_SYNCYTIAL_VIRUS", "PARAINFLUENZA_1_4", "ADENOVIRUS", "RHINOVIRUS", "ENTEROVIRUS", "M_PNEUMONIAE", "C_PNEUMONIAE", "ARI", "CHIKUNGUNYA", "POST_IMMUNIZATION_ADVERSE_EVENTS_MILD", "POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE", "FHA", "INVASIVE_PNEUMOCOCCAL_INFECTION", "INVASIVE_MENINGOCOCCAL_INFECTION", "GIARDIASIS", "CRYPTOSPORIDIOSIS", "SHIGELLOSIS", "SALMONELLOSIS", "SYPHILIS", "YERSINIOSIS", "MUMPS", "GONOCOCCAL_INFECTION", "OTHER", "UNDEFINED" ]
+          },
+          "epipulseDatasource" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "epipulseSubjectCode" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
           },
           "eventParticipantFollowUpDuration" : {
             "type" : "integer",

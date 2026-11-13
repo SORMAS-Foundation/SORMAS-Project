@@ -13942,14 +13942,26 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        epipulseLocationCode:
+          type: string
+          maxLength: 10
+          minLength: 0
         externalId:
           type: string
           maxLength: 255
           minLength: 0
+        iso2Code:
+          type: string
+          maxLength: 2
+          minLength: 2
         isoCode:
           type: string
           maxLength: 3
           minLength: 2
+        isoNumericCode:
+          type: string
+          maxLength: 3
+          minLength: 3
         nutsCode:
           type: string
         subcontinent:
@@ -13978,9 +13990,15 @@ components:
           type: string
         displayName:
           type: string
+        epipulseLocationCode:
+          type: string
         externalId:
           type: string
+        iso2Code:
+          type: string
         isoCode:
+          type: string
+        isoNumericCode:
           type: string
         nutsCode:
           type: string
@@ -15562,6 +15580,14 @@ components:
           - GONOCOCCAL_INFECTION
           - OTHER
           - UNDEFINED
+        epipulseDatasource:
+          type: string
+          maxLength: 512
+          minLength: 0
+        epipulseSubjectCode:
+          type: string
+          maxLength: 512
+          minLength: 0
         eventParticipantFollowUpDuration:
           type: integer
           format: int32
