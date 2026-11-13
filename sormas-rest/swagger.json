@@ -16928,6 +16928,17 @@
           "primaryDisease" : {
             "type" : "boolean"
           },
+          "recoveryProtectionDurationDays" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "recoveryProtectionLifelong" : {
+            "type" : "boolean"
+          },
+          "recoveryProtectionStartOffsetDays" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "usualRangeExcludedYears" : {
             "type" : "array",
             "items" : {
@@ -16941,6 +16952,21 @@
             "maxLength" : 36,
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
+          },
+          "vaccinationProtectionDurationDays" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "vaccinationProtectionLifelong" : {
+            "type" : "boolean"
+          },
+          "vaccinationProtectionRequiredDoses" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "vaccinationProtectionStartOffsetDays" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       },
@@ -21322,6 +21348,14 @@
             "maxLength" : 36,
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
+          },
+          "validFrom" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "validUntil" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         }
       },

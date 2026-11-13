@@ -15642,6 +15642,14 @@ components:
           format: int32
         primaryDisease:
           type: boolean
+        recoveryProtectionDurationDays:
+          type: integer
+          format: int32
+        recoveryProtectionLifelong:
+          type: boolean
+        recoveryProtectionStartOffsetDays:
+          type: integer
+          format: int32
         usualRangeExcludedYears:
           type: array
           items:
@@ -15653,6 +15661,17 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        vaccinationProtectionDurationDays:
+          type: integer
+          format: int32
+        vaccinationProtectionLifelong:
+          type: boolean
+        vaccinationProtectionRequiredDoses:
+          type: integer
+          format: int32
+        vaccinationProtectionStartOffsetDays:
+          type: integer
+          format: int32
     DiseaseVariant:
       type: object
       properties:
@@ -22489,6 +22508,12 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        validFrom:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
     ImmunizationReferenceDto:
       type: object
       properties:
