@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
@@ -41,25 +42,154 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRe
 public class EpipulseCaseInclusionTest {
 
 	@Test
-	@DisplayName("TUBE notifies confirmed, probable and possible cases only")
-	public void tubeNotifiesConfirmedProbableAndPossible() {
+	@DisplayName("TUBE, CONSYPH, PERT and MENI notify confirmed, probable and possible cases only")
+	public void codesNotifyingConfirmedProbableAndPossible() {
 
-		Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.TUBE);
+		for (EpipulseSubjectCode subjectCode : EnumSet
+			.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.CONSYPH, EpipulseSubjectCode.PERT, EpipulseSubjectCode.MENI)) {
 
-		assertThat(
-			notified,
-			containsInAnyOrder(
-				CaseClassification.CONFIRMED,
-				CaseClassification.CONFIRMED_NO_SYMPTOMS,
-				CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
-				CaseClassification.PROBABLE,
-				CaseClassification.SUSPECT));
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
 
-		// Unclassified and ruled-out cases are not notifications.
-		assertThat(notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
-		assertThat(notified.contains(CaseClassification.NO_CASE), is(false));
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(
+					CaseClassification.CONFIRMED,
+					CaseClassification.CONFIRMED_NO_SYMPTOMS,
+					CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+					CaseClassification.PROBABLE,
+					CaseClassification.SUSPECT));
 
-		assertThat(EpipulseCaseInclusion.isNarrowed(EpipulseSubjectCode.TUBE), is(true));
+			// Unclassified and ruled-out cases are not notifications.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NO_CASE), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
+	}
+
+	@Test
+	@DisplayName("SYPH and GONO notify confirmed, probable, possible and not yet classified cases")
+	public void syphAndGonoNotifyClassifiedAndUnclassifiedCases() {
+
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.SYPH, EpipulseSubjectCode.GONO)) {
+
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
+
+			// "leave empty until case definitions are met": an unclassified case is sent, blank.
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(
+					CaseClassification.CONFIRMED,
+					CaseClassification.CONFIRMED_NO_SYMPTOMS,
+					CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+					CaseClassification.PROBABLE,
+					CaseClassification.SUSPECT,
+					CaseClassification.NOT_CLASSIFIED));
+
+			// A ruled-out case is still not a notification.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NO_CASE), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
+
+		// CONSYPH shares the disease and the value set, but not the empty column.
+		assertThat(EpipulseCaseInclusion.notifiedBy(EpipulseSubjectCode.CONSYPH).contains(CaseClassification.NOT_CLASSIFIED), is(false));
+	}
+
+	@Test
+	@DisplayName("DENGUE, SALM and SHIG notify confirmed and probable cases only")
+	public void dengueSalmAndShigNotifyConfirmedAndProbable() {
+
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.SALM, EpipulseSubjectCode.SHIG)) {
+
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
+
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(
+					CaseClassification.CONFIRMED,
+					CaseClassification.CONFIRMED_NO_SYMPTOMS,
+					CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+					CaseClassification.PROBABLE));
+
+			// The metadata value set has no POSS for either code.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.SUSPECT), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NO_CASE), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
+	}
+
+	@Test
+	@DisplayName("MALA and PNEU notify confirmed cases only")
+	public void malaAndPneuNotifyConfirmedOnly() {
+
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.MALA, EpipulseSubjectCode.PNEU)) {
+
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
+
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
+
+			// The metadata value set has neither PROB nor POSS for either code.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.PROBABLE), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.SUSPECT), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NO_CASE), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
+	}
+
+	@Test
+	@DisplayName("MEAS and RUBE notify confirmed, probable, possible and discarded cases")
+	public void measAndRubeNotifyEveryClassifiedCaseIncludingDiscarded() {
+
+		for (EpipulseSubjectCode subjectCode : EnumSet.of(EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE)) {
+
+			Set<CaseClassification> notified = EpipulseCaseInclusion.notifiedBy(subjectCode);
+
+			assertThat(
+				subjectCode.name(),
+				notified,
+				containsInAnyOrder(
+					CaseClassification.CONFIRMED,
+					CaseClassification.CONFIRMED_NO_SYMPTOMS,
+					CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+					CaseClassification.PROBABLE,
+					CaseClassification.SUSPECT,
+					CaseClassification.NO_CASE));
+
+			// An unclassified case is still not a notification.
+			assertThat(subjectCode.name(), notified.contains(CaseClassification.NOT_CLASSIFIED), is(false));
+
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(true));
+		}
+	}
+
+	@Test
+	@DisplayName("DISCARDED is reported only by a code that declares it")
+	public void discardedIsReportedOnlyWhereDeclared() {
+
+		Set<EpipulseSubjectCode> declaring = EnumSet.of(EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE, EpipulseSubjectCode.DIPH);
+
+		for (EpipulseSubjectCode subjectCode : EpipulseSubjectCode.values()) {
+			assertThat(
+				subjectCode.name(),
+				EpipulseCaseInclusion.reports(subjectCode, EpipulseCaseClassificationRef.DISCARDED),
+				is(declaring.contains(subjectCode)));
+		}
+		assertThat(EpipulseCaseInclusion.reports(null, EpipulseCaseClassificationRef.DISCARDED), is(false));
+
+		// A code with no rule still writes only its own value set: CHIK has no POSS.
+		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.CHIK, EpipulseCaseClassificationRef.POSS), is(false));
+		assertThat(EpipulseCaseInclusion.reports(EpipulseSubjectCode.MUMP, EpipulseCaseClassificationRef.POSS), is(true));
 	}
 
 	@Test
@@ -67,11 +197,19 @@ public class EpipulseCaseInclusionTest {
 	public void aSubjectCodeWithNoRuleNotifiesEveryCase() {
 
 		// Default behavior for non-enrolled codes is no narrowing.
-		for (EpipulseSubjectCode subjectCode : EpipulseSubjectCode.values()) {
-			if (subjectCode != EpipulseSubjectCode.TUBE) {
-				assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
-				assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(false));
-			}
+		Set<EpipulseSubjectCode> narrowed =
+			EnumSet.of(EpipulseSubjectCode.TUBE, EpipulseSubjectCode.DENGUE, EpipulseSubjectCode.MALA, EpipulseSubjectCode.MEAS, EpipulseSubjectCode.RUBE, EpipulseSubjectCode.SALM,
+			EpipulseSubjectCode.SHIG,
+			EpipulseSubjectCode.SYPH,
+			EpipulseSubjectCode.CONSYPH,
+			EpipulseSubjectCode.PNEU,
+			EpipulseSubjectCode.PERT,
+			EpipulseSubjectCode.MENI,
+			EpipulseSubjectCode.GONO);
+
+		for (EpipulseSubjectCode subjectCode : EnumSet.complementOf(EnumSet.copyOf(narrowed))) {
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.notifiedBy(subjectCode), is(empty()));
+			assertThat(subjectCode.name(), EpipulseCaseInclusion.isNarrowed(subjectCode), is(false));
 		}
 	}
 
@@ -93,18 +231,15 @@ public class EpipulseCaseInclusionTest {
 	}
 
 	@Test
-	@DisplayName("no EpiPulse code claims an unclassified or ruled-out case")
-	public void noCodeClaimsAnUnclassifiedOrRuledOutCase() {
+	@DisplayName("no EpiPulse code claims an unclassified case, and a ruled-out case is DISCARDED")
+	public void noCodeClaimsAnUnclassifiedCase() {
 
-		// NOT_CLASSIFIED and NO_CASE must remain unmapped.
-		for (CaseClassification classification : new CaseClassification[] {
-			CaseClassification.NOT_CLASSIFIED,
-			CaseClassification.NO_CASE }) {
-
-			assertThat(classification.name(), EpipulseCaseClassificationRef.getByCaseClassification(classification), is(nullRef()));
-		}
-
+		// NOT_CLASSIFIED must remain unmapped.
+		assertThat(EpipulseCaseClassificationRef.getByCaseClassification(CaseClassification.NOT_CLASSIFIED), is(nullRef()));
 		assertThat(EpipulseCaseClassificationRef.getByCaseClassification(null), is(nullRef()));
+
+		// Which subject codes may write it is EpipulseCaseInclusion.reports, tested above.
+		assertThat(EpipulseCaseClassificationRef.getByCaseClassification(CaseClassification.NO_CASE), is(EpipulseCaseClassificationRef.DISCARDED));
 	}
 
 	@Test

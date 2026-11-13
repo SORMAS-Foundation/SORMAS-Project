@@ -56,12 +56,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
@@ -78,6 +80,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.Serotype;
+import de.symeda.sormas.api.symptoms.ClinicalManifestation;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -152,6 +155,7 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 		CaseDataDto caze = fixture.caze(person, ONSET, c -> {
 			c.setOutcome(CaseOutcome.RECOVERED);
 			c.setClinicalConfirmation(YesNoUnknown.YES);
+			c.getSymptoms().setClinicalManifestation(ClinicalManifestation.NO_SIGN_OF_SEVERITY);
 			hospitalisedForTheReportedDisease().accept(c);
 			c.getEpiData().setImportedCase(YesNoUnknown.YES);
 			c.getEpiData().setModeOfTransmission(ModeOfTransmission.MOSQUITOES_FROM_ENDEMIC_COUNTRY);
@@ -179,9 +183,9 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 		expected.put(OUTCOME, value("A"));
 		expected.put(HOSPITALISATION, value("true"));
 		expected.put(CLINICAL_CRITERIA_STATUS, value("true"));
-		// One derived value (ASY) means no symptoms, blanks DateOfOnset
-		// Tested in asymptomaticIsTheOneClinicalCriterionDerived
-		expected.put(CLINICAL_CRITERIA, blank());
+		// the manifestation; the asymptomatic flag and the other values are tested in
+		// clinicalCriteriaReadsTheAsymptomaticFlagThenTheManifestation
+		expected.put(CLINICAL_CRITERIA, value("NSEV"));
 		expected.put(DATE_OF_ONSET, value("2024-06-10"));
 		expected.put(DATE_OF_NOTIFICATION, value("2024-06-10"));
 		// No doctor's notification: first positive test is diagnosis date
@@ -386,13 +390,21 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	@Test
-	@DisplayName("asymptomatic is the one clinical criterion derived, and it blanks the onset date beside it")
-	public void asymptomaticIsTheOneClinicalCriterionDerived() {
+	@DisplayName("ClinicalCriteria reads the asymptomatic flag, then the clinical manifestation")
+	public void clinicalCriteriaReadsTheAsymptomaticFlagThenTheManifestation() {
 
-		// TODO: only ASY is mapped. Telling NSEV from SEV requires WHO severity definition (not recorded).
 		String asymptomatic = caseWith(c -> c.getSymptoms().setAsymptomatic(SymptomState.YES));
 		String symptomatic = caseWith(c -> c.getSymptoms().setAsymptomatic(SymptomState.NO));
 		String notRecorded = caseWith(c -> {
+		});
+		String noSignOfSeverity = caseWith(c -> c.getSymptoms().setClinicalManifestation(ClinicalManifestation.NO_SIGN_OF_SEVERITY));
+		String signOfSeverity = caseWith(c -> c.getSymptoms().setClinicalManifestation(ClinicalManifestation.SIGN_OF_SEVERITY));
+		String manifestationAsymptomatic = caseWith(c -> c.getSymptoms().setClinicalManifestation(ClinicalManifestation.ASYMPTOMATIC));
+		String manifestationUnknown = caseWith(c -> c.getSymptoms().setClinicalManifestation(ClinicalManifestation.UNKNOWN));
+		// contradictory, possible only through the API: the flag wins, as it does for DateOfOnset
+		String flagAndSeverity = caseWith(c -> {
+			c.getSymptoms().setAsymptomatic(SymptomState.YES);
+			c.getSymptoms().setClinicalManifestation(ClinicalManifestation.SIGN_OF_SEVERITY);
 		});
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.DENGUE, PERIOD_START, PERIOD_END);
@@ -400,6 +412,11 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(export.entryFor(asymptomatic), CLINICAL_CRITERIA), is("ASY"));
 		assertThat(export.value(export.entryFor(symptomatic), CLINICAL_CRITERIA), is(""));
 		assertThat(export.value(export.entryFor(notRecorded), CLINICAL_CRITERIA), is(""));
+		assertThat(export.value(export.entryFor(noSignOfSeverity), CLINICAL_CRITERIA), is("NSEV"));
+		assertThat(export.value(export.entryFor(signOfSeverity), CLINICAL_CRITERIA), is("SEV"));
+		assertThat(export.value(export.entryFor(manifestationAsymptomatic), CLINICAL_CRITERIA), is("ASY"));
+		assertThat(export.value(export.entryFor(manifestationUnknown), CLINICAL_CRITERIA), is(""));
+		assertThat(export.value(export.entryFor(flagAndSeverity), CLINICAL_CRITERIA), is("ASY"));
 
 		// Flag suppresses DateOfOnset: both columns cannot be filled together
 		assertThat(export.value(export.entryFor(asymptomatic), DATE_OF_ONSET), is(""));
@@ -430,6 +447,31 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.values(export.entryFor(inside), PLACE_OF_INFECTION), contains("TH"));
 		assertThat(export.values(export.entryFor(twoCountries), PLACE_OF_INFECTION), containsInAnyOrder("TH", "BR"));
 		assertThat(export.values(export.entryFor(tooEarly), PLACE_OF_INFECTION), is(blank()));
+	}
+
+	// ---
+	// Which cases are in the file
+	// ---
+
+	@Test
+	@DisplayName("confirmed and probable cases are notified, and nothing else is")
+	public void onlyConfirmedAndProbableCasesAreExported() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String confirmedUnknownSymptoms = classifiedCase(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+
+		// DENGUE has no POSS, and neither an unclassified nor a ruled-out case is notifiable.
+		classifiedCase(CaseClassification.SUSPECT);
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+		classifiedCase(CaseClassification.NO_CASE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.DENGUE, PERIOD_START, PERIOD_END);
+
+		assertThat(exportedCases(export), containsInAnyOrder(confirmed, confirmedNoSymptoms, confirmedUnknownSymptoms, probable));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
 	}
 
 	// ---
@@ -472,6 +514,14 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 
 	private PersonReferenceDto newPerson() {
 		return creator.createPerson().toReference();
+	}
+
+	private String classifiedCase(CaseClassification classification) {
+		return caseWith(c -> c.setCaseClassification(classification));
+	}
+
+	private static List<String> exportedCases(ExportedEntries export) {
+		return export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList());
 	}
 
 	private String caseWith(Consumer<CaseDataDto> extraConfig) {

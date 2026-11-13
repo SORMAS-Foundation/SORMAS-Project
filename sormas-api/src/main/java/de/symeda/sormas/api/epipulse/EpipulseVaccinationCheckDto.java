@@ -21,18 +21,20 @@ package de.symeda.sormas.api.epipulse;
 import java.util.Date;
 
 /**
- * One vaccination belonging to an acquired immunization, as supplied by the export aggregate.
+ * One vaccination dose the patient received, as supplied by the export aggregate.
  *
  * <p>
- * Both dates are kept instead of a single coalesced date, because which one gets reported is a
+ * Only doses recorded under an immunization whose means is in
+ * {@link EpipulseMapping#VACCINATION_DOSE_MEANS} reach this DTO; the aggregate filters the rest.
+ *
+ * <p>
+ * Both dates are kept instead of a single coalesced date, because the one gets reported is a
  * rule (see {@link EpipulseCaseDates#vaccinationDate}).
- * For the same reason, the dose has the id of the immunization that it belongs to.
  */
 public class EpipulseVaccinationCheckDto {
 
 	private Date vaccinationDate;
 	private Date reportDate;
-	private Long immunizationId;
 
 	public Date getVaccinationDate() {
 		return vaccinationDate;
@@ -50,21 +52,4 @@ public class EpipulseVaccinationCheckDto {
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
-
-	/**
-	 * Which immunization this dose was given under, as {@link EpipulseImmunizationCheckDto#getId}.
-	 *
-	 * <p>
-	 * The aggregate is flat -- one row per dose, whatever immunization it came from -- so this is the only
-	 * thing that ties a dose to the immunization {@code EpipulseMapping} selected. Nothing outside the
-	 * export sees the id.
-	 */
-	public Long getImmunizationId() {
-		return immunizationId;
-	}
-
-	public void setImmunizationId(Long immunizationId) {
-		this.immunizationId = immunizationId;
-	}
-
 }

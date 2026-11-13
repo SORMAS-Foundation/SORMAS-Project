@@ -34,6 +34,10 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRe
  * This is one of two filters used by {@code filtered_cases} (besides
  * {@link EpipulseCaseSubset}). It decides which classifications are notifiable for a subject code.
  * Subject codes without an entry here notify all cases of their disease.
+ *
+ * <p>
+ * It also decides which codes the {@code CaseClassification} column may carry
+ * ({@link #reports}), so a code is written only where it is also selected.
  */
 public final class EpipulseCaseInclusion {
 
@@ -43,7 +47,36 @@ public final class EpipulseCaseInclusion {
 	private static final Set<EpipulseCaseClassificationRef> CONFIRMED_PROBABLE_POSSIBLE = Collections
 		.unmodifiableSet(EnumSet.of(EpipulseCaseClassificationRef.CONF, EpipulseCaseClassificationRef.PROB, EpipulseCaseClassificationRef.POSS));
 
+	/**
+	 * Confirmed, probable, possible and discarded classification codes.
+	 */
+	private static final Set<EpipulseCaseClassificationRef> CONFIRMED_PROBABLE_POSSIBLE_DISCARDED = Collections.unmodifiableSet(
+		EnumSet.of(
+			EpipulseCaseClassificationRef.CONF,
+			EpipulseCaseClassificationRef.PROB,
+			EpipulseCaseClassificationRef.POSS,
+			EpipulseCaseClassificationRef.DISCARDED));
+
+	/**
+	 * Confirmed classification code only.
+	 */
+	private static final Set<EpipulseCaseClassificationRef> CONFIRMED = Collections.unmodifiableSet(EnumSet.of(EpipulseCaseClassificationRef.CONF));
+
+	/**
+	 * Confirmed and probable classification codes.
+	 */
+	private static final Set<EpipulseCaseClassificationRef> CONFIRMED_PROBABLE =
+		Collections.unmodifiableSet(EnumSet.of(EpipulseCaseClassificationRef.CONF, EpipulseCaseClassificationRef.PROB));
+
 	private static final Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> NOTIFIED_CODES = notifiedCodes();
+
+	/**
+	 * Subject codes whose rule also notifies a case not yet classified, with the
+	 * {@code CaseClassification} column left blank. Only for a code whose EpiPulse description allows
+	 * the column to be empty: SYPH's and GONO's say it can "leave empty until case definitions are met".
+	 */
+	private static final Set<EpipulseSubjectCode> NOTIFIES_UNCLASSIFIED =
+		Collections.unmodifiableSet(EnumSet.of(EpipulseSubjectCode.SYPH, EpipulseSubjectCode.GONO));
 
 	private EpipulseCaseInclusion() {
 	}
@@ -54,8 +87,53 @@ public final class EpipulseCaseInclusion {
 
 		// TUBE has no CaseClassification column in metadata; rule comes from TB specification.
 		notified.put(EpipulseSubjectCode.TUBE, CONFIRMED_PROBABLE_POSSIBLE);
+		// SYPH's CaseClassification value set in metadata is CONF, PROB and POSS. EpiPulse expects
+		// CONF at EU level, but accepts the other two until national case definitions catch up, and
+		// an empty column for a case not yet classified (see NOTIFIES_UNCLASSIFIED).
+		notified.put(EpipulseSubjectCode.SYPH, CONFIRMED_PROBABLE_POSSIBLE);
+		// CONSYPH's value set is the same as SYPH's, but its description allows no empty column.
+		notified.put(EpipulseSubjectCode.CONSYPH, CONFIRMED_PROBABLE_POSSIBLE);
+		// GONO's value set and description are the same as SYPH's, empty column included.
+		notified.put(EpipulseSubjectCode.GONO, CONFIRMED_PROBABLE_POSSIBLE);
+		// PERT's CaseClassification value set in metadata is CONF, PROB and POSS.
+		notified.put(EpipulseSubjectCode.PERT, CONFIRMED_PROBABLE_POSSIBLE);
+		// MENI's CaseClassification value set in metadata is CONF, PROB and POSS.
+		notified.put(EpipulseSubjectCode.MENI, CONFIRMED_PROBABLE_POSSIBLE);
+		// DENGUE's CaseClassification value set in metadata is CONF and PROB only.
+		notified.put(EpipulseSubjectCode.DENGUE, CONFIRMED_PROBABLE);
+		// SALM's CaseClassification value set in metadata is CONF and PROB only.
+		notified.put(EpipulseSubjectCode.SALM, CONFIRMED_PROBABLE);
+		// SHIG's CaseClassification value set in metadata is CONF and PROB only.
+		notified.put(EpipulseSubjectCode.SHIG, CONFIRMED_PROBABLE);
+		// MALA's CaseClassification value set in metadata is CONF only.
+		notified.put(EpipulseSubjectCode.MALA, CONFIRMED);
+		// PNEU's CaseClassification value set in metadata is CONF only.
+		notified.put(EpipulseSubjectCode.PNEU, CONFIRMED);
+		// MEAS's CaseClassification value set in metadata is CONF, PROB, POSS and DISCARDED.
+		notified.put(EpipulseSubjectCode.MEAS, CONFIRMED_PROBABLE_POSSIBLE_DISCARDED);
+		// RUBE's CaseClassification value set in metadata is the same as MEAS's.
+		notified.put(EpipulseSubjectCode.RUBE, CONFIRMED_PROBABLE_POSSIBLE_DISCARDED);
 
 		return Collections.unmodifiableMap(notified);
+	}
+
+	/**
+	 * The {@code CaseClassification} value set of each subject code without a rule above. These
+	 * export every case of their disease; the column writes a code only where it is in the set.
+	 */
+	private static final Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> UNFILTERED_VALUE_SETS = unfilteredValueSets();
+
+	private static Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> unfilteredValueSets() {
+
+		Map<EpipulseSubjectCode, Set<EpipulseCaseClassificationRef>> valueSets = new EnumMap<>(EpipulseSubjectCode.class);
+
+		valueSets.put(EpipulseSubjectCode.CHIK, CONFIRMED_PROBABLE);
+		valueSets.put(EpipulseSubjectCode.WNF, CONFIRMED_PROBABLE);
+		valueSets.put(EpipulseSubjectCode.MUMP, CONFIRMED_PROBABLE_POSSIBLE);
+		valueSets.put(EpipulseSubjectCode.POLI, CONFIRMED_PROBABLE_POSSIBLE);
+		valueSets.put(EpipulseSubjectCode.DIPH, CONFIRMED_PROBABLE_POSSIBLE_DISCARDED);
+
+		return Collections.unmodifiableMap(valueSets);
 	}
 
 	/**
@@ -66,8 +144,30 @@ public final class EpipulseCaseInclusion {
 	public static Set<CaseClassification> notifiedBy(EpipulseSubjectCode subjectCode) {
 
 		Set<EpipulseCaseClassificationRef> codes = NOTIFIED_CODES.get(subjectCode);
+		if (codes == null) {
+			return Collections.emptySet();
+		}
 
-		return codes == null ? Collections.emptySet() : EpipulseCaseClassificationRef.caseClassificationsOf(codes);
+		Set<CaseClassification> classifications = EnumSet.copyOf(EpipulseCaseClassificationRef.caseClassificationsOf(codes));
+		if (NOTIFIES_UNCLASSIFIED.contains(subjectCode)) {
+			classifications.add(CaseClassification.NOT_CLASSIFIED);
+		}
+
+		return Collections.unmodifiableSet(classifications);
+	}
+
+	/**
+	 * Whether this subject code writes the given code in its {@code CaseClassification} column:
+	 * only a code in its value set, from its rule or from {@link #UNFILTERED_VALUE_SETS}.
+	 */
+	public static boolean reports(EpipulseSubjectCode subjectCode, EpipulseCaseClassificationRef code) {
+
+		Set<EpipulseCaseClassificationRef> codes = null;
+		if (subjectCode != null) {
+			codes = NOTIFIED_CODES.containsKey(subjectCode) ? NOTIFIED_CODES.get(subjectCode) : UNFILTERED_VALUE_SETS.get(subjectCode);
+		}
+
+		return (codes == null ? CONFIRMED_PROBABLE_POSSIBLE : codes).contains(code);
 	}
 
 	/**

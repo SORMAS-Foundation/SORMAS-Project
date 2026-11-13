@@ -20,62 +20,50 @@ package de.symeda.sormas.api.epipulse;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
+
 /**
- * One acquired vaccination course from the export aggregate.
+ * One immunization record of the patient for the exported disease, from the export aggregate.
  *
  * <p>
- * Contains only fields needed for vaccination status and last-dose derivation.
+ * This field is only read for the two {@code VaccinationStatus} outcomes that dose rows cannot
+ * decide:
+ * <ul>
+ * <li>{@code UNKDOSE} - a vaccination immunization with no doses recorded under it</li>
+ * <li>{@code NOTVACC} - an explicit {@link MeansOfImmunization#NOT_IMMUNIZED} record</li>
+ * </ul>
+ * The dose count is derived from the dose rows, so this record does not carry the immunization's
+ * status, validity window, or planned number of doses.
  */
 public class EpipulseImmunizationCheckDto {
 
-	private Long id;
-	private Date validFrom;
-	private Date validUntil;
-	private Integer numberOfDoses;
+	private MeansOfImmunization meansOfImmunization;
+	private Date startDate;
+	private Date reportDate;
 
-	/**
-	 * Database id of the course, used to match linked vaccination doses.
-	 */
-	public Long getId() {
-		return id;
+	public MeansOfImmunization getMeansOfImmunization() {
+		return meansOfImmunization;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setMeansOfImmunization(MeansOfImmunization meansOfImmunization) {
+		this.meansOfImmunization = meansOfImmunization;
 	}
 
-	/** When the course starts protecting the patient. */
-	public Date getValidFrom() {
-		return validFrom;
+	/** When the immunization started, where recorded; see {@link EpipulseCaseDates#immunizationDate}. */
+	public Date getStartDate() {
+		return startDate;
 	}
 
-	public void setValidFrom(Date validFrom) {
-		this.validFrom = validFrom;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
-	/** When that protection expires. Lifelong protection is stored as a date in the year 9999. */
-	public Date getValidUntil() {
-		return validUntil;
+	/** When the immunization was recorded; never blank in the database. */
+	public Date getReportDate() {
+		return reportDate;
 	}
 
-	public void setValidUntil(Date validUntil) {
-		this.validUntil = validUntil;
-	}
-
-	/**
-	 * Number of doses in this acquired course.
-	 *
-	 * <p>
-	 * This is the recorded dose count, not a planned target.
-	 *
-	 * @apiNote Keep null-safe handling: an acquired course may still miss dose count after manual
-	 *          status edits.
-	 */
-	public Integer getNumberOfDoses() {
-		return numberOfDoses;
-	}
-
-	public void setNumberOfDoses(Integer numberOfDoses) {
-		this.numberOfDoses = numberOfDoses;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 }

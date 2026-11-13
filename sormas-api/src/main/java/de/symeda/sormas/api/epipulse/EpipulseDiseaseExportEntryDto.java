@@ -20,9 +20,11 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.symptoms.ClinicalManifestation;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -50,6 +52,7 @@ public class EpipulseDiseaseExportEntryDto {
 	private Integer dayOfBirth;
 	private Date symptomOnsetDate;
 	private SymptomState asymptomatic;
+	private ClinicalManifestation clinicalManifestation; // SymptomsDto.clinicalManifestation, DENGUE ClinicalCriteria
 	private Sex sex;
 	private String addressCommunityNutsCode;
 	private String addressDistrictNutsCode;
@@ -221,6 +224,7 @@ public class EpipulseDiseaseExportEntryDto {
 	// -- RUBE (Rubella) --
 
 	private Boolean pregnancy; // CaseDataDto.pregnant
+	private Trimester trimester; // CaseDataDto.trimester, RUBE WeekOfGestation
 
 	// -- TUBE (Tuberculosis) --
 	// hivStatus/pathogen are reused with TUBE-specific value sets and source mapping.
@@ -462,7 +466,11 @@ public class EpipulseDiseaseExportEntryDto {
 		this.vaccinations = vaccinations;
 	}
 
-	/** The acquired vaccination courses {@code VaccinationStatus} chooses one of. */
+	/**
+	 * The patient's vaccination and {@code NOT_IMMUNIZED} immunizations.
+	 * Used by {@code VaccinationStatus} only where no dose decides it.
+	 * Used by {@code VaccinationStatusMaternal} for {@code MATERNAL_VACCINATION} immunizations,
+	 */
 	public List<EpipulseImmunizationCheckDto> getImmunizations() {
 		return immunizations;
 	}
@@ -541,6 +549,14 @@ public class EpipulseDiseaseExportEntryDto {
 
 	public void setAsymptomatic(SymptomState asymptomatic) {
 		this.asymptomatic = asymptomatic;
+	}
+
+	public ClinicalManifestation getClinicalManifestation() {
+		return clinicalManifestation;
+	}
+
+	public void setClinicalManifestation(ClinicalManifestation clinicalManifestation) {
+		this.clinicalManifestation = clinicalManifestation;
 	}
 
 	// Phase 3: Getters and setters for clinical and epidemiology fields
@@ -1114,6 +1130,14 @@ public class EpipulseDiseaseExportEntryDto {
 
 	public void setPregnancy(Boolean pregnancy) {
 		this.pregnancy = pregnancy;
+	}
+
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
 	}
 
 	public Date getDateOfEntry() {
