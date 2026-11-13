@@ -44,6 +44,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = {
@@ -80,10 +81,13 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String RESIDENCE_AT_ONSET = "residenceAtOnset";
 	public static final String CLUSTER_IDENTIFIER = "clusterIdentifier";
 	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION_OTHER = "probableRouteOfTransmissionOther";
 	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
 	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
 	public static final String SEX_WORKER = "sexWorker";
+	public static final String SEX_WORKER_OTHER = "sexWorkerOther";
 	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String CONTACT_WITH_SEX_WORKER_OTHER = "contactWithSexWorkerOther";
 	public static final String TYPE_OF_CLINICAL_SERVICE = "typeOfClinicalService";
 	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
 
@@ -253,6 +257,12 @@ public class EpiDataDto extends PseudonymizableDto {
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
 
 	@Diseases({
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String probableRouteOfTransmissionOther;
+
+	@Diseases({
 		Disease.SYPHILIS })
 	private CountryReferenceDto motherCountryOfBirth;
 
@@ -262,12 +272,23 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	@Diseases({
 		Disease.SYPHILIS })
-	private YesNoUnknown sexWorker;
+	private YesNoUnknownOther sexWorker;
+
+	@Diseases({
+		Disease.SYPHILIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String sexWorkerOther;
 
 	@Diseases({
 		Disease.SYPHILIS,
 		Disease.GONOCOCCAL_INFECTION })
-	private YesNoUnknown contactWithSexWorker;
+	private YesNoUnknownOther contactWithSexWorker;
+
+	@Diseases({
+		Disease.SYPHILIS,
+		Disease.GONOCOCCAL_INFECTION })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String contactWithSexWorkerOther;
 
 	@Diseases({
 		Disease.SYPHILIS })
@@ -506,19 +527,19 @@ public class EpiDataDto extends PseudonymizableDto {
 		this.motherCitizenship = motherCitizenship;
 	}
 
-	public YesNoUnknown getSexWorker() {
+	public YesNoUnknownOther getSexWorker() {
 		return sexWorker;
 	}
 
-	public void setSexWorker(YesNoUnknown sexWorker) {
+	public void setSexWorker(YesNoUnknownOther sexWorker) {
 		this.sexWorker = sexWorker;
 	}
 
-	public YesNoUnknown getContactWithSexWorker() {
+	public YesNoUnknownOther getContactWithSexWorker() {
 		return contactWithSexWorker;
 	}
 
-	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+	public void setContactWithSexWorker(YesNoUnknownOther contactWithSexWorker) {
 		this.contactWithSexWorker = contactWithSexWorker;
 	}
 
@@ -554,5 +575,29 @@ public class EpiDataDto extends PseudonymizableDto {
 		clone.getExposures().addAll(exposureDtos);
 
 		return clone;
+	}
+
+	public String getProbableRouteOfTransmissionOther() {
+		return probableRouteOfTransmissionOther;
+	}
+
+	public void setProbableRouteOfTransmissionOther(String probableRouteOfTransmissionOther) {
+		this.probableRouteOfTransmissionOther = probableRouteOfTransmissionOther;
+	}
+
+	public String getSexWorkerOther() {
+		return sexWorkerOther;
+	}
+
+	public void setSexWorkerOther(String sexWorkerOther) {
+		this.sexWorkerOther = sexWorkerOther;
+	}
+
+	public String getContactWithSexWorkerOther() {
+		return contactWithSexWorkerOther;
+	}
+
+	public void setContactWithSexWorkerOther(String contactWithSexWorkerOther) {
+		this.contactWithSexWorkerOther = contactWithSexWorkerOther;
 	}
 }

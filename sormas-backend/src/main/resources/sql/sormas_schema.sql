@@ -18539,5 +18539,27 @@ UPDATE diseaseconfiguration
 
 INSERT INTO schema_version (version_number, comment) VALUES (690, '#14416 - Configurable Immunization validity');
 
+-- Additional STI details. Existing YES/NO/UNKNOWN values use the same names in YesNoUnknownOther
+-- and remain unchanged, including in history tables.
+ALTER TABLE epidata ADD COLUMN probablerouteoftransmissionother varchar(512);
+ALTER TABLE epidata ADD COLUMN sexworkerother varchar(512);
+ALTER TABLE epidata ADD COLUMN contactwithsexworkerother varchar(512);
+ALTER TABLE epidata_history ADD COLUMN probablerouteoftransmissionother varchar(512);
+ALTER TABLE epidata_history ADD COLUMN sexworkerother varchar(512);
+ALTER TABLE epidata_history ADD COLUMN contactwithsexworkerother varchar(512);
+
+ALTER TABLE symptoms ADD COLUMN syphilisinfectionsiteother varchar(512);
+ALTER TABLE symptoms_history ADD COLUMN syphilisinfectionsiteother varchar(512);
+
+ALTER TABLE externalmessage ADD COLUMN probablerouteoftransmissionother varchar(512);
+ALTER TABLE externalmessage ADD COLUMN sexworker varchar(255);
+ALTER TABLE externalmessage ADD COLUMN sexworkerother varchar(512);
+ALTER TABLE externalmessage ADD COLUMN contactwithsexworkerother varchar(512);
+ALTER TABLE externalmessage_history ADD COLUMN probablerouteoftransmissionother varchar(512);
+ALTER TABLE externalmessage_history ADD COLUMN sexworker varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN sexworkerother varchar(512);
+ALTER TABLE externalmessage_history ADD COLUMN contactwithsexworkerother varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (691, 'Add other STI risk and infection site details');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -1685,6 +1685,14 @@
     ]
   },
   {
+    "symptom": "syphilisInfectionSiteOther",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
     "symptom": "syphilisInfectionSite",
     "oldSymptomGroup": "N/A",
     "proposedSymptomGroup": "Skin",

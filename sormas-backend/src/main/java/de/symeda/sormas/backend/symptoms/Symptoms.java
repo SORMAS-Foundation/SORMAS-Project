@@ -409,6 +409,7 @@ public class Symptoms extends AbstractDomainObject {
 	@Deprecated
 	private SymptomState maculopapularRash;
 	private SyphilisInfectionSite syphilisInfectionSite;
+	private String syphilisInfectionSiteOther;
 	private SyphilisStage syphilisStage;
 	private SyphilisInfectiousness syphilisInfectiousness;
 	private YesNoUnknown clinicalCriteriaMet;
@@ -3554,4 +3555,12 @@ public class Symptoms extends AbstractDomainObject {
 		this.concurrentStiUnknown = concurrentStiUnknown;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSyphilisInfectionSiteOther() {
+		return syphilisInfectionSiteOther;
+	}
+
+	public void setSyphilisInfectionSiteOther(String syphilisInfectionSiteOther) {
+		this.syphilisInfectionSiteOther = syphilisInfectionSiteOther;
+	}
 }
