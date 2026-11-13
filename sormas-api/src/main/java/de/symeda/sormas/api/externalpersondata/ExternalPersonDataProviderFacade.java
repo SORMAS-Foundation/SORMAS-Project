@@ -2,7 +2,6 @@ package de.symeda.sormas.api.externalpersondata;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.ejb.Remote;
@@ -53,8 +52,8 @@ public interface ExternalPersonDataProviderFacade {
 	ExternalPersonDataSearchResponse find(@NotNull ExternalPersonDataSearchRequest request);
 
 	/**
-	 * @return dictionary with key being the tag, value being the attribute(s) (if no comma, single attribute, otherwise multiples)
+	 * @return dictionary with key being the tag, values being the attributes
 	 */
 	@NotNull
-	Map<String, Set<String>> getAllowedAttributesByTag();
+	AllowedHtmlTagsAndAttributesDto getAllowedAttributesByTag();
 }

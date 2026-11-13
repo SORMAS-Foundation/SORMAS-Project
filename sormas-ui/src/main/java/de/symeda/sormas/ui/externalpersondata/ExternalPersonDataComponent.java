@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.externalpersondata;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalpersondata.AllowedHtmlTagsAndAttributesDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataForDisplayDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -124,11 +126,20 @@ public class ExternalPersonDataComponent extends DetailSubComponentWrapper {
 	private static @NotNull String extractCleanHtml(ExternalPersonDataForDisplayDto displayData) {
 		Safelist safelist = Safelist.basic();
 
-		Map<String, Set<String>> allowedTagsAndAttributes = FacadeProvider.getExternalPersonDataProviderFacade().getAllowedAttributesByTag();
+		AllowedHtmlTagsAndAttributesDto result = FacadeProvider.getExternalPersonDataProviderFacade().getAllowedAttributesByTag();
+
+		Map<String, Set<String>> allowedTagsAndAttributes = result.getAllowedAttributesByTag();
 
 		if (MapUtils.isNotEmpty(allowedTagsAndAttributes)) {
 			for (Map.Entry<String, Set<String>> entry : allowedTagsAndAttributes.entrySet()) {
-				safelist = safelist.addAttributes(entry.getKey(), entry.getValue().toArray(String[]::new));
+				safelist.addAttributes(entry.getKey(), entry.getValue().toArray(String[]::new));
+			}
+		}
+
+		Set<String> allowedTagsWithoutAttributes = result.getAllowedTagsWithoutAttributes();
+		if (CollectionUtils.isNotEmpty(allowedTagsWithoutAttributes)) {
+			for (String tag : allowedTagsWithoutAttributes) {
+				safelist.addTags(tag);
 			}
 		}
 

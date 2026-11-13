@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.audit.ExternalSystemCallAuditRequest;
+import de.symeda.sormas.api.externalpersondata.AllowedHtmlTagsAndAttributesDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataAddressRequestDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataForDisplayDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderAdapterFacade;
@@ -51,8 +52,8 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 
 	public static final Set<String> STYLE_HTML_ATTRIBUTE_NAME = Set.of("style");
 
-	private static final Map<String, Set<String>> DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG =
-		Stream.of("dt", "dl", "dd", "h3", "section", "div").collect(Collectors.toMap(Function.identity(), ignored -> STYLE_HTML_ATTRIBUTE_NAME));
+	private static final AllowedHtmlTagsAndAttributesDto DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG = AllowedHtmlTagsAndAttributesDto
+		.of(Stream.of("dt", "dl", "dd", "h3", "section", "div").collect(Collectors.toMap(Function.identity(), ignored -> STYLE_HTML_ATTRIBUTE_NAME)));
 
 	private static final Logger logger = LoggerFactory.getLogger(ExternalPersonDataProviderFacadeEJB.class);
 
@@ -128,7 +129,7 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 	}
 
 	@Override
-	public Map<String, Set<String>> getAllowedAttributesByTag() {
+	public AllowedHtmlTagsAndAttributesDto getAllowedAttributesByTag() {
 		String htmlSanitizationConfigJson = systemConfigurationValueFacade.getValue(EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY);
 
 		if (StringUtils.isBlank(htmlSanitizationConfigJson)) {
@@ -136,10 +137,14 @@ public class ExternalPersonDataProviderFacadeEJB implements ExternalPersonDataPr
 		}
 
 		try {
-			return ObjectMapperProvider.getInstance().readValue(htmlSanitizationConfigJson, new TypeReference<>() {
-			});
+			return AllowedHtmlTagsAndAttributesDto.of(ObjectMapperProvider.getInstance().readValue(htmlSanitizationConfigJson, new TypeReference<>() {
+			}));
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
+			logger.error(
+				"Invalid JSON for: [{}], the default configuration will be used instead",
+				EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY,
+				e);
+			return DEFAULT_ALLOWED_HTML_ATTRIBUTES_BY_TAG;
 		}
 	}
 

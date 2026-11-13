@@ -204,7 +204,7 @@ class ExternalPersonDataProviderFacadeEJBTest extends AbstractBeanTest {
 			.thenReturn(configuration);
 
 		// EXECUTE
-		Map<String, Set<String>> result = victim.getAllowedAttributesByTag();
+		Map<String, Set<String>> result = getAllowedAttributesByTag();
 
 		// CHECK
 		assertEquals(
@@ -225,17 +225,21 @@ class ExternalPersonDataProviderFacadeEJBTest extends AbstractBeanTest {
 		verifyNoInteractions(auditLogger, adapter);
 	}
 
+	private Map<String, Set<String>> getAllowedAttributesByTag() {
+		return victim.getAllowedAttributesByTag().getAllowedAttributesByTag();
+	}
+
 	@Test
 	void readsConfiguredHtmlAttributes() {
 		// PREPARE
 		when(systemConfigurationValueFacade.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY))
-			.thenReturn("{\"a\":[\"href\",\"title\"],\"p\":[]}");
+			.thenReturn("{\"a\":[\"href\",\"title\"]");
 
 		// EXECUTE
-		Map<String, Set<String>> result = victim.getAllowedAttributesByTag();
+		Map<String, Set<String>> result = getAllowedAttributesByTag();
 
 		// CHECK
-		assertEquals(Map.of("a", Set.of("href", "title"), "p", Set.of()), result);
+		assertEquals(Map.of("a", Set.of("href", "title")), result);
 	}
 
 	@Test
@@ -245,7 +249,7 @@ class ExternalPersonDataProviderFacadeEJBTest extends AbstractBeanTest {
 			.thenReturn("{}");
 
 		// EXECUTE
-		Map<String, Set<String>> result = victim.getAllowedAttributesByTag();
+		Map<String, Set<String>> result = getAllowedAttributesByTag();
 
 		// CHECK
 		assertEquals(Map.of(), result);
@@ -258,10 +262,23 @@ class ExternalPersonDataProviderFacadeEJBTest extends AbstractBeanTest {
 			.thenReturn("invalid json");
 
 		// EXECUTE
-		RuntimeException exception = assertThrows(RuntimeException.class, () -> victim.getAllowedAttributesByTag());
+		RuntimeException exception = assertThrows(RuntimeException.class, () -> getAllowedAttributesByTag());
 
 		// CHECK
 		assertInstanceOf(JsonProcessingException.class, exception.getCause());
+	}
+
+	@Test
+	void getAllowedAttributesByTag_removesEmptyEntries() throws NamingException {
+		// PREPARE
+		when(systemConfigurationValueFacade.getValue(ExternalPersonDataProviderFacade.EXTERNAL_PERSON_DATA_HTML_SANITIZATION_CONFIG_KEY))
+			.thenReturn("{\"a\":[],\"div\":[null,\"\"],\"dd\":[\"style\"]}");
+
+		// EXECUTE
+		Map<String, Set<String>> result = getAllowedAttributesByTag();
+
+		// CHECK
+		assertEquals(Map.of("dd", Set.of("style")), result);
 	}
 
 	private void configureProvider() {
