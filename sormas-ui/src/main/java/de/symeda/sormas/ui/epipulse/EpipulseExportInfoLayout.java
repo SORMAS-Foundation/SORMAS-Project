@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,13 +15,17 @@
 
 package de.symeda.sormas.ui.epipulse;
 
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
+import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.AbstractInfoLayout;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 
 public class EpipulseExportInfoLayout extends AbstractInfoLayout<EpipulseExportDto> {
@@ -43,8 +47,22 @@ public class EpipulseExportInfoLayout extends AbstractInfoLayout<EpipulseExportD
 		updateEpipulseExportInfo();
 	}
 
+	/**
+	 * Shows the export in two columns; for a failed export, the reason follows below in one full-width row in red, e.g.
+	 * "No EpiPulse subject code is configured for Diphtheria. Enter it in the disease configuration of Diphtheria…".
+	 */
 	private void updateEpipulseExportInfo() {
 		this.removeAllComponents();
+
+		VerticalLayout contentLayout = new VerticalLayout();
+		contentLayout.setMargin(false);
+		contentLayout.setSpacing(true);
+		contentLayout.setWidth(100, Unit.PERCENTAGE);
+
+		HorizontalLayout columnsLayout = new HorizontalLayout();
+		columnsLayout.setMargin(false);
+		columnsLayout.setSpacing(true);
+		columnsLayout.setWidth(100, Unit.PERCENTAGE);
 
 		VerticalLayout leftColumnLayout = new VerticalLayout();
 		leftColumnLayout.setMargin(false);
@@ -71,7 +89,7 @@ public class EpipulseExportInfoLayout extends AbstractInfoLayout<EpipulseExportD
 			creationDate,
 			I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.CREATION_DATE)).setDescription(creationDate);
 
-		this.addComponent(leftColumnLayout);
+		columnsLayout.addComponent(leftColumnLayout);
 
 		VerticalLayout rightColumnLayout = new VerticalLayout();
 		rightColumnLayout.setMargin(false);
@@ -93,6 +111,25 @@ public class EpipulseExportInfoLayout extends AbstractInfoLayout<EpipulseExportD
 			status,
 			I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.STATUS)).setDescription(status);
 
-		this.addComponent(rightColumnLayout);
+		columnsLayout.addComponent(rightColumnLayout);
+		contentLayout.addComponent(columnsLayout);
+
+		// why a failed export failed, e.g. "No EpiPulse subject code is configured for Diphtheria…", in one full-width row in
+		// red, so the user sees at once what to correct
+		String statusReason = epipulseExportDto.getStatusReason();
+		if (epipulseExportDto.getStatus() == EpipulseExportStatus.FAILED && statusReason != null && !statusReason.trim().isEmpty()) {
+			Label statusReasonLabel = addDescLabel(
+				contentLayout,
+				EpipulseExportDto.STATUS_REASON,
+				statusReason.trim(),
+				I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.STATUS_REASON));
+			if (statusReasonLabel != null) {
+				statusReasonLabel.setWidth(100, Unit.PERCENTAGE);
+				statusReasonLabel.setDescription(statusReason.trim());
+				statusReasonLabel.addStyleName(CssStyles.LABEL_CRITICAL);
+			}
+		}
+
+		this.addComponent(contentLayout);
 	}
 }

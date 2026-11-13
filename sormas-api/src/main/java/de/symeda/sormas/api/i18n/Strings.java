@@ -790,6 +790,8 @@ public interface Strings {
 	String headingCorrectPathogenTest = "headingCorrectPathogenTest";
 	String headingCorrectPerson = "headingCorrectPerson";
 	String headingCorrectSample = "headingCorrectSample";
+	String headingCountryCodes = "headingCountryCodes";
+	String headingCountryGeneralInformation = "headingCountryGeneralInformation";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateCustomizableField = "headingCreateCustomizableField";
@@ -1320,6 +1322,7 @@ public interface Strings {
 	String infoDeveloperOptions = "infoDeveloperOptions";
 	String infoDeveloperOptionsContactGeneration = "infoDeveloperOptionsContactGeneration";
 	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
+	String infoDiseaseConfigurationEpipulseDatasource = "infoDiseaseConfigurationEpipulseDatasource";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDistrictClimatePoint = "infoDistrictClimatePoint";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
@@ -1536,6 +1539,7 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses = "infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses";
 	String infoSystemConfigurationValueDescriptionEmailSenderAddress = "infoSystemConfigurationValueDescriptionEmailSenderAddress";
 	String infoSystemConfigurationValueDescriptionEmailSenderName = "infoSystemConfigurationValueDescriptionEmailSenderName";
+	String infoSystemConfigurationValueDescriptionEpipulseDatasource = "infoSystemConfigurationValueDescriptionEpipulseDatasource";
 	String infoSystemConfigurationValueDescriptionEvent717ApplicableEventStatuses = "infoSystemConfigurationValueDescriptionEvent717ApplicableEventStatuses";
 	String infoSystemConfigurationValueDescriptionMenuBackgroundColor = "infoSystemConfigurationValueDescriptionMenuBackgroundColor";
 	String infoSystemConfigurationValueDescriptionSmsAuthKey = "infoSystemConfigurationValueDescriptionSmsAuthKey";
@@ -1822,6 +1826,7 @@ public interface Strings {
 	String messageEpipulseExportDeleteConfirmationDescription = "messageEpipulseExportDeleteConfirmationDescription";
 	String messageEpipulseExportDeleted = "messageEpipulseExportDeleted";
 	String messageEpipulseExportDownloadNoFileName = "messageEpipulseExportDownloadNoFileName";
+	String messageEpipulseExportFailedUnexpected = "messageEpipulseExportFailedUnexpected";
 	String messageEpipulseExportNoCancel = "messageEpipulseExportNoCancel";
 	String messageEpipulseExportNoDelete = "messageEpipulseExportNoDelete";
 	String messageEpipulseInvalidConfigError = "messageEpipulseInvalidConfigError";

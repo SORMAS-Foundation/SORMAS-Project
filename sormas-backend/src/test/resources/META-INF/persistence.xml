@@ -107,9 +107,6 @@
 		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
 		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
 		<class>de.symeda.sormas.backend.epipulse.EpipulseExport</class>
-		<class>de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration</class>
-		<class>de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration</class>
-		<class>de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
@@ -160,6 +157,10 @@
 		<class>de.symeda.sormas.backend.contact.Contact</class>
 		<class>de.symeda.sormas.backend.epidata.EpiData</class>
 		<class>de.symeda.sormas.backend.environment.Environment</class>
+		<class>de.symeda.sormas.backend.climate.ClimateLocation</class>
+		<class>de.symeda.sormas.backend.climate.ClimateObservation</class>
+		<class>de.symeda.sormas.backend.climate.ClimateJob</class>
+		<class>de.symeda.sormas.backend.climate.SiteClimateReading</class>
 		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
 		<class>de.symeda.sormas.backend.event.Event</class>
 		<class>de.symeda.sormas.backend.event.EventParticipant</class>
@@ -167,6 +168,10 @@
 		<class>de.symeda.sormas.backend.infrastructure.facility.Facility</class>
 		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
 		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Assessment</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Bottleneck</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717Enabler</class>
+		<class>de.symeda.sormas.backend.event.sevenoneseven.Event717CorrectiveAction</class>
 		<class>de.symeda.sormas.backend.location.Location</class>
 		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
 		<class>de.symeda.sormas.backend.person.Person</class>
@@ -244,9 +249,6 @@
 		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
 		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
 		<class>de.symeda.sormas.backend.epipulse.EpipulseExport</class>
-		<class>de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration</class>
-		<class>de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration</class>
-		<class>de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

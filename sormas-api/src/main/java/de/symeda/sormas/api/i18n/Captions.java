@@ -1378,8 +1378,11 @@ public interface Captions {
 	String Country_defaultInfrastructure = "Country.defaultInfrastructure";
 	String Country_defaultName = "Country.defaultName";
 	String Country_displayName = "Country.displayName";
+	String Country_epipulseLocationCode = "Country.epipulseLocationCode";
 	String Country_externalId = "Country.externalId";
+	String Country_iso2Code = "Country.iso2Code";
 	String Country_isoCode = "Country.isoCode";
+	String Country_isoNumericCode = "Country.isoNumericCode";
 	String Country_nutsCode = "Country.nutsCode";
 	String Country_subcontinent = "Country.subcontinent";
 	String Country_unoCode = "Country.unoCode";
@@ -1677,6 +1680,8 @@ public interface Captions {
 	String DiseaseConfiguration_caseFollowUpDuration = "DiseaseConfiguration.caseFollowUpDuration";
 	String DiseaseConfiguration_caseSurveillanceEnabled = "DiseaseConfiguration.caseSurveillanceEnabled";
 	String DiseaseConfiguration_disease = "DiseaseConfiguration.disease";
+	String DiseaseConfiguration_epipulseDatasource = "DiseaseConfiguration.epipulseDatasource";
+	String DiseaseConfiguration_epipulseSubjectCode = "DiseaseConfiguration.epipulseSubjectCode";
 	String DiseaseConfiguration_eventParticipantFollowUpDuration = "DiseaseConfiguration.eventParticipantFollowUpDuration";
 	String DiseaseConfiguration_exposureCategories = "DiseaseConfiguration.exposureCategories";
 	String DiseaseConfiguration_exposureCategoryNames = "DiseaseConfiguration.exposureCategoryNames";
@@ -1873,6 +1878,7 @@ public interface Captions {
 	String EpipulseExport_startDate = "EpipulseExport.startDate";
 	String EpipulseExport_status = "EpipulseExport.status";
 	String EpipulseExport_statusChangeDate = "EpipulseExport.statusChangeDate";
+	String EpipulseExport_statusReason = "EpipulseExport.statusReason";
 	String EpipulseExport_subjectCode = "EpipulseExport.subjectCode";
 	String EpipulseExport_totalRecords = "EpipulseExport.totalRecords";
 	String EpipulseExport_uuid = "EpipulseExport.uuid";
@@ -3847,6 +3853,7 @@ public interface Captions {
 	String system = "system";
 	String SystemConfigurationValue_category = "SystemConfigurationValue.category";
 	String SystemConfigurationValue_categoryClimate = "SystemConfigurationValue.categoryClimate";
+	String SystemConfigurationValue_categoryEpipulse = "SystemConfigurationValue.categoryEpipulse";
 	String SystemConfigurationValue_categoryName = "SystemConfigurationValue.categoryName";
 	String SystemConfigurationValue_encrytp = "SystemConfigurationValue.encrytp";
 	String SystemConfigurationValue_General = "SystemConfigurationValue.General";

@@ -38,7 +38,7 @@ public final class EpipulseRow {
 		this.context = context;
 	}
 
-	/** Export-level context (server NUTS code, subject-code test types). */
+	/** Export-level context (EpiPulse location code of the server country, subject-code test types). */
 	public ExportContext context() {
 		return context;
 	}

@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.backend.epipulse.disease;
 
@@ -325,16 +322,16 @@ public class TubeFieldModelTest {
 	public void originFallsBackFromBirthCountryToCitizenship() {
 
 		EpipulseDiseaseExportEntryDto entry = new EpipulseDiseaseExportEntryDto();
-		entry.setServerCountryNutsCode("LU");
+		entry.setServerCountryLocationCode("LU");
 
 		assertThat("nothing recorded", EpipulseMapping.bornReportingCountry(entry), is(""));
 		assertThat("nothing recorded", EpipulseMapping.nationalityReportingCountry(entry), is(""));
 
-		entry.setCitizenshipCountryNutsCode("LU");
+		entry.setCitizenshipCountryLocationCode("LU");
 		assertThat("citizenship stands in for an unknown place of birth", EpipulseMapping.bornReportingCountry(entry), is("true"));
 		assertThat(EpipulseMapping.nationalityReportingCountry(entry), is("true"));
 
-		entry.setBirthCountryNutsCode("PT");
+		entry.setBirthCountryLocationCode("PT");
 		assertThat("place of birth decides where it is known", EpipulseMapping.bornReportingCountry(entry), is("false"));
 		assertThat("citizenship is read on its own", EpipulseMapping.nationalityReportingCountry(entry), is("true"));
 	}

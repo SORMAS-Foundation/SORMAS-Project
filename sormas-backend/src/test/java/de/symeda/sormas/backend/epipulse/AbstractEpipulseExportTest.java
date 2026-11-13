@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.backend.epipulse;
 
@@ -25,6 +22,8 @@ import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 
+import org.hibernate.query.NativeQuery;
+import org.hibernate.type.StandardBasicTypes;
 import org.junit.jupiter.api.Tag;
 
 import de.symeda.sormas.api.Disease;
@@ -36,7 +35,6 @@ import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
 import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.api.epipulse.EpipulseVariable;
-import de.symeda.sormas.api.epipulse.referencevalue.EpipulseDiseaseRef;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
@@ -54,6 +52,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.epipulse.disease.EpipulseFieldModels;
 import de.symeda.sormas.backend.epipulse.export.EpipulseCaseBasedExportStrategy;
 import de.symeda.sormas.backend.epipulse.fieldmodel.EpipulseValues;
@@ -77,7 +76,7 @@ public abstract class AbstractEpipulseExportTest extends AbstractBeanTest {
 	protected static final String SERVER_COUNTRY_NAME = "Luxembourg";
 	protected static final String SERVER_COUNTRY_LOCALE = "de-LU";
 	protected static final String SERVER_COUNTRY_ISO3 = "LUX";
-	protected static final String SERVER_COUNTRY_NUTS_CODE = "LU";
+	protected static final String SERVER_COUNTRY_LOCATION_CODE = "LU";
 
 	/** Shared test data source used for configured subject codes. */
 	protected static final String SERVER_DATA_SOURCE = "LU-SURV";
@@ -90,58 +89,136 @@ public abstract class AbstractEpipulseExportTest extends AbstractBeanTest {
 		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_NAME, SERVER_COUNTRY_NAME);
 		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, SERVER_COUNTRY_LOCALE);
 
-		// Read back rather than hardcoded, so the rows match whatever the facade derives from the
-		// locale -- the same value the orchestrator passes the strategy in production.
-		String serverCountryCode = getConfigFacade().getCountryCode();
-
 		executeInTransaction(em -> {
 
+			// the EpiPulse location code is the EpiPulse reporting country of the server country
 			Country country = new Country();
 			country.setUuid(DataHelper.createUuid());
 			country.setDefaultName(SERVER_COUNTRY_NAME);
 			country.setIsoCode(SERVER_COUNTRY_ISO3);
-			country.setNutsCode(SERVER_COUNTRY_NUTS_CODE);
+			country.setEpipulseLocationCode(SERVER_COUNTRY_LOCATION_CODE);
 			em.persist(country);
 
-			EpipulseLocationConfiguration location = new EpipulseLocationConfiguration();
-			location.setUuid(DataHelper.createUuid());
-			location.setType("Country");
-			location.setCode(serverCountryCode);
-			location.setName(SERVER_COUNTRY_NAME);
-			location.setCountryIso2Code(serverCountryCode);
-			em.persist(location);
-
 			for (EpipulseSubjectCode subjectCode : subjectCodes) {
-
-				EpipulseDatasourceConfiguration dataSource = new EpipulseDatasourceConfiguration();
-				dataSource.setUuid(DataHelper.createUuid());
-				dataSource.setCountryIso2Code(serverCountryCode);
-				dataSource.setDatasource(SERVER_DATA_SOURCE);
-				dataSource.setName(SERVER_DATA_SOURCE);
-				dataSource.setDescription(SERVER_DATA_SOURCE);
-				dataSource.setSubjectcode(subjectCode.name());
-				em.persist(dataSource);
-
-				EpipulseSubjectcodeConfiguration configuration = new EpipulseSubjectcodeConfiguration();
-				configuration.setUuid(DataHelper.createUuid());
-				configuration.setSubjectcode(subjectCode.name());
-				configuration.setName(subjectCode.name());
-				// the EpiPulse disease, as the ECDC metadata has it: CONSYPH is filed under SYPH, so
-				// a lookup by disease rather than by subject code would fail here
-				configuration.setDisease(epipulseDisease(subjectCode));
-				configuration.setAggregatedreporting(false);
-				em.persist(configuration);
+				configureDiseaseSubjectCode(em, subjectCode);
 			}
 		});
 	}
 
-	private static String epipulseDisease(EpipulseSubjectCode subjectCode) {
-		try {
-			return EpipulseDiseaseRef.getBySubjectCode(subjectCode).name();
-		} catch (IllegalArgumentException e) {
-			// a subject code without a disease reference value yet
-			return subjectCode.name();
+	/**
+	 * Enters the subject code in the disease configuration of its disease, creating the configuration when it is missing.
+	 * An already entered code is kept, so SYPH and CONSYPH configured together leave SYPHILIS with the first of them; the
+	 * export accepts the other one as a sibling code of the same disease.
+	 */
+	private void configureDiseaseSubjectCode(EntityManager em, EpipulseSubjectCode subjectCode) {
+
+		Disease disease = subjectCode.getDisease();
+		if (disease == null) {
+			return;
 		}
+
+		DiseaseConfiguration configuration =
+			em.createQuery("select d from " + DiseaseConfiguration.TABLE_NAME + " d where d.disease = :disease", DiseaseConfiguration.class)
+				.setParameter("disease", disease)
+				.getResultStream()
+				.findFirst()
+				.orElse(null);
+
+		if (configuration == null) {
+			configuration = DiseaseConfiguration.build(disease);
+			configuration.setUuid(DataHelper.createUuid());
+			em.persist(configuration);
+		}
+
+		// the disease's own data source; the system configuration value EPIPULSE_DATASOURCE, created empty by schema version
+		// 687, is removed by the truncation before every test, see setSystemDatasource(String)
+		if (configuration.getEpipulseDatasource() == null || configuration.getEpipulseDatasource().trim().isEmpty()) {
+			configuration.setEpipulseDatasource(SERVER_DATA_SOURCE);
+		}
+
+		if (configuration.getEpipulseSubjectCode() == null || configuration.getEpipulseSubjectCode().trim().isEmpty()) {
+			configuration.setEpipulseSubjectCode(subjectCode.name());
+		}
+	}
+
+	/**
+	 * Creates the system configuration value {@code EPIPULSE_DATASOURCE} with {@code value}, as schema version 687 creates it
+	 * (category {@code EPIPULSE}, optional), and as an admin then fills it in. The test database is truncated before every
+	 * test, so the row from the migration is gone and every test that needs it creates it here.
+	 *
+	 * <p>
+	 * Example: {@code setSystemDatasource("LU-SYSTEM1")} → a disease without its own data source is exported with
+	 * {@code "LU-SYSTEM1"}; {@code setSystemDatasource("")} → the state of a new installation, the key exists but is empty.
+	 */
+	protected void setSystemDatasource(String value) {
+
+		executeInTransaction(em -> {
+			//@formatter:off
+			em.createNativeQuery(
+				"INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) " +
+				"SELECT nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EPIPULSE', " +
+				"       'i18n/EpiPulse/categoryEpipulse', 'i18n/EpiPulse/categoryEpipulse' " +
+				"WHERE NOT EXISTS (SELECT 1 FROM systemconfigurationcategory WHERE name = 'EPIPULSE')")
+				.executeUpdate();
+			em.createNativeQuery("DELETE FROM systemconfigurationvalue WHERE config_key = 'EPIPULSE_DATASOURCE'").executeUpdate();
+			em.createNativeQuery(
+				"INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_encrypt, " +
+				"                                     changedate, creationdate, id, uuid) " +
+				"SELECT 'EPIPULSE_DATASOURCE', :value, c.id, true, false, now(), now(), nextval('entity_seq'), generate_base32_uuid() " +
+				"FROM systemconfigurationcategory c WHERE c.name = 'EPIPULSE'")
+				.setParameter("value", value)
+				.executeUpdate();
+			//@formatter:on
+		});
+	}
+
+	/**
+	 * Sets one EpiPulse column of the disease configuration of {@code disease} directly in the database, e.g.
+	 * {@code setDiseaseConfigurationValue(Disease.DIPHTHERIA, "epipulsesubjectcode", "MEAS")} for a wrong subject code, or
+	 * {@code setDiseaseConfigurationValue(Disease.MEASLES, "epipulsedatasource", null)} to remove its own data source.
+	 *
+	 * @param column
+	 *            {@code epipulsesubjectcode} or {@code epipulsedatasource}
+	 */
+	protected void setDiseaseConfigurationValue(Disease disease, String column, String value) {
+
+		executeInTransaction(em -> {
+			// unwrapped like EpipulseCaseBasedExportStrategy does, so a null value is bound with its SQL type
+			em.createNativeQuery("UPDATE diseaseconfiguration SET " + column + " = :value WHERE disease = :disease")
+				.unwrap(NativeQuery.class)
+				.setParameter("value", value, StandardBasicTypes.STRING)
+				.setParameter("disease", disease.name())
+				.executeUpdate();
+		});
+	}
+
+	/**
+	 * Sets the EpiPulse location code of the server country (default name {@link #SERVER_COUNTRY_NAME}) directly in the
+	 * database, e.g. {@code setServerCountryLocationCode(null)} for a server country without one, or
+	 * {@code setServerCountryLocationCode("lu")} for one entered in lower case.
+	 */
+	protected void setServerCountryLocationCode(String locationCode) {
+
+		executeInTransaction(em -> {
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :code WHERE defaultname = :name")
+				.unwrap(NativeQuery.class)
+				.setParameter("code", locationCode, StandardBasicTypes.STRING)
+				.setParameter("name", SERVER_COUNTRY_NAME)
+				.executeUpdate();
+		});
+	}
+
+	/**
+	 * Archives the server country (default name {@link #SERVER_COUNTRY_NAME}) directly in the database, e.g. to check that
+	 * an archived country is never used as reporting country.
+	 */
+	protected void archiveServerCountry() {
+
+		executeInTransaction(em -> {
+			em.createNativeQuery("UPDATE country SET archived = true WHERE defaultname = :name")
+				.setParameter("name", SERVER_COUNTRY_NAME)
+				.executeUpdate();
+		});
 	}
 
 	/**
@@ -178,7 +255,7 @@ public abstract class AbstractEpipulseExportTest extends AbstractBeanTest {
 
 		try {
 			List<EpipulseDiseaseExportEntryDto> entries = getBean(EpipulseCaseBasedExportStrategy.class)
-				.export(fieldModel, exportDto, getConfigFacade().getCountryCode(), getConfigFacade().getCountryName())
+				.export(fieldModel, exportDto, getConfigFacade().getCountryName())
 				.getExportEntryList();
 
 			return new ExportedEntries(fieldModel, entries);

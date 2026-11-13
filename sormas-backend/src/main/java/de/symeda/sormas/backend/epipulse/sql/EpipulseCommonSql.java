@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.backend.epipulse.sql;
 
@@ -96,7 +93,8 @@ public final class EpipulseCommonSql {
 		//@formatter:off
 		return "variables AS (SELECT      :disease         AS disease," +
 			   "                          :subjectCode     AS subject_code," +
-			   "                          :countryLocale   AS country_locale," +
+			   "                          :reportingCountry AS reporting_country," +
+			   "                          :datasource      AS datasource," +
 			   "                          CAST(:startDate AS date) AS start_date," +
 			   "                          CAST(:endDate AS date)   AS end_date," +
 			   // NULL means "incubation window unknown", not zero days. Casted params must be
@@ -107,19 +105,19 @@ public final class EpipulseCommonSql {
 	}
 
 	/**
-	 * Reporting metadata CTE: reporting country code and datasource by locale/subject code.
+	 * Reporting metadata CTE: subject code, reporting country code and data source.
+	 *
+	 * <p>
+	 * Both are resolved once by {@code EpipulseConfigurationLookupService} and bound as parameters: the reporting country
+	 * ({@code :reportingCountry}) is the EpiPulse location code of the server country ({@code country.epipulselocationcode},
+	 * e.g. {@code "EL"} for Greece, without any fallback), the data source ({@code :datasource}) from the disease configuration, else the system configuration value
+	 * {@code EPIPULSE_DATASOURCE}.
 	 */
 	private static String buildConfigDataCte() {
 		//@formatter:off
 		return "config_data AS (SELECT v.subject_code," +
-			   "                            (SELECT epl.code" +
-			   "                             FROM epipulse_location_configuration epl" +
-			   "                             WHERE epl.type = 'Country'" +
-			   "                               AND epl.country_iso2_code = v.country_locale) as reporting_country," +
-			   "                            (SELECT epd.datasource" +
-			   "                             FROM epipulse_datasource_configuration epd" +
-			   "                             WHERE epd.country_iso2_code = v.country_locale" +
-			   "                               AND epd.subjectcode = v.subject_code)         as datasource" +
+			   "                            v.reporting_country," +
+			   "                            v.datasource" +
 			   "                     FROM variables v)";
 		//@formatter:on
 	}

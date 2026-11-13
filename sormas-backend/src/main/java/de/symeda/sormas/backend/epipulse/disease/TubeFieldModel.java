@@ -93,7 +93,7 @@ final class TubeFieldModel {
 	 */
 	private static void addOrigin(List<ValueDef> fields) {
 
-		// Both booleans compare source NUTS codes to the exporting server's NUTS code.
+		// Both booleans compare the EpiPulse location codes of the countries to the one of the exporting server's country.
 		fields.add(ValueDef.calculated(EpipulseVariable.BORN_REPORTING_COUNTRY, EpipulseMapping::bornReportingCountry));
 		CountryOfBirthFields.addCountryOfBirth(fields);
 		fields.add(ValueDef.calculated(EpipulseVariable.NATIONALITY_REPORTING_COUNTRY, EpipulseMapping::nationalityReportingCountry));

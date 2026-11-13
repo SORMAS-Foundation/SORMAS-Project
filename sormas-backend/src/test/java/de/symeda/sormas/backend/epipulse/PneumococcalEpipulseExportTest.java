@@ -187,7 +187,7 @@ public class PneumococcalEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than the case
 		assertThat(export.value(entry, DISEASE), is("PNEU"));
 		assertThat(export.value(entry, SUBJECT_CODE), is("PNEU"));
-		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_LOCATION_CODE));
 		assertThat(export.value(entry, DATA_SOURCE), is(SERVER_DATA_SOURCE));
 
 		// from the case record itself
@@ -206,8 +206,8 @@ public class PneumococcalEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(entry, GENDER), is("F"));
 		assertThat(export.value(entry, AGE), is("33"));
 		assertThat(export.value(entry, AGE_MONTH), is(blankOrNullString()));
-		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_NUTS_CODE));
-		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_LOCATION_CODE));
+		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_LOCATION_CODE));
 
 		// the vaccination summary pair
 		assertThat(export.value(entry, VACCINATION_STATUS), is("2DOSE"));

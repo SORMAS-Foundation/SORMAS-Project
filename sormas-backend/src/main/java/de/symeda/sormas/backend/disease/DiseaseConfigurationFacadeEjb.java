@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -47,6 +47,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -467,6 +468,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setMaxIncubationPeriod(source.getMaxIncubationPeriod());
 		target.setMinIncubationPeriod(source.getMinIncubationPeriod());
 		target.setCaseDefinitionText(source.getCaseDefinitionText());
+		target.setEpipulseSubjectCode(source.getEpipulseSubjectCode());
+		target.setEpipulseDatasource(source.getEpipulseDatasource());
 		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());
 		target.setMinContagiousPeriod(source.getMinContagiousPeriod());
 		target.setIsContagious(source.getIsContagious());
@@ -566,6 +569,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setMinIncubationPeriod(source.getMinIncubationPeriod());
 		target.setIncubationPeriodEnabled(source.getIncubationPeriodEnabled());
 		target.setCaseDefinitionText(source.getCaseDefinitionText());
+		target.setEpipulseSubjectCode(StringUtils.trimToNull(source.getEpipulseSubjectCode()));
+		target.setEpipulseDatasource(StringUtils.trimToNull(source.getEpipulseDatasource()));
 		target.setExposureCategories(source.getExposureCategories());
 		target.setIsContagious(source.getIsContagious());
 		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());

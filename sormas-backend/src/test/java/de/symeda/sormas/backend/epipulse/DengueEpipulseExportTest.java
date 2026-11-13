@@ -129,8 +129,8 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 		UserDto surveillanceSupervisor = creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_SUPERVISOR);
 		fixture = fixtureFor(Disease.DENGUE, rdcf, surveillanceSupervisor);
 
-		thailand = countryWithNutsCode("Thailand", "THA", "TH");
-		brazil = countryWithNutsCode("Brazil", "BRA", "BR");
+		thailand = countryWithEpipulseLocationCode("Thailand", "THA", "TH");
+		brazil = countryWithEpipulseLocationCode("Brazil", "BRA", "BR");
 	}
 
 	// ---
@@ -169,7 +169,7 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than from the case
 		expected.put(DISEASE, value("DENGUE"));
 		expected.put(SUBJECT_CODE, value("DENGUE"));
-		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(DATA_SOURCE, value(SERVER_DATA_SOURCE));
 		expected.put(STATUS, value("NEW/UPDATE"));
 
@@ -502,14 +502,14 @@ public class DengueEpipulseExportTest extends AbstractEpipulseExportTest {
 		return exposure;
 	}
 
-	/** Country with NUTS code for export reporting. TestDataCreator doesn't set this. */
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	/** Country with an EpiPulse location code, reported by the export as country code. TestDataCreator doesn't set this. */
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});
