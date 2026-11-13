@@ -419,7 +419,7 @@ public class AutomaticLabMessageProcessor {
 
 		@Override
 		protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-			CaseDataDto savedCase = caseFacade.save(caze);
+			CaseDataDto savedCase = caseFacade.saveFromExternalMessage(caze);
 			// the person was already merged in-memory by mergePerson() in the base class
 			// (address, contact details, additional addresses/contacts), but not yet persisted
 			personFacade.save(person);

@@ -1521,7 +1521,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	public CaseDataDto saveFromExternalMessage(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
 		boolean isNewGonococcalCase = dto.getDisease() == Disease.GONOCOCCAL_INFECTION && service.getByUuid(dto.getUuid()) == null;
 		CaseDataDto saved = save(dto);
-		if (!isNewGonococcalCase || saved.getCaseClassification() == dto.getCaseClassification()) {
+		if (!isNewGonococcalCase || dto.getCaseClassification() == null || saved.getCaseClassification() == dto.getCaseClassification()) {
 			return saved;
 		}
 
