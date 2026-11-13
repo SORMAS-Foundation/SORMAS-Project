@@ -53,12 +53,12 @@ import org.mockito.stubbing.Answer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -442,8 +442,9 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCreateCaseTakesClassificationAndHivStatusFromMessage() throws ExecutionException, InterruptedException {
+	public void testCreateGonococcalCaseTakesClassificationAndHivStatusFromMessageInLuxembourg() throws ExecutionException, InterruptedException {
 
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
 		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.GONOCOCCAL_INFECTION, "test-report-id", ExternalMessageStatus.UNPROCESSED);
@@ -465,6 +466,19 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.NOT_CLASSIFIED));
 		assertThat(caseCaptor.getValue().getHealthConditions().getHivStatus(), is(nullValue()));
+	}
+
+	@Test
+	public void testCreateCaseIgnoresMessageClassificationForNonGonococcalDisease() throws ExecutionException, InterruptedException {
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		labMessage.setCaseClassification(CaseClassification.NO_CASE);
+		runFlow(labMessage);
+
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.NOT_CLASSIFIED));
 	}
 
 	private ArgumentCaptor<CaseDataDto> captureCreatedCase() {

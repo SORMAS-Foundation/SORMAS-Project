@@ -160,6 +160,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		return new CaseCreateForm(true, false, null, true);
 	}
 
+	public static CaseCreateForm forSelfReport() {
+		return new CaseCreateForm(true, false, null, false);
+	}
+
 	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
 		this(false, true, convertedTravelEntry, false);
 	}

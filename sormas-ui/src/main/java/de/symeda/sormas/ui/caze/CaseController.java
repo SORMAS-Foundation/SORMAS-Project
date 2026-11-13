@@ -674,7 +674,7 @@ public class CaseController {
 
 		CaseCreateForm createForm;
 		if (createdByProcessing) {
-			createForm = CaseCreateForm.forProcessing();
+			createForm = createdFromLabMessage ? CaseCreateForm.forProcessing() : CaseCreateForm.forSelfReport();
 		} else {
 			createForm = convertedContact == null && convertedEventParticipant == null && convertedTravelEntry == null && unrelatedDisease == null
 				? new CaseCreateForm()

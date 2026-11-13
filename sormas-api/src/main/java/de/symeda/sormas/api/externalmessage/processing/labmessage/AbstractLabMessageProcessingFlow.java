@@ -179,9 +179,6 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 
 	@Override
 	protected void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
-		if (externalMessageDto.getCaseClassification() != null) {
-			caseDto.setCaseClassification(externalMessageDto.getCaseClassification());
-		}
 		if (externalMessageDto.getHivStatus() != null) {
 			caseDto.getHealthConditions().setHivStatus(externalMessageDto.getHivStatus());
 		}
@@ -219,6 +216,11 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			therapyDto.setMdrXdrTuberculosis(Boolean.TRUE.equals(externalMessageDto.getTuberculosisMdrXdrTuberculosis()));
 
 			// for regular tuberculosis the case classification should be handled in the external message pre-processing
+			break;
+		case GONOCOCCAL_INFECTION:
+			if (externalMessageDto.getCaseClassification() != null) {
+				caseClassification = externalMessageDto.getCaseClassification();
+			}
 			break;
 		case CORONAVIRUS:
 			// case classification is handled in the external message pre-processing
