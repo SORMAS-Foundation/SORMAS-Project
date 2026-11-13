@@ -3677,6 +3677,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().saveFromExternalMessage(viaExternalMessage);
 		getCaseFacade().save(viaPlainSave);
 
+		assertEquals(CaseClassification.NO_CASE, getCaseFacade().getCaseDataByUuid(viaExternalMessage.getUuid()).getCaseClassification());
 		assertEquals(
 			getCaseFacade().getCaseDataByUuid(viaPlainSave.getUuid()).getCaseClassification(),
 			getCaseFacade().getCaseDataByUuid(viaExternalMessage.getUuid()).getCaseClassification());
