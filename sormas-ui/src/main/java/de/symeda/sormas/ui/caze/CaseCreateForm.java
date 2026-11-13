@@ -122,6 +122,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	// necessary extra data. This variable is expected to be replaced in the implementation of
 	// issue #5910.
 	private final TravelEntryDto convertedTravelEntry;
+	private final boolean createdByProcessing;
 
 	//@formatter:off
     private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
@@ -152,14 +153,22 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     //@formatter:on
 
 	public CaseCreateForm() {
-		this(true, true, null);
+		this(true, true, null, false);
+	}
+
+	public static CaseCreateForm forProcessing() {
+		return new CaseCreateForm(true, false, null, true);
 	}
 
 	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
-		this(false, true, convertedTravelEntry);
+		this(false, true, convertedTravelEntry, false);
 	}
 
-	public CaseCreateForm(Boolean showHomeAddressForm, Boolean showPersonSearchButton, TravelEntryDto convertedTravelEntry) {
+	private CaseCreateForm(
+		Boolean showHomeAddressForm,
+		Boolean showPersonSearchButton,
+		TravelEntryDto convertedTravelEntry,
+		boolean createdByProcessing) {
 		super(
 			CaseDataDto.class,
 			CaseDataDto.I18N_PREFIX,
@@ -168,6 +177,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			UiFieldAccessCheckers.getNoop());
 		this.convertedTravelEntry = convertedTravelEntry;
+		this.createdByProcessing = createdByProcessing;
 		this.showHomeAddressForm = showHomeAddressForm;
 		this.showPersonSearchButton = showPersonSearchButton;
 
@@ -587,7 +597,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityOrHome.select(TypeOfPlace.HOME);
 			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
 			classificationField.select(CaseClassification.CONFIRMED);
-		} else if (newDisease == Disease.GONOCOCCAL_INFECTION) {
+		} else if (newDisease == Disease.GONOCOCCAL_INFECTION && !createdByProcessing) {
 			facilityOrHome.setValue(null);
 			facilityOrHome.unselect(TypeOfPlace.HOME);
 			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
