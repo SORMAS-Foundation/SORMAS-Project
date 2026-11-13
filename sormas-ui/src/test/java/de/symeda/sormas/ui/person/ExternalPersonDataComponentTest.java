@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -17,6 +19,7 @@ import com.vaadin.ui.Panel;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalpersondata.AllowedHtmlTagsAndAttributesDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataForDisplayDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataIndexDto;
 import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
@@ -259,6 +262,7 @@ class ExternalPersonDataComponentTest extends AbstractUiBeanTest {
 			ExternalPersonDataForDisplayDto display = new ExternalPersonDataForDisplayDto();
 			display.setHtml("<p>External person</p>");
 			when(context.provider.findDisplayDataByNationalHealthId("health-id")).thenReturn(display);
+			when(context.provider.getAllowedAttributesByTag()).thenReturn(AllowedHtmlTagsAndAttributesDto.of(new HashMap<>()));
 			Panel panel = (Panel) context.create().getComponent(0);
 			Label html = (Label) panel.getContent();
 			assertEquals(display.getHtml(), html.getValue());
