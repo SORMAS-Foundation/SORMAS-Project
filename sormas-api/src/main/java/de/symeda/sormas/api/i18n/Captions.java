@@ -3663,6 +3663,7 @@ public interface Captions {
 	String Symptoms_lymphadenopathy = "Symptoms.lymphadenopathy";
 	String Symptoms_lymphadenopathyAxillary = "Symptoms.lymphadenopathyAxillary";
 	String Symptoms_lymphadenopathyCervical = "Symptoms.lymphadenopathyCervical";
+	String Symptoms_lymphadenopathyCervical_RUBELLA = "Symptoms.lymphadenopathyCervical.RUBELLA";
 	String Symptoms_lymphadenopathyInguinal = "Symptoms.lymphadenopathyInguinal";
 	String Symptoms_lymphadenopathyRetroauricular = "Symptoms.lymphadenopathyRetroauricular";
 	String Symptoms_lymphadenopathySuboccipital = "Symptoms.lymphadenopathySuboccipital";
@@ -3722,7 +3723,9 @@ public interface Captions {
 	String Symptoms_otherMajorSiteDetails = "Symptoms.otherMajorSiteDetails";
 	String Symptoms_otherMinorSiteDetails = "Symptoms.otherMinorSiteDetails";
 	String Symptoms_otherNeurologicalSymptoms = "Symptoms.otherNeurologicalSymptoms";
+	String Symptoms_otherNeurologicalSymptoms_RUBELLA = "Symptoms.otherNeurologicalSymptoms.RUBELLA";
 	String Symptoms_otherNeurologicalSymptomsText = "Symptoms.otherNeurologicalSymptomsText";
+	String Symptoms_otherNeurologicalSymptomsText_RUBELLA = "Symptoms.otherNeurologicalSymptomsText.RUBELLA";
 	String Symptoms_otherNonHemorrhagicSymptoms = "Symptoms.otherNonHemorrhagicSymptoms";
 	String Symptoms_otherNonHemorrhagicSymptomsText = "Symptoms.otherNonHemorrhagicSymptomsText";
 	String Symptoms_otitisMedia = "Symptoms.otitisMedia";

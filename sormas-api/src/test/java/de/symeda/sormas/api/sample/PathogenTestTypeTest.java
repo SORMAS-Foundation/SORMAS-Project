@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -429,15 +428,17 @@ public class PathogenTestTypeTest {
 	}
 
 	@Test
-	@Disabled("see github issue #14335")
-	public void otherAbsorbedTheSuccessorlessMethodsAndStaysVisibleEverywhere() {
-		// DIRECT_MICROSCOPY and RAPID_ANTIBODY_TEST migrate onto OTHER, which carries no @Diseases, so a migrated
-		// record renders for every disease. The LATERAL_FLOW_ASSAY merge has the same guard above.
+	public void otherIsOfferedForEveryDiseaseExceptThoseTheMatrixLeavesWithoutIt() {
+		Set<Disease> diseasesWithoutOther = EnumSet.of(Disease.DIPHTHERIA, Disease.YERSINIOSIS);
+
 		for (Disease disease : Disease.values()) {
-			assertThat(
-				"OTHER must be visible for " + disease.name(),
-				de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease),
-				hasItem(PathogenTestType.OTHER));
+			List<PathogenTestType> visibleMethods =
+				de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease);
+			if (diseasesWithoutOther.contains(disease)) {
+				assertThat("OTHER must be hidden for " + disease.name(), visibleMethods, not(hasItem(PathogenTestType.OTHER)));
+			} else {
+				assertThat("OTHER must be visible for " + disease.name(), visibleMethods, hasItem(PathogenTestType.OTHER));
+			}
 		}
 	}
 }
