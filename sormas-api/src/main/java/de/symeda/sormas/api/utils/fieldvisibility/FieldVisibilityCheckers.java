@@ -115,6 +115,7 @@ public class FieldVisibilityCheckers implements Serializable {
 	}
 
 	private FieldVisibilityCheckers addDiseaseCountryRuleOnceBothAreKnown() {
+		// Later andWithDisease/andWithCountry calls do not update this rule
 		if (hasDisease && hasCountry && !hasDiseaseCountryRule) {
 			hasDiseaseCountryRule = true;
 			add(new DiseaseCountryFieldVisibilityChecker(disease, countryLocale));

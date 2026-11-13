@@ -332,12 +332,13 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	}
 
 	/**
-	 * Scopes the pathogen-test method combo to the methods that are visible for the given disease
-	 * (via {@link Diseases}), selectable for new tests (via
+	 * Scopes the pathogen-test method combo to the methods that pass {@code checkers} (the
+	 * {@link Diseases} lists and the per-country disease rules), selectable for new tests (via
 	 * {@link PathogenTestType#isSelectableForNewTests}) and — when a category is selected — belong to
 	 * that {@link PathogenTestCategory}. With no category selected the combo shows all
-	 * selectable, disease-visible methods. The currently saved value is always kept selectable so an
-	 * existing test recorded with a now-hidden method can still be edited. Sorted alphabetically.
+	 * selectable, visible methods. The currently saved value is always kept selectable so an
+	 * existing test recorded with a now-hidden method can still be edited. Sorted alphabetically,
+	 * ignoring case.
 	 */
 	protected static void updateTestTypeItemsByCategory(
 		ComboBox<PathogenTestType> comboBox,
@@ -383,8 +384,9 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	}
 
 	/**
-	 * Lists the {@link PathogenTestCategory} values that have at least one selectable method visible
-	 * for the given disease, so empty categories are not offered. Sorted alphabetically.
+	 * Lists the {@link PathogenTestCategory} values that have at least one selectable method passing
+	 * {@code checkers}, so empty categories are not offered. Sorted alphabetically, ignoring case,
+	 * with {@link PathogenTestCategory#OTHER} last.
 	 */
 	protected static List<PathogenTestCategory> getVisibleTestCategories(FieldVisibilityCheckers checkers) {
 		return getVisibleTestCategories(checkers, null);
@@ -392,7 +394,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 
 	/**
 	 * As {@link #getVisibleTestCategories(FieldVisibilityCheckers)} but additionally includes {@code retainCategory}
-	 * even when no selectable, disease-visible method maps to it — used when loading an existing test
+	 * even when no selectable, visible method maps to it — used when loading an existing test
 	 * whose (possibly legacy/hidden) method's category would otherwise be absent from the selector.
 	 */
 	protected static List<PathogenTestCategory> getVisibleTestCategories(FieldVisibilityCheckers checkers, PathogenTestCategory retainCategory) {

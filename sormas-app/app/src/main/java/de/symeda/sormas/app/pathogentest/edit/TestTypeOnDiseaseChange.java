@@ -9,6 +9,7 @@ final class TestTypeOnDiseaseChange {
 	}
 
 	static PathogenTestType methodToKeep(Disease originalDisease, Disease selectedDisease, PathogenTestType currentMethod) {
+		// Keeps the saved method listed only while the tested disease is unchanged
 		return selectedDisease == originalDisease ? currentMethod : null;
 	}
 }

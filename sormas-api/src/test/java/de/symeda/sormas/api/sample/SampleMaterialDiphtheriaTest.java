@@ -32,7 +32,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilit
 /**
  * Verifies that {@link DiseaseFieldVisibilityChecker} exposes exactly the {@link SampleMaterial}
  * values approved for Diphtheria in the sample material selection, and hides all others
- * (deprecated and {@link SampleMaterial#UNKNOWN} materials are excluded from both checks).
+ * (deprecated materials are excluded from both checks).
  */
 public class SampleMaterialDiphtheriaTest {
 
@@ -60,8 +60,8 @@ public class SampleMaterialDiphtheriaTest {
     }
 
     /**
-     * Every non-deprecated, non-{@link SampleMaterial#UNKNOWN} material not in {@link #APPROVED} must not be
-     * selectable (hidden) for Diphtheria.
+     * Every non-deprecated material not in {@link #APPROVED}, {@link SampleMaterial#UNKNOWN} included, must
+     * not be selectable (hidden) for Diphtheria.
      */
     @Test
     public void noUnapprovedSpecimenIsSelectableForDiphtheria() {

@@ -695,6 +695,7 @@ public enum PathogenTestType {
 		Disease.NEW_INFLUENZA,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
+	// Sits with the serology methods but is Antigen Detection since Nov 2026
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
@@ -798,6 +799,7 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
 
+	// Sits with the antigen methods but is Serological Tests since Nov 2026
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
@@ -829,7 +831,7 @@ public enum PathogenTestType {
 	HEMAGGLUTINATION_INHIBITION,
 
 	// ----------------------------------------------------------------------------------------------
-	// Culture & Isolation
+	// Culture & Identification
 	// ----------------------------------------------------------------------------------------------
 
 	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
@@ -1338,7 +1340,7 @@ public enum PathogenTestType {
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------
-	// No category: reveals a free-text companion field
+	// Other: its own category, reveals a free-text companion field
 	// ----------------------------------------------------------------------------------------------
 
 	// DIRECT_MICROSCOPY and RAPID_ANTIBODY_TEST had no successor, so their records land here with the former
@@ -1420,9 +1422,10 @@ public enum PathogenTestType {
 
 	/**
 	 * @return the {@link PathogenTestCategory} this method belongs to, declared via
-	 *         {@link PathogenTestCategoryRel}, or {@code null} for values with no category (e.g. the
-	 *         free-text {@code OTHER}). The category is derived from the method so it can be
-	 *         re-selected when editing an existing test without persisting a separate column.
+	 *         {@link PathogenTestCategoryRel}, or {@code null} for a value without that annotation
+	 *         ({@code OTHER} has its own {@link PathogenTestCategory#OTHER}). The category is derived
+	 *         from the method so it can be re-selected when editing an existing test without persisting
+	 *         a separate column.
 	 */
 	public static PathogenTestCategory getCategory(PathogenTestType testType) {
 		if (testType == null) {
@@ -1483,6 +1486,7 @@ public enum PathogenTestType {
 	}
 
 	public static List<PathogenTestType> requestableMethods(FieldVisibilityCheckers checkers, Collection<PathogenTestType> savedRequests) {
+		// Other stays only if saved: new ones go in requestedOtherPathogenTests
 		Collection<PathogenTestType> saved = savedRequests != null ? savedRequests : Collections.emptySet();
 		return Arrays.stream(values())
 			.filter(
@@ -1493,6 +1497,7 @@ public enum PathogenTestType {
 	}
 
 	public static List<PathogenTestType> selectableMethods(FieldVisibilityCheckers checkers, PathogenTestType retainType) {
+		// retainType stays listed so a saved legacy or hidden method still shows
 		return Arrays.stream(values())
 			.filter(type -> type == retainType || isSelectableForNewTests(type) && checkers.isVisible(PathogenTestType.class, type.name()))
 			.sorted(Comparator.comparing(PathogenTestType::toString, String.CASE_INSENSITIVE_ORDER))

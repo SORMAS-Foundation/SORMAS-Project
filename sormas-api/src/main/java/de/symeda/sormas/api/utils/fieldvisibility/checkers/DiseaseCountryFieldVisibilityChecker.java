@@ -35,6 +35,7 @@ public class DiseaseCountryFieldVisibilityChecker implements FieldVisibilityChec
 	}
 
 	private boolean isServerIn(String[] countries) {
+		// An unset server country counts as none of the listed countries
 		return countryLocale != null && CountryHelper.isInCountries(countryLocale, countries);
 	}
 }

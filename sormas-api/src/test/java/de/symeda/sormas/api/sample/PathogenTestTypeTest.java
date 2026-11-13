@@ -50,6 +50,7 @@ public class PathogenTestTypeTest {
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST,
+		// Retired by the Nov 2026 matrix round; kept so saved records still render
 		PathogenTestType.IMMUNOFLUORESCENCE_ASSAY);
 
 	@Test
@@ -327,8 +328,9 @@ public class PathogenTestTypeTest {
 
 	@Test
 	public void diseaseHiddenMethodIsDroppedByVisibleValues() {
-		// Guards the scenario behind the retainType re-add in FormComponent#updateTestTypeItemsByCategory
-		// and the retainCategory re-add in #getVisibleTestCategories: a method that is @Diseases(hide = true)
+		// Guards the retainType check in PathogenTestType#selectableMethods and the
+		// retainCategory re-add in FormComponent#getVisibleTestCategories: a method
+		// that is @Diseases(hide = true)
 		// for a disease is excluded by getVisibleValues for that disease, so a saved test recorded with it can
 		// only be kept selectable by adding it back explicitly. ANTIBODY_DETECTION carries such a hide-list
 		// covering DENGUE. INCUBATION_TIME is the same case for a method that is also legacy.

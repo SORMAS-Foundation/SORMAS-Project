@@ -695,6 +695,7 @@ public enum SampleMaterial {
 	@Diseases({})
 	CATHETER_EXIT_SITE,
 
+	// Eye is a Gonococcal infection sample on the Luxembourg server only
 	@Diseases({
 		Disease.GONOCOCCAL_INFECTION })
 	@HideForDiseasesInCountriesExcept(diseases = Disease.GONOCOCCAL_INFECTION, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
@@ -713,6 +714,7 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS })
 	LOWER_RESPIRATORY_TRACT,
 
+	// Kept for Salmonellosis: Luxembourg lab messages map SALM-19 PUS here
 	@Diseases({
 		Disease.SHIGELLOSIS,
 		Disease.TUBERCULOSIS,
@@ -1043,6 +1045,7 @@ public enum SampleMaterial {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ULCER_SWAB,
 
+	// Kept for Salmonellosis: Luxembourg lab messages map SALM-19 UNK here
 	@Diseases(value = {
 		Disease.DENGUE,
 		Disease.MEASLES,

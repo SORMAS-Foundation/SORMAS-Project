@@ -76,7 +76,7 @@ public class PathogenTestController {
 
 	private final PathogenTestFacade facade = FacadeProvider.getPathogenTestFacade();
 
-	// Antibiotic susceptibility test is applicable for TB(Lux), IMI, IPI, Shigellosis, Diphtheria and Gonococcal infection. For others it should be null.
+	// AST is kept for these diseases on every server; for others it is null
 	private static final List<Disease> AST_ALLOWED_DISEASES = Arrays
 		.asList(
 			Disease.TUBERCULOSIS,
@@ -353,7 +353,6 @@ public class PathogenTestController {
 
 		pathogenTests.forEach(p -> {
 			p.setSample(sampleRef);
-			//the susceptibility test is applicable only for LUX TB and all-countries invasive disease
 			if (shouldClearDrugSusceptibility(p.getTestType(), p.getTestedDisease())) {
 				p.setDrugSusceptibility(null);
 			}
