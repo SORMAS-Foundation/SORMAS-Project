@@ -53,6 +53,8 @@ public class EpipulseMappingTest {
 	private static final Date DOSE_OLDER = DateHelper.getDateZero(2023, 0, 5);
 	private static final Date DOSE_LATEST = DateHelper.getDateZero(2024, 1, 20);
 	private static final Date AFTER = DateHelper.getDateZero(2024, 6, 1);
+	/** A notification date between DOSE_OLDER and DOSE_LATEST: 2023-09-01. */
+	private static final Date NOTIFIED = DateHelper.getDateZero(2023, 8, 1);
 
 	private static final int STANDARD = 10;
 	private static final int MENI = 4;
@@ -75,24 +77,84 @@ public class EpipulseMappingTest {
 		}
 	}
 
-	// rule 1: no onset
+	// rule 1: no onset and no notification date
 
 	@Test
-	@DisplayName("a case with no onset date reports both columns blank, whatever is on record")
-	public void noOnsetReportsBlank() {
+	@DisplayName("a case with neither an onset nor a notification date reports both columns blank, whatever is on record")
+	public void noReferenceDateReportsBlank() {
 
-		// with no onset there is no date to have been vaccinated by; NOTVACC would assert the
-		// patient was never vaccinated
+		// with no date there is nothing to have been vaccinated by; NOTVACC would assert the
+		// patient was never vaccinated. The schema requires a report date, so this is defensive.
 		for (EpipulseDiseaseExportEntryDto entry : Arrays.asList(
 			withDoses(entry(), dose(DOSE_OLDER)),
 			entry(immunization(MeansOfImmunization.VACCINATION, BEFORE)),
 			entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE)))) {
 
 			entry.setSymptomOnsetDate(null);
+			entry.setReportDate(null);
 
 			assertEquals("", status(entry, STANDARD));
 			assertEquals("", lastVaccination(entry));
 		}
+	}
+
+	// the reference date: onset, else notification
+
+	@Test
+	@DisplayName("without an onset date the doses are counted up to the notification date")
+	public void withoutOnsetTheNotificationDateIsTheReference() {
+
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDEST), dose(DOSE_OLDER), dose(DOSE_LATEST));
+		entry.setSymptomOnsetDate(null);
+		entry.setReportDate(NOTIFIED);
+
+		// DOSE_LATEST comes after the notification date; the last date is from the counted set
+		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("2023-01-05", lastVaccination(entry));
+	}
+
+	@Test
+	@DisplayName("an asymptomatic case has no onset, so it is measured at the notification date too")
+	public void anAsymptomaticCaseUsesTheNotificationDate() {
+
+		// the stored onset date is ignored for an asymptomatic case, as DateOfOnset ignores it
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(DOSE_LATEST));
+		entry.setAsymptomatic(SymptomState.YES);
+		entry.setReportDate(NOTIFIED);
+
+		assertEquals("1DOSE", status(entry, STANDARD));
+		assertEquals("2023-01-05", lastVaccination(entry));
+	}
+
+	@Test
+	@DisplayName("an onset date wins over the notification date")
+	public void anOnsetDateWinsOverTheNotificationDate() {
+
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(DOSE_LATEST));
+		entry.setReportDate(NOTIFIED);
+
+		// measured at REFERENCE, the onset: DOSE_LATEST counts although it follows the notification
+		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("2024-02-20", lastVaccination(entry));
+	}
+
+	@Test
+	@DisplayName("without an onset date, NOTVACC and UNKDOSE are judged at the notification date as well")
+	public void theOtherRulesUseTheNotificationDateToo() {
+
+		EpipulseDiseaseExportEntryDto dosesAfter = withDoses(entry(), dose(AFTER));
+		EpipulseDiseaseExportEntryDto recordedBefore = entry(immunization(MeansOfImmunization.VACCINATION, BEFORE));
+		EpipulseDiseaseExportEntryDto recordedAfter = entry(immunization(MeansOfImmunization.VACCINATION, DOSE_LATEST));
+
+		for (EpipulseDiseaseExportEntryDto entry : Arrays.asList(dosesAfter, recordedBefore, recordedAfter)) {
+			entry.setSymptomOnsetDate(null);
+			entry.setReportDate(NOTIFIED);
+		}
+
+		assertEquals("NOTVACC", status(dosesAfter, STANDARD));
+		assertEquals("UNKDOSE", status(recordedBefore, STANDARD));
+		assertEquals("", status(recordedAfter, STANDARD));
+		assertEquals("", lastVaccination(dosesAfter));
 	}
 
 	// rule 2: doses up to the onset day
