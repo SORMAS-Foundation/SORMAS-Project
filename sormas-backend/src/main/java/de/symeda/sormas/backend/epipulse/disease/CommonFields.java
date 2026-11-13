@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.backend.epipulse.disease;
 
@@ -163,9 +160,9 @@ final class CommonFields {
 
 		fields.add(
 			ValueDef.sqlOnly(
-				"address_country_nutscode",
-				"person_address_country.nutscode",
-				(dto, row) -> dto.setAddressCountryNutsCode((String) row.get("address_country_nutscode"))));
+				"address_country_locationcode",
+				"person_address_country.epipulselocationcode",
+				(dto, row) -> dto.setAddressCountryLocationCode((String) row.get("address_country_locationcode"))));
 
 		fields.add(
 			ValueDef.sqlOnly(
@@ -183,8 +180,8 @@ final class CommonFields {
 				"responsible_region.nutscode",
 				(dto, row) -> dto.setResponsibleRegionNutsCode((String) row.get("responsible_region_nutscode"))));
 
-		// Fallback NUTS code used by place fields when no jurisdiction code is available.
-		fields.add(ValueDef.contextOnly((dto, row) -> dto.setServerCountryNutsCode(row.context().getServerCountryNutsCode())));
+		// Fallback for the place fields when no jurisdiction NUTS code is available: the EpiPulse location code of the server country.
+		fields.add(ValueDef.contextOnly((dto, row) -> dto.setServerCountryLocationCode(row.context().getServerCountryLocationCode())));
 
 		fields.add(ValueDef.sqlOnly("caseclassification", "c.caseclassification", (dto, row) -> {
 			String caseClassification = (String) row.get("caseclassification");

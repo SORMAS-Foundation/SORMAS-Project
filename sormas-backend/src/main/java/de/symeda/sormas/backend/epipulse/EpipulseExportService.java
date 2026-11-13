@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,11 +15,9 @@
 
 package de.symeda.sormas.backend.epipulse;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -33,12 +31,16 @@ import de.symeda.sormas.api.epipulse.EpipulseExportCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.epipulse.export.EpipulseConfigurationLookupService;
 
 @Stateless
 @LocalBean
 public class EpipulseExportService extends BaseAdoService<EpipulseExport> {
 
 	private static final Logger logger = Logger.getLogger(EpipulseExportService.class.getName());
+
+	@EJB
+	private EpipulseConfigurationLookupService configurationLookupService;
 
 	public EpipulseExportService() {
 		super(EpipulseExport.class);
@@ -80,30 +82,16 @@ public class EpipulseExportService extends BaseAdoService<EpipulseExport> {
 		return filter;
 	}
 
+	/**
+	 * Whether EpiPulse exports can be created: an EpiPulse data source is configured, either as system configuration value
+	 * {@code EPIPULSE_DATASOURCE} (entered by an admin, e.g. {@code "LU-SYSTEM1"}) or in the disease configuration of at
+	 * least one disease.
+	 */
 	public boolean configured() {
 		try {
-			//@formatter:off
-            List<String> requiredTables =
-                    Arrays.asList(
-                            EpipulseDatasourceConfiguration.TABLE_NAME,
-                            EpipulseLocationConfiguration.TABLE_NAME,
-                            EpipulseSubjectcodeConfiguration.TABLE_NAME
-                    );
-
-            String query = "SELECT COUNT(*) " +
-                    "FROM information_schema.tables " +
-                    "WHERE table_schema = 'public' " +
-                    "AND table_name IN (" +
-                    String.join(",", requiredTables.stream()
-                            .map(table -> "'" + table + "'")
-                            .collect(Collectors.toList())) +
-                    ")";
-            //@formatter:on
-
-			Number count = (Number) em.createNativeQuery(query).getSingleResult();
-			return count.intValue() == requiredTables.size();
+			return configurationLookupService.isDatasourceConfigured();
 		} catch (Exception e) {
-			logger.warning("Error checking epipulse configuration tables: " + e.getMessage());
+			logger.warning("Error checking the EpiPulse configuration: " + e.getMessage());
 			return false;
 		}
 	}

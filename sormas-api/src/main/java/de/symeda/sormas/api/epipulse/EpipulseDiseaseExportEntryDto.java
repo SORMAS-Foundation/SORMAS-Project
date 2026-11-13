@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.api.epipulse;
 
@@ -57,11 +54,11 @@ public class EpipulseDiseaseExportEntryDto {
 	private String addressCommunityNutsCode;
 	private String addressDistrictNutsCode;
 	private String addressRegionNutsCode;
-	private String addressCountryNutsCode;
+	private String addressCountryLocationCode;
 	private String responsibleCommunityNutsCode;
 	private String responsibleDistrictNutsCode;
 	private String responsibleRegionNutsCode;
-	private String serverCountryNutsCode;
+	private String serverCountryLocationCode;
 	private CaseClassification caseClassification;
 	private YesNoUnknown admittedToHealthFacility;
 	private HospitalizationReasonType hospitalizationReason;
@@ -116,10 +113,10 @@ public class EpipulseDiseaseExportEntryDto {
 	private String clinicalCriteria; // REF: BACTERPNEUMO, MENI, MENISEPTI, OTH, SEPTI
 
 	// -- Syphilis --
-	private String birthCountryNutsCode; // CountryOfBirth
-	private String citizenshipCountryNutsCode; // CountryOfNationality
-	private String motherBirthCountryNutsCode; // CountryOfBirthOfMother, CONSYPH only
-	private String motherCitizenshipCountryNutsCode; // CountryOfNationalityOfMother, CONSYPH only
+	private String birthCountryLocationCode; // CountryOfBirth
+	private String citizenshipCountryLocationCode; // CountryOfNationality
+	private String motherBirthCountryLocationCode; // CountryOfBirthOfMother, CONSYPH only
+	private String motherCitizenshipCountryLocationCode; // CountryOfNationalityOfMother, CONSYPH only
 	private List<String> siteOfInfection; // REF: AR, GEN, OTH, PH
 	private String stageSyph; // REF: I, NI
 	private String stageSyphDetailed; // REF: EL, L, LL, P, S
@@ -353,12 +350,12 @@ public class EpipulseDiseaseExportEntryDto {
 		this.addressRegionNutsCode = addressRegionNutsCode;
 	}
 
-	public String getAddressCountryNutsCode() {
-		return addressCountryNutsCode;
+	public String getAddressCountryLocationCode() {
+		return addressCountryLocationCode;
 	}
 
-	public void setAddressCountryNutsCode(String addressCountryNutsCode) {
-		this.addressCountryNutsCode = addressCountryNutsCode;
+	public void setAddressCountryLocationCode(String addressCountryLocationCode) {
+		this.addressCountryLocationCode = addressCountryLocationCode;
 	}
 
 	public String getResponsibleCommunityNutsCode() {
@@ -385,12 +382,12 @@ public class EpipulseDiseaseExportEntryDto {
 		this.responsibleRegionNutsCode = responsibleRegionNutsCode;
 	}
 
-	public String getServerCountryNutsCode() {
-		return serverCountryNutsCode;
+	public String getServerCountryLocationCode() {
+		return serverCountryLocationCode;
 	}
 
-	public void setServerCountryNutsCode(String serverCountryNutsCode) {
-		this.serverCountryNutsCode = serverCountryNutsCode;
+	public void setServerCountryLocationCode(String serverCountryLocationCode) {
+		this.serverCountryLocationCode = serverCountryLocationCode;
 	}
 
 	public CaseClassification getCaseClassification() {
@@ -885,36 +882,36 @@ public class EpipulseDiseaseExportEntryDto {
 
 	// ==================== Syphilis ====================
 
-	public String getBirthCountryNutsCode() {
-		return birthCountryNutsCode;
+	public String getBirthCountryLocationCode() {
+		return birthCountryLocationCode;
 	}
 
-	public void setBirthCountryNutsCode(String birthCountryNutsCode) {
-		this.birthCountryNutsCode = birthCountryNutsCode;
+	public void setBirthCountryLocationCode(String birthCountryLocationCode) {
+		this.birthCountryLocationCode = birthCountryLocationCode;
 	}
 
-	public String getMotherBirthCountryNutsCode() {
-		return motherBirthCountryNutsCode;
+	public String getMotherBirthCountryLocationCode() {
+		return motherBirthCountryLocationCode;
 	}
 
-	public String getCitizenshipCountryNutsCode() {
-		return citizenshipCountryNutsCode;
+	public String getCitizenshipCountryLocationCode() {
+		return citizenshipCountryLocationCode;
 	}
 
-	public void setCitizenshipCountryNutsCode(String citizenshipCountryNutsCode) {
-		this.citizenshipCountryNutsCode = citizenshipCountryNutsCode;
+	public void setCitizenshipCountryLocationCode(String citizenshipCountryLocationCode) {
+		this.citizenshipCountryLocationCode = citizenshipCountryLocationCode;
 	}
 
-	public void setMotherBirthCountryNutsCode(String motherBirthCountryNutsCode) {
-		this.motherBirthCountryNutsCode = motherBirthCountryNutsCode;
+	public void setMotherBirthCountryLocationCode(String motherBirthCountryLocationCode) {
+		this.motherBirthCountryLocationCode = motherBirthCountryLocationCode;
 	}
 
-	public String getMotherCitizenshipCountryNutsCode() {
-		return motherCitizenshipCountryNutsCode;
+	public String getMotherCitizenshipCountryLocationCode() {
+		return motherCitizenshipCountryLocationCode;
 	}
 
-	public void setMotherCitizenshipCountryNutsCode(String motherCitizenshipCountryNutsCode) {
-		this.motherCitizenshipCountryNutsCode = motherCitizenshipCountryNutsCode;
+	public void setMotherCitizenshipCountryLocationCode(String motherCitizenshipCountryLocationCode) {
+		this.motherCitizenshipCountryLocationCode = motherCitizenshipCountryLocationCode;
 	}
 
 	public List<String> getSiteOfInfection() {

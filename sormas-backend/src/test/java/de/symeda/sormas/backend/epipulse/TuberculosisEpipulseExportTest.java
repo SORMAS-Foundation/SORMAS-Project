@@ -156,7 +156,7 @@ public class TuberculosisEpipulseExportTest extends AbstractEpipulseExportTest {
 		UserDto surveillanceSupervisor = creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_SUPERVISOR);
 		fixture = fixtureFor(Disease.TUBERCULOSIS, rdcf, surveillanceSupervisor);
 
-		portugal = countryWithNutsCode("Portugal", "PRT", "PT");
+		portugal = countryWithEpipulseLocationCode("Portugal", "PRT", "PT");
 		// Reuse configured reporting-country row to avoid duplicate-NUTS false positives.
 		luxembourg = getCountryFacade().getCountryByIsoCode(SERVER_COUNTRY_ISO3);
 	}
@@ -203,7 +203,7 @@ public class TuberculosisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// Configuration-derived columns
 		expected.put(DISEASE, value("TUBE"));
 		expected.put(SUBJECT_CODE, value("TUBE"));
-		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(DATA_SOURCE, value(SERVER_DATA_SOURCE));
 		expected.put(STATUS, value("NEW/UPDATE"));
 
@@ -224,7 +224,7 @@ public class TuberculosisEpipulseExportTest extends AbstractEpipulseExportTest {
 		expected.put(BORN_REPORTING_COUNTRY, value("false"));
 		expected.put(COUNTRY_OF_BIRTH, value("PT"));
 		expected.put(NATIONALITY_REPORTING_COUNTRY, value("true"));
-		expected.put(COUNTRY_OF_NATIONALITY, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(COUNTRY_OF_NATIONALITY, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(DATE_OF_ENTRY, value("2015-03-01"));
 
 		// Clinical columns
@@ -667,15 +667,15 @@ public class TuberculosisEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	/**
-	 * Creates a reportable country row with NUTS code; required for place/origin columns.
+	 * Creates a reportable country row with an EpiPulse location code; required for place/origin columns.
 	 */
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});

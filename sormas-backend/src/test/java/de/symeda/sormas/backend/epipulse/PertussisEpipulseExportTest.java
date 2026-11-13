@@ -125,7 +125,7 @@ public class PertussisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than the case
 		assertThat(export.value(entry, DISEASE), is("PERT"));
 		assertThat(export.value(entry, SUBJECT_CODE), is("PERT"));
-		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_LOCATION_CODE));
 		assertThat(export.value(entry, DATA_SOURCE), is(SERVER_DATA_SOURCE));
 
 		// from the case record itself
@@ -145,8 +145,8 @@ public class PertussisEpipulseExportTest extends AbstractEpipulseExportTest {
 
 		// the region and district carry no NUTS code of their own, so both fall back to the
 		// server country's
-		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_NUTS_CODE));
-		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_LOCATION_CODE));
+		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_LOCATION_CODE));
 
 		// from the hospitalisation, the immunization course and the pathogen test
 		assertThat(export.value(entry, HOSPITALISATION), is("true"));

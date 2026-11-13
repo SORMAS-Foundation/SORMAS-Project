@@ -18290,4 +18290,53 @@ ALTER TABLE siteclimatereading_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (686, '#14382 - Climate feature: site climate readings');
 
+-- #14406 - EpiPulse configuration moves into diseaseconfiguration and country
+-- 1. diseaseconfiguration.epipulsesubjectcode replaces epipulse_subjectcode_configuration
+-- 2. the new country.epipulselocationcode replaces epipulse_location_configuration; country also gets
+--    iso2code (ISO 3166-1 alpha-2) and isonumericcode (ISO 3166-1 numeric, three digits)
+-- 3. diseaseconfiguration.epipulsedatasource and the system configuration value EPIPULSE_DATASOURCE replace epipulse_datasource_configuration
+-- The data of the former tables is not copied, as it is not valid or not present for every country. Instead, the EpiPulse
+-- location codes come from "Import default countries", the subject codes and data sources are entered by an admin in the
+-- disease configuration, and the value of EPIPULSE_DATASOURCE by an admin in the system configuration.
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS epipulsesubjectcode varchar(512);
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS epipulsesubjectcode varchar(512);
+
+-- EpiPulse data source per disease; empty means the system configuration value EPIPULSE_DATASOURCE is used
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS epipulsedatasource varchar(512);
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS epipulsedatasource varchar(512);
+
+-- EpiPulse data source of every disease without its own one: created empty and optional, entered by an admin, e.g.
+-- LU-SYSTEM1; the pattern allows a letter or digit, then letters, digits, spaces and @ . / _ -
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description)
+SELECT nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EPIPULSE',
+       'i18n/EpiPulse/categoryEpipulse', 'i18n/EpiPulse/categoryEpipulse'
+WHERE NOT EXISTS (SELECT 1 FROM systemconfigurationcategory WHERE name = 'EPIPULSE');
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional,
+                                     value_pattern, value_encrypt, data_provider, validation_message,
+                                     changedate, creationdate, id, uuid)
+SELECT 'EPIPULSE_DATASOURCE', '', 'i18n/infoSystemConfigurationValueDescriptionEpipulseDatasource', c.id, true,
+       '[A-Za-z0-9][A-Za-z0-9@./_ -]*', false, null, 'i18n/epipulseSettingDatasource',
+       now(), now(), nextval('entity_seq'), generate_base32_uuid()
+FROM systemconfigurationcategory c
+WHERE c.name = 'EPIPULSE'
+  AND NOT EXISTS (SELECT 1 FROM systemconfigurationvalue WHERE config_key = 'EPIPULSE_DATASOURCE');
+
+-- country codes filled by "Import default countries" from sormas_import_all_countries.csv
+ALTER TABLE country ADD COLUMN IF NOT EXISTS iso2code varchar(2);
+ALTER TABLE country_history ADD COLUMN IF NOT EXISTS iso2code varchar(2);
+ALTER TABLE country ADD COLUMN IF NOT EXISTS isonumericcode varchar(3);
+ALTER TABLE country_history ADD COLUMN IF NOT EXISTS isonumericcode varchar(3);
+ALTER TABLE country ADD COLUMN IF NOT EXISTS epipulselocationcode varchar(10);
+ALTER TABLE country_history ADD COLUMN IF NOT EXISTS epipulselocationcode varchar(10);
+
+DROP TABLE IF EXISTS epipulse_subjectcode_configuration;
+DROP TABLE IF EXISTS epipulse_subjectcode_configuration_history;
+DROP TABLE IF EXISTS epipulse_location_configuration;
+DROP TABLE IF EXISTS epipulse_location_configuration_history;
+DROP TABLE IF EXISTS epipulse_datasource_configuration;
+DROP TABLE IF EXISTS epipulse_datasource_configuration_history;
+
+INSERT INTO schema_version (version_number, comment) VALUES (687, '#14406 - EpiPulse subject codes and data sources in diseaseconfiguration, EpiPulse location, ISO2 and ISO numeric codes in country, system configuration value EPIPULSE_DATASOURCE');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

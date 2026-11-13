@@ -186,8 +186,8 @@ public class MeningococcalEpipulseExportTest extends AbstractEpipulseExportTest 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		fixture = fixtureFor(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, rdcf, creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
-		france = countryWithNutsCode("France", "FRA", "FR");
-		italy = countryWithNutsCode("Italy", "ITA", "IT");
+		france = countryWithEpipulseLocationCode("France", "FRA", "FR");
+		italy = countryWithEpipulseLocationCode("Italy", "ITA", "IT");
 	}
 
 	@Test
@@ -216,7 +216,7 @@ public class MeningococcalEpipulseExportTest extends AbstractEpipulseExportTest 
 		// from the configuration rather than the case
 		assertThat(export.value(entry, DISEASE), is("MENI"));
 		assertThat(export.value(entry, SUBJECT_CODE), is("MENI"));
-		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_LOCATION_CODE));
 		assertThat(export.value(entry, DATA_SOURCE), is(SERVER_DATA_SOURCE));
 
 		// from the case record itself
@@ -236,8 +236,8 @@ public class MeningococcalEpipulseExportTest extends AbstractEpipulseExportTest 
 		assertThat(export.value(entry, GENDER), is("F"));
 		assertThat(export.value(entry, AGE), is("33"));
 		assertThat(export.value(entry, AGE_MONTH), is(blankOrNullString()));
-		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_NUTS_CODE));
-		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_LOCATION_CODE));
+		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_LOCATION_CODE));
 
 		// from the epidemiological data
 		assertThat(export.value(entry, IMPORTED_STATUS), is("IMP"));
@@ -763,16 +763,16 @@ public class MeningococcalEpipulseExportTest extends AbstractEpipulseExportTest 
 	}
 
 	/**
-	 * Create a country with NUTS code for export reporting.
-	 * TestDataCreator doesn't set NUTS codes, making countries invisible to place columns.
+	 * Create a country with an EpiPulse location code for export reporting.
+	 * TestDataCreator doesn't set EpiPulse location codes, making countries invisible to place columns.
 	 */
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});

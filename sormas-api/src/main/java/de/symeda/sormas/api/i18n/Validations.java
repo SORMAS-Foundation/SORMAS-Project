@@ -89,6 +89,7 @@ public interface Validations {
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactFollowUpUntilDateSoftValidation = "contactFollowUpUntilDateSoftValidation";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
+	String countryNutsCodeAlreadyExists = "countryNutsCodeAlreadyExists";
 	String customizableEnumValueAllowedCharacters = "customizableEnumValueAllowedCharacters";
 	String customizableEnumValueAlreadyInUse = "customizableEnumValueAlreadyInUse";
 	String customizableEnumValueDuplicateLanguage = "customizableEnumValueDuplicateLanguage";
@@ -113,6 +114,12 @@ public interface Validations {
 	String environmentName = "environmentName";
 	String environmentSampleDateTimeAfterPathogenTestDateTime = "environmentSampleDateTimeAfterPathogenTestDateTime";
 	String environmentWaterFieldsSetWithNotWaterMedia = "environmentWaterFieldsSetWithNotWaterMedia";
+	String epipulseDatasourceRequired = "epipulseDatasourceRequired";
+	String epipulseReportingCountryMissing = "epipulseReportingCountryMissing";
+	String epipulseSettingDatasource = "epipulseSettingDatasource";
+	String epipulseSubjectCodeAggregated = "epipulseSubjectCodeAggregated";
+	String epipulseSubjectCodeMismatch = "epipulseSubjectCodeMismatch";
+	String epipulseSubjectCodeMissing = "epipulseSubjectCodeMissing";
 	String errorsInForm = "errorsInForm";
 	String event717BottleneckCategoryRequired = "event717BottleneckCategoryRequired";
 	String event717CorrectiveActionBottleneckInvalid = "event717CorrectiveActionBottleneckInvalid";

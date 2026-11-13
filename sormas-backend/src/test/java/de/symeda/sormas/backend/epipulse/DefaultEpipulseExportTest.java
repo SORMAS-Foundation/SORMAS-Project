@@ -109,7 +109,7 @@ public class DefaultEpipulseExportTest extends AbstractEpipulseExportTest {
 		var entry = export.only();
 		assertThat(export.value(entry, SUBJECT_CODE), is(SUBJECT_CODE_UNDER_TEST.name()));
 		assertThat(export.value(entry, DISEASE), is(SUBJECT_CODE_UNDER_TEST.name()));
-		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_LOCATION_CODE));
 		assertThat(export.value(entry, GENDER), is("F"));
 		assertThat(export.value(entry, NATIONAL_RECORD_ID), is(not(blankOrNullString())));
 	}

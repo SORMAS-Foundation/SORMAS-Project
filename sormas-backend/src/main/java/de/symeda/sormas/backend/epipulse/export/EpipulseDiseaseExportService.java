@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,6 +26,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,13 +75,28 @@ public class EpipulseDiseaseExportService {
 		}
 	}
 
+	/**
+	 * Stores the final status of a background export, in its own transaction. A cancelled export is not changed.
+	 *
+	 * <p>
+	 * {@code statusReason} is stored in {@code status_reason} with every update, so the reason of a failed export is shown in
+	 * its detail view, and a successful export clears an older reason.
+	 *
+	 * <p>
+	 * Example: FAILED with "No EpiPulse subject code is configured for Diphtheria…" → status FAILED and that reason;
+	 * COMPLETED with {@code null} → status COMPLETED, file data set, reason empty.
+	 *
+	 * @param statusReason
+	 *            why the export failed, in words the user understands; {@code null} for a successful export
+	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void updateStatusForBackgroundProcess(
 		String exportUuid,
 		EpipulseExportStatus newStatus,
 		Integer totalRecords,
 		String exportFileName,
-		BigDecimal exportFileSizeBytes) {
+		BigDecimal exportFileSizeBytes,
+		String statusReason) {
 
 		try {
 			// If current status is CANCELLED, do not proceed
@@ -105,6 +122,7 @@ public class EpipulseDiseaseExportService {
 			//@formatter:off
 			StringBuilder sql = new StringBuilder("UPDATE epipulse_export SET ")
                     .append("status = :status")
+                    .append(", status_reason = :statusReason")
                     .append(", status_change_date = now()")
                     .append(", changedate = now()");
             //@formatter:on
@@ -119,6 +137,8 @@ public class EpipulseDiseaseExportService {
 			sql.append(" WHERE uuid = :uuid");
 
 			Query q = em.createNativeQuery(sql.toString()).setParameter("status", newStatus.name()).setParameter("uuid", exportUuid);
+			// typed, so a null reason (successful export) is bound as text and does not fail on PostgreSQL
+			q.unwrap(NativeQuery.class).setParameter("statusReason", StringUtils.trimToNull(statusReason), StandardBasicTypes.TEXT);
 
 			// Set parameters only if status is COMPLETED
 			if (newStatus == EpipulseExportStatus.COMPLETED) {

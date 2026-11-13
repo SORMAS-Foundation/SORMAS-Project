@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -73,7 +73,7 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			+ fluidRowLocs(DiseaseConfigurationDto.USUAL_RANGE_EXCLUDED_YEARS)
 			+ loc(LOC_USUAL_RANGE_INFO);
 
-	public static final String GENERAL_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.UUID)
+	public static final String GENERAL_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.UUID, DiseaseConfigurationDto.EPIPULSE_SUBJECT_CODE, DiseaseConfigurationDto.EPIPULSE_DATASOURCE)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.ACTIVE, DiseaseConfigurationDto.PRIMARY_DISEASE, DiseaseConfigurationDto.AGGREGATE_REPORTING_ENABLED)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.CASE_SURVEILLANCE_ENABLED)
 			+ fluidRowLocs(DiseaseConfigurationDto.EXTENDED_CLASSIFICATION, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI, DiseaseConfigurationDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD)
@@ -141,6 +141,11 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		cbDisease = addDiseaseField(DiseaseConfigurationDto.DISEASE, true, false);
 		cbDisease.setStyleName(CssStyles.H3);
 		addField(generalLayout, DiseaseConfigurationDto.UUID);
+		TextField tfEpipulseSubjectCode = addField(generalLayout, DiseaseConfigurationDto.EPIPULSE_SUBJECT_CODE, TextField.class);
+		tfEpipulseSubjectCode.setNullRepresentation("");
+		TextField tfEpipulseDatasource = addField(generalLayout, DiseaseConfigurationDto.EPIPULSE_DATASOURCE, TextField.class);
+		tfEpipulseDatasource.setNullRepresentation("");
+		addInfoIcon(tfEpipulseDatasource, I18nProperties.getString(Strings.infoDiseaseConfigurationEpipulseDatasource));
 		addField(generalLayout, DiseaseConfigurationDto.ACTIVE, CheckBox.class);
 		addField(generalLayout, DiseaseConfigurationDto.PRIMARY_DISEASE, CheckBox.class);
 		cbCaseSurveillance = addField(generalLayout, DiseaseConfigurationDto.CASE_SURVEILLANCE_ENABLED, CheckBox.class);
@@ -370,6 +375,26 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		}
 
 		return StringEscapeUtils.escapeHtml4(value);
+	}
+
+	/**
+	 * Adds an info icon after the caption of {@code field} that shows {@code info} as tooltip when hovering the field, like
+	 * the info icon next to "Overwrite existing entries" in the import dialogs. The caption itself is escaped, so it is
+	 * shown as plain text.
+	 *
+	 * <p>
+	 * Example: "EpiPulse data source" → "EPIPULSE DATA SOURCE ⓘ", tooltip "EpiPulse data source of this disease's
+	 * exports…". A {@code null} field or an empty {@code info} changes nothing.
+	 */
+	private void addInfoIcon(TextField field, String info) {
+
+		if (field == null || StringUtils.isBlank(info)) {
+			return;
+		}
+
+		field.setCaptionAsHtml(true);
+		field.setCaption(escapeHtml(field.getCaption()) + " " + VaadinIcons.INFO_CIRCLE.getHtml());
+		field.setDescription(info);
 	}
 
 	@Override

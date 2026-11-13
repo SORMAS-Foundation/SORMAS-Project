@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.api.epipulse;
 
@@ -139,8 +136,8 @@ public final class EpipulseMapping {
 			entry.getAddressCommunityNutsCode(),
 			entry.getAddressDistrictNutsCode(),
 			entry.getAddressRegionNutsCode(),
-			entry.getAddressCountryNutsCode(),
-			entry.getServerCountryNutsCode());
+			entry.getAddressCountryLocationCode(),
+			entry.getServerCountryLocationCode());
 	}
 
 	/**
@@ -153,7 +150,7 @@ public final class EpipulseMapping {
 			entry.getResponsibleCommunityNutsCode(),
 			entry.getResponsibleDistrictNutsCode(),
 			entry.getResponsibleRegionNutsCode(),
-			entry.getServerCountryNutsCode());
+			entry.getServerCountryLocationCode());
 	}
 
 	// --- case ---
@@ -242,26 +239,26 @@ public final class EpipulseMapping {
 
 	// ==================== Syphilis ====================
 
-	/** {@code CountryOfBirth} as NUTS code. */
+	/** {@code CountryOfBirth} as EpiPulse location code of the country. */
 	public static String countryOfBirth(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getBirthCountryNutsCode();
+		return entry.getBirthCountryLocationCode();
 	}
 
-	/** {@code CountryOfBirthOfMother} as NUTS code. */
+	/** {@code CountryOfBirthOfMother} as EpiPulse location code of the country. */
 	public static String countryOfBirthOfMother(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getMotherBirthCountryNutsCode();
+		return entry.getMotherBirthCountryLocationCode();
 	}
 
-	/** {@code CountryOfNationality} as NUTS code. */
+	/** {@code CountryOfNationality} as EpiPulse location code of the country. */
 	public static String countryOfNationality(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getCitizenshipCountryNutsCode();
+		return entry.getCitizenshipCountryLocationCode();
 	}
 
 	/**
 	 * {@code CountryOfNationalityOfMother} from epidemiological mother-citizenship data (CONSYPH).
 	 */
 	public static String countryOfNationalityOfMother(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getMotherCitizenshipCountryNutsCode();
+		return entry.getMotherCitizenshipCountryLocationCode();
 	}
 
 	/**
@@ -885,27 +882,30 @@ public final class EpipulseMapping {
 	 * neither is known.
 	 */
 	public static String bornReportingCountry(EpipulseDiseaseExportEntryDto entry) {
-		return isReportingCountry(entry, firstPopulated(entry.getBirthCountryNutsCode(), entry.getCitizenshipCountryNutsCode()));
+		return isReportingCountry(entry, firstPopulated(entry.getBirthCountryLocationCode(), entry.getCitizenshipCountryLocationCode()));
 	}
 
 	/** {@code NationalityReportingCountry} BOOL, from citizenship alone. Unknown stays blank. */
 	public static String nationalityReportingCountry(EpipulseDiseaseExportEntryDto entry) {
-		return isReportingCountry(entry, entry.getCitizenshipCountryNutsCode());
+		return isReportingCountry(entry, entry.getCitizenshipCountryLocationCode());
 	}
 
 	/**
-	 * Compares a country NUTS code against the exporting server's own, as the two
+	 * Compares a country EpiPulse location code against the exporting server's own, as the two
 	 * {@code *ReportingCountry} booleans do.
 	 */
-	private static String isReportingCountry(EpipulseDiseaseExportEntryDto entry, String countryNutsCode) {
+	private static String isReportingCountry(EpipulseDiseaseExportEntryDto entry, String countryLocationCode) {
 
-		String reportingCountryNutsCode = entry.getServerCountryNutsCode();
+		String reportingCountryLocationCode = entry.getServerCountryLocationCode();
 
-		if (countryNutsCode == null || countryNutsCode.isEmpty() || reportingCountryNutsCode == null || reportingCountryNutsCode.isEmpty()) {
+		if (countryLocationCode == null
+			|| countryLocationCode.isEmpty()
+			|| reportingCountryLocationCode == null
+			|| reportingCountryLocationCode.isEmpty()) {
 			return "";
 		}
 
-		return String.valueOf(countryNutsCode.equals(reportingCountryNutsCode));
+		return String.valueOf(countryLocationCode.equals(reportingCountryLocationCode));
 	}
 
 	/** {@code DateOfEntry}: when a patient of foreign origin entered the reporting country. */

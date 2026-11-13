@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.importexport;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,10 +44,7 @@ import de.symeda.sormas.backend.climate.ClimateJob;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
-import de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration;
 import de.symeda.sormas.backend.epipulse.EpipulseExport;
-import de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration;
-import de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.selfreport.SelfReport;
@@ -75,9 +87,6 @@ public class DatabaseExportServiceTest {
 		SelfReport.class,
 		DocumentTemplate.class,
 		EpipulseExport.class,
-		EpipulseSubjectcodeConfiguration.class,
-		EpipulseDatasourceConfiguration.class,
-		EpipulseLocationConfiguration.class,
 		// the climate job queue holds run state, not data; its climate data is exported through the other climate tables
 		ClimateJob.class);
 

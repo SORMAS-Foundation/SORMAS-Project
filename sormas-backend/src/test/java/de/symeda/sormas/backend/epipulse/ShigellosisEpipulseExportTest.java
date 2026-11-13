@@ -164,8 +164,8 @@ public class ShigellosisEpipulseExportTest extends AbstractEpipulseExportTest {
 		UserDto surveillanceSupervisor = creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_SUPERVISOR);
 		fixture = fixtureFor(Disease.SHIGELLOSIS, rdcf, surveillanceSupervisor);
 
-		france = countryWithNutsCode("France", "FRA", "FR");
-		italy = countryWithNutsCode("Italy", "ITA", "IT");
+		france = countryWithEpipulseLocationCode("France", "FRA", "FR");
+		italy = countryWithEpipulseLocationCode("Italy", "ITA", "IT");
 	}
 
 	// ---------------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ public class ShigellosisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than from the case
 		expected.put(DISEASE, value("SHIG"));
 		expected.put(SUBJECT_CODE, value("SHIG"));
-		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(DATA_SOURCE, value(SERVER_DATA_SOURCE));
 		expected.put(STATUS, value("NEW/UPDATE"));
 
@@ -723,16 +723,16 @@ public class ShigellosisEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	/**
-	 * A country the export can report, which means one with a NUTS code -- {@code TestDataCreator}
+	 * A country the export can report, which means one with an EpiPulse location code -- {@code TestDataCreator}
 	 * does not set that column, and without it the country is invisible to every place column.
 	 */
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});

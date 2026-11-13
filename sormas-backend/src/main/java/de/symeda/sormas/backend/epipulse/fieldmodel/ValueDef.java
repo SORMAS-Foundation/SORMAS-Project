@@ -78,7 +78,7 @@ public final class ValueDef {
 	/**
 	 * DTO state from the export context, not from the row; neither SELECT nor CSV column.
 	 * 
-	 * For export-level values like the server's own NUTS code. Keeping it in the field list ensures
+	 * For export-level values like the EpiPulse location code of the server's own country. Keeping it in the field list ensures
 	 * it is declared once and cannot be forgotten.
 	 */
 	public static ValueDef contextOnly(BiConsumer<EpipulseDiseaseExportEntryDto, EpipulseRow> reader) {

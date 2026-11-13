@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.backend.epipulse.export;
 
@@ -41,7 +38,10 @@ import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportResult;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.epipulse.EpipulseExport;
 import de.symeda.sormas.backend.epipulse.EpipulseExportFacadeEjb;
@@ -87,6 +87,7 @@ public class EpipulseCsvExportOrchestrator {
 
 		EpipulseExport epipulseExport = null;
 		EpipulseExportStatus exportStatus = EpipulseExportStatus.FAILED;
+		String statusReason = null;
 		boolean shouldUpdateStatus = false;
 
 		Integer totalRecords = null;
@@ -116,7 +117,6 @@ public class EpipulseCsvExportOrchestrator {
 
 			// Load configuration
 			EpipulseExportDto exportDto = epipulseExportEjb.toEpipulseExportDto(epipulseExport);
-			String serverCountryCode = configFacadeEjb.getCountryCode();
 			String serverCountryName = configFacadeEjb.getCountryName();
 
 			// Setup file path
@@ -125,7 +125,7 @@ public class EpipulseCsvExportOrchestrator {
 			exportFilePath = generatedFilesPath + "/" + exportFileName;
 
 			// Execute disease-specific export
-			EpipulseDiseaseExportResult exportResult = exportFunction.execute(fieldModel, exportDto, serverCountryCode, serverCountryName);
+			EpipulseDiseaseExportResult exportResult = exportFunction.execute(fieldModel, exportDto, serverCountryName);
 			totalRecords = exportResult.getExportEntryList().size();
 
 			// Setup CSV writer with try-with-resources for automatic resource management
@@ -150,6 +150,7 @@ public class EpipulseCsvExportOrchestrator {
 			exportStatus = EpipulseExportStatus.COMPLETED;
 		} catch (Exception e) {
 			exportStatus = EpipulseExportStatus.FAILED;
+			statusReason = failureReason(e);
 			logger.error("Error during export with uuid {}: {}", uuid, e.getMessage(), e);
 		} finally {
 			// Cleanup of partial files when export fails
@@ -174,13 +175,44 @@ public class EpipulseCsvExportOrchestrator {
 			// Update final status
 			if (shouldUpdateStatus && epipulseExport != null) {
 				try {
-					diseaseExportService
-						.updateStatusForBackgroundProcess(epipulseExport.getUuid(), exportStatus, totalRecords, exportFileName, exportFileSizeBytes);
+					diseaseExportService.updateStatusForBackgroundProcess(
+						epipulseExport.getUuid(),
+						exportStatus,
+						totalRecords,
+						exportFileName,
+						exportFileSizeBytes,
+						exportStatus == EpipulseExportStatus.FAILED ? statusReason : null);
 				} catch (Exception e) {
 					logger.error("CRITICAL: Failed to update export status for uuid {}: {}", uuid, e.getMessage(), e);
 				}
 			}
 		}
+	}
+
+	/**
+	 * The reason shown to the user for a failed export: the message of a {@link ValidationRuntimeException} anywhere in the
+	 * cause chain of {@code e} (an incomplete configuration, e.g. a missing subject code), else a general message that
+	 * points to the server log. Technical details are only logged, never shown.
+	 *
+	 * <p>
+	 * Example: the subject code of DIPHTHERIA is missing → "No EpiPulse subject code is configured for Diphtheria. Enter it
+	 * in the disease configuration of Diphtheria…"; an SQL error → "The export failed because of an unexpected error…".
+	 */
+	private String failureReason(Throwable e) {
+
+		Throwable cause = e;
+		// limited depth, so a cause chain with a cycle cannot loop forever
+		for (int depth = 0; cause != null && depth < 20; depth++) {
+			if (cause instanceof ValidationRuntimeException && cause.getMessage() != null && !cause.getMessage().trim().isEmpty()) {
+				return cause.getMessage().trim();
+			}
+			if (cause.getCause() == cause) {
+				break;
+			}
+			cause = cause.getCause();
+		}
+
+		return I18nProperties.getString(Strings.messageEpipulseExportFailedUnexpected);
 	}
 
 	/**
@@ -196,14 +228,13 @@ public class EpipulseCsvExportOrchestrator {
 		 *            the field model that selects and reads the rows
 		 * @param dto
 		 *            the export DTO
-		 * @param countryCode
-		 *            the country code
 		 * @param countryName
-		 *            the country name
+		 *            the server country name from {@code country.name}, e.g. "Luxembourg"; only used in the message when the
+		 *            server country has no EpiPulse location code
 		 * @return the export result containing entries and max counts
 		 * @throws SQLException
 		 *             if database error occurs
 		 */
-		EpipulseDiseaseExportResult execute(FieldModel fieldModel, EpipulseExportDto dto, String countryCode, String countryName) throws SQLException;
+		EpipulseDiseaseExportResult execute(FieldModel fieldModel, EpipulseExportDto dto, String countryName) throws SQLException;
 	}
 }

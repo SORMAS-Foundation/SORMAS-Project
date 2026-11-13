@@ -170,7 +170,7 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		fixture = fixtureFor(Disease.RUBELLA, rdcf, creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
-		france = countryWithNutsCode("France", "FRA", "FR");
+		france = countryWithEpipulseLocationCode("France", "FRA", "FR");
 	}
 
 	@Test
@@ -224,7 +224,7 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than the case
 		assertThat(export.value(entry, DISEASE), is("RUBE"));
 		assertThat(export.value(entry, SUBJECT_CODE), is("RUBE"));
-		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_LOCATION_CODE));
 		assertThat(export.value(entry, DATA_SOURCE), is(SERVER_DATA_SOURCE));
 
 		// from the case record itself
@@ -250,8 +250,8 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(entry, GENDER), is("F"));
 		assertThat(export.value(entry, AGE), is("33"));
 		assertThat(export.value(entry, AGE_MONTH), is(blankOrNullString()));
-		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_NUTS_CODE));
-		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_LOCATION_CODE));
+		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_LOCATION_CODE));
 
 		// from the epidemiological data, none of which the rubella form offers today
 		assertThat(export.value(entry, CLUSTER_RELATED), is("true"));
@@ -636,13 +636,13 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		return exposure;
 	}
 
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});
