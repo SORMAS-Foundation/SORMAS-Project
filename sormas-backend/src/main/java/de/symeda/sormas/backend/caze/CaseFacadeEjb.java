@@ -1518,6 +1518,25 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
+	public CaseDataDto saveFromExternalMessage(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
+		boolean isNewGonococcalCase = dto.getDisease() == Disease.GONOCOCCAL_INFECTION && service.getByUuid(dto.getUuid()) == null;
+		CaseDataDto saved = save(dto);
+		if (!isNewGonococcalCase || saved.getCaseClassification() == dto.getCaseClassification()) {
+			return saved;
+		}
+
+		Case caze = service.getByUuid(saved.getUuid());
+		caze.setCaseClassification(dto.getCaseClassification());
+		caze.setClassificationDate(caze.getReportDate());
+		caze.setClassificationUser(caze.getReportingUser());
+		service.ensurePersisted(caze);
+		return toPseudonymizedDto(caze);
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> coreAndPersonDto) throws ValidationRuntimeException {
 		CaseDataDto caseDto = coreAndPersonDto.getCoreData();
 		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();

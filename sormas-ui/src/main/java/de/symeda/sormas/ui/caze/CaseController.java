@@ -580,6 +580,10 @@ public class CaseController {
 	}
 
 	protected CaseDataDto saveCase(CaseDataDto cazeDto) {
+		return saveCase(cazeDto, false);
+	}
+
+	private CaseDataDto saveCase(CaseDataDto cazeDto, boolean fromExternalMessage) {
 
 		if (cazeDto.getReInfection() == YesNoUnknown.NO || cazeDto.getReInfection() == YesNoUnknown.UNKNOWN) {
 			cazeDto.setPreviousInfectionDate(null);
@@ -589,7 +593,9 @@ public class CaseController {
 
 		// Compare old and new case
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
-		CaseDataDto resultDto = FacadeProvider.getCaseFacade().save(cazeDto);
+		CaseDataDto resultDto = fromExternalMessage
+			? FacadeProvider.getCaseFacade().saveFromExternalMessage(cazeDto)
+			: FacadeProvider.getCaseFacade().save(cazeDto);
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
 			// TODO would be much better to have a notification for this triggered in the backend
@@ -860,12 +866,12 @@ public class CaseController {
 						FacadeProvider.getPersonFacade().save(personDto);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						dto.setPerson(personDto.toReference());
-						saveCase(dto);
+						saveCase(dto, createdFromLabMessage);
 					} else {
 						transferDataToPerson(createForm, dbPerson);
 						FacadeProvider.getPersonFacade().save(dbPerson);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-						saveCase(dto);
+						saveCase(dto, createdFromLabMessage);
 					}
 				} else {
 					PersonDto searchedPerson = createForm.getSearchedPerson();
