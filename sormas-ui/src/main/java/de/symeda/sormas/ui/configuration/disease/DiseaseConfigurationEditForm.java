@@ -34,8 +34,12 @@ import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.RichTextArea;
@@ -54,8 +58,10 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.FormSectionAccordion;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.DiseaseConfigurationAgeGroupComponent;
 
@@ -68,6 +74,7 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	public static final String AGE_GROUP_HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.AGE_GROUPS);
 
 	private static final String LOC_USUAL_RANGE_INFO = "locUsualRangeInfo";
+	private static final String LOC_IMMUNIZATION_VALIDITY_INFO = "locImmunizationValidityInfo";
 
 	public static final String CLIMATE_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.USUAL_RANGE_EXCLUDED_YEARS)
 			+ loc(LOC_USUAL_RANGE_INFO);
@@ -80,7 +87,21 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			+ fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.FOLLOW_UP_DURATION,DiseaseConfigurationDto.CASE_FOLLOW_UP_DURATION,DiseaseConfigurationDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION)
 			+ fluidRowLocsCss(CssStyles.VSPACE_5, DiseaseConfigurationDto.INCUBATION_PERIOD_ENABLED,DiseaseConfigurationDto.IS_CONTAGIOUS)
 			+ fluidRowLocsCss(CssStyles.VSPACE_1, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, DiseaseConfigurationDto.MAX_INCUBATION_PERIOD,DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD)
-			+ fluidRowLocs(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
+		+ fluidRowLocsCss(CssStyles.VSPACE_TOP_3, LOC_IMMUNIZATION_VALIDITY_INFO)
+		+ fluidRowLocsCss(
+			CssStyles.VSPACE_5,
+			DiseaseConfigurationDto.VACCINATION_PROTECTION_REQUIRED_DOSES,
+			DiseaseConfigurationDto.VACCINATION_PROTECTION_START_OFFSET_DAYS,
+			DiseaseConfigurationDto.RECOVERY_PROTECTION_START_OFFSET_DAYS)
+		+ fluidRowLocsCss(
+			CssStyles.VSPACE_3,
+			DiseaseConfigurationDto.VACCINATION_PROTECTION_LIFELONG,
+			DiseaseConfigurationDto.RECOVERY_PROTECTION_LIFELONG)
+		+ fluidRowLocsCss(
+			CssStyles.VSPACE_5,
+			DiseaseConfigurationDto.VACCINATION_PROTECTION_DURATION_DAYS,
+			DiseaseConfigurationDto.RECOVERY_PROTECTION_DURATION_DAYS)
+		+ fluidRowLocs(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
 	//@formatter:on
 	public static final String MAIN_ACCORDION_LOC = "mainAccordionLoc";
 	private static final String LOC_DEPRECATED_VALUES_WARNING = "locDeprecatedValuesWarning";
@@ -103,6 +124,10 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	private CheckBox cbIsContagious;
 	private TextField tfMinContagiousPeriod;
 	private TextField tfMaxContagiousPeriod;
+	private CheckBox cbVaccinationProtectionLifelong;
+	private TextField tfVaccinationProtectionDurationDays;
+	private CheckBox cbRecoveryProtectionLifelong;
+	private TextField tfRecoveryProtectionDurationDays;
 
 	private CheckboxSet<ExposureCategory> exposureCategoriesField;
 	private CheckboxSet<Integer> usualRangeExcludedYearsField;
@@ -163,6 +188,14 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		cbIsContagious = addField(generalLayout, DiseaseConfigurationDto.IS_CONTAGIOUS, CheckBox.class);
 		tfMinContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, TextField.class);
 		tfMaxContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD, TextField.class);
+		addField(generalLayout, DiseaseConfigurationDto.VACCINATION_PROTECTION_REQUIRED_DOSES, TextField.class);
+		addField(generalLayout, DiseaseConfigurationDto.VACCINATION_PROTECTION_START_OFFSET_DAYS, TextField.class);
+		tfVaccinationProtectionDurationDays = addField(generalLayout, DiseaseConfigurationDto.VACCINATION_PROTECTION_DURATION_DAYS, TextField.class);
+		cbVaccinationProtectionLifelong = addField(generalLayout, DiseaseConfigurationDto.VACCINATION_PROTECTION_LIFELONG, CheckBox.class);
+		addField(generalLayout, DiseaseConfigurationDto.RECOVERY_PROTECTION_START_OFFSET_DAYS, TextField.class);
+		tfRecoveryProtectionDurationDays = addField(generalLayout, DiseaseConfigurationDto.RECOVERY_PROTECTION_DURATION_DAYS, TextField.class);
+		cbRecoveryProtectionLifelong = addField(generalLayout, DiseaseConfigurationDto.RECOVERY_PROTECTION_LIFELONG, CheckBox.class);
+		generalLayout.addComponent(createImmunizationValidityInfo(), LOC_IMMUNIZATION_VALIDITY_INFO);
 
 		deprecatedValuesWarningLabel = new Label(
 			VaadinIcons.WARNING.getHtml() + " " + I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues),
@@ -224,6 +257,9 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			Arrays.asList(Boolean.TRUE),
 			true);
 		FieldHelper.setVisibleWhen(cbIsContagious, Arrays.asList(tfMaxContagiousPeriod, tfMinContagiousPeriod), Arrays.asList(Boolean.TRUE), true);
+		FieldHelper
+			.setVisibleWhen(cbVaccinationProtectionLifelong, Arrays.asList(tfVaccinationProtectionDurationDays), Arrays.asList(Boolean.FALSE), true);
+		FieldHelper.setVisibleWhen(cbRecoveryProtectionLifelong, Arrays.asList(tfRecoveryProtectionDurationDays), Arrays.asList(Boolean.FALSE), true);
 		FieldHelper.setVisibleWhen(
 			cbCaseSurveillance,
 			Arrays.asList(
@@ -292,15 +328,18 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		int lastYear = LocalDate.now().getYear() - 1;
 		int firstYear = lastYear - historyYears + 1;
 
-		Set<Integer> ticked = usualRangeExcludedYearsField.getValue() != null ? (Set<Integer>) usualRangeExcludedYearsField.getValue() : Collections.emptySet();
+		Set<Integer> ticked =
+			usualRangeExcludedYearsField.getValue() != null ? (Set<Integer>) usualRangeExcludedYearsField.getValue() : Collections.emptySet();
 		List<Integer> excluded = ticked.stream().filter(year -> year >= firstYear && year <= lastYear).sorted().collect(Collectors.toList());
 		int remaining = historyYears - excluded.size();
 		String period = firstYear == lastYear ? String.valueOf(lastYear) : firstYear + "–" + lastYear;
 
 		if (remaining < minimumYears) {
-			usualRangeInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeNotShown), remaining, historyYears, minimumYears));
+			usualRangeInfoLabel
+				.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeNotShown), remaining, historyYears, minimumYears));
 		} else if (excluded.isEmpty()) {
-			usualRangeInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeYears), remaining, historyYears, period));
+			usualRangeInfoLabel
+				.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeYears), remaining, historyYears, period));
 		} else {
 			usualRangeInfoLabel.setValue(
 				String.format(
@@ -404,6 +443,13 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	public void attach() {
 		super.attach();
 
+		// Initialize visibility for vaccination/recovery protection duration fields
+		updateVaccinationProtectionDurationVisibility();
+		updateRecoveryProtectionDurationVisibility();
+
+		cbVaccinationProtectionLifelong.addValueChangeListener(e -> updateVaccinationProtectionDurationVisibility());
+		cbRecoveryProtectionLifelong.addValueChangeListener(e -> updateRecoveryProtectionDurationVisibility());
+
 		cbCaseSurveillance.addValueChangeListener(e -> {
 			System.out.println("not enabled" + !cbFollowUpEnabled.isEnabled());
 			System.out.println("value" + cbFollowUpEnabled.getValue());
@@ -417,5 +463,43 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 				tfEventParticipantFollowUpDuration.setEnabled(true);
 			}
 		});
+	}
+
+	/**
+	 * Heading with an info icon for the vaccination and recovery protection values: a short explanation as tooltip, the full
+	 * explanation of the quick immunization form fill-out in a popup on click.
+	 */
+	private HorizontalLayout createImmunizationValidityInfo() {
+		Label heading = new Label(I18nProperties.getString(Strings.headingDiseaseConfigurationImmunizationValidity));
+		CssStyles.style(heading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY);
+
+		Button infoButton = ButtonHelper.createIconButton(
+			null,
+			VaadinIcons.INFO_CIRCLE,
+			e -> VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(Strings.headingDiseaseConfigurationImmunizationValidity),
+				I18nProperties.getString(Strings.infoDiseaseConfigurationImmunizationValidityDetails),
+				ContentMode.HTML,
+				640),
+			ValoTheme.BUTTON_BORDERLESS,
+			ValoTheme.BUTTON_ICON_ONLY);
+		infoButton.setDescription(I18nProperties.getString(Strings.infoDiseaseConfigurationImmunizationValidity));
+
+		HorizontalLayout layout = new HorizontalLayout(heading, infoButton);
+		layout.setMargin(false);
+		layout.setSpacing(false);
+		layout.setComponentAlignment(heading, Alignment.MIDDLE_LEFT);
+		layout.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
+		return layout;
+	}
+
+	private void updateVaccinationProtectionDurationVisibility() {
+		boolean lifelong = Boolean.TRUE.equals(cbVaccinationProtectionLifelong.getValue());
+		tfVaccinationProtectionDurationDays.setVisible(!lifelong);
+	}
+
+	private void updateRecoveryProtectionDurationVisibility() {
+		boolean lifelong = Boolean.TRUE.equals(cbRecoveryProtectionLifelong.getValue());
+		tfRecoveryProtectionDurationDays.setVisible(!lifelong);
 	}
 }

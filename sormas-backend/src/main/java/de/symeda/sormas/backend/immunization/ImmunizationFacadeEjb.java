@@ -46,7 +46,6 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -97,6 +96,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -144,8 +144,6 @@ public class ImmunizationFacadeEjb
 
 	private static final String USE_DETERMINED_VACCINATION_STATUS_CONFIG_KEY = "USE_DETERMINED_VACCINATION_STATUS";
 	private static final String USE_QUICK_IMMUNIZATION_CREATION_CONFIG_KEY = "USE_QUICK_IMMUNIZATION_CREATION";
-	private static final ImmunizationValidityCalculator DEFAULT_IMMUNIZATION_VALIDITY_CALCULATOR = new DefaultImmunizationValidityCalculator();
-	private static final ImmunizationValidityCalculator LUXEMBOURG_IMMUNIZATION_VALIDITY_CALCULATOR = new LuxembourgImmunizationValidityCalculator();
 
 	@EJB
 	private DirectoryImmunizationService directoryImmunizationService;
@@ -167,6 +165,8 @@ public class ImmunizationFacadeEjb
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
@@ -545,7 +545,8 @@ public class ImmunizationFacadeEjb
 	@Override
 	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
 		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
-		return service.getEntriesList(personId, criteria.getDisease(), first, max);
+		return service
+			.getEntriesList(personId, criteria.getDisease(), criteria.getReferencePeriodFrom(), criteria.getReferencePeriodTo(), first, max);
 	}
 
 	@Override
@@ -883,11 +884,8 @@ public class ImmunizationFacadeEjb
 	}
 
 	private ImmunizationValidityCalculator getImmunizationValidityCalculator() {
-		if (CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			return LUXEMBOURG_IMMUNIZATION_VALIDITY_CALCULATOR;
-		}
-
-		return DEFAULT_IMMUNIZATION_VALIDITY_CALCULATOR;
+		// Uses the disease configuration's vaccination/recovery protection values if configured, otherwise the default behaviour
+		return new DefaultImmunizationValidityCalculator(diseaseConfigurationFacade);
 	}
 
 	@Override

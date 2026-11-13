@@ -18370,4 +18370,174 @@ DROP TABLE IF EXISTS epipulse_datasource_configuration_history;
 
 INSERT INTO schema_version (version_number, comment) VALUES (689, '#14406 - EpiPulse subject codes and data sources in diseaseconfiguration, EpiPulse location, ISO2 and ISO numeric codes in country, system configuration value EPIPULSE_DATASOURCE');
 
+-- 2026-07-31 Configurable immunization validity periods - #14416 
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS vaccinationprotectionstartoffsetdays integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS vaccinationprotectionrequireddoses integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS vaccinationprotectiondurationdays integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS vaccinationprotectionlifelong boolean;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS recoveryprotectionstartoffsetdays integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS recoveryprotectiondurationdays integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS recoveryprotectionlifelong boolean;
+
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS vaccinationprotectionstartoffsetdays integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS vaccinationprotectionrequireddoses integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS vaccinationprotectiondurationdays integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS vaccinationprotectionlifelong boolean;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS recoveryprotectionstartoffsetdays integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS recoveryprotectiondurationdays integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS recoveryprotectionlifelong boolean;
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 3,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'CORONAVIRUS';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 28,
+       vaccinationprotectionrequireddoses = 3,
+       vaccinationprotectiondurationdays = 2555,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = 0,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = true
+ WHERE disease = 'DENGUE';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 28,
+       vaccinationprotectionrequireddoses = 3,
+       vaccinationprotectiondurationdays = 3650,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'DIPHTERIA';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 1,
+       vaccinationprotectiondurationdays = 300,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'INFLUENZA';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 3,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'INVASIVE_MENINGOCOCCAL_INFECTION';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = NULL,
+       vaccinationprotectionrequireddoses = 2,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'INVASIVE_PNEUMOCOCCAL_INFECTION';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 28,
+       vaccinationprotectionrequireddoses = 3,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'MALARIA';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 2,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = true,
+       recoveryprotectionstartoffsetdays = 0,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = true
+ WHERE disease = 'MEASLES';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 3,
+       vaccinationprotectiondurationdays = 3650,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'PERTUSSIS';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 3,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'POLIO';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 2,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'RABIES';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 2,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = true,
+       recoveryprotectionstartoffsetdays = 0,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = true
+ WHERE disease = 'RUBELLA';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 14,
+       vaccinationprotectionrequireddoses = 3,
+       vaccinationprotectiondurationdays = 3650,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease IN ('NON_NEONATAL_TETANUS', 'NEONATAL_TETANUS');
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = NULL,
+       vaccinationprotectionrequireddoses = 1,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = false,
+       recoveryprotectionstartoffsetdays = NULL,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = false
+ WHERE disease = 'TUBERCULOSIS';
+
+UPDATE diseaseconfiguration
+   SET vaccinationprotectionstartoffsetdays = 10,
+       vaccinationprotectionrequireddoses = 1,
+       vaccinationprotectiondurationdays = NULL,
+       vaccinationprotectionlifelong = true,
+       recoveryprotectionstartoffsetdays = 0,
+       recoveryprotectiondurationdays = NULL,
+       recoveryprotectionlifelong = true
+ WHERE disease = 'YELLOW_FEVER';
+
+INSERT INTO schema_version (version_number, comment) VALUES (690, '#14416 - Configurable Immunization validity');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -9,6 +9,13 @@ import de.symeda.sormas.ui.immunization.components.fields.info.ImmunizationInfo;
 import de.symeda.sormas.ui.immunization.components.fields.info.InfoLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
+/**
+ * Warns the user about an existing immunization that is similar based on start and end date.
+ *
+ * @deprecated Start and end date were superseded by the validity period fields (valid from / valid until) and are no longer
+ *             shown in the immunization forms. Kept for now in case the similarity check is revised and needed again.
+ */
+@Deprecated
 public class SimilarImmunizationPopup extends VerticalLayout {
 
 	public SimilarImmunizationPopup(ImmunizationDto immunization, ImmunizationDto similarImmunization) {

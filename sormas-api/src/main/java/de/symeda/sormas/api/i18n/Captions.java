@@ -1696,7 +1696,14 @@ public interface Captions {
 	String DiseaseConfiguration_minContagiousPeriod = "DiseaseConfiguration.minContagiousPeriod";
 	String DiseaseConfiguration_minIncubationPeriod = "DiseaseConfiguration.minIncubationPeriod";
 	String DiseaseConfiguration_primaryDisease = "DiseaseConfiguration.primaryDisease";
+	String DiseaseConfiguration_recoveryProtectionDurationDays = "DiseaseConfiguration.recoveryProtectionDurationDays";
+	String DiseaseConfiguration_recoveryProtectionLifelong = "DiseaseConfiguration.recoveryProtectionLifelong";
+	String DiseaseConfiguration_recoveryProtectionStartOffsetDays = "DiseaseConfiguration.recoveryProtectionStartOffsetDays";
 	String DiseaseConfiguration_usualRangeExcludedYears = "DiseaseConfiguration.usualRangeExcludedYears";
+	String DiseaseConfiguration_vaccinationProtectionDurationDays = "DiseaseConfiguration.vaccinationProtectionDurationDays";
+	String DiseaseConfiguration_vaccinationProtectionLifelong = "DiseaseConfiguration.vaccinationProtectionLifelong";
+	String DiseaseConfiguration_vaccinationProtectionRequiredDoses = "DiseaseConfiguration.vaccinationProtectionRequiredDoses";
+	String DiseaseConfiguration_vaccinationProtectionStartOffsetDays = "DiseaseConfiguration.vaccinationProtectionStartOffsetDays";
 	String diseaseConfigurationReportingTypeFilter = "diseaseConfigurationReportingTypeFilter";
 	String diseaseVariantDetails = "diseaseVariantDetails";
 	String District = "District";
@@ -2591,6 +2598,7 @@ public interface Captions {
 	String Immunization_vaccinationInfoSource = "Immunization.vaccinationInfoSource";
 	String Immunization_vaccinations = "Immunization.vaccinations";
 	String Immunization_validFrom = "Immunization.validFrom";
+	String Immunization_validityPeriod = "Immunization.validityPeriod";
 	String Immunization_validUntil = "Immunization.validUntil";
 	String immunizationActiveImmunizations = "immunizationActiveImmunizations";
 	String immunizationAllActiveAndArchivedImmunizations = "immunizationAllActiveAndArchivedImmunizations";

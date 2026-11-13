@@ -27,11 +27,37 @@ public final class ImmunizationEntityHelper {
 	}
 
 	public static Date getDateForComparison(Immunization immunization, boolean withReportDate) {
-		return immunization.getEndDate() != null
-			? immunization.getEndDate()
-			: immunization.getStartDate() != null
-				? immunization.getStartDate()
-				: (withReportDate ? immunization.getReportDate() : immunization.getCreationDate());
+		Date periodEnd = getPeriodEnd(immunization);
+		if (periodEnd != null) {
+			return periodEnd;
+		}
+		Date periodStart = getPeriodStart(immunization);
+		if (periodStart != null) {
+			return periodStart;
+		}
+		return withReportDate ? immunization.getReportDate() : immunization.getCreationDate();
+	}
+
+	/**
+	 * Start and end date were superseded by the validity period (valid from / valid until). Legacy immunizations that have a start or
+	 * end date keep using them; all others use the validity period.
+	 */
+	public static boolean hasLegacyPeriod(Immunization immunization) {
+		return immunization.getStartDate() != null || immunization.getEndDate() != null;
+	}
+
+	/**
+	 * @return the start date for legacy immunizations, otherwise valid from. See {@link #hasLegacyPeriod(Immunization)}.
+	 */
+	public static Date getPeriodStart(Immunization immunization) {
+		return hasLegacyPeriod(immunization) ? immunization.getStartDate() : immunization.getValidFrom();
+	}
+
+	/**
+	 * @return the end date for legacy immunizations, otherwise valid until. See {@link #hasLegacyPeriod(Immunization)}.
+	 */
+	public static Date getPeriodEnd(Immunization immunization) {
+		return hasLegacyPeriod(immunization) ? immunization.getEndDate() : immunization.getValidUntil();
 	}
 
 	public static Date getVaccinationDateForComparison(Vaccination vaccination) {

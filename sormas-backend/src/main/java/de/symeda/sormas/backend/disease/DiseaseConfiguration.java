@@ -55,6 +55,13 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
 	public static final String EPIPULSE_SUBJECT_CODE = "epipulseSubjectCode";
 	public static final String EPIPULSE_DATASOURCE = "epipulseDatasource";
+	public static final String VACCINATION_PROTECTION_START_OFFSET_DAYS = "vaccinationProtectionStartOffsetDays";
+	public static final String VACCINATION_PROTECTION_REQUIRED_DOSES = "vaccinationProtectionRequiredDoses";
+	public static final String VACCINATION_PROTECTION_DURATION_DAYS = "vaccinationProtectionDurationDays";
+	public static final String VACCINATION_PROTECTION_LIFELONG = "vaccinationProtectionLifelong";
+	public static final String RECOVERY_PROTECTION_START_OFFSET_DAYS = "recoveryProtectionStartOffsetDays";
+	public static final String RECOVERY_PROTECTION_DURATION_DAYS = "recoveryProtectionDurationDays";
+	public static final String RECOVERY_PROTECTION_LIFELONG = "recoveryProtectionLifelong";
 
 	private Disease disease;
 	private String epipulseSubjectCode;
@@ -74,6 +81,13 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean isContagious;
 	private Integer minContagiousPeriod;
 	private Integer maxContagiousPeriod;
+	private Integer vaccinationProtectionStartOffsetDays;
+	private Integer vaccinationProtectionRequiredDoses;
+	private Integer vaccinationProtectionDurationDays;
+	private Boolean vaccinationProtectionLifelong;
+	private Integer recoveryProtectionStartOffsetDays;
+	private Integer recoveryProtectionDurationDays;
+	private Boolean recoveryProtectionLifelong;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
@@ -261,6 +275,69 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setMaxContagiousPeriod(Integer maxContagiousPeriod) {
 		this.maxContagiousPeriod = maxContagiousPeriod;
+	}
+
+	@Column
+	public Integer getVaccinationProtectionStartOffsetDays() {
+		return vaccinationProtectionStartOffsetDays;
+	}
+
+	public void setVaccinationProtectionStartOffsetDays(Integer vaccinationProtectionStartOffsetDays) {
+		this.vaccinationProtectionStartOffsetDays = vaccinationProtectionStartOffsetDays;
+	}
+
+	@Column
+	public Integer getVaccinationProtectionRequiredDoses() {
+		return vaccinationProtectionRequiredDoses;
+	}
+
+	public void setVaccinationProtectionRequiredDoses(Integer vaccinationProtectionRequiredDoses) {
+		this.vaccinationProtectionRequiredDoses = vaccinationProtectionRequiredDoses;
+	}
+
+	@Column
+	public Integer getVaccinationProtectionDurationDays() {
+		return vaccinationProtectionDurationDays;
+	}
+
+	public void setVaccinationProtectionDurationDays(Integer vaccinationProtectionDurationDays) {
+		this.vaccinationProtectionDurationDays = vaccinationProtectionDurationDays;
+	}
+
+	@Column
+	public Boolean getVaccinationProtectionLifelong() {
+		return vaccinationProtectionLifelong;
+	}
+
+	public void setVaccinationProtectionLifelong(Boolean vaccinationProtectionLifelong) {
+		this.vaccinationProtectionLifelong = vaccinationProtectionLifelong;
+	}
+
+	@Column
+	public Integer getRecoveryProtectionStartOffsetDays() {
+		return recoveryProtectionStartOffsetDays;
+	}
+
+	public void setRecoveryProtectionStartOffsetDays(Integer recoveryProtectionStartOffsetDays) {
+		this.recoveryProtectionStartOffsetDays = recoveryProtectionStartOffsetDays;
+	}
+
+	@Column
+	public Integer getRecoveryProtectionDurationDays() {
+		return recoveryProtectionDurationDays;
+	}
+
+	public void setRecoveryProtectionDurationDays(Integer recoveryProtectionDurationDays) {
+		this.recoveryProtectionDurationDays = recoveryProtectionDurationDays;
+	}
+
+	@Column
+	public Boolean getRecoveryProtectionLifelong() {
+		return recoveryProtectionLifelong;
+	}
+
+	public void setRecoveryProtectionLifelong(Boolean recoveryProtectionLifelong) {
+		this.recoveryProtectionLifelong = recoveryProtectionLifelong;
 	}
 
 	@Column
