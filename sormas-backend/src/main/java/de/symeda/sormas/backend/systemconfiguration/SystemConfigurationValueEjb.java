@@ -41,6 +41,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,6 +136,13 @@ public class SystemConfigurationValueEjb
 
         return configurationValuesByKey.get(key);
     }
+
+	@Override
+	@PermitAll
+	public String getValueOrDefaultTo(String key, String defaultValue) {
+		String value = getValue(key);
+		return StringUtils.isNotBlank(value) ? value : defaultValue;
+	}
 
     @PermitAll
     public boolean exists(final String key) {

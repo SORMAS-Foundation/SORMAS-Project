@@ -44,7 +44,7 @@
     padding: 12px 16px;
   }
 
-  // Climate dashboard: a filled card where the chart would be, until a region is chosen or something is ticked
+  // Climate dashboard: a filled card where the chart would be, until a region is chosen or a disease added
   .climate-dashboard-empty {
     background: #f2f6fb;
     border-radius: 6px;
@@ -69,6 +69,32 @@
   .climate-dashboard-note {
     font-size: 12px;
     margin-top: 4px;
+  }
+
+  // Climate dashboard disease picker (decision 146): the chosen diseases under the dropdown, one per line, each with a
+  // small remove button right after the name (decision 149); a long name wraps and the button follows its end
+  .climate-disease-picker .climate-disease-chosen {
+    min-height: 26px;
+  }
+  .climate-disease-picker .climate-disease-chosen:first-child {
+    margin-top: 4px;
+  }
+  .climate-disease-picker .climate-disease-chosen > .v-label {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: calc(100% - 32px);
+    white-space: normal;
+  }
+  .climate-disease-picker .climate-disease-chosen > .v-button-icon-only {
+    vertical-align: middle;
+    height: 26px;
+    width: 26px;
+    padding: 0;
+    margin-left: 4px;
+    color: #777777;
+  }
+  .climate-disease-picker .climate-disease-chosen > .v-button-icon-only:hover {
+    color: #222222;
   }
 
   // icons for rainfall, temperature and humidity (ClimateIcon): each drawing is a mask filled with the CSS color,

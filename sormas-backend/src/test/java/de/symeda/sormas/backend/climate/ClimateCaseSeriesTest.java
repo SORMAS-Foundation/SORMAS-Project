@@ -136,6 +136,11 @@ class ClimateCaseSeriesTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void testConfirmedCasesByDefault() {
+		assertEquals(ClimateCaseClassificationFilter.CONFIRMED, new ClimateCaseCriteria().getClassification(), "decision 145");
+	}
+
+	@Test
 	void testUsualRangeGuardrails() {
 
 		createReferenceCases(Disease.DENGUE, 5);
@@ -193,7 +198,11 @@ class ClimateCaseSeriesTest extends AbstractBeanTest {
 	}
 
 	private ClimateCaseCriteria criteria() {
-		return new ClimateCaseCriteria().region(rdcf.region).weeks(target, target).diseases(Collections.singletonList(Disease.DENGUE));
+		// these tests count every case but not a case, and check the confirmed filter on its own
+		return new ClimateCaseCriteria().region(rdcf.region)
+			.weeks(target, target)
+			.diseases(Collections.singletonList(Disease.DENGUE))
+			.classification(ClimateCaseClassificationFilter.ALL_BUT_NOT_A_CASE);
 	}
 
 	private void createCases(Disease disease, EpiWeek week, int count, TestDataCreator.RDCF place) {

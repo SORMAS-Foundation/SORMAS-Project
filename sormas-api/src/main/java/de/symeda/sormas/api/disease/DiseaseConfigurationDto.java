@@ -53,7 +53,6 @@ public class DiseaseConfigurationDto extends EntityDto {
 	public static final String AGE_GROUPS = "ageGroups";
 	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
 	public static final String EXPOSURE_CATEGORIES = "exposureCategories";
-	public static final String CLIMATE_SENSITIVE = "climateSensitive";
 	public static final String USUAL_RANGE_EXCLUDED_YEARS = "usualRangeExcludedYears";
 	public static final String EPIPULSE_SUBJECT_CODE = "epipulseSubjectCode";
 	public static final String EPIPULSE_DATASOURCE = "epipulseDatasource";
@@ -90,8 +89,6 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	private Set<ExposureCategory> exposureCategories;
 
-	/** Whether the disease appears on the Climate dashboard; empty means the default list in ClimateConfiguration. */
-	private Boolean climateSensitive;
 	/** Epidemic years left out of the case usual range on the Climate dashboard. */
 	private Set<Integer> usualRangeExcludedYears;
 
@@ -277,14 +274,6 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	public void setMaxContagiousPeriod(Integer maxContagiousPeriod) {
 		this.maxContagiousPeriod = maxContagiousPeriod;
-	}
-
-	public Boolean getClimateSensitive() {
-		return climateSensitive;
-	}
-
-	public void setClimateSensitive(Boolean climateSensitive) {
-		this.climateSensitive = climateSensitive;
 	}
 
 	public Set<Integer> getUsualRangeExcludedYears() {

@@ -40,7 +40,8 @@ public class ClimateCaseCriteria extends BaseCriteria {
 	private EpiWeek fromWeek;
 	private EpiWeek toWeek;
 	private List<Disease> diseases = new ArrayList<>();
-	private ClimateCaseClassificationFilter classification = ClimateCaseClassificationFilter.ALL_BUT_NOT_A_CASE;
+	// confirmed cases by default, as on the dashboard (decision 145)
+	private ClimateCaseClassificationFilter classification = ClimateCaseClassificationFilter.CONFIRMED;
 	private boolean includeDistricts;
 
 	@IgnoreForUrl

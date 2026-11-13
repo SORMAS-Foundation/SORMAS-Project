@@ -1005,6 +1005,7 @@ public interface Captions {
 	String ClimateDailyExport_temperatureP50 = "ClimateDailyExport.temperatureP50";
 	String ClimateDailyExport_temperatureP90 = "ClimateDailyExport.temperatureP90";
 	String climateDailyValues = "climateDailyValues";
+	String climateDashboardAddDisease = "climateDashboardAddDisease";
 	String climateDashboardChart = "climateDashboardChart";
 	String climateDashboardClassification = "climateDashboardClassification";
 	String climateDashboardClimate = "climateDashboardClimate";
@@ -1042,6 +1043,7 @@ public interface Captions {
 	String climateDashboardMeasureCount = "climateDashboardMeasureCount";
 	String climateDashboardMeasureIncidence = "climateDashboardMeasureIncidence";
 	String climateDashboardPlacePeriodDiseases = "climateDashboardPlacePeriodDiseases";
+	String climateDashboardRemoveDisease = "climateDashboardRemoveDisease";
 	String climateDashboardShade = "climateDashboardShade";
 	String climateDashboardShadeNone = "climateDashboardShadeNone";
 	String climateDashboardTo = "climateDashboardTo";
@@ -1677,7 +1679,6 @@ public interface Captions {
 	String DiseaseConfiguration_automaticSampleAssignmentThreshold = "DiseaseConfiguration.automaticSampleAssignmentThreshold";
 	String DiseaseConfiguration_caseFollowUpDuration = "DiseaseConfiguration.caseFollowUpDuration";
 	String DiseaseConfiguration_caseSurveillanceEnabled = "DiseaseConfiguration.caseSurveillanceEnabled";
-	String DiseaseConfiguration_climateSensitive = "DiseaseConfiguration.climateSensitive";
 	String DiseaseConfiguration_disease = "DiseaseConfiguration.disease";
 	String DiseaseConfiguration_epipulseDatasource = "DiseaseConfiguration.epipulseDatasource";
 	String DiseaseConfiguration_epipulseSubjectCode = "DiseaseConfiguration.epipulseSubjectCode";
@@ -1967,6 +1968,7 @@ public interface Captions {
 	String event717AssessedEvents = "event717AssessedEvents";
 	String Event717Assessment = "Event717Assessment";
 	String Event717Assessment_applicable = "Event717Assessment.applicable";
+	String Event717Assessment_assessedEventStatus = "Event717Assessment.assessedEventStatus";
 	String Event717Assessment_bottlenecks = "Event717Assessment.bottlenecks";
 	String Event717Assessment_caseManagementDate = "Event717Assessment.caseManagementDate";
 	String Event717Assessment_caseManagementNarrative = "Event717Assessment.caseManagementNarrative";
@@ -2045,6 +2047,7 @@ public interface Captions {
 	String Event717Export_responseStatus = "Event717Export.responseStatus";
 	String Event717Export_riskCommunicationDays = "Event717Export.riskCommunicationDays";
 	String event717ExportSummary = "event717ExportSummary";
+	String Event717Index_assessedEventStatus = "Event717Index.assessedEventStatus";
 	String Event717Index_caseManagementDays = "Event717Index.caseManagementDays";
 	String Event717Index_community = "Event717Index.community";
 	String Event717Index_coordinationDays = "Event717Index.coordinationDays";
@@ -2055,6 +2058,7 @@ public interface Captions {
 	String Event717Index_district = "Event717Index.district";
 	String Event717Index_epiAnalysisDays = "Event717Index.epiAnalysisDays";
 	String Event717Index_eventDisease = "Event717Index.eventDisease";
+	String Event717Index_eventStatus = "Event717Index.eventStatus";
 	String Event717Index_eventTitle = "Event717Index.eventTitle";
 	String Event717Index_eventUuid = "Event717Index.eventUuid";
 	String Event717Index_investigationDays = "Event717Index.investigationDays";
@@ -2390,6 +2394,29 @@ public interface Captions {
 	String externalMessageRelatedEntriesFound = "externalMessageRelatedEntriesFound";
 	String externalMessagesList = "externalMessagesList";
 	String externalMessageValueNotSpecified = "externalMessageValueNotSpecified";
+	String externalPersonData = "externalPersonData";
+	String externalPersonDataCurrentValue = "externalPersonDataCurrentValue";
+	String externalPersonDataProviderValue = "externalPersonDataProviderValue";
+	String externalPersonLinkNationalHealthId = "externalPersonLinkNationalHealthId";
+	String ExternalPersons_ageFrom = "ExternalPersons.ageFrom";
+	String ExternalPersons_ageTo = "ExternalPersons.ageTo";
+	String ExternalPersons_alive = "ExternalPersons.alive";
+	String ExternalPersons_birthDate = "ExternalPersons.birthDate";
+	String ExternalPersons_birthYearFrom = "ExternalPersons.birthYearFrom";
+	String ExternalPersons_birthYearTo = "ExternalPersons.birthYearTo";
+	String ExternalPersons_countryOfResidence = "ExternalPersons.countryOfResidence";
+	String ExternalPersons_firstName = "ExternalPersons.firstName";
+	String ExternalPersons_lastName = "ExternalPersons.lastName";
+	String ExternalPersons_livingStatus = "ExternalPersons.livingStatus";
+	String ExternalPersons_localityOfResidence = "ExternalPersons.localityOfResidence";
+	String ExternalPersons_municipalityOfResidence = "ExternalPersons.municipalityOfResidence";
+	String ExternalPersons_nationalHealthId = "ExternalPersons.nationalHealthId";
+	String ExternalPersons_sex = "ExternalPersons.sex";
+	String externalPersonsGoBackToList = "externalPersonsGoBackToList";
+	String externalPersonsResetMaximalCriteria = "externalPersonsResetMaximalCriteria";
+	String externalPersonsResetMinimalCriteria = "externalPersonsResetMinimalCriteria";
+	String externalPersonsSearchByHealthId = "externalPersonsSearchByHealthId";
+	String externalPersonsShowMoreFilters = "externalPersonsShowMoreFilters";
 	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
 	String ExternalSurveillanceToolGateway_excludeAndSend = "ExternalSurveillanceToolGateway.excludeAndSend";
@@ -2607,6 +2634,7 @@ public interface Captions {
 	String includePartialBirthdates = "includePartialBirthdates";
 	String info = "info";
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
+	String integrateExternalPersonData = "integrateExternalPersonData";
 	String lastName = "lastName";
 	String latestPathogenTest = "latestPathogenTest";
 	String lineListing = "lineListing";
@@ -2674,6 +2702,7 @@ public interface Captions {
 	String mainMenuEnvironments = "mainMenuEnvironments";
 	String mainMenuEvents = "mainMenuEvents";
 	String mainMenuExternalMessages = "mainMenuExternalMessages";
+	String mainMenuExternalPersons = "mainMenuExternalPersons";
 	String mainMenuImmunizations = "mainMenuImmunizations";
 	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
@@ -3640,6 +3669,7 @@ public interface Captions {
 	String Symptoms_lymphadenopathy = "Symptoms.lymphadenopathy";
 	String Symptoms_lymphadenopathyAxillary = "Symptoms.lymphadenopathyAxillary";
 	String Symptoms_lymphadenopathyCervical = "Symptoms.lymphadenopathyCervical";
+	String Symptoms_lymphadenopathyCervical_RUBELLA = "Symptoms.lymphadenopathyCervical.RUBELLA";
 	String Symptoms_lymphadenopathyInguinal = "Symptoms.lymphadenopathyInguinal";
 	String Symptoms_lymphadenopathyRetroauricular = "Symptoms.lymphadenopathyRetroauricular";
 	String Symptoms_lymphadenopathySuboccipital = "Symptoms.lymphadenopathySuboccipital";
@@ -3699,7 +3729,9 @@ public interface Captions {
 	String Symptoms_otherMajorSiteDetails = "Symptoms.otherMajorSiteDetails";
 	String Symptoms_otherMinorSiteDetails = "Symptoms.otherMinorSiteDetails";
 	String Symptoms_otherNeurologicalSymptoms = "Symptoms.otherNeurologicalSymptoms";
+	String Symptoms_otherNeurologicalSymptoms_RUBELLA = "Symptoms.otherNeurologicalSymptoms.RUBELLA";
 	String Symptoms_otherNeurologicalSymptomsText = "Symptoms.otherNeurologicalSymptomsText";
+	String Symptoms_otherNeurologicalSymptomsText_RUBELLA = "Symptoms.otherNeurologicalSymptomsText.RUBELLA";
 	String Symptoms_otherNonHemorrhagicSymptoms = "Symptoms.otherNonHemorrhagicSymptoms";
 	String Symptoms_otherNonHemorrhagicSymptomsText = "Symptoms.otherNonHemorrhagicSymptomsText";
 	String Symptoms_otitisMedia = "Symptoms.otitisMedia";
@@ -4211,6 +4243,8 @@ public interface Captions {
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
+	String View_externalPersons = "View.externalPersons";
+	String View_externalPersons_data = "View.externalPersons.data";
 	String View_groups = "View.groups";
 	String View_immunizations = "View.immunizations";
 	String View_messages = "View.messages";

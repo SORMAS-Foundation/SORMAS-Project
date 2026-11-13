@@ -175,6 +175,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final DistrictReferenceDto userDistrict;
 	private final List<EpiWeek> offeredWeeks;
 	private final List<Disease> offeredDiseases;
+	/** The offered diseases without case surveillance, counted from their lab-confirmed aggregate reports (decision 147). */
+	private final Set<Disease> aggregateDiseases;
 
 	private final ComboBox<RegionReferenceDto> regionFilter = new ComboBox<>();
 	private final ComboBox<DistrictReferenceDto> districtFilter = new ComboBox<>();
@@ -184,12 +186,13 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	private final Label emptyCard = new Label();
 	private final VerticalLayout content = new VerticalLayout();
 	private final RadioButtonGroup<View> viewGroup = new RadioButtonGroup<>();
-	private final CheckBoxGroup<Disease> diseaseGroup = new CheckBoxGroup<>();
+	private final ClimateDiseasePicker diseasePicker = new ClimateDiseasePicker();
 	private final CheckBoxGroup<ClimateVariable> climateGroup = new CheckBoxGroup<>();
 	private final ComboBox<ClimateVariable> shadeSelect = new ComboBox<>();
 	private final RadioButtonGroup<Measure> measureGroup = new RadioButtonGroup<>();
 	private final Slider lagSlider = new Slider(0, MAX_LAG);
 	private final Label jurisdictionNote = note(Strings.climateDashboardJurisdiction);
+	private final Label classificationNote = note(null);
 	private final Label diseaseNote = note(null);
 	private final Label shadeNote = note(null);
 	private final Label measureNote = note(null);
@@ -222,13 +225,15 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		userRegion = user != null ? user.getRegion() : null;
 		userDistrict = user != null && userRegion != null ? user.getDistrict() : null;
 		offeredWeeks = offeredWeeks(new Date());
-		Set<Disease> climateSensitive = new LinkedHashSet<>(FacadeProvider.getDiseaseConfigurationFacade().getAllClimateSensitiveDiseases());
+		// every active disease with case surveillance or aggregate reporting, no climate-sensitive flag (decisions 146, 147)
 		offeredDiseases = FacadeProvider.getDiseaseConfigurationFacade()
-			.getAllDiseases(true, null, true)
+			.getAllDiseases(true, null, true, true)
 			.stream()
-			.filter(climateSensitive::contains)
 			.sorted(Comparator.comparing(Disease::toString, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
+		aggregateDiseases = offeredDiseases.stream()
+			.filter(disease -> !FacadeProvider.getDiseaseConfigurationFacade().isCaseSurveillanceEnabled(disease))
+			.collect(Collectors.toSet());
 
 		// 8 columns of chart and 4 of cards, as on the environment Climate data tab, capped at 1600 px instead of its 1280 px
 		// and left-aligned like it (climate.scss, decision 140), so a 5-year chart has room without stretching on large
@@ -312,6 +317,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		classificationFilter.setCaption(I18nProperties.getCaption(Captions.climateDashboardClassification));
 		classificationFilter.setItems(ClimateCaseClassificationFilter.values());
 		classificationFilter.setEmptySelectionAllowed(false);
+		// the classification applies only to diseases counted from cases (decision 147)
+		if (!aggregateDiseases.isEmpty()) {
+			setNote(classificationNote, I18nProperties.getString(Strings.climateDashboardClassificationNote));
+		}
 
 		for (ComboBox<EpiWeek> weekFilter : Arrays.asList(fromFilter, toFilter)) {
 			weekFilter.setItems(offeredWeeks);
@@ -338,16 +347,16 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		HorizontalLayout buttons = new HorizontalLayout(applyButton, resetButton);
 		buttons.setMargin(false);
 
-		// the diseases are chosen with the place and period, none ticked at first; the chart needs at least one (decision 137)
-		diseaseGroup.setCaption(I18nProperties.getCaption(Captions.climateDashboardDiseases));
-		diseaseGroup.setItems(offeredDiseases);
-		// one checkbox per line (decision 136)
-		diseaseGroup.setItemEnabledProvider(disease -> diseaseGroup.getValue().contains(disease) || diseaseGroup.getValue().size() < diseaseCap());
-		// kept with its caption when no disease is marked, so the note sits where the checkboxes would be (decision 138)
-		diseaseGroup.addStyleName(CssStyles.VSPACE_NONE);
-		diseaseGroup.addValueChangeListener(e -> {
-			// the cap is shown by disabling the other boxes, so the provider is asked again after each change
-			diseaseGroup.getDataProvider().refreshAll();
+		// the diseases are chosen with the place and period, none at first; the chart needs at least one (decision 137), picked
+		// in a dropdown with only the chosen ones listed under it, so the card stays short (decision 146)
+		diseasePicker.setCaption(I18nProperties.getCaption(Captions.climateDashboardDiseases));
+		diseasePicker.setWidthFull();
+		// a disease without case surveillance is marked, since its counts are lab-confirmed aggregate reports (decision 147)
+		diseasePicker.setItemCaptionGenerator(this::diseaseCaption);
+		diseasePicker.setItems(offeredDiseases);
+		diseasePicker.setCap(diseaseCap());
+		diseasePicker.addStyleName(CssStyles.VSPACE_NONE);
+		diseasePicker.addValueChangeListener(e -> {
 			updateDiseaseNote();
 			// once applied, a tick takes effect at once, without Apply
 			if (!updating && selection != null) {
@@ -358,19 +367,26 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		updateDiseaseNote();
 
 		filterCard.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.SIDE_COMPONENT_FLUID);
-		filterCard.addComponent(stack(regionFilter, districtFilter, classificationFilter, weeks, withNote(diseaseGroup, diseaseNote), buttons, jurisdictionNote));
+		filterCard.addComponent(stack(
+				regionFilter,
+				districtFilter,
+				withNote(classificationFilter, classificationNote),
+				weeks,
+				withNote(diseasePicker, diseaseNote),
+				buttons,
+				jurisdictionNote));
 		return filterCard;
 	}
 
 	/**
-	 * Says under the diseases why none can be ticked, or that the view's cap is reached.
+	 * Says under the diseases why none can be chosen, or that the view's cap is reached.
 	 */
 	private void updateDiseaseNote() {
 		setNote(
 			diseaseNote,
 			offeredDiseases.isEmpty()
 				? I18nProperties.getString(Strings.climateDashboardNoDiseases)
-				: diseaseGroup.getValue().size() >= diseaseCap()
+				: diseasePicker.getValue().size() >= diseaseCap()
 					? String.format(I18nProperties.getString(Strings.climateDashboardDiseaseCap), diseaseCap())
 					: null);
 	}
@@ -391,10 +407,11 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			}
 			updating = true;
 			try {
-				// back to separate panels with more ticked than the cap: the first 4 stay
-				List<Disease> kept = offeredDiseases.stream().filter(diseaseGroup.getValue()::contains).limit(diseaseCap()).collect(Collectors.toList());
-				diseaseGroup.setValue(new LinkedHashSet<>(kept));
-				diseaseGroup.getDataProvider().refreshAll();
+				// back to separate panels with more chosen than the cap: the first 4 stay
+				List<Disease> kept = offeredDiseases.stream().filter(diseasePicker.getValue()::contains).limit(diseaseCap()).collect(Collectors.toList());
+				diseasePicker.setValue(new LinkedHashSet<>(kept));
+				diseasePicker.setCap(diseaseCap());
+				updateDiseaseNote();
 			} finally {
 				updating = false;
 			}
@@ -456,6 +473,15 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	/**
+	 * @return the disease's name, with "(aggregate)" for a disease counted from its aggregate reports (decision 147)
+	 */
+	String diseaseCaption(Disease disease) {
+		return aggregateDiseases.contains(disease)
+			? String.format(I18nProperties.getString(Strings.climateDashboardDiseaseAggregate), disease.toString())
+			: disease.toString();
+	}
+
+	/**
 	 * @return the control with its note right under it
 	 */
 	private static VerticalLayout withNote(Component control, Label note) {
@@ -489,8 +515,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	/**
-	 * Sets the filters to their defaults: the user's region and district (fixed when their jurisdiction sets them), all
-	 * but not a case, and the last 52 complete weeks.
+	 * Sets the filters to their defaults: the user's region and district (fixed when their jurisdiction sets them), confirmed
+	 * cases only, and the last 52 complete weeks.
 	 */
 	void resetFilters() {
 
@@ -500,7 +526,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 			regionFilter.setEnabled(userRegion == null);
 			districtFilter.setValue(userDistrict);
 			districtFilter.setEnabled(userDistrict == null);
-			classificationFilter.setValue(ClimateCaseClassificationFilter.ALL_BUT_NOT_A_CASE);
+			// confirmed cases by default (decision 145)
+			classificationFilter.setValue(ClimateCaseClassificationFilter.CONFIRMED);
 			// offeredWeeks.get(0) is the current week, not yet complete
 			EpiWeek to = offeredWeeks.get(1);
 			toFilter.setValue(to);
@@ -607,7 +634,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		if (selection == null) {
 			return;
 		}
-		// no chart, display controls or export until a disease is ticked (decision 137)
+		// no chart, display controls or export until a disease is chosen (decision 137)
 		if (selectedDiseases().isEmpty()) {
 			showChart(false, offeredDiseases.isEmpty() ? Strings.climateDashboardNoDiseases : Strings.climateDashboardChooseDisease);
 			return;
@@ -682,7 +709,7 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	/**
-	 * @return the export rows for the applied filters and the ticked diseases, or none before a region is applied
+	 * @return the export rows for the applied filters and the chosen diseases, or none before a region is applied
 	 */
 	List<ClimateDashboardExportDto> getExportRows() {
 		if (selection == null) {
@@ -727,10 +754,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 	}
 
 	/**
-	 * @return the ticked diseases, in the order they are offered
+	 * @return the chosen diseases, in the order they are offered
 	 */
 	List<Disease> selectedDiseases() {
-		return offeredDiseases.stream().filter(diseaseGroup.getValue()::contains).limit(diseaseCap()).collect(Collectors.toList());
+		return offeredDiseases.stream().filter(diseasePicker.getValue()::contains).limit(diseaseCap()).collect(Collectors.toList());
 	}
 
 	private List<ClimateCaseSeriesDto> selectedCaseSeries() {
@@ -751,6 +778,10 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		return districtFilter;
 	}
 
+	ComboBox<ClimateCaseClassificationFilter> getClassificationFilter() {
+		return classificationFilter;
+	}
+
 	ComboBox<EpiWeek> getFromFilter() {
 		return fromFilter;
 	}
@@ -763,8 +794,8 @@ public class ClimateDashboardLayout extends VerticalLayout {
 		return viewGroup;
 	}
 
-	CheckBoxGroup<Disease> getDiseaseGroup() {
-		return diseaseGroup;
+	ClimateDiseasePicker getDiseasePicker() {
+		return diseasePicker;
 	}
 
 	CheckBoxGroup<ClimateVariable> getClimateGroup() {

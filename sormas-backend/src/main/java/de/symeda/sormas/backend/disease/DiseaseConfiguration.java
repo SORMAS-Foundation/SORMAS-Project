@@ -82,7 +82,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	private Set<ExposureCategory> exposureCategories;
 
-	private Boolean climateSensitive;
 	private Set<Integer> usualRangeExcludedYears;
 
 	public static DiseaseConfiguration build(Disease disease) {
@@ -309,18 +308,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setExposureCategories(Set<ExposureCategory> exposureCategories) {
 		this.exposureCategories = exposureCategories;
-	}
-
-	/**
-	 * Whether the disease appears on the Climate dashboard; null means the default list in ClimateConfiguration.
-	 */
-	@Column
-	public Boolean getClimateSensitive() {
-		return climateSensitive;
-	}
-
-	public void setClimateSensitive(Boolean climateSensitive) {
-		this.climateSensitive = climateSensitive;
 	}
 
 	/**

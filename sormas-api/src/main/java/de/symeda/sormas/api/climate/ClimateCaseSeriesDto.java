@@ -39,6 +39,7 @@ public class ClimateCaseSeriesDto implements Serializable {
 	public static final int RECENT_WEEKS = 4;
 
 	private final Disease disease;
+	private final ClimateCaseCountSource countSource;
 	private final RegionReferenceDto region;
 	private final DistrictReferenceDto district;
 	private final Integer population;
@@ -54,6 +55,7 @@ public class ClimateCaseSeriesDto implements Serializable {
 
 	public ClimateCaseSeriesDto(
 		Disease disease,
+		ClimateCaseCountSource countSource,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		Integer population,
@@ -65,6 +67,7 @@ public class ClimateCaseSeriesDto implements Serializable {
 		List<ClimateCaseWeekDto> weeks) {
 
 		this.disease = disease;
+		this.countSource = countSource;
 		this.region = region;
 		this.district = district;
 		this.population = population;
@@ -78,6 +81,13 @@ public class ClimateCaseSeriesDto implements Serializable {
 
 	public Disease getDisease() {
 		return disease;
+	}
+
+	/**
+	 * @return what is counted: cases, or lab-confirmed aggregate reports for a disease without case surveillance (decision 147)
+	 */
+	public ClimateCaseCountSource getCountSource() {
+		return countSource;
 	}
 
 	public RegionReferenceDto getRegion() {
@@ -131,7 +141,8 @@ public class ClimateCaseSeriesDto implements Serializable {
 	}
 
 	/**
-	 * @return the reference years the usual range comes from: those with cases of the disease, excluded years left out
+	 * @return the reference years the usual range comes from: those with cases of the disease (or aggregate reports, for a
+	 *         disease counted from them), excluded years left out
 	 */
 	public List<Integer> getYearsWithCases() {
 		return Collections.unmodifiableList(yearsWithCases);

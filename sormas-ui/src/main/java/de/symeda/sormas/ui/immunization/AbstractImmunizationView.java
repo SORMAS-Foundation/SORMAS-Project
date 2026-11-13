@@ -28,6 +28,7 @@ import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.externalpersondata.ExternalPersonDataComponent;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.contact.ContactDataView;
@@ -126,6 +127,10 @@ public abstract class AbstractImmunizationView extends AbstractEditAllowedDetail
 
 		menu.addView(ImmunizationDataView.VIEW_NAME, I18nProperties.getCaption(ImmunizationDto.I18N_PREFIX), params);
 		menu.addView(ImmunizationPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.PERSON), params);
+
+		if (ExternalPersonDataComponent.isAvailable()) {
+			menu.addView(ImmunizationExternalPersonDataView.VIEW_NAME, I18nProperties.getCaption(Captions.externalPersonData), params);
+		}
 
 		setMainHeaderComponent(ControllerProvider.getImmunizationController().getImmunizationViewTitleLayout(getReference().getUuid()));
 	}

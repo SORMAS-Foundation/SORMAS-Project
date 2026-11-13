@@ -7694,6 +7694,7 @@ paths:
                   - EXTERNAL_MESSAGE_LABORATORY_DELETE
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
                   - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
+                  - EXTERNAL_PERSON_DATA_PROVIDER_ACCESS
                   - SURVEY_VIEW
                   - SURVEY_CREATE
                   - SURVEY_EDIT
@@ -7970,6 +7971,7 @@ paths:
                   - EXTERNAL_MESSAGE_LABORATORY_DELETE
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
                   - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
+                  - EXTERNAL_PERSON_DATA_PROVIDER_ACCESS
                   - SURVEY_VIEW
                   - SURVEY_CREATE
                   - SURVEY_EDIT
@@ -15481,8 +15483,6 @@ components:
         changeDate:
           type: string
           format: date-time
-        climateSensitive:
-          type: boolean
         creationDate:
           type: string
           format: date-time
@@ -17389,6 +17389,14 @@ components:
           $ref: '#/components/schemas/DistrictReferenceDto'
         environment:
           $ref: '#/components/schemas/EnvironmentReferenceDto'
+        event717AssessedEventStatus:
+          type: string
+          enum:
+          - SIGNAL
+          - EVENT
+          - SCREENING
+          - CLUSTER
+          - DROPPED
         event717DetectionStatus:
           type: string
           enum:
@@ -30747,6 +30755,7 @@ components:
           - ANTIMICROBIAL_SUSCEPTIBILITY_TESTING
           - FUNCTIONAL_IMMUNE_ASSAYS
           - PHENOTYPIC_CHARACTERIZATION
+          - OTHER
         penicillinMic:
           type: string
         penicillinSusceptibility:
@@ -32280,6 +32289,7 @@ components:
             - EXTERNAL_MESSAGE_LABORATORY_DELETE
             - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
             - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
+            - EXTERNAL_PERSON_DATA_PROVIDER_ACCESS
             - SURVEY_VIEW
             - SURVEY_CREATE
             - SURVEY_EDIT

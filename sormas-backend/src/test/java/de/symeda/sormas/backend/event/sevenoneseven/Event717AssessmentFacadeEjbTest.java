@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -35,6 +36,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentDto;
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckCategory;
 import de.symeda.sormas.api.event.sevenoneseven.Event717BottleneckDto;
@@ -70,6 +72,8 @@ public class Event717AssessmentFacadeEjbTest extends AbstractBeanTest {
 		super.init();
 
 		createFeatureConfiguration(FeatureType.EVENT_717_ASSESSMENT, true);
+		// the test data creator creates signals; the tests of the setting itself restrict it again
+		Event717TestHelper.allowAllEventStatuses(this);
 		rdcf = creator.createRDCF();
 		event = creator.createEvent(nationalAdmin.toReference());
 	}
@@ -658,5 +662,90 @@ public class Event717AssessmentFacadeEjbTest extends AbstractBeanTest {
 
 		assertTrue(
 			getEvent717AssessmentFacade().getExportList(new EventCriteria().event717Status(Event717TimelinessStatus.OVER_TARGET), null, null).isEmpty());
+		assertEquals(EventStatus.SIGNAL, row.getEventStatus());
+		assertEquals(EventStatus.SIGNAL, row.getAssessedEventStatus());
+	}
+
+	private void setEventStatus(EventDto event, EventStatus status) {
+
+		EventDto storedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
+		storedEvent.setEventStatus(status);
+		getEventFacade().save(storedEvent);
+	}
+
+	@Test
+	public void testNewAssessmentOnlyForApplicableEventStatuses() {
+
+		Event717TestHelper.setApplicableEventStatuses(this, EventStatus.EVENT, EventStatus.CLUSTER);
+		assertEquals(EnumSet.of(EventStatus.EVENT, EventStatus.CLUSTER), getEvent717AssessmentFacade().getApplicableEventStatuses());
+
+		// the event of the setup is a signal
+		assertFalse(getEvent717AssessmentFacade().isAvailableForEvent(event.getUuid()));
+		assertThrows(ValidationRuntimeException.class, () -> getEvent717AssessmentFacade().save(buildAssessment(event)));
+		assertNull(getEvent717AssessmentFacade().getByEventUuid(event.getUuid()));
+
+		EventDto cluster = creator.createEvent(nationalAdmin.toReference(), EventStatus.CLUSTER);
+		assertTrue(getEvent717AssessmentFacade().isAvailableForEvent(cluster.getUuid()));
+		Event717AssessmentDto saved = getEvent717AssessmentFacade().save(buildAssessment(cluster));
+		assertEquals(EventStatus.CLUSTER, saved.getAssessedEventStatus());
+	}
+
+	@Test
+	public void testExistingAssessmentNotAffectedByEventStatusOrSetting() {
+
+		Event717AssessmentDto assessment = getEvent717AssessmentFacade().save(buildAssessment(event));
+		assertEquals(EventStatus.SIGNAL, assessment.getAssessedEventStatus());
+
+		// neither the event status nor the setting change the recorded status, and the assessment stays available and editable
+		setEventStatus(event, EventStatus.EVENT);
+		Event717TestHelper.setApplicableEventStatuses(this, EventStatus.CLUSTER);
+		assertTrue(getEvent717AssessmentFacade().isAvailableForEvent(event.getUuid()));
+		assessment = getEvent717AssessmentFacade().getByEventUuid(event.getUuid());
+		assessment.setGeneralNotes("Edited after the status change");
+		assessment.setAssessedEventStatus(EventStatus.CLUSTER);
+		Event717AssessmentDto saved = getEvent717AssessmentFacade().save(assessment);
+		assertEquals(EventStatus.SIGNAL, saved.getAssessedEventStatus());
+
+		Event717IndexDto row = getEvent717AssessmentFacade().getIndexList(new EventCriteria(), null, null, null).get(0);
+		assertEquals(EventStatus.EVENT, row.getEventStatus());
+		assertEquals(EventStatus.SIGNAL, row.getAssessedEventStatus());
+
+		// still counted, and found by the recorded status, not by the current one
+		assertEquals(1, getEvent717AssessmentFacade().getSummary(new EventCriteria()).getAssessedEvents());
+		assertEquals(1, getEvent717AssessmentFacade().count(new EventCriteria().event717AssessedEventStatus(EventStatus.SIGNAL)));
+		assertEquals(0, getEvent717AssessmentFacade().count(new EventCriteria().event717AssessedEventStatus(EventStatus.EVENT)));
+		assertEquals(
+			0,
+			getEvent717AssessmentFacade().getSummary(new EventCriteria().event717AssessedEventStatus(EventStatus.EVENT)).getAssessedEvents());
+		assertEquals(Collections.singletonList(EventStatus.SIGNAL), getEvent717AssessmentFacade().getAssessedEventStatuses());
+
+		// without the assessment, only the current status decides
+		getEvent717AssessmentFacade().deleteByEventUuid(event.getUuid());
+		assertFalse(getEvent717AssessmentFacade().isAvailableForEvent(event.getUuid()));
+		setEventStatus(event, EventStatus.CLUSTER);
+		assertTrue(getEvent717AssessmentFacade().isAvailableForEvent(event.getUuid()));
+	}
+
+	@Test
+	public void testDroppedEventsOnlyLeftOutOfSummary() {
+
+		getEvent717AssessmentFacade().save(buildAssessment(event));
+		EventDto otherEvent = creator.createEvent(nationalAdmin.toReference());
+		getEvent717AssessmentFacade().save(buildAssessment(otherEvent));
+		assertEquals(2, getEvent717AssessmentFacade().getSummary(new EventCriteria()).getAssessedEvents());
+
+		setEventStatus(otherEvent, EventStatus.DROPPED);
+		assertEquals(1, getEvent717AssessmentFacade().getSummary(new EventCriteria()).getAssessedEvents());
+		// not even when filtering for dropped events
+		assertEquals(0, getEvent717AssessmentFacade().getSummary(new EventCriteria().eventStatus(EventStatus.DROPPED)).getAssessedEvents());
+		// still listed and exported
+		assertEquals(2, getEvent717AssessmentFacade().count(new EventCriteria()));
+		assertEquals(2, getEvent717AssessmentFacade().getExportList(new EventCriteria(), null, null).size());
+		// and still shown on the event
+		assertTrue(getEvent717AssessmentFacade().isAvailableForEvent(otherEvent.getUuid()));
+
+		// counted again once the event is no longer dropped
+		setEventStatus(otherEvent, EventStatus.EVENT);
+		assertEquals(2, getEvent717AssessmentFacade().getSummary(new EventCriteria()).getAssessedEvents());
 	}
 }

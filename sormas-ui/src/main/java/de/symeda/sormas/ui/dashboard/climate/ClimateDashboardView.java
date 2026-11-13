@@ -32,7 +32,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.IgnoreCancelDownloader;
 
 /**
- * The Climate dashboard (decision 118): climate-sensitive diseases against the weekly climate of a region or district.
+ * The Climate dashboard (decision 118): the active diseases against the weekly climate of a region or district.
  * Read-only; the header has only the dashboard switcher (decision 139).
  */
 public class ClimateDashboardView extends AbstractDashboardView {

@@ -29,6 +29,7 @@ import javax.security.enterprise.identitystore.IdentityStore;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.OidcCallerPrincipal;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -62,7 +63,7 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 			Set<String> groups = getCallerGroups(user);
 			context.setCallerGroups(groups);
 			updateLocale(context.getAccessToken(), user);
-			return new CredentialValidationResult(context.getCallerName(), groups);
+			return new CredentialValidationResult(new OidcCallerPrincipal(context.getCallerName(), context.getAccessToken().getToken()), groups);
 		}
 		return result;
 	}

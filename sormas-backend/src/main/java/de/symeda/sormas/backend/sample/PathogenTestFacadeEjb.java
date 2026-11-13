@@ -551,7 +551,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					Validations.required,
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
 		}
-		// susceptibility is applicable for only LUX TB and all counties of IMI and IPI
+		// A drug grid saved on an AST test must hold at least one result
 		if (pathogenTest.getDrugSusceptibility() != null
 			&& pathogenTest.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
 			&& !DrugSusceptibilityMapper.hasData(pathogenTest.getDrugSusceptibility())) {

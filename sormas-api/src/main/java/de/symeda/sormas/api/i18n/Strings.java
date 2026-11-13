@@ -110,6 +110,7 @@ public interface Strings {
 	String climateDashboardAboveUsual = "climateDashboardAboveUsual";
 	String climateDashboardChooseDisease = "climateDashboardChooseDisease";
 	String climateDashboardChooseRegion = "climateDashboardChooseRegion";
+	String climateDashboardClassificationNote = "climateDashboardClassificationNote";
 	String climateDashboardCountsNoPopulation = "climateDashboardCountsNoPopulation";
 	String climateDashboardDates = "climateDashboardDates";
 	String climateDashboardDetailCount = "climateDashboardDetailCount";
@@ -117,10 +118,14 @@ public interface Strings {
 	String climateDashboardDetailDays = "climateDashboardDetailDays";
 	String climateDashboardDetailIncidence = "climateDashboardDetailIncidence";
 	String climateDashboardDetailIncidenceOne = "climateDashboardDetailIncidenceOne";
+	String climateDashboardDetailLabConfirmed = "climateDashboardDetailLabConfirmed";
+	String climateDashboardDetailLabConfirmedIncidence = "climateDashboardDetailLabConfirmedIncidence";
 	String climateDashboardDetailLastYear = "climateDashboardDetailLastYear";
 	String climateDashboardDetailNoDistricts = "climateDashboardDetailNoDistricts";
+	String climateDashboardDetailNoReport = "climateDashboardDetailNoReport";
 	String climateDashboardDetailReportDate = "climateDashboardDetailReportDate";
 	String climateDashboardDetailUsual = "climateDashboardDetailUsual";
+	String climateDashboardDiseaseAggregate = "climateDashboardDiseaseAggregate";
 	String climateDashboardDiseaseCap = "climateDashboardDiseaseCap";
 	String climateDashboardHeatmapTitle = "climateDashboardHeatmapTitle";
 	String climateDashboardHint = "climateDashboardHint";
@@ -133,6 +138,8 @@ public interface Strings {
 	String climateDashboardNoPoint = "climateDashboardNoPoint";
 	String climateDashboardPanelCount = "climateDashboardPanelCount";
 	String climateDashboardPanelIncidence = "climateDashboardPanelIncidence";
+	String climateDashboardPanelLabConfirmed = "climateDashboardPanelLabConfirmed";
+	String climateDashboardPanelLabConfirmedIncidence = "climateDashboardPanelLabConfirmedIncidence";
 	String climateDashboardPanelShifted = "climateDashboardPanelShifted";
 	String climateDashboardPanelShiftedOne = "climateDashboardPanelShiftedOne";
 	String climateDashboardPeriodOrder = "climateDashboardPeriodOrder";
@@ -163,6 +170,7 @@ public interface Strings {
 	String climateExportAboveUsual = "climateExportAboveUsual";
 	String climateExportCases = "climateExportCases";
 	String climateExportIncidence = "climateExportIncidence";
+	String climateExportLabConfirmed = "climateExportLabConfirmed";
 	String climateExportReportDateCases = "climateExportReportDateCases";
 	String climateExportUsualP10 = "climateExportUsualP10";
 	String climateExportUsualP90 = "climateExportUsualP90";
@@ -556,6 +564,7 @@ public interface Strings {
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalEmailAttachmentCannotEncrypt = "errorExternalEmailAttachmentCannotEncrypt";
 	String errorExternalEmailMissingPersonEmailAddress = "errorExternalEmailMissingPersonEmailAddress";
+	String errorExternalPersonDataLoad = "errorExternalPersonDataLoad";
 	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
@@ -575,6 +584,7 @@ public interface Strings {
 	String errorInvalidValue = "errorInvalidValue";
 	String errorLabResultsAdapterNotFound = "errorLabResultsAdapterNotFound";
 	String errorNoAccessToWeb = "errorNoAccessToWeb";
+	String errorNoNationalHealthIdInContext = "errorNoNationalHealthIdInContext";
 	String errorNoPopulationDataFound = "errorNoPopulationDataFound";
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNoRightsForChangingField = "errorNoRightsForChangingField";
@@ -623,6 +633,10 @@ public interface Strings {
 	String exposureEndDate = "exposureEndDate";
 	String exposureStartDate = "exposureStartDate";
 	String externalMessageMultipleSampleReports = "externalMessageMultipleSampleReports";
+	String externalPersonsEnterCriteria = "externalPersonsEnterCriteria";
+	String externalPersonsFirst100Results = "externalPersonsFirst100Results";
+	String externalPersonsInvalidRange = "externalPersonsInvalidRange";
+	String externalPersonsLinkSearchExplanation = "externalPersonsLinkSearchExplanation";
 	String ExternalSurveillanceToolGateway_confirmDeleteCase = "ExternalSurveillanceToolGateway.confirmDeleteCase";
 	String ExternalSurveillanceToolGateway_confirmDeleteEvent = "ExternalSurveillanceToolGateway.confirmDeleteEvent";
 	String ExternalSurveillanceToolGateway_confirmSendCase = "ExternalSurveillanceToolGateway.confirmSendCase";
@@ -1331,6 +1345,7 @@ public interface Strings {
 	String infoEvent717AllTargets = "infoEvent717AllTargets";
 	String infoEvent717AllTargetsMet = "infoEvent717AllTargetsMet";
 	String infoEvent717AssessedEvents = "infoEvent717AssessedEvents";
+	String infoEvent717AssessedEventStatusFilter = "infoEvent717AssessedEventStatusFilter";
 	String infoEvent717Assessment = "infoEvent717Assessment";
 	String infoEvent717DateFilter = "infoEvent717DateFilter";
 	String infoEvent717EarlyResponseActionPending = "infoEvent717EarlyResponseActionPending";
@@ -1344,6 +1359,7 @@ public interface Strings {
 	String infoEvent717MeetTarget = "infoEvent717MeetTarget";
 	String infoEvent717NoEvaluable = "infoEvent717NoEvaluable";
 	String infoEvent717NotAllTargetsMet = "infoEvent717NotAllTargetsMet";
+	String infoEvent717NotApplicable = "infoEvent717NotApplicable";
 	String infoEvent717NotAssessed = "infoEvent717NotAssessed";
 	String infoEvent717SampleSize = "infoEvent717SampleSize";
 	String infoEvent717SummaryExport = "infoEvent717SummaryExport";
@@ -1417,6 +1433,7 @@ public interface Strings {
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";
+	String infoNoExternalPersonData = "infoNoExternalPersonData";
 	String infoNoImmunizationAdverseEvents = "infoNoImmunizationAdverseEvents";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
@@ -1522,6 +1539,7 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses = "infoSystemConfigurationValueDescriptionCronUpdateImmunizationStatuses";
 	String infoSystemConfigurationValueDescriptionEmailSenderAddress = "infoSystemConfigurationValueDescriptionEmailSenderAddress";
 	String infoSystemConfigurationValueDescriptionEmailSenderName = "infoSystemConfigurationValueDescriptionEmailSenderName";
+	String infoSystemConfigurationValueDescriptionEvent717ApplicableEventStatuses = "infoSystemConfigurationValueDescriptionEvent717ApplicableEventStatuses";
 	String infoSystemConfigurationValueDescriptionEpipulseDatasource = "infoSystemConfigurationValueDescriptionEpipulseDatasource";
 	String infoSystemConfigurationValueDescriptionMenuBackgroundColor = "infoSystemConfigurationValueDescriptionMenuBackgroundColor";
 	String infoSystemConfigurationValueDescriptionSmsAuthKey = "infoSystemConfigurationValueDescriptionSmsAuthKey";

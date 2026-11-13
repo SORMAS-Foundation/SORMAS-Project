@@ -38,6 +38,7 @@ public class Event717ExportDto implements Serializable, Pseudonymizable {
 	private final Disease eventDisease;
 	private final String eventDiseaseDetails;
 	private final EventStatus eventStatus;
+	private final EventStatus assessedEventStatus;
 	private final String region;
 	private final String district;
 	private final String community;
@@ -73,7 +74,7 @@ public class Event717ExportDto implements Serializable, Pseudonymizable {
 
 	//@formatter:off
 	public Event717ExportDto(String eventUuid, String eventTitle, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus,
-							 String region, String district, String community,
+							 EventStatus assessedEventStatus, String region, String district, String community,
 							 Date dateOfEmergence, Date dateOfDetection, Date dateOfNotification,
 							 Integer detectionDays, Event717TimelinessStatus detectionStatus,
 							 Integer notificationDays, Event717TimelinessStatus notificationStatus,
@@ -93,6 +94,7 @@ public class Event717ExportDto implements Serializable, Pseudonymizable {
 		this.eventDisease = eventDisease;
 		this.eventDiseaseDetails = eventDiseaseDetails;
 		this.eventStatus = eventStatus;
+		this.assessedEventStatus = assessedEventStatus;
 		this.region = region;
 		this.district = district;
 		this.community = community;
@@ -155,146 +157,151 @@ public class Event717ExportDto implements Serializable, Pseudonymizable {
 	}
 
 	@Order(5)
+	public EventStatus getAssessedEventStatus() {
+		return assessedEventStatus;
+	}
+
+	@Order(6)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(6)
+	@Order(7)
 	public String getDistrict() {
 		return district;
 	}
 
-	@Order(7)
+	@Order(8)
 	public String getCommunity() {
 		return community;
 	}
 
-	@Order(8)
+	@Order(9)
 	public Date getDateOfEmergence() {
 		return dateOfEmergence;
 	}
 
-	@Order(9)
+	@Order(10)
 	public Date getDateOfDetection() {
 		return dateOfDetection;
 	}
 
-	@Order(10)
+	@Order(11)
 	public String getDetectionDays() {
 		return detectionDays;
 	}
 
-	@Order(11)
+	@Order(12)
 	public Event717TimelinessStatus getDetectionStatus() {
 		return detectionStatus;
 	}
 
-	@Order(12)
+	@Order(13)
 	public Date getDateOfNotification() {
 		return dateOfNotification;
 	}
 
-	@Order(13)
+	@Order(14)
 	public String getNotificationDays() {
 		return notificationDays;
 	}
 
-	@Order(14)
+	@Order(15)
 	public Event717TimelinessStatus getNotificationStatus() {
 		return notificationStatus;
 	}
 
-	@Order(15)
+	@Order(16)
 	public Date getInvestigationDate() {
 		return investigationDate;
 	}
 
-	@Order(16)
+	@Order(17)
 	public String getInvestigationDays() {
 		return investigationDays;
 	}
 
-	@Order(17)
+	@Order(18)
 	public Date getEpiAnalysisDate() {
 		return epiAnalysisDate;
 	}
 
-	@Order(18)
+	@Order(19)
 	public String getEpiAnalysisDays() {
 		return epiAnalysisDays;
 	}
 
-	@Order(19)
+	@Order(20)
 	public Date getLabConfirmationDate() {
 		return labConfirmationDate;
 	}
 
-	@Order(20)
+	@Order(21)
 	public String getLabConfirmationDays() {
 		return labConfirmationDays;
 	}
 
-	@Order(21)
+	@Order(22)
 	public Date getCaseManagementDate() {
 		return caseManagementDate;
 	}
 
-	@Order(22)
+	@Order(23)
 	public String getCaseManagementDays() {
 		return caseManagementDays;
 	}
 
-	@Order(23)
+	@Order(24)
 	public Date getCountermeasuresDate() {
 		return countermeasuresDate;
 	}
 
-	@Order(24)
+	@Order(25)
 	public String getCountermeasuresDays() {
 		return countermeasuresDays;
 	}
 
-	@Order(25)
+	@Order(26)
 	public Date getRiskCommunicationDate() {
 		return riskCommunicationDate;
 	}
 
-	@Order(26)
+	@Order(27)
 	public String getRiskCommunicationDays() {
 		return riskCommunicationDays;
 	}
 
-	@Order(27)
+	@Order(28)
 	public Date getCoordinationDate() {
 		return coordinationDate;
 	}
 
-	@Order(28)
+	@Order(29)
 	public String getCoordinationDays() {
 		return coordinationDays;
 	}
 
-	@Order(29)
+	@Order(30)
 	public Date getEarlyResponseCompletionDate() {
 		return earlyResponseCompletionDate;
 	}
 
-	@Order(30)
+	@Order(31)
 	public String getResponseDays() {
 		return responseDays;
 	}
 
-	@Order(31)
+	@Order(32)
 	public Event717TimelinessStatus getResponseStatus() {
 		return responseStatus;
 	}
 
-	@Order(32)
+	@Order(33)
 	public Event717TimelinessStatus getTimelinessStatus() {
 		return timelinessStatus;
 	}
 
-	@Order(33)
+	@Order(34)
 	public String getGeneralNotes() {
 		return generalNotes;
 	}

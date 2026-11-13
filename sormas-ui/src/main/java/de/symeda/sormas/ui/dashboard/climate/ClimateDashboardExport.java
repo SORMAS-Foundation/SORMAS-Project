@@ -30,6 +30,7 @@ import com.vaadin.server.StreamResource;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.climate.ClimateCaseCountSource;
 import de.symeda.sormas.api.climate.ClimateCaseWeekDto;
 import de.symeda.sormas.api.climate.ClimateDashboardExportDto;
 import de.symeda.sormas.api.climate.ClimateObservationExportDto;
@@ -44,7 +45,7 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 
 /**
- * The Climate dashboard's CSV (decision 128): one row per region or district and epi week, the cases of each ticked
+ * The Climate dashboard's CSV (decision 128): one row per region or district and epi week, the cases of each chosen
  * disease in a group of columns, then the week's climate; never shifted by the lag.
  */
 final class ClimateDashboardExport {
@@ -85,8 +86,12 @@ final class ClimateDashboardExport {
 			header.add(caption(field));
 		}
 		for (Disease disease : diseases) {
+			// a disease without case surveillance has its lab-confirmed aggregate reports in the first column (decision 147)
+			String countFormat = FacadeProvider.getDiseaseConfigurationFacade().isCaseSurveillanceEnabled(disease)
+				? Strings.climateExportCases
+				: Strings.climateExportLabConfirmed;
 			for (String format : new String[] {
-				Strings.climateExportCases,
+				countFormat,
 				Strings.climateExportReportDateCases,
 				Strings.climateExportIncidence,
 				Strings.climateExportUsualP10,
@@ -140,13 +145,15 @@ final class ClimateDashboardExport {
 				}
 				continue;
 			}
-			line.add(String.valueOf(week.getCount()));
-			line.add(String.valueOf(week.getReportDateCount()));
+			// a week without an aggregate report has no count, not 0; aggregate reports have no report-date fallback (decision 147)
+			boolean cases = week.isReported() && row.getCountSource(disease) != ClimateCaseCountSource.AGGREGATE_LAB_CONFIRMED;
+			line.add(week.isReported() ? String.valueOf(week.getCount()) : "");
+			line.add(cases ? String.valueOf(week.getReportDateCount()) : "");
 			line.add(number(week.getIncidence()));
 			ClimateRangeDto range = week.getUsualRange();
 			line.add(range != null ? number(range.getP10()) : "");
 			line.add(range != null ? number(range.getP90()) : "");
-			line.add(range != null ? yesNo(week.isAboveUsualRange()) : "");
+			line.add(range != null && week.isReported() ? yesNo(week.isAboveUsualRange()) : "");
 		}
 
 		ClimateWeekDto climate = row.getClimate();

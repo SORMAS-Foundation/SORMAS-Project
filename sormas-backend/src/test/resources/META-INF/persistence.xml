@@ -15,10 +15,10 @@
 		<class>de.symeda.sormas.backend.contact.Contact</class>
 		<class>de.symeda.sormas.backend.epidata.EpiData</class>
 		<class>de.symeda.sormas.backend.environment.Environment</class>
-		<class>de.symeda.sormas.backend.climate.ClimateLocation</class>
-		<class>de.symeda.sormas.backend.climate.ClimateObservation</class>
-		<class>de.symeda.sormas.backend.climate.ClimateJob</class>
-		<class>de.symeda.sormas.backend.climate.SiteClimateReading</class>
+        <class>de.symeda.sormas.backend.climate.ClimateLocation</class>
+        <class>de.symeda.sormas.backend.climate.ClimateObservation</class>
+        <class>de.symeda.sormas.backend.climate.ClimateJob</class>
+        <class>de.symeda.sormas.backend.climate.SiteClimateReading</class>
 		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
 		<class>de.symeda.sormas.backend.event.Event</class>
 		<class>de.symeda.sormas.backend.event.EventParticipant</class>
