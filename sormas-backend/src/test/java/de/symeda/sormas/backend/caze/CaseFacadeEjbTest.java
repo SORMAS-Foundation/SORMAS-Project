@@ -3639,6 +3639,63 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			not(contains(caseWithDoctorDeclaration.getUuid())));
 	}
 
+	private CaseDataDto buildNewCase(Disease disease, CaseClassification classification) {
+		loginWith(nationalUser);
+		CaseDataDto caze = CaseDataDto.build(creator.createPerson().toReference(), disease);
+		caze.setReportDate(new Date());
+		caze.setReportingUser(nationalUser.toReference());
+		caze.getSymptoms().setOnsetDate(new Date());
+		caze.setCaseClassification(classification);
+		caze.setResponsibleRegion(rdcf.region);
+		caze.setResponsibleDistrict(rdcf.district);
+		caze.setResponsibleCommunity(rdcf.community);
+		caze.setFacilityType(getFacilityFacade().getByUuid(rdcf.facility.getUuid()).getType());
+		caze.setHealthFacility(rdcf.facility);
+		return caze;
+	}
+
+	@Test
+	public void testSaveFromExternalMessageKeepsGonococcalClassification() {
+		CaseDataDto probable = getCaseFacade().saveFromExternalMessage(buildNewCase(Disease.GONOCOCCAL_INFECTION, CaseClassification.PROBABLE));
+		assertEquals(CaseClassification.PROBABLE, getCaseFacade().getCaseDataByUuid(probable.getUuid()).getCaseClassification());
+
+		CaseDataDto notClassified =
+			getCaseFacade().saveFromExternalMessage(buildNewCase(Disease.GONOCOCCAL_INFECTION, CaseClassification.NOT_CLASSIFIED));
+		CaseDataDto storedNotClassified = getCaseFacade().getCaseDataByUuid(notClassified.getUuid());
+		assertEquals(CaseClassification.NOT_CLASSIFIED, storedNotClassified.getCaseClassification());
+		assertNull(storedNotClassified.getClassificationDate());
+		assertNull(storedNotClassified.getClassificationUser());
+	}
+
+	@Test
+	public void testSaveFromExternalMessageOnExistingGonococcalCaseBehavesLikePlainSave() {
+		CaseDataDto viaExternalMessage = getCaseFacade().save(buildNewCase(Disease.GONOCOCCAL_INFECTION, CaseClassification.NOT_CLASSIFIED));
+		CaseDataDto viaPlainSave = getCaseFacade().save(buildNewCase(Disease.GONOCOCCAL_INFECTION, CaseClassification.NOT_CLASSIFIED));
+
+		viaExternalMessage.setCaseClassification(CaseClassification.NO_CASE);
+		viaPlainSave.setCaseClassification(CaseClassification.NO_CASE);
+		getCaseFacade().saveFromExternalMessage(viaExternalMessage);
+		getCaseFacade().save(viaPlainSave);
+
+		assertEquals(CaseClassification.NO_CASE, getCaseFacade().getCaseDataByUuid(viaExternalMessage.getUuid()).getCaseClassification());
+		assertEquals(
+			getCaseFacade().getCaseDataByUuid(viaPlainSave.getUuid()).getCaseClassification(),
+			getCaseFacade().getCaseDataByUuid(viaExternalMessage.getUuid()).getCaseClassification());
+	}
+
+	@Test
+	public void testSaveForcesConfirmedOnNewGonococcalCase() {
+		CaseDataDto saved = getCaseFacade().save(buildNewCase(Disease.GONOCOCCAL_INFECTION, CaseClassification.PROBABLE));
+		assertEquals(CaseClassification.CONFIRMED, getCaseFacade().getCaseDataByUuid(saved.getUuid()).getCaseClassification());
+	}
+
+	@Test
+	public void testSaveFromExternalMessageKeepsRsvDefault() {
+		CaseDataDto saved =
+			getCaseFacade().saveFromExternalMessage(buildNewCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, CaseClassification.NOT_CLASSIFIED));
+		assertEquals(CaseClassification.CONFIRMED, getCaseFacade().getCaseDataByUuid(saved.getUuid()).getCaseClassification());
+	}
+
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
 	private static final SecureRandom rnd = new SecureRandom();
 

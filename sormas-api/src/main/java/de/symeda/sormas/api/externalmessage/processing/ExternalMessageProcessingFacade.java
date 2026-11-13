@@ -236,7 +236,7 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 	}
 
 	public CaseDataDto saveCase(CaseDataDto caseDto) {
-		return caseFacade.save(caseDto);
+		return caseFacade.saveFromExternalMessage(caseDto);
 	}
 
 	public TreatmentDto saveTreatment(TreatmentDto treatment) {
