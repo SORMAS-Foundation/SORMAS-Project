@@ -177,17 +177,14 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 		getExternalMessageProcessingFacade().saveExternalMessage(externalMessage);
 	}
 
-	/**
-	 * Post-processes a case after it has been created or updated based on the external message.
-	 * This method has a special case for Pertusis in case of Luxembourg.
-	 * 
-	 * @param caseDto
-	 *            The case data transfer object that has been created or updated.
-	 * @param externalMessageDto
-	 *            The external message data transfer object containing the lab message details.
-	 */
 	@Override
 	protected void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		if (externalMessageDto.getCaseClassification() != null) {
+			caseDto.setCaseClassification(externalMessageDto.getCaseClassification());
+		}
+		if (externalMessageDto.getHivStatus() != null) {
+			caseDto.getHealthConditions().setHivStatus(externalMessageDto.getHivStatus());
+		}
 		if (getExternalMessageProcessingFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			postBuildCaseLuxembourg(caseDto, externalMessageDto);
 		}

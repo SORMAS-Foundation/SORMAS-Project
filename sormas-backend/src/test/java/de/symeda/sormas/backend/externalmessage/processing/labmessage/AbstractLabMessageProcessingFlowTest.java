@@ -53,6 +53,7 @@ import org.mockito.stubbing.Answer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -438,6 +439,42 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		assertThat(result.getData().getSelectedPerson().getEntity(), is(notNullValue()));
 		assertThat(result.getData().getSelectedPerson().isNew(), is(true));
+	}
+
+	@Test
+	public void testCreateCaseTakesClassificationAndHivStatusFromMessage() throws ExecutionException, InterruptedException {
+
+		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.GONOCOCCAL_INFECTION, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		labMessage.setCaseClassification(CaseClassification.PROBABLE);
+		labMessage.setHivStatus(HivStatus.KNOWN_POSITIVE);
+		runFlow(labMessage);
+
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.PROBABLE));
+		assertThat(caseCaptor.getValue().getHealthConditions().getHivStatus(), is(HivStatus.KNOWN_POSITIVE));
+	}
+
+	@Test
+	public void testCreateCaseKeepsDefaultsWhenMessageHasNoClassificationOrHivStatus() throws ExecutionException, InterruptedException {
+
+		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.GONOCOCCAL_INFECTION, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		runFlow(labMessage);
+
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.NOT_CLASSIFIED));
+		assertThat(caseCaptor.getValue().getHealthConditions().getHivStatus(), is(nullValue()));
+	}
+
+	private ArgumentCaptor<CaseDataDto> captureCreatedCase() {
+		doAnswer(answerPickOrCreatePerson(null)).when(handlePickOrCreatePerson).apply(any(), any());
+		ArgumentCaptor<CaseDataDto> caseCaptor = ArgumentCaptor.forClass(CaseDataDto.class);
+		doAnswer((invocation) -> {
+			getCallbackParam(invocation).done(invocation.getArgument(0));
+			return null;
+		}).when(handleCreateCase).handle(caseCaptor.capture(), any(), any());
+		return caseCaptor;
 	}
 
 	@Test
