@@ -218,9 +218,9 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			// for regular tuberculosis the case classification should be handled in the external message pre-processing
 			break;
 		case GONOCOCCAL_INFECTION:
-			if (externalMessageDto.getCaseClassification() != null) {
-				caseClassification = externalMessageDto.getCaseClassification();
-			}
+			caseClassification = externalMessageDto.getCaseClassification() != null
+				? externalMessageDto.getCaseClassification()
+				: CaseClassification.CONFIRMED;
 			break;
 		case CORONAVIRUS:
 			// case classification is handled in the external message pre-processing

@@ -469,6 +469,19 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testCreateGonococcalCaseDefaultsToConfirmedWhenMessageHasNoClassificationInLuxembourg()
+		throws ExecutionException, InterruptedException {
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.GONOCOCCAL_INFECTION, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		runFlow(labMessage);
+
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.CONFIRMED));
+	}
+
+	@Test
 	public void testCreateCaseIgnoresMessageClassificationForNonGonococcalDisease() throws ExecutionException, InterruptedException {
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
