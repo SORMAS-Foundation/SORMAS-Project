@@ -27,9 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -494,14 +492,6 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 		// Actively switching to a non-applicable test type — clear stale values
 		if (pathogenTestType != PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-			FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
-			updateDrugLabelsVisibility(List.of());
-			return false;
-		}
-
-		// Non-Luxembourg TB/Latent TB exclusion — clear stale values
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-			&& (disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS)) {
 			FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
 			updateDrugLabelsVisibility(List.of());
 			return false;

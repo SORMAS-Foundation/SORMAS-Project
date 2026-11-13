@@ -49,22 +49,38 @@ public class PathogenTestTypeTest {
 		// "Other <category>" placeholders: superseded but kept hidden so existing records still load
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
-		PathogenTestType.OTHER_SEROLOGICAL_TEST);
+		PathogenTestType.OTHER_SEROLOGICAL_TEST,
+		// Retired by the Nov 2026 matrix round; kept so saved records still render
+		PathogenTestType.IMMUNOFLUORESCENCE_ASSAY);
 
 	@Test
 	public void everySelectableMethodHasACategory() {
 		List<PathogenTestType> orphans = Arrays.stream(PathogenTestType.values())
 			.filter(PathogenTestType::isSelectableForNewTests)
-			.filter(t -> t != PathogenTestType.OTHER)
 			.filter(t -> PathogenTestType.getCategory(t) == null)
 			.collect(Collectors.toList());
-		assertThat("every selectable method (except OTHER) must declare a category", orphans, is(empty()));
+		assertThat("every selectable method must declare a category", orphans, is(empty()));
 	}
 
 	@Test
-	public void otherHasNoCategoryAndIsNotCategorised() {
-		assertNull(PathogenTestType.getCategory(PathogenTestType.OTHER));
+	public void otherHasTheOtherCategory() {
+		assertThat(PathogenTestType.getCategory(PathogenTestType.OTHER), is(PathogenTestCategory.OTHER));
 		assertNull(PathogenTestType.getCategory(null));
+	}
+
+	@Test
+	public void dfaIsAntigenDetectionAndHiIsSerology() {
+		assertThat(PathogenTestType.getCategory(PathogenTestType.DIRECT_FLUORESCENT_ANTIBODY), is(PathogenTestCategory.ANTIGEN_DETECTION));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.HEMAGGLUTINATION_INHIBITION), is(PathogenTestCategory.SEROLOGICAL_TESTS));
+	}
+
+	@Test
+	public void captionsFollowTheMatrixNotes() {
+		assertThat(PathogenTestType.DIRECT_FLUORESCENT_ANTIBODY.toString(), is("Direct Fluorescent Antibody (DFA)"));
+		assertThat(PathogenTestType.LATERAL_FLOW_ASSAY.toString(), is("Lateral Flow Assay / RDT"));
+		assertThat(PathogenTestType.MIRU_PATTERN_CODE.toString(), is("MIRU-VNTR typing"));
+		assertThat(PathogenTestType.NEUTRALIZING_ANTIBODIES.toString(), is("Neutralization Assay"));
+		assertThat(PathogenTestCategory.CULTURE_AND_ISOLATION.toString(), is("Culture & Identification"));
 	}
 
 	@Test
@@ -112,7 +128,7 @@ public class PathogenTestTypeTest {
 	}
 
 	@Test
-	public void allSevenCategoriesAreRepresentedBySelectableMethods() {
+	public void everyCategoryIsRepresentedBySelectableMethods() {
 		Set<PathogenTestCategory> represented = Arrays.stream(PathogenTestType.values())
 			.filter(PathogenTestType::isSelectableForNewTests)
 			.map(PathogenTestType::getCategory)
@@ -312,8 +328,9 @@ public class PathogenTestTypeTest {
 
 	@Test
 	public void diseaseHiddenMethodIsDroppedByVisibleValues() {
-		// Guards the scenario behind the retainType re-add in FormComponent#updateTestTypeItemsByCategory
-		// and the retainCategory re-add in #getVisibleTestCategories: a method that is @Diseases(hide = true)
+		// Guards the retainType check in PathogenTestType#selectableMethods and the
+		// retainCategory re-add in FormComponent#getVisibleTestCategories: a method
+		// that is @Diseases(hide = true)
 		// for a disease is excluded by getVisibleValues for that disease, so a saved test recorded with it can
 		// only be kept selectable by adding it back explicitly. ANTIBODY_DETECTION carries such a hide-list
 		// covering DENGUE. INCUBATION_TIME is the same case for a method that is also legacy.
