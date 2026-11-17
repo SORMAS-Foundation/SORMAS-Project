@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
+import java.util.Set;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
@@ -56,7 +58,7 @@ class ExternalMessageStiMappingTest extends AbstractUnitTest {
 		source.setContactWithSexWorker(answer);
 		source.setContactWithSexWorkerOther("Contact details");
 		SymptomsDto symptoms = SymptomsDto.build();
-		symptoms.setSyphilisInfectionSite(SyphilisInfectionSite.OTHER);
+		symptoms.setSyphilisInfectionSites(Set.of(SyphilisInfectionSite.OTHER));
 		symptoms.setSyphilisInfectionSiteOther("Infection site details");
 		source.setCaseSymptoms(symptoms);
 		when(symptomsFacadeEjb.fillOrBuildEntity(any(SymptomsDto.class), nullable(Symptoms.class), anyBoolean()))

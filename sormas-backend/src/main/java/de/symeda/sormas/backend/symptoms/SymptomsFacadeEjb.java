@@ -319,7 +319,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCentralNervousSystemDamage(source.getCentralNervousSystemDamage());
 		target.setMalnutrition(source.getMalnutrition());
 		target.setNephroticSyndrome(source.getNephroticSyndrome());
-		target.setSyphilisInfectionSite(source.getSyphilisInfectionSite());
+		target.setSyphilisInfectionSites(source.getSyphilisInfectionSites());
 		target.setSyphilisInfectionSiteOther(source.getSyphilisInfectionSiteOther());
 		target.setSyphilisStage(source.getSyphilisStage());
 		target.setSyphilisInfectiousness(source.getSyphilisInfectiousness());
@@ -690,7 +690,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCentralNervousSystemDamage(source.getCentralNervousSystemDamage());
 		target.setMalnutrition(source.getMalnutrition());
 		target.setNephroticSyndrome(source.getNephroticSyndrome());
-		target.setSyphilisInfectionSite(source.getSyphilisInfectionSite());
+		target.setSyphilisInfectionSites(source.getSyphilisInfectionSites());
 		target.setSyphilisInfectionSiteOther(source.getSyphilisInfectionSiteOther());
 		target.setSyphilisStage(source.getSyphilisStage());
 		target.setSyphilisInfectiousness(source.getSyphilisInfectiousness());

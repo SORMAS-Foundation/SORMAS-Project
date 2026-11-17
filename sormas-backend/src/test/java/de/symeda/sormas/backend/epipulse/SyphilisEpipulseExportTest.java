@@ -65,6 +65,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -247,7 +248,7 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		CaseDataDto caze = fixture.caze(person, ONSET, c -> {
 			c.setSyphilisPresentation(SyphilisPresentation.ACQUIRED);
 			c.setOutcome(CaseOutcome.RECOVERED);
-			c.getSymptoms().setSyphilisInfectionSite(SyphilisInfectionSite.PHARYNGEAL);
+			c.getSymptoms().setSyphilisInfectionSites(Set.of(SyphilisInfectionSite.PHARYNGEAL));
 			c.getSymptoms().setSyphilisInfectiousness(SyphilisInfectiousness.INFECTIOUS);
 			c.getSymptoms().setSyphilisStage(SyphilisStage.EARLY_LATENT_SYPHILIS);
 			c.getEpiData().setSexWorker(YesNoUnknownOther.YES);
@@ -417,7 +418,7 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// mapping, this checks that the column is selected, parsed and reported at all.
 		Map<String, String> sites = new LinkedHashMap<>();
 		for (Map.Entry<SyphilisInfectionSite, String> site : SITE_CODES.entrySet()) {
-			sites.put(acquiredCaseWith(c -> c.getSymptoms().setSyphilisInfectionSite(site.getKey())).getUuid(), site.getValue());
+			sites.put(acquiredCaseWith(c -> c.getSymptoms().setSyphilisInfectionSites(Set.of(site.getKey()))).getUuid(), site.getValue());
 		}
 
 		Map<String, String> infectiousness = new LinkedHashMap<>();

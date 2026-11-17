@@ -22,7 +22,7 @@ import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
 
 /**
  * STI {@code SiteOfInfection} mapping (currently emitted for SYPH) from
- * {@code symptoms.syphilisinfectionsite}.
+ * {@code symptoms.syphilisinfectionsites}.
  *
  * <p>
  * {@code UNKNOWN} is intentionally unmapped (blank), not {@code OTH}. EpiPulse marks the variable

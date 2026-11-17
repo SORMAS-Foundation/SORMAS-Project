@@ -24,6 +24,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.DtoUserDefinedValuesHelper;
+import de.symeda.sormas.api.utils.ValueUtils;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
@@ -493,7 +495,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	}
 
 	private boolean hasExternalHealthConditionsData(ExternalMessageDto externalMessage) {
-		if (Disease.TUBERCULOSIS.equals(externalMessage.getDisease())) {
+		Disease currentDisease = externalMessage.getDisease();
+		if (Disease.TUBERCULOSIS.equals(currentDisease)) {
 			return externalMessage.getTuberculosis() != null
 				|| externalMessage.getHiv() != null
 				|| externalMessage.getHivArt() != null
@@ -502,8 +505,12 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 				|| externalMessage.getComplianceWithTreatment() != null;
 		}
 
-		if (Disease.MALARIA.equals(externalMessage.getDisease())) {
+		if (Disease.MALARIA.equals(currentDisease)) {
 			return externalMessage.getMalaria() != null || externalMessage.getMalariaInfectedYear() != null;
+		}
+
+		if (Disease.SYPHILIS.equals(currentDisease)) {
+			return ObjectUtils.anyNotNull(externalMessage.getHivStatus(), externalMessage.getStiProphylaxis());
 		}
 
 		return false;
@@ -535,7 +542,13 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			|| externalMessage.getContactWithSexWorker() != null
 			|| StringUtils.isNotBlank(externalMessage.getContactWithSexWorkerOther())
 			|| externalMessage.getMotherCountryOfBirth() != null
-			|| externalMessage.getMotherCitizenship() != null;
+			|| externalMessage.getMotherCitizenship() != null
+			|| ValueUtils.anyNonNullOrStringNotEmpty(
+				externalMessage.getProbableRouteOfTransmission(),
+				externalMessage.getMotherCitizenship(),
+				externalMessage.getMotherCountryOfBirth(),
+				externalMessage.getInfectionSource(),
+				externalMessage.getInfectionSourceText());
 	}
 
 	protected boolean hasExternalActivitiesAsCaseData(ExternalMessageDto externalMessage) {

@@ -258,8 +258,8 @@ final class SymptomGroupLayout {
 		value -> value == InfectionSite.OTHER,
 		SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE,
 		value -> value == CongenitalHeartDiseaseType.OTHER,
-		SymptomsDto.SYPHILIS_INFECTION_SITE,
-		value -> value == SyphilisInfectionSite.OTHER);
+		SymptomsDto.SYPHILIS_INFECTION_SITES,
+		value -> value instanceof Set<?> && ((Set<?>) value).contains(SyphilisInfectionSite.OTHER));
 
 	/**
 	 * The vertical layout of the form that receives all group sections, one below the other, in the order they are created

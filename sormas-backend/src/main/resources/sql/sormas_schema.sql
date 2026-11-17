@@ -18562,4 +18562,10 @@ ALTER TABLE externalmessage_history ADD COLUMN contactwithsexworkerother varchar
 
 INSERT INTO schema_version (version_number, comment) VALUES (691, 'Add other STI risk and infection site details');
 
+-- Existing single values are valid comma-separated sets.
+ALTER TABLE symptoms RENAME COLUMN syphilisinfectionsite TO syphilisinfectionsites;
+ALTER TABLE symptoms_history RENAME COLUMN syphilisinfectionsite TO syphilisinfectionsites;
+
+INSERT INTO schema_version (version_number, comment) VALUES (692, 'Allow multiple syphilis infection sites');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

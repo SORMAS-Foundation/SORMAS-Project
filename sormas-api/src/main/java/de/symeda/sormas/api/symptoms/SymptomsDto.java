@@ -58,6 +58,7 @@ import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
 import static de.symeda.sormas.api.Disease.YERSINIOSIS;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.validation.constraints.Size;
 
@@ -434,7 +435,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String CENTRAL_NERVOUS_SYSTEM_DAMAGE = "centralNervousSystemDamage";
 	public static final String MALNUTRITION = "malnutrition";
 	public static final String NEPHROTIC_SYNDROME = "nephroticSyndrome";
-	public static final String SYPHILIS_INFECTION_SITE = "syphilisInfectionSite";
+	public static final String SYPHILIS_INFECTION_SITES = "syphilisInfectionSites";
 	public static final String SYPHILIS_INFECTION_SITE_OTHER = "syphilisInfectionSiteOther";
 	public static final String SYPHILIS_STAGE = "syphilisStage";
 	public static final String SYPHILIS_INFECTIOUSNESS = "syphilisInfectiousness";
@@ -3557,12 +3558,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS })
 	@SymptomGrouping(SymptomGroup.SKIN)
 	@DependantOn(CHANCRE)
-	private SyphilisInfectionSite syphilisInfectionSite;
+	private Set<SyphilisInfectionSite> syphilisInfectionSites;
 
 	@Diseases({
 		SYPHILIS })
 	@SymptomGrouping(SymptomGroup.SKIN)
-	@DependantOn(SYPHILIS_INFECTION_SITE)
+	@DependantOn(SYPHILIS_INFECTION_SITES)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String syphilisInfectionSiteOther;
 
@@ -6358,12 +6359,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	}
 
 	@Order(470)
-	public SyphilisInfectionSite getSyphilisInfectionSite() {
-		return syphilisInfectionSite;
+	public Set<SyphilisInfectionSite> getSyphilisInfectionSites() {
+		return syphilisInfectionSites;
 	}
 
-	public void setSyphilisInfectionSite(SyphilisInfectionSite syphilisInfectionSite) {
-		this.syphilisInfectionSite = syphilisInfectionSite;
+	public void setSyphilisInfectionSites(Set<SyphilisInfectionSite> syphilisInfectionSites) {
+		this.syphilisInfectionSites = syphilisInfectionSites;
 	}
 
 	@Order(471)

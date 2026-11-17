@@ -103,7 +103,7 @@ final class SyphFieldModel {
 		fields.add(
 			ValueDef.sqlOnly(
 				"syphilis_infection_site",
-				"symptom.syphilisinfectionsite",
+				"symptom.syphilisinfectionsites",
 				(dto, row) -> dto.setSiteOfInfection(siteOfInfection((String) row.get("syphilis_infection_site")))));
 		fields.add(ValueDef.repeated(EpipulseVariable.SITE_OF_INFECTION, dto -> ValueDef.atLeastOneColumn(EpipulseMapping.siteOfInfection(dto))));
 
@@ -126,12 +126,16 @@ final class SyphFieldModel {
 				EpipulseMapping::stageSyphDetailed));
 	}
 
-	/** A single recorded site, as the one-element list the repeatable group expects. */
+	/** Maps recorded sites to the repeatable group. */
 	private static List<String> siteOfInfection(String recorded) {
 
-		String code = EpipulseSiteOfInfectionRef.codeFor(FieldReaders.parseEnum(SyphilisInfectionSite.class, recorded));
-
-		return code == null ? Collections.emptyList() : Collections.singletonList(code);
+		if (recorded == null || recorded.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return java.util.Arrays.stream(recorded.split(","))
+			.map(value -> EpipulseSiteOfInfectionRef.codeFor(FieldReaders.parseEnum(SyphilisInfectionSite.class, value)))
+			.filter(java.util.Objects::nonNull)
+			.collect(java.util.stream.Collectors.toList());
 	}
 
 	/**
