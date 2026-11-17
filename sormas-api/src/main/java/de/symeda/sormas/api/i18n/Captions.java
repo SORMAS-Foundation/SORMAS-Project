@@ -3825,8 +3825,8 @@ public interface Captions {
 	String Symptoms_symptomStatus = "Symptoms.symptomStatus";
 	String Symptoms_symptomsUnknownOccurred = "Symptoms.symptomsUnknownOccurred";
 	String Symptoms_syndromicFlu = "Symptoms.syndromicFlu";
-	String Symptoms_syphilisInfectionSite = "Symptoms.syphilisInfectionSite";
 	String Symptoms_syphilisInfectionSiteOther = "Symptoms.syphilisInfectionSiteOther";
+	String Symptoms_syphilisInfectionSites = "Symptoms.syphilisInfectionSites";
 	String Symptoms_syphilisInfectiousness = "Symptoms.syphilisInfectiousness";
 	String Symptoms_syphilisStage = "Symptoms.syphilisStage";
 	String Symptoms_temperature = "Symptoms.temperature";
