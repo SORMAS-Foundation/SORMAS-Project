@@ -541,14 +541,10 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			|| StringUtils.isNotBlank(externalMessage.getSexWorkerOther())
 			|| externalMessage.getContactWithSexWorker() != null
 			|| StringUtils.isNotBlank(externalMessage.getContactWithSexWorkerOther())
-			|| externalMessage.getMotherCountryOfBirth() != null
-			|| externalMessage.getMotherCitizenship() != null
 			|| ValueUtils.anyNonNullOrStringNotEmpty(
 				externalMessage.getProbableRouteOfTransmission(),
 				externalMessage.getMotherCitizenship(),
-				externalMessage.getMotherCountryOfBirth(),
-				externalMessage.getInfectionSource(),
-				externalMessage.getInfectionSourceText());
+				externalMessage.getMotherCountryOfBirth());
 	}
 
 	protected boolean hasExternalActivitiesAsCaseData(ExternalMessageDto externalMessage) {

@@ -243,7 +243,6 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		VerticalLayout content = new VerticalLayout();
 		content.setSpacing(true);
 
-		// TODO: check here 
 		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseSymptomsMismatch));
 		message.setContentMode(ContentMode.HTML);
 
