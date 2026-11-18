@@ -19,27 +19,19 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import com.vaadin.ui.UI;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.PseudonymizableDataAccessLevel;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
-import de.symeda.sormas.ui.UserProvider;
 
 /**
  * Tests the value change listener of the occupation type field in {@link PersonEditForm}: the occupation details have to be cleared
@@ -60,18 +52,7 @@ class PersonEditFormOccupationDetailsTest extends AbstractUiBeanTest {
 		createOccupationType(OCCUPATION_WITHOUT_DETAILS, "Occupation without details", false);
 		getCustomizableEnumFacade().loadData();
 
-		// The form reads the data access level of the current user via UiUtil, which needs a current UI with a user provider
-		UserProvider userProvider = mock(UserProvider.class);
-		when(userProvider.getPseudonymizableDataAccessLevel(anyBoolean())).thenReturn(PseudonymizableDataAccessLevel.ALL);
-		UI ui = mock(UI.class, withSettings().extraInterfaces(UserProvider.HasUserProvider.class));
-		when(((UserProvider.HasUserProvider) ui).getUserProvider()).thenReturn(userProvider);
-		UI.setCurrent(ui);
-	}
-
-	@AfterEach
-	void resetCurrentUi() {
-		// UI.setCurrent is thread-local, so it would otherwise leak into other tests running in the same thread
-		UI.setCurrent(null);
+		mockCurrentUiWithFullDataAccess();
 	}
 
 	@Test

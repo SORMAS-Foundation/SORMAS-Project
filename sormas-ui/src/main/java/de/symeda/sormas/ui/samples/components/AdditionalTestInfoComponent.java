@@ -47,6 +47,7 @@ public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> 
 	private final FormEventBus eventBus;
 	private Disease currentDisease;
 	private PathogenTestType currentTestType;
+	private boolean referenceLabDefaulted;
 
 	public AdditionalTestInfoComponent(FormEventBus eventBus, Disease disease) {
 		super(PathogenTestDto.class);
@@ -70,7 +71,12 @@ public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> 
 	}
 
 	private void wireEvents() {
-		// Listen for test type changes
+		track(performedByReferenceLaboratory.addValueChangeListener(e -> {
+			if (e.isUserOriginated()) {
+				referenceLabDefaulted = false;
+			}
+		}));
+
 		track(eventBus.on(TestTypeChangedEvent.class, event -> {
 			PathogenTestType testType = event.getTestType();
 			currentTestType = testType;
@@ -88,14 +94,18 @@ public class AdditionalTestInfoComponent extends FormComponent<PathogenTestDto> 
 	private void updateReferenceLaboratory(PathogenTestType testType, Disease currentDisease) {
 		boolean isReferenceLabTargetTest = REFERENCE_LAB_DEFAULT_DISEASES.contains(currentDisease)
 			&& Arrays.asList(PathogenTestType.ISOLATION, PathogenTestType.GENOTYPING).contains(testType);
-		performedByReferenceLaboratory.setValue(isReferenceLabTargetTest ? true : null);
-		if (!isReferenceLabTargetTest) {
+		if (isReferenceLabTargetTest && performedByReferenceLaboratory.getValue() == null) {
+			performedByReferenceLaboratory.setValue(true);
+			referenceLabDefaulted = true;
+		} else if (!isReferenceLabTargetTest && referenceLabDefaulted) {
 			performedByReferenceLaboratory.clear();
+			referenceLabDefaulted = false;
 		}
 	}
 
 	@Override
 	public void setDto(PathogenTestDto dto) {
+		referenceLabDefaulted = false;
 		super.setDto(dto);
 		currentTestType = dto != null ? dto.getTestType() : null;
 		updateReferenceLaboratory(currentTestType, currentDisease);
