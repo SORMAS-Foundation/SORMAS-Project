@@ -30,6 +30,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -54,6 +56,7 @@ import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessing
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -71,10 +74,13 @@ import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.UiUtil;
 
 class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
+
+	private TestDoctorDeclarationFlow victim;
 
 	private TestDataCreator.RDCF rdcf;
 	private UserDto user;
@@ -95,6 +101,40 @@ class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
 					+ "email VARCHAR(255)," + "phone VARCHAR(255)," + "agentfirstname VARCHAR(255)," + "agentlastname VARCHAR(255))")
 				.executeUpdate();
 		});
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = {
+		false,
+		true })
+	void updatesCountriesOnSavedCasePersonEvenWhenInitialPersonHasDifferentUuid(boolean newPerson) throws Exception {
+		// PREPARE
+		CountryReferenceDto birthCountry = CountryFacadeEjb.toReferenceDto(creator.createCountry("France", "FR", "250"));
+		CountryReferenceDto citizenship = CountryFacadeEjb.toReferenceDto(creator.createCountry("Germany", "DE", "276"));
+		PersonDto savedPerson = creator.createPerson("Given", "Family");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			savedPerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		ExternalMessageDto message = createDoctorDeclarationMessage(m -> {
+			m.setPersonBirthCountry(birthCountry);
+			m.setPersonCitizenship(citizenship);
+		});
+		victim = createFlow(message);
+		PersonDto initialPerson = newPerson ? PersonDto.build() : savedPerson;
+		ExternalMessageProcessingResult resultData = new ExternalMessageProcessingResult().withPerson(initialPerson, newPerson).withCreatedCase(caze);
+
+		// EXECUTE
+		victim.exposeHandleProcessingDone(ProcessingResult.of(ProcessingResultStatus.DONE, resultData)).toCompletableFuture().get();
+
+		// CHECK
+		PersonDto updatedPerson = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
+		assertEquals(birthCountry, updatedPerson.getBirthCountry());
+		assertEquals(citizenship, updatedPerson.getCitizenship());
 	}
 
 	@Test
