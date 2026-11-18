@@ -95,6 +95,7 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown healthcareProfessional;
 	private String placeOfInfection;
 	private String residenceAtOnset;
+	private Country residenceAtOnsetCountry;
 	private String patientIllLocation;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
 	private String contactWithSexWorkerOther;
@@ -320,6 +321,15 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setResidenceAtOnset(String residenceAtOnset) {
 		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getResidenceAtOnsetCountry() {
+		return residenceAtOnsetCountry;
+	}
+
+	public void setResidenceAtOnsetCountry(Country residenceAtOnsetCountry) {
+		this.residenceAtOnsetCountry = residenceAtOnsetCountry;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

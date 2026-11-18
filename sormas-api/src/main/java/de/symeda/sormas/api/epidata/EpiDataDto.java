@@ -79,6 +79,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 	public static final String PLACE_OF_INFECTION = "placeOfInfection";
 	public static final String RESIDENCE_AT_ONSET = "residenceAtOnset";
+	public static final String RESIDENCE_AT_ONSET_COUNTRY = "residenceAtOnsetCountry";
 	public static final String CLUSTER_IDENTIFIER = "clusterIdentifier";
 	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
 	public static final String PROBABLE_ROUTE_OF_TRANSMISSION_OTHER = "probableRouteOfTransmissionOther";
@@ -231,8 +232,17 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.RUBELLA })
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@SensitiveData
 	@Size(max = 255, message = Validations.textTooLong)
 	private String residenceAtOnset;
+
+	@Diseases({
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS,
+		Disease.RUBELLA })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private CountryReferenceDto residenceAtOnsetCountry;
 
 	/**
 	 * #13399 - the place where the patient became ill, moved here from {@code SymptomsDto.patientIllLocation}. Free text,
@@ -485,6 +495,14 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setResidenceAtOnset(String residenceAtOnset) {
 		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	public CountryReferenceDto getResidenceAtOnsetCountry() {
+		return residenceAtOnsetCountry;
+	}
+
+	public void setResidenceAtOnsetCountry(CountryReferenceDto residenceAtOnsetCountry) {
+		this.residenceAtOnsetCountry = residenceAtOnsetCountry;
 	}
 
 	public String getPatientIllLocation() {

@@ -38,7 +38,7 @@ Perform these steps against Luxembourg's SORMAS server admin UI (Configuration >
   transmission" is the caption SORMAS uses for mother-to-child transmission.
 - Confirm the "Hospital" caption on `ClusterType.NOSOCOMIAL` reads correctly for Luxembourg's ECDC report - no enum change needed, caption only.
 - Confirm in the running UI that the four Activities-as-a-case TYPE OF PLACE values (School, Education and childcare, Nursing home, Asylum seekers shelter) are available for Rubella cases - already true for Luxembourg, no code change.
-- "Place of residence of patient at time of disease onset" uses the existing free-text `residenceAtOnset` field - confirmed 2026-08-27, no country dropdown needed. No admin action, recorded here for reference only.
+- "Place of residence of patient at time of disease onset" uses `residenceAtOnsetCountry`, a country dropdown since #14424 (ECDC reporting, confirmed 2026-11-17). Free text recorded before that stays in `residenceAtOnset`, shown under the dropdown only when filled. No admin action, recorded here for reference only.
 
 ## Classification limits and rollout warning (#14296)
 

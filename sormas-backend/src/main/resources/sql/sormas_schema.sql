@@ -18568,4 +18568,24 @@ ALTER TABLE symptoms_history RENAME COLUMN syphilisinfectionsite TO syphilisinfe
 
 INSERT INTO schema_version (version_number, comment) VALUES (692, 'Allow multiple syphilis infection sites');
 
+-- #14424 country of residence at onset; the free text stays in residenceatonset
+ALTER TABLE epidata ADD COLUMN residenceatonsetcountry_id bigint;
+ALTER TABLE epidata ADD CONSTRAINT fk_epidata_residenceatonsetcountry_id FOREIGN KEY (residenceatonsetcountry_id) REFERENCES country (id);
+ALTER TABLE epidata_history ADD COLUMN residenceatonsetcountry_id bigint;
+
+ALTER TABLE epidata DISABLE TRIGGER versioning_trigger;
+
+UPDATE epidata e
+SET residenceatonsetcountry_id = match.country_id, changedate = now()
+FROM (
+    SELECT DISTINCT ON (lower(c.defaultname)) lower(c.defaultname) AS name, c.id AS country_id
+    FROM country c
+    WHERE c.defaultname IS NOT NULL
+    ORDER BY lower(c.defaultname), c.archived, c.id) match
+WHERE lower(trim(e.residenceatonset)) = match.name;
+
+ALTER TABLE epidata ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (693, '#14424 - EpiData residence at onset as country');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
