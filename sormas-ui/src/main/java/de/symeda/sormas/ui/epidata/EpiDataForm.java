@@ -396,6 +396,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
+		epiDataFieldsHint().setVisible(getField(EpiDataDto.HEALTHCARE_PROFESSIONAL).isVisible());
+
 		// #13399 - the location where the patient became ill is only recorded for cases, e.g. it is hidden in the epi data
 		// of an AFP contact
 		Field<?> patientIllLocationField = getField(EpiDataDto.PATIENT_ILL_LOCATION);
@@ -623,6 +625,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		activityAsCaseField
 			.addValueChangeListener(e -> ogActivityAsCaseDetailsKnown.setEnabled(CollectionUtils.isEmpty(activityAsCaseField.getValue())));
+	}
+
+	Component epiDataFieldsHint() {
+		return getContent().getComponent(LOC_EPI_DATA_FIELDS_HINT);
 	}
 
 	private void addHeadingsAndInfoTexts() {
