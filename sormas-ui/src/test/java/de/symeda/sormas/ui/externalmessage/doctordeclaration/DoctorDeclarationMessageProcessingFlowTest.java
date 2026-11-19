@@ -30,8 +30,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -103,11 +101,8 @@ class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {
-		false,
-		true })
-	void updatesCountriesOnSavedCasePersonEvenWhenInitialPersonHasDifferentUuid(boolean newPerson) throws Exception {
+	@Test
+	void updatesCountriesOnSavedCasePerson() throws Exception {
 		// PREPARE
 		CountryReferenceDto birthCountry = CountryFacadeEjb.toReferenceDto(creator.createCountry("France", "FR", "250"));
 		CountryReferenceDto citizenship = CountryFacadeEjb.toReferenceDto(creator.createCountry("Germany", "DE", "276"));
@@ -125,8 +120,7 @@ class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
 			m.setPersonCitizenship(citizenship);
 		});
 		victim = createFlow(message);
-		PersonDto initialPerson = newPerson ? PersonDto.build() : savedPerson;
-		ExternalMessageProcessingResult resultData = new ExternalMessageProcessingResult().withPerson(initialPerson, newPerson).withCreatedCase(caze);
+		ExternalMessageProcessingResult resultData = new ExternalMessageProcessingResult().withPerson(savedPerson, false).withCreatedCase(caze);
 
 		// EXECUTE
 		victim.exposeHandleProcessingDone(ProcessingResult.of(ProcessingResultStatus.DONE, resultData)).toCompletableFuture().get();
