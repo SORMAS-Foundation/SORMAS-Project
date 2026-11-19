@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -26,6 +27,7 @@ public class CronServicePermissionTest extends AbstractUnitTest {
 	public static final String BACKEND_ROOT_PACKAGE_NAME = "de.symeda.sormas.backend";
 
 	@Test
+	@DisplayName("Asserts methods called by the CronService are accessible to the 'System' user")
 	void methodsCalledByCronServiceAllowSystemWhenRightsAreRestricted() {
 		// PREPARE
 		JavaClasses classes = new ClassFileImporter().importPackages("de.symeda.sormas.backend");
