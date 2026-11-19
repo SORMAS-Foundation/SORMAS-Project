@@ -27352,14 +27352,18 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
-          "syphilisInfectionSite" : {
-            "type" : "string",
-            "enum" : [ "GENITAL", "ANORECTAL", "PHARYNGEAL", "UNKNOWN", "OTHER" ]
-          },
           "syphilisInfectionSiteOther" : {
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          },
+          "syphilisInfectionSites" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "GENITAL", "ANORECTAL", "PHARYNGEAL", "UNKNOWN", "OTHER" ]
+            },
+            "uniqueItems" : true
           },
           "syphilisInfectiousness" : {
             "type" : "string",
