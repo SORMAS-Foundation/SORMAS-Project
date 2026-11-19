@@ -384,6 +384,11 @@ public final class ExternalMessageMapper {
 		}
 
 		List<String[]> changedFields = new ArrayList<>();
+		changedFields.addAll(
+			map(
+				Stream.of(
+					Mapping.of(person::setBirthCountry, person.getBirthCountry(), externalMessage.getPersonBirthCountry(), PersonDto.BIRTH_COUNTRY),
+					Mapping.of(person::setCitizenship, person.getCitizenship(), externalMessage.getPersonCitizenship(), PersonDto.CITIZENSHIP))));
 
 		if (externalMessage.getPersonPresentCondition() != null) {
 			person.setPresentCondition(externalMessage.getPersonPresentCondition());

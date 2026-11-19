@@ -423,6 +423,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		person.setBirthdateDD(personCreated.getBirthdateDD());
 		person.setBirthdateMM(personCreated.getBirthdateMM());
 		person.setBirthdateYYYY(personCreated.getBirthdateYYYY());
+		person.setBirthCountry(personCreated.getBirthCountry());
+		person.setCitizenship(personCreated.getCitizenship());
 		person.setSex(personCreated.getSex());
 		person.setPresentCondition(personCreated.getPresentCondition());
 		person.setNationalHealthId(personCreated.getNationalHealthId());

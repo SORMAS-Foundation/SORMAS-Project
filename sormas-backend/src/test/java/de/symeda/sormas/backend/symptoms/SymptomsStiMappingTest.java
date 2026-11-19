@@ -2,6 +2,8 @@ package de.symeda.sormas.backend.symptoms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -16,7 +18,7 @@ class SymptomsStiMappingTest extends AbstractUnitTest {
 	void preservesOtherInfectionSiteInBothDirections() {
 		// PREPARE
 		SymptomsDto source = SymptomsDto.build();
-		source.setSyphilisInfectionSite(SyphilisInfectionSite.OTHER);
+		source.setSyphilisInfectionSites(Set.of(SyphilisInfectionSite.GENITAL, SyphilisInfectionSite.OTHER));
 		source.setSyphilisInfectionSiteOther("Infection site details");
 
 		// EXECUTE
@@ -24,9 +26,9 @@ class SymptomsStiMappingTest extends AbstractUnitTest {
 		SymptomsDto result = SymptomsFacadeEjb.toSymptomsDto(entity);
 
 		// CHECK
-		assertEquals(source.getSyphilisInfectionSite(), entity.getSyphilisInfectionSite());
+		assertEquals(source.getSyphilisInfectionSites(), entity.getSyphilisInfectionSites());
 		assertEquals(source.getSyphilisInfectionSiteOther(), entity.getSyphilisInfectionSiteOther());
-		assertEquals(source.getSyphilisInfectionSite(), result.getSyphilisInfectionSite());
+		assertEquals(source.getSyphilisInfectionSites(), result.getSyphilisInfectionSites());
 		assertEquals(source.getSyphilisInfectionSiteOther(), result.getSyphilisInfectionSiteOther());
 	}
 }

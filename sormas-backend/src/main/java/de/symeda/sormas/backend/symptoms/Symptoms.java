@@ -20,8 +20,10 @@ package de.symeda.sormas.backend.symptoms;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -408,7 +410,7 @@ public class Symptoms extends AbstractDomainObject {
 	// #13399 - deprecated, replaced by skinRash
 	@Deprecated
 	private SymptomState maculopapularRash;
-	private SyphilisInfectionSite syphilisInfectionSite;
+	private Set<SyphilisInfectionSite> syphilisInfectionSites;
 	private String syphilisInfectionSiteOther;
 	private SyphilisStage syphilisStage;
 	private SyphilisInfectiousness syphilisInfectiousness;
@@ -3006,13 +3008,13 @@ public class Symptoms extends AbstractDomainObject {
 		this.maculopapularRash = maculopapularRash;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public SyphilisInfectionSite getSyphilisInfectionSite() {
-		return syphilisInfectionSite;
+	@Convert(converter = SyphilisInfectionSiteSetConverter.class)
+	public Set<SyphilisInfectionSite> getSyphilisInfectionSites() {
+		return syphilisInfectionSites;
 	}
 
-	public void setSyphilisInfectionSite(SyphilisInfectionSite syphilisInfectionSite) {
-		this.syphilisInfectionSite = syphilisInfectionSite;
+	public void setSyphilisInfectionSites(Set<SyphilisInfectionSite> syphilisInfectionSites) {
+		this.syphilisInfectionSites = syphilisInfectionSites;
 	}
 
 	@Enumerated(EnumType.STRING)

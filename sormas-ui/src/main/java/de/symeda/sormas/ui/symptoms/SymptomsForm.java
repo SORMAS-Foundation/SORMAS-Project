@@ -84,6 +84,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
 import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectiousness;
 import de.symeda.sormas.api.symptoms.syphilis.SyphilisStage;
 import de.symeda.sormas.api.utils.DateComparator;
@@ -102,6 +103,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
@@ -587,7 +589,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CENTRAL_NERVOUS_SYSTEM_DAMAGE,
 			MALNUTRITION,
 			NEPHROTIC_SYNDROME,
-			SYPHILIS_INFECTION_SITE,
 			SYPHILIS_INFECTION_SITE_OTHER,
 			SYPHILIS_STAGE,
 			SYPHILIS_INFECTIOUSNESS,
@@ -654,6 +655,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			OTHER_COMPLICATION_DIAGNOSIS,
 			OTHER_COMPLICATION_DIAGNOSIS_TEXT,
 			UNKNOWN_COMPLICATION_DIAGNOSIS);
+
+		CheckboxSet<SyphilisInfectionSite> infectionSitesField = addField(SYPHILIS_INFECTION_SITES, CheckboxSet.class);
+		infectionSitesField.setItems(Arrays.asList(SyphilisInfectionSite.values()), null, null);
 
 		// Comments can be long, so they are entered in a multi-line text area that gets
 		// a row of its own (see populateGroupLayout)
@@ -1254,8 +1258,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(SKIN_RASH).setCaption(I18nProperties.getCaption(Captions.Symptoms_skinRash_RUBELLA));
 			getField(LYMPHADENOPATHY_CERVICAL).setCaption(I18nProperties.getCaption(Captions.Symptoms_lymphadenopathyCervical_RUBELLA));
 			getField(OTHER_NEUROLOGICAL_SYMPTOMS).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherNeurologicalSymptoms_RUBELLA));
-			getField(OTHER_NEUROLOGICAL_SYMPTOMS_TEXT)
-				.setCaption(I18nProperties.getCaption(Captions.Symptoms_otherNeurologicalSymptomsText_RUBELLA));
+			getField(OTHER_NEUROLOGICAL_SYMPTOMS_TEXT).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherNeurologicalSymptomsText_RUBELLA));
 		}
 
 		if (symptomsContext == SymptomsContext.CASE && caze != null && caze.getDisease() == Disease.PLAGUE) {
@@ -1738,7 +1741,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		ComboBox stageField = (ComboBox) getFieldGroup().getField(SYPHILIS_STAGE);
 		Field<Object> infectiousnessField = (Field<Object>) getFieldGroup().getField(SYPHILIS_INFECTIOUSNESS);
-		Field<?> infectionSiteField = getFieldGroup().getField(SYPHILIS_INFECTION_SITE);
+		Field<?> infectionSiteField = getFieldGroup().getField(SYPHILIS_INFECTION_SITES);
 
 		if (isCongenital) {
 			// stageHeadingLabel.setVisible(false);
