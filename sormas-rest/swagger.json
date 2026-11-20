@@ -18037,6 +18037,9 @@
             "maxLength" : 255,
             "minLength" : 0
           },
+          "residenceAtOnsetCountry" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
           "sexWorker" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN", "OTHER" ]

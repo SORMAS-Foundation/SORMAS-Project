@@ -17110,6 +17110,8 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        residenceAtOnsetCountry:
+          $ref: '#/components/schemas/CountryReferenceDto'
         sexWorker:
           type: string
           enum:
