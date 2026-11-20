@@ -148,6 +148,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private boolean skipFacilityTypeUpdate;
 	private boolean disableFacilityAddressCheck;
 	private boolean hasEventParticipantsWithoutJurisdiction;
+	private boolean noCountryOrServerCountry = true;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -377,22 +378,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 			if (districtDto == null) {
 				FieldHelper.removeItems(facility);
-				// Add a visual indictator reminding the user to select a district
-
-				if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-					facility.setComponentError(new ErrorMessage() {
-
-						@Override
-						public ErrorLevel getErrorLevel() {
-							return ErrorLevel.INFO;
-						}
-
-						@Override
-						public String getFormattedHtmlMessage() {
-							return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
-						}
-					});
-				}
+				showFacilityNeedsDistrictHint();
 			} else if (facilityType.getValue() != null) {
 				facility.setComponentError(null);
 				facility.markAsDirty();
@@ -456,19 +442,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 								false));
 				}
 			} else if (facilityType.getValue() != null && district.getValue() == null) {
-				// Add a visual indictator reminding the user to select a district
-				facility.setComponentError(new ErrorMessage() {
-
-					@Override
-					public ErrorLevel getErrorLevel() {
-						return ErrorLevel.INFO;
-					}
-
-					@Override
-					public String getFormattedHtmlMessage() {
-						return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
-					}
-				});
+				showFacilityNeedsDistrictHint();
 			}
 
 			// Only show contactperson-details if at least a faciltytype has been set
@@ -572,6 +546,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		country.addValueChangeListener(e -> {
 			updateRegionCombo(region, country);
 			region.setValue(null);
+
+			// The hidden jurisdiction fields can not be chosen again by the user, so the defaults have to be put back.
+			// Facilities of the server country are not offered for a foreign country, so it is left without a district.
+			if (noCountryOrServerCountry && UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+				hideAndFillJurisdictionFields();
+			}
 		});
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
@@ -580,6 +560,30 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
 		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
+	}
+
+	/**
+	 * Adds a visual indicator reminding the user to select a district.
+	 * Not shown when the jurisdiction fields are hidden, because the district can not be selected then.
+	 */
+	private void showFacilityNeedsDistrictHint() {
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			return;
+		}
+
+		facility.setComponentError(new ErrorMessage() {
+
+			@Override
+			public ErrorLevel getErrorLevel() {
+				return ErrorLevel.INFO;
+			}
+
+			@Override
+			public String getFormattedHtmlMessage() {
+				return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
+			}
+		});
 	}
 
 	private void hideAndFillJurisdictionFields() {
@@ -639,6 +643,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private void updateRegionCombo(ComboBox region, ComboBox country) {
 		InfrastructureFieldsHelper.updateRegionBasedOnCountry(country, region, (isServerCountry) -> {
+			noCountryOrServerCountry = isServerCountry;
 			if (districtRequiredOnDefaultCountry) {
 				setFieldsRequirement(hasEventParticipantsWithoutJurisdiction || isServerCountry, LocationDto.REGION, LocationDto.DISTRICT);
 			}

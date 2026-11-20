@@ -25,11 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -1262,6 +1264,100 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertFalse(isDisplayed(form, congenitalHeartDiseaseDetails));
 		assertNull(congenitalHeartDiseaseType.getValue());
 		assertTrue(congenitalHeartDiseaseDetails.isEmpty());
+	}
+
+	@Test
+	void shouldRecordOvernightStayRequiredWhenThereIsNoCase() {
+		// clinical assessments and follow-up visits have no case to open the hospitalization of
+		for (SymptomsContext context : Arrays.asList(SymptomsContext.CLINICAL_VISIT, SymptomsContext.VISIT)) {
+			SymptomsForm form =
+				new SymptomsForm(null, Disease.YERSINIOSIS, null, null, context, ViewMode.NORMAL, UiFieldAccessCheckers.getNoop());
+			form.setValue(SymptomsDto.build());
+			NullableOptionGroup overnightStayRequired = form.getField(SymptomsDto.OVERNIGHT_STAY_REQUIRED);
+
+			// the first change after loading is not acted upon, so yes is chosen a second time
+			assertDoesNotThrow(() -> {
+				overnightStayRequired.setNullableValue(SymptomState.YES);
+				overnightStayRequired.setNullableValue(SymptomState.NO);
+				overnightStayRequired.setNullableValue(SymptomState.YES);
+			}, context.name());
+			assertEquals(SymptomState.YES, overnightStayRequired.getNullableValue(), context.name());
+		}
+	}
+
+	@Test
+	void shouldClearEveryDisplayedSymptomStateFieldForGonococcalInfection() {
+		SymptomsForm form = createForm(Disease.GONOCOCCAL_INFECTION);
+		List<NullableOptionGroup> symptomStateFields = displayedSymptomStateFields(form, SymptomState.NO);
+		assertGonococcalFieldsAreIncluded(form, symptomStateFields);
+		symptomStateFields.forEach(field -> field.setNullableValue(SymptomState.NO));
+
+		findButton(form, I18nProperties.getCaption(Captions.actionClearAll)).click();
+
+		assertEquals(
+			Collections.emptyList(),
+			propertyIds(form, symptomStateFields.stream().filter(field -> field.getNullableValue() != null)),
+			"fields that were not cleared");
+	}
+
+	@Test
+	void shouldSetEveryClearedSymptomStateFieldForGonococcalInfection() {
+		assertSetClearedToStateSetsEveryField(Captions.symptomsSetClearedToNo, SymptomState.NO);
+		assertSetClearedToStateSetsEveryField(Captions.symptomsSetClearedToUnknown, SymptomState.UNKNOWN);
+	}
+
+	@Test
+	void shouldNotOfferGonococcalSitesAndConcurrentStisAsFirstSymptom() {
+		SymptomsForm form = createForm(Disease.GONOCOCCAL_INFECTION);
+		ComboBox onsetSymptom = form.getField(SymptomsDto.ONSET_SYMPTOM);
+		NullableOptionGroup urethritis = form.getField(SymptomsDto.URETHRITIS);
+		NullableOptionGroup genitalSite = form.getField(SymptomsDto.GONOCOCCAL_INFECTION_SITE_GENITAL);
+		NullableOptionGroup chlamydia = form.getField(SymptomsDto.CONCURRENT_STI_CHLAMYDIA);
+
+		urethritis.setNullableValue(SymptomState.YES);
+		genitalSite.setNullableValue(SymptomState.YES);
+		chlamydia.setNullableValue(SymptomState.YES);
+
+		// a site of infection or another infection is not a symptom the illness can start with
+		assertTrue(onsetSymptom.getItemIds().contains(urethritis.getCaption()));
+		assertFalse(onsetSymptom.getItemIds().contains(genitalSite.getCaption()));
+		assertFalse(onsetSymptom.getItemIds().contains(chlamydia.getCaption()));
+	}
+
+	private static void assertSetClearedToStateSetsEveryField(String buttonCaption, SymptomState state) {
+		SymptomsForm form = createForm(Disease.GONOCOCCAL_INFECTION);
+		List<NullableOptionGroup> symptomStateFields = displayedSymptomStateFields(form, state);
+		assertGonococcalFieldsAreIncluded(form, symptomStateFields);
+
+		findButton(form, I18nProperties.getCaption(buttonCaption)).click();
+
+		assertEquals(
+			Collections.emptyList(),
+			propertyIds(form, symptomStateFields.stream().filter(field -> field.getNullableValue() != state)),
+			"fields that were not set to " + state);
+	}
+
+	/** The gonococcal symptoms, sites of infection and concurrent STIs have to be among the checked fields. */
+	private static void assertGonococcalFieldsAreIncluded(SymptomsForm form, List<NullableOptionGroup> symptomStateFields) {
+		for (String fieldId : Arrays
+			.asList(SymptomsDto.URETHRITIS, SymptomsDto.GONOCOCCAL_INFECTION_SITE_GENITAL, SymptomsDto.CONCURRENT_STI_CHLAMYDIA)) {
+			assertTrue(symptomStateFields.contains(form.getField(fieldId)), fieldId);
+		}
+	}
+
+	/** The fields answered with a symptom state that the user can see and change. */
+	private static List<NullableOptionGroup> displayedSymptomStateFields(SymptomsForm form, SymptomState offeredState) {
+		return form.getFieldGroup()
+			.getFields()
+			.stream()
+			.filter(NullableOptionGroup.class::isInstance)
+			.map(NullableOptionGroup.class::cast)
+			.filter(field -> field.containsId(offeredState) && isDisplayed(form, field) && field.isEnabled() && !field.isReadOnly())
+			.collect(Collectors.toList());
+	}
+
+	private static List<Object> propertyIds(SymptomsForm form, Stream<NullableOptionGroup> fields) {
+		return fields.map(form.getFieldGroup()::getPropertyId).collect(Collectors.toList());
 	}
 
 	/** The group section (title, rows) a displayed component belongs to. */
