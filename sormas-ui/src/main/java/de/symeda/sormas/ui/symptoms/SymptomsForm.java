@@ -189,6 +189,34 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			UNKNOWN_COMPLICATION_DIAGNOSIS));
 	private static final List<String> COMBO_BOX_FIELDS = Collections.unmodifiableList(Arrays.asList(CLINICAL_MANIFESTATION));
 
+	/**
+	 * The sites of infection and the concurrent STIs of a gonococcal infection are answered with a symptom state, so
+	 * the clear and set cleared buttons cover them. They are not symptoms, so they are kept out of
+	 * unconditionalSymptomFieldIds and are not offered as the first symptom.
+	 * NO_CONCURRENT_STI comes before the concurrent STIs because it disables them while it is yes.
+	 */
+	private static final List<String> GONOCOCCAL_SITE_AND_CONCURRENT_STI_FIELD_IDS = Collections.unmodifiableList(
+		Arrays.asList(
+			GONOCOCCAL_INFECTION_SITE_ANORECTAL,
+			GONOCOCCAL_INFECTION_SITE_BLOOD,
+			GONOCOCCAL_INFECTION_SITE_CEREBROSPINAL_FLUID,
+			GONOCOCCAL_INFECTION_SITE_EYE,
+			GONOCOCCAL_INFECTION_SITE_GENITAL,
+			GONOCOCCAL_INFECTION_SITE_JOINT_FLUID,
+			GONOCOCCAL_INFECTION_SITE_PHARYNGEAL,
+			GONOCOCCAL_INFECTION_SITE_UNKNOWN,
+			GONOCOCCAL_INFECTION_SITE_OTHER,
+			NO_CONCURRENT_STI,
+			CONCURRENT_STI_CHLAMYDIA,
+			CONCURRENT_STI_GENITAL_HERPES,
+			CONCURRENT_STI_LGV,
+			CONCURRENT_STI_MYCOPLASMA_GENITALIUM,
+			CONCURRENT_STI_INFECTIOUS_SYPHILIS,
+			CONCURRENT_STI_TRICHOMONAS_VAGINALIS,
+			CONCURRENT_STI_GENITAL_WARTS,
+			CONCURRENT_STI_OTHER,
+			CONCURRENT_STI_UNKNOWN));
+
 	// public static final String SKIN_RASH_ONSET_DATE_LAYOUT = fluidRowLocs(6,
 	// "LBL_SKIN_RASH_ONSET_DATE", 1, "", 5, SKIN_RASH_ONSET_DATE);
 	private static final List<Disease> CLINICAL_SIGNS_AND_SYMPTOMS_HIDE_DISEASES = Arrays.asList(
@@ -1095,6 +1123,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			SALIVARY_SWELLING,
 			ORCHITIS,
 			PANCREATITIS,
+			// Gonococcal infection
+			CERVICITIS,
+			NEWBORN_CONJUNCTIVITIS,
+			EPIDIDYMITIS,
+			PELVIC_INFLAMMATORY_DISEASE,
+			PROCTITIS,
+			ACUTE_SALPINGITIS,
+			URETHRITIS,
 			// Diphtheria clinical criteria
 			CONJUNCTIVAL_PRESENTATION,
 			CUTANEOUS_PRESENTATION,
@@ -1208,6 +1244,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			lesionsLocationFieldIds.forEach(this::safeClearField);
 			monkeypoxImageFieldIds.forEach(this::safeClearField);
 			YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS.forEach(this::safeClearField);
+			GONOCOCCAL_SITE_AND_CONCURRENT_STI_FIELD_IDS.forEach(this::safeClearField);
 			COMBO_BOX_FIELDS.forEach(this::safeClearField);
 			// #14366 - the symptom listeners no longer clear the onset date, so clear the
 			// onset and offset dates here; safeClearField skips missing or read-only fields
@@ -1817,7 +1854,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	public Button createButtonSetClearedToSymptomState(String caption, SymptomState symptomState) {
 
 		Button button = ButtonHelper.createButton(caption, event -> {
-			Stream.of(unconditionalSymptomFieldIds, conditionalBleedingSymptomFieldIds, lesionsFieldIds, monkeypoxImageFieldIds)
+			Stream
+				.of(
+					unconditionalSymptomFieldIds,
+					conditionalBleedingSymptomFieldIds,
+					lesionsFieldIds,
+					monkeypoxImageFieldIds,
+					GONOCOCCAL_SITE_AND_CONCURRENT_STI_FIELD_IDS)
 				.flatMap(List::stream)
 				.forEach(symptomId -> setClearedSymptomToState(symptomId, symptomState));
 			// Clear YesNoUnknown fields - map SymptomState to YesNoUnknown
