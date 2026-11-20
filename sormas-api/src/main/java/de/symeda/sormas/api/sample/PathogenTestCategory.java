@@ -20,8 +20,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 /**
  * Broad grouping of laboratory test methods. When adding a pathogen test the user first picks a
  * category, which scopes the available {@link PathogenTestType} methods to those annotated with the
- * matching {@link PathogenTestCategoryRel}. The seven values come from the approved
- * "Categories" reference sheet of the laboratory specification.
+ * matching {@link PathogenTestCategoryRel}. The values come from the approved "Categories"
+ * reference sheet of the laboratory specification, plus {@link #OTHER} for the free-text Other method,
+ * which the category selector always lists last.
  */
 public enum PathogenTestCategory {
 
@@ -32,7 +33,8 @@ public enum PathogenTestCategory {
 	MICROSCOPY_AND_STAINING,
 	ANTIMICROBIAL_SUSCEPTIBILITY_TESTING,
 	FUNCTIONAL_IMMUNE_ASSAYS,
-	PHENOTYPIC_CHARACTERIZATION;
+	PHENOTYPIC_CHARACTERIZATION,
+	OTHER;
 
 	@Override
 	public String toString() {

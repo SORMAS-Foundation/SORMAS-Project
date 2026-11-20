@@ -20,6 +20,7 @@ public class PathogenTestTypeRubellaTest {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.GENOTYPING,
 		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
+		PathogenTestType.SANGER_SEQUENCING,
 		PathogenTestType.OTHER);
 
 	private final DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.RUBELLA);

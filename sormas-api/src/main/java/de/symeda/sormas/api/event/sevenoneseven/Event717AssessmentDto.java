@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -48,6 +49,7 @@ public class Event717AssessmentDto extends PseudonymizableDto {
 	public static final int MAX_ENTRIES_PER_INTERVAL = 3;
 
 	public static final String EVENT = "event";
+	public static final String ASSESSED_EVENT_STATUS = "assessedEventStatus";
 	public static final String DATE_OF_EMERGENCE = "dateOfEmergence";
 	public static final String EMERGENCE_NARRATIVE = "emergenceNarrative";
 	public static final String DATE_OF_DETECTION = "dateOfDetection";
@@ -87,6 +89,7 @@ public class Event717AssessmentDto extends PseudonymizableDto {
 
 	@NotNull(message = Validations.requiredField)
 	private EventReferenceDto event;
+	private EventStatus assessedEventStatus;
 	private Date dateOfEmergence;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -294,6 +297,17 @@ public class Event717AssessmentDto extends PseudonymizableDto {
 
 	public void setEvent(EventReferenceDto event) {
 		this.event = event;
+	}
+
+	/**
+	 * @return The status of the event when the assessment was created. Set by the server; ignored on save.
+	 */
+	public EventStatus getAssessedEventStatus() {
+		return assessedEventStatus;
+	}
+
+	public void setAssessedEventStatus(EventStatus assessedEventStatus) {
+		this.assessedEventStatus = assessedEventStatus;
 	}
 
 	public Date getDateOfEmergence() {

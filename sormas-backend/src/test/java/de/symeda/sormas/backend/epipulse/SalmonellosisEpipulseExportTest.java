@@ -61,6 +61,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUSPECTED_VEHICLE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -72,12 +73,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
@@ -163,8 +166,8 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 		reportingUser = surveillanceSupervisor.toReference();
 		fixture = fixtureFor(Disease.SALMONELLOSIS, rdcf, surveillanceSupervisor);
 
-		france = countryWithNutsCode("France", "FRA", "FR");
-		italy = countryWithNutsCode("Italy", "ITA", "IT");
+		france = countryWithEpipulseLocationCode("France", "FRA", "FR");
+		italy = countryWithEpipulseLocationCode("Italy", "ITA", "IT");
 	}
 
 	// ---------------------------------------------------------------------------------------
@@ -203,7 +206,7 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 		// from the configuration rather than from the case
 		expected.put(DISEASE, value("SALM"));
 		expected.put(SUBJECT_CODE, value("SALM"));
-		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(DATA_SOURCE, value(SERVER_DATA_SOURCE));
 		expected.put(STATUS, value("NEW/UPDATE"));
 
@@ -530,6 +533,33 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 	}
 
 	// ---------------------------------------------------------------------------------------
+	// which cases are in the file
+	// ---------------------------------------------------------------------------------------
+
+	@Test
+	@DisplayName("confirmed and probable cases are notified, and nothing else is")
+	public void onlyConfirmedAndProbableCasesAreExported() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String confirmedUnknownSymptoms = classifiedCase(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+
+		// SALM has no POSS, and neither an unclassified nor a ruled-out case is notifiable.
+		classifiedCase(CaseClassification.SUSPECT);
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+		classifiedCase(CaseClassification.NO_CASE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.SALM, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, confirmedUnknownSymptoms, probable));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+	}
+
+	// ---------------------------------------------------------------------------------------
 	// assertions
 	// ---------------------------------------------------------------------------------------
 
@@ -573,6 +603,10 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 
 	private PersonReferenceDto newPerson() {
 		return creator.createPerson().toReference();
+	}
+
+	private String classifiedCase(CaseClassification classification) {
+		return fixture.caze(newPerson(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
 	}
 
 	private CaseDataDto caseWith(Consumer<CaseDataDto> extraConfig) {
@@ -649,16 +683,16 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 	}
 
 	/**
-	 * A country the export can report, means one with a NUTS code - {@code TestDataCreator}
+	 * A country the export can report, means one with an EpiPulse location code - {@code TestDataCreator}
 	 * does not set that column, and without it the country is invisible to every place column.
 	 */
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});

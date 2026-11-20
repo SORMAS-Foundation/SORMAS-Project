@@ -55,7 +55,6 @@ import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -63,6 +62,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.epipulse.export.EpipulseConfigurationLookupService;
 import de.symeda.sormas.backend.epipulse.export.EpipulseExportTimerEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -94,6 +94,9 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 	@EJB
 	private EpipulseExportTimerEjb exportTimerEjb;
 
+	@EJB
+	private EpipulseConfigurationLookupService configurationLookupService;
+
 	@RightsAllowed({
 		UserRight._EPIPULSE_EXPORT_CREATE })
 	@Override
@@ -104,6 +107,10 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 			.checkCreateAndEditRights(existingEpipulseExport, userService, UserRight.EPIPULSE_EXPORT_CREATE, UserRight.EPIPULSE_EXPORT_CREATE);
 
 		validate(dto);
+		if (existingEpipulseExport == null) {
+			// only for a new export, so a later change of the configuration never blocks saving an existing one
+			validateDatasource(dto);
+		}
 
 		EpipulseExport epipulseExport = fillOrBuildEntity(dto, existingEpipulseExport);
 
@@ -314,6 +321,8 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 		dto.setExportFileName(entity.getExportFileName());
 		dto.setExportFileSize(entity.getExportFileSize());
 		dto.setCreationUser(UserFacadeEjb.toReferenceDto(entity.getCreationUser()));
+		// read-only for the user: written by the background export, therefore not copied back in fillOrBuildEntity
+		dto.setStatusReason(entity.getStatusReason());
 
 		return dto;
 	}
@@ -331,13 +340,50 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 		return new EpipulseExportReferenceDto(entity.getUuid());
 	}
 
+	/**
+	 * Checks that the end date of the export is not before its start date.
+	 *
+	 * <p>
+	 * Example: start 12/11/2026, end 02/11/2026 → {@link ValidationRuntimeException} "Report end date has to be after or on
+	 * the same day as Report start date"; start and end on the same day → accepted.
+	 *
+	 * @throws ValidationRuntimeException
+	 *             if the end date is before the start date
+	 */
 	private void validate(EpipulseExportDto epipulseExportDto) throws ValidationRuntimeException {
 		if (DateHelper.isDateAfter(epipulseExportDto.getStartDate(), epipulseExportDto.getEndDate())) {
-			String validationError = String.format(
-				I18nProperties.getValidationError(Validations.afterDate),
-				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, EpipulseExportDto.START_DATE),
-				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, EpipulseExportDto.END_DATE));
+			// getValidationError formats the message itself; formatting it again without arguments threw a
+			// MissingFormatArgumentException instead of showing the message
+			String validationError = I18nProperties.getValidationError(
+				Validations.afterDate,
+				I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.END_DATE),
+				I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.START_DATE));
 			throw new ValidationRuntimeException(validationError);
+		}
+	}
+
+	/**
+	 * Checks that an EpiPulse data source is configured for the disease of the export: its own one in the disease
+	 * configuration, else the system configuration value {@code EPIPULSE_DATASOURCE}. The data source is required, so the
+	 * export is not created without it, and the user is told where to enter it.
+	 *
+	 * <p>
+	 * Example: MEASLES with own data source {@code "LU-SURV"} → accepted; MEASLES without own data source and
+	 * {@code EPIPULSE_DATASOURCE = "LU-SYSTEM1"} → accepted; MEASLES without own data source and the system value empty →
+	 * {@link ValidationRuntimeException} "An EpiPulse data source is required for Measles…"; no subject code → nothing is
+	 * checked here: the export form requires one, and the column {@code epipulse_export.subject_code} is {@code NOT NULL}.
+	 *
+	 * @throws ValidationRuntimeException
+	 *             if no data source is configured for the disease
+	 */
+	private void validateDatasource(EpipulseExportDto epipulseExportDto) throws ValidationRuntimeException {
+
+		if (epipulseExportDto == null || epipulseExportDto.getSubjectCode() == null) {
+			return;
+		}
+
+		if (configurationLookupService.lookupDatasource(epipulseExportDto.getSubjectCode()) == null) {
+			throw new ValidationRuntimeException(configurationLookupService.datasourceRequiredMessage(epipulseExportDto.getSubjectCode()));
 		}
 	}
 

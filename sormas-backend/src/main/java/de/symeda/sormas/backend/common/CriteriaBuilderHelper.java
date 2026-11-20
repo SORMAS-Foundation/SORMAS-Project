@@ -203,7 +203,7 @@ public class CriteriaBuilderHelper {
 		return coalesce(cb, String.class, expressions);
 	}
 
-	public static Predicate applyDateFilter(CriteriaBuilder cb, Predicate filter, Path path, Date fromDate, Date toDate) {
+	public static Predicate applyDateFilter(CriteriaBuilder cb, Predicate filter, Expression path, Date fromDate, Date toDate) {
 		if (fromDate != null && toDate != null) {
 			filter = and(cb, filter, cb.between(path, fromDate, toDate));
 		} else if (fromDate != null) {

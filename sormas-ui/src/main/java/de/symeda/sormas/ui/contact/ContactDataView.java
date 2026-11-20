@@ -15,6 +15,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -176,7 +177,6 @@ public class ContactDataView extends AbstractContactView implements HasName {
 				CssStyles.VSPACE_2);
 			buttonsLayout.addComponent(chooseCaseButton);
 			Button removeCaseButton = ButtonHelper.createButton(Captions.contactRemoveCase, null, ValoTheme.BUTTON_LINK);
-
 			if (contactDto.getCaze() != null) {
 				buttonsLayout.addComponent(removeCaseButton);
 			}
@@ -279,6 +279,14 @@ public class ContactDataView extends AbstractContactView implements HasName {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 					Disease criteriaDisease = refreshedContact.getDisease();
 					String criteriaDiseaseDetails = refreshedContact.getDiseaseDetails();
+					Date referencePeriodFrom = refreshedContact.getFirstContactDate();
+					if (referencePeriodFrom == null) {
+						referencePeriodFrom = refreshedContact.getLastContactDate() != null
+							? refreshedContact.getLastContactDate()
+							: refreshedContact.getReportDateTime();
+					}
+					Date referencePeriodTo =
+						refreshedContact.getLastContactDate() != null ? refreshedContact.getLastContactDate() : referencePeriodFrom;
 					if (criteriaDisease == null && refreshedContact.getCaze() != null) {
 						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
 						criteriaDisease = refreshedCase != null ? refreshedCase.getDisease() : null;
@@ -286,6 +294,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 					}
 					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease)
 						.withDiseaseDetails(criteriaDiseaseDetails)
+						.withReferencePeriod(referencePeriodFrom, referencePeriodTo)
 						.build();
 				}, null, this::showUnsavedChangesPopup, editAllowed, vaccinationStatusPanel, SormasUI::refreshView, getContactRef())),
 					IMMUNIZATION_LOC);

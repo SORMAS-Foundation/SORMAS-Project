@@ -30,7 +30,7 @@ import de.symeda.sormas.api.epipulse.referencevalue.EpipulseDengueModeOfTransmis
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseDengueSerotypeRef;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.sample.Serotype;
-import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.ClinicalManifestation;
 import de.symeda.sormas.backend.epipulse.fieldmodel.EpipulseRow;
 import de.symeda.sormas.backend.epipulse.fieldmodel.FieldModel;
 import de.symeda.sormas.backend.epipulse.fieldmodel.ValueDef;
@@ -103,9 +103,16 @@ final class DengueFieldModel {
 				EpipulseVariable.CLINICAL_CRITERIA_STATUS,
 				EpipulseMapping::clinicalCriteriaStatus));
 
-		// No select column of its own: asymptomatic is already in every model's base block, where
-		// it suppresses DateOfOnset, and this reads the DTO field that block populates.
-		fields.add(ValueDef.calculated(EpipulseVariable.CLINICAL_CRITERIA, DengueFieldModel::clinicalCriteria));
+		// The asymptomatic is already in every model's base block,
+		// where it suppresses DateOfOnset, the rule reads also manifestation.
+		fields.add(
+			ValueDef.direct(
+				"clinical_manifestation",
+				"symptom.clinicalmanifestation",
+				(dto, row) -> dto
+					.setClinicalManifestation(FieldReaders.parseEnum(ClinicalManifestation.class, (String) row.get("clinical_manifestation"))),
+				EpipulseVariable.CLINICAL_CRITERIA,
+				EpipulseMapping::dengueClinicalCriteria));
 	}
 
 	/**
@@ -171,13 +178,6 @@ final class DengueFieldModel {
 		fields.add(
 			ValueDef
 				.repeated(EpipulseVariable.PATHOGEN_DETECTION_METHOD, dto -> ValueDef.atLeastOneColumn(EpipulseMapping.dengueDetectionMethods(dto))));
-	}
-
-	/**
-	 * Maps dengue {@code ClinicalCriteria}; currently only {@code ASY} can be derived reliably.
-	 */
-	private static String clinicalCriteria(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getAsymptomatic() == SymptomState.YES ? "ASY" : null;
 	}
 
 	private static void readModeOfTransmission(EpipulseDiseaseExportEntryDto dto, EpipulseRow row) {

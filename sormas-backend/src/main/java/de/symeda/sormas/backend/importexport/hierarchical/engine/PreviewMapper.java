@@ -12,25 +12,25 @@ public final class PreviewMapper {
 	private PreviewMapper() {
 	}
 
-	public static ImportPreviewDto toPreview(ImportDefinition definition, ImportPlan plan) {
-		List<BlockPreviewDto> blocks = plan.blocks().stream().map(block -> toBlock(definition, block)).collect(Collectors.toList());
+	public static ImportPreviewDto toPreview(ImportPlan plan) {
+		List<BlockPreviewDto> blocks = plan.blocks().stream().map(block -> toBlock(plan, block)).collect(Collectors.toList());
 		return new ImportPreviewDto(plan.fileIssues(), plan.rowIssues(), blocks, plan.ignoredColumns());
 	}
 
-	private static BlockPreviewDto toBlock(ImportDefinition definition, PlannedBlock block) {
+	private static BlockPreviewDto toBlock(ImportPlan plan, PlannedBlock block) {
 		List<RecordOperationDto> operations = block.records()
 			.map(
 				record -> new RecordOperationDto(
 					record.node().level().name(),
 					record.operation(),
-					definition.handler(record.node().level()).label(record),
+					plan.handler(record.node().level()).label(record),
 					record.node().lineNumber(),
 					record.changes(),
 					record.parent() == null ? record.reason() : null,
 					record.linkedRoot() == null ? null : record.linkedRoot().lineNumber()))
 			.collect(Collectors.toList());
 		String label =
-			block.rootRecord() != null ? definition.handler(block.root().level()).label(block.rootRecord()) : block.root().label();
+			block.rootRecord() != null ? plan.handler(block.root().level()).label(block.rootRecord()) : block.root().label();
 		return new BlockPreviewDto(
 			block.index(),
 			block.root().lineNumber(),

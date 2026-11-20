@@ -32,10 +32,12 @@ final class TestHandler implements LevelHandler {
 
 	private final PathogenTestFacadeEjbLocal pathogenTestFacade;
 	private final CurrentUserService currentUserService;
+	private final ColumnHeaders headers;
 
-	TestHandler(PathogenTestFacadeEjbLocal pathogenTestFacade, CurrentUserService currentUserService) {
+	TestHandler(PathogenTestFacadeEjbLocal pathogenTestFacade, CurrentUserService currentUserService, ColumnHeaders headers) {
 		this.pathogenTestFacade = pathogenTestFacade;
 		this.currentUserService = currentUserService;
+		this.headers = headers;
 	}
 
 	@Override
@@ -113,13 +115,13 @@ final class TestHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
-		if (RejectedRecords.alreadyRejected(record)) {
+		if (RejectedRecords.hasAnyIssue(record)) {
 			return;
 		}
 		try {
 			pathogenTestFacade.validate(record.target(TEST));
 		} catch (ValidationRuntimeException e) {
-			ValidationIssues.report(record.node(), TEST, e);
+			ValidationIssues.report(record.node(), TEST, e, headers);
 		}
 	}
 }

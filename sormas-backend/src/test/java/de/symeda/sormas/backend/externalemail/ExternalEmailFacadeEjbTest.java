@@ -33,6 +33,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,6 +47,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.mail.MessagingException;
 
@@ -78,6 +82,7 @@ import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
 import de.symeda.sormas.api.externalemail.ExternalEmailOptionsWithAttachmentsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogCriteria;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
@@ -857,6 +862,53 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 		assertThat(relatedEntityUuids, hasItem(caze1.getUuid()));
 		assertThat(relatedEntityUuids, hasItem(caze2.getUuid()));
+	}
+
+	@Test
+	public void testQuarantineOrderAttachmentKeepsDisplayNameWithoutTempPrefix() throws MessagingException, IOException {
+		CaseDataDto caze = creator.createCase(userDto.toReference(), personDto.toReference(), rdcf);
+		ArgumentCaptor<Map<File, String>> attachmentsCaptor = ArgumentCaptor.forClass(Map.class);
+		Mockito.doNothing().when(emailService).sendEmail(any(), any(), any(), attachmentsCaptor.capture());
+
+		sendQuarantineOrderEmail(caze);
+
+		Map<File, String> attachments = attachmentsCaptor.getValue();
+		assertThat(attachments, aMapWithSize(1));
+		String displayName = attachments.values().iterator().next();
+		assertThat(displayName, is(DataHelper.getShortUuid(caze.getUuid()) + "-Quarantine.pdf"));
+		assertThat(displayName.startsWith(ImportExportUtils.TEMP_FILE_PREFIX), is(false));
+	}
+
+	@Test
+	public void testQuarantineOrderTempFilesCarryTempPrefixWhenSendingFails() throws MessagingException, IOException {
+		CaseDataDto caze = creator.createCase(userDto.toReference(), personDto.toReference(), rdcf);
+		Mockito.doThrow(new IllegalStateException("boom")).when(emailService).sendEmail(any(), any(), any(), any());
+
+		sendQuarantineOrderEmail(caze);
+
+		try (Stream<Path> tempFiles = Files.list(Paths.get(MockProducer.TMP_PATH))) {
+			List<String> quarantineFiles = tempFiles.map(path -> path.getFileName().toString())
+				.filter(name -> name.endsWith("Quarantine.docx"))
+				.collect(Collectors.toList());
+			assertThat(quarantineFiles, hasSize(1));
+			assertThat(quarantineFiles.get(0).startsWith(ImportExportUtils.TEMP_FILE_PREFIX), is(true));
+			Files.delete(Paths.get(MockProducer.TMP_PATH, quarantineFiles.get(0)));
+		}
+	}
+
+	private void sendQuarantineOrderEmail(CaseDataDto caze) throws IOException {
+		ExternalEmailOptionsWithAttachmentsDto options =
+			new ExternalEmailOptionsWithAttachmentsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE);
+		options.setTemplate(toReference(caseEmailTemplate));
+		QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptions = new QuarantineOrderDocumentOptionsDto();
+		quarantineOrderDocumentOptions.setTemplate(toReference(quarantineOrderTemplate));
+		quarantineOrderDocumentOptions.setExtraProperties(new Properties());
+		quarantineOrderDocumentOptions.setShouldUploadGeneratedDoc(false);
+		quarantineOrderDocumentOptions.setDocumentWorkflow(DocumentWorkflow.QUARANTINE_ORDER_CASE);
+		options.setQuarantineOrderDocumentOptionsDto(quarantineOrderDocumentOptions);
+		options.setAttachedDocuments(new HashSet<>());
+
+		getExternalEmailFacade().sendBulkEmail(options, Collections.singletonList(caze.toReference()));
 	}
 
 	private DocumentDto createDocument(String fileName, DocumentRelatedEntityType relatedEntityType, String relatedEntityUuid) throws IOException {

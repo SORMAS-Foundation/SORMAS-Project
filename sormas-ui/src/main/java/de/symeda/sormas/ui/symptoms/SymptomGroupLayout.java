@@ -56,6 +56,7 @@ import de.symeda.sormas.api.symptoms.DiagnosisType;
 import de.symeda.sormas.api.symptoms.InfectionSite;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
 import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.SymptomGroup;
@@ -175,11 +176,11 @@ final class SymptomGroupLayout {
 		SymptomGroup.METABOLIC,
 		SymptomGroup.MUSCULOSKELETAL,
 		SymptomGroup.GENITAL,
+		SymptomGroup.SYSTEM_DISORDER,
+		SymptomGroup.OTHER,
 		SymptomGroup.STAGE,
 		SymptomGroup.SITE_OF_INFECTION,
 		SymptomGroup.CONCURRENT_STI,
-		SymptomGroup.SYSTEM_DISORDER,
-		SymptomGroup.OTHER,
 		SymptomGroup.CLINICAL_ASSESSMENT_AND_COURSE);
 
 	/**
@@ -256,7 +257,9 @@ final class SymptomGroupLayout {
 		SymptomsDto.MAJOR_SITE,
 		value -> value == InfectionSite.OTHER,
 		SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE,
-		value -> value == CongenitalHeartDiseaseType.OTHER);
+		value -> value == CongenitalHeartDiseaseType.OTHER,
+		SymptomsDto.SYPHILIS_INFECTION_SITES,
+		value -> value instanceof Set<?> && ((Set<?>) value).contains(SyphilisInfectionSite.OTHER));
 
 	/**
 	 * The vertical layout of the form that receives all group sections, one below the other, in the order they are created

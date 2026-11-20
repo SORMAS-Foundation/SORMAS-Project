@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +19,7 @@ import static de.symeda.sormas.backend.util.QueryHelper.getResultList;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -45,9 +47,11 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
@@ -57,6 +61,7 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationIndexDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.sort.EntitySortUtils;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -87,6 +92,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private DiseaseConfigurationService service;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	private static final List<Disease> activeDiseases = new ArrayList<>();
 	private static final List<Disease> inactiveDiseases = new ArrayList<>();
@@ -97,6 +104,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private static final List<Disease> followUpEnabledDiseases = new ArrayList<>();
 	private static final List<Disease> incubationEnabledDiseases = new ArrayList<>();
 	private static final List<Disease> contagiousEnabledDiseases = new ArrayList<>();
+	private static final Map<Disease, Set<Integer>> usualRangeExcludedYears = new EnumMap<>(Disease.class);
 
 	private static final Map<Disease, Boolean> extendedClassificationDiseases = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Boolean> extendedClassificationMultiDiseases = new EnumMap<>(Disease.class);
@@ -109,6 +117,13 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private static final Map<Disease, Integer> minContagiousPeriod = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Integer> maxContagiousPeriod = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Integer> automaticSampleAssignmentThresholds = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> vaccinationProtectionStartOffsetDays = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> vaccinationProtectionRequiredDoses = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> vaccinationProtectionDurationDays = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Boolean> vaccinationProtectionLifelong = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> recoveryProtectionStartOffsetDays = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> recoveryProtectionDurationDays = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Boolean> recoveryProtectionLifelong = new EnumMap<>(Disease.class);
 
 	@Override
 	@PermitAll
@@ -396,6 +411,18 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
+	@PermitAll
+	public boolean isCaseSurveillanceEnabled(Disease disease) {
+		return caseSurveillanceDiseases.contains(disease);
+	}
+
+	@Override
+	@PermitAll
+	public Set<Integer> getUsualRangeExcludedYears(Disease disease) {
+		return usualRangeExcludedYears.getOrDefault(disease, Collections.emptySet());
+	}
+
+	@Override
 	public List<Disease> getAllActiveDiseases() {
 		return activeDiseases;
 	}
@@ -448,14 +475,24 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setMaxIncubationPeriod(source.getMaxIncubationPeriod());
 		target.setMinIncubationPeriod(source.getMinIncubationPeriod());
 		target.setCaseDefinitionText(source.getCaseDefinitionText());
+		target.setEpipulseSubjectCode(source.getEpipulseSubjectCode());
+		target.setEpipulseDatasource(source.getEpipulseDatasource());
 		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());
 		target.setMinContagiousPeriod(source.getMinContagiousPeriod());
 		target.setIsContagious(source.getIsContagious());
+		target.setVaccinationProtectionStartOffsetDays(source.getVaccinationProtectionStartOffsetDays());
+		target.setVaccinationProtectionRequiredDoses(source.getVaccinationProtectionRequiredDoses());
+		target.setVaccinationProtectionDurationDays(source.getVaccinationProtectionDurationDays());
+		target.setVaccinationProtectionLifelong(source.getVaccinationProtectionLifelong());
+		target.setRecoveryProtectionStartOffsetDays(source.getRecoveryProtectionStartOffsetDays());
+		target.setRecoveryProtectionDurationDays(source.getRecoveryProtectionDurationDays());
+		target.setRecoveryProtectionLifelong(source.getRecoveryProtectionLifelong());
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
 		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
 		target.setExposureCategories(source.getExposureCategories());
+		target.setUsualRangeExcludedYears(source.getUsualRangeExcludedYears());
 
 		return target;
 	}
@@ -491,6 +528,41 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	@Override
 	public Integer getAutomaticSampleAssignmentThreshold(Disease disease) {
 		return automaticSampleAssignmentThresholds.get(disease);
+	}
+
+	@Override
+	public Integer getVaccinationProtectionStartOffsetDays(Disease disease) {
+		return vaccinationProtectionStartOffsetDays.get(disease);
+	}
+
+	@Override
+	public Integer getVaccinationProtectionRequiredDoses(Disease disease) {
+		return vaccinationProtectionRequiredDoses.get(disease);
+	}
+
+	@Override
+	public Integer getVaccinationProtectionDurationDays(Disease disease) {
+		return vaccinationProtectionDurationDays.get(disease);
+	}
+
+	@Override
+	public boolean isVaccinationProtectionLifelong(Disease disease) {
+		return Boolean.TRUE.equals(vaccinationProtectionLifelong.get(disease));
+	}
+
+	@Override
+	public Integer getRecoveryProtectionStartOffsetDays(Disease disease) {
+		return recoveryProtectionStartOffsetDays.get(disease);
+	}
+
+	@Override
+	public Integer getRecoveryProtectionDurationDays(Disease disease) {
+		return recoveryProtectionDurationDays.get(disease);
+	}
+
+	@Override
+	public boolean isRecoveryProtectionLifelong(Disease disease) {
+		return Boolean.TRUE.equals(recoveryProtectionLifelong.get(disease));
 	}
 
 	@Override
@@ -546,15 +618,53 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setMinIncubationPeriod(source.getMinIncubationPeriod());
 		target.setIncubationPeriodEnabled(source.getIncubationPeriodEnabled());
 		target.setCaseDefinitionText(source.getCaseDefinitionText());
+		target.setEpipulseSubjectCode(StringUtils.trimToNull(source.getEpipulseSubjectCode()));
+		target.setEpipulseDatasource(StringUtils.trimToNull(source.getEpipulseDatasource()));
 		target.setExposureCategories(source.getExposureCategories());
 		target.setIsContagious(source.getIsContagious());
 		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());
 		target.setMinContagiousPeriod(source.getMinContagiousPeriod());
+		target.setUsualRangeExcludedYears(source.getUsualRangeExcludedYears());
+		target.setVaccinationProtectionStartOffsetDays(source.getVaccinationProtectionStartOffsetDays());
+		target.setVaccinationProtectionRequiredDoses(source.getVaccinationProtectionRequiredDoses());
+		target.setVaccinationProtectionDurationDays(source.getVaccinationProtectionDurationDays());
+		target.setVaccinationProtectionLifelong(source.getVaccinationProtectionLifelong());
+		target.setRecoveryProtectionStartOffsetDays(source.getRecoveryProtectionStartOffsetDays());
+		target.setRecoveryProtectionDurationDays(source.getRecoveryProtectionDurationDays());
+		target.setRecoveryProtectionLifelong(source.getRecoveryProtectionLifelong());
 
 		//update changedate: required for mobile app to be aware of changes
 		target.setChangeDate(new Timestamp((new Date()).getTime()));
 
 		return target;
+	}
+
+	public void presetLuxembourgRubellaConfiguration() {
+		if (!configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			return;
+		}
+
+		DiseaseConfiguration rubella =
+			Optional.ofNullable(service.getDiseaseConfiguration(Disease.RUBELLA)).orElseGet(() -> DiseaseConfiguration.build(Disease.RUBELLA));
+		rubella.setActive(true);
+		rubella.setPrimaryDisease(true);
+		rubella.setCaseSurveillanceEnabled(true);
+		rubella.setExposureCategories(withRespiratoryAndVerticalPathways(rubella.getExposureCategories()));
+		rubella.setChangeDate(new Timestamp(new Date().getTime()));
+		service.ensurePersisted(rubella);
+
+		loadData();
+	}
+
+	private static Set<ExposureCategory> withRespiratoryAndVerticalPathways(Set<ExposureCategory> exposureCategories) {
+		Set<ExposureCategory> pathways = EnumSet.noneOf(ExposureCategory.class);
+		if (exposureCategories != null) {
+			pathways.addAll(exposureCategories);
+		}
+		pathways.remove(ExposureCategory.AIR_BORNE);
+		pathways.add(ExposureCategory.RESPIRATORY);
+		pathways.add(ExposureCategory.VERTICAL_TRANSMISSION);
+		return pathways;
 	}
 
 	@PostConstruct
@@ -578,9 +688,21 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		minContagiousPeriod.clear();
 		maxContagiousPeriod.clear();
 		automaticSampleAssignmentThresholds.clear();
+		usualRangeExcludedYears.clear();
+		vaccinationProtectionStartOffsetDays.clear();
+		vaccinationProtectionRequiredDoses.clear();
+		vaccinationProtectionDurationDays.clear();
+		vaccinationProtectionLifelong.clear();
+		recoveryProtectionStartOffsetDays.clear();
+		recoveryProtectionDurationDays.clear();
+		recoveryProtectionLifelong.clear();
 
 		for (DiseaseConfiguration configuration : service.getAll()) {
 			Disease disease = configuration.getDisease();
+
+			if (configuration.getUsualRangeExcludedYears() != null && !configuration.getUsualRangeExcludedYears().isEmpty()) {
+				usualRangeExcludedYears.put(disease, Collections.unmodifiableSet(new TreeSet<>(configuration.getUsualRangeExcludedYears())));
+			}
 
 			if (enabled(configuration.getActive(), disease.isDefaultActive())) {
 				activeDiseases.add(disease);
@@ -664,6 +786,14 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 			if (configuration.getAutomaticSampleAssignmentThreshold() != null) {
 				automaticSampleAssignmentThresholds.put(disease, configuration.getAutomaticSampleAssignmentThreshold());
 			}
+
+			vaccinationProtectionStartOffsetDays.put(disease, configuration.getVaccinationProtectionStartOffsetDays());
+			vaccinationProtectionRequiredDoses.put(disease, configuration.getVaccinationProtectionRequiredDoses());
+			vaccinationProtectionDurationDays.put(disease, configuration.getVaccinationProtectionDurationDays());
+			vaccinationProtectionLifelong.put(disease, configuration.getVaccinationProtectionLifelong());
+			recoveryProtectionStartOffsetDays.put(disease, configuration.getRecoveryProtectionStartOffsetDays());
+			recoveryProtectionDurationDays.put(disease, configuration.getRecoveryProtectionDurationDays());
+			recoveryProtectionLifelong.put(disease, configuration.getRecoveryProtectionLifelong());
 		}
 	}
 

@@ -158,6 +158,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.UserField;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -989,7 +990,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Enabling the general comments for all diseases.
 		generalCommentLabel.setVisible(true);
 
-		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
+		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class, new ResizableTextAreaWrapper<>());
 		additionalDetails.setRows(6);
 		additionalDetails.setDescription(
 			I18nProperties.getPrefixDescription(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS, "") + "\n"

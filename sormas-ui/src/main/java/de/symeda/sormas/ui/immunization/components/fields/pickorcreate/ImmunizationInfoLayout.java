@@ -9,6 +9,13 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
+/**
+ * Shows the start and end date of an immunization in the pick-or-create dialog.
+ *
+ * @deprecated Start and end date were superseded by the validity period fields (valid from / valid until) and are no longer
+ *             shown in the immunization forms. Kept for now in case the similarity check is revised and needed again.
+ */
+@Deprecated
 public class ImmunizationInfoLayout extends HorizontalLayout {
 
 	ImmunizationInfoLayout(ImmunizationDto immunization) {

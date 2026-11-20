@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
 import de.symeda.sormas.api.epipulse.EpipulseLaboratoryMapper;
 import de.symeda.sormas.api.epipulse.EpipulseMapping;
@@ -132,12 +133,18 @@ final class RubeFieldModel {
 	}
 
 	/**
-	 * WeekOfGestation: gestational age at infection (declared, left blank). SORMAS has no matching field
-	 * (PersonDto.gestationAgeAtBirth is congenital-only, different measurement). Blank not absent: EpiPulse
-	 * validates exact column set. TODO: SORMAS field needed (bands W1-12, W13-20, W20+).
+	 * WeekOfGestation: the case's trimester as EpiPulse's week band where it fits one (FIRST = W1-12,
+	 * THIRD = W20+); blank for SECOND, which spans W13-20 and W20+, for UNKNOWN or none recorded. Not
+	 * PersonDto.gestationAgeAtBirth, which measures the patient's own birth.
 	 */
 	private static void addWeekOfGestation(List<ValueDef> fields) {
-		fields.add(ValueDef.blank(EpipulseVariable.WEEK_OF_GESTATION));
+		fields.add(
+			ValueDef.direct(
+				"trimester",
+				"c.trimester",
+				(dto, row) -> dto.setTrimester(FieldReaders.parseEnum(Trimester.class, (String) row.get("trimester"))),
+				EpipulseVariable.WEEK_OF_GESTATION,
+				EpipulseMapping::weekOfGestation));
 	}
 
 	/**

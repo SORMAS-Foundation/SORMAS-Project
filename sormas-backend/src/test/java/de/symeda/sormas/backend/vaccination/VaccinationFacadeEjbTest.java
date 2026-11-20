@@ -179,6 +179,53 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testCreateAssociatesByValidityPeriodWithoutStartAndEndDate() {
+
+		Disease disease = Disease.CORONAVIRUS;
+		Date referenceDate = new Date();
+
+		// Immunization association case 2: vaccination date within the validity period
+		PersonDto person1 = creator.createPerson("James", "Doe");
+		ImmunizationDto immunizationOld = creator.createImmunization(disease, person1.toReference(), nationalUser.toReference(), rdcf, i -> {
+			i.setValidFrom(DateHelper.subtractDays(referenceDate, 400));
+			i.setValidUntil(DateHelper.subtractDays(referenceDate, 380));
+		});
+		ImmunizationDto immunizationRecent = creator.createImmunization(disease, person1.toReference(), nationalUser.toReference(), rdcf, i -> {
+			i.setValidFrom(DateHelper.subtractDays(referenceDate, 100));
+			i.setValidUntil(DateHelper.subtractDays(referenceDate, 50));
+		});
+
+		VaccinationDto vaccination11 = VaccinationDto.build(nationalUser.toReference());
+		vaccination11.setVaccinationDate(DateHelper.subtractDays(referenceDate, 390));
+		vaccination11 = getVaccinationFacade().createWithImmunization(vaccination11, rdcf.region, rdcf.district, person1.toReference(), disease);
+		assertEquals(immunizationOld.toReference(), vaccination11.getImmunization());
+
+		VaccinationDto vaccination12 = VaccinationDto.build(nationalUser.toReference());
+		vaccination12.setVaccinationDate(DateHelper.subtractDays(referenceDate, 75));
+		vaccination12 = getVaccinationFacade().createWithImmunization(vaccination12, rdcf.region, rdcf.district, person1.toReference(), disease);
+		assertEquals(immunizationRecent.toReference(), vaccination12.getImmunization());
+
+		// Legacy immunizations keep using start and end date, even if a validity period is set
+		PersonDto person2 = creator.createPerson("Jane", "Doe");
+		creator.createImmunization(disease, person2.toReference(), nationalUser.toReference(), rdcf, i -> {
+			i.setStartDate(DateHelper.subtractDays(referenceDate, 400));
+			i.setEndDate(DateHelper.subtractDays(referenceDate, 380));
+			i.setValidFrom(DateHelper.subtractDays(referenceDate, 100));
+			i.setValidUntil(DateHelper.subtractDays(referenceDate, 50));
+		});
+		ImmunizationDto immunizationValidity = creator.createImmunization(disease, person2.toReference(), nationalUser.toReference(), rdcf, i -> {
+			i.setValidFrom(DateHelper.subtractDays(referenceDate, 200));
+			i.setValidUntil(DateHelper.subtractDays(referenceDate, 150));
+		});
+
+		// Case 3: nearest period end is valid until -150 (legacy end -380 is further away)
+		VaccinationDto vaccination21 = VaccinationDto.build(nationalUser.toReference());
+		vaccination21.setVaccinationDate(DateHelper.subtractDays(referenceDate, 75));
+		vaccination21 = getVaccinationFacade().createWithImmunization(vaccination21, rdcf.region, rdcf.district, person2.toReference(), disease);
+		assertEquals(immunizationValidity.toReference(), vaccination21.getImmunization());
+	}
+
+	@Test
 	public void testGetAllVaccinations() {
 
 		PersonDto person1 = creator.createPerson("John", "Doe");

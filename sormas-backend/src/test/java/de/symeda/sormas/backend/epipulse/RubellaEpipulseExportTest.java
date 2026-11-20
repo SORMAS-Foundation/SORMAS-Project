@@ -59,18 +59,22 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.WEEK_OF_GESTATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Date;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
@@ -170,7 +174,7 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		fixture = fixtureFor(Disease.RUBELLA, rdcf, creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
-		france = countryWithNutsCode("France", "FRA", "FR");
+		france = countryWithEpipulseLocationCode("France", "FRA", "FR");
 	}
 
 	@Test
@@ -184,6 +188,7 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 			c.setInvestigatedDate(INVESTIGATED);
 			c.setClinicalConfirmation(YesNoUnknown.YES);
 			c.setPregnant(YesNoUnknown.YES);
+			c.setTrimester(Trimester.THIRD);
 			c.getSymptoms().setArthritis(SymptomState.YES);
 			c.getSymptoms().setEncephalitis(SymptomState.YES);
 			c.getEpiData().setClusterRelated(true);
@@ -224,7 +229,7 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than the case
 		assertThat(export.value(entry, DISEASE), is("RUBE"));
 		assertThat(export.value(entry, SUBJECT_CODE), is("RUBE"));
-		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_LOCATION_CODE));
 		assertThat(export.value(entry, DATA_SOURCE), is(SERVER_DATA_SOURCE));
 
 		// from the case record itself
@@ -242,16 +247,17 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		// worked out from the tests: the earliest positive verified one is on the 12th
 		assertThat(export.value(entry, DATE_USED_FOR_STATISTICS), is("2024-06-12"));
 
-		// the pregnancy block: one column derived, one blank for want of a field that measures it
+		// the pregnancy block: the trimester as EpiPulse's week band, not the person's gestational
+		// age at birth (16, which would be W13-20)
 		assertThat(export.value(entry, PREGNANCY), is("true"));
-		assertThat(export.value(entry, WEEK_OF_GESTATION), is(blankOrNullString()));
+		assertThat(export.value(entry, WEEK_OF_GESTATION), is("W20+"));
 
 		// from the person and their address
 		assertThat(export.value(entry, GENDER), is("F"));
 		assertThat(export.value(entry, AGE), is("33"));
 		assertThat(export.value(entry, AGE_MONTH), is(blankOrNullString()));
-		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_NUTS_CODE));
-		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_LOCATION_CODE));
+		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_LOCATION_CODE));
 
 		// from the epidemiological data, none of which the rubella form offers today
 		assertThat(export.value(entry, CLUSTER_RELATED), is("true"));
@@ -279,8 +285,8 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	@Test
-	@DisplayName("Pregnancy reports nothing for UNKNOWN, and WeekOfGestation nothing at all")
-	public void pregnancyIsReportedAndWeekOfGestationIsNot() {
+	@DisplayName("Pregnancy reports nothing for UNKNOWN, and WeekOfGestation never reads the gestational age at birth")
+	public void pregnancyIsReportedAndWeekOfGestationIgnoresGestationAgeAtBirth() {
 
 		// Four cases in one export rather than four tests: the database is truncated after every
 		// method, so another case inside one costs almost nothing. Each person carries a different
@@ -300,11 +306,11 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(export.entryFor(unknown.getUuid()), PREGNANCY), is(blankOrNullString()));
 		assertThat(export.value(export.entryFor(unanswered.getUuid()), PREGNANCY), is(blankOrNullString()));
 
-		// WeekOfGestation is blank for all four, including the three whose person records a
-		// gestational age at birth in each of the three bands EpiPulse offers. That field measures
-		// the gestational age of the person at their own birth, not of the patient's pregnancy when
-		// she was infected, so a value here would be the wrong measurement rather than a missing
-		// one. This is the assertion that fails if the column is ever wired back to it.
+		// None above recordtrimester, so WeekOfGestation is blank for all, including
+		// the three whose person records a gestational age at birth in each of the three bands
+		// EpiPulse offers. That field measures the person at their own birth, not the patient's
+		// pregnancy when she was infected. This is the assertion that fails if the column is ever
+		// wired to it.
 		for (CaseDataDto caze : new CaseDataDto[] {
 			pregnant,
 			notPregnant,
@@ -316,6 +322,29 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 				export.value(export.entryFor(caze.getUuid()), WEEK_OF_GESTATION),
 				is(blankOrNullString()));
 		}
+	}
+
+	@Test
+	@DisplayName("WeekOfGestation reports the first and third trimester's band, and nothing for the second, UNKNOWN or none")
+	public void weekOfGestationReportsTheTrimesterBand() {
+
+		CaseDataDto first = trimesterCase(Trimester.FIRST);
+		// Second is ambiguous given the available bands
+		CaseDataDto second = trimesterCase(Trimester.SECOND);
+		CaseDataDto third = trimesterCase(Trimester.THIRD);
+		CaseDataDto unknown = trimesterCase(Trimester.UNKNOWN);
+		CaseDataDto none = trimesterCase(null);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.RUBE, PERIOD_START, PERIOD_END);
+
+		// weeks 1-12 and 28 or later each fall inside one band
+		assertThat(export.value(export.entryFor(first.getUuid()), WEEK_OF_GESTATION), is("W1-12"));
+		assertThat(export.value(export.entryFor(third.getUuid()), WEEK_OF_GESTATION), is("W20+"));
+		// weeks 13-27 straddle W13-20 and W20+, and the doctor's declaration stores both its
+		// "13 to 20" and its "20 and more" as SECOND, so neither band can be claimed
+		assertThat(export.value(export.entryFor(second.getUuid()), WEEK_OF_GESTATION), is(blankOrNullString()));
+		assertThat(export.value(export.entryFor(unknown.getUuid()), WEEK_OF_GESTATION), is(blankOrNullString()));
+		assertThat(export.value(export.entryFor(none.getUuid()), WEEK_OF_GESTATION), is(blankOrNullString()));
 	}
 
 	@Test
@@ -586,6 +615,35 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.values(export.only(), COMPLICATION_DIAGNOSIS), contains("NONE"));
 	}
 
+	@Test
+	@DisplayName("every classified case is notified, a ruled-out one as DISCARDED, and an unclassified one is not")
+	public void classifiedCasesAreNotifiedAndRuledOutOnesAreDiscarded() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+		String possible = classifiedCase(CaseClassification.SUSPECT);
+		String discarded = classifiedCase(CaseClassification.NO_CASE);
+
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.RUBE, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible, discarded));
+
+		assertThat(export.value(export.entryFor(confirmed), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(export.value(export.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+		assertThat(export.value(export.entryFor(discarded), CASE_CLASSIFICATION), is("DISCARDED"));
+	}
+
+	private String classifiedCase(CaseClassification classification) {
+		return fixture.caze(creator.createPerson().toReference(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
+	}
+
 	/**
 	 * @param gestationWeeks
 	 *            written to {@code PersonDto.gestationAgeAtBirth}, the field {@code WeekOfGestation}
@@ -597,6 +655,16 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 			creator.createPerson("Anna", "Bauer", Sex.FEMALE, 1990, 6, 15, p -> p.setGestationAgeAtBirth(gestationWeeks)).toReference();
 
 		return fixture.caze(person, ONSET, caze -> caze.setPregnant(pregnant));
+	}
+
+	private CaseDataDto trimesterCase(Trimester trimester) {
+
+		PersonReferenceDto person = creator.createPerson("Anna", "Bauer", Sex.FEMALE, 1990, 6, 15).toReference();
+
+		return fixture.caze(person, ONSET, caze -> {
+			caze.setPregnant(YesNoUnknown.YES);
+			caze.setTrimester(trimester);
+		});
 	}
 
 	private CaseDataDto iggCase(PathogenTestResultType result, Consumer<PathogenTestDto> flags) {
@@ -636,13 +704,13 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 		return exposure;
 	}
 
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});

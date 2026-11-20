@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.infrastructure.country;
 
 import java.util.Collections;
@@ -43,6 +58,29 @@ public class CountryService extends AbstractInfrastructureAdoService<Country, Co
 		}
 
 		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	/**
+	 * All countries, archived or not, whose NUTS code equals {@code nutsCode}, ignoring case and surrounding spaces.
+	 * {@code null} or an empty code → an empty list.
+	 *
+	 * <p>
+	 * Example: {@code " lu"} → Luxembourg with NUTS code {@code "LU"}; {@code "XX"} → empty list.
+	 */
+	public List<Country> getByNutsCode(String nutsCode) {
+
+		String trimmed = nutsCode != null ? nutsCode.trim() : null;
+		if (trimmed == null || trimmed.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
+		Root<Country> from = cq.from(getElementClass());
+
+		cq.where(CriteriaBuilderHelper.ilikePrecise(cb, from.get(Country.NUTS_CODE), trimmed));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -109,9 +147,13 @@ public class CountryService extends AbstractInfrastructureAdoService<Country, Co
 					continue;
 				}
 
+				// e.g. "GR", "GRC", "300" or "EL" all find Greece
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.ilike(cb, from.get(Country.ISO_CODE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Country.ISO2_CODE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Country.ISO_NUMERIC_CODE), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Country.UNO_CODE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Country.EPIPULSE_LOCATION_CODE), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Country.DEFAULT_NAME), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}

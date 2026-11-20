@@ -263,6 +263,7 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
         final var combo = new ComboBox<String>();
         combo.setEmptySelectionAllowed(false);
         combo.setItems(getValue().getDataProvider().getOptions().values());
+        combo.setItemCaptionGenerator(getValue().getDataProvider()::getOptionCaption);
         combo.setSelectedItem(getValue().getValue());
         combo.addValueChangeListener(event -> fireValueChange(combo));
         combo.setWidthFull();

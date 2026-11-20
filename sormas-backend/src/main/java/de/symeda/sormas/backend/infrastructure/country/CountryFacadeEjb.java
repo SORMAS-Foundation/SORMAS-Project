@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -54,6 +54,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -112,6 +113,44 @@ public class CountryFacadeEjb
 		return super.doSave(dtoToSave, allowMerge, includeArchived, checkChangeDate, allowUuidOverwrite);
 	}
 
+	/**
+	 * Checks that no other country has the NUTS code of {@code dto} before it is saved, so a duplicate is shown to
+	 * the user as a validation message instead of failing on the unique constraint {@code country_nutscode_pk}. Runs for
+	 * every save: the country form, "Import default countries", the REST API and the central infrastructure sync.
+	 *
+	 * <p>
+	 * Example: Antigua and Barbuda has {@code "AG"}, another country is saved with {@code "ag "} → a
+	 * {@link ValidationRuntimeException} "The NUTS code AG is already used by the country Antigua and Barbuda…";
+	 * Antigua and Barbuda saved again with {@code "AG"} → saved; an empty code → saved, any number of countries may have
+	 * none.
+	 *
+	 * @throws ValidationRuntimeException
+	 *             if another country, archived or not, already has the code
+	 */
+	@Override
+	protected CountryDto persistEntity(CountryDto dto, Country entityToPersist, boolean checkChangeDate, boolean allowUuidOverwrite) {
+
+		if (dto != null) {
+			String nutsCode = StringUtils.trimToNull(dto.getNutsCode());
+			Long ownId = entityToPersist != null ? entityToPersist.getId() : null;
+
+			Country otherCountry = service.getByNutsCode(nutsCode)
+				.stream()
+				.filter(country -> country != null && (ownId == null || !ownId.equals(country.getId())))
+				.findFirst()
+				.orElse(null);
+
+			if (otherCountry != null) {
+				String otherName = StringUtils.defaultIfBlank(otherCountry.getDefaultName(), otherCountry.getIsoCode());
+				String otherCode = StringUtils.defaultIfBlank(otherCountry.getNutsCode(), nutsCode);
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(Validations.countryNutsCodeAlreadyExists, otherCode, otherName, otherName));
+			}
+		}
+
+		return super.persistEntity(dto, entityToPersist, checkChangeDate, allowUuidOverwrite);
+	}
+
 	@Override
 	@PermitAll
 	public List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
@@ -164,8 +203,11 @@ public class CountryFacadeEjb
 					break;
 				case CountryIndexDto.EXTERNAL_ID:
 				case CountryIndexDto.ISO_CODE:
+				case CountryIndexDto.ISO2_CODE:
+				case CountryIndexDto.ISO_NUMERIC_CODE:
 				case CountryIndexDto.UNO_CODE:
 				case CountryIndexDto.NUTS_CODE:
+				case CountryIndexDto.EPIPULSE_LOCATION_CODE:
 					expression = cb.lower(country.get(sortProperty.propertyName));
 					break;
 				default:
@@ -237,10 +279,13 @@ public class CountryFacadeEjb
 		dto.setDefaultName(entity.getDefaultName());
 		dto.setExternalId(entity.getExternalId());
 		dto.setIsoCode(entity.getIsoCode());
+		dto.setIso2Code(entity.getIso2Code());
+		dto.setIsoNumericCode(entity.getIsoNumericCode());
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 		dto.setNutsCode(entity.getNutsCode());
+		dto.setEpipulseLocationCode(entity.getEpipulseLocationCode());
 		applyToDtoInheritance(dto, entity);
 
 		return dto;
@@ -265,10 +310,13 @@ public class CountryFacadeEjb
 		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setIsoCode(isoCode);
+		dto.setIso2Code(entity.getIso2Code());
+		dto.setIsoNumericCode(entity.getIsoNumericCode());
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 		dto.setNutsCode(entity.getNutsCode());
+		dto.setEpipulseLocationCode(entity.getEpipulseLocationCode());
 
 		return dto;
 	}
@@ -292,8 +340,12 @@ public class CountryFacadeEjb
 		target.setDefaultName(source.getDefaultName());
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
+		target.setIso2Code(StringUtils.trimToNull(source.getIso2Code()));
+		target.setIsoNumericCode(StringUtils.trimToNull(source.getIsoNumericCode()));
 		target.setUnoCode(source.getUnoCode());
-		target.setNutsCode(source.getNutsCode());
+		// trimmed and empty → null: the unique constraint allows any number of countries without a code, but not two with ""
+		target.setNutsCode(StringUtils.trimToNull(source.getNutsCode()));
+		target.setEpipulseLocationCode(StringUtils.trimToNull(source.getEpipulseLocationCode()));
 		applyFillOrBuildEntityInheritance(target, source);
 
 		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();

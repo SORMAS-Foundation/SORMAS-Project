@@ -20,7 +20,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
 import com.vaadin.ui.Button;
@@ -36,10 +38,19 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
 public class LabMessageUiHelperUnitTest {
 
+	private MockedConstruction<SampleCreateForm> sampleCreateForms;
+
+	@AfterEach
+	public void closeSampleCreateFormMock() {
+		if (sampleCreateForms != null) {
+			sampleCreateForms.close();
+		}
+	}
+
 	@Test
 	public void testEstablishFinalCommitButtons() {
 
-		Mockito.mockConstruction(SampleCreateForm.class);
+		sampleCreateForms = Mockito.mockConstruction(SampleCreateForm.class);
 
 		UserReferenceDto user = new UserReferenceDto();
 		CaseReferenceDto caze = new CaseReferenceDto();

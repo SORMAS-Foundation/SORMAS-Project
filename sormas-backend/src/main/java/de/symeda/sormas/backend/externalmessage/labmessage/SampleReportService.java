@@ -15,18 +15,22 @@
 
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
 @LocalBean
@@ -54,5 +58,18 @@ public class SampleReportService extends BaseAdoService<SampleReport> {
 
 		super.deletePermanent(sampleReport);
 		return false;
+	}
+
+	public void unlinkSample(Sample sample) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<SampleReport> cu = cb.createCriteriaUpdate(SampleReport.class);
+		Root<SampleReport> root = cu.from(SampleReport.class);
+
+		cu.set(SampleReport.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(SampleReport.SAMPLE), (Sample) null);
+		cu.where(cb.equal(root.get(SampleReport.SAMPLE), sample));
+
+		em.createQuery(cu).executeUpdate();
 	}
 }

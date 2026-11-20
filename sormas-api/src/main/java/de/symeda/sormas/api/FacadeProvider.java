@@ -35,6 +35,11 @@ import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
+import de.symeda.sormas.api.climate.ClimateCaseFacade;
+import de.symeda.sormas.api.climate.ClimateJobFacade;
+import de.symeda.sormas.api.climate.ClimateObservationFacade;
+import de.symeda.sormas.api.climate.ClimateSeriesFacade;
+import de.symeda.sormas.api.climate.SiteClimateReadingFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
@@ -65,6 +70,7 @@ import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
+import de.symeda.sormas.api.externalpersondata.ExternalPersonDataProviderFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -612,6 +618,30 @@ public class FacadeProvider {
 
 	public static EpipulseExportFacade getEpipulseExportFacade() {
 		return get().lookupEjbRemote(EpipulseExportFacade.class);
+	}
+
+	public static ClimateJobFacade getClimateJobFacade() {
+		return get().lookupEjbRemote(ClimateJobFacade.class);
+	}
+
+	public static ClimateSeriesFacade getClimateSeriesFacade() {
+		return get().lookupEjbRemote(ClimateSeriesFacade.class);
+	}
+
+	public static ClimateCaseFacade getClimateCaseFacade() {
+		return get().lookupEjbRemote(ClimateCaseFacade.class);
+	}
+
+	public static SiteClimateReadingFacade getSiteClimateReadingFacade() {
+		return get().lookupEjbRemote(SiteClimateReadingFacade.class);
+	}
+
+	public static ClimateObservationFacade getClimateObservationFacade() {
+		return get().lookupEjbRemote(ClimateObservationFacade.class);
+	}
+
+	public static ExternalPersonDataProviderFacade getExternalPersonDataProviderFacade() {
+		return get().lookupEjbRemote(ExternalPersonDataProviderFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -21,11 +21,40 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.AbstractUnitTest;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 
-class DtoUserDefinedValuesHelperTest {
+class DtoUserDefinedValuesHelperTest extends AbstractUnitTest {
+
+	@Test
+	void ignoresUnknownStiAnswersWhenCheckingForExistingData() {
+		// PREPARE
+		EpiDataDto epiData = EpiDataDto.build();
+		epiData.setSexWorker(YesNoUnknownOther.UNKNOWN);
+		epiData.setContactWithSexWorker(YesNoUnknownOther.UNKNOWN);
+
+		// EXECUTE
+		boolean result = DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(epiData, EpiDataDto.class);
+
+		// CHECK
+		assertFalse(result);
+	}
+
+	@Test
+	void treatsOtherStiAnswersAsExistingData() {
+		// PREPARE
+		EpiDataDto epiData = EpiDataDto.build();
+		epiData.setSexWorker(YesNoUnknownOther.OTHER);
+
+		// EXECUTE
+		boolean result = DtoUserDefinedValuesHelper.hasAnyUserDefinedValuesIgnoringUnknown(epiData, EpiDataDto.class);
+
+		// CHECK
+		assertTrue(result);
+	}
 
 	@Test
 	void hasAnyUserDefinedValuesIgnoresInheritedProperties() {

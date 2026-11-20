@@ -170,6 +170,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setPatientIllLocation(source.getPatientIllLocation());
 		target.setTypeOfClinicalService(source.getTypeOfClinicalService());
 		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setContactWithSexWorkerOther(source.getContactWithSexWorkerOther());
+		target.setSexWorkerOther(source.getSexWorkerOther());
+		target.setProbableRouteOfTransmissionOther(source.getProbableRouteOfTransmissionOther());
 		target.setMotherCountryOfBirth(countryService.getByReferenceDto(source.getMotherCountryOfBirth()));
 		target.setMotherCitizenship(countryService.getByReferenceDto(source.getMotherCitizenship()));
 		target.setSexWorker(source.getSexWorker());
@@ -371,6 +374,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setPatientIllLocation(source.getPatientIllLocation());
 		target.setTypeOfClinicalService(source.getTypeOfClinicalService());
 		target.setProbableRouteOfTransmission(source.getProbableRouteOfTransmission());
+		target.setContactWithSexWorkerOther(source.getContactWithSexWorkerOther());
+		target.setSexWorkerOther(source.getSexWorkerOther());
+		target.setProbableRouteOfTransmissionOther(source.getProbableRouteOfTransmissionOther());
 		target.setMotherCountryOfBirth(CountryFacadeEjb.toReferenceDto(source.getMotherCountryOfBirth()));
 		target.setMotherCitizenship(CountryFacadeEjb.toReferenceDto(source.getMotherCitizenship()));
 		target.setSexWorker(source.getSexWorker());

@@ -20,6 +20,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -38,8 +41,12 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final int EDIT_COLUMN_WIDTH = 60;
+	private static final int RUN_NOW_COLUMN_WIDTH = 100;
+	private static final String RUN_NOW_COLUMN_ID = "runNow";
 
-	public ScheduledJobsGrid(Consumer<CronJobStatusDto> editHandler) {
+	private String searchText = "";
+
+	public ScheduledJobsGrid(Consumer<CronJobStatusDto> editHandler, Consumer<CronJobStatusDto> runNowHandler) {
 
 		super(CronJobStatusDto.class);
 		setSizeFull();
@@ -57,13 +64,13 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		addColumn(this::describeDuration).setId("duration").setCaption(I18nProperties.getCaption(Captions.cronJobDuration));
 		addColumn(this::describeOutcome).setId("outcome").setCaption(I18nProperties.getCaption(Captions.cronJobOutcome));
 
-		addEditColumn(editHandler);
+		addEditAndRunNowColumns(editHandler, runNowHandler);
 
 		setDescriptionGenerator(this::describeRow);
 		reload();
 	}
 
-	private void addEditColumn(Consumer<CronJobStatusDto> editHandler) {
+	private void addEditAndRunNowColumns(Consumer<CronJobStatusDto> editHandler, Consumer<CronJobStatusDto> runNowHandler) {
 
 		List<Column<CronJobStatusDto, ?>> columnOrder = new ArrayList<>(getColumns());
 
@@ -73,10 +80,34 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		editColumn.setSortable(false);
 		editColumn.setWidth(EDIT_COLUMN_WIDTH);
 
+		Column<CronJobStatusDto, String> runNowColumn = addColumn(status -> VaadinIcons.PLAY.getHtml(), new HtmlRenderer());
+		runNowColumn.setId(RUN_NOW_COLUMN_ID);
+		String runNowCaption = I18nProperties.getCaption(Captions.cronJobRunNow);
+		runNowColumn.setCaption(runNowCaption);
+		runNowColumn.setDescriptionGenerator(status -> runNowCaption);
+		runNowColumn.setSortable(false);
+		runNowColumn.setWidth(RUN_NOW_COLUMN_WIDTH);
+
+		columnOrder.add(0, runNowColumn);
 		columnOrder.add(0, editColumn);
 		setColumnOrder(columnOrder.toArray(new Column[0]));
 
-		addItemClickListener(new ShowDetailsListener<>(FilteredGrid.ACTION_BTN_ID, editHandler::accept));
+		addItemClickListener(new ShowDetailsListener<CronJobStatusDto>(FilteredGrid.ACTION_BTN_ID, editHandler) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void handleItemClick(ItemClick<CronJobStatusDto> event) {
+				if (!isRunNowColumn(event.getColumn())) {
+					super.handleItemClick(event);
+				}
+			}
+		});
+		addItemClickListener(new ShowDetailsListener<>(RUN_NOW_COLUMN_ID, false, runNowHandler));
+	}
+
+	private boolean isRunNowColumn(Column<CronJobStatusDto, ?> column) {
+		return column != null && RUN_NOW_COLUMN_ID.equals(column.getId());
 	}
 
 	public void reload() {
@@ -84,6 +115,27 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		List<CronJobStatusDto> statuses = FacadeProvider.getCronJobFacade().getAllJobStatuses();
 		statuses.sort(Comparator.comparing(CronJobStatusDto::getNextFireTime, Comparator.nullsLast(Comparator.naturalOrder())));
 		setItems(statuses);
+		applySearchFilter();
+	}
+
+	public void setSearchText(String searchText) {
+
+		this.searchText = searchText;
+		applySearchFilter();
+	}
+
+	public static boolean matchesSearch(String jobName, String description, String searchText) {
+
+		if (searchText == null || searchText.trim().isEmpty()) {
+			return true;
+		}
+		String needle = searchText.trim();
+		return StringUtils.containsIgnoreCase(jobName, needle) || StringUtils.containsIgnoreCase(description, needle);
+	}
+
+	private void applySearchFilter() {
+		((ListDataProvider<CronJobStatusDto>) getDataProvider())
+			.setFilter(status -> matchesSearch(status.getJobName(), describeJob(status), searchText));
 	}
 
 	private String describeJob(CronJobStatusDto status) {

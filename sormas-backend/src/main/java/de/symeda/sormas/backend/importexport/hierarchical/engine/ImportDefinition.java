@@ -16,7 +16,7 @@ public interface ImportDefinition {
 
 	CellWriter cellWriter();
 
-	LevelHandler handler(ImportLevel level);
+	LevelHandler handler(ImportLevel level, List<ColumnSpec> columns);
 
 	BlockCommitter committer();
 

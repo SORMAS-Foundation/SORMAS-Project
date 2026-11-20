@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.configuration.system;
 
 import java.util.stream.Collectors;
 
+import com.vaadin.data.provider.Query;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -110,6 +111,15 @@ public class SystemConfigurationView extends AbstractConfigurationView {
             }
             return caption.toString();
         });
+
+        // a category chosen before navigating here (the Climate data screen links to its category)
+        if (criteria.getCategory() != null) {
+            categoryFilter.getDataProvider()
+                .fetch(new Query<>())
+                .filter(category -> category.getUuid().equals(criteria.getCategory().getUuid()))
+                .findFirst()
+                .ifPresent(categoryFilter::setValue);
+        }
 
         categoryFilter.addValueChangeListener(e -> {
             final SystemConfigurationCategoryDto category = e.getValue();

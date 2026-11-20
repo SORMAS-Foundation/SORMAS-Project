@@ -32,7 +32,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilit
 /**
  * Verifies that {@link DiseaseFieldVisibilityChecker} exposes exactly the {@link SampleMaterial}
  * values approved for Diphtheria in the sample material selection, and hides all others
- * (deprecated and {@link SampleMaterial#UNKNOWN} materials are excluded from both checks).
+ * (deprecated materials are excluded from both checks).
  */
 public class SampleMaterialDiphtheriaTest {
 
@@ -42,7 +42,9 @@ public class SampleMaterialDiphtheriaTest {
         SampleMaterial.SKIN,
         SampleMaterial.TISSUE,
         SampleMaterial.CLINICAL_SAMPLE,
-        SampleMaterial.BLOOD);
+        SampleMaterial.BLOOD,
+        SampleMaterial.ABSCESS_SWAB,
+        SampleMaterial.ULCER_SWAB);
 
     private final DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.DIPHTHERIA);
 
@@ -50,7 +52,7 @@ public class SampleMaterialDiphtheriaTest {
      * Every material in {@link #APPROVED} must be selectable (visible) for Diphtheria and must not be deprecated.
      */
     @Test
-    public void everyApprovedSpecimenIsSelectableForCongenitalRubella() {
+    public void everyApprovedSpecimenIsSelectableForDiphtheria() {
         for (SampleMaterial material : APPROVED) {
             assertFalse(material.isDeprecated(), material.name() + " is retired and cannot be mapped to Diphtheria");
             assertTrue(checker.isVisible(SampleMaterial.class, material.name()), material.name() + " must be selectable for Diphtheria");
@@ -58,13 +60,13 @@ public class SampleMaterialDiphtheriaTest {
     }
 
     /**
-     * Every non-deprecated, non-{@link SampleMaterial#UNKNOWN} material not in {@link #APPROVED} must not be
-     * selectable (hidden) for Diphtheria.
+     * Every non-deprecated material not in {@link #APPROVED}, {@link SampleMaterial#UNKNOWN} included, must
+     * not be selectable (hidden) for Diphtheria.
      */
     @Test
-    public void noUnapprovedSpecimenIsSelectableForCongenitalRubella() {
+    public void noUnapprovedSpecimenIsSelectableForDiphtheria() {
         for (SampleMaterial material : SampleMaterial.values()) {
-            if (APPROVED.contains(material) || material.isDeprecated() || material == SampleMaterial.UNKNOWN) {
+            if (APPROVED.contains(material) || material.isDeprecated()) {
                 continue;
             }
             assertFalse(checker.isVisible(SampleMaterial.class, material.name()), material.name() + " leaks into the Diphtheria");

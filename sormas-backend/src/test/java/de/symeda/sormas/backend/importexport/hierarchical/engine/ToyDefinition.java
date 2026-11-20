@@ -31,6 +31,8 @@ public final class ToyDefinition implements ImportDefinition {
 	public final Map<String, ToyChild> children = new HashMap<>();
 	public final Map<String, Integer> lookups = new HashMap<>();
 	public final List<Integer> committed = new ArrayList<>();
+	public final List<List<ColumnSpec>> handlerColumns = new ArrayList<>();
+	public int columnsCalls;
 	private final int maxRows;
 	private boolean lenient;
 
@@ -76,6 +78,7 @@ public final class ToyDefinition implements ImportDefinition {
 
 	@Override
 	public List<ColumnSpec> columns() {
+		columnsCalls++;
 		return List.of(
 			new ColumnSpec("parent.key", "Key"),
 			new ColumnSpec("parent.name", "Name", "name"),
@@ -108,7 +111,8 @@ public final class ToyDefinition implements ImportDefinition {
 	}
 
 	@Override
-	public LevelHandler handler(ImportLevel level) {
+	public LevelHandler handler(ImportLevel level, List<ColumnSpec> columns) {
+		handlerColumns.add(columns);
 		if (level == PARENT) {
 			return new ParentHandler();
 		}

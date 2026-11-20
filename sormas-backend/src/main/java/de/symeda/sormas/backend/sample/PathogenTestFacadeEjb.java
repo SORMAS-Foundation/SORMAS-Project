@@ -366,6 +366,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
 		target.setSequenceId(source.getSequenceId());
 		target.setSeroConversion(source.getSeroConversion());
+		target.setAvidityPerformed(source.getAvidityPerformed());
+		target.setAvidityIndex(source.getAvidityIndex());
+		target.setAvidityInterpretation(source.getAvidityInterpretation());
 
 		// IGRA tube values
 		target.setTubeNil(source.getTubeNil());
@@ -548,7 +551,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					Validations.required,
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
 		}
-		// susceptibility is applicable for only LUX TB and all counties of IMI and IPI
+		// A drug grid saved on an AST test must hold at least one result
 		if (pathogenTest.getDrugSusceptibility() != null
 			&& pathogenTest.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
 			&& !DrugSusceptibilityMapper.hasData(pathogenTest.getDrugSusceptibility())) {
@@ -717,6 +720,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
 		target.setSequenceId(source.getSequenceId());
 		target.setSeroConversion(source.getSeroConversion());
+		target.setAvidityPerformed(source.getAvidityPerformed());
+		target.setAvidityIndex(source.getAvidityIndex());
+		target.setAvidityInterpretation(source.getAvidityInterpretation());
 		// Clear quantitative result fields that the selected method does not produce, so a value left over
 		// from a previous test type cannot survive and violate the method/result-type contract.
 		Set<ResultValueType> resultValueTypes = PathogenTestType.getResultValueTypes(target.getTestType());

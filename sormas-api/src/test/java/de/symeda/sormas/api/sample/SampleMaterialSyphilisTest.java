@@ -23,8 +23,7 @@ public class SampleMaterialSyphilisTest {
 		SampleMaterial.OROPHARYNGEAL_SWAB,
 		SampleMaterial.PLACENTA,
 		SampleMaterial.RECTAL_SWAB,
-		SampleMaterial.SERA,
-		SampleMaterial.UNKNOWN);
+		SampleMaterial.SERA);
 
 	private static final List<SampleMaterial> TRIMMED = List.of(
 		SampleMaterial.ABSCESS_SWAB,
@@ -54,6 +53,7 @@ public class SampleMaterialSyphilisTest {
 		SampleMaterial.TEARS,
 		SampleMaterial.TISSUE,
 		SampleMaterial.ULCER_SWAB,
+		SampleMaterial.UNKNOWN,
 		SampleMaterial.URINE);
 
 	private final DiseaseFieldVisibilityChecker checker = new DiseaseFieldVisibilityChecker(Disease.SYPHILIS);
@@ -73,7 +73,7 @@ public class SampleMaterialSyphilisTest {
 		for (SampleMaterial material : TRIMMED) {
 			assertFalse(
 				checker.isVisible(SampleMaterial.class, material.name()),
-				material.name() + " must not be offered for Syphilis (#14220 specimen list)");
+				material.name() + " must not be offered for Syphilis (#14220, D4 12 Nov 2026)");
 		}
 	}
 

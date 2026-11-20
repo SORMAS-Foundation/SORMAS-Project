@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.api.epipulse;
 
@@ -22,20 +19,28 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseOutcomeRef;
+import de.symeda.sormas.api.epipulse.referencevalue.EpipulseDengueClinicalCriteriaRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseDiseaseRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseGenderRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulsePathogenTestTypeRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulsePneumococcalSerotypingMethodRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseStatusRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseVaccinationStatusRef;
+import de.symeda.sormas.api.epipulse.referencevalue.EpipulseWeekOfGestationRef;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 /**
@@ -138,8 +143,8 @@ public final class EpipulseMapping {
 			entry.getAddressCommunityNutsCode(),
 			entry.getAddressDistrictNutsCode(),
 			entry.getAddressRegionNutsCode(),
-			entry.getAddressCountryNutsCode(),
-			entry.getServerCountryNutsCode());
+			entry.getAddressCountryLocationCode(),
+			entry.getServerCountryLocationCode());
 	}
 
 	/**
@@ -152,7 +157,7 @@ public final class EpipulseMapping {
 			entry.getResponsibleCommunityNutsCode(),
 			entry.getResponsibleDistrictNutsCode(),
 			entry.getResponsibleRegionNutsCode(),
-			entry.getServerCountryNutsCode());
+			entry.getServerCountryLocationCode());
 	}
 
 	// --- case ---
@@ -161,14 +166,18 @@ public final class EpipulseMapping {
 	 * {@code CaseClassification} as recorded in SORMAS.
 	 *
 	 * <p>
-	 * No subject-code-specific narrowing is applied here. Any resulting EpiPulse rejection must be
-	 * handled by case filtering, not by silently changing this value.
+	 * This field writes a code only when the subject code reports it — see
+	 * {@link EpipulseCaseInclusion#reports}. For example, a ruled-out case gets {@code DISCARDED} only
+	 * if its subject code declares that value; otherwise the field stays blank. Case filtering decides
+	 * which cases reach the file at all, so this field does not.
 	 */
 	public static String caseClassification(EpipulseDiseaseExportEntryDto entry) {
 
 		EpipulseCaseClassificationRef classificationRef = EpipulseCaseClassificationRef.getByCaseClassification(entry.getCaseClassification());
 
-		return classificationRef == null ? null : classificationRef.name();
+		return classificationRef == null || !EpipulseCaseInclusion.reports(entry.getSubjectCode(), classificationRef)
+			? null
+			: classificationRef.name();
 	}
 
 	/** {@code DateOfOnset}; see {@link EpipulseCaseDates#dateOfOnset}. */
@@ -239,28 +248,50 @@ public final class EpipulseMapping {
 		return text(entry.getClinicalCriteriaStatus());
 	}
 
+	/**
+	 * Resolves {@code ClinicalCriteria} for DENGUE to one of {@code ASY}, {@code NSEV} or {@code SEV}.
+	 * Evaluate in this order:
+	 *
+	 * <ol>
+	 * <li>If {@code symptoms.asymptomatic} is {@code YES}, return {@code ASY}. This ASY is ruled out
+	 * first because setting it also blanks {@code DateOfOnset}.
+	 * <li>Otherwise map {@code symptoms.clinicalManifestation} through
+	 * {@link EpipulseDengueClinicalCriteriaRef}. {@code UNKNOWN}, {@code OTHER}, or no answer
+	 * resolves to blank.</li>
+	 * </ol>
+	 *
+	 */
+	public static String dengueClinicalCriteria(EpipulseDiseaseExportEntryDto entry) {
+
+		if (entry.getAsymptomatic() == SymptomState.YES) {
+			return EpipulseDengueClinicalCriteriaRef.ASY.name();
+		}
+
+		return EpipulseDengueClinicalCriteriaRef.codeFor(entry.getClinicalManifestation());
+	}
+
 	// ==================== Syphilis ====================
 
-	/** {@code CountryOfBirth} as NUTS code. */
+	/** {@code CountryOfBirth} as EpiPulse location code of the country. */
 	public static String countryOfBirth(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getBirthCountryNutsCode();
+		return entry.getBirthCountryLocationCode();
 	}
 
-	/** {@code CountryOfBirthOfMother} as NUTS code. */
+	/** {@code CountryOfBirthOfMother} as EpiPulse location code of the country. */
 	public static String countryOfBirthOfMother(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getMotherBirthCountryNutsCode();
+		return entry.getMotherBirthCountryLocationCode();
 	}
 
-	/** {@code CountryOfNationality} as NUTS code. */
+	/** {@code CountryOfNationality} as EpiPulse location code of the country. */
 	public static String countryOfNationality(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getCitizenshipCountryNutsCode();
+		return entry.getCitizenshipCountryLocationCode();
 	}
 
 	/**
 	 * {@code CountryOfNationalityOfMother} from epidemiological mother-citizenship data (CONSYPH).
 	 */
 	public static String countryOfNationalityOfMother(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getMotherCitizenshipCountryNutsCode();
+		return entry.getMotherCitizenshipCountryLocationCode();
 	}
 
 	/**
@@ -627,6 +658,11 @@ public final class EpipulseMapping {
 		return text(entry.getPregnancy());
 	}
 
+	/** {@code WeekOfGestation} band from the trimester; blank for SECOND, {@code UNKNOWN} or none recorded. */
+	public static String weekOfGestation(EpipulseDiseaseExportEntryDto entry) {
+		return EpipulseWeekOfGestationRef.codeFor(entry.getTrimester());
+	}
+
 	// --- antimicrobial susceptibility testing ---
 
 	public static String astMethod(EpipulseDiseaseExportEntryDto entry) {
@@ -714,103 +750,183 @@ public final class EpipulseMapping {
 	// --- vaccination ---
 
 	/**
-	 * {@code DateOfLastVaccination}: latest dose date before onset from the same selected course used
-	 * by {@code VaccinationStatus}.
+	 * The set of {@link MeansOfImmunization} values whose doses count toward the patient's own
+	 * dose total.
 	 *
 	 * <p>
-	 * Dose date uses administration date with report-date fallback
-	 * ({@link EpipulseCaseDates#vaccinationDate}); same-day-or-later doses are excluded.
+	 * This is deliberately not {@link MeansOfImmunization#isVaccination}, which would also admit:
+	 * <ul>
+	 * <li>{@code MATERNAL_VACCINATION} - these doses were given to the mother and are described by
+	 * {@code VaccinationStatusMaternal}; they never count toward the patient's own total</li>
+	 * <li>{@code MONOCLONAL_ANTIBODY} - not a vaccine</li>
+	 * </ul>
+	 * 
+	 */
+	public static final Set<MeansOfImmunization> VACCINATION_DOSE_MEANS =
+		Collections.unmodifiableSet(EnumSet.of(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY));
+
+	/**
+	 * {@code DateOfLastVaccination}: the latest of the doses {@link #vaccinationStatus} counts.
+	 *
+	 * <p>
+	 * Read from exactly the same doses, up to the same reference date
+	 * ({@link EpipulseCaseDates#vaccinationReferenceDate}: onset, else notification), so the two
+	 * columns can never describe different vaccinations: blank whenever the status is not a dose
+	 * count. A dose on the reference day counts, as it does for the status, although EpiPulse words
+	 * this column "before disease onset".
 	 */
 	public static String dateOfLastVaccination(EpipulseDiseaseExportEntryDto entry) {
 
-		Date onset = EpipulseCaseDates.dateOfOnset(entry);
-		if (onset == null) {
+		Date reference = EpipulseCaseDates.vaccinationReferenceDate(entry);
+		if (reference == null) {
 			return "";
 		}
 
-		Date onsetDay = DateHelper.getStartOfDay(onset);
-		EpipulseImmunizationCheckDto course = relevantImmunization(entry, onsetDay);
-		if (course == null || entry.getVaccinations() == null) {
-			return "";
-		}
+		SortedSet<Date> doseDays = doseDaysUpTo(entry, DateHelper.getStartOfDay(reference));
 
-		Date latest = null;
-		for (EpipulseVaccinationCheckDto vaccination : entry.getVaccinations()) {
-
-			if (!Objects.equals(vaccination.getImmunizationId(), course.getId())) {
-				continue;
-			}
-
-			Date administered = EpipulseCaseDates.vaccinationDate(vaccination);
-			if (administered == null || !administered.before(onsetDay)) {
-				continue;
-			}
-
-			if (latest == null || administered.after(latest)) {
-				latest = administered;
-			}
-		}
-
-		return formatDate(latest);
+		return doseDays.isEmpty() ? "" : formatDate(doseDays.last());
 	}
 
 	/**
-	 * {@code VaccinationStatus} as EpiPulse dose code from the relevant immunization course.
+	 * {@code VaccinationStatus}: the number of vaccine doses the patient received up to and
+	 * including the reference day - the onset, or for a case without one (asymptomatic included)
+	 * the notification date ({@link EpipulseCaseDates#vaccinationReferenceDate}). "Onset" below
+	 * means that reference day.
 	 *
 	 * <p>
-	 * There is no fallback date usage, the vaccination status is derived based of onset date or none at all.
-	 * 
-	 * <p>
-	 * Selection follows onset-based BR0010-BR0012 logic (shared with
-	 * {@code ImmunizationService.deriveVaccinationStatus}): course must be valid at onset and latest
-	 * by {@code validFrom}. No qualifying course -> {@code NOTVACC}; missing dose count ->
-	 * {@code UNKDOSE}. Dose value is capped by {@code maxDoses} per subject code.
+	 * Counts doses, not courses: every dose recorded under a same-disease immunization whose means
+	 * is in {@link #VACCINATION_DOSE_MEANS}, whatever the immunization's status - a pending, failed
+	 * or expired course still delivered its doses. Doses on the same day count once, so a dose
+	 * recorded under two immunizations is not counted twice. The first rule that applies wins:
+	 *
+	 * <ol>
+	 * <li>no onset and no notification date - blank: there is no date to have been vaccinated by</li>
+	 * <li>at least one dose up to the onset day - that count, capped at {@code maxDoses}</li>
+	 * <li>doses on record, all after onset - {@code NOTVACC}: the dates show none had been given</li>
+	 * <li>no doses on record at all, but a vaccination immunization recorded up to the onset day
+	 * ({@link EpipulseCaseDates#immunizationDate}) - {@code UNKDOSE}: vaccinated, the doses not
+	 * entered. Its planned number of doses is not a count of doses given, so it is not used</li>
+	 * <li>an explicit {@code NOT_IMMUNIZED} immunization - {@code NOTVACC}</li>
+	 * <li>nothing recorded - blank: the absence of a record is not evidence of non-vaccination</li>
+	 * </ol>
 	 */
 	public static String vaccinationStatus(EpipulseDiseaseExportEntryDto entry, int maxDoses) {
 
-		Date onset = EpipulseCaseDates.dateOfOnset(entry);
-		if (onset == null) {
+		Date reference = EpipulseCaseDates.vaccinationReferenceDate(entry);
+		if (reference == null) {
 			return "";
 		}
 
-		EpipulseImmunizationCheckDto reported = relevantImmunization(entry, DateHelper.getStartOfDay(onset));
-		if (reported == null) {
+		Date onsetDay = DateHelper.getStartOfDay(reference);
+
+		SortedSet<Date> doseDays = doseDaysUpTo(entry, onsetDay);
+		if (!doseDays.isEmpty()) {
+			return doseCountCode(Math.min(doseDays.size(), maxDoses));
+		}
+
+		if (hasDoses(entry)) {
 			return EpipulseVaccinationStatusRef.NOTVACC.getCode();
 		}
 
-		Integer doses = reported.getNumberOfDoses();
+		if (hasVaccinationImmunizationUpTo(entry, onsetDay)) {
+			return EpipulseVaccinationStatusRef.UNKDOSE.getCode();
+		}
 
-		return doses == null ? EpipulseVaccinationStatusRef.UNKDOSE.getCode() : doseCountCode(Math.min(doses, maxDoses));
+		if (hasNotImmunizedRecord(entry)) {
+			return EpipulseVaccinationStatusRef.NOTVACC.getCode();
+		}
+
+		return "";
 	}
 
 	/**
-	 * Selects the single immunization course shared by vaccination status/date-of-last-dose logic.
-	 * Requires validity window to include onset day and chooses latest {@code validFrom}.
+	 * The distinct days a dose was given on, up to and including the onset day. A dose with no date
+	 * at all cannot be placed before or after onset and is left out.
 	 */
-	private static EpipulseImmunizationCheckDto relevantImmunization(EpipulseDiseaseExportEntryDto entry, Date onsetDay) {
+	private static SortedSet<Date> doseDaysUpTo(EpipulseDiseaseExportEntryDto entry, Date onsetDay) {
+
+		SortedSet<Date> doseDays = new TreeSet<>();
+		if (entry.getVaccinations() == null) {
+			return doseDays;
+		}
+
+		for (EpipulseVaccinationCheckDto vaccination : entry.getVaccinations()) {
+
+			Date administered = EpipulseCaseDates.vaccinationDate(vaccination);
+			if (administered == null) {
+				continue;
+			}
+
+			Date day = DateHelper.getStartOfDay(administered);
+			if (!day.after(onsetDay)) {
+				doseDays.add(day);
+			}
+		}
+
+		return doseDays;
+	}
+
+	private static boolean hasDoses(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getVaccinations() != null && !entry.getVaccinations().isEmpty();
+	}
+
+	private static boolean hasVaccinationImmunizationUpTo(EpipulseDiseaseExportEntryDto entry, Date onsetDay) {
 
 		if (entry.getImmunizations() == null) {
-			return null;
+			return false;
 		}
 
-		EpipulseImmunizationCheckDto relevant = null;
 		for (EpipulseImmunizationCheckDto immunization : entry.getImmunizations()) {
 
-			if (immunization.getValidFrom() == null || immunization.getValidUntil() == null) {
+			if (!VACCINATION_DOSE_MEANS.contains(immunization.getMeansOfImmunization())) {
 				continue;
 			}
 
-			Date validFrom = DateHelper.getStartOfDay(immunization.getValidFrom());
-			if (validFrom.after(onsetDay) || DateHelper.getStartOfDay(immunization.getValidUntil()).before(onsetDay)) {
-				continue;
-			}
-
-			if (relevant == null || validFrom.after(DateHelper.getStartOfDay(relevant.getValidFrom()))) {
-				relevant = immunization;
+			Date recorded = EpipulseCaseDates.immunizationDate(immunization);
+			if (recorded != null && !DateHelper.getStartOfDay(recorded).after(onsetDay)) {
+				return true;
 			}
 		}
 
-		return relevant;
+		return false;
+	}
+
+	private static boolean hasNotImmunizedRecord(EpipulseDiseaseExportEntryDto entry) {
+
+		return entry.getImmunizations() != null
+			&& entry.getImmunizations().stream().anyMatch(immunization -> immunization.getMeansOfImmunization() == MeansOfImmunization.NOT_IMMUNIZED);
+	}
+
+	/**
+	 * {@code VaccinationStatusMaternal} BOOL: whether the mother was vaccinated during pregnancy,
+	 * for patients under 2 at onset.
+	 *
+	 * <p>
+	 * SORMAS records this on the patient, not on the mother: a same-disease immunization whose means
+	 * is {@code MATERNAL_VACCINATION} - the protection the child received through the mother. Such a
+	 * record makes the value {@code true}, whatever its status or dates: a maternal vaccination
+	 * precedes birth, so it always precedes onset. The value is never {@code false}: the absence of
+	 * the record is not evidence that the mother was not vaccinated, and {@code NOT_IMMUNIZED}
+	 * describes the patient, not the mother.
+	 *
+	 * <p>
+	 * "Under 2" is the {@code Age} column's own reading - completed years at
+	 * {@link EpipulseCaseDates#ageReferenceDate} - so the two columns cannot disagree. Blank when the
+	 * age is unknown or 2 or more.
+	 */
+	public static String vaccinationStatusMaternal(EpipulseDiseaseExportEntryDto entry) {
+
+		Integer years = EpipulseCaseDates.ageYears(entry);
+		if (years == null || years >= 2) {
+			return "";
+		}
+
+		boolean maternalVaccination = entry.getImmunizations() != null
+			&& entry.getImmunizations()
+				.stream()
+				.anyMatch(immunization -> immunization.getMeansOfImmunization() == MeansOfImmunization.MATERNAL_VACCINATION);
+
+		return maternalVaccination ? String.valueOf(true) : "";
 	}
 
 	// --- shared helpers ---
@@ -872,6 +988,198 @@ public final class EpipulseMapping {
 	 */
 	private static String micValue(Double value) {
 		return value == null ? "" : BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
+	}
+
+	// --- TUBE (Tuberculosis) ---
+
+	/**
+	 * {@code BornReportingCountry} BOOL: whether the patient originates from the reporting country.
+	 *
+	 * <p>
+	 * Place of birth decides; citizenship is fallback when birth country is missing. Blank when
+	 * neither is known.
+	 */
+	public static String bornReportingCountry(EpipulseDiseaseExportEntryDto entry) {
+		return isReportingCountry(entry, firstPopulated(entry.getBirthCountryLocationCode(), entry.getCitizenshipCountryLocationCode()));
+	}
+
+	/** {@code NationalityReportingCountry} BOOL, from citizenship alone. Unknown stays blank. */
+	public static String nationalityReportingCountry(EpipulseDiseaseExportEntryDto entry) {
+		return isReportingCountry(entry, entry.getCitizenshipCountryLocationCode());
+	}
+
+	/**
+	 * Compares a country EpiPulse location code against the exporting server's own, as the two
+	 * {@code *ReportingCountry} booleans do.
+	 */
+	private static String isReportingCountry(EpipulseDiseaseExportEntryDto entry, String countryLocationCode) {
+
+		String reportingCountryLocationCode = entry.getServerCountryLocationCode();
+
+		if (countryLocationCode == null
+			|| countryLocationCode.isEmpty()
+			|| reportingCountryLocationCode == null
+			|| reportingCountryLocationCode.isEmpty()) {
+			return "";
+		}
+
+		return String.valueOf(countryLocationCode.equals(reportingCountryLocationCode));
+	}
+
+	/** {@code DateOfEntry}: when a patient of foreign origin entered the reporting country. */
+	public static String dateOfEntry(EpipulseDiseaseExportEntryDto entry) {
+		return formatDate(entry.getDateOfEntry());
+	}
+
+	/** {@code MajorSiteOfTB} code; see {@code EpipulseTubeSiteOfTbRef}. */
+	public static String majorSiteOfTB(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getMajorSiteOfTB();
+	}
+
+	/** {@code MinorSiteOfTB} code; unlike major site, never {@code PULMONARY}. */
+	public static String minorSiteOfTB(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getMinorSiteOfTB();
+	}
+
+	/**
+	 * {@code DiagnosedAnteMortem} BOOL, the negation of {@code CaseDataDto.postMortem}.
+	 *
+	 * <p>
+	 * Source is primitive {@code boolean}, so the derived value is never null.
+	 */
+	public static String diagnosedAnteMortem(EpipulseDiseaseExportEntryDto entry) {
+		return text(entry.getDiagnosedAnteMortem());
+	}
+
+	/**
+	 * {@code PrevDiagnosis} BOOL: tuberculosis diagnosed in an earlier calendar year.
+	 *
+	 * <p>
+	 * Derived from infection year only; value is {@code true} or blank (never {@code false}).
+	 */
+	public static String prevDiagnosis(EpipulseDiseaseExportEntryDto entry) {
+
+		Integer year = previousDiagnosisYear(entry);
+
+		return year == null ? "" : String.valueOf(true);
+	}
+
+	/** {@code PrevDiagnosisYear}, blank unless it is earlier than {@code DateUsedForStatistics}. */
+	public static String prevDiagnosisYear(EpipulseDiseaseExportEntryDto entry) {
+		return text(previousDiagnosisYear(entry));
+	}
+
+	/**
+	 * The recorded year of an earlier episode, or {@code null} where there is none EpiPulse would
+	 * accept.
+	 *
+	 * <p>
+	 * EpiPulse requires the year to precede {@code DateUsedForStatistics}; a year equal to or later
+	 * than the reporting year describes this episode, not a previous one.
+	 *
+	 * <p>
+	 * Non-positive year means unanswered ({@code int8 default 0} source), not a valid episode year.
+	 */
+	private static Integer previousDiagnosisYear(EpipulseDiseaseExportEntryDto entry) {
+
+		Integer year = entry.getTuberculosisInfectionYear();
+		Date dateUsedForStatistics = EpipulseCaseDates.dateUsedForStatistics(entry);
+
+		if (year == null || year <= 0 || dateUsedForStatistics == null) {
+			return null;
+		}
+
+		return year < UtilDate.toLocalDate(dateUsedForStatistics).getYear() ? year : null;
+	}
+
+	/** {@code PrevTreatment} BOOL. Unknown stays blank. */
+	public static String prevTreatment(EpipulseDiseaseExportEntryDto entry) {
+		return text(entry.getPrevTreatment());
+	}
+
+	/** {@code PrevTreatmentCompletion} code; see {@code EpipulseTubePrevTreatmentCompletionRef}. */
+	public static String prevTreatmentCompletion(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getPrevTreatmentCompletion();
+	}
+
+	/** {@code ResultCulture}: {@code POS}, {@code NEG} or {@code NOTEST}. */
+	public static String resultCulture(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getResultCulture();
+	}
+
+	/** {@code ResultMicroscopyAFB}: {@code POS}, {@code NEG} or {@code NOTEST}. */
+	public static String resultMicroscopyAFB(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getResultMicroscopyAFB();
+	}
+
+	/** {@code ResultOtherTest}: nucleic acid and histopathology findings, or {@code NOTEST}. */
+	public static String resultOtherTest(EpipulseDiseaseExportEntryDto entry) {
+		return EpipulseLaboratoryMapper.mapOtherTestResult(entry.getHistopathologyResult(), entry.getNucleicAcidResult());
+	}
+
+	/** {@code SIR_AMK}: susceptibility to Amikacin. */
+	public static String sir_AMK(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_AMK();
+	}
+
+	/** {@code SIR_BDQ}: susceptibility to Bedaquiline. */
+	public static String sir_BDQ(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_BDQ();
+	}
+
+	/** {@code SIR_CLF}: susceptibility to Clofazimine. */
+	public static String sir_CLF(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_CLF();
+	}
+
+	/** {@code SIR_DLM}: susceptibility to Delamanid. */
+	public static String sir_DLM(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_DLM();
+	}
+
+	/** {@code SIR_ETH}: susceptibility to Ethambutol. */
+	public static String sir_ETH(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_ETH();
+	}
+
+	/** {@code SIR_ETI}: susceptibility to Ethionamide. */
+	public static String sir_ETI(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_ETI();
+	}
+
+	/** {@code SIR_INH}: susceptibility to Isoniazid. */
+	public static String sir_INH(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_INH();
+	}
+
+	/** {@code SIR_LNZ}: susceptibility to Linezolid. */
+	public static String sir_LNZ(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_LNZ();
+	}
+
+	/** {@code SIR_LVX}: susceptibility to Levofloxacin. */
+	public static String sir_LVX(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_LVX();
+	}
+
+	/** {@code SIR_MFX}: susceptibility to Moxifloxacin. */
+	public static String sir_MFX(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_MFX();
+	}
+
+	/** {@code SIR_PTM}: susceptibility to Pretomanid. */
+	public static String sir_PTM(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_PTM();
+	}
+
+	/** {@code SIR_PZA}: susceptibility to Pyrazinamide. */
+	public static String sir_PZA(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_PZA();
+	}
+
+	/** {@code SIR_STR}: susceptibility to Streptomycin. */
+	public static String sir_STR(EpipulseDiseaseExportEntryDto entry) {
+		return entry.getSir_STR();
 	}
 
 	/** Converts nullable value to export text. */

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,30 +27,41 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.climate.ClimateConfiguration;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.FormSectionAccordion;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.DiseaseConfigurationAgeGroupComponent;
 
@@ -61,7 +73,13 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 
 	public static final String AGE_GROUP_HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.AGE_GROUPS);
 
-	public static final String GENERAL_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.UUID)
+	private static final String LOC_USUAL_RANGE_INFO = "locUsualRangeInfo";
+	private static final String LOC_IMMUNIZATION_VALIDITY_INFO = "locImmunizationValidityInfo";
+
+	public static final String CLIMATE_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.USUAL_RANGE_EXCLUDED_YEARS)
+			+ loc(LOC_USUAL_RANGE_INFO);
+
+	public static final String GENERAL_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.UUID, DiseaseConfigurationDto.EPIPULSE_SUBJECT_CODE, DiseaseConfigurationDto.EPIPULSE_DATASOURCE)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.ACTIVE, DiseaseConfigurationDto.PRIMARY_DISEASE, DiseaseConfigurationDto.AGGREGATE_REPORTING_ENABLED)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.CASE_SURVEILLANCE_ENABLED)
 			+ fluidRowLocs(DiseaseConfigurationDto.EXTENDED_CLASSIFICATION, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI, DiseaseConfigurationDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD)
@@ -69,7 +87,21 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			+ fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.FOLLOW_UP_DURATION,DiseaseConfigurationDto.CASE_FOLLOW_UP_DURATION,DiseaseConfigurationDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION)
 			+ fluidRowLocsCss(CssStyles.VSPACE_5, DiseaseConfigurationDto.INCUBATION_PERIOD_ENABLED,DiseaseConfigurationDto.IS_CONTAGIOUS)
 			+ fluidRowLocsCss(CssStyles.VSPACE_1, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, DiseaseConfigurationDto.MAX_INCUBATION_PERIOD,DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD)
-			+ fluidRowLocs(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
+		+ fluidRowLocsCss(CssStyles.VSPACE_TOP_3, LOC_IMMUNIZATION_VALIDITY_INFO)
+		+ fluidRowLocsCss(
+			CssStyles.VSPACE_5,
+			DiseaseConfigurationDto.VACCINATION_PROTECTION_REQUIRED_DOSES,
+			DiseaseConfigurationDto.VACCINATION_PROTECTION_START_OFFSET_DAYS,
+			DiseaseConfigurationDto.RECOVERY_PROTECTION_START_OFFSET_DAYS)
+		+ fluidRowLocsCss(
+			CssStyles.VSPACE_3,
+			DiseaseConfigurationDto.VACCINATION_PROTECTION_LIFELONG,
+			DiseaseConfigurationDto.RECOVERY_PROTECTION_LIFELONG)
+		+ fluidRowLocsCss(
+			CssStyles.VSPACE_5,
+			DiseaseConfigurationDto.VACCINATION_PROTECTION_DURATION_DAYS,
+			DiseaseConfigurationDto.RECOVERY_PROTECTION_DURATION_DAYS)
+		+ fluidRowLocs(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
 	//@formatter:on
 	public static final String MAIN_ACCORDION_LOC = "mainAccordionLoc";
 	private static final String LOC_DEPRECATED_VALUES_WARNING = "locDeprecatedValuesWarning";
@@ -92,8 +124,14 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	private CheckBox cbIsContagious;
 	private TextField tfMinContagiousPeriod;
 	private TextField tfMaxContagiousPeriod;
+	private CheckBox cbVaccinationProtectionLifelong;
+	private TextField tfVaccinationProtectionDurationDays;
+	private CheckBox cbRecoveryProtectionLifelong;
+	private TextField tfRecoveryProtectionDurationDays;
 
 	private CheckboxSet<ExposureCategory> exposureCategoriesField;
+	private CheckboxSet<Integer> usualRangeExcludedYearsField;
+	private Label usualRangeInfoLabel;
 	private Label deprecatedValuesWarningLabel;
 	private boolean updatingExposureCategoryItems;
 	private boolean settingFormValue;
@@ -127,6 +165,11 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		cbDisease = addDiseaseField(DiseaseConfigurationDto.DISEASE, true, false);
 		cbDisease.setStyleName(CssStyles.H3);
 		addField(generalLayout, DiseaseConfigurationDto.UUID);
+		TextField tfEpipulseSubjectCode = addField(generalLayout, DiseaseConfigurationDto.EPIPULSE_SUBJECT_CODE, TextField.class);
+		tfEpipulseSubjectCode.setNullRepresentation("");
+		TextField tfEpipulseDatasource = addField(generalLayout, DiseaseConfigurationDto.EPIPULSE_DATASOURCE, TextField.class);
+		tfEpipulseDatasource.setNullRepresentation("");
+		addInfoIcon(tfEpipulseDatasource, I18nProperties.getString(Strings.infoDiseaseConfigurationEpipulseDatasource));
 		addField(generalLayout, DiseaseConfigurationDto.ACTIVE, CheckBox.class);
 		addField(generalLayout, DiseaseConfigurationDto.PRIMARY_DISEASE, CheckBox.class);
 		cbCaseSurveillance = addField(generalLayout, DiseaseConfigurationDto.CASE_SURVEILLANCE_ENABLED, CheckBox.class);
@@ -145,6 +188,14 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		cbIsContagious = addField(generalLayout, DiseaseConfigurationDto.IS_CONTAGIOUS, CheckBox.class);
 		tfMinContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, TextField.class);
 		tfMaxContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD, TextField.class);
+		addField(generalLayout, DiseaseConfigurationDto.VACCINATION_PROTECTION_REQUIRED_DOSES, TextField.class);
+		addField(generalLayout, DiseaseConfigurationDto.VACCINATION_PROTECTION_START_OFFSET_DAYS, TextField.class);
+		tfVaccinationProtectionDurationDays = addField(generalLayout, DiseaseConfigurationDto.VACCINATION_PROTECTION_DURATION_DAYS, TextField.class);
+		cbVaccinationProtectionLifelong = addField(generalLayout, DiseaseConfigurationDto.VACCINATION_PROTECTION_LIFELONG, CheckBox.class);
+		addField(generalLayout, DiseaseConfigurationDto.RECOVERY_PROTECTION_START_OFFSET_DAYS, TextField.class);
+		tfRecoveryProtectionDurationDays = addField(generalLayout, DiseaseConfigurationDto.RECOVERY_PROTECTION_DURATION_DAYS, TextField.class);
+		cbRecoveryProtectionLifelong = addField(generalLayout, DiseaseConfigurationDto.RECOVERY_PROTECTION_LIFELONG, CheckBox.class);
+		generalLayout.addComponent(createImmunizationValidityInfo(), LOC_IMMUNIZATION_VALIDITY_INFO);
 
 		deprecatedValuesWarningLabel = new Label(
 			VaadinIcons.WARNING.getHtml() + " " + I18nProperties.getString(Strings.messageDiseaseConfigurationContainsDeprecatedValues),
@@ -180,6 +231,13 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationCaseDefinition), false, caseDefinitionLayout);
 		accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationAgeGroup), false, ageGroupLayout);
 
+		CustomLayout climateLayout = new CustomLayout();
+		climateLayout.setTemplateContents(CLIMATE_HTML_LAYOUT);
+		addUsualRangeExcludedYearsField(climateLayout);
+		if (UiUtil.enabled(FeatureType.CLIMATE_MANAGEMENT)) {
+			accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationClimate), false, climateLayout);
+		}
+
 		getContent().addComponent(accordion, MAIN_ACCORDION_LOC);
 
 		setReadOnly(true, DiseaseConfigurationDto.DISEASE, DiseaseConfigurationDto.UUID);
@@ -199,6 +257,9 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			Arrays.asList(Boolean.TRUE),
 			true);
 		FieldHelper.setVisibleWhen(cbIsContagious, Arrays.asList(tfMaxContagiousPeriod, tfMinContagiousPeriod), Arrays.asList(Boolean.TRUE), true);
+		FieldHelper
+			.setVisibleWhen(cbVaccinationProtectionLifelong, Arrays.asList(tfVaccinationProtectionDurationDays), Arrays.asList(Boolean.FALSE), true);
+		FieldHelper.setVisibleWhen(cbRecoveryProtectionLifelong, Arrays.asList(tfRecoveryProtectionDurationDays), Arrays.asList(Boolean.FALSE), true);
 		FieldHelper.setVisibleWhen(
 			cbCaseSurveillance,
 			Arrays.asList(
@@ -225,8 +286,78 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			super.setValue(newFieldValue);
 			updateExposureCategoryItems(selectedExposureCategories);
 			ageGroupsComponent.setValue(ageGroups);
+			updateUsualRangeInfo();
 		} finally {
 			settingFormValue = false;
+		}
+	}
+
+	/**
+	 * Checkboxes for the last {@link ClimateConfiguration#EXCLUDABLE_YEARS} complete years; older years have no effect on the
+	 * usual range, so they are not offered.
+	 */
+	@SuppressWarnings("unchecked")
+	private void addUsualRangeExcludedYearsField(CustomLayout climateLayout) {
+
+		usualRangeExcludedYearsField = addField(climateLayout, DiseaseConfigurationDto.USUAL_RANGE_EXCLUDED_YEARS, CheckboxSet.class);
+		usualRangeExcludedYearsField.setColumnCount(5);
+
+		int currentYear = LocalDate.now().getYear();
+		List<Integer> years = IntStream.range(currentYear - ClimateConfiguration.EXCLUDABLE_YEARS, currentYear).boxed().collect(Collectors.toList());
+		usualRangeExcludedYearsField.setItems(years, null, null, String::valueOf, null);
+
+		usualRangeInfoLabel = new Label();
+		CssStyles.style(usualRangeInfoLabel, CssStyles.LABEL_WHITE_SPACE_NORMAL, CssStyles.VSPACE_TOP_4);
+		climateLayout.addComponent(usualRangeInfoLabel, LOC_USUAL_RANGE_INFO);
+
+		usualRangeExcludedYearsField.addValueChangeListener(e -> updateUsualRangeInfo());
+	}
+
+	/**
+	 * Shows how many of the reference years remain for the case usual range after the ticked years are left out.
+	 */
+	@SuppressWarnings("unchecked")
+	private void updateUsualRangeInfo() {
+
+		if (usualRangeInfoLabel == null) {
+			return;
+		}
+
+		int historyYears = getClimateSetting(ClimateConfiguration.HISTORY_YEARS, ClimateConfiguration.DEFAULT_HISTORY_YEARS);
+		int minimumYears = getClimateSetting(ClimateConfiguration.CASE_MIN_HISTORY_YEARS, 3);
+		int lastYear = LocalDate.now().getYear() - 1;
+		int firstYear = lastYear - historyYears + 1;
+
+		Set<Integer> ticked =
+			usualRangeExcludedYearsField.getValue() != null ? (Set<Integer>) usualRangeExcludedYearsField.getValue() : Collections.emptySet();
+		List<Integer> excluded = ticked.stream().filter(year -> year >= firstYear && year <= lastYear).sorted().collect(Collectors.toList());
+		int remaining = historyYears - excluded.size();
+		String period = firstYear == lastYear ? String.valueOf(lastYear) : firstYear + "–" + lastYear;
+
+		if (remaining < minimumYears) {
+			usualRangeInfoLabel
+				.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeNotShown), remaining, historyYears, minimumYears));
+		} else if (excluded.isEmpty()) {
+			usualRangeInfoLabel
+				.setValue(String.format(I18nProperties.getString(Strings.infoClimateUsualRangeYears), remaining, historyYears, period));
+		} else {
+			usualRangeInfoLabel.setValue(
+				String.format(
+					I18nProperties.getString(Strings.infoClimateUsualRangeYearsExcluded),
+					remaining,
+					historyYears,
+					period,
+					excluded.stream().map(String::valueOf).collect(Collectors.joining(", "))));
+		}
+	}
+
+	private static int getClimateSetting(String key, int defaultValue) {
+
+		try {
+			int value = Integer.parseInt(FacadeProvider.getSystemConfigurationValueFacade().getValue(key).trim());
+			return value > 0 ? value : defaultValue;
+		} catch (NumberFormatException | NullPointerException e) {
+			return defaultValue;
 		}
 	}
 
@@ -283,6 +414,26 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		return StringEscapeUtils.escapeHtml4(value);
 	}
 
+	/**
+	 * Adds an info icon after the caption of {@code field} that shows {@code info} as tooltip when hovering the field, like
+	 * the info icon next to "Overwrite existing entries" in the import dialogs. The caption itself is escaped, so it is
+	 * shown as plain text.
+	 *
+	 * <p>
+	 * Example: "EpiPulse data source" → "EPIPULSE DATA SOURCE ⓘ", tooltip "EpiPulse data source of this disease's
+	 * exports…". A {@code null} field or an empty {@code info} changes nothing.
+	 */
+	private void addInfoIcon(TextField field, String info) {
+
+		if (field == null || StringUtils.isBlank(info)) {
+			return;
+		}
+
+		field.setCaptionAsHtml(true);
+		field.setCaption(escapeHtml(field.getCaption()) + " " + VaadinIcons.INFO_CIRCLE.getHtml());
+		field.setDescription(info);
+	}
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
@@ -291,6 +442,13 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	@Override
 	public void attach() {
 		super.attach();
+
+		// Initialize visibility for vaccination/recovery protection duration fields
+		updateVaccinationProtectionDurationVisibility();
+		updateRecoveryProtectionDurationVisibility();
+
+		cbVaccinationProtectionLifelong.addValueChangeListener(e -> updateVaccinationProtectionDurationVisibility());
+		cbRecoveryProtectionLifelong.addValueChangeListener(e -> updateRecoveryProtectionDurationVisibility());
 
 		cbCaseSurveillance.addValueChangeListener(e -> {
 			System.out.println("not enabled" + !cbFollowUpEnabled.isEnabled());
@@ -305,5 +463,43 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 				tfEventParticipantFollowUpDuration.setEnabled(true);
 			}
 		});
+	}
+
+	/**
+	 * Heading with an info icon for the vaccination and recovery protection values: a short explanation as tooltip, the full
+	 * explanation of the quick immunization form fill-out in a popup on click.
+	 */
+	private HorizontalLayout createImmunizationValidityInfo() {
+		Label heading = new Label(I18nProperties.getString(Strings.headingDiseaseConfigurationImmunizationValidity));
+		CssStyles.style(heading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY);
+
+		Button infoButton = ButtonHelper.createIconButton(
+			null,
+			VaadinIcons.INFO_CIRCLE,
+			e -> VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(Strings.headingDiseaseConfigurationImmunizationValidity),
+				I18nProperties.getString(Strings.infoDiseaseConfigurationImmunizationValidityDetails),
+				ContentMode.HTML,
+				640),
+			ValoTheme.BUTTON_BORDERLESS,
+			ValoTheme.BUTTON_ICON_ONLY);
+		infoButton.setDescription(I18nProperties.getString(Strings.infoDiseaseConfigurationImmunizationValidity));
+
+		HorizontalLayout layout = new HorizontalLayout(heading, infoButton);
+		layout.setMargin(false);
+		layout.setSpacing(false);
+		layout.setComponentAlignment(heading, Alignment.MIDDLE_LEFT);
+		layout.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
+		return layout;
+	}
+
+	private void updateVaccinationProtectionDurationVisibility() {
+		boolean lifelong = Boolean.TRUE.equals(cbVaccinationProtectionLifelong.getValue());
+		tfVaccinationProtectionDurationDays.setVisible(!lifelong);
+	}
+
+	private void updateRecoveryProtectionDurationVisibility() {
+		boolean lifelong = Boolean.TRUE.equals(cbRecoveryProtectionLifelong.getValue());
+		tfRecoveryProtectionDurationDays.setVisible(!lifelong);
 	}
 }

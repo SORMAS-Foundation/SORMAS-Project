@@ -432,7 +432,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			symptom(SymptomsDto.SKIN_RASH, Disease.RUBELLA.name()),
 			xOf(
 				1,
-				symptom(SymptomsDto.LYMPHADENOPATHY_CERVICAL),
+				symptom(SymptomsDto.LYMPHADENOPATHY_CERVICAL, Disease.RUBELLA.name()),
 				symptom(SymptomsDto.LYMPHADENOPATHY_SUBOCCIPITAL),
 				symptom(SymptomsDto.LYMPHADENOPATHY_RETROAURICULAR),
 				symptom(SymptomsDto.ARTHRALGIA),

@@ -32,18 +32,23 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.survey.SurveyDto;
+import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -64,9 +69,12 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 
@@ -1055,5 +1063,181 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		loginWith(user);
 
 		assertEquals(1, getCaseService().count());
+	}
+
+	@Test
+	public void externalMessageSymptomsSurviveTheOrphanCleanup() {
+		TestDataCreator.RDCF redcf = creator.createRDCF();
+		UserDto user = creator.createUser(redcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		ExternalMessageDto message = creator.createExternalMessage(m -> {
+			m.setCaseSymptoms(SymptomsDto.build());
+			m.getCaseSymptoms().setFever(SymptomState.YES);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(SymptomState.YES, getExternalMessageFacade().getByUuid(message.getUuid()).getCaseSymptoms().getFever());
+	}
+
+	@Test
+	public void unreferencedSymptomsAreStillDeleted() {
+		TestDataCreator.RDCF redcf = creator.createRDCF();
+		UserDto user = creator.createUser(redcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		Symptoms symptoms = new Symptoms();
+		executeInTransaction(em -> {
+			em.persist(symptoms);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertNull(getSymptomsService().getByUuid(symptoms.getUuid()));
+	}
+
+	@Test
+	public void caseDeletionKeepsSampleReportsOfItsSamples() {
+		createDeletionConfigurations();
+		DeletionConfiguration caseConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		ExternalMessageDto message = creator.createExternalMessage(null);
+		SampleReportDto sampleReport = creator.createSampleReport(message, sample.toReference());
+
+		final Date expired = DateUtils.addDays(new Date(), (-1) * caseConfig.deletionPeriod - 1);
+		executeInTransaction(em -> {
+			Case persisted = em.createQuery("select c from cases c where c.uuid=:uuid", Case.class)
+				.setParameter("uuid", caze.getUuid())
+				.getSingleResult();
+			persisted.setCreationDate(new Timestamp(expired.getTime()));
+			persisted.setChangeDate(new Timestamp(expired.getTime()));
+			em.persist(persisted);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getSampleService().count());
+		assertEquals(1, getSampleReportService().count());
+		assertNull(getSampleReportService().getByUuid(sampleReport.getUuid()).getSample());
+	}
+
+	@Test
+	public void caseDeletionUnlinksOnlyTheSampleReportOfTheDeletedSample() {
+		createDeletionConfigurations();
+		DeletionConfiguration caseConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		CaseDataDto keptCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		CaseDataDto expiredCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		SampleDto sampleX = creator.createSample(keptCase.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sampleY = creator.createSample(expiredCase.toReference(), user.toReference(), rdcf.facility);
+		ExternalMessageDto message = creator.createExternalMessage(null);
+		SampleReportDto reportX = creator.createSampleReport(message, sampleX.toReference());
+		SampleReportDto reportY = creator.createSampleReport(message, sampleY.toReference());
+
+		final Date expired = DateUtils.addDays(new Date(), (-1) * caseConfig.deletionPeriod - 1);
+		executeInTransaction(em -> {
+			Case persisted = em.createQuery("select c from cases c where c.uuid=:uuid", Case.class)
+				.setParameter("uuid", expiredCase.getUuid())
+				.getSingleResult();
+			persisted.setCreationDate(new Timestamp(expired.getTime()));
+			persisted.setChangeDate(new Timestamp(expired.getTime()));
+			em.persist(persisted);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertNotNull(getSampleService().getByUuid(sampleX.getUuid()));
+		assertNull(getSampleService().getByUuid(sampleY.getUuid()));
+		assertEquals(2, getSampleReportService().count());
+		assertEquals(sampleX.getUuid(), getSampleReportService().getByUuid(reportX.getUuid()).getSample().getUuid());
+		assertNull(getSampleReportService().getByUuid(reportY.getUuid()).getSample());
+	}
+
+	@Test
+	public void caseDeletionRemovesItsSpecialAccessesSurveyTokensAndMessageLogs() {
+		createDeletionConfigurations();
+		DeletionConfiguration caseConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		UserDto assignee = creator.createUser(rdcf, "Other", "Assignee", creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		creator.createSpecialCaseAccess(caze.toReference(), user.toReference(), assignee.toReference(), DateUtils.addDays(new Date(), 5));
+		creator.createSurveyToken(caze.toReference());
+
+		final Date expired = DateUtils.addDays(new Date(), (-1) * caseConfig.deletionPeriod - 1);
+		executeInTransaction(em -> {
+			Case persisted = em.createQuery("select c from cases c where c.uuid=:uuid", Case.class)
+				.setParameter("uuid", caze.getUuid())
+				.getSingleResult();
+			ManualMessageLog log = new ManualMessageLog();
+			log.setMessageType(MessageType.EMAIL);
+			log.setSentDate(new Date());
+			log.setSendingUser(em.find(User.class, getUserService().getByUuid(user.getUuid()).getId()));
+			log.setRecipientPerson(em.find(Person.class, getPersonService().getByUuid(person.getUuid()).getId()));
+			log.setCaze(persisted);
+			em.persist(log);
+			persisted.setCreationDate(new Timestamp(expired.getTime()));
+			persisted.setChangeDate(new Timestamp(expired.getTime()));
+			em.persist(persisted);
+		});
+
+		assertEquals(1, getSpecialCaseAccessService().count());
+		assertEquals(1, getSurveyTokenService().count());
+		assertEquals(1, getManualMessageLogService().count());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getSpecialCaseAccessService().count());
+		assertEquals(0, getSurveyTokenService().count());
+		assertEquals(0, getManualMessageLogService().count());
+		assertNull(getCaseService().getByUuid(caze.getUuid()));
+	}
+
+	@Test
+	public void caseDeletionKeepsOtherCasesSurveyTokens() {
+		createDeletionConfigurations();
+		DeletionConfiguration caseConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		CaseDataDto expiredCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		CaseDataDto keptCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		SurveyDto survey = creator.createSurvey("Shared-Survey", Disease.MALARIA);
+		SurveyTokenDto expiredToken = SurveyTokenDto.build(survey.toReference());
+		expiredToken.setToken("TOKEN1");
+		expiredToken.setCaseAssignedTo(expiredCase.toReference());
+		getSurveyTokenFacade().save(expiredToken);
+		SurveyTokenDto keptToken = SurveyTokenDto.build(survey.toReference());
+		keptToken.setToken("TOKEN2");
+		keptToken.setCaseAssignedTo(keptCase.toReference());
+		keptToken = getSurveyTokenFacade().save(keptToken);
+
+		final Date expired = DateUtils.addDays(new Date(), (-1) * caseConfig.deletionPeriod - 1);
+		executeInTransaction(em -> {
+			Case persisted = em.createQuery("select c from cases c where c.uuid=:uuid", Case.class)
+				.setParameter("uuid", expiredCase.getUuid())
+				.getSingleResult();
+			persisted.setCreationDate(new Timestamp(expired.getTime()));
+			persisted.setChangeDate(new Timestamp(expired.getTime()));
+			em.persist(persisted);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(1, getSurveyTokenService().count());
+		assertEquals(keptCase.getUuid(), getSurveyTokenService().getByUuid(keptToken.getUuid()).getCaseAssignedTo().getUuid());
 	}
 }

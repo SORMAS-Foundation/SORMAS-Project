@@ -1,11 +1,30 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.disease;
 
 import java.util.List;
 import java.util.Set;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class DiseaseConfigurationDto extends EntityDto {
 
@@ -29,13 +48,32 @@ public class DiseaseConfigurationDto extends EntityDto {
 	public static final String IS_CONTAGIOUS = "isContagious";
 	public static final String MIN_CONTAGIOUS_PERIOD = "minContagiousPeriod";
 	public static final String MAX_CONTAGIOUS_PERIOD = "maxContagiousPeriod";
+	public static final String VACCINATION_PROTECTION_START_OFFSET_DAYS = "vaccinationProtectionStartOffsetDays";
+	public static final String VACCINATION_PROTECTION_REQUIRED_DOSES = "vaccinationProtectionRequiredDoses";
+	public static final String VACCINATION_PROTECTION_DURATION_DAYS = "vaccinationProtectionDurationDays";
+	public static final String VACCINATION_PROTECTION_LIFELONG = "vaccinationProtectionLifelong";
+	public static final String RECOVERY_PROTECTION_START_OFFSET_DAYS = "recoveryProtectionStartOffsetDays";
+	public static final String RECOVERY_PROTECTION_DURATION_DAYS = "recoveryProtectionDurationDays";
+	public static final String RECOVERY_PROTECTION_LIFELONG = "recoveryProtectionLifelong";
 	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
 	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
 	public static final String AGE_GROUPS = "ageGroups";
 	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
 	public static final String EXPOSURE_CATEGORIES = "exposureCategories";
+	public static final String USUAL_RANGE_EXCLUDED_YEARS = "usualRangeExcludedYears";
+	public static final String EPIPULSE_SUBJECT_CODE = "epipulseSubjectCode";
+	public static final String EPIPULSE_DATASOURCE = "epipulseDatasource";
 
 	private Disease disease;
+	/** EpiPulse subject code of the disease, e.g. {@code "MEAS"} for measles; {@code null} when none has been entered. */
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String epipulseSubjectCode;
+	/**
+	 * EpiPulse data source of the disease's exports, e.g. {@code "LU-TUBE-REG"}; {@code null} means the system configuration
+	 * value {@code EPIPULSE_DATASOURCE} is used.
+	 */
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String epipulseDatasource;
 	private Boolean active;
 	private Boolean primaryDisease;
 	private Boolean caseSurveillanceEnabled;
@@ -51,6 +89,13 @@ public class DiseaseConfigurationDto extends EntityDto {
 	private Boolean isContagious;
 	private Integer minContagiousPeriod;
 	private Integer maxContagiousPeriod;
+	private Integer vaccinationProtectionStartOffsetDays;
+	private Integer vaccinationProtectionRequiredDoses;
+	private Integer vaccinationProtectionDurationDays;
+	private Boolean vaccinationProtectionLifelong;
+	private Integer recoveryProtectionStartOffsetDays;
+	private Integer recoveryProtectionDurationDays;
+	private Boolean recoveryProtectionLifelong;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
@@ -58,12 +103,31 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	private Set<ExposureCategory> exposureCategories;
 
+	/** Epidemic years left out of the case usual range on the Climate dashboard. */
+	private Set<Integer> usualRangeExcludedYears;
+
 	public Disease getDisease() {
 		return disease;
 	}
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public String getEpipulseSubjectCode() {
+		return epipulseSubjectCode;
+	}
+
+	public void setEpipulseSubjectCode(String epipulseSubjectCode) {
+		this.epipulseSubjectCode = epipulseSubjectCode;
+	}
+
+	public String getEpipulseDatasource() {
+		return epipulseDatasource;
+	}
+
+	public void setEpipulseDatasource(String epipulseDatasource) {
+		this.epipulseDatasource = epipulseDatasource;
 	}
 
 	public Boolean getActive() {
@@ -224,6 +288,70 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	public void setMaxContagiousPeriod(Integer maxContagiousPeriod) {
 		this.maxContagiousPeriod = maxContagiousPeriod;
+	}
+
+	public Set<Integer> getUsualRangeExcludedYears() {
+		return usualRangeExcludedYears;
+	}
+
+	public void setUsualRangeExcludedYears(Set<Integer> usualRangeExcludedYears) {
+		this.usualRangeExcludedYears = usualRangeExcludedYears;
+	}
+
+	public Integer getVaccinationProtectionStartOffsetDays() {
+		return vaccinationProtectionStartOffsetDays;
+	}
+
+	public void setVaccinationProtectionStartOffsetDays(Integer vaccinationProtectionStartOffsetDays) {
+		this.vaccinationProtectionStartOffsetDays = vaccinationProtectionStartOffsetDays;
+	}
+
+	public Integer getVaccinationProtectionRequiredDoses() {
+		return vaccinationProtectionRequiredDoses;
+	}
+
+	public void setVaccinationProtectionRequiredDoses(Integer vaccinationProtectionRequiredDoses) {
+		this.vaccinationProtectionRequiredDoses = vaccinationProtectionRequiredDoses;
+	}
+
+	public Integer getVaccinationProtectionDurationDays() {
+		return vaccinationProtectionDurationDays;
+	}
+
+	public void setVaccinationProtectionDurationDays(Integer vaccinationProtectionDurationDays) {
+		this.vaccinationProtectionDurationDays = vaccinationProtectionDurationDays;
+	}
+
+	public Boolean getVaccinationProtectionLifelong() {
+		return vaccinationProtectionLifelong;
+	}
+
+	public void setVaccinationProtectionLifelong(Boolean vaccinationProtectionLifelong) {
+		this.vaccinationProtectionLifelong = vaccinationProtectionLifelong;
+	}
+
+	public Integer getRecoveryProtectionStartOffsetDays() {
+		return recoveryProtectionStartOffsetDays;
+	}
+
+	public void setRecoveryProtectionStartOffsetDays(Integer recoveryProtectionStartOffsetDays) {
+		this.recoveryProtectionStartOffsetDays = recoveryProtectionStartOffsetDays;
+	}
+
+	public Integer getRecoveryProtectionDurationDays() {
+		return recoveryProtectionDurationDays;
+	}
+
+	public void setRecoveryProtectionDurationDays(Integer recoveryProtectionDurationDays) {
+		this.recoveryProtectionDurationDays = recoveryProtectionDurationDays;
+	}
+
+	public Boolean getRecoveryProtectionLifelong() {
+		return recoveryProtectionLifelong;
+	}
+
+	public void setRecoveryProtectionLifelong(Boolean recoveryProtectionLifelong) {
+		this.recoveryProtectionLifelong = recoveryProtectionLifelong;
 	}
 
 }

@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.events;
 import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent.QUARANTINE_LOC;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -185,18 +186,14 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 			}
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-				layout.addSidePanelComponent(
-					new SideComponentLayout(
-						new ImmunizationListComponent(
-							() -> new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease())
-								.withDiseaseDetails(event.getDiseaseDetails())
-								.build(),
-							null,
-							this::showUnsavedChangesPopup,
-							editAllowed,
-							vaccinationStatusPanel,
-							SormasUI::refreshView,
-							getReference())),
+				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
+					Date referencePeriodFrom = event.getStartDate() != null ? event.getStartDate() : event.getReportDateTime();
+					Date referencePeriodTo = event.getEndDate() != null ? event.getEndDate() : referencePeriodFrom;
+					return new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease())
+						.withDiseaseDetails(event.getDiseaseDetails())
+						.withReferencePeriod(referencePeriodFrom, referencePeriodTo)
+						.build();
+				}, null, this::showUnsavedChangesPopup, editAllowed, vaccinationStatusPanel, SormasUI::refreshView, getReference())),
 					IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {

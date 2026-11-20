@@ -21,6 +21,7 @@ import java.util.EnumSet;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.event.EventStatus;
 
 /**
  * Row of the 7-1-7 view of the event directory: the stored timeliness of one 7-1-7 assessment, laid out like the "Assess 7-1-7
@@ -40,6 +41,8 @@ public class Event717IndexDto implements Serializable {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String EVENT_STATUS = "eventStatus";
+	public static final String ASSESSED_EVENT_STATUS = "assessedEventStatus";
 	public static final String DETECTION_DAYS = "detectionDays";
 	public static final String DETECTION_STATUS = "detectionStatus";
 	public static final String NOTIFICATION_DAYS = "notificationDays";
@@ -63,6 +66,8 @@ public class Event717IndexDto implements Serializable {
 	private final String region;
 	private final String district;
 	private final String community;
+	private final EventStatus eventStatus;
+	private final EventStatus assessedEventStatus;
 	private final Integer detectionDays;
 	private final Event717TimelinessStatus detectionStatus;
 	private final Integer notificationDays;
@@ -76,6 +81,7 @@ public class Event717IndexDto implements Serializable {
 	//@formatter:off
 	public Event717IndexDto(String eventUuid, String eventTitle, Disease eventDisease, String eventDiseaseDetails, Date dateOfEmergence,
 							String region, String district, String community,
+							EventStatus eventStatus, EventStatus assessedEventStatus,
 							Integer detectionDays, Event717TimelinessStatus detectionStatus,
 							Integer notificationDays, Event717TimelinessStatus notificationStatus,
 							Integer investigationDays, Boolean investigationNotApplicable,
@@ -96,6 +102,8 @@ public class Event717IndexDto implements Serializable {
 		this.region = region;
 		this.district = district;
 		this.community = community;
+		this.eventStatus = eventStatus;
+		this.assessedEventStatus = assessedEventStatus;
 		this.detectionDays = detectionDays;
 		this.detectionStatus = detectionStatus;
 		this.notificationDays = notificationDays;
@@ -178,6 +186,20 @@ public class Event717IndexDto implements Serializable {
 
 	public String getCommunity() {
 		return community;
+	}
+
+	/**
+	 * @return The current status of the event.
+	 */
+	public EventStatus getEventStatus() {
+		return eventStatus;
+	}
+
+	/**
+	 * @return The status of the event when the assessment was created.
+	 */
+	public EventStatus getAssessedEventStatus() {
+		return assessedEventStatus;
 	}
 
 	public Integer getDetectionDays() {

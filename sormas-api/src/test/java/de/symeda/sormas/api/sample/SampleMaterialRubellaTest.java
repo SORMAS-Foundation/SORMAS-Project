@@ -17,6 +17,7 @@ public class SampleMaterialRubellaTest {
 		SampleMaterial.DRY_BLOOD,
 		SampleMaterial.EDTA_WHOLE_BLOOD,
 		SampleMaterial.NP_SWAB,
+		SampleMaterial.OROPHARYNGEAL_SWAB,
 		SampleMaterial.CLINICAL_SAMPLE,
 		SampleMaterial.SALIVA,
 		SampleMaterial.URINE);
@@ -29,19 +30,19 @@ public class SampleMaterialRubellaTest {
 			assertFalse(material.isDeprecated(), material.name() + " is retired and cannot be on the Rubella specimen list");
 			assertTrue(
 				checker.isVisible(SampleMaterial.class, material.name()),
-				material.name() + " must be selectable for Rubella (#14293 specimen list)");
+				material.name() + " must be selectable for Rubella (#14293, D4/D5 12 Nov 2026)");
 		}
 	}
 
 	@Test
 	public void noUnapprovedSpecimenIsSelectableForRubella() {
 		for (SampleMaterial material : SampleMaterial.values()) {
-			if (APPROVED.contains(material) || material.isDeprecated() || material == SampleMaterial.UNKNOWN) {
+			if (APPROVED.contains(material) || material.isDeprecated()) {
 				continue;
 			}
 			assertFalse(
 				checker.isVisible(SampleMaterial.class, material.name()),
-				material.name() + " leaks into the Rubella specimen picker — hide it (#14293)");
+				material.name() + " leaks into the Rubella specimen picker, hide it (#14293, D4/D5 12 Nov 2026)");
 		}
 	}
 }

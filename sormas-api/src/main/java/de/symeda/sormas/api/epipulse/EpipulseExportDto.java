@@ -42,6 +42,7 @@ public class EpipulseExportDto extends PseudonymizableDto {
 	public static final String EXPORT_FILE_NAME = "exportFileName";
 	public static final String EXPORT_FILE_SIZE = "exportFileSize";
 	public static final String CREATION_USER = "creationUser";
+	public static final String STATUS_REASON = "statusReason";
 
 	private EpipulseSubjectCode subjectCode;
 	private Date startDate;
@@ -52,6 +53,10 @@ public class EpipulseExportDto extends PseudonymizableDto {
 	private String exportFileName;
 	private Long exportFileSize;
 	private UserReferenceDto creationUser;
+	/**
+	 * Why the export failed, in words the user understands, e.g. "No EpiPulse subject code is configured for Diphtheria…";
+	 * {@code null} when the export did not fail. Written by the background export, read-only for the user.
+	 */
 	private String statusReason;
 
 	public static EpipulseExportDto build(UserReferenceDto user) {

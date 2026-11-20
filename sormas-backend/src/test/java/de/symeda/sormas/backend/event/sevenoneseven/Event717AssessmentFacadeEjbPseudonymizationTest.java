@@ -69,6 +69,7 @@ public class Event717AssessmentFacadeEjbPseudonymizationTest extends AbstractBea
 		super.init();
 
 		createFeatureConfiguration(FeatureType.EVENT_717_ASSESSMENT, true);
+		Event717TestHelper.allowAllEventStatuses(this);
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2");

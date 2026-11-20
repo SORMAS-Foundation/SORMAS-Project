@@ -55,6 +55,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.STATUS;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -64,6 +65,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -98,6 +101,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 
@@ -190,9 +194,9 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		reportingUser = surveillanceSupervisor.toReference();
 		fixture = fixtureFor(Disease.SYPHILIS, rdcf, surveillanceSupervisor);
 
-		france = countryWithNutsCode("France", "FRA", "FR");
-		italy = countryWithNutsCode("Italy", "ITA", "IT");
-		spain = countryWithNutsCode("Spain", "ESP", "ES");
+		france = countryWithEpipulseLocationCode("France", "FRA", "FR");
+		italy = countryWithEpipulseLocationCode("Italy", "ITA", "IT");
+		spain = countryWithEpipulseLocationCode("Spain", "ESP", "ES");
 	}
 
 	// ---------------------------------------------------------------------------------------
@@ -244,15 +248,15 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		CaseDataDto caze = fixture.caze(person, ONSET, c -> {
 			c.setSyphilisPresentation(SyphilisPresentation.ACQUIRED);
 			c.setOutcome(CaseOutcome.RECOVERED);
-			c.getSymptoms().setSyphilisInfectionSite(SyphilisInfectionSite.PHARYNGEAL);
+			c.getSymptoms().setSyphilisInfectionSites(Set.of(SyphilisInfectionSite.PHARYNGEAL));
 			c.getSymptoms().setSyphilisInfectiousness(SyphilisInfectiousness.INFECTIOUS);
 			c.getSymptoms().setSyphilisStage(SyphilisStage.EARLY_LATENT_SYPHILIS);
-			c.getEpiData().setSexWorker(YesNoUnknown.YES);
+			c.getEpiData().setSexWorker(YesNoUnknownOther.YES);
 			c.getEpiData().getExposures().add(travelTo(france));
 			// the STI risk and service block, shared with gonorrhoea
 			c.getEpiData().setTypeOfClinicalService(TypeOfClinicalService.DERMATOLOGY_VENEREOLOGY_CLINIC);
 			c.getEpiData().setProbableRouteOfTransmission(ProbableRouteOfTransmission.HETEROSEXUAL_CONTACT);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.NO);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.NO);
 			c.getHealthConditions().setHivStatus(HivStatus.NEW_DIAGNOSIS);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.NO);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.YES);
@@ -269,7 +273,7 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than from the case
 		expected.put(DISEASE, value("SYPH"));
 		expected.put(SUBJECT_CODE, value("SYPH"));
-		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(DATA_SOURCE, value(SERVER_DATA_SOURCE));
 		expected.put(STATUS, value("NEW/UPDATE"));
 
@@ -352,7 +356,7 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// EpiPulse reports congenital syphilis under the same disease code as acquired - the
 		// subject code is what distinguishes the two, not this column
 		expected.put(DISEASE, value("SYPH"));
-		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(DATA_SOURCE, value(SERVER_DATA_SOURCE));
 		expected.put(STATUS, value("NEW/UPDATE"));
 
@@ -375,7 +379,7 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		expected.put(COUNTRY_OF_NATIONALITY, value("ES"));
 		expected.put(COUNTRY_OF_NATIONALITY_OF_MOTHER, value("FR"));
 		// no address on the person, so residence falls through to the server country
-		expected.put(PLACE_OF_RESIDENCE, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(PLACE_OF_RESIDENCE, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(PLACE_OF_NOTIFICATION, value("LU1010"));
 
 		expected.put(PATHOGEN_DETECTION_RESULT, value("CONF"));
@@ -414,7 +418,7 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// mapping, this checks that the column is selected, parsed and reported at all.
 		Map<String, String> sites = new LinkedHashMap<>();
 		for (Map.Entry<SyphilisInfectionSite, String> site : SITE_CODES.entrySet()) {
-			sites.put(acquiredCaseWith(c -> c.getSymptoms().setSyphilisInfectionSite(site.getKey())).getUuid(), site.getValue());
+			sites.put(acquiredCaseWith(c -> c.getSymptoms().setSyphilisInfectionSites(Set.of(site.getKey()))).getUuid(), site.getValue());
 		}
 
 		Map<String, String> infectiousness = new LinkedHashMap<>();
@@ -457,9 +461,9 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 	@DisplayName("SexWorker reports nothing when the answer was not established")
 	public void sexWorkerReportsNothingWhenNotEstablished() {
 
-		String yes = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknown.YES)).getUuid();
-		String no = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknown.NO)).getUuid();
-		String unknown = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknown.UNKNOWN)).getUuid();
+		String yes = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknownOther.YES)).getUuid();
+		String no = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknownOther.NO)).getUuid();
+		String unknown = acquiredCaseWith(c -> c.getEpiData().setSexWorker(YesNoUnknownOther.UNKNOWN)).getUuid();
 		String unanswered = syphilisCase(SyphilisPresentation.ACQUIRED).getUuid();
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.SYPH, PERIOD_START, PERIOD_END);
@@ -483,7 +487,7 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		String recorded = acquiredCaseWith(c -> {
 			c.getEpiData().setTypeOfClinicalService(TypeOfClinicalService.YOUTH_CLINIC);
 			c.getEpiData().setProbableRouteOfTransmission(ProbableRouteOfTransmission.MSM_HOMO_OR_BISEXUAL_MALE);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.YES);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.YES);
 			c.getHealthConditions().setHivStatus(HivStatus.KNOWN_POSITIVE);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.YES);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.NO);
@@ -554,6 +558,52 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 		// PROB. A suspect case reports its classification and nothing here.
 		assertThat(export.value(export.entryFor(suspect), CASE_CLASSIFICATION), is("POSS"));
 		assertThat(export.value(export.entryFor(suspect), PATHOGEN_DETECTION_RESULT), is(""));
+	}
+
+	@Test
+	@DisplayName("SYPH notifies every case but a ruled-out one, an unclassified one blank; CONSYPH only classified ones")
+	public void syphAndConsyphNotifyTheirOwnClassifications() {
+
+		String confirmed = acquiredCaseClassified(CaseClassification.CONFIRMED).getUuid();
+		String confirmedNoSymptoms = acquiredCaseClassified(CaseClassification.CONFIRMED_NO_SYMPTOMS).getUuid();
+		String probable = acquiredCaseClassified(CaseClassification.PROBABLE).getUuid();
+		String possible = acquiredCaseClassified(CaseClassification.SUSPECT).getUuid();
+		// "leave empty until case definitions are met"
+		String unclassified = acquiredCaseClassified(CaseClassification.NOT_CLASSIFIED).getUuid();
+
+		// a ruled-out case is not notifiable
+		acquiredCaseClassified(CaseClassification.NO_CASE);
+
+		// CONSYPH has the same value set but no empty column: an unclassified case is left out too
+		String congenitalConfirmed = congenitalCaseClassified(CaseClassification.CONFIRMED);
+		String congenitalProbable = congenitalCaseClassified(CaseClassification.PROBABLE);
+		String congenitalPossible = congenitalCaseClassified(CaseClassification.SUSPECT);
+		congenitalCaseClassified(CaseClassification.NOT_CLASSIFIED);
+		congenitalCaseClassified(CaseClassification.NO_CASE);
+
+		ExportedEntries acquired = runExport(EpipulseSubjectCode.SYPH, PERIOD_START, PERIOD_END);
+		ExportedEntries congenital = runExport(EpipulseSubjectCode.CONSYPH, PERIOD_START, PERIOD_END);
+
+		assertThat(nationalRecordIds(acquired), containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible, unclassified));
+		assertThat(acquired.value(acquired.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(acquired.value(acquired.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(acquired.value(acquired.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+		assertThat(acquired.value(acquired.entryFor(unclassified), CASE_CLASSIFICATION), is(""));
+
+		assertThat(nationalRecordIds(congenital), containsInAnyOrder(congenitalConfirmed, congenitalProbable, congenitalPossible));
+		assertThat(congenital.value(congenital.entryFor(congenitalPossible), CASE_CLASSIFICATION), is("POSS"));
+	}
+
+	private String congenitalCaseClassified(CaseClassification classification) {
+
+		return fixture.caze(newPerson(), ONSET, caze -> {
+			caze.setSyphilisPresentation(SyphilisPresentation.CONGENITAL);
+			caze.setCaseClassification(classification);
+		}).getUuid();
+	}
+
+	private static List<String> nationalRecordIds(ExportedEntries export) {
+		return export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList());
 	}
 
 	// ---------------------------------------------------------------------------------------
@@ -700,16 +750,16 @@ public class SyphilisEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	/**
-	 * A country the export can report, which means one with a NUTS code - {@code TestDataCreator}
+	 * A country the export can report, which means one with an EpiPulse location code - {@code TestDataCreator}
 	 * does not set that column, and without it the country is invisible to every place column.
 	 */
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});

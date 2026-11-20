@@ -24,7 +24,7 @@ public class ImmunizationIndexDtoResultTransformer implements ResultTransformer 
 		Integer birthdateDD = objects[7] != null ? (int) objects[7] : null;
 		Integer birthdateMM = objects[8] != null ? (int) objects[8] : null;
 		Integer birthdateYYYY = objects[9] != null ? (int) objects[9] : null;
-		return new ImmunizationIndexDto(
+		ImmunizationIndexDto dto = new ImmunizationIndexDto(
 			(String) objects[0],
 			(String) objects[1],
 			(String) objects[2],
@@ -43,6 +43,10 @@ public class ImmunizationIndexDtoResultTransformer implements ResultTransformer 
 			(DeletionReason) objects[19],
 			(String) objects[20],
 			(Boolean) objects[21]);
+		// objects[22] is the change date
+		dto.setValidFrom((Date) objects[23]);
+		dto.setValidUntil((Date) objects[24]);
+		return dto;
 	}
 
 	@Override

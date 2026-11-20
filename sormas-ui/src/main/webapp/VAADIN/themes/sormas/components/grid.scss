@@ -8,6 +8,19 @@ $v-grid-cell-focused-border: none !default;
 
 
 @mixin sormas-grid {
+  .external-persons-grid {
+    .v-grid-body .v-grid-row:hover > td {
+      background-color: $v-focus-light-color;
+      cursor: pointer;
+    }
+
+    .v-grid-cell a {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      min-height: 100%;
+    }
+  }
   
   .v-grid,
   .v-treegrid {

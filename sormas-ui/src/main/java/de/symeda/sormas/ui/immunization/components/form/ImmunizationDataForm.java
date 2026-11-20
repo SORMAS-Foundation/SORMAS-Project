@@ -226,6 +226,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		DateField endDate = addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
 		DateComparisonValidator.addStartEndValidators(startDate, endDate);
 		DateComparisonValidator.dateFieldDependencyValidationVisibility(startDate, endDate);
+		// Start and end date were superseded by the validity period (valid from / valid until)
+		setVisible(false, startDate, endDate);
 
 		DateField validFrom = addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
 		DateField validUntil = addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);

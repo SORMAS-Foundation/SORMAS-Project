@@ -207,6 +207,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 					return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
 						.withDiseaseDetails(refreshedCase.getDiseaseDetails())
+						.withReferencePeriod(refreshedCase.getReportDate(), refreshedCase.getReportDate())
 						.build();
 				}, null, this::showUnsavedChangesPopup, isEditAllowed, vaccinationStatusPanel, SormasUI::refreshView, getCaseRef())),
 					IMMUNIZATION_LOC);

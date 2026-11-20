@@ -43,6 +43,7 @@ import de.symeda.sormas.api.epidata.TypeOfClinicalService;
 import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.NotExposedToApi;
@@ -96,10 +97,13 @@ public class EpiData extends AbstractDomainObject {
 	private String residenceAtOnset;
 	private String patientIllLocation;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
+	private String contactWithSexWorkerOther;
+	private String sexWorkerOther;
+	private String probableRouteOfTransmissionOther;
 	private Country motherCountryOfBirth;
 	private Country motherCitizenship;
-	private YesNoUnknown sexWorker;
-	private YesNoUnknown contactWithSexWorker;
+	private YesNoUnknownOther sexWorker;
+	private YesNoUnknownOther contactWithSexWorker;
 	private TypeOfClinicalService typeOfClinicalService;
 
 	@Enumerated(EnumType.STRING)
@@ -364,20 +368,20 @@ public class EpiData extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getSexWorker() {
+	public YesNoUnknownOther getSexWorker() {
 		return sexWorker;
 	}
 
-	public void setSexWorker(YesNoUnknown sexWorker) {
+	public void setSexWorker(YesNoUnknownOther sexWorker) {
 		this.sexWorker = sexWorker;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getContactWithSexWorker() {
+	public YesNoUnknownOther getContactWithSexWorker() {
 		return contactWithSexWorker;
 	}
 
-	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+	public void setContactWithSexWorker(YesNoUnknownOther contactWithSexWorker) {
 		this.contactWithSexWorker = contactWithSexWorker;
 	}
 
@@ -390,4 +394,30 @@ public class EpiData extends AbstractDomainObject {
 		this.clusterIdentifier = clusterIdentifier;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getProbableRouteOfTransmissionOther() {
+		return probableRouteOfTransmissionOther;
+	}
+
+	public void setProbableRouteOfTransmissionOther(String probableRouteOfTransmissionOther) {
+		this.probableRouteOfTransmissionOther = probableRouteOfTransmissionOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSexWorkerOther() {
+		return sexWorkerOther;
+	}
+
+	public void setSexWorkerOther(String sexWorkerOther) {
+		this.sexWorkerOther = sexWorkerOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getContactWithSexWorkerOther() {
+		return contactWithSexWorkerOther;
+	}
+
+	public void setContactWithSexWorkerOther(String contactWithSexWorkerOther) {
+		this.contactWithSexWorkerOther = contactWithSexWorkerOther;
+	}
 }

@@ -27,6 +27,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.AvidityInterpretation;
 import de.symeda.sormas.api.sample.Biotype;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -613,5 +614,29 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("cgMLST-diph-cluster-7", reloaded.getCgMlstCluster());
 		assertEquals(YesNoUnknown.YES, reloaded.getSequenceDataUploadedToPublicRepository());
 		assertEquals(de.symeda.sormas.api.sample.TestRunStatus.COMPLETED, reloaded.getTestRunStatus());
+	}
+
+	@Test
+	public void avidityValuesRoundTripForRubella() {
+		final RDCF rdcf = creator.createRDCF();
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final CaseDataDto caze =
+			creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf, c -> c.setDisease(Disease.RUBELLA));
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, null);
+		PathogenTestDto test = creator.createPathogenTest(sample.toReference(), user.toReference(), p -> {
+			p.setTestedDisease(Disease.RUBELLA);
+			p.setLab(rdcf.facility);
+			p.setTestType(PathogenTestType.IGG_SERUM_ANTIBODY);
+			p.setTestResult(PathogenTestResultType.POSITIVE);
+			p.setAvidityPerformed(true);
+			p.setAvidityIndex(42.5f);
+			p.setAvidityInterpretation(AvidityInterpretation.HIGH);
+		});
+
+		PathogenTestDto reloaded = getPathogenTestFacade().getByUuid(test.getUuid());
+
+		assertEquals(Boolean.TRUE, reloaded.getAvidityPerformed());
+		assertEquals(42.5f, reloaded.getAvidityIndex());
+		assertEquals(AvidityInterpretation.HIGH, reloaded.getAvidityInterpretation());
 	}
 }

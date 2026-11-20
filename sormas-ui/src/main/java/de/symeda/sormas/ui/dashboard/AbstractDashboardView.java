@@ -33,6 +33,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
+import de.symeda.sormas.ui.dashboard.climate.ClimateDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.gis.GisDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
@@ -95,6 +96,11 @@ public abstract class AbstractDashboardView extends AbstractView {
 			dashboardSwitcher.setItemCaption(DashboardType.CAMPAIGNS, I18nProperties.getEnumCaption(DashboardType.CAMPAIGNS));
 		}
 
+		if (ClimateDashboardView.permitted()) {
+			dashboardSwitcher.addItem(DashboardType.CLIMATE);
+			dashboardSwitcher.setItemCaption(DashboardType.CLIMATE, I18nProperties.getEnumCaption(DashboardType.CLIMATE));
+		}
+
 		addHeaderComponent(dashboardSwitcher);
 
 		// Hide the dashboard switcher if only one dashboard is accessible to the user
@@ -124,6 +130,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 			SormasUI.get().getNavigator().navigateTo(AefiDashboardView.VIEW_NAME);
 		} else if (DashboardType.GIS.equals(e.getProperty().getValue())) {
 			SormasUI.get().getNavigator().navigateTo(GisDashboardView.VIEW_NAME);
+		} else if (DashboardType.CLIMATE.equals(e.getProperty().getValue())) {
+			SormasUI.get().getNavigator().navigateTo(ClimateDashboardView.VIEW_NAME);
 		} else {
 			SormasUI.get().getNavigator().navigateTo(CampaignDashboardView.VIEW_NAME);
 		}

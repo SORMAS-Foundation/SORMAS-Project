@@ -161,14 +161,10 @@ public class MalaFieldModelTest {
 	@DisplayName("CaseClassification is the one shared mapping, even though MALA's value set is narrower than it")
 	public void caseClassificationIsTheOneSharedMapping() {
 
-		// EpiPulse gives MALA the single value CONF, so POSS and PROB below are values it will
-		// reject. Sending them is the decision rather than an oversight: the question a rejected
-		// suspected case raises is whether it belonged in the submission at all, which is answered
-		// by filtering the export per subject code and not by blanking one column. Every disease
-		// keeps one mapping until that filtering exists.
-		//
-		// This test exists to make that decision visible. A change here should be accompanied by
-		// the classification filter in filtered_cases, not by a per-code narrowing of the column.
+		// EpiPulse gives MALA the single value CONF.
+		// Still the others will be valid, because EpipulseCaseInclusion leaves it out of
+		// filtered_cases; the column is therefore not narrowed per code, and POSS and PROB below
+		// only show that the mapping itself is shared betweed.
 		assertThat(EpipulseMapping.caseClassification(classifiedAs(CaseClassification.CONFIRMED)), is("CONF"));
 		assertThat(EpipulseMapping.caseClassification(classifiedAs(CaseClassification.SUSPECT)), is("POSS"));
 		assertThat(EpipulseMapping.caseClassification(classifiedAs(CaseClassification.PROBABLE)), is("PROB"));

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,10 +75,12 @@ import de.symeda.sormas.api.externalemail.ExternalEmailOptionsWithAttachmentsDto
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
@@ -116,6 +119,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private static final Logger logger = LoggerFactory.getLogger(ExternalEmailFacadeEjb.class);
 	public static final int ATTACHMENT_PASSWORD_LENGTH = 10;
 	private static final String SURVEY_TOKEN_DOCUMENT_PLACEHOLDER = "surveyToken";
+	private static final Random RANDOM = new Random();
 	// @formatter:off
 	private static final Map<DocumentWorkflow, DocumentRelatedEntityType> DOCUMENT_WORKFLOW_DOCUMENT_RELATION_MAPPING = Map.of(
 		DocumentWorkflow.CASE_EMAIL, DocumentRelatedEntityType.CASE,
@@ -315,7 +319,9 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			// document uploading will be handled in another place 
 			false);
 		String fileName = docGenerationHelper.getDocumentFileName(emailOptions.getRootEntityReference(), documentOptions.getTemplate());
-		File tempTemplateFile = Paths.get(configFacade.getTempFilesPath()).resolve(fileName).toFile();
+		String tempFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_quarantine_" + DateHelper.formatDateForExport(new Date()) + "_"
+			+ RANDOM.nextInt(Integer.MAX_VALUE) + "_" + fileName;
+		File tempTemplateFile = Paths.get(configFacade.getTempFilesPath()).resolve(tempFileName).toFile();
 		BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(tempTemplateFile.toPath()));
 		bufferedOutputStream.write(generatedDocument);
 		bufferedOutputStream.close();

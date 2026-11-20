@@ -36,9 +36,12 @@ import de.symeda.sormas.backend.epipulse.sql.EpipulseVaccinationSql;
 /**
  * PERT (Pertussis) export: the simplest model - no CTEs, no joins, no SELECT columns of its own.
  * 
- * All fields are {@link ValueDef#calculated} over common DTO state. {@code PathogenDetectionMethod}
- * repeats (floored at one column) over qualifying tests. Two columns are blank: SORMAS lacks
- * MaternalHistoryDto for vaccination and GestationalAgeCategory as a week count.
+ * <p>
+ * All fields are {@link ValueDef#calculated} over common DTO state.
+ * <p>
+ * {@code PathogenDetectionMethod} repeats (floored at one column) over qualifying tests.
+ * {@code VaccinationStatusMaternal} reads the patient's {@code MATERNAL_VACCINATION} immunizations.
+ *
  */
 final class PertussisFieldModel {
 
@@ -73,12 +76,14 @@ final class PertussisFieldModel {
 		fields.add(DATE_OF_LAST_VACCINATION);
 		fields.add(CommonFields.vaccinationStatus(CommonFields.STANDARD_MAX_DOSES));
 
-		// TODO: MaternalHistoryDto is congenital-rubella shaped (infection, rash, conjunctivitis, arthralgia),
-		// not maternal vaccination - needs SORMAS field
-		fields.add(ValueDef.blank(EpipulseVariable.VACCINATION_STATUS_MATERNAL));
+		// True for a patient under 2 with a MATERNAL_VACCINATION immunization, otherwise blank.
+		// Read from the immunizations EpipulseVaccinationSql already loads.
+		fields.add(ValueDef.calculated(EpipulseVariable.VACCINATION_STATUS_MATERNAL, EpipulseMapping::vaccinationStatusMaternal));
 
-		// TODO: GestationalAgeCategory bands birth (AT_TERM, PREMATURE_*), not week of vaccination -
-		// needs SORMAS field for EpiPulse's 0-42 week range
+		// TODO: no SORMAS field holds the gestational week of the maternal vaccination.
+		// GestationalAgeCategory bands the birth (AT_TERM, PREMATURE_*). A possible route is
+		// person.gestationAgeAtBirth minus the weeks from a dose recorded under the MATERNAL_VACCINATION
+		// immunization to the birth date - but that would be too much inferring to be sure.
 		fields.add(ValueDef.blank(EpipulseVariable.GESTATIONAL_AGE_AT_VACCINATION));
 
 		return fields;

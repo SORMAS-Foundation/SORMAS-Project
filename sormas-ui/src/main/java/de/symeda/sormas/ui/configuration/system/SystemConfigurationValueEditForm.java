@@ -18,6 +18,8 @@ package de.symeda.sormas.ui.configuration.system;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import com.vaadin.data.Binder;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.PasswordField;
@@ -28,15 +30,19 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Form for editing system configuration values.
  */
 public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemConfigurationValueDto> {
 
+	private static final String LOC_OPTION_WARNING = "optionWarning";
+
 	private static final String HTML_LAYOUT = locs(
 		SystemConfigurationValueDto.DESCRIPTION_PROPERTY_NAME,
 		SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME,
+		LOC_OPTION_WARNING,
 		SystemConfigurationValueDto.VALIDATION_MESSAGE_PROPERTY_NAME);
 
 	/**
@@ -89,6 +95,26 @@ public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemCon
 		binder.forField(dynamicInput).bind(SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME);
 		getContent().addComponent(dynamicInput, SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME);
 
+		if (value.getDataProvider() != null) {
+			final Label optionWarningLabel = new Label("", ContentMode.HTML);
+			optionWarningLabel.setWidth(600, Unit.PIXELS);
+			CssStyles.style(optionWarningLabel, CssStyles.LABEL_WARNING, CssStyles.LABEL_WHITE_SPACE_NORMAL, CssStyles.VSPACE_TOP_3);
+			getContent().addComponent(optionWarningLabel, LOC_OPTION_WARNING);
+
+			updateOptionWarning(optionWarningLabel, value);
+			dynamicInput.addValueChangeListener(
+				(SystemConfigurationValueDynamicInput.ValueChangeListener) e -> updateOptionWarning(optionWarningLabel, dynamicInput.getValue()));
+		}
+	}
+
+	/**
+	 * Shows the warning registered for the selected value under the input, or hides the label when there is none.
+	 */
+	private static void updateOptionWarning(Label optionWarningLabel, SystemConfigurationValueDto value) {
+
+		String warning = SystemConfigurationOptionWarnings.getWarning(value.getKey(), value.getValue());
+		optionWarningLabel.setValue(warning != null ? VaadinIcons.WARNING.getHtml() + " " + warning : "");
+		optionWarningLabel.setVisible(warning != null);
 	}
 
 	/**

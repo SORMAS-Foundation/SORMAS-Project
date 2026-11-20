@@ -31,6 +31,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForDiseasesInCountries;
+import de.symeda.sormas.api.utils.HideForDiseasesInCountriesExcept;
 
 public enum SampleMaterial {
 
@@ -416,8 +418,6 @@ public enum SampleMaterial {
 		Disease.YERSINIOSIS,
 		Disease.GONOCOCCAL_INFECTION,
 		Disease.DIPHTHERIA }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ENDOTRACHEAL_ASPIRATE,
 
 	@Diseases(value = {
@@ -577,7 +577,6 @@ public enum SampleMaterial {
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.SALMONELLOSIS,
-		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS }, hide = true)
 	OROPHARYNGEAL_SWAB,
@@ -678,8 +677,7 @@ public enum SampleMaterial {
 	EDTA_WHOLE_BLOOD,
 
 	@Diseases(value = {
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.TUBERCULOSIS })
+		Disease.CRYPTOSPORIDIOSIS })
 	INTESTINAL_FLUID,
 
 	@Diseases(value = {
@@ -697,7 +695,10 @@ public enum SampleMaterial {
 	@Diseases({})
 	CATHETER_EXIT_SITE,
 
-	@Diseases({})
+	// Eye is a Gonococcal infection sample on the Luxembourg server only
+	@Diseases({
+		Disease.GONOCOCCAL_INFECTION })
+	@HideForDiseasesInCountriesExcept(diseases = Disease.GONOCOCCAL_INFECTION, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	EYE,
 
 	@Diseases({
@@ -713,6 +714,7 @@ public enum SampleMaterial {
 		Disease.TUBERCULOSIS })
 	LOWER_RESPIRATORY_TRACT,
 
+	// Kept for Salmonellosis: Luxembourg lab messages map SALM-19 PUS here
 	@Diseases({
 		Disease.SHIGELLOSIS,
 		Disease.TUBERCULOSIS,
@@ -756,8 +758,7 @@ public enum SampleMaterial {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ABSCESS_SWAB,
@@ -834,6 +835,7 @@ public enum SampleMaterial {
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
+	@HideForDiseasesInCountries(diseases = Disease.GONOCOCCAL_INFECTION, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {
@@ -990,6 +992,7 @@ public enum SampleMaterial {
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
+	@HideForDiseasesInCountries(diseases = Disease.NEW_INFLUENZA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	LUNG_TISSUE,
 
 	@Diseases(value = {
@@ -1037,12 +1040,12 @@ public enum SampleMaterial {
 		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION,
-		Disease.DIPHTHERIA }, hide = true)
+		Disease.GONOCOCCAL_INFECTION }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ULCER_SWAB,
 
+	// Kept for Salmonellosis: Luxembourg lab messages map SALM-19 UNK here
 	@Diseases(value = {
 		Disease.DENGUE,
 		Disease.MEASLES,
@@ -1060,7 +1063,11 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.YERSINIOSIS,
-		Disease.GONOCOCCAL_INFECTION }, hide = true)
+		Disease.GONOCOCCAL_INFECTION,
+		Disease.SYPHILIS,
+		Disease.MUMPS,
+		Disease.RUBELLA,
+		Disease.DIPHTHERIA }, hide = true)
 	UNKNOWN,
 
 	@Diseases(value = {

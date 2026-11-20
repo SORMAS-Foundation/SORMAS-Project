@@ -60,12 +60,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportEntryDto;
@@ -187,7 +189,7 @@ public class PneumococcalEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than the case
 		assertThat(export.value(entry, DISEASE), is("PNEU"));
 		assertThat(export.value(entry, SUBJECT_CODE), is("PNEU"));
-		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, REPORTING_COUNTRY), is(SERVER_COUNTRY_LOCATION_CODE));
 		assertThat(export.value(entry, DATA_SOURCE), is(SERVER_DATA_SOURCE));
 
 		// from the case record itself
@@ -206,8 +208,8 @@ public class PneumococcalEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(entry, GENDER), is("F"));
 		assertThat(export.value(entry, AGE), is("33"));
 		assertThat(export.value(entry, AGE_MONTH), is(blankOrNullString()));
-		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_NUTS_CODE));
-		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_NUTS_CODE));
+		assertThat(export.value(entry, PLACE_OF_RESIDENCE), is(SERVER_COUNTRY_LOCATION_CODE));
+		assertThat(export.value(entry, PLACE_OF_NOTIFICATION), is(SERVER_COUNTRY_LOCATION_CODE));
 
 		// the vaccination summary pair
 		assertThat(export.value(entry, VACCINATION_STATUS), is("2DOSE"));
@@ -408,9 +410,35 @@ public class PneumococcalEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(export.value(export.entryFor(noTests.getUuid()), NRL_DATA), is("false"));
 	}
 
+	@Test
+	@DisplayName("only confirmed cases are notified, as PNEU's value set has CONF alone")
+	public void onlyConfirmedCasesAreExported() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String confirmedUnknownSymptoms = classifiedCase(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+
+		// PNEU has neither PROB nor POSS, and an unclassified or ruled-out case is never notifiable.
+		classifiedCase(CaseClassification.PROBABLE);
+		classifiedCase(CaseClassification.SUSPECT);
+		classifiedCase(CaseClassification.NOT_CLASSIFIED);
+		classifiedCase(CaseClassification.NO_CASE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.PNEU, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, confirmedUnknownSymptoms));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+	}
+
 	// ---------------------------------------------------------------------------------------
 	// fixture - everything shared lives on CaseFixture; what is left is PNEU shorthand
 	// ---------------------------------------------------------------------------------------
+
+	private String classifiedCase(CaseClassification classification) {
+		return fixture.caze(creator.createPerson().toReference(), ONSET, c -> c.setCaseClassification(classification)).getUuid();
+	}
 
 	private CaseDataDto caseWithMeningitisAndPneumonia(SymptomState meningitis, SymptomState pneumonia) {
 

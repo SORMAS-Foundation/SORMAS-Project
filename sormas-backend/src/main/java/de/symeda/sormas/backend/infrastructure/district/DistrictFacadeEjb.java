@@ -40,6 +40,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
@@ -50,6 +51,8 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.climate.ClimateLinkingService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
@@ -88,6 +91,8 @@ public class DistrictFacadeEjb
 	private PopulationDataFacadeEjbLocal populationDataFacade;
 	@EJB
 	private DefaultInfrastructureCache defaultInfrastructureCache;
+	@EJB
+	private ClimateLinkingService climateLinkingService;
 
 	public DistrictFacadeEjb() {
 	}
@@ -298,6 +303,8 @@ public class DistrictFacadeEjb
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setExternalID(entity.getExternalID());
 		dto.setNutsCode(entity.getNutsCode());
+		dto.setClimateLatitude(entity.getClimateLatitude());
+		dto.setClimateLongitude(entity.getClimateLongitude());
 		applyToDtoInheritance(dto, entity);
 
 		return dto;
@@ -340,9 +347,47 @@ public class DistrictFacadeEjb
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setExternalID(source.getExternalID());
 		target.setNutsCode(source.getNutsCode());
+		target.setClimateLatitude(source.getClimateLatitude());
+		target.setClimateLongitude(source.getClimateLongitude());
 		applyFillOrBuildEntityInheritance(target, source);
 
 		return target;
+	}
+
+	/**
+	 * Also links the district to its climate location when the climate feature is on, so a new or changed climate point
+	 * takes effect at once.
+	 */
+	@Override
+	protected DistrictDto persistEntity(DistrictDto dto, District entityToPersist, boolean checkChangeDate, boolean allowUuidOverwrite) {
+
+		validateClimatePoint(dto);
+
+		District district = fillOrBuildEntity(dto, entityToPersist, checkChangeDate, allowUuidOverwrite);
+		service.ensurePersisted(district);
+
+		if (climateLinkingService.isClimateEnabled()) {
+			climateLinkingService.linkDistrict(district);
+		}
+
+		return toDto(district);
+	}
+
+	/**
+	 * The climate point needs both coordinates or neither, and is not 0,0 (a common placeholder for "unknown"). Ranges are
+	 * checked by the bean validation annotations on {@link DistrictDto}.
+	 */
+	private void validateClimatePoint(DistrictDto dto) {
+
+		Double latitude = dto.getClimateLatitude();
+		Double longitude = dto.getClimateLongitude();
+
+		if ((latitude == null) != (longitude == null)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.districtClimatePointIncomplete));
+		}
+		if (latitude != null && latitude == 0 && longitude == 0) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.districtClimatePointZero));
+		}
 	}
 
 	@Override

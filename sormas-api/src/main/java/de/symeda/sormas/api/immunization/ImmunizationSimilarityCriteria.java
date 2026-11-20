@@ -10,7 +10,11 @@ public final class ImmunizationSimilarityCriteria extends BaseCriteria implement
 
 	private final String immunizationUuid;
 	private final Disease disease;
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	private final Date startDate;
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	private final Date endDate;
 	private final String personUuid;
 	private final MeansOfImmunization meansOfImmunization;
@@ -19,7 +23,11 @@ public final class ImmunizationSimilarityCriteria extends BaseCriteria implement
 
 		private String immunizationUuid;
 		private Disease disease;
+		/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+		@Deprecated
 		private Date startDate;
+		/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+		@Deprecated
 		private Date endDate;
 		private String personUuid;
 		private MeansOfImmunization meansOfImmunization;
@@ -34,11 +42,15 @@ public final class ImmunizationSimilarityCriteria extends BaseCriteria implement
 			return this;
 		}
 
+		/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+		@Deprecated
 		public Builder withStartDate(Date startDate) {
 			this.startDate = startDate;
 			return this;
 		}
 
+		/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+		@Deprecated
 		public Builder withEndDate(Date endDate) {
 			this.endDate = endDate;
 			return this;
@@ -83,11 +95,15 @@ public final class ImmunizationSimilarityCriteria extends BaseCriteria implement
 		return disease;
 	}
 
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	@IgnoreForUrl
 	public Date getStartDate() {
 		return startDate;
 	}
 
+	/** @deprecated Superseded by the validity period ({@link ImmunizationDto#VALID_FROM}, {@link ImmunizationDto#VALID_UNTIL}). */
+	@Deprecated
 	@IgnoreForUrl
 	public Date getEndDate() {
 		return endDate;

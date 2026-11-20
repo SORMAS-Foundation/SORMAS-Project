@@ -14,7 +14,11 @@
  */
 package de.symeda.sormas.ui.events.sevenoneseven;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -29,7 +33,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.sevenoneseven.Event717AssessmentFacade;
 import de.symeda.sormas.api.event.sevenoneseven.Event717DateType;
+import de.symeda.sormas.api.event.sevenoneseven.Event717IndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -48,9 +55,11 @@ import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 /**
- * Filters of the 7-1-7 summary: disease, region, district, relevance status and a period on an event or 7-1-7 date.
+ * Filters of the 7-1-7 summary: disease, region, district, relevance status, event status at assessment and a period on an event or
+ * 7-1-7 date.
  */
 @SuppressWarnings("serial")
 public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria> {
@@ -76,6 +85,7 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 			LocationDto.REGION,
 			LocationDto.DISTRICT,
 			RELEVANCE_STATUS_FILTER,
+			EventCriteria.EVENT_717_ASSESSED_EVENT_STATUS,
 			DATE_FILTER,
 			DATE_FILTER_INFO };
 	}
@@ -97,6 +107,16 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 
 		relevanceStatusFilter = createRelevanceStatusFilter();
 		getContent().addComponent(relevanceStatusFilter, RELEVANCE_STATUS_FILTER);
+
+		// filters on the event status recorded when the assessment was created, not on the current one
+		ComboBox assessedEventStatusField = addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventCriteria.EVENT_717_ASSESSED_EVENT_STATUS,
+				I18nProperties.getPrefixCaption(Event717IndexDto.I18N_PREFIX, Event717IndexDto.ASSESSED_EVENT_STATUS),
+				200));
+		// keeps the caption property of the enum items, unlike adding the items directly
+		FieldHelper.updateEnumData(assessedEventStatusField, getAssessedEventStatusOptions());
+		assessedEventStatusField.setDescription(I18nProperties.getString(Strings.infoEvent717AssessedEventStatusFilter));
 
 		dateFilter = new EpiWeekAndDateFilterComponent<>(
 			false,
@@ -124,6 +144,19 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 		dateFilterInfo.setDescription(I18nProperties.getString(Strings.infoEvent717DateFilter), ContentMode.HTML);
 		CssStyles.style(dateFilterInfo, FILTER_ITEM_STYLE, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		getContent().addComponent(dateFilterInfo, DATE_FILTER_INFO);
+	}
+
+	/**
+	 * @return The applicable event statuses and the statuses still recorded on existing assessments, e.g. after a status was removed
+	 *         from the setting, in the order of the enum.
+	 */
+	private static List<EventStatus> getAssessedEventStatusOptions() {
+
+		Event717AssessmentFacade facade = FacadeProvider.getEvent717AssessmentFacade();
+		Set<EventStatus> statuses = EnumSet.noneOf(EventStatus.class);
+		statuses.addAll(facade.getApplicableEventStatuses());
+		statuses.addAll(facade.getAssessedEventStatuses());
+		return new ArrayList<>(statuses);
 	}
 
 	private static ComboBox createRelevanceStatusFilter() {
@@ -161,6 +194,13 @@ public class Event717SummaryFilterForm extends AbstractFilterForm<EventCriteria>
 	protected void applyDependenciesOnNewValue(EventCriteria criteria) {
 
 		applyRegionFilterDependency(criteria.getRegion(), LocationDto.DISTRICT);
+
+		// a status kept for the session may no longer be offered, e.g. when its assessments were deleted
+		ComboBox assessedEventStatusField = getField(EventCriteria.EVENT_717_ASSESSED_EVENT_STATUS);
+		if (criteria.getEvent717AssessedEventStatus() != null && !assessedEventStatusField.containsId(criteria.getEvent717AssessedEventStatus())) {
+			criteria.setEvent717AssessedEventStatus(null);
+			assessedEventStatusField.setValue(null);
+		}
 
 		relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 

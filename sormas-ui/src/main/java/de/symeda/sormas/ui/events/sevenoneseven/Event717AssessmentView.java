@@ -25,6 +25,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.events.AbstractEventView;
@@ -35,7 +36,8 @@ import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 
 /**
  * Tab of an event showing its 7-1-7 assessment. When no assessment exists yet, an empty form is shown and the assessment is
- * created on the first save.
+ * created on the first save. The tab is only shown when the event already has an assessment or its current status is one of the
+ * applicable statuses of the system configuration.
  */
 public class Event717AssessmentView extends AbstractEventView {
 
@@ -58,8 +60,24 @@ public class Event717AssessmentView extends AbstractEventView {
 		return UiUtil.permitted(FeatureType.EVENT_717_ASSESSMENT, UserRight.EVENT_717_ASSESSMENT_VIEW);
 	}
 
+	/**
+	 * @return Whether the 7-1-7 tab and side component are shown for the event: the assessment is {@link #isAvailable() available} to
+	 *         the current user, and the event already has an assessment or its current status allows creating one.
+	 */
+	public static boolean isAvailableForEvent(String eventUuid) {
+		return isAvailable() && FacadeProvider.getEvent717AssessmentFacade().isAvailableForEvent(eventUuid);
+	}
+
 	@Override
 	protected void initView(String params) {
+
+		String eventUuid = getEventRef().getUuid();
+		Event717AssessmentFacade facade = FacadeProvider.getEvent717AssessmentFacade();
+		if (!facade.isAvailableForEvent(eventUuid)) {
+			// the tab is hidden for this event, e.g. opened from an old link or after deleting the assessment of a not applicable event
+			ControllerProvider.getEventController().navigateToData(eventUuid);
+			return;
+		}
 
 		setHeightUndefined();
 
@@ -68,8 +86,6 @@ public class Event717AssessmentView extends AbstractEventView {
 		container.setMargin(true);
 		setSubComponent(container);
 
-		Event717AssessmentFacade facade = FacadeProvider.getEvent717AssessmentFacade();
-		String eventUuid = getEventRef().getUuid();
 		boolean editAllowed = UiUtil.permitted(isEditAllowed(), UserRight.EVENT_717_ASSESSMENT_EDIT) && !isEventDeleted();
 
 		Event717AssessmentDto assessment = facade.getByEventUuid(eventUuid);

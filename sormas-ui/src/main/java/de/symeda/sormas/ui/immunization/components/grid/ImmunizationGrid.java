@@ -73,8 +73,8 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 			ImmunizationIndexDto.MEANS_OF_IMMUNIZATION,
 			ImmunizationIndexDto.MANAGEMENT_STATUS,
 			ImmunizationIndexDto.IMMUNIZATION_STATUS,
-			ImmunizationIndexDto.START_DATE,
-			ImmunizationIndexDto.END_DATE,
+			ImmunizationIndexDto.VALID_FROM,
+			ImmunizationIndexDto.VALID_UNTIL,
 			ImmunizationIndexDto.LAST_VACCINE_TYPE,
 			ImmunizationIndexDto.RECOVERY_DATE,
 			DELETE_REASON_COLUMN);
@@ -93,9 +93,9 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 					value.getDateOfBirthYYYY()),
 			new TextRenderer());
 
-		((Column<ImmunizationIndexDto, Date>) getColumn(ImmunizationIndexDto.START_DATE))
+		((Column<ImmunizationIndexDto, Date>) getColumn(ImmunizationIndexDto.VALID_FROM))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<ImmunizationIndexDto, Date>) getColumn(ImmunizationIndexDto.END_DATE))
+		((Column<ImmunizationIndexDto, Date>) getColumn(ImmunizationIndexDto.VALID_UNTIL))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<ImmunizationIndexDto, Date>) getColumn(ImmunizationIndexDto.RECOVERY_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));

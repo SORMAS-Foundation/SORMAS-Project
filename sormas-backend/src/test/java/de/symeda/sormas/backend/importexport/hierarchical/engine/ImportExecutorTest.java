@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.hierarchical.BlockOutcome;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
+import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
 import de.symeda.sormas.api.importexport.hierarchical.ImportPreviewDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportReportDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportSheet;
@@ -77,6 +79,53 @@ class ImportExecutorTest {
 	}
 
 	@Test
+	void aBlockFailingAtCommitHoldsBackItsOtherLines() {
+		ToyDefinition toy = new ToyDefinition();
+		ImportSheet sheet = sheet("| P1 | explode | C1 | 1 | |", "|    |         | C2 | 2 | |");
+
+		ImportReportDto report = new ImportExecutor().commit(toy, sheet, preview(toy, sheet).readyFingerprints(), countingRunner);
+
+		List<ImportIssueDto> issues = report.getResults().get(0).getIssues();
+		assertEquals(2, issues.size());
+		assertEquals(ImportIssueKind.COMMIT, issues.get(0).getKind());
+		assertEquals(Integer.valueOf(2), issues.get(0).getLineNumber());
+		assertEquals(ImportIssueKind.SKIPPED, issues.get(1).getKind());
+		assertEquals(Integer.valueOf(3), issues.get(1).getLineNumber());
+		assertEquals(I18nProperties.getValidationError(Validations.importHierarchicalLineHeldBack, 2), issues.get(1).getMessage());
+	}
+
+	@Test
+	void aBlockNotImportedBecauseOfItsLinkedRootHoldsBackItsOtherLines() {
+		ToyDefinition toy = new ToyDefinition();
+		ImportSheet sheet = sheet("| P1 | explode | | | |", "| with-P1 | Beta | C1 | 1 | |", "|    |         | C2 | 2 | |");
+
+		ImportReportDto report = new ImportExecutor().commit(toy, sheet, preview(toy, sheet).readyFingerprints(), countingRunner);
+
+		List<ImportIssueDto> issues = report.getResults().get(1).getIssues();
+		assertEquals(2, issues.size());
+		assertEquals(ImportIssueKind.SKIPPED, issues.get(1).getKind());
+		assertEquals(Integer.valueOf(4), issues.get(1).getLineNumber());
+		assertEquals(I18nProperties.getValidationError(Validations.importHierarchicalLineHeldBack, 3), issues.get(1).getMessage());
+	}
+
+	@Test
+	void aBlockChangedSinceThePreviewHoldsBackItsOtherLines() {
+		ToyDefinition toy = new ToyDefinition().withParent("P1", "Alpha", new Date(1_000L));
+		ImportSheet sheet = sheet("| P1 | Beta | C1 | 1 | |", "|    |      | C2 | 2 | |");
+		Map<Integer, String> previewed = preview(toy, sheet).readyFingerprints();
+		toy.parentVersions.put("P1", new Date(2_000L));
+
+		ImportReportDto report = new ImportExecutor().commit(toy, sheet, previewed, countingRunner);
+
+		List<ImportIssueDto> issues = report.getResults().get(0).getIssues();
+		assertEquals(BlockOutcome.CHANGED_SINCE_PREVIEW, report.getResults().get(0).getOutcome());
+		assertEquals(2, issues.size());
+		assertEquals(ImportIssueKind.SKIPPED, issues.get(1).getKind());
+		assertEquals(Integer.valueOf(3), issues.get(1).getLineNumber());
+		assertEquals(I18nProperties.getValidationError(Validations.importHierarchicalLineHeldBack, 2), issues.get(1).getMessage());
+	}
+
+	@Test
 	void anUnchangedBlockIsNeverCommitted() {
 		ToyDefinition toy = new ToyDefinition().withParent("P1", "Alpha", new Date(1_000L));
 		ImportSheet sheet = sheet("| P1 | Alpha | | | |");
@@ -101,7 +150,7 @@ class ImportExecutorTest {
 	}
 
 	private static ImportPreviewDto preview(ToyDefinition toy, ImportSheet sheet) {
-		return PreviewMapper.toPreview(toy, new Planner().plan(toy, sheet, null));
+		return PreviewMapper.toPreview(new Planner().plan(toy, sheet, null));
 	}
 
 	private static ImportSheet sheet(String... rows) {

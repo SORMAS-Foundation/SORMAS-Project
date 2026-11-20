@@ -87,11 +87,11 @@ public final class EpipulsePlaceOfInfectionSql {
 		//@formatter:off
 		return "case_contamination_country AS (" +
 			   "    SELECT c.id as case_id," +
-			   "           epi_country.nutscode as place_of_infection " +
+			   "           epi_country.epipulselocationcode as place_of_infection " +
 			   "    FROM filtered_cases c " +
 			   "    JOIN epidata epi ON epi.id = c.epidata_id " +
 			   "    JOIN country epi_country ON epi_country.id = epi.country_id " +
-			   "    WHERE epi_country.nutscode IS NOT NULL " +
+			   "    WHERE epi_country.epipulselocationcode IS NOT NULL " +
 			   // Blank import status counts as not imported.
 			   "      AND epi.caseimportedstatus IS DISTINCT FROM '" + CaseImportedStatus.IMPORTED_CASE.name() + "')";
 		//@formatter:on
@@ -118,9 +118,9 @@ public final class EpipulsePlaceOfInfectionSql {
 
 		switch (rule) {
 		case IMPORTED_COUNTRY:
-			return "exp_country.nutscode";
+			return "exp_country.epipulselocationcode";
 		case LOWEST_LEVEL:
-			return "exp_country.nutscode";
+			return "exp_country.epipulselocationcode";
 		default:
 			throw new IllegalArgumentException("Unhandled place of infection rule: " + rule);
 		}

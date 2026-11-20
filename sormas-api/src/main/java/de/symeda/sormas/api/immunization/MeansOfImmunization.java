@@ -26,7 +26,8 @@ public enum MeansOfImmunization {
 	VACCINATION_RECOVERY,
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.PERTUSSIS })
 	MATERNAL_VACCINATION,
 
 	@Diseases(value = {

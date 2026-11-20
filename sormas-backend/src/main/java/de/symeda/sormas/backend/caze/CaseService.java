@@ -158,6 +158,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -176,6 +177,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.survey.Survey;
 import de.symeda.sormas.backend.survey.SurveyToken;
+import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -259,6 +261,10 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private DistrictService districtService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private SurveyTokenService surveyTokenService;
+	@EJB
+	private ManualMessageLogService manualMessageLogService;
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 
@@ -1220,6 +1226,10 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			c.setDuplicateOf(null);
 			ensurePersisted(c);
 		});
+
+		specialCaseAccessService.deleteByCase(caze);
+		surveyTokenService.deleteByCase(caze);
+		manualMessageLogService.deleteByCase(caze);
 
 		deleteCaseLinks(caze);
 

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
@@ -141,7 +142,14 @@ public class CountriesView extends AbstractConfigurationView {
 				this::getSelectedRows,
 				ExportEntityName.COUNTRIES,
 				Collections.singletonList(CountriesGrid.ACTION_BTN_ID),
-				Collections.singletonList(CountryIndexDto.DEFAULT_NAME));
+				Arrays.asList(
+					CountryIndexDto.EXTERNAL_ID,
+					CountryIndexDto.ISO2_CODE,
+					CountryIndexDto.ISO_NUMERIC_CODE,
+					CountryIndexDto.UNO_CODE,
+					CountryIndexDto.DEFAULT_NAME,
+					CountryIndexDto.NUTS_CODE,
+					CountryIndexDto.EPIPULSE_LOCATION_CODE));
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}

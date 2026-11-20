@@ -1,0 +1,46 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.api.climate;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+
+/**
+ * Dropdown for CLIMATE_HISTORY_SOURCE. The cost warning shown when OPENWEATHER is selected is added by the System
+ * Configuration edit dialog, because it needs this deployment's districts and settings.
+ */
+public class ClimateHistorySourceProvider extends AbstractClimateDropdownProvider {
+
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected List<String> getOptionValues() {
+		return Arrays.stream(ClimateHistorySource.values()).map(Enum::name).collect(Collectors.toList());
+	}
+
+	@Override
+	public String getOptionCaption(String optionValue) {
+
+		try {
+			return I18nProperties.getEnumCaption(ClimateHistorySource.valueOf(optionValue));
+		} catch (IllegalArgumentException | NullPointerException e) {
+			return optionValue;
+		}
+	}
+}

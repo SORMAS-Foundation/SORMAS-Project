@@ -125,7 +125,7 @@ public final class DtoUserDefinedValuesHelper {
 	}
 
 	private static boolean isUnknownValue(Object value) {
-		return value == YesNoUnknown.UNKNOWN || value == SymptomState.UNKNOWN;
+		return value == YesNoUnknown.UNKNOWN || value == YesNoUnknownOther.UNKNOWN || value == SymptomState.UNKNOWN;
 	}
 
 	private static boolean isPrimitiveDefaultValue(Object value, Class<?> fieldType) {

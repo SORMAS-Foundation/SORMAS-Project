@@ -50,6 +50,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.STATUS;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -61,12 +62,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.clinicalcourse.HivStatus;
@@ -88,6 +91,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 
@@ -132,9 +136,9 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 		UserDto surveillanceSupervisor = creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_SUPERVISOR);
 		fixture = fixtureFor(Disease.GONOCOCCAL_INFECTION, rdcf, surveillanceSupervisor);
 
-		france = countryWithNutsCode("France", "FRA", "FR");
-		spain = countryWithNutsCode("Spain", "ESP", "ES");
-		italy = countryWithNutsCode("Italy", "ITA", "IT");
+		france = countryWithEpipulseLocationCode("France", "FRA", "FR");
+		spain = countryWithEpipulseLocationCode("Spain", "ESP", "ES");
+		italy = countryWithEpipulseLocationCode("Italy", "ITA", "IT");
 	}
 
 	// ---
@@ -162,8 +166,8 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 			c.getEpiData().getExposures().add(travelTo(italy));
 			c.getEpiData().setTypeOfClinicalService(TypeOfClinicalService.DEDICATED_STI_CLINIC);
 			c.getEpiData().setProbableRouteOfTransmission(ProbableRouteOfTransmission.MSM_HOMO_OR_BISEXUAL_MALE);
-			c.getEpiData().setSexWorker(YesNoUnknown.NO);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.YES);
+			c.getEpiData().setSexWorker(YesNoUnknownOther.NO);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.YES);
 			c.getHealthConditions().setHivStatus(HivStatus.KNOWN_POSITIVE);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.YES);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.NO);
@@ -179,7 +183,7 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 		// from the configuration rather than from the case
 		expected.put(DISEASE, value("GONO"));
 		expected.put(SUBJECT_CODE, value("GONO"));
-		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_NUTS_CODE));
+		expected.put(REPORTING_COUNTRY, value(SERVER_COUNTRY_LOCATION_CODE));
 		expected.put(DATA_SOURCE, value(SERVER_DATA_SOURCE));
 		expected.put(STATUS, value("NEW/UPDATE"));
 
@@ -342,15 +346,15 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 
 		// Four columns share one reader: test all four in one case (false = recorded; empty = unknown)
 		String answered = caseWith(c -> {
-			c.getEpiData().setSexWorker(YesNoUnknown.NO);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.NO);
+			c.getEpiData().setSexWorker(YesNoUnknownOther.NO);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.NO);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.NO);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.NO);
 		});
 
 		String notEstablished = caseWith(c -> {
-			c.getEpiData().setSexWorker(YesNoUnknown.UNKNOWN);
-			c.getEpiData().setContactWithSexWorker(YesNoUnknown.UNKNOWN);
+			c.getEpiData().setSexWorker(YesNoUnknownOther.UNKNOWN);
+			c.getEpiData().setContactWithSexWorker(YesNoUnknownOther.UNKNOWN);
 			c.getHealthConditions().setHivPrep(YesNoUnknown.UNKNOWN);
 			c.getHealthConditions().setStiProphylaxis(YesNoUnknown.UNKNOWN);
 		});
@@ -438,6 +442,35 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	// ---
+	// Which cases are in the file
+	// ---
+
+	@Test
+	@DisplayName("every case but a ruled-out one is notified, an unclassified one with the column blank")
+	public void ruledOutCasesAreNotExported() {
+
+		String confirmed = classifiedCase(CaseClassification.CONFIRMED);
+		String confirmedNoSymptoms = classifiedCase(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		String probable = classifiedCase(CaseClassification.PROBABLE);
+		String possible = classifiedCase(CaseClassification.SUSPECT);
+		// "leave empty until case definitions are met"
+		String unclassified = classifiedCase(CaseClassification.NOT_CLASSIFIED);
+
+		// a ruled-out case is not notifiable
+		classifiedCase(CaseClassification.NO_CASE);
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.GONO, PERIOD_START, PERIOD_END);
+
+		assertThat(
+			export.all().stream().map(EpipulseDiseaseExportEntryDto::getNationalRecordId).collect(Collectors.toList()),
+			containsInAnyOrder(confirmed, confirmedNoSymptoms, probable, possible, unclassified));
+		assertThat(export.value(export.entryFor(confirmedNoSymptoms), CASE_CLASSIFICATION), is("CONF"));
+		assertThat(export.value(export.entryFor(probable), CASE_CLASSIFICATION), is("PROB"));
+		assertThat(export.value(export.entryFor(possible), CASE_CLASSIFICATION), is("POSS"));
+		assertThat(export.value(export.entryFor(unclassified), CASE_CLASSIFICATION), is(""));
+	}
+
+	// ---
 	// Assertions
 	// ---
 
@@ -475,6 +508,25 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 	// Fixture
 	// ---
 
+	/**
+	 * SORMAS sets every new gonococcal infection case to CONFIRMED on creation
+	 * ({@code CaseFacadeEjb.CONFIRMED_CASE_CLASSIFICATION_DISEASES}), and a later save recomputes it,
+	 * so the classification under test is written to the row directly.
+	 */
+	private String classifiedCase(CaseClassification classification) {
+
+		String uuid = fixture.caze(newPerson(), ONSET).getUuid();
+
+		executeInTransaction(em -> {
+			em.createNativeQuery("UPDATE cases SET caseclassification = :classification WHERE uuid = :uuid")
+				.setParameter("classification", classification.name())
+				.setParameter("uuid", uuid)
+				.executeUpdate();
+		});
+
+		return uuid;
+	}
+
 	private PersonReferenceDto newPerson() {
 		return creator.createPerson().toReference();
 	}
@@ -494,14 +546,14 @@ public class GonorrhoeaEpipulseExportTest extends AbstractEpipulseExportTest {
 		return exposure;
 	}
 
-	/** Country with NUTS code for export reporting. TestDataCreator doesn't set this. */
-	private CountryReferenceDto countryWithNutsCode(String name, String isoCode, String nutsCode) {
+	/** Country with an EpiPulse location code, reported by the export as country code. TestDataCreator doesn't set this. */
+	private CountryReferenceDto countryWithEpipulseLocationCode(String name, String isoCode, String locationCode) {
 
 		Country country = creator.createCountry(name, isoCode, null);
 
 		executeInTransaction(em -> {
-			em.createNativeQuery("UPDATE country SET nutscode = :nutsCode WHERE uuid = :uuid")
-				.setParameter("nutsCode", nutsCode)
+			em.createNativeQuery("UPDATE country SET epipulselocationcode = :locationCode WHERE uuid = :uuid")
+				.setParameter("locationCode", locationCode)
 				.setParameter("uuid", country.getUuid())
 				.executeUpdate();
 		});

@@ -40,6 +40,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -73,7 +74,6 @@ public class AttachmentService {
 	private static final String XDOC_DEFAULT_DOCX_TO_PDF_CONVERTER = "XDOC";
 	private static final String DOCX_TO_PDF_CONVERSION_FACADE_JNDI_CONFIG_KEY = "DOCX_TO_PDF_CONVERSION_FACADE_JNDI";
 
-	private static final String TEMP_FILE_PREFIX = "sormas_temp";
 	private static final Random RANDOM = new Random();
 
 	@EJB
@@ -158,7 +158,8 @@ public class AttachmentService {
 
 	private Path getTmpFilePathForConversion() {
 		Path path = Paths.get(configFacade.getTempFilesPath());
-		String fileName = TEMP_FILE_PREFIX + "_converted_" + DateHelper.formatDateForExport(new Date()) + "_" + RANDOM.nextInt(Integer.MAX_VALUE);
+		String fileName =
+			ImportExportUtils.TEMP_FILE_PREFIX + "_converted_" + DateHelper.formatDateForExport(new Date()) + "_" + RANDOM.nextInt(Integer.MAX_VALUE);
 
 		return path.resolve(fileName);
 

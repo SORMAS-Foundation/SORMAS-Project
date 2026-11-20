@@ -81,6 +81,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -136,9 +137,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			Disease.SYPHILIS,
 			Disease.GONOCOCCAL_INFECTION,
 			Disease.MUMPS,
-			Disease.DIPHTHERIA));
+			Disease.DIPHTHERIA,
+			Disease.RUBELLA));
 	private static final List<Disease> CLUSTER_ALLOWED_DISEASES =
-		Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS, Disease.DIPHTHERIA));
+		Collections.unmodifiableList(Arrays.asList(Disease.MEASLES, Disease.MUMPS, Disease.DIPHTHERIA, Disease.RUBELLA));
+	private static final List<Disease> INFECTION_SOURCE_BY_TRANSMISSION_DISEASES =
+		List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS);
+	private static final List<Disease> IMPORTED_CASE_COUNTRY_DISEASES =
+		List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS, Disease.RUBELLA);
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -163,9 +169,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
 			fluidRowLocs(8, EpiDataDto.CLUSTER_IDENTIFIER,4,null) +
 			fluidRowLocs(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, "") +
-			fluidRowLocs(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, "") +
-			fluidRowLocs(EpiDataDto.SEX_WORKER, EpiDataDto.CONTACT_WITH_SEX_WORKER) +
+			fluidRowLocs(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION_OTHER) +
 			fluidRowLocs(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP) +
+			fluidRowLocs(EpiDataDto.SEX_WORKER, EpiDataDto.CONTACT_WITH_SEX_WORKER) +
+			fluidRowLocs(EpiDataDto.SEX_WORKER_OTHER, EpiDataDto.CONTACT_WITH_SEX_WORKER_OTHER) +
 			loc(LOC_PROPHYLAXIS_STATUS)+
 			fluidRowLocs("PROPHYLAXIS_LAYOUT")+
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
@@ -310,6 +317,22 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		motherCitizenship.addItems(countries);
 		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class);
 		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class);
+		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION_OTHER, TextField.class);
+		addField(EpiDataDto.SEX_WORKER_OTHER, TextField.class);
+		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER_OTHER, TextField.class);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION_OTHER,
+			EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION,
+			ProbableRouteOfTransmission.OTHER,
+			true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.SEX_WORKER_OTHER, EpiDataDto.SEX_WORKER, YesNoUnknownOther.OTHER, true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			EpiDataDto.CONTACT_WITH_SEX_WORKER_OTHER,
+			EpiDataDto.CONTACT_WITH_SEX_WORKER,
+			YesNoUnknownOther.OTHER,
+			true);
 		includeContagiousDates(symptomOnsetDate, disease);
 
 		FieldHelper.setVisibleWhen(
@@ -343,14 +366,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				return value instanceof Set && ((Set<?>) value).contains(InfectionSource.OTHER);
 			},
 			true);
-		// Giardiasis, Cryptosporidiosis, Shigellosis, Mumps, Salmonellosis: country follows "imported case = YES" and
-		// infection source follows the mode of transmission.
-		// Diphtheria: country follows "case imported status = imported case"; infection source is always shown.
 		if (disease == Disease.DIPHTHERIA) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.CASE_IMPORTED_STATUS, CaseImportedStatus.IMPORTED_CASE, true);
-		} else if (List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SHIGELLOSIS, Disease.MUMPS, Disease.SALMONELLOSIS)
-			.contains(disease)) {
+		} else if (IMPORTED_CASE_COUNTRY_DISEASES.contains(disease)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
+		}
+		if (INFECTION_SOURCE_BY_TRANSMISSION_DISEASES.contains(disease)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				EpiDataDto.INFECTION_SOURCE,

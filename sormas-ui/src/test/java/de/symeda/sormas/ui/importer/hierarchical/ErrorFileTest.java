@@ -43,7 +43,27 @@ class ErrorFileTest {
 		assertArrayEquals(new String[] { I18nProperties.getCaption(Captions.importErrorDescription), "epidNumber", "fieldSampleID" }, rows.get(1));
 		assertEquals(4, rows.size());
 		assertArrayEquals(new String[] { "changed", "A", "S1" }, rows.get(2));
-		assertArrayEquals(new String[] { "bad sample", "", "S2" }, rows.get(3));
+		assertArrayEquals(new String[] { "fieldSampleID: bad sample", "", "S2" }, rows.get(3));
+	}
+
+	@Test
+	void prefixesTheColumnToTheMessage() {
+		ImportSheet sheet = new ImportSheet(List.of("CaseData.healthFacility"), List.of(new ImportSheetRow(2, List.of("X"))));
+		ImportIssueDto issue = new ImportIssueDto(ImportIssueKind.BLOCK, 2, "CaseData.healthFacility", "unknown facility");
+
+		List<String[]> rows = ErrorFile.rows(sheet, List.of(new ErrorFile.FailedBlock(2, 2, List.of(issue))), List.of());
+
+		assertArrayEquals(new String[] { "healthFacility: unknown facility", "X" }, rows.get(2));
+	}
+
+	@Test
+	void writesTheHeldBackMessage() {
+		ImportSheet sheet = new ImportSheet(List.of("CaseData.epidNumber"), List.of(new ImportSheetRow(2, List.of("A")), new ImportSheetRow(3, List.of("A"))));
+		ImportIssueDto held = new ImportIssueDto(ImportIssueKind.SKIPPED, 3, null, "Not imported because line 2 of the same case has problems");
+
+		List<String[]> rows = ErrorFile.rows(sheet, List.of(new ErrorFile.FailedBlock(2, 3, List.of(held))), List.of());
+
+		assertArrayEquals(new String[] { "Not imported because line 2 of the same case has problems", "A" }, rows.get(3));
 	}
 
 	@Test

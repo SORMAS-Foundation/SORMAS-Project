@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.common.cron;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
@@ -81,5 +82,13 @@ public class CronJobTest {
 
 		assertEquals(declared, invoked);
 		assertEquals(CronJob.values().length, invoked.size());
+	}
+
+	@Test
+	public void onlyTheNegativeSampleCleanupIsRetired() {
+
+		assertTrue(CronJob.SOFT_DELETE_OLD_NEGATIVE_SAMPLES.isRetired());
+		assertEquals(CronJob.values().length - 1, CronJob.active().size());
+		assertFalse(CronJob.active().contains(CronJob.SOFT_DELETE_OLD_NEGATIVE_SAMPLES));
 	}
 }

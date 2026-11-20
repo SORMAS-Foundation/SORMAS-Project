@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.sevenoneseven.Event717DateType;
 import de.symeda.sormas.api.event.sevenoneseven.Event717EarlyResponseAction;
 import de.symeda.sormas.api.event.sevenoneseven.Event717ExportDto;
@@ -104,6 +105,20 @@ public class Event717AssessmentService extends BaseAdoService<Event717Assessment
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
+	/**
+	 * @return The distinct event statuses recorded on the assessments when they were created, in the order of the enum.
+	 */
+	public List<EventStatus> getAssessedEventStatuses() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventStatus> cq = cb.createQuery(EventStatus.class);
+		Root<Event717Assessment> from = cq.from(Event717Assessment.class);
+		Expression<EventStatus> status = from.get(Event717Assessment.ASSESSED_EVENT_STATUS);
+		cq.select(status).distinct(true).where(cb.isNotNull(status));
+
+		return em.createQuery(cq).getResultList().stream().sorted().collect(Collectors.toList());
+	}
+
 	public void deletePermanentByEvent(Event event) {
 
 		Event717Assessment assessment = getByEvent(event);
@@ -149,6 +164,12 @@ public class Event717AssessmentService extends BaseAdoService<Event717Assessment
 		if (criteria.getEvent717ResponseStatus() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(assessment.get(Event717Assessment.RESPONSE_STATUS), criteria.getEvent717ResponseStatus()));
+		}
+		if (criteria.getEvent717AssessedEventStatus() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(assessment.get(Event717Assessment.ASSESSED_EVENT_STATUS), criteria.getEvent717AssessedEventStatus()));
 		}
 		// the event service ignores date types it does not know, so the 7-1-7 dates are filtered here
 		if (criteria.getEventDateType() instanceof Event717DateType) {
@@ -234,6 +255,8 @@ public class Event717AssessmentService extends BaseAdoService<Event717Assessment
 				eventJoins.getRegion().get(Region.NAME),
 				eventJoins.getDistrict().get(District.NAME),
 				eventJoins.getCommunity().get(Community.NAME),
+				event.get(Event.EVENT_STATUS),
+				assessment.get(Event717Assessment.ASSESSED_EVENT_STATUS),
 				assessment.get(Event717Assessment.DETECTION_DAYS),
 				assessment.get(Event717Assessment.DETECTION_STATUS),
 				assessment.get(Event717Assessment.NOTIFICATION_DAYS),
@@ -328,6 +351,10 @@ public class Event717AssessmentService extends BaseAdoService<Event717Assessment
 			case Event717IndexDto.COMMUNITY:
 				expression = cb.lower(eventJoins.getCommunity().get(Community.NAME));
 				break;
+			case Event717IndexDto.EVENT_STATUS:
+				expression = event.get(Event.EVENT_STATUS);
+				break;
+			case Event717IndexDto.ASSESSED_EVENT_STATUS:
 			case Event717IndexDto.DATE_OF_EMERGENCE:
 			case Event717IndexDto.DETECTION_DAYS:
 			case Event717IndexDto.DETECTION_STATUS:
@@ -410,10 +437,9 @@ public class Event717AssessmentService extends BaseAdoService<Event717Assessment
 		}
 		cq.multiselect(selections);
 
-		Predicate filter = buildFilter(criteria, queryContext);
-		if (filter != null) {
-			cq.where(filter);
-		}
+		// events that are currently dropped are never counted, whatever the criteria; they stay in the directory and the export
+		Predicate notDropped = cb.notEqual(queryContext.getJoins().getEvent().get(Event.EVENT_STATUS), EventStatus.DROPPED);
+		cq.where(CriteriaBuilderHelper.and(cb, buildFilter(criteria, queryContext), notDropped));
 
 		// the counts are read in the order in which they were selected
 		Iterator<Object> counts = Arrays.asList(em.createQuery(cq).getSingleResult().toArray()).iterator();
@@ -492,6 +518,7 @@ public class Event717AssessmentService extends BaseAdoService<Event717Assessment
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.EVENT_STATUS),
+			assessment.get(Event717Assessment.ASSESSED_EVENT_STATUS),
 			eventJoins.getRegion().get(Region.NAME),
 			eventJoins.getDistrict().get(District.NAME),
 			eventJoins.getCommunity().get(Community.NAME),

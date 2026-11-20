@@ -1685,7 +1685,15 @@
     ]
   },
   {
-    "symptom": "syphilisInfectionSite",
+    "symptom": "syphilisInfectionSiteOther",
+    "oldSymptomGroup": "N/A",
+    "proposedSymptomGroup": "Skin",
+    "diseases": [
+      "SYPHILIS"
+    ]
+  },
+  {
+    "symptom": "syphilisInfectionSites",
     "oldSymptomGroup": "N/A",
     "proposedSymptomGroup": "Skin",
     "diseases": [
@@ -3202,7 +3210,8 @@
     "oldSymptomGroup": "General",
     "proposedSymptomGroup": "Clinical presentation",
     "diseases": [
-      "MUMPS"
+      "MUMPS",
+      "CONGENITAL_RUBELLA"
     ]
   },
   {

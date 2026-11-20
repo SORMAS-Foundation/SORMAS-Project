@@ -19,12 +19,14 @@
 package de.symeda.sormas.backend.epipulse.disease;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.epipulse.EpipulseImmunizationCheckDto;
 import de.symeda.sormas.api.epipulse.EpipulseVaccinationCheckDto;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.epipulse.fieldmodel.ValueDef;
 
@@ -37,8 +39,8 @@ import de.symeda.sormas.backend.epipulse.fieldmodel.ValueDef;
  * {@link CommonFields}. Callers must also merge {@code EpipulseVaccinationSql.spec()}.
  *
  * <p>
- * It loads aggregated vaccination/immunization records; final course/dose selection rules are in
- * {@code EpipulseMapping}.
+ * It loads the patient's doses and immunization records; the rule that turns them into the two
+ * columns is in {@code EpipulseMapping}.
  */
 final class VaccinationFields {
 
@@ -61,8 +63,8 @@ final class VaccinationFields {
 	}
 
 	/**
-	 * Parses {@code case_all_vaccinations} records:
-	 * {@code vaccinationDate|reportDate|immunizationId}, separated by {@code #}.
+	 * Parses {@code case_all_vaccinations} records: {@code vaccinationDate|reportDate}, separated by
+	 * {@code #}.
 	 *
 	 * <p>
 	 * Field order and separators are coupled to {@code EpipulseVaccinationSql}. Package-private for
@@ -72,74 +74,34 @@ final class VaccinationFields {
 
 		SimpleDateFormat dbDateFormat = FieldReaders.dbDateFormat();
 
-		return FieldReaders.parseRecords(dbVaccinationStr, 3, vaccinationArr -> {
-			String vaccinationDate = vaccinationArr[0];
-			String reportDate = vaccinationArr[1];
-			String immunizationId = vaccinationArr[2];
-
+		return FieldReaders.parseRecords(dbVaccinationStr, 2, vaccinationArr -> {
 			EpipulseVaccinationCheckDto dto = new EpipulseVaccinationCheckDto();
-
-			if (!StringUtils.isBlank(vaccinationDate)) {
-				dto.setVaccinationDate(DateHelper.parseDate(vaccinationDate, dbDateFormat));
-			}
-
-			if (!StringUtils.isBlank(reportDate)) {
-				dto.setReportDate(DateHelper.parseDate(reportDate, dbDateFormat));
-			}
-
-			if (!StringUtils.isBlank(immunizationId)) {
-				try {
-					dto.setImmunizationId(Long.parseLong(immunizationId));
-				} catch (NumberFormatException e) {
-				}
-			}
+			dto.setVaccinationDate(parseDate(vaccinationArr[0], dbDateFormat));
+			dto.setReportDate(parseDate(vaccinationArr[1], dbDateFormat));
 
 			return dto;
 		});
 	}
 
 	/**
-	 * Parses {@code case_all_immunizations} records:
-	 * {@code id|validFrom|validUntil|numberOfDoses}, separated by {@code #}.
-	 *
-	 * <p>
-	 * The id links immunization courses to parsed doses from {@link #parseVaccinations(String)}.
+	 * Parses {@code case_all_immunizations} records: {@code meansOfImmunization|startDate|reportDate},
+	 * separated by {@code #}.
 	 */
 	static List<EpipulseImmunizationCheckDto> parseImmunizations(String dbImmunizationStr) {
 
 		SimpleDateFormat dbDateFormat = FieldReaders.dbDateFormat();
 
-		return FieldReaders.parseRecords(dbImmunizationStr, 4, immunizationArr -> {
-			String id = immunizationArr[0];
-			String validFrom = immunizationArr[1];
-			String validUntil = immunizationArr[2];
-			String numberOfDoses = immunizationArr[3];
-
+		return FieldReaders.parseRecords(dbImmunizationStr, 3, immunizationArr -> {
 			EpipulseImmunizationCheckDto dto = new EpipulseImmunizationCheckDto();
-
-			if (!StringUtils.isBlank(id)) {
-				try {
-					dto.setId(Long.parseLong(id));
-				} catch (NumberFormatException e) {
-				}
-			}
-
-			if (!StringUtils.isBlank(validFrom)) {
-				dto.setValidFrom(DateHelper.parseDate(validFrom, dbDateFormat));
-			}
-
-			if (!StringUtils.isBlank(validUntil)) {
-				dto.setValidUntil(DateHelper.parseDate(validUntil, dbDateFormat));
-			}
-
-			if (!StringUtils.isBlank(numberOfDoses)) {
-				try {
-					dto.setNumberOfDoses(Integer.parseInt(numberOfDoses));
-				} catch (NumberFormatException e) {
-				}
-			}
+			dto.setMeansOfImmunization(FieldReaders.parseEnum(MeansOfImmunization.class, immunizationArr[0]));
+			dto.setStartDate(parseDate(immunizationArr[1], dbDateFormat));
+			dto.setReportDate(parseDate(immunizationArr[2], dbDateFormat));
 
 			return dto;
 		});
+	}
+
+	private static Date parseDate(String value, SimpleDateFormat dbDateFormat) {
+		return StringUtils.isBlank(value) ? null : DateHelper.parseDate(value, dbDateFormat);
 	}
 }

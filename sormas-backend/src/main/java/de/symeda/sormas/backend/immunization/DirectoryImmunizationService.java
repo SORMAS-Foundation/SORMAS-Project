@@ -41,7 +41,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
@@ -133,7 +132,9 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 							immunization.get(Immunization.DELETION_REASON),
 							immunization.get(Immunization.OTHER_DELETION_REASON),
 							JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(directoryImmunizationQueryContext)),
-							immunization.get(Immunization.CHANGE_DATE)),
+							immunization.get(Immunization.CHANGE_DATE),
+							immunization.get(Immunization.VALID_FROM),
+							immunization.get(Immunization.VALID_UNTIL)),
 						// add sort properties to select
 						sortBy(sortProperties, directoryImmunizationQueryContext).stream())
 					.collect(Collectors.toList()));
@@ -185,6 +186,8 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 				case ImmunizationIndexDto.IMMUNIZATION_STATUS:
 				case ImmunizationIndexDto.START_DATE:
 				case ImmunizationIndexDto.END_DATE:
+				case ImmunizationIndexDto.VALID_FROM:
+				case ImmunizationIndexDto.VALID_UNTIL:
 				case ImmunizationIndexDto.RECOVERY_DATE:
 					expression = immunizationQueryContext.getRoot().get(sortProperty.propertyName);
 					break;
@@ -332,12 +335,14 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		if (Boolean.TRUE.equals(criteria.getOnlyPersonsWithOverdueImmunization())) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), ImmunizationManagementStatus.ONGOING));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Immunization.END_DATE), DateHelper.getStartOfDay(new Date())));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(buildPeriodEndExpression(cb, from), DateHelper.getStartOfDay(new Date())));
 		}
 		if (criteria.getImmunizationDateType() != null) {
-			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), directoryImmunizationQueryContext);
-			if (path != null) {
-				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
+			Expression<?> dateExpression = criteria.getImmunizationDateType() == ImmunizationDateType.IMMUNIZATION_END
+				? buildPeriodEndExpression(cb, from)
+				: buildPathForDateFilter(criteria.getImmunizationDateType(), directoryImmunizationQueryContext);
+			if (dateExpression != null) {
+				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, dateExpression, criteria.getFromDate(), criteria.getToDate());
 			}
 		}
 
@@ -356,6 +361,18 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		}
 
 		return filter;
+	}
+
+	/**
+	 * Start and end date were superseded by the validity period (valid from / valid until). Legacy immunizations that have a start or
+	 * end date keep using the end date; all others use valid until. Same logic as {@link ImmunizationEntityHelper#getPeriodEnd}.
+	 */
+	private Expression<Date> buildPeriodEndExpression(CriteriaBuilder cb, From<?, ?> from) {
+		return cb.<Date> selectCase()
+			.when(
+				cb.or(cb.isNotNull(from.get(Immunization.START_DATE)), cb.isNotNull(from.get(Immunization.END_DATE))),
+				from.get(Immunization.END_DATE))
+			.otherwise(from.get(Immunization.VALID_UNTIL));
 	}
 
 	private Path<Object> buildPathForDateFilter(

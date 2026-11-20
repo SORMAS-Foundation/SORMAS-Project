@@ -73,6 +73,9 @@ public class ImmunizationController {
 		navigator.addView(ImmunizationsView.VIEW_NAME, ImmunizationsView.class);
 		navigator.addView(ImmunizationDataView.VIEW_NAME, ImmunizationDataView.class);
 		navigator.addView(ImmunizationPersonView.VIEW_NAME, ImmunizationPersonView.class);
+		if (UiUtil.permitted(UserRight.EXTERNAL_PERSON_DATA_PROVIDER_ACCESS)) {
+			navigator.addView(ImmunizationExternalPersonDataView.VIEW_NAME, ImmunizationExternalPersonDataView.class);
+		}
 	}
 
 	public void create() {
@@ -416,19 +419,19 @@ public class ImmunizationController {
 
 	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson, ReferenceDto origin) {
 		dto.setPerson(selectedPerson);
-		selectOrCreateImmunization(dto, uuid -> {
-			if (uuid == null) {
-				return;
-			}
-			if (!uuid.equals(dto.getUuid())) {
-				dto.setUuid(uuid);
-				dto.setChangeDate(new Date());
-			}
-			FacadeProvider.getImmunizationFacade().save(dto);
-			navigateToImmunization(uuid, origin);
-		});
+
+		ImmunizationDto savedImmunization = FacadeProvider.getImmunizationFacade().save(dto);
+		navigateToImmunization(savedImmunization.getUuid(), origin);
 	}
 
+	/**
+	 * Displays a dialog to select similar immunizations based on start date and end date.
+	 * This was deprecated due to disabling of start and end date which confound the validity from and to.
+	 * 
+	 * @param immunizationDto
+	 * @param selectedImmunizationUuidConsumer
+	 */
+	@Deprecated(forRemoval = true)
 	private void selectOrCreateImmunization(ImmunizationDto immunizationDto, Consumer<String> selectedImmunizationUuidConsumer) {
 		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withDisease(immunizationDto.getDisease())
 			.withStartDate(immunizationDto.getStartDate())

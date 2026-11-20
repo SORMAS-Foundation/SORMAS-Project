@@ -49,10 +49,8 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -326,25 +324,14 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	private void updateSampleMaterialItems(ComboBox sampleMaterial, SampleMaterial selectedMaterial) {
 
-		final CountryFieldVisibilityChecker countryChecker = new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale());
-		final List<SampleMaterial> diseaseVisible = Diseases.DiseasesConfiguration.getVisibleValues(SampleMaterial.class, disease);
-
 		List<SampleMaterial> items = Arrays.stream(SampleMaterial.values())
 			.filter(
 				material -> material == selectedMaterial
-					|| (!material.isDeprecated() && isVisibleForCountry(material, countryChecker) && diseaseVisible.contains(material)))
+					|| (!material.isDeprecated() && fieldVisibilityCheckers.isVisible(SampleMaterial.class, material.name())))
 			.sorted(Comparator.comparing(SampleMaterial::toString, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
 
 		FieldHelper.updateEnumData(sampleMaterial, items);
-	}
-
-	private static boolean isVisibleForCountry(SampleMaterial material, CountryFieldVisibilityChecker countryChecker) {
-		try {
-			return countryChecker.isVisible(SampleMaterial.class.getField(material.name()));
-		} catch (NoSuchFieldException e) {
-			return true;
-		}
 	}
 
 	@Override
@@ -407,11 +394,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
-		requestedPathogenTestsField.addItems(
-			Arrays.stream(PathogenTestType.values())
-				.filter(c -> fieldVisibilityCheckers.isVisible(PathogenTestType.class, c.name()))
-				.collect(Collectors.toList()));
-		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
+		requestedPathogenTestsField.addItems(PathogenTestType.requestableMethods(fieldVisibilityCheckers, Collections.emptySet()));
 		requestedPathogenTestsField.setCaption(null);
 
 		OptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, OptionGroup.class);

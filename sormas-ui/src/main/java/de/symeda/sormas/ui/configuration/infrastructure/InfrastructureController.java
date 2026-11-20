@@ -19,15 +19,18 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
@@ -371,6 +374,8 @@ public class InfrastructureController {
 		}
 
 		editForm.setValue(district);
+		final Double originalClimateLatitude = district.getClimateLatitude();
+		final Double originalClimateLongitude = district.getClimateLongitude();
 
 		final CommitDiscardWrapperComponent<DistrictEditForm> editView = new CommitDiscardWrapperComponent<DistrictEditForm>(
 			editForm,
@@ -381,9 +386,27 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getDistrictFacade().save(editForm.getValue());
-				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
-				SormasUI.get().getNavigator().navigateTo(DistrictsView.VIEW_NAME);
+				DistrictDto districtToSave = editForm.getValue();
+				boolean climatePointChanged = !isNew
+					&& UiUtil.enabled(FeatureType.CLIMATE_MANAGEMENT)
+					&& (!Objects.equals(originalClimateLatitude, districtToSave.getClimateLatitude())
+						|| !Objects.equals(originalClimateLongitude, districtToSave.getClimateLongitude()));
+
+				if (climatePointChanged) {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingDistrictClimatePointChanged),
+						new Label(I18nProperties.getString(Strings.confirmationDistrictClimatePointChanged)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						480,
+						confirmed -> {
+							if (Boolean.TRUE.equals(confirmed)) {
+								saveDistrict(districtToSave);
+							}
+						});
+				} else {
+					saveDistrict(districtToSave);
+				}
 			}
 		});
 
@@ -396,6 +419,12 @@ public class InfrastructureController {
 		}
 
 		return editView;
+	}
+
+	private void saveDistrict(DistrictDto district) {
+		FacadeProvider.getDistrictFacade().save(district);
+		Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+		SormasUI.get().getNavigator().navigateTo(DistrictsView.VIEW_NAME);
 	}
 
 	private CommitDiscardWrapperComponent<CommunityEditForm> getCommunityEditComponent(CommunityDto community) {

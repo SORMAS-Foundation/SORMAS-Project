@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -170,4 +171,12 @@ public interface UserFacade {
 	void syncUsersFromAuthenticationProvider();
 
 	boolean isSyncEnabled();
+
+	/**
+	 * Returns the JWT token or null for the currently connected user.
+	 * 
+	 * @return JWT token or null of the current user.
+	 */
+	@Nullable
+	String getCurrentAccessToken();
 }

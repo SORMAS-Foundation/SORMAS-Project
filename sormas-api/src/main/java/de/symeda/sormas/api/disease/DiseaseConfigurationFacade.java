@@ -2,6 +2,7 @@ package de.symeda.sormas.api.disease;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -60,6 +61,20 @@ public interface DiseaseConfigurationFacade {
 
 	Integer getAutomaticSampleAssignmentThreshold(Disease disease);
 
+	Integer getVaccinationProtectionStartOffsetDays(Disease disease);
+
+	Integer getVaccinationProtectionRequiredDoses(Disease disease);
+
+	Integer getVaccinationProtectionDurationDays(Disease disease);
+
+	boolean isVaccinationProtectionLifelong(Disease disease);
+
+	Integer getRecoveryProtectionStartOffsetDays(Disease disease);
+
+	Integer getRecoveryProtectionDurationDays(Disease disease);
+
+	boolean isRecoveryProtectionLifelong(Disease disease);
+
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
 
 	Disease getDefaultDisease();
@@ -69,6 +84,17 @@ public interface DiseaseConfigurationFacade {
 	boolean usesExtendedClassification(Disease disease);
 
 	boolean usesExtendedClassificationMulti(Disease disease);
+
+	/**
+	 * @return true when case surveillance is switched on for the disease; the Climate dashboard then counts its cases, and
+	 *         otherwise its lab-confirmed aggregate reports (decision 147)
+	 */
+	boolean isCaseSurveillanceEnabled(Disease disease);
+
+	/**
+	 * @return years left out of the case usual range for this disease; empty when none
+	 */
+	Set<Integer> getUsualRangeExcludedYears(Disease disease);
 
 	long count(DiseaseConfigurationCriteria criteria);
 

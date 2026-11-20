@@ -11,9 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +32,7 @@ import de.symeda.sormas.api.importexport.hierarchical.OperationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.ConstraintValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
@@ -46,6 +51,8 @@ final class CaseHandler implements LevelHandler {
 	private final PersonFacadeEjbLocal personFacade;
 	private final CaseService caseService;
 	private final CurrentUserService currentUserService;
+	private final Validator validator;
+	private final ColumnHeaders headers;
 	private final CaseMatcher matcher;
 	private final double nameSimilarityThreshold;
 
@@ -54,12 +61,16 @@ final class CaseHandler implements LevelHandler {
 		PersonFacadeEjbLocal personFacade,
 		CaseService caseService,
 		CurrentUserService currentUserService,
+		Validator validator,
+		ColumnHeaders headers,
 		double nameSimilarityThreshold) {
 		this.caseFacade = caseFacade;
 		this.nameSimilarityThreshold = nameSimilarityThreshold;
 		this.personFacade = personFacade;
 		this.caseService = caseService;
 		this.currentUserService = currentUserService;
+		this.validator = validator;
+		this.headers = headers;
 		this.matcher = new CaseMatcher(caseService, caseFacade, personFacade);
 	}
 
@@ -233,22 +244,25 @@ final class CaseHandler implements LevelHandler {
 			record.reportIssue(null, I18nProperties.getValidationError(Validations.importHierarchicalMaskedRecord));
 			return;
 		}
-		if (RejectedRecords.alreadyRejected(record)) {
+		if (RejectedRecords.hasIssuesWithoutColumn(record)) {
 			return;
 		}
 		CaseDataDto caze = record.target(CASE);
 		if (caze.getEpidNumber() != null && caseFacade.doesEpidNumberExist(caze.getEpidNumber(), caze.getUuid(), caze.getDisease())) {
 			record.reportIssue(CaseTemplateSchema.EPID_NUMBER, I18nProperties.getString(Strings.messageEpidNumberWarning));
 		}
-		try {
-			personFacade.validate(record.target(PERSON));
-		} catch (ValidationRuntimeException e) {
-			ValidationIssues.report(record.node(), PERSON, e);
-		}
-		try {
-			caseFacade.validate(record.target(CASE));
-		} catch (ValidationRuntimeException e) {
-			ValidationIssues.report(record.node(), CASE, e);
+		PersonDto person = record.target(PERSON);
+		ValidationIssues.report(record.node(), PERSON, personFacade.getValidationProblems(person), headers);
+		reportConstraintViolations(record, PERSON, person);
+		ValidationIssues.report(record.node(), CASE, caseFacade.getValidationProblems(caze), headers);
+		reportConstraintViolations(record, CASE, caze);
+	}
+
+	private void reportConstraintViolations(PlannedRecord record, String target, Object dto) {
+		Set<ConstraintViolation<Object>> violations = validator.validate(dto);
+		if (!violations.isEmpty()) {
+			ValidationIssues
+				.report(record.node(), target, new ValidationRuntimeException(ConstraintValidationHelper.getPropertyErrors(violations)), headers);
 		}
 	}
 }

@@ -17,14 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForDiseasesInCountries;
+import de.symeda.sormas.api.utils.HideForDiseasesInCountriesExcept;
 import de.symeda.sormas.api.utils.LegacyEnumHelper;
 import de.symeda.sormas.api.utils.LegacyEnumNames;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 public enum PathogenTestType {
 
@@ -415,12 +426,12 @@ public enum PathogenTestType {
 		Disease.SYPHILIS,
 		Disease.MALARIA,
 		Disease.GONOCOCCAL_INFECTION,
-		Disease.RUBELLA,
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
+	@HideForDiseasesInCountries(diseases = Disease.RUBELLA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	SANGER_SEQUENCING,
 
 	@Diseases(value = {
@@ -435,6 +446,7 @@ public enum PathogenTestType {
 		Disease.DIPHTHERIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
+	@HideForDiseasesInCountries(diseases = Disease.MALARIA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	WHOLE_GENOME_SEQUENCING,
 
 	@Diseases(value = {
@@ -620,7 +632,6 @@ public enum PathogenTestType {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
-		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -635,6 +646,7 @@ public enum PathogenTestType {
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
 		ResultValueType.WESTERN_BLOT })
+	@HideForDiseasesInCountriesExcept(diseases = Disease.INFLUENZA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	WESTERN_BLOT,
 
 	@Diseases(value = {
@@ -671,6 +683,7 @@ public enum PathogenTestType {
 		Disease.CONGENITAL_RUBELLA })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	@HideForDiseasesInCountries(diseases = Disease.MALARIA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	INDIRECT_FLUORESCENT_ANTIBODY,
 
 	@Diseases(value = {
@@ -682,7 +695,8 @@ public enum PathogenTestType {
 		Disease.NEW_INFLUENZA,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
-	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	// Sits with the serology methods but is Antigen Detection since Nov 2026
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
 
@@ -749,6 +763,7 @@ public enum PathogenTestType {
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	@NotSelectableForNewTests
 	IMMUNOFLUORESCENCE_ASSAY,
 
 	@Diseases(value = {
@@ -784,6 +799,7 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
 
+	// Sits with the antigen methods but is Serological Tests since Nov 2026
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE,
@@ -806,7 +822,7 @@ public enum PathogenTestType {
 		Disease.CONGENITAL_RUBELLA,
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
-	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	// Positive/Negative interpretation plus the reciprocal titre (#14105): TEXT alone rendered no result
 	// field. The titre ('1:160') is kept as text, not a Float numeric value, like NEUTRALIZING_ANTIBODIES.
 	@ResultValueTypeRel({
@@ -815,7 +831,7 @@ public enum PathogenTestType {
 	HEMAGGLUTINATION_INHIBITION,
 
 	// ----------------------------------------------------------------------------------------------
-	// Culture & Isolation
+	// Culture & Identification
 	// ----------------------------------------------------------------------------------------------
 
 	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
@@ -912,7 +928,6 @@ public enum PathogenTestType {
 		Disease.CORONAVIRUS,
 		Disease.MALARIA,
 		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
@@ -928,6 +943,7 @@ public enum PathogenTestType {
 		Disease.DIPHTHERIA }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
+	@HideForDiseasesInCountriesExcept(diseases = Disease.LATENT_TUBERCULOSIS, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	MALDI_TOF,
 
 	// ----------------------------------------------------------------------------------------------
@@ -1209,6 +1225,7 @@ public enum PathogenTestType {
 		ResultValueType.QUALITATIVE,
 		ResultValueType.TEXT,
 		ResultValueType.NUMERIC })
+	@HideForDiseasesInCountries(diseases = Disease.MALARIA, countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	QUANTITATIVE_BUFFY_COAT,
 
 	@Diseases({
@@ -1238,11 +1255,9 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS,
-		Disease.CRYPTOSPORIDIOSIS,
         Disease.DIPHTHERIA,
 		Disease.GONOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
@@ -1325,7 +1340,7 @@ public enum PathogenTestType {
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------
-	// No category: reveals a free-text companion field
+	// Other: its own category, reveals a free-text companion field
 	// ----------------------------------------------------------------------------------------------
 
 	// DIRECT_MICROSCOPY and RAPID_ANTIBODY_TEST had no successor, so their records land here with the former
@@ -1337,6 +1352,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.YERSINIOSIS,
 		Disease.DIPHTHERIA }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.OTHER)
 	OTHER;
 
 	/**
@@ -1406,9 +1422,10 @@ public enum PathogenTestType {
 
 	/**
 	 * @return the {@link PathogenTestCategory} this method belongs to, declared via
-	 *         {@link PathogenTestCategoryRel}, or {@code null} for values with no category (e.g. the
-	 *         free-text {@code OTHER}). The category is derived from the method so it can be
-	 *         re-selected when editing an existing test without persisting a separate column.
+	 *         {@link PathogenTestCategoryRel}, or {@code null} for a value without that annotation
+	 *         ({@code OTHER} has its own {@link PathogenTestCategory#OTHER}). The category is derived
+	 *         from the method so it can be re-selected when editing an existing test without persisting
+	 *         a separate column.
 	 */
 	public static PathogenTestCategory getCategory(PathogenTestType testType) {
 		if (testType == null) {
@@ -1466,6 +1483,25 @@ public enum PathogenTestType {
 			return DEFAULT_RESULT_VALUE_TYPES;
 		}
 		return RESULT_VALUE_TYPES_BY_METHOD.getOrDefault(testType, DEFAULT_RESULT_VALUE_TYPES);
+	}
+
+	public static List<PathogenTestType> requestableMethods(FieldVisibilityCheckers checkers, Collection<PathogenTestType> savedRequests) {
+		// Other stays only if saved: new ones go in requestedOtherPathogenTests
+		Collection<PathogenTestType> saved = savedRequests != null ? savedRequests : Collections.emptySet();
+		return Arrays.stream(values())
+			.filter(
+				type -> saved.contains(type)
+					|| type != OTHER && isSelectableForNewTests(type) && checkers.isVisible(PathogenTestType.class, type.name()))
+			.sorted(Comparator.comparing(PathogenTestType::toString, String.CASE_INSENSITIVE_ORDER))
+			.collect(Collectors.toList());
+	}
+
+	public static List<PathogenTestType> selectableMethods(FieldVisibilityCheckers checkers, PathogenTestType retainType) {
+		// retainType stays listed so a saved legacy or hidden method still shows
+		return Arrays.stream(values())
+			.filter(type -> type == retainType || isSelectableForNewTests(type) && checkers.isVisible(PathogenTestType.class, type.name()))
+			.sorted(Comparator.comparing(PathogenTestType::toString, String.CASE_INSENSITIVE_ORDER))
+			.collect(Collectors.toList());
 	}
 
 	/**

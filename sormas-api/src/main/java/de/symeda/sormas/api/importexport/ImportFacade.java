@@ -51,6 +51,8 @@ public interface ImportFacade {
 
 	void generatePopulationDataImportTemplateFile() throws IOException;
 
+	void generateClimateObservationImportTemplateFile() throws IOException;
+
 	void generateAreaImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
 	void generateContinentImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
@@ -98,6 +100,10 @@ public interface ImportFacade {
 	String getPopulationDataImportTemplateFileName();
 
 	String getPopulationDataImportTemplateFilePath();
+
+	String getClimateObservationImportTemplateFileName();
+
+	String getClimateObservationImportTemplateFilePath();
 
 	String getCaseLineListingImportTemplateFileName();
 

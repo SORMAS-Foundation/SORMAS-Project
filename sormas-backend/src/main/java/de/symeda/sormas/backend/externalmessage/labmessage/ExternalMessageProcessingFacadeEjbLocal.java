@@ -41,6 +41,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.notifier.NotifierEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 @LocalBean
@@ -69,6 +70,7 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 		CountryFacadeEjbLocal countryFacade,
 		SurveillanceReportFacadeEjbLocal surveillanceReportFacade,
 		NotifierEjb.NotifierEjbLocal notifierFacade,
+		TreatmentFacadeEjbLocal treatmentFacade,
 		UserService userService) {
 		super(
 			externalMessageFacade,
@@ -88,7 +90,8 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 			customizableEnumFacade,
 			countryFacade,
 			surveillanceReportFacade,
-			notifierFacade);
+			notifierFacade,
+			treatmentFacade);
 		this.userService = userService;
 	}
 

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,13 +27,14 @@ import de.symeda.sormas.api.importexport.hierarchical.RecordOperationDto;
 
 class PreviewPresentationTest {
 
+	private static final ColumnLabels NO_LABELS = ColumnLabels.of(List.of());
 	private static final ImportIssueDto BAD_DATE = new ImportIssueDto(ImportIssueKind.BLOCK, 4, "test.testDateTime", "bad date");
 
 	@Test
 	void aCleanNewImportHasNothingToReview() {
 		ImportPreviewDto preview = preview(ready(0, create("case", "NI-001", 2), create("sample", "S1", 2)));
 
-		PreviewPresentation presentation = new PreviewPresentation(preview, emptyReport());
+		PreviewPresentation presentation = new PreviewPresentation(preview, emptyReport(), NO_LABELS);
 
 		assertTrue(presentation.nothingToReview());
 		assertEquals(List.of(), presentation.problems());
@@ -46,7 +48,7 @@ class PreviewPresentationTest {
 			new RecordOperationDto("sample", OperationType.UPDATE, "S-1", 3, List.of(new FieldChangeDto("sample.sampleMaterial", "Serum", "Blood")));
 		BlockPreviewDto broken = new BlockPreviewDto(1, 5, 5, "B", BlockStatus.ERROR, "", List.of(update), List.of(BAD_DATE));
 
-		PreviewPresentation presentation = new PreviewPresentation(preview(ready(0, update), broken), emptyReport());
+		PreviewPresentation presentation = new PreviewPresentation(preview(ready(0, update), broken), emptyReport(), NO_LABELS);
 
 		assertFalse(presentation.nothingToReview());
 		assertEquals(1, presentation.changes().size());
@@ -58,7 +60,7 @@ class PreviewPresentationTest {
 	void newRecordsComeOnlyFromReadyBlocks() {
 		BlockPreviewDto broken = new BlockPreviewDto(1, 5, 5, "B", BlockStatus.ERROR, "", List.of(create("case", "NI-002", 5)), List.of(BAD_DATE));
 
-		PreviewPresentation presentation = new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2)), broken), emptyReport());
+		PreviewPresentation presentation = new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2)), broken), emptyReport(), NO_LABELS);
 
 		assertEquals(1, presentation.newRecords().size());
 		assertEquals("NI-001", presentation.newRecords().get(0).getLabel());
@@ -69,18 +71,83 @@ class PreviewPresentationTest {
 		ImportIssueDto commitFailure = new ImportIssueDto(ImportIssueKind.COMMIT, 2, null, "changed since the preview");
 		ImportReportDto report = new ImportReportDto(List.of(new BlockResultDto(0, BlockOutcome.CHANGED_SINCE_PREVIEW, List.of(commitFailure))));
 
-		PreviewPresentation presentation = new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2))), report);
+		PreviewPresentation presentation = new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2))), report, NO_LABELS);
 
 		assertEquals(List.of(commitFailure), presentation.problems());
 		assertFalse(presentation.nothingToReview());
 	}
 
 	@Test
+	void namesTheRecordOfEachProblem() {
+		ImportIssueDto issue = new ImportIssueDto(ImportIssueKind.BLOCK, 6, "CaseData.healthFacility", "unknown");
+		BlockPreviewDto broken = new BlockPreviewDto(0, 5, 7, "Case OneSampleTwoTests", BlockStatus.ERROR, "", List.of(), List.of(issue));
+
+		PreviewPresentation presentation = new PreviewPresentation(preview(broken), emptyReport(), NO_LABELS);
+
+		assertEquals("Case OneSampleTwoTests", presentation.problemRows().get(0).getRecord());
+		assertEquals(6, presentation.problemRows().get(0).getLineNumber());
+	}
+
+	@Test
+	void aLineOutsideEveryBlockOrWithoutLineHasNoRecord() {
+		BlockPreviewDto broken = new BlockPreviewDto(0, 5, 7, "Case A", BlockStatus.ERROR, "", List.of(), List.of());
+		ImportIssueDto outside = new ImportIssueDto(ImportIssueKind.BLOCK, 9, "col", "outside");
+		ImportIssueDto before = new ImportIssueDto(ImportIssueKind.BLOCK, 2, "col", "before");
+		ImportIssueDto noLine = new ImportIssueDto(ImportIssueKind.BLOCK, null, null, "file");
+		ImportReportDto report = new ImportReportDto(List.of(new BlockResultDto(0, BlockOutcome.FAILED, List.of(outside, before, noLine))));
+
+		PreviewPresentation presentation = new PreviewPresentation(preview(broken), report, NO_LABELS);
+
+		assertEquals("", presentation.problemRows().get(0).getRecord());
+		assertEquals("", presentation.problemRows().get(1).getRecord());
+		assertEquals("", presentation.problemRows().get(2).getRecord());
+	}
+
+	@Test
+	void doesNotCountHeldBackLinesAsProblems() {
+		ImportIssueDto problem = new ImportIssueDto(ImportIssueKind.BLOCK, 5, "CaseData.healthFacility", "unknown");
+		ImportIssueDto heldOne = new ImportIssueDto(ImportIssueKind.SKIPPED, 6, null, "held");
+		ImportIssueDto heldTwo = new ImportIssueDto(ImportIssueKind.SKIPPED, 7, null, "held");
+		BlockPreviewDto broken = new BlockPreviewDto(0, 5, 7, "B", BlockStatus.ERROR, "", List.of(), List.of(problem, heldOne, heldTwo));
+
+		PreviewPresentation presentation = new PreviewPresentation(preview(broken), emptyReport(), NO_LABELS);
+
+		assertEquals(3, presentation.problemRows().size());
+		assertEquals(1, presentation.problemCount());
+		assertTrue(presentation.problemRows().get(1).isHeldBack());
+	}
+
+	@Test
 	void flagsProblemsOnlyWhenThereAreSome() {
 		BlockPreviewDto broken = new BlockPreviewDto(1, 5, 5, "B", BlockStatus.ERROR, "", List.of(), List.of(BAD_DATE));
 
-		assertFalse(new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2))), emptyReport()).hasProblems());
-		assertTrue(new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2)), broken), emptyReport()).hasProblems());
+		assertFalse(new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2))), emptyReport(), NO_LABELS).hasProblems());
+		assertTrue(new PreviewPresentation(preview(ready(0, create("case", "NI-001", 2)), broken), emptyReport(), NO_LABELS).hasProblems());
+	}
+
+	@Test
+	void listsProblemsInLineOrder() {
+		ImportIssueDto lateProblem = new ImportIssueDto(ImportIssueKind.BLOCK, 12, "Sample.lab", "unknown lab");
+		ImportIssueDto heldBack = new ImportIssueDto(ImportIssueKind.SKIPPED, 10, null, "held");
+		ImportIssueDto caseProblem = new ImportIssueDto(ImportIssueKind.BLOCK, 8, "CaseData.healthFacility", "missing");
+		BlockPreviewDto broken = new BlockPreviewDto(0, 8, 12, "B", BlockStatus.ERROR, "", List.of(), List.of(caseProblem, lateProblem, heldBack));
+
+		PreviewPresentation presentation = new PreviewPresentation(preview(broken), emptyReport(), NO_LABELS);
+
+		assertEquals(
+			List.of(8, 10, 12),
+			presentation.problemRows().stream().map(PreviewPresentation.ProblemRow::getLineNumber).collect(Collectors.toList()));
+	}
+
+	@Test
+	void showsTheColumnAsItIsNamedInTheFile() {
+		ImportIssueDto problem = new ImportIssueDto(ImportIssueKind.BLOCK, 5, "CaseData.healthFacility", "missing");
+		BlockPreviewDto broken = new BlockPreviewDto(0, 5, 5, "B", BlockStatus.ERROR, "", List.of(), List.of(problem));
+
+		PreviewPresentation presentation =
+			new PreviewPresentation(preview(broken), emptyReport(), ColumnLabels.of(List.of("CaseData.healthFacility")));
+
+		assertEquals("healthFacility", presentation.problemRows().get(0).getColumn());
 	}
 
 	@Test

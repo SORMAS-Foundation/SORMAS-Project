@@ -28,6 +28,7 @@ import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
@@ -111,6 +112,14 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 				cb.equal(from.join(SpecialCaseAccess.CAZE, JoinType.LEFT).get(Case.UUID), caze.getUuid()),
 				cb.equal(from.join(SpecialCaseAccess.ASSIGNED_TO, JoinType.LEFT).get(User.UUID), assignedTo.getUuid())))
 			.forEach(this::deletePermanent);
+	}
+
+	public void deleteByCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<SpecialCaseAccess> cd = cb.createCriteriaDelete(SpecialCaseAccess.class);
+		Root<SpecialCaseAccess> root = cd.from(SpecialCaseAccess.class);
+		cd.where(cb.equal(root.get(SpecialCaseAccess.CAZE), caze));
+		em.createQuery(cd).executeUpdate();
 	}
 
 	public <T extends IsCase> List<String> getCaseUuidsWithSpecialAccess(Collection<T> cases) {

@@ -1,5 +1,21 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.disease;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.List;
@@ -37,8 +53,19 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
 	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
 	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
+	public static final String EPIPULSE_SUBJECT_CODE = "epipulseSubjectCode";
+	public static final String EPIPULSE_DATASOURCE = "epipulseDatasource";
+	public static final String VACCINATION_PROTECTION_START_OFFSET_DAYS = "vaccinationProtectionStartOffsetDays";
+	public static final String VACCINATION_PROTECTION_REQUIRED_DOSES = "vaccinationProtectionRequiredDoses";
+	public static final String VACCINATION_PROTECTION_DURATION_DAYS = "vaccinationProtectionDurationDays";
+	public static final String VACCINATION_PROTECTION_LIFELONG = "vaccinationProtectionLifelong";
+	public static final String RECOVERY_PROTECTION_START_OFFSET_DAYS = "recoveryProtectionStartOffsetDays";
+	public static final String RECOVERY_PROTECTION_DURATION_DAYS = "recoveryProtectionDurationDays";
+	public static final String RECOVERY_PROTECTION_LIFELONG = "recoveryProtectionLifelong";
 
 	private Disease disease;
+	private String epipulseSubjectCode;
+	private String epipulseDatasource;
 	private Boolean active;
 	private Boolean primaryDisease;
 	private Boolean caseSurveillanceEnabled;
@@ -54,6 +81,13 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean isContagious;
 	private Integer minContagiousPeriod;
 	private Integer maxContagiousPeriod;
+	private Integer vaccinationProtectionStartOffsetDays;
+	private Integer vaccinationProtectionRequiredDoses;
+	private Integer vaccinationProtectionDurationDays;
+	private Boolean vaccinationProtectionLifelong;
+	private Integer recoveryProtectionStartOffsetDays;
+	private Integer recoveryProtectionDurationDays;
+	private Boolean recoveryProtectionLifelong;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
@@ -61,6 +95,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Integer automaticSampleAssignmentThreshold;
 
 	private Set<ExposureCategory> exposureCategories;
+
+	private Set<Integer> usualRangeExcludedYears;
 
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
@@ -76,6 +112,34 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	/**
+	 * EpiPulse subject code of the disease (column {@code epipulsesubjectcode}), entered by an admin in the disease
+	 * configuration, e.g. {@code "MEAS"} for measles. {@code null} when no code has been entered; the EpiPulse export of the
+	 * disease then fails.
+	 */
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getEpipulseSubjectCode() {
+		return epipulseSubjectCode;
+	}
+
+	public void setEpipulseSubjectCode(String epipulseSubjectCode) {
+		this.epipulseSubjectCode = epipulseSubjectCode;
+	}
+
+	/**
+	 * EpiPulse data source of the disease's exports, e.g. {@code "LU-TUBE-REG"} for a tuberculosis register.
+	 * {@code null} when not entered; the export then uses the system configuration value {@code EPIPULSE_DATASOURCE}, e.g.
+	 * {@code "LU-SYSTEM1"}, entered by an admin. When both are empty, the export of the disease fails.
+	 */
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getEpipulseDatasource() {
+		return epipulseDatasource;
+	}
+
+	public void setEpipulseDatasource(String epipulseDatasource) {
+		this.epipulseDatasource = epipulseDatasource;
 	}
 
 	@Column
@@ -214,6 +278,69 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	}
 
 	@Column
+	public Integer getVaccinationProtectionStartOffsetDays() {
+		return vaccinationProtectionStartOffsetDays;
+	}
+
+	public void setVaccinationProtectionStartOffsetDays(Integer vaccinationProtectionStartOffsetDays) {
+		this.vaccinationProtectionStartOffsetDays = vaccinationProtectionStartOffsetDays;
+	}
+
+	@Column
+	public Integer getVaccinationProtectionRequiredDoses() {
+		return vaccinationProtectionRequiredDoses;
+	}
+
+	public void setVaccinationProtectionRequiredDoses(Integer vaccinationProtectionRequiredDoses) {
+		this.vaccinationProtectionRequiredDoses = vaccinationProtectionRequiredDoses;
+	}
+
+	@Column
+	public Integer getVaccinationProtectionDurationDays() {
+		return vaccinationProtectionDurationDays;
+	}
+
+	public void setVaccinationProtectionDurationDays(Integer vaccinationProtectionDurationDays) {
+		this.vaccinationProtectionDurationDays = vaccinationProtectionDurationDays;
+	}
+
+	@Column
+	public Boolean getVaccinationProtectionLifelong() {
+		return vaccinationProtectionLifelong;
+	}
+
+	public void setVaccinationProtectionLifelong(Boolean vaccinationProtectionLifelong) {
+		this.vaccinationProtectionLifelong = vaccinationProtectionLifelong;
+	}
+
+	@Column
+	public Integer getRecoveryProtectionStartOffsetDays() {
+		return recoveryProtectionStartOffsetDays;
+	}
+
+	public void setRecoveryProtectionStartOffsetDays(Integer recoveryProtectionStartOffsetDays) {
+		this.recoveryProtectionStartOffsetDays = recoveryProtectionStartOffsetDays;
+	}
+
+	@Column
+	public Integer getRecoveryProtectionDurationDays() {
+		return recoveryProtectionDurationDays;
+	}
+
+	public void setRecoveryProtectionDurationDays(Integer recoveryProtectionDurationDays) {
+		this.recoveryProtectionDurationDays = recoveryProtectionDurationDays;
+	}
+
+	@Column
+	public Boolean getRecoveryProtectionLifelong() {
+		return recoveryProtectionLifelong;
+	}
+
+	public void setRecoveryProtectionLifelong(Boolean recoveryProtectionLifelong) {
+		this.recoveryProtectionLifelong = recoveryProtectionLifelong;
+	}
+
+	@Column
 	public Boolean getExtendedClassification() {
 		return extendedClassification;
 	}
@@ -258,5 +385,18 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setExposureCategories(Set<ExposureCategory> exposureCategories) {
 		this.exposureCategories = exposureCategories;
+	}
+
+	/**
+	 * Epidemic years left out of the case usual range on the Climate dashboard.
+	 */
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	@Convert(converter = YearSetConverter.class)
+	public Set<Integer> getUsualRangeExcludedYears() {
+		return usualRangeExcludedYears;
+	}
+
+	public void setUsualRangeExcludedYears(Set<Integer> usualRangeExcludedYears) {
+		this.usualRangeExcludedYears = usualRangeExcludedYears;
 	}
 }

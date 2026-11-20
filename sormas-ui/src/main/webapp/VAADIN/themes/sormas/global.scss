@@ -362,6 +362,11 @@
     padding: 12px 20px;
     margin-bottom: 24px;
   }
+  // a side component that fits a narrow side column (420px plus padding is wider than 4 of 12 columns at 1280px)
+  .side-component.side-component-fluid {
+    min-width: 100%;
+    padding: 12px;
+  }
   .active-side-component-element {
     background-color: $v-focus-color;
     border-radius: 6px;

@@ -49,6 +49,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.SyphilisPresentation;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HivStatus;
@@ -65,6 +66,7 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknownOther;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.InfectionSourceSetConverter;
@@ -72,6 +74,7 @@ import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
@@ -109,6 +112,8 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_CITIZENSHIP = "personCitizenship";
 	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
 	public static final String STI_PROPHYLAXIS = "stiProphylaxis";
+	public static final String CASE_PREGNANT = "casePregnant";
+	public static final String CASE_TRIMESTER = "caseTrimester";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
@@ -146,6 +151,8 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
+	public static final String TREATMENTS = "treatments";
+	public static final String TREATMENT = "treatment";
 	public static final String ADDITIONAL_PERSON_CONTACT_DETAILS = "additionalPersonContactDetails";
 	public static final String ADDITIONAL_PERSON_ADDRESSES = "additionalPersonAddresses";
 
@@ -155,7 +162,11 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 	public static final String HIV_STATUS = "hivStatus";
 	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION_OTHER = "probableRouteOfTransmissionOther";
+	public static final String SEX_WORKER = "sexWorker";
+	public static final String SEX_WORKER_OTHER = "sexWorkerOther";
 	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String CONTACT_WITH_SEX_WORKER_OTHER = "contactWithSexWorkerOther";
 	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
 	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
 
@@ -186,6 +197,8 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Country personCitizenship;
 	private SyphilisPresentation syphilisPresentation;
 	private YesNoUnknown stiProphylaxis;
+	private YesNoUnknown casePregnant;
+	private Trimester caseTrimester;
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
@@ -221,6 +234,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private List<SampleReport> sampleReports;
 	private SurveillanceReport surveillanceReport;
+	private Treatment treatment;
 	private String tsv;
 	private String personAdditionalDetails;
 
@@ -243,6 +257,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private String activitiesAsCase;
 	private String exposures;
+	private String treatments;
 	private String additionalPersonContactDetails;
 	private String additionalPersonAddresses;
 
@@ -280,7 +295,11 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private HivStatus hivStatus;
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
-	private YesNoUnknown contactWithSexWorker;
+	private YesNoUnknownOther sexWorker;
+	private String contactWithSexWorkerOther;
+	private String sexWorkerOther;
+	private String probableRouteOfTransmissionOther;
+	private YesNoUnknownOther contactWithSexWorker;
 	private Country motherCountryOfBirth;
 	private Country motherCitizenship;
 
@@ -570,6 +589,24 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.stiProphylaxis = stiProphylaxis;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCasePregnant() {
+		return casePregnant;
+	}
+
+	public void setCasePregnant(YesNoUnknown casePregnant) {
+		this.casePregnant = casePregnant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Trimester getCaseTrimester() {
+		return caseTrimester;
+	}
+
+	public void setCaseTrimester(Trimester caseTrimester) {
+		this.caseTrimester = caseTrimester;
+	}
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Facility getPersonFacility() {
 		return personFacility;
@@ -723,6 +760,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setSurveillanceReport(SurveillanceReport surveillanceReport) {
 		this.surveillanceReport = surveillanceReport;
+	}
+
+	@OneToOne(fetch = FetchType.LAZY)
+	public Treatment getTreatment() {
+		return treatment;
+	}
+
+	public void setTreatment(Treatment treatment) {
+		this.treatment = treatment;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = SampleReport.LAB_MESSAGE, fetch = FetchType.LAZY)
@@ -945,6 +991,16 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setExposures(String exposures) {
 		this.exposures = exposures;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getTreatments() {
+		return treatments;
+	}
+
+	public void setTreatments(String treatments) {
+		this.treatments = treatments;
 	}
 
 	public Date getDeceasedDate() {
@@ -1223,11 +1279,11 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getContactWithSexWorker() {
+	public YesNoUnknownOther getContactWithSexWorker() {
 		return contactWithSexWorker;
 	}
 
-	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+	public void setContactWithSexWorker(YesNoUnknownOther contactWithSexWorker) {
 		this.contactWithSexWorker = contactWithSexWorker;
 	}
 
@@ -1249,4 +1305,39 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.motherCitizenship = motherCitizenship;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getProbableRouteOfTransmissionOther() {
+		return probableRouteOfTransmissionOther;
+	}
+
+	public void setProbableRouteOfTransmissionOther(String probableRouteOfTransmissionOther) {
+		this.probableRouteOfTransmissionOther = probableRouteOfTransmissionOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getSexWorkerOther() {
+		return sexWorkerOther;
+	}
+
+	public void setSexWorkerOther(String sexWorkerOther) {
+		this.sexWorkerOther = sexWorkerOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getContactWithSexWorkerOther() {
+		return contactWithSexWorkerOther;
+	}
+
+	public void setContactWithSexWorkerOther(String contactWithSexWorkerOther) {
+		this.contactWithSexWorkerOther = contactWithSexWorkerOther;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknownOther getSexWorker() {
+		return sexWorker;
+	}
+
+	public void setSexWorker(YesNoUnknownOther sexWorker) {
+		this.sexWorker = sexWorker;
+	}
 }

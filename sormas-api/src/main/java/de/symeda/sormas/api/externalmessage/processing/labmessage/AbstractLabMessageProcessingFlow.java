@@ -177,17 +177,15 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 		getExternalMessageProcessingFacade().saveExternalMessage(externalMessage);
 	}
 
-	/**
-	 * Post-processes a case after it has been created or updated based on the external message.
-	 * This method has a special case for Pertusis in case of Luxembourg.
-	 * 
-	 * @param caseDto
-	 *            The case data transfer object that has been created or updated.
-	 * @param externalMessageDto
-	 *            The external message data transfer object containing the lab message details.
-	 */
 	@Override
 	protected void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		if (externalMessageDto.getHivStatus() != null) {
+			caseDto.getHealthConditions().setHivStatus(externalMessageDto.getHivStatus());
+		}
+		if (externalMessageDto.getDisease() == Disease.GONOCOCCAL_INFECTION) {
+			caseDto.setCaseClassification(
+				externalMessageDto.getCaseClassification() != null ? externalMessageDto.getCaseClassification() : CaseClassification.CONFIRMED);
+		}
 		if (getExternalMessageProcessingFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			postBuildCaseLuxembourg(caseDto, externalMessageDto);
 		}
@@ -222,6 +220,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			therapyDto.setMdrXdrTuberculosis(Boolean.TRUE.equals(externalMessageDto.getTuberculosisMdrXdrTuberculosis()));
 
 			// for regular tuberculosis the case classification should be handled in the external message pre-processing
+			break;
+		case GONOCOCCAL_INFECTION:
 			break;
 		case CORONAVIRUS:
 			// case classification is handled in the external message pre-processing

@@ -31,7 +31,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -55,6 +54,8 @@ import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
@@ -64,6 +65,7 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -76,7 +78,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
@@ -162,34 +163,64 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		return false;
 	}
 
-	public List<ImmunizationListEntryDto> getEntriesList(Long personId, Disease disease, Integer first, Integer max) {
+	public List<ImmunizationListEntryDto> getEntriesList(
+		Long personId,
+		Disease disease,
+		Date referencePeriodFrom,
+		Date referencePeriodTo,
+		Integer first,
+		Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+		final CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
 		final Root<Immunization> immunization = cq.from(Immunization.class);
 
 		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, immunization);
-
-		cq.multiselect(
-			immunization.get(Immunization.UUID),
-			immunization.get(Immunization.DISEASE),
-			immunization.get(Immunization.MEANS_OF_IMMUNIZATION),
-			immunization.get(Immunization.IMMUNIZATION_STATUS),
-			immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
-			immunization.get(Immunization.START_DATE),
-			immunization.get(Immunization.END_DATE),
-			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(immunizationQueryContext)));
 
 		final Predicate criteriaFilter = buildCriteriaFilter(personId, disease, immunizationQueryContext);
 		if (criteriaFilter != null) {
 			cq.where(criteriaFilter);
 		}
 
+		cq.select(immunization);
 		cq.orderBy(cb.desc(immunization.get(Immunization.CHANGE_DATE)));
-
 		cq.distinct(true);
 
-		return QueryHelper.getResultList(em, cq, new ImmunizationListEntryDtoResultTransformer(), first, max);
+		List<Immunization> immunizations = QueryHelper.getResultList(em, cq, null, null);
+		RelevantImmunizationSelection selection =
+			referencePeriodFrom != null ? determineRelevantImmunizationSelection(immunizations, referencePeriodFrom, referencePeriodTo) : null;
+
+		long firstResult = first != null ? first.longValue() : 0L;
+		long maxResults = max != null ? max.longValue() : Long.MAX_VALUE;
+
+		return immunizations.stream()
+			.skip(firstResult)
+			.limit(maxResults)
+			.map(i -> toImmunizationListEntryDto(i, selection))
+			.collect(Collectors.toList());
+	}
+
+	private ImmunizationListEntryDto toImmunizationListEntryDto(Immunization immunization, RelevantImmunizationSelection selection) {
+		ImmunizationListEntryDto dto = new ImmunizationListEntryDto(
+			immunization.getUuid(),
+			immunization.getDisease(),
+			immunization.getMeansOfImmunization(),
+			immunization.getImmunizationStatus(),
+			immunization.getImmunizationManagementStatus(),
+			immunization.getStartDate(),
+			immunization.getEndDate());
+		dto.setValidFrom(immunization.getValidFrom());
+		dto.setValidUntil(immunization.getValidUntil());
+		dto.setInJurisdiction(inJurisdictionOrOwned(immunization));
+
+		if (selection != null) {
+			boolean relevantForVaccinationStatus = selection.isRelevant(immunization);
+			dto.setRelevantForVaccinationStatus(relevantForVaccinationStatus);
+			if (!relevantForVaccinationStatus) {
+				dto.setNonRelevantMessage(getNonRelevantImmunizationMessage(immunization, selection));
+			}
+		}
+
+		return dto;
 	}
 
 	@Override
@@ -801,31 +832,16 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 				.build();
 		}
 
-		List<Immunization> notImmunized =
-			immunizations.stream().filter(i -> MeansOfImmunization.NOT_IMMUNIZED.equals(i.getMeansOfImmunization())).collect(Collectors.toList());
+		RelevantImmunizationSelection selection = determineRelevantImmunizationSelection(immunizations, fromDate, effectiveUntilDate);
 
-		// We only have not immunized entries
-		if (!notImmunized.isEmpty() && notImmunized.size() == immunizations.size()) {
-			// Multiple not immunized entries could exist, 
-			// If so we just pick closest not immunized based on report date relative to fromDate.
-			// Not Immunized entries do not need to be subject to valid from / valid to because we only do this if there are no other immunizations
-			Immunization relevantNotImmunized = notImmunized.stream()
-				.filter(i -> i.getReportDate() != null)
-				.min(Comparator.comparingLong(i -> Math.abs(i.getReportDate().getTime() - fromDate.getTime())))
-				.orElse(null);
-			if (relevantNotImmunized != null) {
-				return VaccinationStatusData.Builder.createFrom(buildVaccinationStatusData(relevantNotImmunized))
+		if (selection.hasOnlyNotImmunizedEntries()) {
+			if (selection.getRelevantImmunization() != null) {
+				return VaccinationStatusData.Builder.createFrom(buildVaccinationStatusData(selection.getRelevantImmunization()))
 					.referencePeriodFrom(fromDate)
 					.referencePeriodTo(effectiveUntilDate)
 					.build();
 			}
-		}
 
-		// BR0010: only ACQUIRED immunizations are considered
-		List<Immunization> acquiredImmunizations =
-			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
-
-		if (acquiredImmunizations.isEmpty()) {
 			return VaccinationStatusData.Builder.createBlank()
 				.vaccinationStatus(getFallbackVaccinationStatus(false))
 				.informationReliability(InformationReliability.UNKNOWN)
@@ -834,15 +850,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 				.build();
 		}
 
-		// BR0011: select immunization with validFrom closest to (<=) fromDate
-		// BR0012: validUntil must be >= effectiveUntilDate; null validUntil = no match
-		Immunization relevantImmunization = acquiredImmunizations.stream()
-			.filter(i -> i.getValidFrom() != null && !i.getValidFrom().after(fromDate))
-			.filter(i -> i.getValidUntil() != null && !i.getValidUntil().before(effectiveUntilDate))
-			.max(Comparator.comparing(Immunization::getValidFrom))
-			.orElse(null);
-
-		if (relevantImmunization == null) {
+		if (!selection.hasAcquiredImmunizations()) {
 			return VaccinationStatusData.Builder.createBlank()
 				.vaccinationStatus(getFallbackVaccinationStatus(false))
 				.informationReliability(InformationReliability.UNKNOWN)
@@ -851,10 +859,110 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 				.build();
 		}
 
-		return VaccinationStatusData.Builder.createFrom(buildVaccinationStatusData(relevantImmunization))
+		if (selection.getRelevantImmunization() == null) {
+			return VaccinationStatusData.Builder.createBlank()
+				.vaccinationStatus(getFallbackVaccinationStatus(false))
+				.informationReliability(InformationReliability.UNKNOWN)
+				.referencePeriodFrom(fromDate)
+				.referencePeriodTo(effectiveUntilDate)
+				.build();
+		}
+
+		return VaccinationStatusData.Builder.createFrom(buildVaccinationStatusData(selection.getRelevantImmunization()))
 			.referencePeriodFrom(fromDate)
 			.referencePeriodTo(effectiveUntilDate)
 			.build();
+	}
+
+	private RelevantImmunizationSelection determineRelevantImmunizationSelection(List<Immunization> immunizations, Date fromDate, Date untilDate) {
+		Date effectiveUntilDate = untilDate != null ? untilDate : fromDate;
+
+		List<Immunization> notImmunized =
+			immunizations.stream().filter(i -> MeansOfImmunization.NOT_IMMUNIZED.equals(i.getMeansOfImmunization())).collect(Collectors.toList());
+		boolean onlyNotImmunizedEntries = !notImmunized.isEmpty() && notImmunized.size() == immunizations.size();
+		if (onlyNotImmunizedEntries) {
+			Immunization relevantNotImmunized = notImmunized.stream()
+				.filter(i -> i.getReportDate() != null)
+				.min(Comparator.comparingLong(i -> Math.abs(i.getReportDate().getTime() - fromDate.getTime())))
+				.orElse(null);
+			return new RelevantImmunizationSelection(fromDate, effectiveUntilDate, relevantNotImmunized, true, false);
+		}
+
+		List<Immunization> acquiredImmunizations =
+			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
+		Immunization relevantImmunization = acquiredImmunizations.stream()
+			.filter(i -> matchesReferencePeriod(i, fromDate, effectiveUntilDate))
+			.max(Comparator.comparing(Immunization::getValidFrom))
+			.orElse(null);
+
+		return new RelevantImmunizationSelection(fromDate, effectiveUntilDate, relevantImmunization, false, !acquiredImmunizations.isEmpty());
+	}
+
+	private boolean matchesReferencePeriod(Immunization immunization, Date fromDate, Date effectiveUntilDate) {
+		return immunization.getValidFrom() != null
+			&& !immunization.getValidFrom().after(fromDate)
+			&& immunization.getValidUntil() != null
+			&& !immunization.getValidUntil().before(effectiveUntilDate);
+	}
+
+	private String getNonRelevantImmunizationMessage(Immunization immunization, RelevantImmunizationSelection selection) {
+		if (selection.hasOnlyNotImmunizedEntries()) {
+			return immunization.getReportDate() == null
+				? String.format(
+					I18nProperties.getString(Strings.infoImmunizationNotMatchedMissingReportDate),
+					formatDate(selection.getReferencePeriodFrom()))
+				: String.format(
+					I18nProperties.getString(Strings.infoImmunizationNotMatchedCloserNotImmunizedReportDate),
+					formatDate(immunization.getReportDate()),
+					formatDate(selection.getReferencePeriodFrom()),
+					formatDate(selection.getRelevantImmunization() != null ? selection.getRelevantImmunization().getReportDate() : null));
+		}
+
+		if (!ImmunizationStatus.ACQUIRED.equals(immunization.getImmunizationStatus())) {
+			return String.format(I18nProperties.getString(Strings.infoImmunizationStatusAcquired), immunization.getImmunizationStatus());
+		}
+
+		if (immunization.getValidFrom() == null) {
+			return String
+				.format(I18nProperties.getString(Strings.infoImmunizationNotMatchedValidFromMissing), formatDate(selection.getReferencePeriodFrom()));
+		}
+
+		if (immunization.getValidFrom().after(selection.getReferencePeriodFrom())) {
+			return String.format(
+				I18nProperties.getString(Strings.infoImmunizationNotMatchedValidFromAfterReferencePeriod),
+				formatDate(immunization.getValidFrom()),
+				formatDate(selection.getReferencePeriodFrom()));
+		}
+
+		if (immunization.getValidUntil() == null) {
+			return String
+				.format(I18nProperties.getString(Strings.infoImmunizationNotMatchedValidUntilMissing), formatDate(selection.getReferencePeriodTo()));
+		}
+
+		if (immunization.getValidUntil().before(selection.getReferencePeriodTo())) {
+			return String.format(
+				I18nProperties.getString(Strings.infoImmunizationNotMatchedValidUntilBeforeReferencePeriod),
+				formatDate(immunization.getValidUntil()),
+				formatDate(selection.getReferencePeriodTo()));
+		}
+
+		if (selection.getRelevantImmunization() != null) {
+			return String.format(
+				I18nProperties.getString(Strings.infoImmunizationNotMatchedSuperseded),
+				formatDate(immunization.getValidFrom()),
+				formatDate(selection.getRelevantImmunization().getValidFrom()),
+				formatReferencePeriod(selection));
+		}
+
+		return null;
+	}
+
+	private String formatDate(Date date) {
+		return date != null ? DateFormatHelper.formatLocalDate(date) : "?";
+	}
+
+	private String formatReferencePeriod(RelevantImmunizationSelection selection) {
+		return DateFormatHelper.buildPeriodString(selection.getReferencePeriodFrom(), selection.getReferencePeriodTo());
 	}
 
 	/**
@@ -1006,26 +1114,63 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 
 		// Get all immunizations for the person and disease
 		List<Immunization> immunizations = getByPersonAndDisease(personUuid, disease, false);
+		RelevantImmunizationSelection selection = determineRelevantImmunizationSelection(immunizations, referenceDate, referenceDate);
 
-		// Filter immunizations with status ACQUIRED
-		List<Immunization> acquiredImmunizations =
-			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
-
-		if (acquiredImmunizations.isEmpty()) {
+		if (selection.hasOnlyNotImmunizedEntries() || !selection.hasAcquiredImmunizations()) {
 			return null;
 		}
 
-		// BR0011/BR0012: same selection logic as deriveVaccinationStatus
-		Immunization relevantImmunization = acquiredImmunizations.stream()
-			.filter(i -> i.getValidFrom() != null && !i.getValidFrom().after(referenceDate))
-			.filter(i -> i.getValidUntil() != null && !i.getValidUntil().before(referenceDate))
-			.max(Comparator.comparing(Immunization::getValidFrom))
-			.orElse(null);
-
-		if (relevantImmunization == null) {
+		if (selection.getRelevantImmunization() == null) {
 			return null;
 		}
 
-		return relevantImmunization.getMeansOfImmunizationDetails();
+		return selection.getRelevantImmunization().getMeansOfImmunizationDetails();
+	}
+
+	private static final class RelevantImmunizationSelection {
+
+		private final Date referencePeriodFrom;
+		private final Date referencePeriodTo;
+		private final Immunization relevantImmunization;
+		private final boolean onlyNotImmunizedEntries;
+		private final boolean hasAcquiredImmunizations;
+
+		private RelevantImmunizationSelection(
+			Date referencePeriodFrom,
+			Date referencePeriodTo,
+			Immunization relevantImmunization,
+			boolean onlyNotImmunizedEntries,
+			boolean hasAcquiredImmunizations) {
+
+			this.referencePeriodFrom = referencePeriodFrom;
+			this.referencePeriodTo = referencePeriodTo;
+			this.relevantImmunization = relevantImmunization;
+			this.onlyNotImmunizedEntries = onlyNotImmunizedEntries;
+			this.hasAcquiredImmunizations = hasAcquiredImmunizations;
+		}
+
+		private Date getReferencePeriodFrom() {
+			return referencePeriodFrom;
+		}
+
+		private Date getReferencePeriodTo() {
+			return referencePeriodTo;
+		}
+
+		private Immunization getRelevantImmunization() {
+			return relevantImmunization;
+		}
+
+		private boolean hasOnlyNotImmunizedEntries() {
+			return onlyNotImmunizedEntries;
+		}
+
+		private boolean hasAcquiredImmunizations() {
+			return hasAcquiredImmunizations;
+		}
+
+		private boolean isRelevant(Immunization immunization) {
+			return relevantImmunization != null && Objects.equals(relevantImmunization.getUuid(), immunization.getUuid());
+		}
 	}
 }

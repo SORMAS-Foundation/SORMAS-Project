@@ -58,6 +58,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -438,6 +439,69 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		assertThat(result.getData().getSelectedPerson().getEntity(), is(notNullValue()));
 		assertThat(result.getData().getSelectedPerson().isNew(), is(true));
+	}
+
+	@Test
+	public void testCreateGonococcalCaseTakesClassificationAndHivStatusFromMessageInLuxembourg() throws ExecutionException, InterruptedException {
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.GONOCOCCAL_INFECTION, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		labMessage.setCaseClassification(CaseClassification.PROBABLE);
+		labMessage.setHivStatus(HivStatus.KNOWN_POSITIVE);
+		runFlow(labMessage);
+
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.PROBABLE));
+		assertThat(caseCaptor.getValue().getHealthConditions().getHivStatus(), is(HivStatus.KNOWN_POSITIVE));
+	}
+
+	@Test
+	public void testCreateGonococcalCaseDefaultsToConfirmedAndLeavesHivNullWhenMessageHasNeither() throws ExecutionException, InterruptedException {
+
+		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.GONOCOCCAL_INFECTION, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		runFlow(labMessage);
+
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.CONFIRMED));
+		assertThat(caseCaptor.getValue().getHealthConditions().getHivStatus(), is(nullValue()));
+	}
+
+	@Test
+	public void testCreateGonococcalCaseDefaultsToConfirmedWhenMessageHasNoClassificationInLuxembourg()
+		throws ExecutionException, InterruptedException {
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.GONOCOCCAL_INFECTION, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		runFlow(labMessage);
+
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.CONFIRMED));
+	}
+
+	@Test
+	public void testCreateCaseIgnoresMessageClassificationForNonGonococcalDisease() throws ExecutionException, InterruptedException {
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ArgumentCaptor<CaseDataDto> caseCaptor = captureCreatedCase();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		labMessage.setCaseClassification(CaseClassification.NO_CASE);
+		runFlow(labMessage);
+
+		assertThat(caseCaptor.getValue().getCaseClassification(), is(CaseClassification.NOT_CLASSIFIED));
+	}
+
+	private ArgumentCaptor<CaseDataDto> captureCreatedCase() {
+		doAnswer(answerPickOrCreatePerson(null)).when(handlePickOrCreatePerson).apply(any(), any());
+		ArgumentCaptor<CaseDataDto> caseCaptor = ArgumentCaptor.forClass(CaseDataDto.class);
+		doAnswer((invocation) -> {
+			getCallbackParam(invocation).done(invocation.getArgument(0));
+			return null;
+		}).when(handleCreateCase).handle(caseCaptor.capture(), any(), any());
+		return caseCaptor;
 	}
 
 	@Test

@@ -13,6 +13,7 @@ public class SampleMaterialGonococcalInfectionForDiseaseTest extends AbstractEnu
 			SampleMaterial.RECTAL_SWAB,
 			SampleMaterial.OROPHARYNGEAL_SWAB,
 			SampleMaterial.CONJUNCTIVAL_SWAB,
+			SampleMaterial.EYE,
 			SampleMaterial.BLOOD,
 			SampleMaterial.CEREBROSPINAL_FLUID,
 			SampleMaterial.SYNOVIAL_FLUID };

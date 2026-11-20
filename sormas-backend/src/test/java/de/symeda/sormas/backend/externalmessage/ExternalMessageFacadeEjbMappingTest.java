@@ -56,6 +56,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
+import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -70,6 +71,8 @@ public class ExternalMessageFacadeEjbMappingTest {
 	private UserService userservice;
 	@Mock
 	private SurveillanceReportService surveillanceReportService;
+	@Mock
+	private TreatmentService treatmentService;
 	@Mock
 	private CountryService countryService;
 	@Mock

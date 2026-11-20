@@ -38,6 +38,7 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 public class AbstractImportLayout extends VerticalLayout {
 
 	protected Button downloadErrorReportButton;
+	private ImportLayoutComponent errorReportComponent;
 	protected Upload upload;
 	protected final UserDto currentUser;
 	protected final UI currentUI;
@@ -164,10 +165,14 @@ public class AbstractImportLayout extends VerticalLayout {
 		String infoText = I18nProperties.getString(Strings.infoDownloadErrorReport);
 		Resource buttonIcon = VaadinIcons.DOWNLOAD;
 		String buttonCaption = I18nProperties.getCaption(Captions.importDownloadErrorReport);
-		ImportLayoutComponent errorReportComponent = new ImportLayoutComponent(step, headline, infoText, buttonIcon, buttonCaption);
+		errorReportComponent = new ImportLayoutComponent(step, headline, infoText, buttonIcon, buttonCaption);
 		downloadErrorReportButton = errorReportComponent.getButton();
 		errorReportComponent.getButton().setEnabled(false);
 		addComponent(errorReportComponent);
+	}
+
+	protected void setDownloadErrorReportVisible(boolean visible) {
+		errorReportComponent.setVisible(visible);
 	}
 
 	protected void resetDownloadErrorReportButton() {

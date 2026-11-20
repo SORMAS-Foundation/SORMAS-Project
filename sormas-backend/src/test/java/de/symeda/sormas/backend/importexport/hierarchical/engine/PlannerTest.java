@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.hierarchical.BlockStatus;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueDto;
 import de.symeda.sormas.api.importexport.hierarchical.ImportIssueKind;
@@ -223,6 +225,19 @@ class PlannerTest {
 	}
 
 	@Test
+	void theHandlersGetThePlansColumnsWithoutAskingTheDefinitionAgain() {
+		ToyDefinition toy = new ToyDefinition();
+
+		ImportPlan plan = new Planner().plan(toy, SheetFixtures.table("| parent.key | parent.alias | child.code |", "| P1 | Beta | C1 |"), null);
+		PreviewMapper.toPreview(plan);
+
+		assertEquals(1, toy.columnsCalls);
+		assertEquals(2, toy.handlerColumns.size());
+		toy.handlerColumns
+			.forEach(columns -> assertTrue(columns.stream().anyMatch(column -> "parent.alias".equals(column.header())), columns.toString()));
+	}
+
+	@Test
 	void anUnknownColumnIsAFileIssueUnlessTheDefinitionIgnoresIt() {
 		ImportSheet sheet = SheetFixtures.table("| parent.key | parent.colour |", "| P1 | red |");
 
@@ -233,6 +248,45 @@ class PlannerTest {
 		assertEquals(List.of(), lenient.fileIssues());
 		assertEquals(List.of("parent.colour"), lenient.ignoredColumns());
 		assertEquals(1, lenient.blocks().size());
+	}
+
+	@Test
+	void linesWithoutProblemsInAFailedBlockAreHeldBack() {
+		PlannedBlock block =
+			plan(new ToyDefinition(), "| P1 | Alpha | C1 | 1 | |", "|    |       | C2 | abc | |", "|    |       | C3 | 2 | |").blocks().get(0);
+
+		assertEquals(BlockStatus.ERROR, block.status());
+		assertEquals(List.of(2, 4), heldBackLines(block));
+		assertEquals(
+			I18nProperties.getValidationError(Validations.importHierarchicalLineHeldBack, 3),
+			block.issues().stream().filter(issue -> issue.getKind() == ImportIssueKind.SKIPPED).findFirst().get().getMessage());
+		assertTrue(block.issues().stream().filter(issue -> issue.getLineNumber() == 3).noneMatch(issue -> issue.getKind() == ImportIssueKind.SKIPPED));
+	}
+
+	@Test
+	void aLineHoldingSeveralLevelsIsHeldBackOnce() {
+		PlannedBlock block = plan(new ToyDefinition(), "| P1 | Alpha | C1 | 1 | |", "|    |       | C2 | 2 | |", "|    |       | C3 | abc | |")
+			.blocks()
+			.get(0);
+
+		assertEquals(List.of(2, 3), heldBackLines(block));
+	}
+
+	@Test
+	void aReadyBlockHasNoHeldBackLines() {
+		PlannedBlock block = plan(new ToyDefinition(), "| P1 | Alpha | C1 | 1 | |", "|    |       | C2 | 2 | |").blocks().get(0);
+
+		assertEquals(BlockStatus.READY, block.status());
+		assertEquals(List.of(), heldBackLines(block));
+		assertTrue(block.issues().isEmpty());
+	}
+
+	private static List<Integer> heldBackLines(PlannedBlock block) {
+		return block.issues()
+			.stream()
+			.filter(issue -> issue.getKind() == ImportIssueKind.SKIPPED)
+			.map(ImportIssueDto::getLineNumber)
+			.collect(Collectors.toList());
 	}
 
 	private static ImportPlan plan(ToyDefinition toy, String... rows) {

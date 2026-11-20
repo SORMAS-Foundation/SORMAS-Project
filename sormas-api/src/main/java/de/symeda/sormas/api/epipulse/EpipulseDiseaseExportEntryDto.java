@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.api.epipulse;
 
@@ -23,9 +20,11 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.symptoms.ClinicalManifestation;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -53,15 +52,16 @@ public class EpipulseDiseaseExportEntryDto {
 	private Integer dayOfBirth;
 	private Date symptomOnsetDate;
 	private SymptomState asymptomatic;
+	private ClinicalManifestation clinicalManifestation; // SymptomsDto.clinicalManifestation, DENGUE ClinicalCriteria
 	private Sex sex;
 	private String addressCommunityNutsCode;
 	private String addressDistrictNutsCode;
 	private String addressRegionNutsCode;
-	private String addressCountryNutsCode;
+	private String addressCountryLocationCode;
 	private String responsibleCommunityNutsCode;
 	private String responsibleDistrictNutsCode;
 	private String responsibleRegionNutsCode;
-	private String serverCountryNutsCode;
+	private String serverCountryLocationCode;
 	private CaseClassification caseClassification;
 	private YesNoUnknown admittedToHealthFacility;
 	private HospitalizationReasonType hospitalizationReason;
@@ -116,10 +116,10 @@ public class EpipulseDiseaseExportEntryDto {
 	private String clinicalCriteria; // REF: BACTERPNEUMO, MENI, MENISEPTI, OTH, SEPTI
 
 	// -- Syphilis --
-	private String birthCountryNutsCode; // CountryOfBirth
-	private String citizenshipCountryNutsCode; // CountryOfNationality
-	private String motherBirthCountryNutsCode; // CountryOfBirthOfMother, CONSYPH only
-	private String motherCitizenshipCountryNutsCode; // CountryOfNationalityOfMother, CONSYPH only
+	private String birthCountryLocationCode; // CountryOfBirth
+	private String citizenshipCountryLocationCode; // CountryOfNationality
+	private String motherBirthCountryLocationCode; // CountryOfBirthOfMother, CONSYPH only
+	private String motherCitizenshipCountryLocationCode; // CountryOfNationalityOfMother, CONSYPH only
 	private List<String> siteOfInfection; // REF: AR, GEN, OTH, PH
 	private String stageSyph; // REF: I, NI
 	private String stageSyphDetailed; // REF: EL, L, LL, P, S
@@ -163,6 +163,19 @@ public class EpipulseDiseaseExportEntryDto {
 	private String micSign_RIF;
 	private Double micValueAST_RIF;
 	private String sir_RIF;
+	private String sir_AMK; // Amikacin
+	private String sir_BDQ; // Bedaquiline
+	private String sir_CLF; // Clofazimine
+	private String sir_DLM; // Delamanid
+	private String sir_ETH; // Ethambutol
+	private String sir_ETI; // Ethionamide
+	private String sir_INH; // Isoniazid
+	private String sir_LNZ; // Linezolid
+	private String sir_LVX; // Levofloxacin
+	private String sir_MFX; // Moxifloxacin
+	private String sir_PTM; // Pretomanid
+	private String sir_PZA; // Pyrazinamide
+	private String sir_STR; // Streptomycin
 
 	// -- SALM (Salmonellosis) --
 	// SALM uses a BOOL here. MEAS and MENI map importation through ImportedStatus.
@@ -201,7 +214,9 @@ public class EpipulseDiseaseExportEntryDto {
 	// siteOfInfection from nine symptom columns where syphilis fills it from one enum, which is a
 	// property of the derivation rather than of the field.
 	private String clinicalServiceType; // EpiDataDto.typeOfClinicalService mapped to EpiPulse codes
-	private String hivStatus; // HealthConditionsDto.hivStatus mapped to NEG/POS/POSKNOWN/POSNEW
+	// HealthConditionsDto.hivStatus for the STI codes, HealthConditionsDto.hiv for TUBE, each
+	// mapped by the subject code's own reference set
+	private String hivStatus;
 	private Boolean hivPrEP; // HealthConditionsDto.hivPrep
 	private Boolean antibioticProphylaxis; // HealthConditionsDto.stiProphylaxis
 	private Boolean contactSW; // EpiDataDto.contactWithSexWorker
@@ -209,6 +224,23 @@ public class EpipulseDiseaseExportEntryDto {
 	// -- RUBE (Rubella) --
 
 	private Boolean pregnancy; // CaseDataDto.pregnant
+	private Trimester trimester; // CaseDataDto.trimester, RUBE WeekOfGestation
+
+	// -- TUBE (Tuberculosis) --
+	// hivStatus/pathogen are reused with TUBE-specific value sets and source mapping.
+	private Date dateOfEntry; // PersonDto.entryDate
+	private String majorSiteOfTB; // SymptomsDto.majorSite mapped by EpipulseTubeSiteOfTbRef
+	private String minorSiteOfTB; // SymptomsDto.minorSite mapped by EpipulseTubeSiteOfTbRef
+	private Boolean diagnosedAnteMortem; // CaseDataDto.postMortem, negated
+	// Shared source for PrevDiagnosis and PrevDiagnosisYear.
+	private Integer tuberculosisInfectionYear; // HealthConditionsDto.tuberculosisInfectionYear
+	private Boolean prevTreatment; // HealthConditionsDto.previousTuberculosisTreatment
+	private String prevTreatmentCompletion; // HealthConditionsDto.complianceWithTreatment mapped to PREVTT*
+	private String resultCulture; // POS/NEG/NOTEST over the case's verified culture tests
+	private String resultMicroscopyAFB; // POS/NEG/NOTEST over the case's verified microscopy tests
+	// Inputs for ResultOtherTest (combined in EpipulseLaboratoryMapper.mapOtherTestResult).
+	private String nucleicAcidResult;
+	private String histopathologyResult;
 
 	public String getReportingCountry() {
 		return reportingCountry;
@@ -322,12 +354,12 @@ public class EpipulseDiseaseExportEntryDto {
 		this.addressRegionNutsCode = addressRegionNutsCode;
 	}
 
-	public String getAddressCountryNutsCode() {
-		return addressCountryNutsCode;
+	public String getAddressCountryLocationCode() {
+		return addressCountryLocationCode;
 	}
 
-	public void setAddressCountryNutsCode(String addressCountryNutsCode) {
-		this.addressCountryNutsCode = addressCountryNutsCode;
+	public void setAddressCountryLocationCode(String addressCountryLocationCode) {
+		this.addressCountryLocationCode = addressCountryLocationCode;
 	}
 
 	public String getResponsibleCommunityNutsCode() {
@@ -354,12 +386,12 @@ public class EpipulseDiseaseExportEntryDto {
 		this.responsibleRegionNutsCode = responsibleRegionNutsCode;
 	}
 
-	public String getServerCountryNutsCode() {
-		return serverCountryNutsCode;
+	public String getServerCountryLocationCode() {
+		return serverCountryLocationCode;
 	}
 
-	public void setServerCountryNutsCode(String serverCountryNutsCode) {
-		this.serverCountryNutsCode = serverCountryNutsCode;
+	public void setServerCountryLocationCode(String serverCountryLocationCode) {
+		this.serverCountryLocationCode = serverCountryLocationCode;
 	}
 
 	public CaseClassification getCaseClassification() {
@@ -434,7 +466,11 @@ public class EpipulseDiseaseExportEntryDto {
 		this.vaccinations = vaccinations;
 	}
 
-	/** The acquired vaccination courses {@code VaccinationStatus} chooses one of. */
+	/**
+	 * The patient's vaccination and {@code NOT_IMMUNIZED} immunizations.
+	 * Used by {@code VaccinationStatus} only where no dose decides it.
+	 * Used by {@code VaccinationStatusMaternal} for {@code MATERNAL_VACCINATION} immunizations,
+	 */
 	public List<EpipulseImmunizationCheckDto> getImmunizations() {
 		return immunizations;
 	}
@@ -513,6 +549,14 @@ public class EpipulseDiseaseExportEntryDto {
 
 	public void setAsymptomatic(SymptomState asymptomatic) {
 		this.asymptomatic = asymptomatic;
+	}
+
+	public ClinicalManifestation getClinicalManifestation() {
+		return clinicalManifestation;
+	}
+
+	public void setClinicalManifestation(ClinicalManifestation clinicalManifestation) {
+		this.clinicalManifestation = clinicalManifestation;
 	}
 
 	// Phase 3: Getters and setters for clinical and epidemiology fields
@@ -854,36 +898,36 @@ public class EpipulseDiseaseExportEntryDto {
 
 	// ==================== Syphilis ====================
 
-	public String getBirthCountryNutsCode() {
-		return birthCountryNutsCode;
+	public String getBirthCountryLocationCode() {
+		return birthCountryLocationCode;
 	}
 
-	public void setBirthCountryNutsCode(String birthCountryNutsCode) {
-		this.birthCountryNutsCode = birthCountryNutsCode;
+	public void setBirthCountryLocationCode(String birthCountryLocationCode) {
+		this.birthCountryLocationCode = birthCountryLocationCode;
 	}
 
-	public String getMotherBirthCountryNutsCode() {
-		return motherBirthCountryNutsCode;
+	public String getMotherBirthCountryLocationCode() {
+		return motherBirthCountryLocationCode;
 	}
 
-	public String getCitizenshipCountryNutsCode() {
-		return citizenshipCountryNutsCode;
+	public String getCitizenshipCountryLocationCode() {
+		return citizenshipCountryLocationCode;
 	}
 
-	public void setCitizenshipCountryNutsCode(String citizenshipCountryNutsCode) {
-		this.citizenshipCountryNutsCode = citizenshipCountryNutsCode;
+	public void setCitizenshipCountryLocationCode(String citizenshipCountryLocationCode) {
+		this.citizenshipCountryLocationCode = citizenshipCountryLocationCode;
 	}
 
-	public void setMotherBirthCountryNutsCode(String motherBirthCountryNutsCode) {
-		this.motherBirthCountryNutsCode = motherBirthCountryNutsCode;
+	public void setMotherBirthCountryLocationCode(String motherBirthCountryLocationCode) {
+		this.motherBirthCountryLocationCode = motherBirthCountryLocationCode;
 	}
 
-	public String getMotherCitizenshipCountryNutsCode() {
-		return motherCitizenshipCountryNutsCode;
+	public String getMotherCitizenshipCountryLocationCode() {
+		return motherCitizenshipCountryLocationCode;
 	}
 
-	public void setMotherCitizenshipCountryNutsCode(String motherCitizenshipCountryNutsCode) {
-		this.motherCitizenshipCountryNutsCode = motherCitizenshipCountryNutsCode;
+	public void setMotherCitizenshipCountryLocationCode(String motherCitizenshipCountryLocationCode) {
+		this.motherCitizenshipCountryLocationCode = motherCitizenshipCountryLocationCode;
 	}
 
 	public List<String> getSiteOfInfection() {
@@ -1088,4 +1132,203 @@ public class EpipulseDiseaseExportEntryDto {
 		this.pregnancy = pregnancy;
 	}
 
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
+	}
+
+	public Date getDateOfEntry() {
+		return dateOfEntry;
+	}
+
+	public void setDateOfEntry(Date dateOfEntry) {
+		this.dateOfEntry = dateOfEntry;
+	}
+
+	public String getMajorSiteOfTB() {
+		return majorSiteOfTB;
+	}
+
+	public void setMajorSiteOfTB(String majorSiteOfTB) {
+		this.majorSiteOfTB = majorSiteOfTB;
+	}
+
+	public String getMinorSiteOfTB() {
+		return minorSiteOfTB;
+	}
+
+	public void setMinorSiteOfTB(String minorSiteOfTB) {
+		this.minorSiteOfTB = minorSiteOfTB;
+	}
+
+	public Boolean getDiagnosedAnteMortem() {
+		return diagnosedAnteMortem;
+	}
+
+	public void setDiagnosedAnteMortem(Boolean diagnosedAnteMortem) {
+		this.diagnosedAnteMortem = diagnosedAnteMortem;
+	}
+
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
+	}
+
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
+	}
+
+	public Boolean getPrevTreatment() {
+		return prevTreatment;
+	}
+
+	public void setPrevTreatment(Boolean prevTreatment) {
+		this.prevTreatment = prevTreatment;
+	}
+
+	public String getPrevTreatmentCompletion() {
+		return prevTreatmentCompletion;
+	}
+
+	public void setPrevTreatmentCompletion(String prevTreatmentCompletion) {
+		this.prevTreatmentCompletion = prevTreatmentCompletion;
+	}
+
+	public String getResultCulture() {
+		return resultCulture;
+	}
+
+	public void setResultCulture(String resultCulture) {
+		this.resultCulture = resultCulture;
+	}
+
+	public String getResultMicroscopyAFB() {
+		return resultMicroscopyAFB;
+	}
+
+	public void setResultMicroscopyAFB(String resultMicroscopyAFB) {
+		this.resultMicroscopyAFB = resultMicroscopyAFB;
+	}
+
+	public String getNucleicAcidResult() {
+		return nucleicAcidResult;
+	}
+
+	public void setNucleicAcidResult(String nucleicAcidResult) {
+		this.nucleicAcidResult = nucleicAcidResult;
+	}
+
+	public String getHistopathologyResult() {
+		return histopathologyResult;
+	}
+
+	public void setHistopathologyResult(String histopathologyResult) {
+		this.histopathologyResult = histopathologyResult;
+	}
+
+	public String getSir_AMK() {
+		return sir_AMK;
+	}
+
+	public void setSir_AMK(String sir_AMK) {
+		this.sir_AMK = sir_AMK;
+	}
+
+	public String getSir_BDQ() {
+		return sir_BDQ;
+	}
+
+	public void setSir_BDQ(String sir_BDQ) {
+		this.sir_BDQ = sir_BDQ;
+	}
+
+	public String getSir_CLF() {
+		return sir_CLF;
+	}
+
+	public void setSir_CLF(String sir_CLF) {
+		this.sir_CLF = sir_CLF;
+	}
+
+	public String getSir_DLM() {
+		return sir_DLM;
+	}
+
+	public void setSir_DLM(String sir_DLM) {
+		this.sir_DLM = sir_DLM;
+	}
+
+	public String getSir_ETH() {
+		return sir_ETH;
+	}
+
+	public void setSir_ETH(String sir_ETH) {
+		this.sir_ETH = sir_ETH;
+	}
+
+	public String getSir_ETI() {
+		return sir_ETI;
+	}
+
+	public void setSir_ETI(String sir_ETI) {
+		this.sir_ETI = sir_ETI;
+	}
+
+	public String getSir_INH() {
+		return sir_INH;
+	}
+
+	public void setSir_INH(String sir_INH) {
+		this.sir_INH = sir_INH;
+	}
+
+	public String getSir_LNZ() {
+		return sir_LNZ;
+	}
+
+	public void setSir_LNZ(String sir_LNZ) {
+		this.sir_LNZ = sir_LNZ;
+	}
+
+	public String getSir_LVX() {
+		return sir_LVX;
+	}
+
+	public void setSir_LVX(String sir_LVX) {
+		this.sir_LVX = sir_LVX;
+	}
+
+	public String getSir_MFX() {
+		return sir_MFX;
+	}
+
+	public void setSir_MFX(String sir_MFX) {
+		this.sir_MFX = sir_MFX;
+	}
+
+	public String getSir_PTM() {
+		return sir_PTM;
+	}
+
+	public void setSir_PTM(String sir_PTM) {
+		this.sir_PTM = sir_PTM;
+	}
+
+	public String getSir_PZA() {
+		return sir_PZA;
+	}
+
+	public void setSir_PZA(String sir_PZA) {
+		this.sir_PZA = sir_PZA;
+	}
+
+	public String getSir_STR() {
+		return sir_STR;
+	}
+
+	public void setSir_STR(String sir_STR) {
+		this.sir_STR = sir_STR;
+	}
 }

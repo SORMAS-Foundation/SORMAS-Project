@@ -115,6 +115,7 @@ public class Event717SummaryView extends AbstractView {
 		criteria.region(null);
 		criteria.district(null);
 		criteria.relevanceStatus(defaults.getRelevanceStatus());
+		criteria.event717AssessedEventStatus(null);
 		criteria.eventDateBetween(null, null, defaults.getEventDateType(), defaults.getDateFilterOption());
 	}
 
