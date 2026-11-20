@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.samples;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
@@ -405,9 +402,25 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	/** Sets initial field values for a newly created pathogen test. */
 	public void initializeForNewTest(Disease disease) {
 		testResultComponent.getTestResultField().setValue(PathogenTestResultType.PENDING);
-		if (disease != null) {
-			diseaseSelectionComponent.getDiseaseField().setValue(disease);
+		presetTestedDisease(disease);
+	}
+
+	/**
+	 * Presets the tested disease of a new pathogen test with the disease of the sample's case, contact or event, but only when it is
+	 * an active primary disease. Otherwise the field stays empty and the user has to choose a disease.
+	 * <p>
+	 * Example: the case has Measles (active, primary), so Measles is preselected. The case has Dengue, configured as non-primary
+	 * or inactive, so the field stays empty.
+	 *
+	 * @param disease
+	 *            the disease of the sample's case, contact or event; {@code null} is ignored
+	 */
+	public void presetTestedDisease(Disease disease) {
+		if (disease == null || diseaseSelectionComponent == null) {
+			return;
 		}
+
+		diseaseSelectionComponent.presetDiseaseForNewTest(disease);
 	}
 
 	/** Updates lab field required state (e.g. when sample purpose changes). */
