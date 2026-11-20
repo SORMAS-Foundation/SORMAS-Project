@@ -222,7 +222,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
 		}
 		if (criteria.getVaccinationStatus() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventParticipant.VACCINATION_STATUS), criteria.getVaccinationStatus()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, from.get(EventParticipant.VACCINATION_STATUS).in(criteria.getVaccinationStatus().matchingStatuses()));
 		}
 		if (Boolean.TRUE.equals(criteria.getNoResultingCase())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(EventParticipant.RESULTING_CASE)));

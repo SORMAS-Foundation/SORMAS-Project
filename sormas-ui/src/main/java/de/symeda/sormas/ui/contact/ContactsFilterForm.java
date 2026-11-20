@@ -26,6 +26,7 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDateType;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -227,7 +228,9 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
 					240));
 		}
-		addField(moreFiltersContainer, FieldConfiguration.pixelSized(ContactCriteria.VACCINATION_STATUS, 140));
+		ComboBox vaccinationStatusField =
+			addField(moreFiltersContainer, FieldConfiguration.pixelSized(ContactCriteria.VACCINATION_STATUS, 140));
+		FieldHelper.updateEnumData(vaccinationStatusField, VaccinationStatus.selectableValues());
 
 		addField(
 			moreFiltersContainer,

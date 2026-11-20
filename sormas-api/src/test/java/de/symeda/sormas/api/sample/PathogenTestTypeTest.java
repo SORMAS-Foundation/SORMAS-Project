@@ -326,6 +326,16 @@ public class PathogenTestTypeTest {
 	}
 
 	@Test
+	public void histopathologyIsSelectableForTuberculosisButNotLatentTuberculosis() {
+		assertThat(
+			de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, Disease.TUBERCULOSIS),
+			hasItem(PathogenTestType.HISTOPATHOLOGY));
+		assertThat(
+			de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, Disease.LATENT_TUBERCULOSIS),
+			not(hasItem(PathogenTestType.HISTOPATHOLOGY)));
+	}
+
+	@Test
 	public void diseaseHiddenMethodIsDroppedByVisibleValues() {
 		// Guards the retainType check in PathogenTestType#selectableMethods and the
 		// retainCategory re-add in FormComponent#getVisibleTestCategories: a method

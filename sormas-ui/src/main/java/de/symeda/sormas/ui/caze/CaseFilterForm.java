@@ -34,6 +34,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionType;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -271,7 +272,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					240));
 		}
 
-		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.VACCINATION_STATUS, 140));
+		ComboBox vaccinationStatusField =
+			addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.VACCINATION_STATUS, 140));
+		FieldHelper.updateEnumData(vaccinationStatusField, VaccinationStatus.selectableValues());
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REINFECTION_STATUS, 140));

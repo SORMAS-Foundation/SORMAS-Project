@@ -44,6 +44,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.persistence.EntityManager;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Test;
@@ -2547,5 +2549,37 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(updatedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID));
 		assertTrue(updatedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.PHYSICAL_CONTACT));
 		assertTrue(updatedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.CLOSE_CONTACT));
+	}
+
+	@Test
+	public void testVaccinationStatusFilterMatchesLegacyRecovered() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto nationalUser = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		loginWith(nationalUser);
+		UserReferenceDto user = nationalUser.toReference();
+		ContactDto recovered = creator.createContact(user, creator.createPerson().toReference(), Disease.CORONAVIRUS, rdcf);
+		ContactDto hadTheDisease = creator.createContact(user, creator.createPerson().toReference(), Disease.CORONAVIRUS, rdcf);
+		ContactDto vaccinated = creator.createContact(user, creator.createPerson().toReference(), Disease.CORONAVIRUS, rdcf);
+		// saving re-derives the status from immunizations, so seed it directly
+		setStoredVaccinationStatus(recovered, VaccinationStatus.RECOVERED);
+		setStoredVaccinationStatus(hadTheDisease, VaccinationStatus.HAD_THE_DISEASE);
+		setStoredVaccinationStatus(vaccinated, VaccinationStatus.VACCINATED);
+
+		ContactCriteria criteria = new ContactCriteria();
+		criteria.setVaccinationStatus(VaccinationStatus.HAD_THE_DISEASE);
+
+		List<String> uuids =
+			getContactFacade().getIndexList(criteria, 0, 100, null).stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
+		assertEquals(2, uuids.size());
+		assertTrue(uuids.containsAll(List.of(recovered.getUuid(), hadTheDisease.getUuid())));
+	}
+
+	private void setStoredVaccinationStatus(ContactDto contact, VaccinationStatus status) {
+		executeInTransaction((EntityManager em) -> {
+			em.createQuery("UPDATE contact SET vaccinationStatus = :status WHERE uuid = :uuid")
+				.setParameter("status", status)
+				.setParameter("uuid", contact.getUuid())
+				.executeUpdate();
+		});
 	}
 }

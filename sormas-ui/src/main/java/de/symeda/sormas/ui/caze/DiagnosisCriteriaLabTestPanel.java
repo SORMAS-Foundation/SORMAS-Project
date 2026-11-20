@@ -59,9 +59,9 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 	private static final String MICROSCOPY_TEST_RESULT_LOC = "microscopyTestResultLoc";
 	private static final String MICROSCOPY_TEST_RESULT_DATE_LOC = "microscopyTestResultDateLoc";
 	private static final String MICROSCOPY_TEST_SCALE_LOC = "microscopyTestScaleLoc";
-	private static final String BIOPSY_TEST_LOC = "biopsyTestLoc";
-	private static final String BIOPSY_TEST_RESULT_LOC = "biopsyTestResultLoc";
-	private static final String BIOPSY_TEST_RESULT_DATE_LOC = "biopsyTestResultDateLoc";
+	private static final String HISTOPATHOLOGY_TEST_LOC = "histopathologyTestLoc";
+	private static final String HISTOPATHOLOGY_TEST_RESULT_LOC = "histopathologyTestResultLoc";
+	private static final String HISTOPATHOLOGY_TEST_RESULT_DATE_LOC = "histopathologyTestResultDateLoc";
 	private static final String CULTURE_TEST_LOC = "cultureTestLoc";
 	private static final String CULTURE_TEST_RESULT_LOC = "cultureTestResultLoc";
 	private static final String CULTURE_TEST_RESULT_DATE_LOC = "cultureTestResultDateLoc";
@@ -94,7 +94,7 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
                 + fluidRowLocs(6, "", 4, PCR_ISONIAZID_LOC, 2, "")
                 + fluidRowLocs(6, MICROSCOPY_TEST_LOC, 4, MICROSCOPY_TEST_RESULT_LOC, 2, MICROSCOPY_TEST_RESULT_DATE_LOC)
                 + fluidRowLocs(6, "", 4, MICROSCOPY_TEST_SCALE_LOC, 2, "")
-                + fluidRowLocs(6, BIOPSY_TEST_LOC, 4, BIOPSY_TEST_RESULT_LOC, 2, BIOPSY_TEST_RESULT_DATE_LOC)
+                + fluidRowLocs(6, HISTOPATHOLOGY_TEST_LOC, 4, HISTOPATHOLOGY_TEST_RESULT_LOC, 2, HISTOPATHOLOGY_TEST_RESULT_DATE_LOC)
                 + fluidRowLocs(6, CULTURE_TEST_LOC, 4, CULTURE_TEST_RESULT_LOC, 2, CULTURE_TEST_RESULT_DATE_LOC);
     //@formatter:on
 
@@ -231,6 +231,20 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			} else {
 				microscopyTest.setValue(TEST_TYPE_NO);
 				microscopyTestScale.setVisible(false);
+			}
+
+			OptionGroup histopathologyTest =
+				addTestTypeComponent(HISTOPATHOLOGY_TEST_LOC, I18nProperties.getEnumCaption(PathogenTestType.HISTOPATHOLOGY));
+			OptionGroup histopathologyTestResult = addTestResultComponent(HISTOPATHOLOGY_TEST_RESULT_LOC);
+			TextField histopathologyTestResultDate = addTextFieldComponent(HISTOPATHOLOGY_TEST_RESULT_DATE_LOC, "", true);
+			if (testDetails.containsKey(PathogenTestType.HISTOPATHOLOGY.name())) {
+				histopathologyTest.setValue(TEST_TYPE_YES);
+				final Map<String, String> histopathologyDetails = testDetails.get(PathogenTestType.HISTOPATHOLOGY.name());
+				histopathologyTestResult
+					.setValue(PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES.get(histopathologyDetails.get(TEST_RESULT_KEY_RESULT)));
+				histopathologyTestResultDate.setValue(histopathologyDetails.get(TEST_RESULT_KEY_DATE));
+			} else {
+				histopathologyTest.setValue(TEST_TYPE_NO);
 			}
 
 			OptionGroup cultureTest = addTestTypeComponent(CULTURE_TEST_LOC, I18nProperties.getEnumCaption(PathogenTestType.CULTURE));

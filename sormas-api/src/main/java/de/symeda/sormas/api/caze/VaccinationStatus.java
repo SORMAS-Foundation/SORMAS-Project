@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 
@@ -63,5 +67,13 @@ public enum VaccinationStatus {
 	 */
 	public VaccinationStatus normalize() {
 		return this == RECOVERED ? HAD_THE_DISEASE : this;
+	}
+
+	public List<VaccinationStatus> matchingStatuses() {
+		return isHadTheDisease() ? List.of(HAD_THE_DISEASE, RECOVERED) : List.of(this);
+	}
+
+	public static List<VaccinationStatus> selectableValues() {
+		return Arrays.stream(values()).filter(status -> status != RECOVERED).collect(Collectors.toList());
 	}
 }
