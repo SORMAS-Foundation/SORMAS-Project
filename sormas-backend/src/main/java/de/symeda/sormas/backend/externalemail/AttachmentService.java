@@ -40,13 +40,14 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.importexport.ImportExportUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Suppliers;
 import com.lowagie.text.Document;
@@ -55,6 +56,7 @@ import com.lowagie.text.Image;
 import com.lowagie.text.pdf.PdfWriter;
 
 import de.symeda.sormas.api.conversion.DocxToPdfConversionAdapterFacade;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -65,6 +67,8 @@ import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
 @Stateless
 @LocalBean
 public class AttachmentService {
+
+	private static final Logger logger = LoggerFactory.getLogger(AttachmentService.class);
 
 	public static final String DOCX_FILE_EXTENSION = ".docx";
 	public static final String PDF_FILE_EXTENSION = ".pdf";
@@ -94,7 +98,10 @@ public class AttachmentService {
 	private @NotNull Supplier<PdfConverter> getAppropriateDocxToPdfConverter() {
 		return () -> Optional.ofNullable(systemConfigurationValueEjb.getValue(DOCX_PDF_CONVERTER_CONFIG_KEY))
 			.map(docxToPdfConverters::get)
-			.orElseGet(() -> docxToPdfConverters.get(XDOC_DEFAULT_DOCX_TO_PDF_CONVERTER));
+			.orElseGet(() -> {
+				logger.info("Using default docx -> pdf converter: [{}]", XDOC_DEFAULT_DOCX_TO_PDF_CONVERTER);
+				return docxToPdfConverters.get(XDOC_DEFAULT_DOCX_TO_PDF_CONVERTER);
+			});
 	}
 
 	private final Map<String, Supplier<PdfConverter>> converters =
@@ -182,6 +189,9 @@ public class AttachmentService {
 
 		@Override
 		public File convert(File file) throws IOException {
+
+			logger.debug("Converting using XdocReportDocXConverter");
+
 			String convertedFilePath = getTmpFilePathForConversion() + PDF_FILE_EXTENSION;
 			try (InputStream inputStream = new FileInputStream(file); OutputStream outputStream = new FileOutputStream(convertedFilePath)) {
 				XWPFDocument document = new XWPFDocument(inputStream);
@@ -200,6 +210,7 @@ public class AttachmentService {
 
 		@Override
 		public File convert(File file) {
+			logger.debug("Converting using AdapterDelegateConverter");
 			String targetPdfFilePath = getTmpFilePathForConversion() + PDF_FILE_EXTENSION;
 			getDocxToPdfConversionFacade().convertToPdf(file.getPath(), targetPdfFilePath);
 			return new File(targetPdfFilePath);
