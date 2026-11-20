@@ -5,6 +5,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -52,7 +53,9 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 				180),
 			ComboBox.class);
 
-		addField(FieldConfiguration.pixelSized(EventParticipantCriteria.VACCINATION_STATUS, 140), ComboBox.class);
+		ComboBox vaccinationStatusField =
+			addField(FieldConfiguration.pixelSized(EventParticipantCriteria.VACCINATION_STATUS, 140), ComboBox.class);
+		FieldHelper.updateEnumData(vaccinationStatusField, VaccinationStatus.selectableValues());
 
 		TextField searchField = addField(
 			FieldConfiguration

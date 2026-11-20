@@ -775,7 +775,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), caseCriteria.getSymptomJournalStatus()));
 		}
 		if (caseCriteria.getVaccinationStatus() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.VACCINATION_STATUS), caseCriteria.getVaccinationStatus()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, from.get(Case.VACCINATION_STATUS).in(caseCriteria.getVaccinationStatus().matchingStatuses()));
 		}
 		if (caseCriteria.getReinfectionStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.REINFECTION_STATUS), caseCriteria.getReinfectionStatus()));

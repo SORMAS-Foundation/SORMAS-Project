@@ -1296,7 +1296,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 				.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), contactCriteria.getSymptomJournalStatus()));
 		}
 		if (contactCriteria.getVaccinationStatus() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.VACCINATION_STATUS), contactCriteria.getVaccinationStatus()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, from.get(Contact.VACCINATION_STATUS).in(contactCriteria.getVaccinationStatus().matchingStatuses()));
 		}
 		if (contactCriteria.getRelationToCase() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.RELATION_TO_CASE), contactCriteria.getRelationToCase()));
