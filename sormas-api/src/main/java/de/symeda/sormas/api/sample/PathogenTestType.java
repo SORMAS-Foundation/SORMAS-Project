@@ -1096,7 +1096,6 @@ public enum PathogenTestType {
 		Disease.SYPHILIS,
 		Disease.NEW_INFLUENZA,
 		Disease.CORONAVIRUS,
-		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.PERTUSSIS,
 		Disease.INFLUENZA,
