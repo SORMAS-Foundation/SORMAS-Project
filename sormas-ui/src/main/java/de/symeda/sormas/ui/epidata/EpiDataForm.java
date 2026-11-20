@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Component;
@@ -163,7 +164,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE_TEXT) +
-			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET_COUNTRY) +
+			fluidRowLocs(6, "", 6, EpiDataDto.RESIDENCE_AT_ONSET) +
 			fluidRowLocs(6, EpiDataDto.PATIENT_ILL_LOCATION, 6, "") +
 			loc(LOC_CLUSTER_TYPE_HEADING)+
 			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
@@ -296,9 +298,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		addField(EpiDataDto.IMPORTED_CASE, NullableOptionGroup.class);
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
-		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
+		ComboBox country = addCountryField(EpiDataDto.COUNTRY, countries);
 		country.setVisible(false);
-		country.addItems(countries);
 		if (Disease.SHIGELLOSIS == disease) {
 			country.setCaption(I18nProperties.getCaption(Captions.EpiData_country_SHIG));
 		}
@@ -307,14 +308,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
-		addField(EpiDataDto.RESIDENCE_AT_ONSET);
+		addCountryField(EpiDataDto.RESIDENCE_AT_ONSET_COUNTRY, countries);
+		addField(EpiDataDto.RESIDENCE_AT_ONSET, TextField.class);
 		addField(EpiDataDto.PATIENT_ILL_LOCATION, TextField.class);
 		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class);
 		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, ComboBox.class);
-		ComboBox motherCountryOfBirth = addInfrastructureField(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH);
-		motherCountryOfBirth.addItems(countries);
-		ComboBox motherCitizenship = addInfrastructureField(EpiDataDto.MOTHER_CITIZENSHIP);
-		motherCitizenship.addItems(countries);
+		addCountryField(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, countries);
+		addCountryField(EpiDataDto.MOTHER_CITIZENSHIP, countries);
 		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class);
 		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class);
 		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION_OTHER, TextField.class);
@@ -396,8 +396,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		// #13399 - the location where the patient became ill is only recorded for cases, e.g. it is hidden in the epi data
-		// of an AFP contact
+		epiDataFieldsHint().setVisible(getField(EpiDataDto.HEALTHCARE_PROFESSIONAL).isVisible());
+
+		// #13399 the place the patient became ill is recorded for cases only
 		Field<?> patientIllLocationField = getField(EpiDataDto.PATIENT_ILL_LOCATION);
 		if (parentClass != CaseDataDto.class && patientIllLocationField != null) {
 			patientIllLocationField.setVisible(false);
@@ -625,6 +626,16 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			.addValueChangeListener(e -> ogActivityAsCaseDetailsKnown.setEnabled(CollectionUtils.isEmpty(activityAsCaseField.getValue())));
 	}
 
+	private ComboBox addCountryField(String propertyId, List<CountryReferenceDto> countries) {
+		ComboBox field = addInfrastructureField(propertyId);
+		field.addItems(countries);
+		return field;
+	}
+
+	Component epiDataFieldsHint() {
+		return getContent().getComponent(LOC_EPI_DATA_FIELDS_HINT);
+	}
+
 	private void addHeadingsAndInfoTexts() {
 		getContent().addComponent(
 			new MultilineLabel(
@@ -751,7 +762,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	@Override
 	public void setValue(EpiDataDto newFieldValue) {
 		super.setValue(newFieldValue);
-		// In the Conclusion section, for Malaria, prophylaxis details are mandatory to display. so displaying the latest prophylaxis adherence status.
+		// #14424 free-text residence from before the country dropdown
+		setVisible(
+			isVisibleAllowed(EpiDataDto.RESIDENCE_AT_ONSET) && StringUtils.isNotBlank(newFieldValue.getResidenceAtOnset()),
+			EpiDataDto.RESIDENCE_AT_ONSET);
 		Optional<ProphylaxisAdherence> adherence = newFieldValue.getExposures()
 			.stream()
 			.sorted(Comparator.comparing(ExposureDto::getStartDate, Comparator.nullsLast(Comparator.reverseOrder())))

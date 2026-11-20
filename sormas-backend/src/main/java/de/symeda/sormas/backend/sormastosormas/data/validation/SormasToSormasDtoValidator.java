@@ -127,6 +127,12 @@ public abstract class SormasToSormasDtoValidator<DTO extends SormasToSormasShare
 			infraValidator.validateCountry(epiData.getCountry(), Captions.EpiData_country, validationErrors, epiData::setCountry, direction);
 			infraValidator.validateCountry(epiData.getMotherCitizenship(), Captions.EpiData_motherCitizenship, validationErrors, epiData::setMotherCitizenship, direction);
 			infraValidator.validateCountry(epiData.getMotherCountryOfBirth(), Captions.EpiData_motherCountryOfBirth, validationErrors, epiData::setMotherCountryOfBirth, direction);
+			infraValidator.validateCountry(
+				epiData.getResidenceAtOnsetCountry(),
+				Captions.EpiData_residenceAtOnsetCountry,
+				validationErrors,
+				epiData::setResidenceAtOnsetCountry,
+				direction);
 			epiData.getExposures().forEach(exposure -> {
 				LocationDto exposureLocation = exposure.getLocation();
 				if (exposureLocation != null) {

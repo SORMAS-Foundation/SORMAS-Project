@@ -1874,6 +1874,7 @@ public interface Captions {
 	String EpiData_probableRouteOfTransmission = "EpiData.probableRouteOfTransmission";
 	String EpiData_probableRouteOfTransmissionOther = "EpiData.probableRouteOfTransmissionOther";
 	String EpiData_residenceAtOnset = "EpiData.residenceAtOnset";
+	String EpiData_residenceAtOnsetCountry = "EpiData.residenceAtOnsetCountry";
 	String EpiData_sexWorker = "EpiData.sexWorker";
 	String EpiData_sexWorkerOther = "EpiData.sexWorkerOther";
 	String EpiData_typeOfClinicalService = "EpiData.typeOfClinicalService";
