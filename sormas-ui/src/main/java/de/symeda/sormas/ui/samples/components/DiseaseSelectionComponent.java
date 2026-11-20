@@ -1,22 +1,20 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.samples.components;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -48,6 +46,7 @@ public class DiseaseSelectionComponent extends FormComponent<PathogenTestDto> {
 	private final boolean isEnvironmentSample;
 
 	private ComboBox<Disease> diseaseField;
+	private List<Disease> selectableDiseases;
 	private TextField diseaseDetailsField;
 	private Label diseaseDetailsSpacer;
 	private ComboBox<Pathogen> testedPathogenField;
@@ -70,10 +69,12 @@ public class DiseaseSelectionComponent extends FormComponent<PathogenTestDto> {
 		diseaseField = createComboBox(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.I18N_PREFIX);
 		diseaseField.setItemCaptionGenerator(Disease::toString);
 
+		// Same list as the case disease field: active primary diseases only (see SormasFieldGroupFieldFactory#populateWithDiseaseData).
+		// The saved disease of an existing test is still shown when it is not in this list, because ComboBox#setValue does not
+		// require the value to be one of the items.
 		List<Disease> activeDiseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-		List<Disease> nonPrimary = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, false, true);
-		activeDiseases.addAll(nonPrimary);
-		diseaseField.setItems(activeDiseases);
+		selectableDiseases = activeDiseases != null ? activeDiseases : new ArrayList<>();
+		diseaseField.setItems(selectableDiseases);
 
 		diseaseDetailsField = createTextField(PathogenTestDto.TESTED_DISEASE_DETAILS, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
 		diseaseDetailsField.setVisible(false);
@@ -151,6 +152,25 @@ public class DiseaseSelectionComponent extends FormComponent<PathogenTestDto> {
 				testedPathogenDetailsField.clear();
 			}
 		}));
+	}
+
+	/**
+	 * Presets the tested disease of a new pathogen test, but only when the disease is one of the listed diseases (active primary
+	 * diseases). Otherwise the field is left unchanged, so the user has to choose a disease from the list.
+	 * <p>
+	 * Example: the list is {@code [CORONAVIRUS, MEASLES]} and the field is empty. {@code presetDiseaseForNewTest(MEASLES)} selects
+	 * Measles. {@code presetDiseaseForNewTest(DENGUE)}, with Dengue configured as non-primary or inactive, leaves the field empty.
+	 * {@code presetDiseaseForNewTest(null)} changes nothing.
+	 *
+	 * @param disease
+	 *            the disease of the sample's case, contact or event; {@code null} is ignored
+	 */
+	public void presetDiseaseForNewTest(Disease disease) {
+		if (disease == null || selectableDiseases == null || !selectableDiseases.contains(disease)) {
+			return;
+		}
+
+		diseaseField.setValue(disease);
 	}
 
 	public ComboBox<Disease> getDiseaseField() {
