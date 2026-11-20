@@ -409,6 +409,21 @@ class ExposureFormSmokeTest extends AbstractUiBeanTest {
 		assertFalse(form.hasDeprecatedValues());
 	}
 
+	@Test
+	void shouldKeepExposureTypeDetailsWhenLoadingExistingExposure() {
+		ExposureForm form = createMalariaForm(false);
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.OTHER);
+		exposure.setExposureTypeDetails("Other activity");
+
+		assertDoesNotThrow(() -> form.setValue(exposure));
+
+		Field<?> detailsField = form.getField(ExposureDto.EXPOSURE_TYPE_DETAILS);
+		assertEquals(ExposureType.OTHER, form.getField(ExposureDto.EXPOSURE_TYPE).getValue());
+		assertTrue(detailsField.isVisible());
+		assertEquals("Other activity", detailsField.getValue());
+	}
+
 	private static ExposureForm createMalariaForm(boolean create) {
 		return createForm(Disease.MALARIA, create);
 	}

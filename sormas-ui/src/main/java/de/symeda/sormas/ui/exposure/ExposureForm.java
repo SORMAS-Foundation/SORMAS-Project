@@ -1005,9 +1005,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			newFieldValue.setProtectiveMeasures(
 				withoutDeprecated(newFieldValue.getProtectiveMeasures(), ExposureProtectiveMeasure::isDeprecated));
 		}
+		// Rebuilding the exposure type items temporarily resets the field to null, which clears fields that depend on it
+		// (e.g. the exposure type details), so this has to be done before the values are bound
+		populateExposureTypes(newFieldValue);
+
 		super.setValue(newFieldValue);
 
-		populateExposureTypes(newFieldValue);
 		populateExposureCategories(newFieldValue);
 
 		if (newFieldValue != null) {
