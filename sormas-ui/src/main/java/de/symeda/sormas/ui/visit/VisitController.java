@@ -35,6 +35,7 @@ import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -77,11 +78,10 @@ public class VisitController {
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
 
 			editForm = new VisitEditForm(
 				visit.getDisease(),
-				Optional.ofNullable(caze).map(CaseDataDto::getSyphilisPresentation).orElse(null),
+				getSourceCaseSyphilisPresentation(contact),
 				contact,
 				visitPerson,
 				false,
@@ -194,10 +194,9 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
-		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
 		VisitEditForm createForm = new VisitEditForm(
 			visit.getDisease(),
-			Optional.ofNullable(caseDataDto).map(CaseDataDto::getSyphilisPresentation).orElse(null),
+			getSourceCaseSyphilisPresentation(contact),
 			contact,
 			contactPerson,
 			true,
@@ -223,6 +222,16 @@ public class VisitController {
 			doneConsumer,
 			VisitLogic.getAllowedStartDate(CaseLogic.getStartDate(caze)),
 			VisitLogic.getAllowedEndDate(CaseLogic.getEndDate(caze)));
+	}
+
+	static SyphilisPresentation getSourceCaseSyphilisPresentation(ContactDto contact) {
+		if (contact.getDisease() != Disease.SYPHILIS) {
+			return null;
+		}
+		return Optional.ofNullable(contact.getCaze())
+			.map(caseRef -> FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid()))
+			.map(CaseDataDto::getSyphilisPresentation)
+			.orElse(null);
 	}
 
 	private VisitDto createNewVisit(PersonReferenceDto personRef, Disease disease) {
