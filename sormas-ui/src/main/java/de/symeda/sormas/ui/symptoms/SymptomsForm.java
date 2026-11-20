@@ -1285,9 +1285,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		DateComparisonValidator.addStartEndValidators(onsetDateField, getField(OFFSET_DATE));
 		DateComparisonValidator.addStartEndValidators(onsetDateField, getField(SYMPTOM_END_DATE));
 
-		// Navigate to hospitalization view when overnight stay required is set to yes
+		// Navigate to hospitalization view when overnight stay required is set to yes.
+		// Only the symptoms of the case itself have a case to navigate to, clinical assessments and visits do not.
 		overNightStayRequiredField.addValueChangeListener(e -> {
-			if (isListenerAction) {
+			if (isListenerAction && caze != null) {
 				final boolean isOvernightStayRequiredYes =
 					SymptomState.YES.equals(FieldHelper.getNullableSourceFieldValue(overNightStayRequiredField));
 				if (isOvernightStayRequiredYes) {

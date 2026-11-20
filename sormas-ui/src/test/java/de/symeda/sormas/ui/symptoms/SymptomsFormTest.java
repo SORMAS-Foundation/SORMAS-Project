@@ -1264,6 +1264,25 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertTrue(congenitalHeartDiseaseDetails.isEmpty());
 	}
 
+	@Test
+	void shouldRecordOvernightStayRequiredWhenThereIsNoCase() {
+		// clinical assessments and follow-up visits have no case to open the hospitalization of
+		for (SymptomsContext context : Arrays.asList(SymptomsContext.CLINICAL_VISIT, SymptomsContext.VISIT)) {
+			SymptomsForm form =
+				new SymptomsForm(null, Disease.YERSINIOSIS, null, null, context, ViewMode.NORMAL, UiFieldAccessCheckers.getNoop());
+			form.setValue(SymptomsDto.build());
+			NullableOptionGroup overnightStayRequired = form.getField(SymptomsDto.OVERNIGHT_STAY_REQUIRED);
+
+			// the first change after loading is not acted upon, so yes is chosen a second time
+			assertDoesNotThrow(() -> {
+				overnightStayRequired.setNullableValue(SymptomState.YES);
+				overnightStayRequired.setNullableValue(SymptomState.NO);
+				overnightStayRequired.setNullableValue(SymptomState.YES);
+			}, context.name());
+			assertEquals(SymptomState.YES, overnightStayRequired.getNullableValue(), context.name());
+		}
+	}
+
 	/** The group section (title, rows) a displayed component belongs to. */
 	private static VerticalLayout sectionOf(Component component) {
 		for (Component current = component; current != null; current = current.getParent()) {
