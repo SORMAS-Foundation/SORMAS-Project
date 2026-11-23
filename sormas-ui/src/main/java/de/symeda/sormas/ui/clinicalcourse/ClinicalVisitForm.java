@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.clinicalcourse;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
@@ -91,6 +106,34 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 		setRequired(true, ClinicalVisitDto.VISIT_DATE_TIME);
 
 		initializeAccessAndAllowedAccesses();
+	}
+
+	/**
+	 * Returns true if the symptoms of the visit have "No complications" Yes together
+	 * with a complication set to Yes (#14457), see
+	 * {@link SymptomsForm#hasContradictingComplications()}.
+	 * <p>
+	 * Example (Mumps): No complications Yes, Orchitis Yes -> {@code true}; symptoms
+	 * form not created yet -> {@code false}.
+	 *
+	 * @return true if "No complications" contradicts a complication
+	 */
+	public boolean hasContradictingComplications() {
+		return symptomsForm != null && symptomsForm.hasContradictingComplications();
+	}
+
+	/**
+	 * Returns the warning text for the contradiction, see
+	 * {@link SymptomsForm#getContradictingComplicationsMessage()}.
+	 * <p>
+	 * Example (Mumps): No complications Yes, Orchitis Yes ->
+	 * {@code No complications is set to "Yes", but these complications are also set to "Yes": Orchitis. ...};
+	 * no contradiction or no symptoms form -> {@code ""}.
+	 *
+	 * @return the warning text, never {@code null}
+	 */
+	public String getContradictingComplicationsMessage() {
+		return symptomsForm != null ? symptomsForm.getContradictingComplicationsMessage() : "";
 	}
 
 	@Override

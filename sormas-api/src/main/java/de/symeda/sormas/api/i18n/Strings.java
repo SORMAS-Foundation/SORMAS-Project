@@ -1959,6 +1959,7 @@ public interface Strings {
 	String messageNoCaseFoundToLinkImmunization = "messageNoCaseFoundToLinkImmunization";
 	String messageNoCasesSelected = "messageNoCasesSelected";
 	String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
+	String messageNoComplicationsWithComplications = "messageNoComplicationsWithComplications";
 	String messageNoContactsSelected = "messageNoContactsSelected";
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";

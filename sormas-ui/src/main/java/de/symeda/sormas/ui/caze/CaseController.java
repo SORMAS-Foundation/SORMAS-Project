@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -155,6 +155,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -1419,6 +1420,15 @@ public class CaseController {
 
 		CommitDiscardWrapperComponent<SymptomsForm> editView =
 			new CommitDiscardWrapperComponent<>(symptomsForm, UiUtil.permitted(UserRight.CASE_EDIT), symptomsForm.getFieldGroup());
+
+		editView.setPreCommitListener(successCallback -> {
+			if (symptomsForm.hasContradictingComplications()) {
+				// #14457 - show "No complications" Yes together with a complication Yes as a warning and don't save
+				NotificationHelper.showNotification(symptomsForm.getContradictingComplicationsMessage(), Notification.Type.WARNING_MESSAGE, -1);
+			} else {
+				successCallback.run();
+			}
+		});
 
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);

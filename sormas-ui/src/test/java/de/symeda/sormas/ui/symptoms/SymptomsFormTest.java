@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.symptoms;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
@@ -1373,6 +1375,239 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 			}
 		}
 		return null;
+	}
+
+	// --- #14457: "No complications" Yes together with a complication Yes
+	// --------------------------------------------------------------------------
+	// noComplications (YesNoUnknown) is offered for Mumps only; the complications are the
+	// @Complication(MUMPS) fields plus otherComplications. The form only warns (yellow marker);
+	// saving is blocked by the controllers, which ask hasContradictingComplications()
+
+	@Test
+	void shouldNotReportContradictionForNewMumpsSymptoms() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+
+		assertTrue(isDisplayed(form, form.getField(SymptomsDto.NO_COMPLICATIONS)));
+		assertFalse(form.hasContradictingComplications());
+		assertEquals("", form.getContradictingComplicationsMessage());
+		assertNull(((NullableOptionGroup) form.getField(SymptomsDto.NO_COMPLICATIONS)).getComponentError());
+	}
+
+	@Test
+	void shouldReportContradictionWhenNoComplicationsAndOrchitisAreYes() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup noComplications = form.getField(SymptomsDto.NO_COMPLICATIONS);
+		NullableOptionGroup orchitis = form.getField(SymptomsDto.ORCHITIS);
+
+		orchitis.setNullableValue(SymptomState.YES);
+		noComplications.setNullableValue(YesNoUnknown.YES);
+
+		assertTrue(form.hasContradictingComplications());
+		assertEquals(
+			String.format(
+				I18nProperties.getString(Strings.messageNoComplicationsWithComplications),
+				noComplications.getCaption(),
+				orchitis.getCaption()),
+			form.getContradictingComplicationsMessage());
+	}
+
+	@Test
+	void shouldShowYellowWarningOnNoComplicationsWhileContradicted() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup noComplications = form.getField(SymptomsDto.NO_COMPLICATIONS);
+		NullableOptionGroup orchitis = form.getField(SymptomsDto.ORCHITIS);
+
+		// complication first, then "No complications"
+		orchitis.setNullableValue(SymptomState.YES);
+		noComplications.setNullableValue(YesNoUnknown.YES);
+
+		assertNotNull(noComplications.getComponentError());
+		assertEquals(ErrorLevel.WARNING, noComplications.getComponentError().getErrorLevel());
+		assertEquals(form.getContradictingComplicationsMessage(), noComplications.getComponentError().getFormattedHtmlMessage());
+	}
+
+	@Test
+	void shouldShowYellowWarningWhenComplicationIsSetAfterNoComplications() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup noComplications = form.getField(SymptomsDto.NO_COMPLICATIONS);
+
+		noComplications.setNullableValue(YesNoUnknown.YES);
+		assertNull(noComplications.getComponentError());
+
+		((NullableOptionGroup) form.getField(SymptomsDto.MENINGITIS)).setNullableValue(SymptomState.YES);
+
+		assertTrue(form.hasContradictingComplications());
+		assertNotNull(noComplications.getComponentError());
+		assertEquals(ErrorLevel.WARNING, noComplications.getComponentError().getErrorLevel());
+	}
+
+	@Test
+	void shouldRemoveYellowWarningWhenContradictionIsResolved() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup noComplications = form.getField(SymptomsDto.NO_COMPLICATIONS);
+		NullableOptionGroup orchitis = form.getField(SymptomsDto.ORCHITIS);
+
+		// resolved by setting the complication to No
+		orchitis.setNullableValue(SymptomState.YES);
+		noComplications.setNullableValue(YesNoUnknown.YES);
+		orchitis.setNullableValue(SymptomState.NO);
+		assertFalse(form.hasContradictingComplications());
+		assertNull(noComplications.getComponentError());
+
+		// resolved by changing "No complications"
+		orchitis.setNullableValue(SymptomState.YES);
+		assertNotNull(noComplications.getComponentError());
+		noComplications.setNullableValue(YesNoUnknown.NO);
+		assertFalse(form.hasContradictingComplications());
+		assertNull(noComplications.getComponentError());
+	}
+
+	@Test
+	void shouldNotReportContradictionWhenNoComplicationsIsNotYes() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup noComplications = form.getField(SymptomsDto.NO_COMPLICATIONS);
+		((NullableOptionGroup) form.getField(SymptomsDto.ORCHITIS)).setNullableValue(SymptomState.YES);
+
+		for (YesNoUnknown notYes : new YesNoUnknown[] {
+			YesNoUnknown.NO,
+			YesNoUnknown.UNKNOWN,
+			null }) {
+			noComplications.setNullableValue(notYes);
+			assertFalse(form.hasContradictingComplications(), "No complications " + notYes);
+			assertEquals("", form.getContradictingComplicationsMessage(), "No complications " + notYes);
+		}
+	}
+
+	@Test
+	void shouldNotReportContradictionWhenComplicationsAreNoOrUnknown() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+		((NullableOptionGroup) form.getField(SymptomsDto.NO_COMPLICATIONS)).setNullableValue(YesNoUnknown.YES);
+		((NullableOptionGroup) form.getField(SymptomsDto.ORCHITIS)).setNullableValue(SymptomState.NO);
+		((NullableOptionGroup) form.getField(SymptomsDto.MENINGITIS)).setNullableValue(SymptomState.UNKNOWN);
+
+		assertFalse(form.hasContradictingComplications());
+	}
+
+	@Test
+	void shouldListEveryContradictingComplicationInTheMessage() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+		((NullableOptionGroup) form.getField(SymptomsDto.NO_COMPLICATIONS)).setNullableValue(YesNoUnknown.YES);
+		String[] complicationFieldIds = {
+			SymptomsDto.MENINGITIS,
+			SymptomsDto.ENCEPHALITIS,
+			SymptomsDto.ORCHITIS,
+			SymptomsDto.PANCREATITIS,
+			SymptomsDto.SALIVARY_SWELLING };
+		for (String fieldId : complicationFieldIds) {
+			((NullableOptionGroup) form.getField(fieldId)).setNullableValue(SymptomState.YES);
+		}
+
+		// the order of the captions follows the reflection order of SymptomsDto, so only check that all are named
+		String message = form.getContradictingComplicationsMessage();
+		for (String fieldId : complicationFieldIds) {
+			String caption = form.getField(fieldId).getCaption();
+			assertTrue(message.contains(caption), fieldId + " (" + caption + ") is missing in: " + message);
+		}
+	}
+
+	@Test
+	void shouldTreatUnknownComplicationsYesAsContradiction() {
+		// unknownComplications is annotated @Complication(MUMPS), so it counts as a complication
+		SymptomsForm form = createForm(Disease.MUMPS);
+		((NullableOptionGroup) form.getField(SymptomsDto.NO_COMPLICATIONS)).setNullableValue(YesNoUnknown.YES);
+		((NullableOptionGroup) form.getField(SymptomsDto.UNKNOWN_COMPLICATIONS)).setNullableValue(YesNoUnknown.YES);
+
+		assertTrue(form.hasContradictingComplications());
+	}
+
+	@Test
+	void shouldTreatOtherComplicationsYesAsContradiction() {
+		// otherComplications is not annotated @Complication, it is added explicitly; it is
+		// @HideForCountries(GERMANY), so the test runs for Luxembourg where it is offered
+		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup otherComplications = form.getField(SymptomsDto.OTHER_COMPLICATIONS);
+		assertTrue(isDisplayed(form, otherComplications));
+
+		((NullableOptionGroup) form.getField(SymptomsDto.NO_COMPLICATIONS)).setNullableValue(YesNoUnknown.YES);
+		otherComplications.setNullableValue(SymptomState.YES);
+
+		assertTrue(form.hasContradictingComplications());
+		assertTrue(form.getContradictingComplicationsMessage().contains(otherComplications.getCaption()));
+	}
+
+	@Test
+	void shouldResolveContradictionWhenAsymptomaticClearsTheComplications() {
+		// Asymptomatic Yes clears every symptom except "No complications", so the contradiction disappears
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup noComplications = form.getField(SymptomsDto.NO_COMPLICATIONS);
+		NullableOptionGroup orchitis = form.getField(SymptomsDto.ORCHITIS);
+		orchitis.setNullableValue(SymptomState.YES);
+		noComplications.setNullableValue(YesNoUnknown.YES);
+		assertTrue(form.hasContradictingComplications());
+
+		((NullableOptionGroup) form.getField(SymptomsDto.ASYMPTOMATIC)).setNullableValue(SymptomState.YES);
+
+		assertNull(orchitis.getNullableValue());
+		assertEquals(YesNoUnknown.YES, noComplications.getNullableValue());
+		assertFalse(form.hasContradictingComplications());
+		assertNull(noComplications.getComponentError());
+	}
+
+	@Test
+	void shouldReportContradictionWhenLoadingExistingMumpsSymptoms() {
+		// saved contradictory data is not changed silently, it is shown with the yellow warning
+		SymptomsForm form = createForm(Disease.MUMPS);
+		SymptomsDto symptoms = SymptomsDto.build();
+		symptoms.setNoComplications(YesNoUnknown.YES);
+		symptoms.setOrchitis(SymptomState.YES);
+
+		assertDoesNotThrow(() -> form.setValue(symptoms));
+
+		NullableOptionGroup noComplications = form.getField(SymptomsDto.NO_COMPLICATIONS);
+		assertEquals(YesNoUnknown.YES, noComplications.getNullableValue());
+		assertEquals(SymptomState.YES, ((NullableOptionGroup) form.getField(SymptomsDto.ORCHITIS)).getNullableValue());
+		assertTrue(form.hasContradictingComplications());
+		assertNotNull(noComplications.getComponentError());
+		assertEquals(ErrorLevel.WARNING, noComplications.getComponentError().getErrorLevel());
+	}
+
+	@Test
+	void shouldNotReportContradictionWhenNoComplicationsIsReadOnly() {
+		// the user could not correct a read-only "No complications", so it never blocks saving
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup noComplications = form.getField(SymptomsDto.NO_COMPLICATIONS);
+		noComplications.setNullableValue(YesNoUnknown.YES);
+		((NullableOptionGroup) form.getField(SymptomsDto.ORCHITIS)).setNullableValue(SymptomState.YES);
+
+		noComplications.setReadOnly(true);
+
+		assertFalse(form.hasContradictingComplications());
+		assertEquals("", form.getContradictingComplicationsMessage());
+	}
+
+	@Test
+	void shouldIgnoreHiddenComplications() {
+		SymptomsForm form = createForm(Disease.MUMPS);
+		NullableOptionGroup orchitis = form.getField(SymptomsDto.ORCHITIS);
+		((NullableOptionGroup) form.getField(SymptomsDto.NO_COMPLICATIONS)).setNullableValue(YesNoUnknown.YES);
+		orchitis.setNullableValue(SymptomState.YES);
+
+		orchitis.setVisible(false);
+
+		assertFalse(form.hasContradictingComplications());
+	}
+
+	@Test
+	void shouldNeverReportContradictionForDiseasesWithoutNoComplications() {
+		// Dengue has complications (e.g. meningitis) but no "No complications" field
+		SymptomsForm form = createForm(Disease.DENGUE);
+		assertFalse(isDisplayed(form, form.getField(SymptomsDto.NO_COMPLICATIONS)));
+
+		((NullableOptionGroup) form.getField(SymptomsDto.MENINGITIS)).setNullableValue(SymptomState.YES);
+
+		assertFalse(form.hasContradictingComplications());
+		assertEquals("", form.getContradictingComplicationsMessage());
 	}
 
 	private static SymptomsForm createForm(Disease disease) {
