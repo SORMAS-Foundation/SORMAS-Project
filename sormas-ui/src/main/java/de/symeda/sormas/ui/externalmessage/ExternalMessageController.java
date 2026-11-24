@@ -54,6 +54,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
@@ -211,7 +212,8 @@ public class ExternalMessageController {
 	public void processLabMessage(String labMessageUuid) {
 		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
-		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, processingFacade);
+		CustomizableEnumFacade customizableEnumFacade = FacadeProvider.getCustomizableEnumFacade();
+		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, processingFacade, customizableEnumFacade);
 		RelatedLabMessageHandler relatedLabMessageHandler = new RelatedLabMessageHandler(UiUtil.getUser(), processingFacade, mapper);
 		LabMessageProcessingFlow flow = new LabMessageProcessingFlow(labMessage, mapper, processingFacade, relatedLabMessageHandler);
 
@@ -241,7 +243,8 @@ public class ExternalMessageController {
 	public void processDoctorDeclarationMessage(String messageUuid) {
 		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(messageUuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
-		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessageDto, processingFacade);
+		CustomizableEnumFacade customizableEnumFacade = FacadeProvider.getCustomizableEnumFacade();
+		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessageDto, processingFacade, customizableEnumFacade);
 		DoctorDeclarationMessageProcessingFlow flow = new DoctorDeclarationMessageProcessingFlow(externalMessageDto, mapper, processingFacade);
 
 		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
@@ -271,7 +274,8 @@ public class ExternalMessageController {
 	public void processPhysiciansReport(String uuid) {
 		ExternalMessageDto physicianReport = FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
-		ExternalMessageMapper mapper = new ExternalMessageMapper(physicianReport, processingFacade);
+		CustomizableEnumFacade customizableEnumFacade = FacadeProvider.getCustomizableEnumFacade();
+		ExternalMessageMapper mapper = new ExternalMessageMapper(physicianReport, processingFacade, customizableEnumFacade);
 		PhysiciansReportProcessingFlow flow = new PhysiciansReportProcessingFlow(mapper, processingFacade);
 
 		flow.run(physicianReport).handle((BiFunction<? super ProcessingResult<CaseDataDto>, Throwable, Void>) (result, exception) -> {

@@ -73,6 +73,7 @@ import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
@@ -107,6 +108,8 @@ public class AutomaticLabMessageProcessor {
 	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
+	@EJB
+	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 
 	@Transactional(Transactional.TxType.REQUIRES_NEW)
 	public ProcessingResult<ExternalMessageProcessingResult> processLabMessage(ExternalMessageDto externalMessage)
@@ -114,7 +117,7 @@ public class AutomaticLabMessageProcessor {
 		return new AutomaticLabMessageProcessingFlow(
 			externalMessage,
 			userFacade.getCurrentUser(),
-			new ExternalMessageMapper(externalMessage, processingFacade),
+			new ExternalMessageMapper(externalMessage, processingFacade, customizableEnumFacade),
 			processingFacade).run().handle((result, throwable) -> {
 				if (throwable != null) {
 					em.getTransaction().rollback();
