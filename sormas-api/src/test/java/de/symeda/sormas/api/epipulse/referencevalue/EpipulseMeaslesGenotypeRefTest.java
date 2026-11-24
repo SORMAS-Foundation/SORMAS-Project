@@ -39,9 +39,6 @@ import de.symeda.sormas.api.utils.Diseases;
  */
 public class EpipulseMeaslesGenotypeRefTest {
 
-	// bare "B" is not a WHO lineage; EpiPulse lists B1, B2, B3
-	private static final GenoType UNMAPPABLE = GenoType.GENOTYPE_B;
-
 	private static List<GenoType> measlesGenotypes() {
 
 		return Arrays.stream(GenoType.values()).filter(EpipulseMeaslesGenotypeRefTest::isMeasles).collect(Collectors.toList());
@@ -58,14 +55,10 @@ public class EpipulseMeaslesGenotypeRefTest {
 	}
 
 	@Test
-	@DisplayName("every measles genotype SORMAS can record is mapped, bar the one that has no EpiPulse value")
+	@DisplayName("every measles genotype SORMAS can record is mapped")
 	public void everyMeaslesGenotypeIsMapped() {
 
 		for (GenoType genoType : measlesGenotypes()) {
-			if (genoType == UNMAPPABLE) {
-				continue;
-			}
-
 			EpipulseMeaslesGenotypeRef ref = EpipulseMeaslesGenotypeRef.getByGenoType(genoType);
 
 			assertNotNull(ref, genoType.name() + " is a measles genotype with no EpiPulse value mapped");
@@ -75,10 +68,8 @@ public class EpipulseMeaslesGenotypeRefTest {
 	}
 
 	@Test
-	@DisplayName("GENOTYPE_B reports nothing, GENOTYPE_B1 reports MEASV_B1")
-	public void genotypeBIsNotReportedButB1Is() {
-
-		assertNull(EpipulseMeaslesGenotypeRef.getByGenoType(UNMAPPABLE));
+	@DisplayName("GENOTYPE_B1 reports MEASV_B1")
+	public void genotypeB1IsReported() {
 		assertEquals(GenoType.GENOTYPE_B1, EpipulseMeaslesGenotypeRef.MEASV_B1.getGenoType());
 	}
 

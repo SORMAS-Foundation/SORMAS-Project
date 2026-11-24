@@ -46,27 +46,34 @@ public class MeaslesGenotypeB1MigrationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void retagsOnlyPathogenTestsWhoseResultTextCarriesMeas6B1() throws IOException {
+	public void retiresEveryGenotypeBPathogenTestToB1() throws IOException {
 
-		String labB1 = pathogenTest("GENOTYPE_B", "MEAS-6 Genotype: B1");
-		String labB1MultiLine = pathogenTest("GENOTYPE_B", "Lab note\nMEAS-6 Genotype: B1\nother");
-		String manualB = pathogenTest("GENOTYPE_B", null);
-		String notB1 = pathogenTest("GENOTYPE_B", "MEAS-6 Genotype: B10");
-		String b3 = pathogenTest("GENOTYPE_B3", "MEAS-6 Genotype: B3");
+		String labB1 = pathogenTest();
+		String labB1MultiLine = pathogenTest();
+		String manualB = pathogenTest();
+		String notB1 = pathogenTest();
+		String b3 = pathogenTest();
+		// seeded only after every test exists: JPA can no longer read GENOTYPE_B
+		setGenotype("pathogentest", labB1, "GENOTYPE_B", "MEAS-6 Genotype: B1");
+		setGenotype("pathogentest", labB1MultiLine, "GENOTYPE_B", "Lab note\nMEAS-6 Genotype: B1\nother");
+		setGenotype("pathogentest", manualB, "GENOTYPE_B", null);
+		setGenotype("pathogentest", notB1, "GENOTYPE_B", "MEAS-6 Genotype: B10");
+		setGenotype("pathogentest", b3, "GENOTYPE_B3", "MEAS-6 Genotype: B3");
 
 		runMigration694();
 
 		assertThat(genotype("pathogentest", labB1), is("GENOTYPE_B1"));
 		assertThat(genotype("pathogentest", labB1MultiLine), is("GENOTYPE_B1"));
-		assertThat(genotype("pathogentest", manualB), is("GENOTYPE_B"));
-		assertThat(genotype("pathogentest", notB1), is("GENOTYPE_B"));
+		assertThat(genotype("pathogentest", manualB), is("GENOTYPE_B1"));
+		assertThat(genotype("pathogentest", notB1), is("GENOTYPE_B1"));
 		assertThat(genotype("pathogentest", b3), is("GENOTYPE_B3"));
 	}
 
 	@Test
 	public void retagsHistoryRowsWithoutWritingNewOnes() throws IOException {
 
-		String labB1 = pathogenTest("GENOTYPE_B", "MEAS-6 Genotype: B1");
+		String labB1 = pathogenTest();
+		setGenotype("pathogentest", labB1, "GENOTYPE_B", "MEAS-6 Genotype: B1");
 		// a second update makes the trigger copy the B1-text version into history
 		executeSql("UPDATE pathogentest SET changedate = now() WHERE uuid = '" + labB1 + "'");
 		long historyRowsBefore = count("SELECT count(*) FROM pathogentest_history");
@@ -75,8 +82,7 @@ public class MeaslesGenotypeB1MigrationTest extends AbstractBeanTest {
 
 		assertThat(count("SELECT count(*) FROM pathogentest_history"), equalTo(historyRowsBefore));
 		assertThat(
-			count(
-				"SELECT count(*) FROM pathogentest_history WHERE genotype = 'GENOTYPE_B' AND testresulttext = 'MEAS-6 Genotype: B1'"),
+			count("SELECT count(*) FROM pathogentest_history WHERE genotype = 'GENOTYPE_B'"),
 			equalTo(0L));
 		assertThat(
 			count(
@@ -85,37 +91,40 @@ public class MeaslesGenotypeB1MigrationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void retagsLabMessageTestReports() throws IOException {
+	public void retiresGenotypeBTestReportsToB1() throws IOException {
 
 		String b1Report = testReport("GENOTYPE_B", "MEAS-6 Genotype: B1");
 		String bReport = testReport("GENOTYPE_B", "manually typed");
+		String b3Report = testReport("GENOTYPE_B3", "MEAS-6 Genotype: B3");
 
 		runMigration694();
 
 		assertThat(genotype("testreport", b1Report), is("GENOTYPE_B1"));
-		assertThat(genotype("testreport", bReport), is("GENOTYPE_B"));
+		assertThat(genotype("testreport", bReport), is("GENOTYPE_B1"));
+		assertThat(genotype("testreport", b3Report), is("GENOTYPE_B3"));
 	}
 
 	@Test
 	public void runningTheMigrationTwiceChangesNothingMore() throws IOException {
 
-		String labB1 = pathogenTest("GENOTYPE_B", "MEAS-6 Genotype: B1");
-		String manualB = pathogenTest("GENOTYPE_B", null);
+		String labB1 = pathogenTest();
+		String manualB = pathogenTest();
+		setGenotype("pathogentest", labB1, "GENOTYPE_B", "MEAS-6 Genotype: B1");
+		setGenotype("pathogentest", manualB, "GENOTYPE_B", null);
 
 		runMigration694();
 		runMigration694();
 
 		assertThat(genotype("pathogentest", labB1), is("GENOTYPE_B1"));
-		assertThat(genotype("pathogentest", manualB), is("GENOTYPE_B"));
+		assertThat(genotype("pathogentest", manualB), is("GENOTYPE_B1"));
 	}
 
-	private String pathogenTest(String genotype, String resultText) {
+	private String pathogenTest() {
 
 		PathogenTestDto test = creator.createPathogenTest(sample.toReference(), user.toReference(), t -> {
 			t.setTestedDisease(Disease.MEASLES);
 			t.setLab(rdcf.facility);
 		});
-		setGenotype("pathogentest", test.getUuid(), genotype, resultText);
 		return test.getUuid();
 	}
 
