@@ -1108,7 +1108,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
-				new PersonReferenceDto(person.getUuid())))
+				new PersonReferenceDto(person.getUuid()),
+				new CaseReferenceDto(caseUuid)))
 			.setCaption(null);
 
 		//diagnosis criteria

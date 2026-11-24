@@ -62,6 +62,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -77,6 +78,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -89,6 +91,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -102,6 +105,9 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 	private static final String CONFIDENTIAL_LABEL_LOC = "confidentialLabel";
 	private Disease disease;
 	private PersonReferenceDto personReferenceDto;
+	private ReferenceDto origin;
+	private BooleanSupplier ownerFormCommitter;
+	private Object lastVaccinatedAnswer;
 
 	//@formatter:off
 	public static final String TB_INFECTION_YEAR_LAYOUT = fluidRowLocs(6, "LBL_TUBERCULOSIS_INFECTION_YEAR", 6, TUBERCULOSIS_INFECTION_YEAR);
@@ -195,10 +201,16 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		Disease disease,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		UiFieldAccessCheckers fieldAccessCheckers,
-		PersonReferenceDto personReferenceDto) {
+		PersonReferenceDto personReferenceDto,
+		ReferenceDto origin) {
 		this(disease, fieldVisibilityCheckers, fieldAccessCheckers);
 		this.personReferenceDto = personReferenceDto;
+		this.origin = origin;
 		this.disease = disease;
+	}
+
+	public void setOwnerFormCommitter(BooleanSupplier ownerFormCommitter) {
+		this.ownerFormCommitter = ownerFormCommitter;
 	}
 
 	@Override
@@ -357,13 +369,18 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				fieldVisibilityCheck(getField(EXPOSED_TO_MOSQUITO_BORNE_VIRUSES), exposedToMosquitoBorneViruses, lblExposedToMosquitoBorneViruses);
 				NullableOptionGroup vaccinatedAgainstMosquitoBorneViruses = getField(VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES);
 				vaccinatedAgainstMosquitoBorneViruses.addValueChangeListener(e -> {
-					if (vaccinationListener) {
-						boolean isVaccinated =
-							YesNoUnknown.YES.equals(FieldHelper.getNullableSourceFieldValue(vaccinatedAgainstMosquitoBorneViruses));
-						if (isVaccinated) {
-							ControllerProvider.getImmunizationController().create(personReferenceDto, disease);
+					if (vaccinationListener
+						&& YesNoUnknown.YES.equals(FieldHelper.getNullableSourceFieldValue(vaccinatedAgainstMosquitoBorneViruses))) {
+						if (ownerFormCommitter == null) {
+							ControllerProvider.getImmunizationController().create(personReferenceDto, disease, null, null, origin);
+						} else if (ownerFormCommitter.getAsBoolean()) {
+							ControllerProvider.getImmunizationController().create(personReferenceDto, disease, null, SormasUI::refreshView, origin);
+						} else {
+							vaccinationListener = false;
+							vaccinatedAgainstMosquitoBorneViruses.setValue(lastVaccinatedAnswer);
 						}
 					}
+					lastVaccinatedAnswer = vaccinatedAgainstMosquitoBorneViruses.getValue();
 					vaccinationListener = true;
 				});
 			}
