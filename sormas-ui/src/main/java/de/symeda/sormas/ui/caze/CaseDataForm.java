@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1964,8 +1964,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	public void setVaccinationCommitter(BooleanSupplier committer) {
-		healthConditionsForm.setOwnerFormCommitter(committer);
+	public void setVaccinationSaver(Predicate<Runnable> saver) {
+		healthConditionsForm.setOwnerFormSaver(saver);
 	}
 
 	@Override

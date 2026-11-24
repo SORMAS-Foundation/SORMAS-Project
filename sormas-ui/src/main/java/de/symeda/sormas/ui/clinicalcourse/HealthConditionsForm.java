@@ -62,7 +62,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -106,7 +106,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 	private Disease disease;
 	private PersonReferenceDto personReferenceDto;
 	private ReferenceDto origin;
-	private BooleanSupplier ownerFormCommitter;
+	private Predicate<Runnable> ownerFormSaver;
 	private Object lastVaccinatedAnswer;
 
 	//@formatter:off
@@ -209,8 +209,12 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		this.disease = disease;
 	}
 
-	public void setOwnerFormCommitter(BooleanSupplier ownerFormCommitter) {
-		this.ownerFormCommitter = ownerFormCommitter;
+	public void setOwnerFormSaver(Predicate<Runnable> ownerFormSaver) {
+		this.ownerFormSaver = ownerFormSaver;
+	}
+
+	private boolean isSavedAsVaccinated() {
+		return getValue() != null && YesNoUnknown.YES.equals(getValue().getVaccinatedAgainstMosquitoBorneViruses());
 	}
 
 	@Override
@@ -370,12 +374,13 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				NullableOptionGroup vaccinatedAgainstMosquitoBorneViruses = getField(VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES);
 				vaccinatedAgainstMosquitoBorneViruses.addValueChangeListener(e -> {
 					if (vaccinationListener
-						&& YesNoUnknown.YES.equals(FieldHelper.getNullableSourceFieldValue(vaccinatedAgainstMosquitoBorneViruses))) {
-						if (ownerFormCommitter == null) {
+						&& YesNoUnknown.YES.equals(FieldHelper.getNullableSourceFieldValue(vaccinatedAgainstMosquitoBorneViruses))
+						&& !isSavedAsVaccinated()) {
+						if (ownerFormSaver == null) {
 							ControllerProvider.getImmunizationController().create(personReferenceDto, disease, null, null, origin);
-						} else if (ownerFormCommitter.getAsBoolean()) {
-							ControllerProvider.getImmunizationController().create(personReferenceDto, disease, null, SormasUI::refreshView, origin);
-						} else {
+						} else if (!ownerFormSaver.test(
+							() -> ControllerProvider.getImmunizationController()
+								.create(personReferenceDto, disease, null, SormasUI::refreshView, origin))) {
 							vaccinationListener = false;
 							vaccinatedAgainstMosquitoBorneViruses.setValue(lastVaccinatedAnswer);
 						}

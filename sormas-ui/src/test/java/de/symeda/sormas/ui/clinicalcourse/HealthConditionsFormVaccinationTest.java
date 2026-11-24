@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +34,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.immunization.ImmunizationController;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
+@SuppressWarnings("unchecked")
 class HealthConditionsFormVaccinationTest extends AbstractUiBeanTest {
 
 	private final PersonReferenceDto person = new PersonReferenceDto("PERSON-UUID");
@@ -68,27 +69,30 @@ class HealthConditionsFormVaccinationTest extends AbstractUiBeanTest {
 	@Test
 	void savesTheCaseBeforeOpeningThePopup() {
 
-		BooleanSupplier committer = mock(BooleanSupplier.class);
-		Mockito.when(committer.getAsBoolean()).thenReturn(true);
-		form.setOwnerFormCommitter(committer);
+		Predicate<Runnable> saver = mock(Predicate.class);
+		Mockito.when(saver.test(any())).thenAnswer(call -> {
+			call.<Runnable> getArgument(0).run();
+			return true;
+		});
+		form.setOwnerFormSaver(saver);
 
 		answer(YesNoUnknown.YES);
 
-		InOrder order = inOrder(committer, immunizationController);
-		order.verify(committer).getAsBoolean();
+		InOrder order = inOrder(saver, immunizationController);
+		order.verify(saver).test(any());
 		order.verify(immunizationController).create(eq(person), eq(Disease.DENGUE), isNull(), notNull(), eq(origin));
 	}
 
 	@Test
 	void doesNotOpenThePopupWhenTheCaseCannotBeSaved() {
 
-		BooleanSupplier committer = mock(BooleanSupplier.class);
-		Mockito.when(committer.getAsBoolean()).thenReturn(false);
-		form.setOwnerFormCommitter(committer);
+		Predicate<Runnable> saver = mock(Predicate.class);
+		Mockito.when(saver.test(any())).thenReturn(false);
+		form.setOwnerFormSaver(saver);
 
 		answer(YesNoUnknown.YES);
 
-		verify(committer).getAsBoolean();
+		verify(saver).test(any());
 		verify(immunizationController, never()).create(any(), any(), any(), any(), any());
 		assertNull(vaccinatedField().getNullableValue());
 	}
@@ -104,12 +108,12 @@ class HealthConditionsFormVaccinationTest extends AbstractUiBeanTest {
 	@Test
 	void answeringNoNeitherSavesNorOpensThePopup() {
 
-		BooleanSupplier committer = mock(BooleanSupplier.class);
-		form.setOwnerFormCommitter(committer);
+		Predicate<Runnable> saver = mock(Predicate.class);
+		form.setOwnerFormSaver(saver);
 
 		answer(YesNoUnknown.NO);
 
-		verify(committer, never()).getAsBoolean();
+		verify(saver, never()).test(any());
 		verify(immunizationController, never()).create(any(), any(), any(), any(), any());
 		assertEquals(YesNoUnknown.NO, vaccinatedField().getNullableValue());
 	}
@@ -123,14 +127,31 @@ class HealthConditionsFormVaccinationTest extends AbstractUiBeanTest {
 			UiFieldAccessCheckers.getNoop(),
 			person,
 			origin);
-		BooleanSupplier committer = mock(BooleanSupplier.class);
-		loaded.setOwnerFormCommitter(committer);
+		Predicate<Runnable> saver = mock(Predicate.class);
+		loaded.setOwnerFormSaver(saver);
 		HealthConditionsDto vaccinated = HealthConditionsDto.build();
 		vaccinated.setVaccinatedAgainstMosquitoBorneViruses(YesNoUnknown.YES);
 
 		loaded.setValue(vaccinated);
 
-		verify(committer, never()).getAsBoolean();
+		verify(saver, never()).test(any());
+		verify(immunizationController, never()).create(any(), any(), any(), any(), any());
+	}
+
+	@Test
+	void discardingBackToASavedYesNeitherSavesNorOpensThePopup() {
+
+		HealthConditionsDto savedYes = HealthConditionsDto.build();
+		savedYes.setVaccinatedAgainstMosquitoBorneViruses(YesNoUnknown.YES);
+		form.setValue(savedYes);
+		Predicate<Runnable> saver = mock(Predicate.class);
+		form.setOwnerFormSaver(saver);
+		answer(YesNoUnknown.NO);
+
+		form.discard();
+
+		assertEquals(YesNoUnknown.YES, vaccinatedField().getNullableValue());
+		verify(saver, never()).test(any());
 		verify(immunizationController, never()).create(any(), any(), any(), any(), any());
 	}
 

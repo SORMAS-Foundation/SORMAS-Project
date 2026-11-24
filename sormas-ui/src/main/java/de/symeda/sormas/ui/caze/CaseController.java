@@ -147,6 +147,7 @@ import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.AfterSaveAction;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -1014,7 +1015,8 @@ public class CaseController {
 		caseEditForm.setValue(caze);
 
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<>(caseEditForm, true, caseEditForm.getFieldGroup());
-		caseEditForm.setVaccinationCommitter(editView::commitAndHandle);
+		AfterSaveAction afterVaccinationSave = new AfterSaveAction();
+		caseEditForm.setVaccinationSaver(openPopup -> afterVaccinationSave.commitThen(editView::commitAndHandle, openPopup));
 
 		caseEditForm.addCustomizableFieldValueChangeListener(e -> editView.setDirty(true));
 		editView.addDiscardListener(caseEditForm::resetCustomizableFieldValues);
@@ -1049,11 +1051,14 @@ public class CaseController {
 			CaseDataDto oldCase = findCase(caseUuid);
 			CaseDataDto cazeDto = caseEditForm.getValue();
 			Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> updatedCaseFieldValues = caseEditForm.collectCurrentFieldValues();
-			saveCaseWithFacilityChangedPrompt(
-				cazeDto,
-				oldCase,
-				() -> FacadeProvider.getCustomizableFieldValueFacade()
-					.saveEntityCustomFields(cazeDto.getUuid(), CustomizableFieldContext.CASE, updatedCaseFieldValues));
+			Runnable openVaccinationPopup = afterVaccinationSave.takeOnSave();
+			saveCaseWithFacilityChangedPrompt(cazeDto, oldCase, () -> {
+				FacadeProvider.getCustomizableFieldValueFacade()
+					.saveEntityCustomFields(cazeDto.getUuid(), CustomizableFieldContext.CASE, updatedCaseFieldValues);
+				if (openVaccinationPopup != null) {
+					openVaccinationPopup.run();
+				}
+			});
 		});
 
 		editView.addDiscardListener(caseEditForm::onDiscard);
