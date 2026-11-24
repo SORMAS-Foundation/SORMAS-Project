@@ -567,6 +567,7 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 
 		// SORMAS records plain genotype B; EpiPulse lists B1, B2, B3 only
 		CaseDataDto unlisted = genotypedCase(GenoType.GENOTYPE_B);
+		CaseDataDto b1 = genotypedCase(GenoType.GENOTYPE_B1);
 
 		// Wrong test type but genotypes follow genotypes, not test types
 		CaseDataDto untyped = fixture.caze(creator.createPerson().toReference(), ONSET);
@@ -580,6 +581,7 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 		ExportedEntries export = runExport(EpipulseSubjectCode.MEAS, PERIOD_START, PERIOD_END);
 
 		assertThat(export.value(export.entryFor(typedTwice.getUuid()), GENOTYPE), is("MEASV_B3"));
+		assertThat(export.value(export.entryFor(b1.getUuid()), GENOTYPE), is("MEASV_B1"));
 		assertThat(export.value(export.entryFor(unlisted.getUuid()), GENOTYPE), is(blankOrNullString()));
 		assertThat(export.value(export.entryFor(untyped.getUuid()), GENOTYPE), is(blankOrNullString()));
 	}

@@ -31,6 +31,9 @@ public enum GenoType {
 	GENOTYPE_B,
 	@Diseases({
 		Disease.MEASLES })
+	GENOTYPE_B1,
+	@Diseases({
+		Disease.MEASLES })
 	GENOTYPE_B2,
 	@Diseases({
 		Disease.MEASLES })

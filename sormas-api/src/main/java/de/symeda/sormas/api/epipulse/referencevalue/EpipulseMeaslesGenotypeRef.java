@@ -32,8 +32,7 @@ import de.symeda.sormas.api.sample.GenoType;
 public enum EpipulseMeaslesGenotypeRef {
 
 	MEASV_A(GenoType.GENOTYPE_A),
-	/** EpiPulse code exists, but SORMAS has no corresponding {@link GenoType} constant. */
-	MEASV_B1(null),
+	MEASV_B1(GenoType.GENOTYPE_B1),
 	MEASV_B2(GenoType.GENOTYPE_B2),
 	MEASV_B3(GenoType.GENOTYPE_B3),
 	MEASV_C1(GenoType.GENOTYPE_C1),
