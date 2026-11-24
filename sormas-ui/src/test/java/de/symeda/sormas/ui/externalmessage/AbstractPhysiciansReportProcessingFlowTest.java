@@ -50,6 +50,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
@@ -82,7 +83,10 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTe
 	private ProcessingResult<CaseDataDto> runFlow(ExternalMessageDto externalMessage) throws ExecutionException, InterruptedException {
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
 		AbstractPhysiciansReportProcessingFlow flow =
-			new AbstractPhysiciansReportProcessingFlow(user, new ExternalMessageMapper(externalMessage, processingFacade), processingFacade) {
+			new AbstractPhysiciansReportProcessingFlow(
+				user,
+				new ExternalMessageMapper(externalMessage, processingFacade, org.mockito.Mockito.mock(CustomizableEnumFacade.class)),
+				processingFacade) {
 
 				@Override
 				protected CompletionStage<Boolean> handleMissingDisease() {

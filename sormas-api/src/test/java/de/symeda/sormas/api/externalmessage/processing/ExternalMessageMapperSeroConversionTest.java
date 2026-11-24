@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -22,7 +23,10 @@ public class ExternalMessageMapperSeroConversionTest {
 		PathogenTestDto pathogenTest =
 			PathogenTestDto.build(new SampleReferenceDto(DataHelper.createUuid()), new UserReferenceDto(DataHelper.createUuid()));
 
-		new ExternalMessageMapper(ExternalMessageDto.build(), Mockito.mock(ExternalMessageProcessingFacade.class))
+		new ExternalMessageMapper(
+			ExternalMessageDto.build(),
+			Mockito.mock(ExternalMessageProcessingFacade.class),
+			org.mockito.Mockito.mock(CustomizableEnumFacade.class))
 			.mapToPathogenTest(testReport, pathogenTest);
 
 		return pathogenTest;

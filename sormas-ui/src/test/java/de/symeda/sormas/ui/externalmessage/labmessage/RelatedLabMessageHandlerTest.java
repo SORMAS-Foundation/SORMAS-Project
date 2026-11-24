@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
@@ -1122,7 +1123,10 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		public ShortcutHandler shortcutHandler;
 
 		public RelatedLabMessageTestHandler(ExternalMessageDto labMessage, ExternalMessageProcessingFacade processingFacade, UserDto user) {
-			super(user, processingFacade, new ExternalMessageMapper(labMessage, processingFacade));
+			super(
+				user,
+				processingFacade,
+				new ExternalMessageMapper(labMessage, processingFacade, org.mockito.Mockito.mock(CustomizableEnumFacade.class)));
 
 			personChangesHandler = Mockito.mock(CorrectedPersonHandler.class);
 			Mockito.doAnswer(invocation -> {
