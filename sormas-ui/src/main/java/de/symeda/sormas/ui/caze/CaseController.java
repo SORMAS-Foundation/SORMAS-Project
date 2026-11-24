@@ -1014,6 +1014,7 @@ public class CaseController {
 		caseEditForm.setValue(caze);
 
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<>(caseEditForm, true, caseEditForm.getFieldGroup());
+		caseEditForm.setVaccinationCommitter(editView::commitAndHandle);
 
 		caseEditForm.addCustomizableFieldValueChangeListener(e -> editView.setDirty(true));
 		editView.addDiscardListener(caseEditForm::resetCustomizableFieldValues);
