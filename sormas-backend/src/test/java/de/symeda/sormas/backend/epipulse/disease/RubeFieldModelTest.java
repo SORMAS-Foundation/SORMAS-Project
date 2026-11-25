@@ -187,9 +187,7 @@ public class RubeFieldModelTest {
 
 		assertEquals(13, EpipulseRubellaGenotypeRef.values().length, "the genotypes RUBE names");
 
-		// Unlike the measles set, nothing here is declared without a SORMAS constant behind it -
-		// EpipulseMeaslesGenotypeRef.MEASV_B1 is the one that is, and this asserts RUBE has no
-		// counterpart to it rather than assuming so.
+		// every RUBE genotype code must have a SORMAS constant behind it
 		for (EpipulseRubellaGenotypeRef ref : EpipulseRubellaGenotypeRef.values()) {
 			assertThat(ref.name() + " has no SORMAS constant", ref.getGenoType(), is(org.hamcrest.Matchers.notNullValue()));
 		}

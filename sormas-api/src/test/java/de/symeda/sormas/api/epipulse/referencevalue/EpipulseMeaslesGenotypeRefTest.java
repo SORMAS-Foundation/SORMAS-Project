@@ -39,12 +39,6 @@ import de.symeda.sormas.api.utils.Diseases;
  */
 public class EpipulseMeaslesGenotypeRefTest {
 
-	/**
-	 * The one measles constant with no EpiPulse equivalent. EpiPulse has B1, B2 and B3; SORMAS has
-	 * B, B2 and B3, and a bare "B" is not a WHO lineage, so there is nothing to map it to.
-	 */
-	private static final GenoType UNMAPPABLE = GenoType.GENOTYPE_B;
-
 	private static List<GenoType> measlesGenotypes() {
 
 		return Arrays.stream(GenoType.values()).filter(EpipulseMeaslesGenotypeRefTest::isMeasles).collect(Collectors.toList());
@@ -61,14 +55,10 @@ public class EpipulseMeaslesGenotypeRefTest {
 	}
 
 	@Test
-	@DisplayName("every measles genotype SORMAS can record is mapped, bar the one that has no EpiPulse value")
+	@DisplayName("every measles genotype SORMAS can record is mapped")
 	public void everyMeaslesGenotypeIsMapped() {
 
 		for (GenoType genoType : measlesGenotypes()) {
-			if (genoType == UNMAPPABLE) {
-				continue;
-			}
-
 			EpipulseMeaslesGenotypeRef ref = EpipulseMeaslesGenotypeRef.getByGenoType(genoType);
 
 			assertNotNull(ref, genoType.name() + " is a measles genotype with no EpiPulse value mapped");
@@ -78,12 +68,9 @@ public class EpipulseMeaslesGenotypeRefTest {
 	}
 
 	@Test
-	@DisplayName("GENOTYPE_B reports nothing rather than guessing at B1")
-	public void theAmbiguousConstantIsNotReported() {
-
-		assertNull(EpipulseMeaslesGenotypeRef.getByGenoType(UNMAPPABLE));
-		// EpiPulse's value exists, it just has nothing in SORMAS to come from
-		assertNull(EpipulseMeaslesGenotypeRef.MEASV_B1.getGenoType());
+	@DisplayName("GENOTYPE_B1 reports MEASV_B1")
+	public void genotypeB1IsReported() {
+		assertEquals(GenoType.GENOTYPE_B1, EpipulseMeaslesGenotypeRef.MEASV_B1.getGenoType());
 	}
 
 	@Test

@@ -18588,4 +18588,22 @@ ALTER TABLE epidata ENABLE TRIGGER versioning_trigger;
 
 INSERT INTO schema_version (version_number, comment) VALUES (693, '#14424 - EpiData residence at onset as country');
 
+-- #14483 retire measles GENOTYPE_B onto GENOTYPE_B1
+ALTER TABLE pathogentest DISABLE TRIGGER versioning_trigger;
+ALTER TABLE testreport DISABLE TRIGGER versioning_trigger;
+
+UPDATE pathogentest SET genotype = 'GENOTYPE_B1', changedate = now()
+    WHERE genotype = 'GENOTYPE_B';
+UPDATE pathogentest_history SET genotype = 'GENOTYPE_B1'
+    WHERE genotype = 'GENOTYPE_B';
+UPDATE testreport SET genotype = 'GENOTYPE_B1', changedate = now()
+    WHERE genotype = 'GENOTYPE_B';
+UPDATE testreport_history SET genotype = 'GENOTYPE_B1'
+    WHERE genotype = 'GENOTYPE_B';
+
+ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
+ALTER TABLE testreport ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (694, '#14483 - Retire measles genotype B onto B1');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

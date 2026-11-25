@@ -17,18 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.LegacyEnumHelper;
+import de.symeda.sormas.api.utils.LegacyEnumNames;
 
 public enum GenoType {
 
 	@Diseases({
 		Disease.MEASLES })
 	GENOTYPE_A,
+	// plain B is no WHO lineage; retired onto B1 by schema migration 694
+	@LegacyEnumNames({
+		"GENOTYPE_B" })
 	@Diseases({
 		Disease.MEASLES })
-	GENOTYPE_B,
+	GENOTYPE_B1,
 	@Diseases({
 		Disease.MEASLES })
 	GENOTYPE_B2,
@@ -206,6 +213,11 @@ public enum GenoType {
 
 	OTHER,
 	UNKNOWN;
+
+	@JsonCreator
+	public static GenoType fromLegacyName(String name) {
+		return LegacyEnumHelper.resolve(GenoType.class, name);
+	}
 
 	@Override
 	public String toString() {
