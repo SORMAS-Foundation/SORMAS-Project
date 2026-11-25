@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ErrorLevel;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -87,6 +89,7 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
 import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectiousness;
 import de.symeda.sormas.api.symptoms.syphilis.SyphilisStage;
+import de.symeda.sormas.api.utils.AnnotationFieldHelper;
 import de.symeda.sormas.api.utils.DateComparator;
 import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -753,6 +756,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			updateOnsetDateEnabled(onsetDateField);
 			updateOffsetDateEnabled();
 		});
+
+		// #14457 - yellow warning while "No complications" is Yes together with a complication set to Yes
+		initContradictingComplicationsWarning();
 
 		if (disease == Disease.GONOCOCCAL_INFECTION) {
 			NullableOptionGroup noConcurrentStiField = getField(NO_CONCURRENT_STI);
@@ -1435,6 +1441,190 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, FEVER));
 			}
 		});
+	}
+
+	/**
+	 * Shows a yellow warning marker on "No complications" while it is Yes and at
+	 * least one complication of the disease is Yes as well (#14457), and removes it
+	 * as soon as the contradiction is gone. Saving is blocked separately by the
+	 * pre-commit listeners of the case symptoms and the clinical visit (see
+	 * {@link #hasContradictingComplications()}), which show the same text as a
+	 * yellow warning notification, like the deprecated exposure categories in the
+	 * disease configuration. Nothing is cleared automatically, so existing
+	 * contradictory data is shown to the user instead of being changed silently.
+	 * <p>
+	 * Example (Mumps): set Orchitis Yes, then No complications Yes -> the yellow
+	 * marker appears on "No complications"; set Orchitis No -> it disappears.
+	 */
+	private void initContradictingComplicationsWarning() {
+
+		Field<?> noComplicationsField = getField(NO_COMPLICATIONS);
+		if (noComplicationsField == null) {
+			return;
+		}
+
+		noComplicationsField.addValueChangeListener(e -> updateContradictingComplicationsWarning());
+		for (String complicationFieldId : getComplicationFieldIds()) {
+			Field<?> complicationField = getField(complicationFieldId);
+			if (complicationField != null) {
+				complicationField.addValueChangeListener(e -> updateContradictingComplicationsWarning());
+			}
+		}
+	}
+
+	/**
+	 * Sets or removes the yellow warning marker on "No complications", depending on
+	 * {@link #hasContradictingComplications()}. The marker uses
+	 * {@link ErrorLevel#WARNING}, so it is shown in yellow and doesn't count as a
+	 * validation error.
+	 * <p>
+	 * Example (Mumps): No complications Yes, Orchitis Yes -> marker with the text of
+	 * {@link #getContradictingComplicationsMessage()}; No complications No -> no
+	 * marker.
+	 */
+	private void updateContradictingComplicationsWarning() {
+
+		Field<?> noComplicationsField = getField(NO_COMPLICATIONS);
+		if (!(noComplicationsField instanceof AbstractComponent)) {
+			return;
+		}
+
+		AbstractComponent noComplicationsComponent = (AbstractComponent) noComplicationsField;
+		if (!hasContradictingComplications()) {
+			noComplicationsComponent.setComponentError(null);
+			return;
+		}
+
+		String message = getContradictingComplicationsMessage();
+		noComplicationsComponent.setComponentError(new ErrorMessage() {
+
+			@Override
+			public ErrorLevel getErrorLevel() {
+				return ErrorLevel.WARNING;
+			}
+
+			@Override
+			public String getFormattedHtmlMessage() {
+				return message;
+			}
+		});
+	}
+
+	/**
+	 * Returns true if "No complications" is Yes while at least one visible
+	 * complication of the disease is Yes too (#14457). The controllers call it in
+	 * their pre-commit listener and don't save while it returns true.
+	 * <p>
+	 * Example (Mumps): No complications Yes, Orchitis Yes -> {@code true};
+	 * No complications Yes, all complications No -> {@code false};
+	 * No complications No, Orchitis Yes -> {@code false}.
+	 *
+	 * @return true if "No complications" contradicts a complication
+	 */
+	public boolean hasContradictingComplications() {
+		return !getContradictingComplicationCaptions().isEmpty();
+	}
+
+	/**
+	 * Returns the warning text that names "No complications" and the complications
+	 * contradicting it, or an empty string if there is no contradiction.
+	 * <p>
+	 * Example (Mumps): No complications Yes, Orchitis Yes, Meningitis Yes ->
+	 * {@code No complications is set to "Yes", but these complications are also set to "Yes": Orchitis, Meningitis. ...};
+	 * no contradiction -> {@code ""}.
+	 *
+	 * @return the warning text, never {@code null}
+	 */
+	public String getContradictingComplicationsMessage() {
+
+		List<String> contradictingCaptions = getContradictingComplicationCaptions();
+		if (contradictingCaptions.isEmpty()) {
+			return "";
+		}
+
+		String noComplicationsCaption = I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, NO_COMPLICATIONS);
+		Field<?> noComplicationsField = getField(NO_COMPLICATIONS);
+		if (noComplicationsField != null) {
+			noComplicationsCaption = StringUtils.defaultIfBlank(noComplicationsField.getCaption(), noComplicationsCaption);
+		}
+
+		return String.format(
+			I18nProperties.getString(Strings.messageNoComplicationsWithComplications),
+			noComplicationsCaption,
+			String.join(", ", contradictingCaptions));
+	}
+
+	/**
+	 * Returns the ids of the complication fields of the disease: the fields
+	 * annotated with {@code @Complication} for it (see
+	 * {@link AnnotationFieldHelper#getComplicatedSymptomsWithDiseases}) plus "Other
+	 * complications", the Yes/No field of the annotated free text.
+	 * <p>
+	 * Example (Mumps): salivarySwelling, unknownComplications, orchitis,
+	 * pancreatitis, otherComplicationsText, encephalitis, meningitis,
+	 * otherComplications (in no guaranteed order); no disease ->
+	 * only otherComplications.
+	 *
+	 * @return the complication field ids, never {@code null}
+	 */
+	private List<String> getComplicationFieldIds() {
+
+		List<String> complicationFieldIds = new ArrayList<>();
+		if (disease != null) {
+			complicationFieldIds.addAll(AnnotationFieldHelper.getComplicatedSymptomsWithDiseases(SymptomsDto.class, disease));
+		}
+		if (!complicationFieldIds.contains(OTHER_COMPLICATIONS)) {
+			complicationFieldIds.add(OTHER_COMPLICATIONS);
+		}
+		return complicationFieldIds;
+	}
+
+	/**
+	 * Returns the captions of the visible complications that are Yes while "No
+	 * complications" is Yes. A hidden or read-only "No complications" field never
+	 * contradicts anything, because the user could not correct it.
+	 * <p>
+	 * Example (Mumps): No complications Yes, Orchitis Yes, Meningitis Yes,
+	 * Pancreatitis No -> {@code ["Orchitis", "Meningitis"]}; No complications No ->
+	 * {@code []}.
+	 *
+	 * @return the captions of the contradicting complications, empty if there are none
+	 */
+	private List<String> getContradictingComplicationCaptions() {
+
+		List<String> contradictingCaptions = new ArrayList<>();
+		Field<?> noComplicationsField = getField(NO_COMPLICATIONS);
+		if (noComplicationsField == null
+			|| !noComplicationsField.isVisible()
+			|| noComplicationsField.isReadOnly()
+			|| !isYes(FieldHelper.getNullableSourceFieldValue(noComplicationsField))) {
+			return contradictingCaptions;
+		}
+
+		for (String complicationFieldId : getComplicationFieldIds()) {
+			Field<?> complicationField = getField(complicationFieldId);
+			if (complicationField != null
+				&& complicationField.isVisible()
+				&& isYes(FieldHelper.getNullableSourceFieldValue(complicationField))) {
+				contradictingCaptions.add(StringUtils.defaultIfBlank(complicationField.getCaption(), complicationFieldId));
+			}
+		}
+		return contradictingCaptions;
+	}
+
+	/**
+	 * Returns true if the given field value means Yes, for both symptom fields
+	 * ({@link SymptomState}) and Yes/No/Unknown fields ({@link YesNoUnknown}).
+	 * <p>
+	 * Example: {@code SymptomState.YES} -> true, {@code YesNoUnknown.YES} -> true,
+	 * {@code SymptomState.NO}, {@code YesNoUnknown.UNKNOWN} or {@code null} -> false.
+	 *
+	 * @param value
+	 *            the field value
+	 * @return true if the value is Yes
+	 */
+	private boolean isYes(Object value) {
+		return SymptomState.YES.equals(value) || YesNoUnknown.YES.equals(value);
 	}
 
 	private Label createLabel(String text, String h4, String location) {

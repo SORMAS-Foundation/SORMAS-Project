@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.clinicalcourse;
 
 import java.util.Collection;
@@ -19,6 +34,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ClinicalCourseController {
@@ -43,6 +59,7 @@ public class ClinicalCourseController {
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
 			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(UserRight.CLINICAL_VISIT_CREATE), form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
+		view.setPreCommitListener(successCallback -> warnOrCommit(form, successCallback));
 		view.addCommitListener(new CommitListener() {
 
 			@Override
@@ -93,6 +110,7 @@ public class ClinicalCourseController {
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 
 		if (isEditOrDeleteAllowed) {
+			view.setPreCommitListener(successCallback -> warnOrCommit(form, successCallback));
 			view.addCommitListener(new CommitListener() {
 
 				@Override
@@ -152,6 +170,29 @@ public class ClinicalCourseController {
 						Type.HUMANIZED_MESSAGE,
 						false).show(Page.getCurrent());
 				});
+		}
+	}
+
+	/**
+	 * Pre-commit check of the clinical visit form (#14457): while "No complications"
+	 * is Yes together with a complication set to Yes, shows the conflict as a yellow
+	 * warning notification and doesn't save, like the deprecated exposure categories
+	 * in the disease configuration. Otherwise the commit continues.
+	 * <p>
+	 * Example (Mumps): No complications Yes, Orchitis Yes -> yellow notification,
+	 * the visit is not saved; No complications No, Orchitis Yes -> the visit is saved.
+	 *
+	 * @param form
+	 *            the clinical visit form
+	 * @param successCallback
+	 *            continues the commit
+	 */
+	private void warnOrCommit(ClinicalVisitForm form, Runnable successCallback) {
+
+		if (form != null && form.hasContradictingComplications()) {
+			NotificationHelper.showNotification(form.getContradictingComplicationsMessage(), Type.WARNING_MESSAGE, -1);
+		} else {
+			successCallback.run();
 		}
 	}
 }
