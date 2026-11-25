@@ -165,6 +165,8 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 			CommitDiscardWrapperComponent<CaseDataForm> caseDataForm =
 				ControllerProvider.getCaseController().getCaseDataEditComponent(caze.getUuid(), viewMode);
 			caseDataForm.getWrappedComponent().getField(CaseDataDto.DISEASE).setEnabled(false);
+			// the wizard saves tabs itself and has its own immunizations tab
+			caseDataForm.getWrappedComponent().setVaccinationSaver(null);
 			return caseDataForm;
 		}));
 		configs.add(TabConfig.of(Captions.CaseData_person, () -> {

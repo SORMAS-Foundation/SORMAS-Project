@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -408,6 +409,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
 	private CheckBox postMortemCB;
 	private Label vaccinationStatusInfoLabel;
+	private HealthConditionsForm healthConditionsForm;
 
 	@SuppressWarnings("java:S107") // sonar: constructor too many parameters
 	public CaseDataForm(
@@ -1101,15 +1103,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 
-		addField(
-			CaseDataDto.HEALTH_CONDITIONS,
-			new HealthConditionsForm(
-				disease,
-				FieldVisibilityCheckers.withDisease(disease)
-					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
-				new PersonReferenceDto(person.getUuid())))
-			.setCaption(null);
+		healthConditionsForm = new HealthConditionsForm(
+			disease,
+			FieldVisibilityCheckers.withDisease(disease)
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
+			new PersonReferenceDto(person.getUuid()),
+			new CaseReferenceDto(caseUuid));
+		addField(CaseDataDto.HEALTH_CONDITIONS, healthConditionsForm).setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
@@ -1961,6 +1962,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getContent().addComponent(resumeButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 			}
 		}
+	}
+
+	public void setVaccinationSaver(Predicate<Runnable> saver) {
+		healthConditionsForm.setOwnerFormSaver(saver);
 	}
 
 	@Override
