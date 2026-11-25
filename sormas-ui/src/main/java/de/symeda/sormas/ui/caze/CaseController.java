@@ -582,10 +582,18 @@ public class CaseController {
 	}
 
 	protected CaseDataDto saveCase(CaseDataDto cazeDto) {
-		return saveCase(cazeDto, false);
+		return saveCase(cazeDto, false, null);
+	}
+
+	private CaseDataDto saveCase(CaseDataDto cazeDto, Runnable afterSave) {
+		return saveCase(cazeDto, false, afterSave);
 	}
 
 	private CaseDataDto saveCase(CaseDataDto cazeDto, boolean fromExternalMessage) {
+		return saveCase(cazeDto, fromExternalMessage, null);
+	}
+
+	private CaseDataDto saveCase(CaseDataDto cazeDto, boolean fromExternalMessage, Runnable afterSave) {
 
 		if (cazeDto.getReInfection() == YesNoUnknown.NO || cazeDto.getReInfection() == YesNoUnknown.UNKNOWN) {
 			cazeDto.setPreviousInfectionDate(null);
@@ -595,9 +603,12 @@ public class CaseController {
 
 		// Compare old and new case
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
-		CaseDataDto resultDto = fromExternalMessage
-			? FacadeProvider.getCaseFacade().saveFromExternalMessage(cazeDto)
-			: FacadeProvider.getCaseFacade().save(cazeDto);
+		CaseDataDto resultDto =
+			fromExternalMessage ? FacadeProvider.getCaseFacade().saveFromExternalMessage(cazeDto) : FacadeProvider.getCaseFacade().save(cazeDto);
+
+		if (afterSave != null) {
+			afterSave.run();
+		}
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
 			// TODO would be much better to have a notification for this triggered in the backend
@@ -1487,13 +1498,16 @@ public class CaseController {
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			cazeDto.setEpiData(epiDataForm.getValue());
-			saveCase(cazeDto);
-			FacadeProvider.getCustomizableFieldValueFacade()
-				.saveEntityCustomFields(cazeDto.getEpiData().getUuid(), CustomizableFieldContext.EPIDATA, epiDataForm.collectCurrentFieldValues());
-			epiDataForm.collectExposureCustomizableFieldValues()
-				.forEach(
+			Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> epiDataCustomFieldValues = epiDataForm.collectCurrentFieldValues();
+			Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> exposureCustomFieldValues =
+				epiDataForm.collectExposureCustomizableFieldValues();
+			saveCase(cazeDto, () -> {
+				FacadeProvider.getCustomizableFieldValueFacade()
+					.saveEntityCustomFields(cazeDto.getEpiData().getUuid(), CustomizableFieldContext.EPIDATA, epiDataCustomFieldValues);
+				exposureCustomFieldValues.forEach(
 					(exposureUuid, fields) -> FacadeProvider.getCustomizableFieldValueFacade()
 						.saveEntityCustomFields(exposureUuid, CustomizableFieldContext.EXPOSURE, fields));
+			});
 		});
 
 		if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
@@ -1715,9 +1729,7 @@ public class CaseController {
 
 				// actions
 				warningComponent.addCommitListener(() -> {
-					saveCase(caze);
-					if (afterSave != null)
-						afterSave.run();
+					saveCase(caze, afterSave);
 					popupWindow.close();
 				});
 				warningComponent.addDiscardListener(popupWindow::close);
@@ -1729,9 +1741,7 @@ public class CaseController {
 				return;
 			}
 		}
-		saveCase(caze);
-		if (afterSave != null)
-			afterSave.run();
+		saveCase(caze, afterSave);
 	}
 
 	private PresentCondition getNewPresentConditionFromOutcome(CaseOutcome outcome) {
