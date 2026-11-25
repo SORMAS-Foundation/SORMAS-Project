@@ -39,8 +39,12 @@ public class CustomizableFieldInputDecimal extends CustomizableFieldInput<String
 
 	private static final long serialVersionUID = 1L;
 
-	/** Matches an optional leading minus, one or more digits, and an optional decimal part. */
-	private static final String DECIMAL_PATTERN = "-?\\d*([.,]\\d*)?";
+	/**
+	 * Matches an optional leading minus and a number with at least one digit, using '.' or ',' as decimal separator
+	 * (e.g. "12", "12.5", "12,", ".5"). A lone sign or separator ("-", ".", ",", "-.") is rejected.
+	 * Empty input is handled separately by the validator.
+	 */
+	private static final String DECIMAL_PATTERN = "-?(\\d+([.,]\\d*)?|[.,]\\d+)";
 
 	private TextField textField;
 	/**

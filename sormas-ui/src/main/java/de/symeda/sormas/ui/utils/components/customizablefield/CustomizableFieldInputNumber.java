@@ -39,8 +39,8 @@ public class CustomizableFieldInputNumber extends CustomizableFieldInput<String>
 
 	private static final long serialVersionUID = 1L;
 
-	/** Matches an optional leading minus followed by one or more digits (or empty string). */
-	private static final String INTEGER_PATTERN = "-?\\d*";
+	/** Matches an optional leading minus followed by one or more digits. Empty input is handled separately by the validator. */
+	private static final String INTEGER_PATTERN = "-?\\d+";
 
 	private TextField textField;
 	/**
