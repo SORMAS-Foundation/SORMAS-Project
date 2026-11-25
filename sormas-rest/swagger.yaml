@@ -24126,7 +24126,7 @@ components:
           type: string
           enum:
           - GENOTYPE_A
-          - GENOTYPE_B
+          - GENOTYPE_B1
           - GENOTYPE_B2
           - GENOTYPE_B3
           - GENOTYPE_C1
@@ -30685,7 +30685,7 @@ components:
           type: string
           enum:
           - GENOTYPE_A
-          - GENOTYPE_B
+          - GENOTYPE_B1
           - GENOTYPE_B2
           - GENOTYPE_B3
           - GENOTYPE_C1
