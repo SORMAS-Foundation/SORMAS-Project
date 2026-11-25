@@ -32,11 +32,13 @@ import org.junit.jupiter.api.Test;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBoxGroup;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HasComponents;
 
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldCustomProperties;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
@@ -233,6 +235,22 @@ class CustomizableFieldsGroupTest {
 		getButtons(getInnerComponent(field)).forEach(Button::click);
 
 		assertNull(field.getValue());
+	}
+
+	@Test
+	void testCheckboxListDefaultValueIsTicked() {
+		CustomizableFieldMetadataDto metadata = buildMetadata("checkbox-list-default", "Option B");
+		metadata.setFieldType(CustomizableFieldType.CHECKBOX_LIST);
+		CustomizableFieldCustomProperties props = new CustomizableFieldCustomProperties();
+		props.setOptions(List.of("Option A", "Option B", "Option C"));
+		metadata.setCustomProperties(props);
+
+		CustomizableFieldInput<Set<String>> field = getField(buildGroup(metadata), metadata);
+
+		assertEquals(Set.of("Option B"), field.getValue());
+		@SuppressWarnings("unchecked")
+		CheckBoxGroup<String> inner = (CheckBoxGroup<String>) getInnerComponent(field);
+		assertEquals(Set.of("Option B"), inner.getValue());
 	}
 
 	private CustomizableFieldInput<?> buildSingleField(CustomizableFieldType type, boolean readOnly) {
