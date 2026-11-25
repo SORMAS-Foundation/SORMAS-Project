@@ -15,6 +15,12 @@
 
 package de.symeda.sormas.ui.configuration.customizablefield;
 
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -34,116 +40,137 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class CustomizableFieldsController {
 
-    /**
-     * Open the create dialog for a new customizable field.
-     */
-    public void createField() {
+	/**
+	 * Open the create dialog for a new customizable field.
+	 */
+	public void createField() {
 
-        CustomizableFieldMetadataDto dto = new CustomizableFieldMetadataDto();
-        dto.setActive(true);
+		CustomizableFieldMetadataDto dto = new CustomizableFieldMetadataDto();
+		dto.setActive(true);
 
-        CustomizableFieldEditForm form = new CustomizableFieldEditForm(false);
-        form.setValue(dto);
+		CustomizableFieldEditForm form = new CustomizableFieldEditForm(false);
+		form.setValue(dto);
 
-        final CommitDiscardWrapperComponent<CustomizableFieldEditForm> cdw = new CommitDiscardWrapperComponent<>(form);
+		final CommitDiscardWrapperComponent<CustomizableFieldEditForm> cdw = new CommitDiscardWrapperComponent<>(form);
 
-        // Validate via Vaadin 8 Binder before allowing commit to proceed
-        cdw.setPreCommitListener(successCallback -> {
-            if (form.validate().isOk()) {
-                successCallback.run();
-            }
-        });
+		// Validate via Vaadin 8 Binder before allowing commit to proceed
+		cdw.setPreCommitListener(successCallback -> {
+			if (validateAndNotify(form)) {
+				successCallback.run();
+			}
+		});
 
-        cdw.addCommitListener(() -> {
-            FacadeProvider.getCustomizableFieldMetadataFacade().save(form.getValue());
-            Notification.show(I18nProperties.getString(Strings.messageCustomizableFieldCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
-            SormasUI.get().getNavigator().navigateTo(CustomizableFieldsView.VIEW_NAME);
-        });
+		cdw.addCommitListener(() -> {
+			FacadeProvider.getCustomizableFieldMetadataFacade().save(form.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageCustomizableFieldCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(CustomizableFieldsView.VIEW_NAME);
+		});
 
-        VaadinUiUtil.showModalPopupWindow(cdw, I18nProperties.getString(Strings.headingCreateCustomizableField));
-    }
+		VaadinUiUtil.showModalPopupWindow(cdw, I18nProperties.getString(Strings.headingCreateCustomizableField));
+	}
 
-    /**
-     * Open the edit dialog for an existing customizable field.
-     */
-    public void editField(String uuid) {
+	/**
+	 * Open the edit dialog for an existing customizable field.
+	 */
+	public void editField(String uuid) {
 
-        CustomizableFieldMetadataDto dto = FacadeProvider.getCustomizableFieldMetadataFacade().getByUuid(uuid);
+		CustomizableFieldMetadataDto dto = FacadeProvider.getCustomizableFieldMetadataFacade().getByUuid(uuid);
 
-        CustomizableFieldEditForm form = new CustomizableFieldEditForm(true);
-        form.setValue(dto);
+		CustomizableFieldEditForm form = new CustomizableFieldEditForm(true);
+		form.setValue(dto);
 
-        final CommitDiscardWrapperComponent<CustomizableFieldEditForm> cdw = new CommitDiscardWrapperComponent<>(form);
+		final CommitDiscardWrapperComponent<CustomizableFieldEditForm> cdw = new CommitDiscardWrapperComponent<>(form);
 
-        // Validate via Vaadin 8 Binder before allowing commit to proceed
-        cdw.setPreCommitListener(successCallback -> {
-            if (form.validate().isOk()) {
-                successCallback.run();
-            }
-        });
+		// Validate via Vaadin 8 Binder before allowing commit to proceed
+		cdw.setPreCommitListener(successCallback -> {
+			if (validateAndNotify(form)) {
+				successCallback.run();
+			}
+		});
 
-        cdw.addCommitListener(() -> {
-            FacadeProvider.getCustomizableFieldMetadataFacade().save(form.getValue());
-            Notification.show(I18nProperties.getString(Strings.messageCustomizableFieldSaved), Notification.Type.ASSISTIVE_NOTIFICATION);
-            SormasUI.get().getNavigator().navigateTo(CustomizableFieldsView.VIEW_NAME);
-        });
+		cdw.addCommitListener(() -> {
+			FacadeProvider.getCustomizableFieldMetadataFacade().save(form.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageCustomizableFieldSaved), Notification.Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(CustomizableFieldsView.VIEW_NAME);
+		});
 
-        VaadinUiUtil.showModalPopupWindow(cdw, I18nProperties.getString(Strings.headingEditCustomizableField) + " - " + dto.getName());
-    }
+		VaadinUiUtil.showModalPopupWindow(cdw, I18nProperties.getString(Strings.headingEditCustomizableField) + " - " + dto.getName());
+	}
 
-    /**
-     * Show a dialog to clone the given field with a new name.
-     */
-    public void cloneField(CustomizableFieldMetadataDto sourceDto) {
+	/**
+	 * Show a dialog to clone the given field with a new name.
+	 */
+	public void cloneField(CustomizableFieldMetadataDto sourceDto) {
 
-        TextField nameField =
-            new TextField(I18nProperties.getPrefixCaption(CustomizableFieldMetadataDto.I18N_PREFIX, CustomizableFieldMetadataDto.NAME));
-        nameField.setWidth(100, com.vaadin.server.Sizeable.Unit.PERCENTAGE);
-        nameField.setRequiredIndicatorVisible(true);
+		TextField nameField =
+			new TextField(I18nProperties.getPrefixCaption(CustomizableFieldMetadataDto.I18N_PREFIX, CustomizableFieldMetadataDto.NAME));
+		nameField.setWidth(100, com.vaadin.server.Sizeable.Unit.PERCENTAGE);
+		nameField.setRequiredIndicatorVisible(true);
 
-        VerticalLayout content = new VerticalLayout();
-        content.setMargin(true);
-        content.setSpacing(true);
-        content.addComponent(nameField);
+		VerticalLayout content = new VerticalLayout();
+		content.setMargin(true);
+		content.setSpacing(true);
+		content.addComponent(nameField);
 
-        VaadinUiUtil.showConfirmationPopup(
-            I18nProperties.getString(Strings.headingCloneCustomizableField),
-            content,
-            I18nProperties.getCaption(Captions.actionClone),
-            I18nProperties.getCaption(Captions.actionCancel),
-            480,
-            result -> {
-                if (Boolean.TRUE.equals(result)) {
-                    String newName = nameField.getValue();
-                    if (newName == null || newName.trim().isEmpty()) {
-                        Notification.show(I18nProperties.getCaption(Captions.actionClone) + " - name required", Notification.Type.WARNING_MESSAGE);
-                        return;
-                    }
-                    FacadeProvider.getCustomizableFieldMetadataFacade().cloneField(sourceDto.getUuid(), newName.trim());
-                    Notification.show(I18nProperties.getString(Strings.messageCustomizableFieldCloned), Notification.Type.ASSISTIVE_NOTIFICATION);
-                    SormasUI.get().getNavigator().navigateTo(CustomizableFieldsView.VIEW_NAME);
-                }
-            });
-    }
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingCloneCustomizableField),
+			content,
+			I18nProperties.getCaption(Captions.actionClone),
+			I18nProperties.getCaption(Captions.actionCancel),
+			480,
+			result -> {
+				if (Boolean.TRUE.equals(result)) {
+					String newName = nameField.getValue();
+					if (newName == null || newName.trim().isEmpty()) {
+						Notification.show(I18nProperties.getCaption(Captions.actionClone) + " - name required", Notification.Type.WARNING_MESSAGE);
+						return;
+					}
+					FacadeProvider.getCustomizableFieldMetadataFacade().cloneField(sourceDto.getUuid(), newName.trim());
+					Notification.show(I18nProperties.getString(Strings.messageCustomizableFieldCloned), Notification.Type.ASSISTIVE_NOTIFICATION);
+					SormasUI.get().getNavigator().navigateTo(CustomizableFieldsView.VIEW_NAME);
+				}
+			});
+	}
 
-    /**
-     * Toggle the active state of a customizable field.
-     */
-    public void toggleActive(CustomizableFieldMetadataDto dto) {
+	/**
+	 * Toggle the active state of a customizable field.
+	 */
+	public void toggleActive(CustomizableFieldMetadataDto dto) {
 
-        FacadeProvider.getCustomizableFieldMetadataFacade().setFieldActive(dto.getUuid(), !dto.isActive());
-        SormasUI.get().getNavigator().navigateTo(CustomizableFieldsView.VIEW_NAME);
-    }
+		FacadeProvider.getCustomizableFieldMetadataFacade().setFieldActive(dto.getUuid(), !dto.isActive());
+		SormasUI.get().getNavigator().navigateTo(CustomizableFieldsView.VIEW_NAME);
+	}
 
-    /**
-     * Show a delete confirmation and delete if confirmed.
-     */
-    public void deleteField(String uuid, CustomizableFieldsGrid grid) {
+	/**
+	 * Show a delete confirmation and delete if confirmed.
+	 */
+	public void deleteField(String uuid, CustomizableFieldsGrid grid) {
 
-        DeletableUtils.showDeleteWithReasonPopup(I18nProperties.getString(Strings.promptConfirmDeleteCustomizableField), deletionDetails -> {
-            FacadeProvider.getCustomizableFieldMetadataFacade().delete(uuid, deletionDetails);
-            Notification.show(I18nProperties.getString(Strings.messageCustomizableFieldDeleted), Notification.Type.ASSISTIVE_NOTIFICATION);
-            grid.reload();
-        });
-    }
+		DeletableUtils.showDeleteWithReasonPopup(I18nProperties.getString(Strings.promptConfirmDeleteCustomizableField), deletionDetails -> {
+			FacadeProvider.getCustomizableFieldMetadataFacade().delete(uuid, deletionDetails);
+			Notification.show(I18nProperties.getString(Strings.messageCustomizableFieldDeleted), Notification.Type.ASSISTIVE_NOTIFICATION);
+			grid.reload();
+		});
+	}
+
+	/**
+	 * Validates the form and, if anything is invalid, shows an error notification.
+	 *
+	 * @return {@code true} if the form is valid and saving may proceed
+	 */
+	private boolean validateAndNotify(CustomizableFieldEditForm form) {
+		BinderValidationStatus<CustomizableFieldMetadataDto> status = form.validate();
+		if (status.isOk()) {
+			return true;
+		}
+
+		String errors = status.getFieldValidationErrors().stream().map(fieldStatus -> {
+			String message = fieldStatus.getMessage().orElse("");
+			String caption = fieldStatus.getField() instanceof Component ? ((Component) fieldStatus.getField()).getCaption() : null;
+			return StringUtils.isNotBlank(caption) ? caption + ": " + message : message;
+		}).filter(StringUtils::isNotBlank).distinct().collect(Collectors.joining("\n"));
+
+		Notification.show(I18nProperties.getString(Strings.messageCheckInputData), errors, Notification.Type.ERROR_MESSAGE);
+		return false;
+	}
 }

@@ -21,12 +21,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+
+import com.vaadin.data.HasValue;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomField;
+import com.vaadin.ui.HasComponents;
 
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
@@ -175,6 +183,89 @@ class CustomizableFieldsGroupTest {
 	void testDecimalRejectsValuesWithoutDigits() {
 		assertValidity(CustomizableFieldType.DECIMAL, false, "-", ".", ",", "-.", "-,", "1.2.3", "1..2", "a");
 		assertValidity(CustomizableFieldType.DECIMAL, true, "0", "12", "-3", "1.5", "1,5", "-1.5", ".5", "1.");
+	}
+
+	@Test
+	void testReadOnlyIsAppliedToInnerWidgetForAllTypes() {
+		for (CustomizableFieldType type : CustomizableFieldType.values()) {
+			CustomizableFieldInput<?> field = buildSingleField(type, true);
+			Component inner = getInnerComponent(field);
+
+			if (inner instanceof HasValue) {
+				assertTrue(((HasValue<?>) inner).isReadOnly(), type + " inner widget must be read-only");
+			} else {
+				List<Button> buttons = getButtons(inner);
+				assertFalse(buttons.isEmpty(), type + " has neither a HasValue nor buttons as inner component");
+				buttons.forEach(button -> assertFalse(button.isEnabled(), type + " buttons must be disabled"));
+			}
+		}
+	}
+
+	@Test
+	void testEditableFieldKeepsInnerWidgetEditableForAllTypes() {
+		for (CustomizableFieldType type : CustomizableFieldType.values()) {
+			CustomizableFieldInput<?> field = buildSingleField(type, false);
+			Component inner = getInnerComponent(field);
+
+			if (inner instanceof HasValue) {
+				assertFalse(((HasValue<?>) inner).isReadOnly(), type + " inner widget must be editable");
+			} else {
+				getButtons(inner).forEach(button -> assertTrue(button.isEnabled(), type + " buttons must be enabled"));
+			}
+		}
+	}
+
+	@Test
+	void testReadOnlyFromMetadataCannotBeLiftedByCaller() {
+		CustomizableFieldInput<?> field = buildSingleField(CustomizableFieldType.TEXT, true);
+		getInnerComponent(field);
+
+		field.setReadOnly(false);
+
+		assertTrue(field.isReadOnly());
+		assertTrue(((HasValue<?>) getInnerComponent(field)).isReadOnly());
+	}
+
+	@Test
+	void testReadOnlyYesNoUnknownIgnoresButtonClicks() {
+		CustomizableFieldInput<?> field = buildSingleField(CustomizableFieldType.YES_NO_UNKNOWN, true);
+
+		getButtons(getInnerComponent(field)).forEach(Button::click);
+
+		assertNull(field.getValue());
+	}
+
+	private CustomizableFieldInput<?> buildSingleField(CustomizableFieldType type, boolean readOnly) {
+		CustomizableFieldMetadataDto metadata = buildMetadata("field-" + type + "-" + readOnly, null);
+		metadata.setFieldType(type);
+		metadata.setReadOnly(readOnly);
+		return getField(buildGroup(metadata), metadata);
+	}
+
+	/**
+	 * Builds (if needed) and returns the inner widget. {@link CustomField#getContent()} is protected and is normally
+	 * triggered by attaching the field to a UI, which is not available in this test.
+	 */
+	private Component getInnerComponent(CustomizableFieldInput<?> field) {
+		try {
+			Method getContent = CustomField.class.getDeclaredMethod("getContent");
+			getContent.setAccessible(true);
+			return (Component) getContent.invoke(field);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	private List<Button> getButtons(Component container) {
+		List<Button> buttons = new ArrayList<>();
+		if (container instanceof HasComponents) {
+			((HasComponents) container).forEach(child -> {
+				if (child instanceof Button) {
+					buttons.add((Button) child);
+				}
+			});
+		}
+		return buttons;
 	}
 
 	private void assertValidity(CustomizableFieldType type, boolean expectedValid, String... values) {

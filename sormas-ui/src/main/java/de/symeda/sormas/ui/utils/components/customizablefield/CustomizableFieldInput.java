@@ -24,6 +24,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.Setter;
@@ -82,6 +83,10 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 	 * Vaadin only after the equality check has already passed.
 	 */
 	private transient T currentValue;
+	/**
+	 * The inner widget returned by {@link #buildInputComponent()}; {@code null} until the content is built.
+	 */
+	private Component inputComponent;
 
 	/**
 	 * Constructs the input and wires a {@link Binder} that keeps the DTO's {@code value} field
@@ -163,7 +168,24 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 
 	@Override
 	protected final Component initContent() {
-		return buildInputComponent();
+		inputComponent = buildInputComponent();
+		applyReadOnlyToWidget(isReadOnly());
+		return inputComponent;
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		boolean effectiveReadOnly = readOnly || (fieldMetadata != null && fieldMetadata.isReadOnly());
+		super.setReadOnly(effectiveReadOnly);
+		if (inputComponent != null) {
+			applyReadOnlyToWidget(effectiveReadOnly);
+		}
+	}
+
+	protected void applyReadOnlyToWidget(boolean readOnly) {
+		if (inputComponent instanceof HasValue) {
+			((HasValue<?>) inputComponent).setReadOnly(readOnly);
+		}
 	}
 
 	/**

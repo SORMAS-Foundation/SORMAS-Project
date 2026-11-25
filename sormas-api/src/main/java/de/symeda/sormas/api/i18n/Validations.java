@@ -95,6 +95,7 @@ public interface Validations {
 	String customizableEnumValueDuplicateLanguage = "customizableEnumValueDuplicateLanguage";
 	String customizableEnumValueDuplicateValue = "customizableEnumValueDuplicateValue";
 	String customizableEnumValueEmptyTranslations = "customizableEnumValueEmptyTranslations";
+	String customizableFieldReadOnlyRequiresDefaultValue = "customizableFieldReadOnlyRequiresDefaultValue";
 	String defaultInfrastructureAlreadyExisting = "defaultInfrastructureAlreadyExisting";
 	String defaultInfrastructureInvalidParentDistrict = "defaultInfrastructureInvalidParentDistrict";
 	String defaultInfrastructureInvalidParentRegion = "defaultInfrastructureInvalidParentRegion";

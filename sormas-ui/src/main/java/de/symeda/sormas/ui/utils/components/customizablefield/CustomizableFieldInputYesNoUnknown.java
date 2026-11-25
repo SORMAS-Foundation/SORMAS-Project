@@ -84,6 +84,9 @@ public class CustomizableFieldInputYesNoUnknown extends CustomizableFieldInput<Y
 		for (YesNoUnknown option : YesNoUnknown.values()) {
 			Button btn = new Button(I18nProperties.getEnumCaption(option));
 			btn.addClickListener(e -> {
+				if (isReadOnly()) {
+					return;
+				}
 				YesNoUnknown current = getValue();
 				setValue(option == current ? null : option);
 			});
@@ -111,6 +114,11 @@ public class CustomizableFieldInputYesNoUnknown extends CustomizableFieldInput<Y
 		} else {
 			applyButtonStyles(value);
 		}
+	}
+
+	@Override
+	protected void applyReadOnlyToWidget(boolean readOnly) {
+		buttons.values().forEach(button -> button.setEnabled(!readOnly));
 	}
 
 	private void applyButtonStyles(YesNoUnknown selected) {
