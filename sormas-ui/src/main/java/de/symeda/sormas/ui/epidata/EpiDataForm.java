@@ -710,6 +710,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		return result;
 	}
 
+	public boolean validateCustomizableFields() {
+		return CustomizableFieldsGroup.validateAndNotify(Arrays.asList(exposureInvestigationPanel, activityAsCasePanel, contactWithSourceCasePanel));
+	}
+
 	/**
 	 * Registers a listener that fires whenever any customizable field in any of this form's
 	 * groups changes its value. Used by the controller to drive

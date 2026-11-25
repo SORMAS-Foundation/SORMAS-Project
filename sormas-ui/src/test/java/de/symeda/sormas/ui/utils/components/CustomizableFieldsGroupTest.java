@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -79,6 +80,135 @@ class CustomizableFieldsGroupTest {
 
 		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values = group.getFieldsValues();
 		assertFalse(values.containsKey(metadata));
+	}
+
+	@Test
+	void testMandatoryTextUntouchedFailsValidation() {
+		CustomizableFieldsGroup group = buildGroup(buildMandatoryMetadata("text-untouched", CustomizableFieldType.TEXT));
+
+		assertEquals(1, group.validateAndCollectErrors().size());
+	}
+
+	@Test
+	void testMandatoryTextClearedToEmptyStringFailsValidation() {
+		CustomizableFieldMetadataDto metadata = buildMandatoryMetadata("text-cleared", CustomizableFieldType.TEXT);
+		CustomizableFieldsGroup group = buildGroup(metadata);
+		CustomizableFieldInput<String> field = getField(group, metadata);
+
+		field.setValue("typed");
+		field.setValue("");
+
+		assertEquals(1, group.validateAndCollectErrors().size());
+	}
+
+	@Test
+	void testMandatoryTextBlankFailsValidation() {
+		CustomizableFieldMetadataDto metadata = buildMandatoryMetadata("text-blank", CustomizableFieldType.TEXT);
+		CustomizableFieldsGroup group = buildGroup(metadata);
+		this.<String> getField(group, metadata).setValue("   ");
+
+		assertEquals(1, group.validateAndCollectErrors().size());
+	}
+
+	@Test
+	void testMandatoryTextFilledPassesValidation() {
+		CustomizableFieldMetadataDto metadata = buildMandatoryMetadata("text-filled", CustomizableFieldType.TEXT);
+		CustomizableFieldsGroup group = buildGroup(metadata);
+		this.<String> getField(group, metadata).setValue("value");
+
+		assertTrue(group.validateAndCollectErrors().isEmpty());
+	}
+
+	@Test
+	void testMandatoryErrorHasMessageAfterCaption() {
+		CustomizableFieldsGroup group = buildGroup(buildMandatoryMetadata("text-message", CustomizableFieldType.TEXT));
+
+		String error = group.validateAndCollectErrors().get(0);
+		assertTrue(error.startsWith("text-message: "));
+		assertFalse(error.substring("text-message: ".length()).isBlank());
+	}
+
+	@Test
+	void testOptionalTextEmptyPassesValidation() {
+		CustomizableFieldMetadataDto metadata = buildMetadata("text-optional", null);
+		CustomizableFieldsGroup group = buildGroup(metadata);
+		this.<String> getField(group, metadata).setValue("");
+
+		assertTrue(group.validateAndCollectErrors().isEmpty());
+	}
+
+	@Test
+	void testMandatoryCheckboxMustBeTicked() {
+		CustomizableFieldMetadataDto metadata = buildMandatoryMetadata("checkbox", CustomizableFieldType.CHECKBOX);
+		CustomizableFieldsGroup group = buildGroup(metadata);
+		CustomizableFieldInput<Boolean> field = getField(group, metadata);
+
+		assertEquals(1, group.validateAndCollectErrors().size(), "untouched");
+
+		field.setValue(Boolean.TRUE);
+		assertTrue(group.validateAndCollectErrors().isEmpty(), "ticked");
+
+		field.setValue(Boolean.FALSE);
+		assertEquals(1, group.validateAndCollectErrors().size(), "unticked again");
+	}
+
+	@Test
+	void testMandatoryCheckboxListEmptiedFailsValidation() {
+		CustomizableFieldMetadataDto metadata = buildMandatoryMetadata("checkbox-list", CustomizableFieldType.CHECKBOX_LIST);
+		CustomizableFieldsGroup group = buildGroup(metadata);
+		CustomizableFieldInput<Set<String>> field = getField(group, metadata);
+
+		field.setValue(Set.of("A"));
+		assertTrue(group.validateAndCollectErrors().isEmpty(), "one option selected");
+
+		field.setValue(Collections.emptySet());
+		assertEquals(1, group.validateAndCollectErrors().size(), "all options deselected");
+	}
+
+	@Test
+	void testNumberRejectsValuesWithoutDigits() {
+		assertValidity(CustomizableFieldType.NUMBER, false, "-", "--1", "1-", "1.5", "a");
+		assertValidity(CustomizableFieldType.NUMBER, true, "0", "12", "-3");
+	}
+
+	@Test
+	void testDecimalRejectsValuesWithoutDigits() {
+		assertValidity(CustomizableFieldType.DECIMAL, false, "-", ".", ",", "-.", "-,", "1.2.3", "1..2", "a");
+		assertValidity(CustomizableFieldType.DECIMAL, true, "0", "12", "-3", "1.5", "1,5", "-1.5", ".5", "1.");
+	}
+
+	private void assertValidity(CustomizableFieldType type, boolean expectedValid, String... values) {
+		CustomizableFieldMetadataDto metadata = buildMetadata("numeric-" + type, null);
+		metadata.setFieldType(type);
+		CustomizableFieldsGroup group = buildGroup(metadata);
+		CustomizableFieldInput<String> field = getField(group, metadata);
+
+		for (String value : values) {
+			field.setValue(value);
+			assertEquals(expectedValid, group.validateAndCollectErrors().isEmpty(), type + " value '" + value + "'");
+		}
+	}
+
+	private CustomizableFieldsGroup buildGroup(CustomizableFieldMetadataDto metadata) {
+		CustomizableFieldsGroup group = new CustomizableFieldsGroup(CustomizableFieldGroup.CASE_DATA_GENERAL);
+		group.setFieldsMetadata(List.of(metadata));
+		group.setFieldsValues(Collections.emptyMap());
+		group.updateFieldsDisplay();
+		return group;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> CustomizableFieldInput<T> getField(CustomizableFieldsGroup group, CustomizableFieldMetadataDto metadata) {
+		CustomizableFieldInput<?> field = group.getFieldByMetadataUuid(metadata.getUuid());
+		assertNotNull(field);
+		return (CustomizableFieldInput<T>) field;
+	}
+
+	private CustomizableFieldMetadataDto buildMandatoryMetadata(String uuid, CustomizableFieldType type) {
+		CustomizableFieldMetadataDto metadata = buildMetadata(uuid, null);
+		metadata.setFieldType(type);
+		metadata.setMandatory(true);
+		return metadata;
 	}
 
 	private CustomizableFieldMetadataDto buildMetadata(String uuid, String defaultValue) {

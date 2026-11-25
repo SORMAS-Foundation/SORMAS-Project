@@ -1044,19 +1044,9 @@ public class CaseController {
 		}
 
 		editView.setPreCommitListener(successCallback -> {
-			List<String> customizableFieldValidationErrors = caseEditForm.validateCustomizableFieldsAndCollectErrors()
-				.stream()
-				.filter(error -> error != null && !error.trim().isEmpty())
-				.distinct()
-				.collect(Collectors.toList());
-
-			if (customizableFieldValidationErrors.isEmpty()) {
+			if (caseEditForm.validateCustomizableFields()) {
 				successCallback.run();
-				return;
 			}
-
-			String errorMessage = customizableFieldValidationErrors.stream().collect(Collectors.joining("\n"));
-			Notification.show(I18nProperties.getString(Strings.messageCheckInputData), errorMessage, Type.ERROR_MESSAGE);
 		});
 
 		editView.addCommitListener(() -> {
@@ -1494,6 +1484,12 @@ public class CaseController {
 
 		epiDataForm.addCustomizableFieldValueChangeListener(e -> editView.setDirty(true));
 		editView.addDiscardListener(epiDataForm::resetCustomizableFieldValues);
+
+		editView.setPreCommitListener(successCallback -> {
+			if (epiDataForm.validateCustomizableFields()) {
+				successCallback.run();
+			}
+		});
 
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);

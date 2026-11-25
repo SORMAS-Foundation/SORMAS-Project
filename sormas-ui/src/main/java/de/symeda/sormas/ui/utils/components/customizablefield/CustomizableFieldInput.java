@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.utils.components.customizablefield;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.Setter;
 import com.vaadin.ui.Component;
@@ -33,6 +35,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 
 /**
  * Abstract base for editable customizable field input components (Vaadin v8).
@@ -93,7 +96,12 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 		binder = new Binder<>(CustomizableFieldValueDto.class);
 		Binder.BindingBuilder<CustomizableFieldValueDto, T> bindingBuilder = binder.forField(this);
 		if (metadata.isMandatory()) {
-			bindingBuilder = bindingBuilder.asRequired();
+			// Vaadin's asRequired() only rejects null (CustomField's empty value), letting cleared text ("")
+			// and empty checkbox lists through. We use our own emptiness check with a real error message.
+			bindingBuilder = bindingBuilder.asRequired(
+				(value, context) -> isValueEmpty(value)
+					? ValidationResult.error(I18nProperties.getValidationError(Validations.requiredField))
+					: ValidationResult.ok());
 		}
 		bindingBuilder = configureBinding(bindingBuilder);
 		bindingBuilder.bind(getValueGetter(), getValueSetter());
@@ -115,6 +123,30 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 	 */
 	protected Binder.BindingBuilder<CustomizableFieldValueDto, T> configureBinding(Binder.BindingBuilder<CustomizableFieldValueDto, T> builder) {
 		return builder;
+	}
+
+	/**
+	 * Returns whether {@code value} counts as empty for the mandatory check.
+	 * {@code null}, blank strings, and empty collections are empty; subclasses may
+	 * widen this (e.g. an unticked checkbox).
+	 * <p>
+	 * Called during validation, so overrides may use instance state.
+	 *
+	 * @param value
+	 *            the field value; may be {@code null}
+	 * @return {@code true} if a mandatory field with this value must be rejected
+	 */
+	protected boolean isValueEmpty(T value) {
+		if (value == null) {
+			return true;
+		}
+		if (value instanceof CharSequence) {
+			return StringUtils.isBlank((CharSequence) value);
+		}
+		if (value instanceof Collection) {
+			return ((Collection<?>) value).isEmpty();
+		}
+		return false;
 	}
 
 	/**

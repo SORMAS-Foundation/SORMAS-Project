@@ -1002,8 +1002,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			}
 			newFieldValue.setSubSettings(withoutDeprecated(newFieldValue.getSubSettings(), ExposureSubSetting::isDeprecated));
 			newFieldValue.setContactFactors(withoutDeprecated(newFieldValue.getContactFactors(), ExposureContactFactor::isDeprecated));
-			newFieldValue.setProtectiveMeasures(
-				withoutDeprecated(newFieldValue.getProtectiveMeasures(), ExposureProtectiveMeasure::isDeprecated));
+			newFieldValue.setProtectiveMeasures(withoutDeprecated(newFieldValue.getProtectiveMeasures(), ExposureProtectiveMeasure::isDeprecated));
 		}
 		// Rebuilding the exposure type items temporarily resets the field to null, which clears fields that depend on it
 		// (e.g. the exposure type details), so this has to be done before the values are bound
@@ -1226,6 +1225,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		}
 
 		return new ArrayList<>(categories);
+	}
+
+	public boolean validateCustomizableFields() {
+		return CustomizableFieldsGroup.validateAndNotify(Arrays.asList(exposureDetailsPanel, exposuresGeneralPanel, locationGeneralPanel));
 	}
 
 	public Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> collectCurrentFieldValues() {

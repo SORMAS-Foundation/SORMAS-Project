@@ -16,17 +16,21 @@
 package de.symeda.sormas.ui.utils.components;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
@@ -34,6 +38,8 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityRestrictions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.components.customizablefield.CustomizableFieldInput;
 import de.symeda.sormas.ui.utils.components.customizablefield.CustomizableFieldInputFactory;
 
@@ -342,6 +348,33 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 			}
 		}
 		return errors;
+	}
+
+	/**
+	 * Validates the fields of the given groups (mandatory and type checks). If any fail, shows a
+	 * single error notification listing them.
+	 * <p>
+	 * Intended for a {@link de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.PreCommitListener}:
+	 * only proceed with the commit if this returns {@code true}.
+	 *
+	 * @param groups
+	 *            groups to validate; {@code null} entries are ignored
+	 * @return {@code true} if all fields are valid
+	 */
+	public static boolean validateAndNotify(Collection<CustomizableFieldsGroup> groups) {
+		List<String> errors = groups.stream()
+			.filter(Objects::nonNull)
+			.flatMap(group -> group.validateAndCollectErrors().stream())
+			.filter(StringUtils::isNotBlank)
+			.distinct()
+			.collect(Collectors.toList());
+
+		if (errors.isEmpty()) {
+			return true;
+		}
+
+		Notification.show(I18nProperties.getString(Strings.messageCheckInputData), String.join("\n", errors), Notification.Type.ERROR_MESSAGE);
+		return false;
 	}
 
 	/**

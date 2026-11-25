@@ -1105,8 +1105,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		healthConditionsForm = new HealthConditionsForm(
 			disease,
-			FieldVisibilityCheckers.withDisease(disease)
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+			FieldVisibilityCheckers.withDisease(disease).add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			new PersonReferenceDto(person.getUuid()),
 			new CaseReferenceDto(caseUuid));
@@ -2146,8 +2145,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		return result;
 	}
 
-	public List<String> validateCustomizableFieldsAndCollectErrors() {
-		return getCustomizableFieldPanels().stream().flatMap(panel -> panel.validateAndCollectErrors().stream()).collect(Collectors.toList());
+	public boolean validateCustomizableFields() {
+		return CustomizableFieldsGroup.validateAndNotify(getCustomizableFieldPanels());
 	}
 
 	public void addCustomizableFieldValueChangeListener(com.vaadin.data.HasValue.ValueChangeListener<?> listener) {
