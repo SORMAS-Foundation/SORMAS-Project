@@ -17,6 +17,24 @@ import de.symeda.sormas.api.AbstractUnitTest;
 class ValueUtilsTest extends AbstractUnitTest {
 
 	@Test
+	void checksSingleValuesIncludingArrays() {
+		// PREPARE
+		String[] value = {};
+
+		// EXECUTE
+		boolean arrayResult = ValueUtils.isNonNullOrStringNotEmpty(value);
+		boolean blankResult = ValueUtils.isNonNullOrStringNotEmpty(" ");
+		boolean nullResult = ValueUtils.isNonNullOrStringNotEmpty(null);
+		boolean textResult = ValueUtils.isNonNullOrStringNotEmpty("text");
+
+		// CHECK
+		assertTrue(arrayResult);
+		assertFalse(blankResult);
+		assertFalse(nullResult);
+		assertTrue(textResult);
+	}
+
+	@Test
 	void returnsFalseForNullArray() {
 		// PREPARE
 		Object[] values = null;

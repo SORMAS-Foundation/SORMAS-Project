@@ -22,20 +22,26 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Suppliers;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.epipulse.referencevalue.EpipulseOccupationRef;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
@@ -58,6 +64,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValueUtils;
 
 public final class ExternalMessageMapper {
 
@@ -67,9 +74,15 @@ public final class ExternalMessageMapper {
 
 	private final ExternalMessageProcessingFacade processingFacade;
 
-	public ExternalMessageMapper(ExternalMessageDto externalMessage, ExternalMessageProcessingFacade processingFacade) {
+	private final CustomizableEnumFacade customizableEnumFacade;
+
+	public ExternalMessageMapper(
+		ExternalMessageDto externalMessage,
+		ExternalMessageProcessingFacade processingFacade,
+		CustomizableEnumFacade customizableEnumFacade) {
 		this.externalMessage = externalMessage;
 		this.processingFacade = processingFacade;
+		this.customizableEnumFacade = customizableEnumFacade;
 	}
 
 	public ExternalMessageDto getExternalMessage() {
@@ -397,6 +410,16 @@ public final class ExternalMessageMapper {
 					PersonDto.PRESENT_CONDITION });
 		}
 
+		Supplier<List<OccupationType>> occupationTypes =
+			Suppliers.memoize(() -> customizableEnumFacade.getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, externalMessage.getDisease()));
+		if (ValueUtils.isYes(externalMessage.getAirportWorker())) {
+			person.setOccupationType(findOccupationType(EpipulseOccupationRef.AIRW, occupationTypes));
+		}
+
+		if (ValueUtils.isYes(externalMessage.getHealthcareProfessional())) {
+			person.setOccupationType(findOccupationType(EpipulseOccupationRef.HCW, occupationTypes));
+		}
+
 		if (externalMessage.getDeceasedDate() != null) {
 			person.setDeathDate(externalMessage.getDeceasedDate());
 			changedFields.add(
@@ -425,6 +448,16 @@ public final class ExternalMessageMapper {
 					PersonDto.CAUSE_OF_DEATH_DETAILS });
 		}
 		return changedFields;
+	}
+
+	private static @Nullable OccupationType findOccupationType(EpipulseOccupationRef aiportWorker, Supplier<List<OccupationType>> occupationTypes) {
+		String searchedOccupationType = aiportWorker.getOccupationType();
+		OccupationType occupationType =
+			occupationTypes.get().stream().filter(candidate -> searchedOccupationType.equals(candidate.getValue())).findFirst().orElseGet(() -> {
+				logger.warn("Could not find matching occupationType for: [{}]", searchedOccupationType);
+				return null;
+			});
+		return occupationType;
 	}
 
 	/**

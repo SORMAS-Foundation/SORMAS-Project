@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.epipulse.EpipulseLaboratoryMapper;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
@@ -23,8 +24,10 @@ public class ExternalMessageMapperNotestResultTest {
 		PathogenTestDto pathogenTest =
 			PathogenTestDto.build(new SampleReferenceDto(DataHelper.createUuid()), new UserReferenceDto(DataHelper.createUuid()));
 
-		ExternalMessageMapper mapper =
-			new ExternalMessageMapper(ExternalMessageDto.build(), Mockito.mock(ExternalMessageProcessingFacade.class));
+		ExternalMessageMapper mapper = new ExternalMessageMapper(
+			ExternalMessageDto.build(),
+			Mockito.mock(ExternalMessageProcessingFacade.class),
+			org.mockito.Mockito.mock(CustomizableEnumFacade.class));
 
 		mapper.mapToPathogenTest(testReport, pathogenTest);
 

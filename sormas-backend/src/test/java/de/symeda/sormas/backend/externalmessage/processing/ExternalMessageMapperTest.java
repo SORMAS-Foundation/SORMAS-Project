@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.junit.jupiter.api.Test;
 
@@ -33,16 +32,17 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SyphilisSerologyMethod;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class ExternalMessageMapperTest extends AbstractBeanTest {
@@ -50,7 +50,8 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 	@Test
 	public void testHomogenousTestResultTypesInWithNoTestReport() {
 		ExternalMessageDto oneSampleReportMessage = ExternalMessageDto.build();
-		ExternalMessageMapper oneSampleReportMessageMapper = new ExternalMessageMapper(oneSampleReportMessage, getExternalMessageProcessingFacade());
+		ExternalMessageMapper oneSampleReportMessageMapper =
+			new ExternalMessageMapper(oneSampleReportMessage, getExternalMessageProcessingFacade(), getCustomizableEnumFacade());
 
 		SampleDto sample1 = new SampleDto();
 		oneSampleReportMessageMapper.mapToSample(sample1, oneSampleReportMessage.getSampleReportsNullSafe().get(0));
@@ -61,7 +62,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		twoSampleReportsMessage.addSampleReport(SampleReportDto.build());
 		twoSampleReportsMessage.addSampleReport(SampleReportDto.build());
 		ExternalMessageMapper twoSampleReportsMessageMapper =
-			new ExternalMessageMapper(twoSampleReportsMessage, getExternalMessageProcessingFacade());
+			new ExternalMessageMapper(twoSampleReportsMessage, getExternalMessageProcessingFacade(), getCustomizableEnumFacade());
 
 		SampleDto sample2 = new SampleDto();
 		twoSampleReportsMessageMapper.mapToSample(sample2, twoSampleReportsMessage.getSampleReportsNullSafe().get(0));
@@ -77,7 +78,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 	@Test
 	public void testHomogenousTestResultTypesInWithHomogenousTestReports() {
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
-		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, getExternalMessageProcessingFacade());
+		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, getExternalMessageProcessingFacade(), getCustomizableEnumFacade());
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
@@ -109,7 +110,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		testReport3.setTestResult(PathogenTestResultType.NEGATIVE);
 		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport3);
 
-		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, getExternalMessageProcessingFacade());
+		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, getExternalMessageProcessingFacade(), getCustomizableEnumFacade());
 
 		SampleDto sample = new SampleDto();
 		mapper.mapToSample(sample, labMessage.getSampleReportsNullSafe().get(0));
@@ -123,7 +124,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		labMessage.setDisease(Disease.CORONAVIRUS);
 		TestReportDto testReport = TestReportDto.build();
 
-		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, getExternalMessageProcessingFacade());
+		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, getExternalMessageProcessingFacade(), getCustomizableEnumFacade());
 
 		DiseaseVariant diseaseVariant = creator.createDiseaseVariant("BF.1.2", Disease.CORONAVIRUS);
 
@@ -180,7 +181,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 	public void testMapToPersonPresentCondition() {
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
 		PersonDto person = PersonDto.build();
-		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, getExternalMessageProcessingFacade());
+		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, getExternalMessageProcessingFacade(), getCustomizableEnumFacade());
 
 		// both values null
 		List<String[]> result = mapper.mapToPerson(person);
@@ -218,7 +219,8 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		// Create a lab facility with external ID
 		var rdcf = creator.createRDCF();
 		String labExternalId = "testLabExternalId";
-		FacilityDto labFacility = creator.createFacility("TestLab", labExternalId, rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
+		FacilityDto labFacility =
+			creator.createFacility("TestLab", labExternalId, rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 
 		// Create external message with reporterExternalIds pointing to the lab
 		ExternalMessageDto externalMessage = ExternalMessageDto.build();
@@ -230,7 +232,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		pathogenTest.setDrugSusceptibility(new DrugSusceptibilityDto());
 
 		// Create mapper and map to pathogen test
-		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessage, getExternalMessageProcessingFacade());
+		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessage, getExternalMessageProcessingFacade(), getCustomizableEnumFacade());
 		mapper.mapToPathogenTest(testReport, pathogenTest);
 
 		// Verify lab is properly set
@@ -250,7 +252,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		PathogenTestDto pathogenTest = new PathogenTestDto();
 		pathogenTest.setDrugSusceptibility(new DrugSusceptibilityDto());
 
-		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessage, getExternalMessageProcessingFacade());
+		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessage, getExternalMessageProcessingFacade(), getCustomizableEnumFacade());
 		mapper.mapToPathogenTest(testReport, pathogenTest);
 
 		assertEquals(SyphilisSerologyMethod.VDRL, pathogenTest.getSyphilisSerologyMethod());

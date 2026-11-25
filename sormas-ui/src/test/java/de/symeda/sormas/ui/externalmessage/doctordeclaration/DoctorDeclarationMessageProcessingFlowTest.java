@@ -41,6 +41,7 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
@@ -460,7 +461,8 @@ class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
 	}
 
 	private TestDoctorDeclarationFlow createFlow(ExternalMessageDto externalMessage) {
-		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessage, processingFacade);
+		ExternalMessageMapper mapper =
+			new ExternalMessageMapper(externalMessage, processingFacade, org.mockito.Mockito.mock(CustomizableEnumFacade.class));
 		try (MockedStatic<UiUtil> uiUtilMock = Mockito.mockStatic(UiUtil.class)) {
 			uiUtilMock.when(UiUtil::getUser).thenReturn(user);
 			return new TestDoctorDeclarationFlow(externalMessage, mapper, processingFacade);

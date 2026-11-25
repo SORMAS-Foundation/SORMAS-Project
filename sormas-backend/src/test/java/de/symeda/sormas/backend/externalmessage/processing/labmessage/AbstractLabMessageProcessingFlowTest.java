@@ -3078,7 +3078,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		AbstractLabMessageProcessingFlow flow = new AbstractLabMessageProcessingFlow(
 			labMessage,
 			user,
-			new ExternalMessageMapper(labMessage, processingFacade),
+			new ExternalMessageMapper(labMessage, processingFacade, getCustomizableEnumFacade()),
 			processingFacade,
 			relatedLabMessageHandler) {
 
