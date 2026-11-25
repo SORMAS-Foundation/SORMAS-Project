@@ -1,9 +1,29 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.utils;
 
+import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID;
+
 import java.lang.annotation.Annotation;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -18,6 +38,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
@@ -29,6 +51,7 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -407,6 +430,63 @@ public abstract class AbstractForm<T> extends CustomField<T> implements WithChil
 			((ComboBox) field).setFilteringMode(FilteringMode.CONTAINS);
 		}
 		return field;
+	}
+
+	/**
+	 * Puts the items of a dropdown in alphabetical order of their caption instead of the order in which they were added
+	 * (e.g. the declaration order of an enum). The items are removed and added again in sorted order, so the order does
+	 * not depend on the container of the dropdown supporting sorting. Captions are compared with the collator of the user's
+	 * language; items with an empty caption are placed last. A selected value is kept. Read-only dropdowns are left
+	 * unchanged, because removing their items would try to clear the value.
+	 * <p>
+	 * Example: Pertussis, Measles, Invasive Pneumococcal Infection, Invasive Meningococcal Infection, … → Chikungunya virus
+	 * disease, Congenital Syphilis, Dengue, Diphtheria, Gonorrhoea, Invasive Meningococcal Infection, Invasive Pneumococcal
+	 * Infection, Malaria, Measles, Mumps, Pertussis, … West Nile virus infection.
+	 *
+	 * @param field
+	 *            the dropdown; {@code null}, read-only or fewer than two items → nothing happens
+	 */
+	@SuppressWarnings("unchecked")
+	protected void sortItemsByCaption(ComboBox field) {
+
+		if (field == null || field.isReadOnly() || field.getItemIds() == null || field.getItemIds().size() < 2) {
+			return;
+		}
+
+		Map<Object, String> captions = new HashMap<>();
+		List<Object> itemIds = new ArrayList<>(field.getItemIds());
+		for (Object itemId : itemIds) {
+			captions.put(itemId, field.getItemCaption(itemId));
+		}
+
+		Language language = I18nProperties.getUserLanguage();
+		Locale locale = language != null && language.getLocale() != null ? language.getLocale() : Locale.getDefault();
+		Comparator<Object> collator = Collator.getInstance(locale);
+		// getItemCaption returns "" for a missing caption, so an empty caption is treated like none and placed last
+		itemIds.sort(Comparator.comparing(itemId -> {
+			String caption = captions.get(itemId);
+			return caption == null || caption.isEmpty() ? null : caption;
+		}, Comparator.nullsLast(collator)));
+
+		Object selectedValue = field.getValue();
+		boolean hasCaptionProperty = field.getContainerPropertyIds() != null && field.getContainerPropertyIds().contains(CAPTION_PROPERTY_ID);
+
+		field.removeAllItems();
+		for (Object itemId : itemIds) {
+			Item item = field.addItem(itemId);
+			if (item == null || !hasCaptionProperty) {
+				continue;
+			}
+
+			Property<Object> captionProperty = item.getItemProperty(CAPTION_PROPERTY_ID);
+			if (captionProperty != null) {
+				captionProperty.setValue(captions.get(itemId));
+			}
+		}
+
+		if (selectedValue != null && field.containsId(selectedValue)) {
+			field.setValue(selectedValue);
+		}
 	}
 
 	/**

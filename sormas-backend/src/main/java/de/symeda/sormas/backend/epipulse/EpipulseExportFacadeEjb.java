@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2026 SORMAS Foundation gGmbH
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 
 package de.symeda.sormas.backend.epipulse;
 
@@ -39,6 +36,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +50,7 @@ import de.symeda.sormas.api.epipulse.EpipulseExportFacade;
 import de.symeda.sormas.api.epipulse.EpipulseExportIndexDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportReferenceDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
+import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -109,7 +108,7 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 		validate(dto);
 		if (existingEpipulseExport == null) {
 			// only for a new export, so a later change of the configuration never blocks saving an existing one
-			validateDatasource(dto);
+			fillAndRequireExportCodes(dto);
 		}
 
 		EpipulseExport epipulseExport = fillOrBuildEntity(dto, existingEpipulseExport);
@@ -291,6 +290,9 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, EpipulseExport::new, true);
 
 		target.setSubjectCode(source.getSubjectCode());
+		// #14472 - stored on the export only, never written back to the disease configuration
+		target.setExportSubjectCode(StringUtils.trimToNull(source.getExportSubjectCode()));
+		target.setExportDatasource(StringUtils.trimToNull(source.getExportDatasource()));
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
 		target.setStatus(source.getStatus());
@@ -313,6 +315,9 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setSubjectCode(entity.getSubjectCode());
+		// #14472 - the background export reads these from this DTO, see EpipulseConfigurationLookupService.lookupConfiguration
+		dto.setExportSubjectCode(entity.getExportSubjectCode());
+		dto.setExportDatasource(entity.getExportDatasource());
 		dto.setStartDate(entity.getStartDate());
 		dto.setEndDate(entity.getEndDate());
 		dto.setStatus(entity.getStatus());
@@ -363,33 +368,58 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 	}
 
 	/**
-	 * Checks that an EpiPulse data source is configured for the disease of the export: its own one in the disease
-	 * configuration, else the system configuration value {@code EPIPULSE_DATASOURCE}. The data source is required, so the
-	 * export is not created without it, and the user is told where to enter it.
+	 * Makes sure a new export is saved with its own subject code and data source (#14472), so neither is ever empty. The
+	 * values entered in the form are kept; a value that is still empty (e.g. a REST client that does not send it) is filled
+	 * from the configuration, the same way the form prefills it. If there is still no value, the export is not created and
+	 * the user is told what is missing. The configuration itself is only read, never changed.
 	 *
 	 * <p>
-	 * Example: MEASLES with own data source {@code "LU-SURV"} → accepted; MEASLES without own data source and
-	 * {@code EPIPULSE_DATASOURCE = "LU-SYSTEM1"} → accepted; MEASLES without own data source and the system value empty →
-	 * {@link ValidationRuntimeException} "An EpiPulse data source is required for Measles…"; no subject code → nothing is
-	 * checked here: the export form requires one, and the column {@code epipulse_export.subject_code} is {@code NOT NULL}.
+	 * Example: entered {@code "CONSYPH"} / {@code "LU-MANUAL"} → both kept; Measles sent without values, configured with
+	 * {@code "MEAS"} and {@code EPIPULSE_DATASOURCE = "LU-SYSTEM1"} → saved with {@code "MEAS"} / {@code "LU-SYSTEM1"};
+	 * Diphtheria without any configured subject code and none entered → {@link ValidationRuntimeException} "No EpiPulse
+	 * subject code is configured for Diphtheria…"; no data source entered nor configured → "An EpiPulse data source is
+	 * required for …"; no disease selected → nothing is filled here: the form requires one, and the column
+	 * {@code epipulse_export.subject_code} is {@code NOT NULL}.
 	 *
 	 * @throws ValidationRuntimeException
-	 *             if no data source is configured for the disease
+	 *             if the subject code or the data source is neither entered nor configured
 	 */
-	private void validateDatasource(EpipulseExportDto epipulseExportDto) throws ValidationRuntimeException {
+	private void fillAndRequireExportCodes(EpipulseExportDto epipulseExportDto) throws ValidationRuntimeException {
 
 		if (epipulseExportDto == null || epipulseExportDto.getSubjectCode() == null) {
 			return;
 		}
 
-		if (configurationLookupService.lookupDatasource(epipulseExportDto.getSubjectCode()) == null) {
-			throw new ValidationRuntimeException(configurationLookupService.datasourceRequiredMessage(epipulseExportDto.getSubjectCode()));
+		EpipulseSubjectCode subjectCode = epipulseExportDto.getSubjectCode();
+
+		if (StringUtils.isBlank(epipulseExportDto.getExportSubjectCode())) {
+			epipulseExportDto.setExportSubjectCode(configurationLookupService.findSubjectCode(subjectCode));
+		}
+		if (StringUtils.isBlank(epipulseExportDto.getExportDatasource())) {
+			epipulseExportDto.setExportDatasource(configurationLookupService.lookupDatasource(subjectCode));
+		}
+
+		if (StringUtils.isBlank(epipulseExportDto.getExportSubjectCode())) {
+			throw new ValidationRuntimeException(configurationLookupService.subjectCodeRequiredMessage(subjectCode));
+		}
+		if (StringUtils.isBlank(epipulseExportDto.getExportDatasource())) {
+			throw new ValidationRuntimeException(configurationLookupService.datasourceRequiredMessage(subjectCode));
 		}
 	}
 
 	@Override
 	public boolean isConfigured() {
 		return epipulseExportService.configured();
+	}
+
+	@Override
+	public String getConfiguredSubjectCode(EpipulseSubjectCode subjectCode) {
+		return configurationLookupService.findSubjectCode(subjectCode);
+	}
+
+	@Override
+	public String getConfiguredDatasource(EpipulseSubjectCode subjectCode) {
+		return configurationLookupService.lookupDatasource(subjectCode);
 	}
 
 	@RightsAllowed({

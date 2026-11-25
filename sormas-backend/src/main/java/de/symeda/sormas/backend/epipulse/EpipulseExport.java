@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -48,8 +48,13 @@ public class EpipulseExport extends DeletableAdo {
 	public static final String EXPORT_FILE_SIZE = "exportFileSize";
 	public static final String CREATION_USER = "creationUser";
 	public static final String ARCHIVED = "archived";
+	public static final String EXPORT_SUBJECT_CODE = "exportSubjectCode";
+	public static final String EXPORT_DATASOURCE = "exportDatasource";
 
 	private EpipulseSubjectCode subjectCode;
+
+	private String exportSubjectCode;
+	private String exportDatasource;
 
 	private Date startDate;
 	private Date endDate;
@@ -177,5 +182,31 @@ public class EpipulseExport extends DeletableAdo {
 
 	public void setStatusReason(String statusReason) {
 		this.statusReason = statusReason;
+	}
+
+	/**
+	 * The EpiPulse subject code of this export (#14472), e.g. {@code "CONSYPH"}; independent of the disease configuration,
+	 * {@code null} for exports created before.
+	 */
+	@Column(name = "export_subject_code")
+	public String getExportSubjectCode() {
+		return exportSubjectCode;
+	}
+
+	public void setExportSubjectCode(String exportSubjectCode) {
+		this.exportSubjectCode = exportSubjectCode;
+	}
+
+	/**
+	 * The EpiPulse data source of this export (#14472), e.g. {@code "LU-SYSTEM1"}; independent of the disease
+	 * configuration, {@code null} for exports created before.
+	 */
+	@Column(name = "export_datasource")
+	public String getExportDatasource() {
+		return exportDatasource;
+	}
+
+	public void setExportDatasource(String exportDatasource) {
+		this.exportDatasource = exportDatasource;
 	}
 }

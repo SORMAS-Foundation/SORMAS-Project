@@ -1885,7 +1885,9 @@ public interface Captions {
 	String epipulseDownloadColumnCaption = "epipulseDownloadColumnCaption";
 	String EpipulseExport_creationUser = "EpipulseExport.creationUser";
 	String EpipulseExport_endDate = "EpipulseExport.endDate";
+	String EpipulseExport_exportDatasource = "EpipulseExport.exportDatasource";
 	String EpipulseExport_exportFileSize = "EpipulseExport.exportFileSize";
+	String EpipulseExport_exportSubjectCode = "EpipulseExport.exportSubjectCode";
 	String EpipulseExport_startDate = "EpipulseExport.startDate";
 	String EpipulseExport_status = "EpipulseExport.status";
 	String EpipulseExport_statusChangeDate = "EpipulseExport.statusChangeDate";

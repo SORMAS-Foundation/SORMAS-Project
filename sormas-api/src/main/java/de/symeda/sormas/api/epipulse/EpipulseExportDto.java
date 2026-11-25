@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,10 +17,14 @@ package de.symeda.sormas.api.epipulse;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = {
@@ -43,8 +47,24 @@ public class EpipulseExportDto extends PseudonymizableDto {
 	public static final String EXPORT_FILE_SIZE = "exportFileSize";
 	public static final String CREATION_USER = "creationUser";
 	public static final String STATUS_REASON = "statusReason";
+	public static final String EXPORT_SUBJECT_CODE = "exportSubjectCode";
+	public static final String EXPORT_DATASOURCE = "exportDatasource";
 
 	private EpipulseSubjectCode subjectCode;
+	/**
+	 * The EpiPulse subject code written to this export's file, e.g. {@code "CONSYPH"}. Prefilled in the create form from the
+	 * disease configuration and editable there; the entered value is used for this export only and never written back to
+	 * the disease configuration. Never empty: the form requires it, and the export facade fills it from the configuration
+	 * when a client sends none, or refuses the export when nothing is configured either.
+	 */
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String exportSubjectCode;
+	/**
+	 * The EpiPulse data source written to this export's file, e.g. {@code "LU-SYSTEM1"}. Prefilled, stored and required like
+	 * {@link #exportSubjectCode}.
+	 */
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String exportDatasource;
 	private Date startDate;
 	private Date endDate;
 	private EpipulseExportStatus status;
@@ -158,5 +178,21 @@ public class EpipulseExportDto extends PseudonymizableDto {
 
 	public void setStatusReason(String statusReason) {
 		this.statusReason = statusReason;
+	}
+
+	public String getExportSubjectCode() {
+		return exportSubjectCode;
+	}
+
+	public void setExportSubjectCode(String exportSubjectCode) {
+		this.exportSubjectCode = exportSubjectCode;
+	}
+
+	public String getExportDatasource() {
+		return exportDatasource;
+	}
+
+	public void setExportDatasource(String exportDatasource) {
+		this.exportDatasource = exportDatasource;
 	}
 }

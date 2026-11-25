@@ -75,6 +75,16 @@ public class EpipulseExportInfoLayout extends AbstractInfoLayout<EpipulseExportD
 			I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.SUBJECT_CODE))
 			.setDescription(epipulseExportDto.getSubjectCode().toString());
 
+		// #14472 - the subject code written to this export's file; empty for exports created before (they used the disease
+		// configuration)
+		String exportSubjectCode = epipulseExportDto.getExportSubjectCode();
+		addDescLabel(
+			leftColumnLayout,
+			EpipulseExportDto.EXPORT_SUBJECT_CODE,
+			exportSubjectCode,
+			I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.EXPORT_SUBJECT_CODE))
+			.setDescription(exportSubjectCode != null ? exportSubjectCode : "");
+
 		String startDate = DateHelper.formatLocalDate(epipulseExportDto.getStartDate(), userLanguage);
 		addDescLabel(
 			leftColumnLayout,
@@ -96,6 +106,15 @@ public class EpipulseExportInfoLayout extends AbstractInfoLayout<EpipulseExportD
 		rightColumnLayout.setSpacing(true);
 
 		addDescLabel(rightColumnLayout, EpipulseExportDto.UUID, "", "");
+
+		// #14472 - the data source written to this export's file; empty for exports created before
+		String exportDatasource = epipulseExportDto.getExportDatasource();
+		addDescLabel(
+			rightColumnLayout,
+			EpipulseExportDto.EXPORT_DATASOURCE,
+			exportDatasource,
+			I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.EXPORT_DATASOURCE))
+			.setDescription(exportDatasource != null ? exportDatasource : "");
 
 		String endDate = DateHelper.formatLocalDate(epipulseExportDto.getEndDate(), userLanguage);
 		addDescLabel(
