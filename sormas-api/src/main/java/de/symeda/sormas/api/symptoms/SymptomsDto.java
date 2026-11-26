@@ -3829,7 +3829,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.symptomatic = symptomatic;
 	}
 
-	@Order(22)
+	@Order(21)
 	public Date getOnsetDate() {
 		return onsetDate;
 	}
@@ -3838,7 +3838,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.onsetDate = onsetDate;
 	}
 
-	@Order(23)
+	@Order(22)
 	public Date getOffsetDate() {
 		return offsetDate;
 	}
@@ -3847,7 +3847,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.offsetDate = offsetDate;
 	}
 
-	@Order(24)
+	@Order(23)
 	public String getOnsetSymptom() {
 		return onsetSymptom;
 	}
@@ -3856,7 +3856,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.onsetSymptom = onsetSymptom;
 	}
 
-	@Order(25)
+	@Order(24)
 	public SymptomState getAsymptomatic() {
 		return asymptomatic;
 	}
@@ -3866,7 +3866,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	}
 
 	// #14502 - after the onset and resolution dates
-	@Order(26)
+	@Order(25)
 	public String getSymptomsComments() {
 		return symptomsComments;
 	}

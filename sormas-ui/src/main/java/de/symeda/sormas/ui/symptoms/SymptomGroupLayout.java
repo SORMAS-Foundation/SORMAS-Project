@@ -205,9 +205,9 @@ final class SymptomGroupLayout {
 	 * has no {@code @Order} gets {@code Integer.MAX_VALUE - fieldCount + declarationIndex}, so all of them come after every
 	 * ordered field and keep their declaration order among themselves. The map is immutable.
 	 * <p>
-	 * Example: {@code getTemperature()} has {@code @Order(0)}, {@code getAsymptomatic()} {@code @Order(25)} and
+	 * Example: {@code getTemperature()} has {@code @Order(0)}, {@code getAsymptomatic()} {@code @Order(24)} and
 	 * {@code getOtherClinicalCriteria()} {@code @Order(520)}, so {@code FIELD_POSITION} maps {@code "temperature" -> 0},
-	 * {@code "asymptomatic" -> 25} and {@code "otherClinicalCriteria" -> 520}, and Temperature is laid out before Asymptomatic.
+	 * {@code "asymptomatic" -> 24} and {@code "otherClinicalCriteria" -> 520}, and Temperature is laid out before Asymptomatic.
 	 */
 	private static final Map<String, Integer> FIELD_POSITION;
 
