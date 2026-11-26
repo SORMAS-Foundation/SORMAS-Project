@@ -37,7 +37,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
@@ -256,8 +255,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				if (!exposureForm.getFieldGroup().isModified()) {
 					pendingCustomizableFieldValues.put(entry.getUuid(), exposureForm.collectCurrentFieldValues());
 					commitCallback.accept(exposureForm.getValue());
-
-					updateAddButtonVisibility(getValue().size());
 				}
 			});
 
@@ -266,8 +263,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 					popupWindow.close();
 					ExposuresField.this.removeEntry(entry);
 					pendingCustomizableFieldValues.remove(entry.getUuid());
-
-					updateAddButtonVisibility(getValue().size());
 				}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
 			}
 		} else {
@@ -293,9 +288,8 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	public void setPropertyDataSource(Property newDataSource) {
 		super.setPropertyDataSource(newDataSource);
 
-		if (getValue() != null) {
-			updateAddButtonVisibility(getValue().size());
-		}
+		// cases and contacts can both have any number of exposures, so only the edit permission decides
+		getAddButton().setVisible(!isReadOnly() && isEditAllowed);
 	}
 
 	public Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> collectCustomizableFieldValues() {
@@ -312,14 +306,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	public void setPseudonymized(boolean isPseudonymized) {
 		this.isPseudonymized = isPseudonymized;
-	}
-
-	private void updateAddButtonVisibility(int exposureCount) {
-		if (isReadOnly() || epiDataParentClass == ContactDto.class && exposureCount > 0 || !isEditAllowed) {
-			getAddButton().setVisible(false);
-		} else {
-			getAddButton().setVisible(true);
-		}
 	}
 
 	private void showMultipleInfectionEnvironmentsPopup(ExposureDto entry) {

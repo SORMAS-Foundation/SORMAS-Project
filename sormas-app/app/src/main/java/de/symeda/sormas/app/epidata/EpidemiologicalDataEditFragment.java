@@ -165,7 +165,6 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 	private void updateExposures() {
 		getContentBinding().setExposureList(getExposureList());
 		getContentBinding().epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
-		updateAddExposuresButtonVisibility();
 	}
 
 	private void addExposure(Exposure exposure) {
@@ -263,14 +262,6 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 	@Override
 	public boolean isShowNewAction() {
 		return false;
-	}
-
-	private void updateAddExposuresButtonVisibility() {
-		if (getActivityRootData() instanceof Contact && !getExposureList().isEmpty()) {
-			getContentBinding().btnAddExposure.setVisibility(GONE);
-		} else {
-			getContentBinding().btnAddExposure.setVisibility(VISIBLE);
-		}
 	}
 
 	private void updateAddActivitiesAsCaseButtonVisibility() {
