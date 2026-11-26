@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseClassificationRef;
 import de.symeda.sormas.api.epipulse.referencevalue.EpipulseCaseOutcomeRef;
@@ -766,70 +767,99 @@ public final class EpipulseMapping {
 		Collections.unmodifiableSet(EnumSet.of(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY));
 
 	/**
-	 * {@code DateOfLastVaccination}: the latest of the doses {@link #vaccinationStatus} counts.
-	 *
-	 * <p>
-	 * Read from exactly the same doses, up to the same reference date
-	 * ({@link EpipulseCaseDates#vaccinationReferenceDate}: onset, else notification), so the two
-	 * columns can never describe different vaccinations: blank whenever the status is not a dose
-	 * count. A dose on the reference day counts, as it does for the status, although EpiPulse words
-	 * this column "before disease onset".
+	 * {@code DateOfLastVaccination}: the newest of the doses {@link #vaccinationStatus} counts
+	 * Blank whenever the status is not a dose count.
 	 */
 	public static String dateOfLastVaccination(EpipulseDiseaseExportEntryDto entry) {
 
-		Date reference = EpipulseCaseDates.vaccinationReferenceDate(entry);
-		if (reference == null) {
+		Date cutoff = EpipulseCaseDates.vaccinationCutoffDate(entry);
+		if (cutoff == null) {
 			return "";
 		}
 
-		SortedSet<Date> doseDays = doseDaysUpTo(entry, DateHelper.getStartOfDay(reference));
+		CountedDoses counted = countDoses(entry, cutoff);
 
-		return doseDays.isEmpty() ? "" : formatDate(doseDays.last());
+		return counted.count == 0 ? "" : formatDate(counted.newestDay);
 	}
 
 	/**
-	 * {@code VaccinationStatus}: the number of vaccine doses the patient received up to and
-	 * including the reference day - the onset, or for a case without one (asymptomatic included)
-	 * the notification date ({@link EpipulseCaseDates#vaccinationReferenceDate}). "Onset" below
-	 * means that reference day.
+	 * {@code VaccinationStatus}: the number of vaccine doses received up to and including the
+	 * cutoff ({@link EpipulseCaseDates#vaccinationCutoffDate}): the onset, or without one the
+	 * notification date, minus the disease's vaccination protection start offset.
 	 *
 	 * <p>
-	 * Counts doses, not courses: every dose recorded under a same-disease immunization whose means
-	 * is in {@link #VACCINATION_DOSE_MEANS}, whatever the immunization's status - a pending, failed
-	 * or expired course still delivered its doses. Doses on the same day count once, so a dose
-	 * recorded under two immunizations is not counted twice. The first rule that applies wins:
-	 *
+	 * Counts every dose recorded under a same-disease immunization whose means is in
+	 * {@link #VACCINATION_DOSE_MEANS}, whatever the immunization's status - a pending, failed or
+	 * expired course still delivered its doses. Report dates are never used:
+	 * <ul>
+	 * <li>doses given on the same day count once, so a dose recorded under two immunizations is not
+	 * counted twice</li>
+	 * <li>a dose with no vaccination date takes the newest dated dose of its own immunization, and
+	 * each such dose counts (quick entry: "N doses, the last on date")</li>
+	 * <li>a dose with no vaccination date in an immunization with no dated dose is not counted; the
+	 * immunization's validity dates decide instead</li>
+	 * </ul>
+	 * The first that applies:
 	 * <ol>
-	 * <li>no onset and no notification date - blank: there is no date to have been vaccinated by</li>
-	 * <li>at least one dose up to the onset day - that count, capped at {@code maxDoses}</li>
-	 * <li>doses on record, all after onset - {@code NOTVACC}: the dates show none had been given</li>
-	 * <li>no doses on record at all, but a vaccination immunization recorded up to the onset day
-	 * ({@link EpipulseCaseDates#immunizationDate}) - {@code UNKDOSE}: vaccinated, the doses not
-	 * entered. Its planned number of doses is not a count of doses given, so it is not used</li>
+	 * <li>no onset and no notification date - blank</li>
+	 * <li>doses up to the cutoff - that count, capped at {@code maxDoses}</li>
+	 * <li>a vaccination immunization with no dated dose, valid from on or before the reference date
+	 * (or, without valid from, valid until on or before it) - {@code UNKDOSE}: vaccinated, the doses
+	 * not dated. Valid from already includes the protection offset where the disease configures
+	 * it, so it is compared with the reference date, not the cutoff</li>
+	 * <li>every vaccination immunization known to postdate the cutoff - its dated doses, or its
+	 * valid from - {@code NOTVACC}</li>
 	 * <li>an explicit {@code NOT_IMMUNIZED} immunization - {@code NOTVACC}</li>
-	 * <li>nothing recorded - blank: the absence of a record is not evidence of non-vaccination</li>
+	 * <li>otherwise blank: nothing recorded, or an immunization with no date at all - the absence of
+	 * a record is not evidence that the patient was not vaccinated</li>
 	 * </ol>
 	 */
 	public static String vaccinationStatus(EpipulseDiseaseExportEntryDto entry, int maxDoses) {
 
 		Date reference = EpipulseCaseDates.vaccinationReferenceDate(entry);
-		if (reference == null) {
+		Date cutoff = EpipulseCaseDates.vaccinationCutoffDate(entry);
+		if (reference == null || cutoff == null) {
 			return "";
 		}
 
-		Date onsetDay = DateHelper.getStartOfDay(reference);
-
-		SortedSet<Date> doseDays = doseDaysUpTo(entry, onsetDay);
-		if (!doseDays.isEmpty()) {
-			return doseCountCode(Math.min(doseDays.size(), maxDoses));
+		CountedDoses counted = countDoses(entry, cutoff);
+		if (counted.count > 0) {
+			return doseCountCode(Math.min(counted.count, maxDoses));
 		}
 
-		if (hasDoses(entry)) {
+		Date referenceDay = DateHelper.getStartOfDay(reference);
+		Map<Long, Date> newestDoseDays = newestDatedDoseDays(entry);
+
+		// No dose counts, so every dated dose on record postdates the cutoff.
+		boolean knownAfter = !newestDoseDays.isEmpty();
+		boolean undatable = false;
+
+		if (entry.getImmunizations() != null) {
+			for (EpipulseImmunizationCheckDto immunization : entry.getImmunizations()) {
+
+				if (!VACCINATION_DOSE_MEANS.contains(immunization.getMeansOfImmunization()) || newestDoseDays.containsKey(immunization.getId())) {
+					continue;
+				}
+
+				Date validFrom = startOfDay(immunization.getValidFrom());
+				Date validUntil = startOfDay(immunization.getValidUntil());
+
+				if (validFrom != null) {
+					if (!validFrom.after(referenceDay)) {
+						return EpipulseVaccinationStatusRef.UNKDOSE.getCode();
+					}
+					knownAfter = true;
+				} else if (validUntil != null && !validUntil.after(referenceDay)) {
+					return EpipulseVaccinationStatusRef.UNKDOSE.getCode();
+				} else {
+					// a valid until after the reference date does not tell when the vaccination was
+					undatable = true;
+				}
+			}
+		}
+
+		if (knownAfter && !undatable) {
 			return EpipulseVaccinationStatusRef.NOTVACC.getCode();
-		}
-
-		if (hasVaccinationImmunizationUpTo(entry, onsetDay)) {
-			return EpipulseVaccinationStatusRef.UNKDOSE.getCode();
 		}
 
 		if (hasNotImmunizedRecord(entry)) {
@@ -839,56 +869,74 @@ public final class EpipulseMapping {
 		return "";
 	}
 
-	/**
-	 * The distinct days a dose was given on, up to and including the onset day. A dose with no date
-	 * at all cannot be placed before or after onset and is left out.
-	 */
-	private static SortedSet<Date> doseDaysUpTo(EpipulseDiseaseExportEntryDto entry, Date onsetDay) {
+	/** The doses {@link #vaccinationStatus} counts and the newest day among them. */
+	private static final class CountedDoses {
 
-		SortedSet<Date> doseDays = new TreeSet<>();
+		private int count;
+		private Date newestDay;
+	}
+
+	/**
+	 * Counts the doses given up to and including the cutoff day. Dated doses count once per day;
+	 * an undated dose is placed on the newest dated dose of its immunization and always counts,
+	 * or is left out when its immunization has no dated dose.
+	 */
+	private static CountedDoses countDoses(EpipulseDiseaseExportEntryDto entry, Date cutoffDay) {
+
+		CountedDoses counted = new CountedDoses();
 		if (entry.getVaccinations() == null) {
-			return doseDays;
+			return counted;
 		}
+
+		Map<Long, Date> newestDoseDays = newestDatedDoseDays(entry);
+		Set<Date> datedDays = new HashSet<>();
+		int undatedDoses = 0;
 
 		for (EpipulseVaccinationCheckDto vaccination : entry.getVaccinations()) {
 
-			Date administered = EpipulseCaseDates.vaccinationDate(vaccination);
-			if (administered == null) {
+			boolean dated = vaccination.getVaccinationDate() != null;
+			Date day = dated ? DateHelper.getStartOfDay(vaccination.getVaccinationDate()) : newestDoseDays.get(vaccination.getImmunizationId());
+			if (day == null || day.after(cutoffDay)) {
 				continue;
 			}
 
-			Date day = DateHelper.getStartOfDay(administered);
-			if (!day.after(onsetDay)) {
-				doseDays.add(day);
+			if (dated) {
+				datedDays.add(day);
+			} else {
+				undatedDoses++;
+			}
+
+			if (counted.newestDay == null || day.after(counted.newestDay)) {
+				counted.newestDay = day;
 			}
 		}
 
-		return doseDays;
+		counted.count = datedDays.size() + undatedDoses;
+		return counted;
 	}
 
-	private static boolean hasDoses(EpipulseDiseaseExportEntryDto entry) {
-		return entry.getVaccinations() != null && !entry.getVaccinations().isEmpty();
+	/** Per immunization id, the day of its newest dose that has a vaccination date. */
+	private static Map<Long, Date> newestDatedDoseDays(EpipulseDiseaseExportEntryDto entry) {
+
+		Map<Long, Date> newestDoseDays = new HashMap<>();
+		if (entry.getVaccinations() == null) {
+			return newestDoseDays;
+		}
+
+		for (EpipulseVaccinationCheckDto vaccination : entry.getVaccinations()) {
+			if (vaccination.getVaccinationDate() != null) {
+				newestDoseDays.merge(
+					vaccination.getImmunizationId(),
+					DateHelper.getStartOfDay(vaccination.getVaccinationDate()),
+					(day, other) -> day.after(other) ? day : other);
+			}
+		}
+
+		return newestDoseDays;
 	}
 
-	private static boolean hasVaccinationImmunizationUpTo(EpipulseDiseaseExportEntryDto entry, Date onsetDay) {
-
-		if (entry.getImmunizations() == null) {
-			return false;
-		}
-
-		for (EpipulseImmunizationCheckDto immunization : entry.getImmunizations()) {
-
-			if (!VACCINATION_DOSE_MEANS.contains(immunization.getMeansOfImmunization())) {
-				continue;
-			}
-
-			Date recorded = EpipulseCaseDates.immunizationDate(immunization);
-			if (recorded != null && !DateHelper.getStartOfDay(recorded).after(onsetDay)) {
-				return true;
-			}
-		}
-
-		return false;
+	private static Date startOfDay(Date date) {
+		return date == null ? null : DateHelper.getStartOfDay(date);
 	}
 
 	private static boolean hasNotImmunizedRecord(EpipulseDiseaseExportEntryDto entry) {

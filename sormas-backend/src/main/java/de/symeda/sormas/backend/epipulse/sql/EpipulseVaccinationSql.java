@@ -59,16 +59,16 @@ public final class EpipulseVaccinationSql {
 	}
 
 	/**
-	 * Every dose the patient received for the disease, newest first: one record per dose, whatever
-	 * immunization it was recorded under, provided that immunization's means holds doses.
+	 * Every dose the patient received for the disease, newest first: one record per dose with the
+	 * id of the immunization it was recorded under, provided that immunization's means holds doses.
 	 */
 	private static String buildVaccinationsCte() {
 		//@formatter:off
 		return "case_all_vaccinations AS (SELECT i.person_id," +
 			   "                                      STRING_AGG(CONCAT_WS(" + SQL_RECORD_SEPARATOR + "," +
-			   "                                                           COALESCE(to_char(v.vaccinationdate, " + SQL_DATE_FORMAT + "), '')," +
-			   "                                                           COALESCE(to_char(v.reportdate, " + SQL_DATE_FORMAT + "), '')), " + SQL_COLLECTION_SEPARATOR +
-			   "                                                 ORDER BY COALESCE(v.vaccinationdate, v.reportdate) DESC)" +
+			   "                                                           i.id," +
+			   "                                                           COALESCE(to_char(v.vaccinationdate, " + SQL_DATE_FORMAT + "), '')), " + SQL_COLLECTION_SEPARATOR +
+			   "                                                 ORDER BY v.vaccinationdate DESC NULLS LAST)" +
 			   "                                          as all_vaccinations_from_latest" +
 			   "                               FROM immunization i" +
 			   "                                        INNER JOIN vaccination v ON i.id = v.immunization_id" +
@@ -85,7 +85,7 @@ public final class EpipulseVaccinationSql {
 	 * The patient's immunizations for the disease that dose rows cannot account for. This covers
 	 * three cases:
 	 * <ul>
-	 * <li>Vaccinations with no doses entered under them.</li>
+	 * <li>Vaccinations with no dated dose under them, placed by their validity dates.</li>
 	 * <li>Explicit {@code NOT_IMMUNIZED} records.</li>
 	 * <li>{@code MATERNAL_VACCINATION} records, which feed {@code VaccinationStatusMaternal}.</li>
 	 * </ul>
@@ -103,9 +103,10 @@ public final class EpipulseVaccinationSql {
 		//@formatter:off
 		return "case_all_immunizations AS (SELECT i.person_id," +
 			   "                                      STRING_AGG(CONCAT_WS(" + SQL_RECORD_SEPARATOR + "," +
+			   "                                                           i.id," +
 			   "                                                           i.meansofimmunization," +
-			   "                                                           COALESCE(to_char(i.startdate, " + SQL_DATE_FORMAT + "), '')," +
-			   "                                                           COALESCE(to_char(i.reportdate, " + SQL_DATE_FORMAT + "), '')), " + SQL_COLLECTION_SEPARATOR +
+			   "                                                           COALESCE(to_char(i.validfrom, " + SQL_DATE_FORMAT + "), '')," +
+			   "                                                           COALESCE(to_char(i.validuntil, " + SQL_DATE_FORMAT + "), '')), " + SQL_COLLECTION_SEPARATOR +
 			   "                                                 ORDER BY i.reportdate DESC)" +
 			   "                                          as all_immunizations_from_latest" +
 			   "                               FROM immunization i" +

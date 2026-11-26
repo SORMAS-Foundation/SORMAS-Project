@@ -37,6 +37,8 @@ import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.api.epipulse.EpipulseVariable;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -254,9 +256,8 @@ public abstract class AbstractEpipulseExportTest extends AbstractBeanTest {
 		FieldModel fieldModel = EpipulseFieldModels.forSubjectCode(subjectCode);
 
 		try {
-			List<EpipulseDiseaseExportEntryDto> entries = getBean(EpipulseCaseBasedExportStrategy.class)
-				.export(fieldModel, exportDto, getConfigFacade().getCountryName())
-				.getExportEntryList();
+			List<EpipulseDiseaseExportEntryDto> entries =
+				getBean(EpipulseCaseBasedExportStrategy.class).export(fieldModel, exportDto, getConfigFacade().getCountryName()).getExportEntryList();
 
 			return new ExportedEntries(fieldModel, entries);
 		} catch (SQLException e) {
@@ -344,6 +345,25 @@ public abstract class AbstractEpipulseExportTest extends AbstractBeanTest {
 			}
 
 			return immunization;
+		}
+
+		/**
+		 * Saves a vaccination through the quick immunization form: {@code numberOfDoses} doses, only
+		 * the last dated, on {@code dateOfMostRecentDose}.
+		 */
+		public ImmunizationDto quickImmunization(PersonReferenceDto person, int numberOfDoses, Date dateOfMostRecentDose) {
+
+			ImmunizationDto immunization = creator.createImmunizationDto(
+				disease,
+				person,
+				reportingUser,
+				ImmunizationStatus.PENDING,
+				MeansOfImmunization.VACCINATION,
+				ImmunizationManagementStatus.ONGOING,
+				rdcf);
+			immunization.setNumberOfDoses(numberOfDoses);
+
+			return getImmunizationFacade().saveQuickImmunization(immunization, null, dateOfMostRecentDose);
 		}
 
 		/** A test on a sample of its own, so several can sit on one case. */

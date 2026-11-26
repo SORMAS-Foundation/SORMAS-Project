@@ -183,9 +183,13 @@ public class EpipulseCaseBasedExportStrategy {
 		List<PathogenTestType> subjectCodePathogenTestTypes = EpipulsePathogenTestTypeRef.getPathogenTestTypesByDisease(exportDto.getSubjectCode());
 
 		ExportContext context = new ExportContext(reportingCountry, subjectCodePathogenTestTypes);
+		// VaccinationStatus cutoff; null when the disease configures none.
+		Integer vaccinationProtectionStartOffsetDays =
+			diseaseConfigurationFacade.getVaccinationProtectionStartOffsetDays(exportDto.getSubjectCode().getDisease());
 
 		for (Object[] row : resultList) {
 			EpipulseDiseaseExportEntryDto dto = new EpipulseDiseaseExportEntryDto();
+			dto.setVaccinationProtectionStartOffsetDays(vaccinationProtectionStartOffsetDays);
 			fieldModel.readInto(dto, row, context);
 			exportEntryList.add(dto);
 		}

@@ -28,13 +28,21 @@ import java.util.Date;
  * {@link EpipulseMapping#VACCINATION_DOSE_MEANS} reach this DTO; the aggregate filters the rest.
  *
  * <p>
- * Both dates are kept instead of a single coalesced date, because the one gets reported is a
- * rule (see {@link EpipulseCaseDates#vaccinationDate}).
+ * The immunization id links the dose to its {@link EpipulseImmunizationCheckDto}: a dose with no
+ * vaccination date is placed on the newest dated dose of the same immunization.
  */
 public class EpipulseVaccinationCheckDto {
 
+	private Long immunizationId;
 	private Date vaccinationDate;
-	private Date reportDate;
+
+	public Long getImmunizationId() {
+		return immunizationId;
+	}
+
+	public void setImmunizationId(Long immunizationId) {
+		this.immunizationId = immunizationId;
+	}
 
 	public Date getVaccinationDate() {
 		return vaccinationDate;
@@ -42,14 +50,5 @@ public class EpipulseVaccinationCheckDto {
 
 	public void setVaccinationDate(Date vaccinationDate) {
 		this.vaccinationDate = vaccinationDate;
-	}
-
-	/** When the vaccination was recorded, which should be used when no vaccination date. */
-	public Date getReportDate() {
-		return reportDate;
-	}
-
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
 	}
 }

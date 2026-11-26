@@ -26,20 +26,32 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
  * One immunization record of the patient for the exported disease, from the export aggregate.
  *
  * <p>
- * This field is only read for the two {@code VaccinationStatus} outcomes that dose rows cannot
+ * This field is only read for the {@code VaccinationStatus} outcomes that dated doses cannot
  * decide:
  * <ul>
- * <li>{@code UNKDOSE} - a vaccination immunization with no doses recorded under it</li>
- * <li>{@code NOTVACC} - an explicit {@link MeansOfImmunization#NOT_IMMUNIZED} record</li>
+ * <li>{@code UNKDOSE} - a vaccination immunization with no dated dose, valid from before the
+ * reference date</li>
+ * <li>{@code NOTVACC} - every vaccination immunization known to postdate the reference date, or an
+ * explicit {@link MeansOfImmunization#NOT_IMMUNIZED} record</li>
  * </ul>
  * The dose count is derived from the dose rows, so this record does not carry the immunization's
- * status, validity window, or planned number of doses.
+ * status or planned number of doses.
  */
 public class EpipulseImmunizationCheckDto {
 
+	private Long id;
 	private MeansOfImmunization meansOfImmunization;
-	private Date startDate;
-	private Date reportDate;
+	private Date validFrom;
+	private Date validUntil;
+
+	/** Links the doses recorded under this immunization ({@link EpipulseVaccinationCheckDto#getImmunizationId}). */
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public MeansOfImmunization getMeansOfImmunization() {
 		return meansOfImmunization;
@@ -49,21 +61,19 @@ public class EpipulseImmunizationCheckDto {
 		this.meansOfImmunization = meansOfImmunization;
 	}
 
-	/** When the immunization started, where recorded; see {@link EpipulseCaseDates#immunizationDate}. */
-	public Date getStartDate() {
-		return startDate;
+	public Date getValidFrom() {
+		return validFrom;
 	}
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setValidFrom(Date validFrom) {
+		this.validFrom = validFrom;
 	}
 
-	/** When the immunization was recorded; never blank in the database. */
-	public Date getReportDate() {
-		return reportDate;
+	public Date getValidUntil() {
+		return validUntil;
 	}
 
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
+	public void setValidUntil(Date validUntil) {
+		this.validUntil = validUntil;
 	}
 }

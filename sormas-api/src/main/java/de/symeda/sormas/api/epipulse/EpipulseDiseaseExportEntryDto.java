@@ -72,6 +72,7 @@ public class EpipulseDiseaseExportEntryDto {
 	private List<EpipulsePathogentTestCheckDto> pathogenTests;
 	private List<EpipulseVaccinationCheckDto> vaccinations;
 	private List<EpipulseImmunizationCheckDto> immunizations;
+	private Integer vaccinationProtectionStartOffsetDays;  // DiseaseConfiguration, VaccinationStatus cutoff
 
 	// MEAS-specific laboratory fields (can be mapped from existing SORMAS data)
 	private Date dateOfSpecimen;
@@ -477,6 +478,18 @@ public class EpipulseDiseaseExportEntryDto {
 
 	public void setImmunizations(List<EpipulseImmunizationCheckDto> immunizations) {
 		this.immunizations = immunizations;
+	}
+
+	/**
+	 * The disease's {@code DiseaseConfiguration.vaccinationProtectionStartOffsetDays}; null when not
+	 * configured.
+	 */
+	public Integer getVaccinationProtectionStartOffsetDays() {
+		return vaccinationProtectionStartOffsetDays;
+	}
+
+	public void setVaccinationProtectionStartOffsetDays(Integer vaccinationProtectionStartOffsetDays) {
+		this.vaccinationProtectionStartOffsetDays = vaccinationProtectionStartOffsetDays;
 	}
 
 	public Date getDateOfSpecimen() {
