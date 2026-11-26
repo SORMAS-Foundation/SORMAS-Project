@@ -66,8 +66,8 @@ import de.symeda.sormas.backend.epipulse.fieldmodel.FieldModel;
  * a link to an imported one, "mosquito-indigenous" the case <em>without</em>. Swapping them
  * compiles, exports, and inverts the one distinction the variable exists to draw, so the pairing
  * is asserted against each constant's caption rather than its name.</li>
- * <li>{@code EpipulseOccupationRef} falls through to {@code OTH} rather than to nothing, the
- * opposite of every other lookup in that package. The two values that must <em>not</em> fall
+ * <li>{@code EpipulseOccupationRef} falls through to {@code OTH} rather than to nothing, as
+ * {@code EpipulseMalaModeOfTransmissionRef} does but no other lookup in that package. The two values that must <em>not</em> fall
  * through are named here so the exception to the exception is written down.</li>
  * </ul>
  */
@@ -205,15 +205,14 @@ public class MalaFieldModelTest {
 	}
 
 	@Test
-	@DisplayName("a bite in an endemic country reports nothing, because every MALA code is about local transmission")
-	public void anOrdinaryImportedCaseReportsNoModeOfTransmission() {
+	@DisplayName("a bite in an endemic country, a laboratory exposure, UNKNOWN and no answer report OTH")
+	public void routesWithoutAMalaCodeReportOther() {
 
-		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(ModeOfTransmission.MOSQUITOES_FROM_ENDEMIC_COUNTRY), is((String) null));
-
-		// UNKNOWN is not OTH.
-		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(ModeOfTransmission.UNKNOWN), is((String) null));
-		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(ModeOfTransmission.BY_LAB), is((String) null));
-		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(null), is((String) null));
+		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(ModeOfTransmission.OTHER), is("OTH"));
+		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(ModeOfTransmission.MOSQUITOES_FROM_ENDEMIC_COUNTRY), is("OTH"));
+		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(ModeOfTransmission.BY_LAB), is("OTH"));
+		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(ModeOfTransmission.UNKNOWN), is("OTH"));
+		assertThat(EpipulseMalaModeOfTransmissionRef.codeFor(null), is("OTH"));
 	}
 
 	// ---------------------------------------------------------------------------------------

@@ -40,14 +40,12 @@ import de.symeda.sormas.api.exposure.ModeOfTransmission;
  * </ul>
  *
  * <p>
- * A bite abroad ({@code MOSQUITOES_FROM_ENDEMIC_COUNTRY}) has no MALA code and is reported via
- * other variables such as import/place fields.
- *
- * <p>
  * Synonym pairs are both accepted: MEDICAL_CARE/HEALTHCARE_ASSOCIATED -> {@code HAI}, and
  * FROM_MOTHER_TO_CHILD/MOTHER_TO_CHILD -> {@code MTCT}. {@code SOHO} maps
- * {@code TRANSFUSION_TRANSPLANT_RECIPIENT}. Unexpressible routes (for example
- * {@code UNKNOWN}, lab-acquired) map to blank rather than {@code OTH}.
+ * {@code TRANSFUSION_TRANSPLANT_RECIPIENT}.
+ *
+ * <p>
+ * Every other route is {@code OTH}, unanswered included
  *
  * @see EpipulseModeOfTransmissionRef SALM's value set for the same variable
  */
@@ -58,7 +56,7 @@ public enum EpipulseMalaModeOfTransmissionRef {
 	MOSQINDIG(ModeOfTransmission.MOSQUITOES_WITHOUT_EVIDENCE),
 	MOSQINTRO(ModeOfTransmission.MOSQUITOES_WITH_STRONG_EPI_EVIDENCE),
 	MTCT(ModeOfTransmission.FROM_MOTHER_TO_CHILD, ModeOfTransmission.MOTHER_TO_CHILD),
-	OTH(ModeOfTransmission.OTHER),
+	OTH(ModeOfTransmission.OTHER, ModeOfTransmission.MOSQUITOES_FROM_ENDEMIC_COUNTRY, ModeOfTransmission.BY_LAB, ModeOfTransmission.UNKNOWN),
 	SOHO(ModeOfTransmission.TRANSFUSION_TRANSPLANT_RECIPIENT);
 
 	private final List<ModeOfTransmission> modesOfTransmission;
@@ -71,11 +69,11 @@ public enum EpipulseMalaModeOfTransmissionRef {
 		return modesOfTransmission;
 	}
 
-	/** The code for a recorded route, or {@code null} for one MALA cannot express. */
+	/** The code for a recorded route; {@code OTH} for none or one MALA has no code of its own for. */
 	public static String codeFor(ModeOfTransmission modeOfTransmission) {
 
 		if (modeOfTransmission == null) {
-			return null;
+			return OTH.name();
 		}
 
 		for (EpipulseMalaModeOfTransmissionRef ref : values()) {
@@ -84,6 +82,6 @@ public enum EpipulseMalaModeOfTransmissionRef {
 			}
 		}
 
-		return null;
+		return OTH.name();
 	}
 }

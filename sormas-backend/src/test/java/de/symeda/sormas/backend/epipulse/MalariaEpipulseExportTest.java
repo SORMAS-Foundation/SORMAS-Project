@@ -208,7 +208,7 @@ public class MalariaEpipulseExportTest extends AbstractEpipulseExportTest {
 		expected.put(PLACE_OF_NOTIFICATION, value("LU1010"));
 
 		expected.put(IMPORTED, value("true"));
-		expected.put(MODE_OF_TRANSMISSION, blank());
+		expected.put(MODE_OF_TRANSMISSION, value("OTH"));
 		expected.put(PLACE_OF_INFECTION, value("GH"));
 
 		// the journey
@@ -449,15 +449,18 @@ public class MalariaEpipulseExportTest extends AbstractEpipulseExportTest {
 		String introduced = caseWith(c -> c.getEpiData().setModeOfTransmission(ModeOfTransmission.MOSQUITOES_WITH_STRONG_EPI_EVIDENCE));
 		String healthcare = caseWith(c -> c.getEpiData().setModeOfTransmission(ModeOfTransmission.MEDICAL_CARE));
 
-		// No code exists; not OTH. All MALA codes describe transmission within reporting country.
+		// no code of its own - every other MALA code describes transmission within the reporting
+		// country - so OTH; a case with no answer reports OTH too
 		String abroad = caseWith(c -> c.getEpiData().setModeOfTransmission(ModeOfTransmission.MOSQUITOES_FROM_ENDEMIC_COUNTRY));
+		String unanswered = caseWith(c -> c.getEpiData().setModeOfTransmission(null));
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.MALA, PERIOD_START, PERIOD_END);
 
 		assertThat(export.value(export.entryFor(indigenous), MODE_OF_TRANSMISSION), is("MOSQINDIG"));
 		assertThat(export.value(export.entryFor(introduced), MODE_OF_TRANSMISSION), is("MOSQINTRO"));
 		assertThat(export.value(export.entryFor(healthcare), MODE_OF_TRANSMISSION), is("HAI"));
-		assertThat(export.value(export.entryFor(abroad), MODE_OF_TRANSMISSION), is(""));
+		assertThat(export.value(export.entryFor(abroad), MODE_OF_TRANSMISSION), is("OTH"));
+		assertThat(export.value(export.entryFor(unanswered), MODE_OF_TRANSMISSION), is("OTH"));
 	}
 
 	@Test
