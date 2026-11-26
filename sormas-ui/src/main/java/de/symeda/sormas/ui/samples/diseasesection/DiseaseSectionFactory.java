@@ -65,6 +65,8 @@ public final class DiseaseSectionFactory {
 			return new RubellaSectionComponent();
 		case YERSINIOSIS:
 			return new YersiniosisSectionComponent();
+		case SALMONELLOSIS:
+			return new SalmonellosisSectionComponent();
 		case DIPHTHERIA:
 			return new DiphtheriaSectionComponent();
 		default:
