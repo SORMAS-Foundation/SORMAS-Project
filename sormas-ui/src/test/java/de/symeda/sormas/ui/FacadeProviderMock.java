@@ -56,6 +56,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.continent.ContinentFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryFacade;
@@ -109,6 +110,7 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.Hospita
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb.ExportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
@@ -187,6 +189,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(DistrictFacadeEjbLocal.class);
 		} else if (CommunityFacade.class == clazz) {
 			return (P) beanTest.getBean(CommunityFacadeEjbLocal.class);
+		} else if (PopulationDataFacade.class == clazz) {
+			return (P) beanTest.getBean(PopulationDataFacadeEjbLocal.class);
 		} else if (UserFacade.class == clazz) {
 			return (P) beanTest.getBean(UserFacadeEjbLocal.class);
 		} else if (HospitalizationFacade.class == clazz) {

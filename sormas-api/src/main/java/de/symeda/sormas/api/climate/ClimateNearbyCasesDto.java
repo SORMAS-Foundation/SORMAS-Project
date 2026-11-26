@@ -33,13 +33,20 @@ public class ClimateNearbyCasesDto implements Serializable {
 
 	private final EnvironmentReferenceDto environment;
 	private final Disease disease;
+	private final ClimateCaseClassificationFilter classification;
 	private final double radiusKm;
 	private final boolean byCommunityOnly;
 	private final List<ClimateNearbyCasesWeekDto> weeks = new ArrayList<>();
 
-	public ClimateNearbyCasesDto(EnvironmentReferenceDto environment, Disease disease, double radiusKm, boolean byCommunityOnly) {
+	public ClimateNearbyCasesDto(
+		EnvironmentReferenceDto environment,
+		Disease disease,
+		ClimateCaseClassificationFilter classification,
+		double radiusKm,
+		boolean byCommunityOnly) {
 		this.environment = environment;
 		this.disease = disease;
+		this.classification = classification;
 		this.radiusKm = radiusKm;
 		this.byCommunityOnly = byCommunityOnly;
 	}
@@ -53,6 +60,13 @@ public class ClimateNearbyCasesDto implements Serializable {
 	 */
 	public Disease getDisease() {
 		return disease;
+	}
+
+	/**
+	 * @return the classifications counted
+	 */
+	public ClimateCaseClassificationFilter getClassification() {
+		return classification;
 	}
 
 	public double getRadiusKm() {

@@ -49,6 +49,14 @@ public interface ClimateCaseFacade {
 	 *         environment's community (decision 82); by community only when the environment has no usable GPS
 	 * @param disease
 	 *            the disease to count, or null for all diseases
+	 * @param classification
+	 *            the classifications to count, or null for confirmed cases only, as on the Climate dashboard
 	 */
-	ClimateNearbyCasesDto getNearbyCases(EnvironmentReferenceDto environment, Disease disease, double radiusKm, LocalDate from, LocalDate to);
+	ClimateNearbyCasesDto getNearbyCases(
+		EnvironmentReferenceDto environment,
+		Disease disease,
+		ClimateCaseClassificationFilter classification,
+		double radiusKm,
+		LocalDate from,
+		LocalDate to);
 }

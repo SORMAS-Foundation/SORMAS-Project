@@ -20,14 +20,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.vaadin.data.provider.Query;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.climate.ClimateCaseClassificationFilter;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesDto;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesWeekDto;
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -104,7 +111,56 @@ class EnvironmentNearbyCasesPanelTest extends AbstractUiBeanTest {
 		assertFalse(panel.getRadius().isVisible());
 	}
 
+	@Test
+	void testClassificationFilterStartsOnConfirmedBetweenDiseaseAndRadius() {
+
+		EnvironmentDto environment = creator.createEnvironment("Lake Arenal", EnvironmentMedia.WATER, user.toReference(), rdcf, e -> {
+			e.getLocation().setLatitude(SITE_LATITUDE);
+			e.getLocation().setLongitude(SITE_LONGITUDE);
+		});
+		// all about 1.1 km north of the site
+		createCase(SITE_LATITUDE + 0.01, SITE_LONGITUDE, CaseClassification.CONFIRMED);
+		createCase(SITE_LATITUDE + 0.01, SITE_LONGITUDE, CaseClassification.PROBABLE);
+		createCase(SITE_LATITUDE + 0.01, SITE_LONGITUDE, CaseClassification.SUSPECT);
+		createCase(SITE_LATITUDE + 0.01, SITE_LONGITUDE, CaseClassification.NO_CASE);
+
+		EnvironmentNearbyCasesPanel panel = new EnvironmentNearbyCasesPanel(environment.toReference(), false);
+		panel.update(yesterday.minusDays(29), yesterday);
+
+		ComboBox<ClimateCaseClassificationFilter> classification = panel.getClassification();
+		assertEquals("Case classification", classification.getCaption());
+		assertFalse(classification.isEmptySelectionAllowed());
+		assertEquals(
+			Arrays.asList(ClimateCaseClassificationFilter.values()),
+			classification.getDataProvider().fetch(new Query<>()).collect(Collectors.toList()),
+			"the options of the Climate dashboard's filter");
+		HorizontalLayout filters = (HorizontalLayout) classification.getParent();
+		assertEquals(0, filters.getComponentIndex(panel.getDisease()));
+		assertEquals(1, filters.getComponentIndex(classification), "after the disease and before the radius");
+		assertEquals(2, filters.getComponentIndex(panel.getRadius()));
+
+		// confirmed cases at first, as on the Climate dashboard
+		assertEquals(ClimateCaseClassificationFilter.CONFIRMED, classification.getValue());
+		assertEquals(ClimateCaseClassificationFilter.CONFIRMED, panel.getNearby().getClassification());
+		assertEquals(1, shownCases(panel));
+
+		classification.setValue(ClimateCaseClassificationFilter.CONFIRMED_AND_PROBABLE);
+		assertEquals(ClimateCaseClassificationFilter.CONFIRMED_AND_PROBABLE, panel.getNearby().getClassification());
+		assertEquals(2, shownCases(panel));
+
+		classification.setValue(ClimateCaseClassificationFilter.ALL_BUT_NOT_A_CASE);
+		assertEquals(3, shownCases(panel));
+	}
+
+	private static int shownCases(EnvironmentNearbyCasesPanel panel) {
+		return panel.getNearby().getWeeks().stream().mapToInt(ClimateNearbyCasesWeekDto::getCount).sum();
+	}
+
 	private void createCase(double homeLatitude, double homeLongitude) {
+		createCase(homeLatitude, homeLongitude, CaseClassification.CONFIRMED);
+	}
+
+	private void createCase(double homeLatitude, double homeLongitude, CaseClassification classification) {
 		PersonDto person = creator.createPerson("Case", "Person", p -> {
 			p.getAddress().setLatitude(homeLatitude);
 			p.getAddress().setLongitude(homeLongitude);
@@ -114,7 +170,7 @@ class EnvironmentNearbyCasesPanelTest extends AbstractUiBeanTest {
 		Date date = ClimateCaptions.toDate(yesterday.minusDays(3));
 		creator.createCase(user.toReference(), person.toReference(), rdcf, c -> {
 			c.setDisease(Disease.CHOLERA);
-			c.setCaseClassification(CaseClassification.CONFIRMED);
+			c.setCaseClassification(classification);
 			c.setReportDate(date);
 			c.getSymptoms().setOnsetDate(date);
 		});

@@ -48,7 +48,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.collections4.ListUtils;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.climate.ClimateCaseClassificationFilter;
 import de.symeda.sormas.api.climate.ClimateCaseCountSource;
 import de.symeda.sormas.api.climate.ClimateCaseCriteria;
 import de.symeda.sormas.api.climate.ClimateCaseFacade;
@@ -322,7 +322,13 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 
 	@Override
 	@RightsAllowed(UserRight._CLIMATE_VIEW)
-	public ClimateNearbyCasesDto getNearbyCases(EnvironmentReferenceDto environmentRef, Disease disease, double radiusKm, LocalDate from, LocalDate to) {
+	public ClimateNearbyCasesDto getNearbyCases(
+		EnvironmentReferenceDto environmentRef,
+		Disease disease,
+		ClimateCaseClassificationFilter classificationFilter,
+		double radiusKm,
+		LocalDate from,
+		LocalDate to) {
 
 		if (environmentRef == null || from == null || to == null || from.isAfter(to) || radiusKm <= 0) {
 			throw new IllegalArgumentException("Nearby cases need an environment, a radius and a period");
@@ -330,6 +336,9 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 		if (!currentUserService.hasUserRight(UserRight.CASE_VIEW)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
+		// confirmed cases unless told otherwise, as for the dashboard's counts (decision 145)
+		ClimateCaseClassificationFilter classification =
+			classificationFilter != null ? classificationFilter : ClimateCaseClassificationFilter.CONFIRMED;
 
 		Environment environment = environmentService.getByUuid(environmentRef.getUuid());
 		Location site = environment.getLocation();
@@ -337,7 +346,7 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 		Long communityId = site != null && site.getCommunity() != null ? site.getCommunity().getId() : null;
 
 		ClimateNearbyCasesDto nearby =
-			new ClimateNearbyCasesDto(EnvironmentFacadeEjb.toReferenceDto(environment), disease, radiusKm, byCommunityOnly);
+			new ClimateNearbyCasesDto(EnvironmentFacadeEjb.toReferenceDto(environment), disease, classification, radiusKm, byCommunityOnly);
 		Map<EpiWeek, ClimateNearbyCasesWeekDto> weeks = new HashMap<>();
 		for (EpiWeek week : ClimateStatistics.weeksBetween(ClimateStatistics.epiWeekOf(from), ClimateStatistics.epiWeekOf(to))) {
 			ClimateNearbyCasesWeekDto weekDto = new ClimateNearbyCasesWeekDto(week);
@@ -396,7 +405,7 @@ public class ClimateCaseFacadeEjb implements ClimateCaseFacade {
 
 		Predicate filter = cb.and(
 			cb.isFalse(caze.get(Case.DELETED)),
-			cb.notEqual(caze.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+			caze.get(Case.CASE_CLASSIFICATION).in(classification.getClassifications()),
 			cb.greaterThanOrEqualTo(caseDate, ClimateCalendar.toDate(from)),
 			cb.lessThan(caseDate, ClimateCalendar.toDate(to.plusDays(1))),
 			place);

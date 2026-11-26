@@ -23,7 +23,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
- * Which cases the Climate dashboard counts.
+ * Which cases the Climate dashboard and "Cases near this site" on an environment's Climate data tab count.
  */
 public enum ClimateCaseClassificationFilter {
 

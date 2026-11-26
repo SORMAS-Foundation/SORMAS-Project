@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.climate.ClimateCaseClassificationFilter;
 import de.symeda.sormas.api.climate.ClimateCaseFacade;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesDto;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesWeekDto;
@@ -116,7 +117,7 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 		createCase(Disease.DENGUE, CaseClassification.NO_CASE, SITE_LATITUDE, SITE_LONGITUDE, null, rdcf.community);
 		String cholera = createCase(Disease.CHOLERA, CaseClassification.SUSPECT, SITE_LATITUDE, SITE_LONGITUDE, null, rdcf.community).getUuid();
 
-		ClimateNearbyCasesDto dengue = facade.getNearbyCases(environment.toReference(), Disease.DENGUE, 2, day.minusDays(10), day.plusDays(1));
+		ClimateNearbyCasesDto dengue = allButNotACase(Disease.DENGUE, 2, day.minusDays(10), day.plusDays(1));
 		assertFalse(dengue.isByCommunityOnly());
 		ClimateNearbyCasesWeekDto week = weekOf(dengue);
 		assertEquals(Collections.singletonList(home), week.getCaseUuids());
@@ -125,10 +126,10 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 		assertEquals(new HashSet<>(Arrays.asList(reported, sameCommunity)), new HashSet<>(week.getCommunityCaseUuids()));
 		assertEquals(2, dengue.getCommunityTotal());
 
-		ClimateNearbyCasesWeekDto withinFive = weekOf(facade.getNearbyCases(environment.toReference(), Disease.DENGUE, 5, day, day));
+		ClimateNearbyCasesWeekDto withinFive = weekOf(allButNotACase(Disease.DENGUE, 5, day, day));
 		assertEquals(new HashSet<>(Arrays.asList(home, farHome)), new HashSet<>(withinFive.getCaseUuids()));
 
-		ClimateNearbyCasesWeekDto allDiseases = weekOf(facade.getNearbyCases(environment.toReference(), null, 2, day, day));
+		ClimateNearbyCasesWeekDto allDiseases = weekOf(allButNotACase(null, 2, day, day));
 		assertEquals(new HashSet<>(Arrays.asList(home, cholera)), new HashSet<>(allDiseases.getCaseUuids()));
 	}
 
@@ -165,7 +166,7 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 		// without a home point, a marked exposure far away places the case there: neither nearby nor matched by community
 		createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, rdcf.community, exposure(6.95, 3.50, 10, true));
 
-		ClimateNearbyCasesWeekDto week = weekOf(facade.getNearbyCases(environment.toReference(), Disease.DENGUE, 2, day, day));
+		ClimateNearbyCasesWeekDto week = weekOf(allButNotACase(Disease.DENGUE, 2, day, day));
 		assertEquals(new HashSet<>(Arrays.asList(exposedHere, laterHere)), new HashSet<>(week.getCaseUuids()));
 		assertEquals(2, week.getExposureCount());
 		assertEquals(0, week.getHomeCount());
@@ -183,11 +184,61 @@ class ClimateNearbyCasesTest extends AbstractBeanTest {
 			entity.getLocation().setLongitude(0.0);
 		});
 
-		ClimateNearbyCasesDto nearby = facade.getNearbyCases(environment.toReference(), Disease.DENGUE, 2, day, day);
+		ClimateNearbyCasesDto nearby = allButNotACase(Disease.DENGUE, 2, day, day);
 		assertTrue(nearby.isByCommunityOnly());
 		ClimateNearbyCasesWeekDto week = weekOf(nearby);
 		assertEquals(0, week.getCount());
 		assertEquals(new HashSet<>(Arrays.asList(home, noPoint)), new HashSet<>(week.getCommunityCaseUuids()));
+	}
+
+	@Test
+	void testClassificationFilter() {
+
+		String confirmed = createCase(Disease.DENGUE, CaseClassification.CONFIRMED, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		String confirmedNoSymptoms =
+			createCase(Disease.DENGUE, CaseClassification.CONFIRMED_NO_SYMPTOMS, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		String confirmedUnknownSymptoms =
+			createCase(Disease.DENGUE, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		String probable = createCase(Disease.DENGUE, CaseClassification.PROBABLE, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		String suspect = createCase(Disease.DENGUE, CaseClassification.SUSPECT, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		String notClassified = createCase(Disease.DENGUE, CaseClassification.NOT_CLASSIFIED, 6.81, SITE_LONGITUDE, null, rdcf.community).getUuid();
+		createCase(Disease.DENGUE, CaseClassification.NO_CASE, 6.81, SITE_LONGITUDE, null, rdcf.community);
+		// cases without a point, matched by community, follow the filter too
+		String confirmedNoPoint = createCase(Disease.DENGUE, CaseClassification.CONFIRMED, null, null, null, rdcf.community).getUuid();
+		String probableNoPoint = createCase(Disease.DENGUE, CaseClassification.PROBABLE, null, null, null, rdcf.community).getUuid();
+		String suspectNoPoint = createCase(Disease.DENGUE, CaseClassification.SUSPECT, null, null, null, rdcf.community).getUuid();
+
+		ClimateNearbyCasesDto confirmedOnly =
+			facade.getNearbyCases(environment.toReference(), Disease.DENGUE, ClimateCaseClassificationFilter.CONFIRMED, 2, day, day);
+		assertEquals(ClimateCaseClassificationFilter.CONFIRMED, confirmedOnly.getClassification());
+		assertEquals(
+			new HashSet<>(Arrays.asList(confirmed, confirmedNoSymptoms, confirmedUnknownSymptoms)),
+			new HashSet<>(weekOf(confirmedOnly).getCaseUuids()));
+		assertEquals(Collections.singletonList(confirmedNoPoint), weekOf(confirmedOnly).getCommunityCaseUuids());
+
+		ClimateNearbyCasesWeekDto confirmedAndProbable = weekOf(
+			facade.getNearbyCases(environment.toReference(), Disease.DENGUE, ClimateCaseClassificationFilter.CONFIRMED_AND_PROBABLE, 2, day, day));
+		assertEquals(
+			new HashSet<>(Arrays.asList(confirmed, confirmedNoSymptoms, confirmedUnknownSymptoms, probable)),
+			new HashSet<>(confirmedAndProbable.getCaseUuids()));
+		assertEquals(new HashSet<>(Arrays.asList(confirmedNoPoint, probableNoPoint)), new HashSet<>(confirmedAndProbable.getCommunityCaseUuids()));
+
+		ClimateNearbyCasesWeekDto allButNotACase = weekOf(allButNotACase(Disease.DENGUE, 2, day, day));
+		assertEquals(
+			new HashSet<>(Arrays.asList(confirmed, confirmedNoSymptoms, confirmedUnknownSymptoms, probable, suspect, notClassified)),
+			new HashSet<>(allButNotACase.getCaseUuids()));
+		assertEquals(
+			new HashSet<>(Arrays.asList(confirmedNoPoint, probableNoPoint, suspectNoPoint)),
+			new HashSet<>(allButNotACase.getCommunityCaseUuids()));
+
+		// without a classification, confirmed cases only, as for the dashboard's counts (decision 145)
+		ClimateNearbyCasesDto byDefault = facade.getNearbyCases(environment.toReference(), Disease.DENGUE, null, 2, day, day);
+		assertEquals(ClimateCaseClassificationFilter.CONFIRMED, byDefault.getClassification());
+		assertEquals(new HashSet<>(weekOf(confirmedOnly).getCaseUuids()), new HashSet<>(weekOf(byDefault).getCaseUuids()));
+	}
+
+	private ClimateNearbyCasesDto allButNotACase(Disease disease, double radiusKm, LocalDate from, LocalDate to) {
+		return facade.getNearbyCases(environment.toReference(), disease, ClimateCaseClassificationFilter.ALL_BUT_NOT_A_CASE, radiusKm, from, to);
 	}
 
 	private ClimateNearbyCasesWeekDto weekOf(ClimateNearbyCasesDto nearby) {
