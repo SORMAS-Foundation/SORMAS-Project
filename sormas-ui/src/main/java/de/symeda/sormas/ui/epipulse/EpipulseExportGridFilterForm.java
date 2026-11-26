@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,6 +16,8 @@
 package de.symeda.sormas.ui.epipulse;
 
 import com.vaadin.ui.Button;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.epipulse.EpipulseExportCriteria;
@@ -58,7 +60,10 @@ public class EpipulseExportGridFilterForm extends AbstractFilterForm<EpipulseExp
 
 	@Override
 	protected void addFields() {
-		addField(FieldConfiguration.pixelSized(EpipulseExportCriteria.SUBJECT_CODE, 150));
+		Field<?> subjectCodeField = addField(FieldConfiguration.pixelSized(EpipulseExportCriteria.SUBJECT_CODE, 150));
+		if (subjectCodeField instanceof ComboBox) {
+			sortItemsByCaption((ComboBox) subjectCodeField);
+		}
 		addField(FieldConfiguration.pixelSized(EpipulseExportCriteria.STATUS, 150));
 
 		PopupDateField reportDateFrom = addField(getContent(), FieldConfiguration.pixelSized(EpipulseExportCriteria.REPORT_DATE_FROM, 140));

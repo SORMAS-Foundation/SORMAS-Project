@@ -18606,4 +18606,20 @@ ALTER TABLE testreport ENABLE TRIGGER versioning_trigger;
 
 INSERT INTO schema_version (version_number, comment) VALUES (694, '#14483 - Retire measles genotype B onto B1');
 
+-- #14472 - EpiPulse export: the subject code and data source entered when creating an export. They are prefilled from
+-- the disease configuration and belong to this export only; every new export gets both (the export facade fills and
+-- requires them)
+ALTER TABLE epipulse_export ADD COLUMN IF NOT EXISTS export_subject_code varchar(512);
+ALTER TABLE epipulse_export ADD COLUMN IF NOT EXISTS export_datasource varchar(512);
+ALTER TABLE epipulse_export_history ADD COLUMN IF NOT EXISTS export_subject_code varchar(512);
+ALTER TABLE epipulse_export_history ADD COLUMN IF NOT EXISTS export_datasource varchar(512);
+
+-- older exports: an export always wrote its own subject code (e.g. CONSYPH), so it is filled from subject_code; the data
+-- source they used is not stored anywhere, so it stays empty and the export falls back to the configuration
+ALTER TABLE epipulse_export DISABLE TRIGGER versioning_trigger;
+UPDATE epipulse_export SET export_subject_code = subject_code WHERE export_subject_code IS NULL AND subject_code IS NOT NULL;
+ALTER TABLE epipulse_export ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (695, '#14472 - EpiPulse export subject code and data source');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
