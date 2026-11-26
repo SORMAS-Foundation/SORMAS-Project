@@ -156,6 +156,10 @@ public class PopulationDataImporter extends DataImporter {
 									FacadeProvider.getRegionFacade().save(regionDto);
 								}
 							}
+						} else if (DataHelper.isNullOrEmpty(cellData.getValue())) {
+							// A blank cell means there is no figure for this sex and age group: nothing is saved for it and a figure
+							// that already exists is kept. Otherwise a file with only some of the template's columns filled, e.g. the
+							// total of a region, would fail on its first blank cell.
 						} else {
 							// Add the data from the currently processed cell to a new population data object
 							PopulationDataDto newPopulationData = PopulationDataDto.build(collectionDate);
