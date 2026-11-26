@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.infrastructure.country;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.ejb.LocalBean;
@@ -63,26 +64,22 @@ public class CountryService extends AbstractInfrastructureAdoService<Country, Co
 	}
 
 	/**
-	 * All countries, archived or not, whose NUTS code equals {@code nutsCode}, ignoring case and surrounding spaces.
-	 * {@code null} or an empty code → an empty list.
-	 *
-	 * <p>
-	 * Example: {@code " lu"} → Luxembourg with NUTS code {@code "LU"}; {@code "XX"} → empty list.
+	 * Finds a country by its NUTS code, including archived countries. The input is trimmed and uppercased before matching.
 	 */
-	public List<Country> getByNutsCode(String nutsCode) {
+	public Optional<Country> getByNutsCode(String nutsCode) {
 
 		String trimmed = nutsCode != null ? nutsCode.trim() : null;
 		if (trimmed == null || trimmed.isEmpty()) {
-			return Collections.emptyList();
+			return Optional.empty();
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
 		Root<Country> from = cq.from(getElementClass());
 
-		cq.where(CriteriaBuilderHelper.ilikePrecise(cb, from.get(Country.NUTS_CODE), trimmed));
+		cq.where(cb.equal(cb.upper(from.get(Country.NUTS_CODE)), trimmed.toUpperCase(Locale.ROOT)));
 
-		return em.createQuery(cq).getResultList();
+		return em.createQuery(cq).setMaxResults(1).getResultList().stream().findFirst();
 	}
 
 	public Optional<Country> getByIsoCode(String isoCode, boolean includeArchivedEntities) {
