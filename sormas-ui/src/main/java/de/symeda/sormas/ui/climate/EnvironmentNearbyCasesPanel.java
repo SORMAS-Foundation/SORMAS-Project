@@ -29,6 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.climate.ClimateCaseClassificationFilter;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesDto;
 import de.symeda.sormas.api.climate.ClimateNearbyCasesWeekDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
@@ -43,7 +44,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
  * "Cases near this site" on the environment Climate data tab (decisions 95 and 96): weekly counts of cases placed within
  * the radius by their probable infection environment, else their home address, with cases without GPS in the same
  * community as a lighter segment. Closeness only: no wording or colour suggests cause or alarm (decision 84). Selecting a
- * week lists its cases.
+ * week lists its cases. The cases counted are chosen by disease and by the Climate dashboard's case classification filter.
  */
 public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 
@@ -52,11 +53,15 @@ public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 	/** The radius options in km (UI spec); 2 km by default. */
 	public static final List<Double> RADII = Arrays.asList(1.0, 2.0, 5.0);
 	public static final double DEFAULT_RADIUS = 2.0;
+	/** Confirmed cases at first, as on the Climate dashboard (decision 145). */
+	public static final ClimateCaseClassificationFilter DEFAULT_CLASSIFICATION = ClimateCaseClassificationFilter.CONFIRMED;
 
 	private static final long WEEK = 7L * 24 * 60 * 60 * 1000;
 
 	private final EnvironmentReferenceDto environment;
 	private final ComboBox<Disease> disease = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+	private final ComboBox<ClimateCaseClassificationFilter> classification =
+		new ComboBox<>(I18nProperties.getCaption(Captions.climateDashboardClassification), Arrays.asList(ClimateCaseClassificationFilter.values()));
 	private final ComboBox<Double> radius = new ComboBox<>(I18nProperties.getCaption(Captions.climateNearbyRadius), RADII);
 	private final Label note = new Label();
 	private final ClimateChart chart = new ClimateChart((series, key) -> weekClicked(key));
@@ -83,13 +88,19 @@ public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 		disease.setPlaceholder(I18nProperties.getCaption(Captions.climateNearbyAllDiseases));
 		disease.setEmptySelectionCaption(I18nProperties.getCaption(Captions.climateNearbyAllDiseases));
 		disease.addValueChangeListener(e -> reload());
+		// the same options as the Climate dashboard's filter, so the bars say which cases they count
+		classification.setEmptySelectionAllowed(false);
+		// wider than a default field, so "Confirmed and probable" is not cut off
+		classification.setWidth(200, Unit.PIXELS);
+		classification.setValue(DEFAULT_CLASSIFICATION);
+		classification.addValueChangeListener(e -> reload());
 		radius.setItemCaptionGenerator(km -> String.format(I18nProperties.getString(Strings.climateNearbyRadiusOption), ClimateCaptions.number(km)));
 		radius.setEmptySelectionAllowed(false);
 		radius.setValue(DEFAULT_RADIUS);
 		radius.setVisible(!byCommunityOnly);
 		radius.addValueChangeListener(e -> reload());
-		CssStyles.style(CssStyles.VSPACE_NONE, disease, radius);
-		HorizontalLayout filters = new HorizontalLayout(disease, radius);
+		CssStyles.style(CssStyles.VSPACE_NONE, disease, classification, radius);
+		HorizontalLayout filters = new HorizontalLayout(disease, classification, radius);
 		filters.setMargin(false);
 		filters.addStyleName(CssStyles.CLIMATE_NEARBY_FILTERS);
 
@@ -115,7 +126,8 @@ public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 			return;
 		}
 		double km = radius.getValue() != null ? radius.getValue() : DEFAULT_RADIUS;
-		nearby = FacadeProvider.getClimateCaseFacade().getNearbyCases(environment, disease.getValue(), km, from, to);
+		ClimateCaseClassificationFilter counted = classification.getValue() != null ? classification.getValue() : DEFAULT_CLASSIFICATION;
+		nearby = FacadeProvider.getClimateCaseFacade().getNearbyCases(environment, disease.getValue(), counted, km, from, to);
 
 		int community = nearby.getCommunityTotal();
 		int total = nearby.getWeeks().stream().mapToInt(ClimateNearbyCasesWeekDto::getCount).sum() + community;
@@ -249,5 +261,13 @@ public class EnvironmentNearbyCasesPanel extends VerticalLayout {
 
 	ComboBox<Double> getRadius() {
 		return radius;
+	}
+
+	ComboBox<ClimateCaseClassificationFilter> getClassification() {
+		return classification;
+	}
+
+	ComboBox<Disease> getDisease() {
+		return disease;
 	}
 }
