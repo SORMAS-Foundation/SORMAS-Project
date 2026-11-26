@@ -16,8 +16,6 @@
 package de.symeda.sormas.backend.infrastructure.country;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -25,6 +23,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +34,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -66,9 +66,7 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(
 			exception.getMessage(),
-			is(
-				I18nProperties
-					.getValidationError(Validations.countryNutsCodeAlreadyExists, "AG", "Antigua and Barbuda", "Antigua and Barbuda")));
+			is(I18nProperties.getValidationError(Validations.countryNutsCodeAlreadyExists, "AG", "Antigua and Barbuda", "Antigua and Barbuda")));
 	}
 
 	/**
@@ -145,8 +143,8 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 	 * {@link CountryService#getByNutsCode(String)} ignores case and surrounding spaces and finds archived countries too.
 	 *
 	 * <p>
-	 * Example: Greece with NUTS code {@code "EL"} → {@code " el"} finds Greece, also when archived; {@code "XX"},
-	 * {@code ""} or {@code null} → empty list.
+	 * Example: Greece with NUTS code {@code "EL"} is found by {@code " el"} even when archived. The result is empty
+	 * for {@code "XX"}, {@code ""} or {@code null}.
 	 */
 	@Test
 	@DisplayName("countries are found by NUTS code, archived or not")
@@ -155,12 +153,35 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		CountryDto greece = saveGreece("EL");
 		getCountryFacade().archive(greece.getUuid());
 
-		List<String> found = getCountryService().getByNutsCode(" el").stream().map(Country::getUuid).collect(Collectors.toList());
+		Optional<String> found = getCountryService().getByNutsCode(" el").map(Country::getUuid);
 
-		assertThat(found, contains(greece.getUuid()));
-		assertThat(getCountryService().getByNutsCode("XX"), is(empty()));
-		assertThat(getCountryService().getByNutsCode(""), is(empty()));
-		assertThat(getCountryService().getByNutsCode(null), is(empty()));
+		assertThat(found, is(Optional.of(greece.getUuid())));
+		assertThat(getCountryService().getByNutsCode("XX"), is(Optional.empty()));
+		assertThat(getCountryService().getByNutsCode(""), is(Optional.empty()));
+		assertThat(getCountryService().getByNutsCode(null), is(Optional.empty()));
+	}
+
+	@Test
+	public void testGetCountryByNutsCode() {
+		// PREPARE
+		CountryDto greece = saveGreece("EL");
+
+		// EXECUTE
+		CountryReferenceDto match = getCountryFacade().getCountryByNutsCode(" eL ");
+		CountryReferenceDto partialMatch = getCountryFacade().getCountryByNutsCode("E");
+		CountryReferenceDto wildcardMatch = getCountryFacade().getCountryByNutsCode("E%");
+		CountryReferenceDto blankMatch = getCountryFacade().getCountryByNutsCode(" ");
+		CountryReferenceDto nullMatch = getCountryFacade().getCountryByNutsCode(null);
+		getCountryFacade().archive(greece.getUuid());
+		CountryReferenceDto archivedMatch = getCountryFacade().getCountryByNutsCode("EL");
+
+		// CHECK
+		assertThat(match.getUuid(), is(greece.getUuid()));
+		assertThat(partialMatch, is(nullValue()));
+		assertThat(wildcardMatch, is(nullValue()));
+		assertThat(blankMatch, is(nullValue()));
+		assertThat(nullMatch, is(nullValue()));
+		assertThat(archivedMatch, is(nullValue()));
 	}
 
 	/**

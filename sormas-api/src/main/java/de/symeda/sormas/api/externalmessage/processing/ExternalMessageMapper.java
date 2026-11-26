@@ -130,6 +130,9 @@ public final class ExternalMessageMapper {
 					person.getNationalHealthId(),
 					externalMessage.getPersonNationalHealthId(),
 					PersonDto.NATIONAL_HEALTH_ID),
+
+				Mapping.of(person::setNamesOfGuardians, person.getNamesOfGuardians(), buildFullGuardianName(), PersonDto.NAMES_OF_GUARDIANS),
+
 				Mapping.of(
 					person::setAdditionalDetails,
 					person.getAdditionalDetails(),
@@ -152,6 +155,15 @@ public final class ExternalMessageMapper {
 		}
 
 		return changedFields;
+	}
+
+	private String buildFullGuardianName() {
+		return String
+			.format(
+				"%s %s",
+				externalMessage.getPersonGuardianFirstName() != null ? externalMessage.getPersonGuardianFirstName() : "",
+				externalMessage.getPersonGuardianLastName() != null ? externalMessage.getPersonGuardianLastName() : "")
+			.trim();
 	}
 
 	public List<String[]> mapFirstSampleReportToSample(SampleDto sample) {

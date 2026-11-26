@@ -380,6 +380,11 @@ public class CountryFacadeEjb
 	}
 
 	@Override
+	public CountryReferenceDto getCountryByNutsCode(String nutsCode) {
+		return service.getByNutsCode(nutsCode).filter(country -> !country.isArchived()).map(CountryFacadeEjb::toReferenceDto).orElse(null);
+	}
+
+	@Override
 	public boolean hasArchivedParentInfrastructure(Collection<String> countryUuids) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
