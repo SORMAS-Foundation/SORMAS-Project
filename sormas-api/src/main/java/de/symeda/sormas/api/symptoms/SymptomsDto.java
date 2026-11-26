@@ -3809,6 +3809,16 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.temperatureSource = temperatureSource;
 	}
 
+	// #14502 - before the onset date, because it enables the onset date
+	@Order(19)
+	public YesNoUnknown getDateOfOnsetKnown() {
+		return dateOfOnsetKnown;
+	}
+
+	public void setDateOfOnsetKnown(YesNoUnknown dateOfOnsetKnown) {
+		this.dateOfOnsetKnown = dateOfOnsetKnown;
+	}
+
 	@Order(20)
 	@ImportIgnore
 	public Boolean getSymptomatic() {
@@ -3817,15 +3827,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setSymptomatic(Boolean symptomatic) {
 		this.symptomatic = symptomatic;
-	}
-
-	@Order(21)
-	public String getSymptomsComments() {
-		return symptomsComments;
-	}
-
-	public void setSymptomsComments(String symptomsComments) {
-		this.symptomsComments = symptomsComments;
 	}
 
 	@Order(22)
@@ -3862,6 +3863,16 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setAsymptomatic(SymptomState asymptomatic) {
 		this.asymptomatic = asymptomatic;
+	}
+
+	// #14502 - after the onset and resolution dates
+	@Order(26)
+	public String getSymptomsComments() {
+		return symptomsComments;
+	}
+
+	public void setSymptomsComments(String symptomsComments) {
+		this.symptomsComments = symptomsComments;
 	}
 
 	@Order(100)
@@ -5723,15 +5734,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setOtherMinorSiteDetails(String otherMinorSiteDetails) {
 		this.otherMinorSiteDetails = otherMinorSiteDetails;
-	}
-
-	@Order(401)
-	public YesNoUnknown getDateOfOnsetKnown() {
-		return dateOfOnsetKnown;
-	}
-
-	public void setDateOfOnsetKnown(YesNoUnknown dateOfOnsetKnown) {
-		this.dateOfOnsetKnown = dateOfOnsetKnown;
 	}
 
 	@Order(402)
