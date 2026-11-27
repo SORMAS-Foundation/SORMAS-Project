@@ -87,13 +87,13 @@ public class EpipulseDiseaseExportEntryDto {
 	// Phase 3: Clinical and epidemiology fields (mapped from existing SORMAS data)
 	private Date dateOfInvestigation; // CaseDataDto.investigatedDate
 	private Boolean clusterRelated; // EpiDataDto.clusterRelated
-	private String clusterIdentification; // EpiDataDto.clusterTypeText
+	private String clusterIdentification; // EpiDataDto.clusterIdentifier
 	private List<String> clusterSetting; // EpiDataDto.clusterType mapped to EpiPulse codes (repeatable)
 	private String importedStatus; // EpiDataDto.caseImportedStatus mapped to EpiPulse codes
 	private List<String> complicationDiagnosis; // SymptomsDto complications (repeatable)
 	private Boolean clinicalCriteriaStatus; // Derived from CaseDataDto.clinicalConfirmation
 	private List<String> placeOfInfection; // EpiDataDto.exposures locations (repeatable)
-	private String causeOfDeath; // PersonDto.causeOfDeathDetails
+	private String causeOfDeath; // PersonDto.causeOfDeathDetails 
 
 	// IPI-specific laboratory fields
 	private String resultOfCulture; // PathogenTestResultType for CULTURE -> POS/NEG/EQUI/NOTEST
@@ -202,10 +202,8 @@ public class EpipulseDiseaseExportEntryDto {
 	// -- DENGUE --
 	// CaseClassification, ClinicalCriteria, ClinicalCriteriaStatus, ClusterId, Imported,
 	// ModeOfTransmission, PathogenDetectionMethod and PlaceOfInfection are declared above and
-	// reused as they stand. clusterIdentification carries epiData.clusterIdentifier here where
-	// measles reads epiData.clusterTypeText into it, and modeOfTransmission holds a code from
-	// DENGUE's value set - both are properties of the derivation the field model chose, not of
-	// these fields.
+	// reused as they stand. modeOfTransmission holds a code from DENGUE's value set - a property
+	// of the derivation the field model chose, not of the field.
 	private String serotype; // PathogenTest.serotype mapped to DENV1-DENV4/DENVOTH
 	private Boolean seroconversionOrTitreRise; // PathogenTest.seroConversion or fourFoldIncreaseAntibodyTiter
 

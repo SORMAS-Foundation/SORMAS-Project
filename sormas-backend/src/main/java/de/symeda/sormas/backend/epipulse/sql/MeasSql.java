@@ -191,7 +191,7 @@ public final class MeasSql {
 		//@formatter:off
 		return "epidata_cluster AS (SELECT c.id as case_id," +
 			   "                            epi.clusterrelated," +
-			   "                            epi.clustertypetext," +
+			   "                            epi.clusteridentifier," +
 			   "                            epi.clustertype," +
 			   "                            epi.caseimportedstatus " +
 			   "                     FROM filtered_cases c " +

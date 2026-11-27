@@ -224,7 +224,9 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 			c.getSymptoms().setOtitisMedia(SymptomState.YES);
 			c.getSymptoms().setPneumoniaClinicalOrRadiologic(SymptomState.YES);
 			c.getEpiData().setClusterRelated(true);
-			c.getEpiData().setClusterTypeText("LU-MEAS-2024-07");
+			c.getEpiData().setClusterIdentifier("LU-MEAS-2024-07");
+			// the free-text cluster description is not the identifier and is not reported
+			c.getEpiData().setClusterTypeText("primary school outbreak");
 			c.getEpiData().setClusterType(ClusterType.SCHOOL);
 			c.getEpiData().setCaseImportedStatus(CaseImportedStatus.IMPORTED_CASE);
 			c.getEpiData().getExposures().add(travelTo(france));

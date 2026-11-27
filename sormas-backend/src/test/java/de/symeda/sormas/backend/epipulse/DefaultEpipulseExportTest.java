@@ -19,6 +19,7 @@
 package de.symeda.sormas.backend.epipulse;
 
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.CASE_CLASSIFICATION;
+import static de.symeda.sormas.api.epipulse.EpipulseVariable.CLUSTER_ID;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.DISEASE;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.GENDER;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.HOSPITALISATION;
@@ -182,6 +183,43 @@ public class DefaultEpipulseExportTest extends AbstractEpipulseExportTest {
 		assertThat(diph.all(), hasSize(2));
 		assertThat(diph.value(diph.entryFor(diphSuspect), CASE_CLASSIFICATION), is("POSS"));
 		assertThat(diph.value(diph.entryFor(diphRuledOut), CASE_CLASSIFICATION), is("DISCARDED"));
+	}
+
+	@Test
+	@DisplayName("ClusterId reports the case's cluster identifier for every code that declares it, and is absent elsewhere")
+	public void clusterIdReportsTheClusterIdentifier() {
+
+		String chik = clusteredCase(EpipulseSubjectCode.CHIK, "LU-CHIK-2024-01");
+		String diph = clusteredCase(EpipulseSubjectCode.DIPH, "LU-DIPH-2024-02");
+		String mump = clusteredCase(EpipulseSubjectCode.MUMP, "LU-MUMP-2024-03");
+		String mumpWithoutCluster = classifiedCase(EpipulseSubjectCode.MUMP, CaseClassification.CONFIRMED);
+
+		ExportedEntries chikExport = runExport(EpipulseSubjectCode.CHIK, periodStart, periodEnd);
+		ExportedEntries diphExport = runExport(EpipulseSubjectCode.DIPH, periodStart, periodEnd);
+		ExportedEntries mumpExport = runExport(EpipulseSubjectCode.MUMP, periodStart, periodEnd);
+		ExportedEntries poliExport = runExport(SUBJECT_CODE_OMITTING_HOSPITALISATION, periodStart, periodEnd);
+
+		assertThat(chikExport.value(chikExport.entryFor(chik), CLUSTER_ID), is("LU-CHIK-2024-01"));
+		assertThat(diphExport.value(diphExport.entryFor(diph), CLUSTER_ID), is("LU-DIPH-2024-02"));
+		assertThat(mumpExport.value(mumpExport.entryFor(mump), CLUSTER_ID), is("LU-MUMP-2024-03"));
+		assertThat(mumpExport.value(mumpExport.entryFor(mumpWithoutCluster), CLUSTER_ID), is(blankOrNullString()));
+
+		// POLI does not declare ClusterId
+		assertThat(poliExport.emits(CLUSTER_ID), is(false));
+	}
+
+	/**
+	 * A confirmed case whose epidemiological data carries the given cluster identifier, and a
+	 * different free-text cluster description that must not be reported in its place.
+	 */
+	private String clusteredCase(EpipulseSubjectCode subjectCode, String clusterIdentifier) {
+
+		CaseDataDto caze = getCaseFacade().getCaseDataByUuid(classifiedCase(subjectCode, CaseClassification.CONFIRMED));
+		caze.getEpiData().setClusterIdentifier(clusterIdentifier);
+		caze.getEpiData().setClusterTypeText("family gathering");
+		getCaseFacade().save(caze);
+
+		return caze.getUuid();
 	}
 
 	private String classifiedCase(EpipulseSubjectCode subjectCode, CaseClassification classification) {

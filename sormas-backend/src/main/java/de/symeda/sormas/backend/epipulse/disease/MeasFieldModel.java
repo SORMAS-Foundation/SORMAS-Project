@@ -131,9 +131,9 @@ final class MeasFieldModel {
 
 		fields.add(
 			ValueDef.direct(
-				"clustertypetext",
-				"ec.clustertypetext",
-				(dto, row) -> dto.setClusterIdentification((String) row.get("clustertypetext")),
+				"clusteridentifier",
+				"ec.clusteridentifier",
+				(dto, row) -> dto.setClusterIdentification((String) row.get("clusteridentifier")),
 				EpipulseVariable.CLUSTER_ID,
 				EpipulseMapping::clusterIdentification));
 
