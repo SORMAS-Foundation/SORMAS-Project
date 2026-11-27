@@ -62,6 +62,11 @@ public class ClinicalCourseView extends AbstractCaseView {
 		clinicalVisitCriteria = ViewModelProviders.of(ClinicalCourseView.class).get(ClinicalVisitCriteria.class);
 	}
 
+	@Override
+	protected boolean isViewAvailable() {
+		return isClinicalCourseViewAvailable(FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid()));
+	}
+
 	private VerticalLayout createClinicalVisitsHeader() {
 
 		VerticalLayout clinicalVisitsHeader = new VerticalLayout();

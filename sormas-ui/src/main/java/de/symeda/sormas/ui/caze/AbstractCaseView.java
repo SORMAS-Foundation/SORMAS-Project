@@ -214,15 +214,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA) && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
 				menu.addView(CaseEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
-			if (UiUtil.permitted(FeatureType.VIEW_TAB_CASES_THERAPY, UserRight.THERAPY_VIEW)
-				&& !caze.checkIsUnreferredPortHealthCase()
-				&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT)
-				&& (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-					&& THERAPY_DISABLED_DISEASES.contains(caze.getDisease())))
-				&& Disease.INFLUENZA != caze.getDisease()) {
-				// Therapy view is not available for Luxembourg for Measles, IMI, IPI, Gradiastis & Cryptosporidiosis cases.
-				// But for other countries, it should be available for the above diseases
-				// Therapy view is not available for all countries Influenza cases. #13708
+			if (isTherapyViewAvailable(caze)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
@@ -234,14 +226,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 		}
 
 		if (showExtraMenuEntries) {
-			// Clinical course is disabled for Luxembourg for Measles, IMI, IPI, GIARDIASIS, Cryptosporidiosis cases,
-			// and for all other countries Influenza cases. #13708 and LTB. #14038
-			boolean isDiseaseDisabled = isLuxembourg
-				? CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease())
-				: NON_LUX_CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease());
-			if (UiUtil.permitted(
-				EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
-				UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !isDiseaseDisabled) {
+			if (isClinicalCourseViewAvailable(caze)) {
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),
@@ -278,6 +263,40 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 		}
 	}
 
+	/**
+	 * Therapy view is not available for Luxembourg for Measles, Giardiasis & Cryptosporidiosis cases,
+	 * but for other countries it is available for these diseases.
+	 * Therapy view is not available for Influenza cases in all countries. #13708
+	 */
+	protected boolean isTherapyViewAvailable(CaseDataDto caze) {
+		return UiUtil.permitted(FeatureType.VIEW_TAB_CASES_THERAPY, UserRight.THERAPY_VIEW)
+			&& !caze.checkIsUnreferredPortHealthCase()
+			&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT)
+			&& !(isLuxembourg && THERAPY_DISABLED_DISEASES.contains(caze.getDisease()))
+			&& Disease.INFLUENZA != caze.getDisease();
+	}
+
+	/**
+	 * Clinical course is disabled for Luxembourg for Measles, IMI, IPI, Giardiasis, Cryptosporidiosis cases,
+	 * and for all other countries for Influenza cases (#13708) and LTB (#14038).
+	 */
+	protected boolean isClinicalCourseViewAvailable(CaseDataDto caze) {
+		boolean isDiseaseDisabled = isLuxembourg
+			? CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease())
+			: NON_LUX_CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease());
+		return UiUtil.permitted(
+			EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
+			UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !isDiseaseDisabled;
+	}
+
+	/**
+	 * Whether this view may be shown for the current case.
+	 * Overridden by views hidden from the submenu in some cases, to prevent opening via direct link either.
+	 */
+	protected boolean isViewAvailable() {
+		return true;
+	}
+
 	@Override
 	public void enter(ViewChangeEvent event) {
 
@@ -285,6 +304,8 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 
 		if (getReference() == null) {
 			UI.getCurrent().getNavigator().navigateTo(getRootViewName());
+		} else if (!isViewAvailable()) {
+			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		} else if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
 			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		} else {

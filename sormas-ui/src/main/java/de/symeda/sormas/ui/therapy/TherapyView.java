@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.therapy;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
@@ -30,6 +31,11 @@ public class TherapyView extends AbstractCaseView {
 
 	public TherapyView() {
 		super(VIEW_NAME, false);
+	}
+
+	@Override
+	protected boolean isViewAvailable() {
+		return isTherapyViewAvailable(FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid()));
 	}
 
 	@Override
