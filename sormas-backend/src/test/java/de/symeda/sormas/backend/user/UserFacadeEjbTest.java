@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -181,6 +183,46 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertThat(result, hasSize(1));
 		assertThat(count, is(1L));
 		assertThat(result.get(0).getUserName(), equalTo("admin"));
+	}
+
+	@Test
+	public void testGetIndexListOrderedByExternalId() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto upper = creator.createUser(rdcf, "Upper", "Case", creator.getUserRoleReference(SURVEILLANCE_OFFICER));
+		upper.setExternalId("B-ext");
+		getUserFacade().saveUser(upper, false);
+		UserDto lower = creator.createUser(rdcf, "Lower", "Case", creator.getUserRoleReference(SURVEILLANCE_OFFICER));
+		lower.setExternalId("a-ext");
+		getUserFacade().saveUser(lower, false);
+
+		List<String> externalIds = getUserFacade()
+			.getIndexList(new UserCriteria(), 0, 100, Collections.singletonList(new SortProperty(UserDto.EXTERNAL_ID, true)))
+			.stream()
+			.map(UserDto::getExternalId)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+
+		assertEquals(Arrays.asList("a-ext", "B-ext"), externalIds);
+	}
+
+	@Test
+	public void testGetIndexListSortsByEverySortableGridColumn() {
+		List<String> sortableColumns = Arrays.asList(
+			UserDto.UUID,
+			UserDto.ACTIVE,
+			UserDto.USER_NAME,
+			UserDto.NAME,
+			UserDto.USER_EMAIL,
+			UserDto.ADDRESS,
+			UserDto.DISTRICT,
+			UserDto.HEALTH_FACILITY,
+			UserDto.EXTERNAL_ID);
+
+		for (String column : sortableColumns) {
+			assertDoesNotThrow(
+				() -> getUserFacade().getIndexList(new UserCriteria(), 0, 100, Collections.singletonList(new SortProperty(column))),
+				column);
+		}
 	}
 
 	@Test
