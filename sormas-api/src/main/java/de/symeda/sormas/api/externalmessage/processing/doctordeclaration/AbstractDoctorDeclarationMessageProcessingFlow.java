@@ -55,6 +55,7 @@ import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -801,6 +802,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			hospitalizationDto.setAdmissionDate(externalMessageDto.getHospitalizationAdmissionDate());
 			hospitalizationDto.setDischargeDate(externalMessageDto.getHospitalizationDischargeDate());
 			hospitalizationDto.setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
+			// we presume that the doctor declaration only reports hospitalizations relevant to the declared disease
+			hospitalizationDto.setHospitalizationReason(HospitalizationReasonType.REPORTED_DISEASE);
 
 			// we need to do a sanity check on discharge date
 			// if the discharge date is before today's date, we need to handle it
@@ -839,6 +842,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		previousHospitalization.setAdmittedToHealthFacility(YesNoUnknown.YES);
 		previousHospitalization.setAdmissionDate(externalMessageDto.getHospitalizationAdmissionDate());
 		previousHospitalization.setDischargeDate(externalMessageDto.getHospitalizationDischargeDate());
+		// we presume that the doctor declaration only reports hospitalizations relevant to the declared disease
+		previousHospitalization.setHospitalizationReason(HospitalizationReasonType.REPORTED_DISEASE);
 
 		if (hospitalFacility != null) {
 			previousHospitalization.setRegion(hospitalFacility.getRegion());
