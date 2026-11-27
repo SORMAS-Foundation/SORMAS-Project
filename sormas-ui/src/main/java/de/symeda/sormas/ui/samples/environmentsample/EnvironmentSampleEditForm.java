@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -195,15 +195,16 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		sampleMaterialField.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null && (EnvironmentSampleMaterial.VECTORS.equals(event.getProperty().getValue()))) {
 				getContent().removeComponent(SAMPLE_MEASUREMENTS_HEADING_LOC);
-				setVisible(
+				// #14519 - measurements don't apply to vectors; clear them so a hidden invalid value (e.g. "abc") doesn't block saving
+				setVisibleClear(
 					false,
-					sampleVolumeField,
-					turbidityField,
-					temperatureField,
-					chlorineResidualsField,
-					phValueField,
-					weatherConditionCheckBoxTree,
-					heavyRains);
+					EnvironmentSampleDto.SAMPLE_VOLUME,
+					EnvironmentSampleDto.TURBIDITY,
+					EnvironmentSampleDto.SAMPLE_TEMPERATURE,
+					EnvironmentSampleDto.CHLORINE_RESIDUALS,
+					EnvironmentSampleDto.PH_VALUE,
+					EnvironmentSampleDto.WEATHER_CONDITIONS,
+					EnvironmentSampleDto.HEAVY_RAIN);
 				vectorTypeField.setVisible(true);
 			} else {
 				getContent().addComponent(buildHeadingLabel(Strings.headingEnvironmentSampleMeasurements), SAMPLE_MEASUREMENTS_HEADING_LOC);
