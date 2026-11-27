@@ -41,7 +41,6 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
@@ -103,11 +102,12 @@ class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
 	}
 
 	@Test
-	void updatesCountriesOnSavedCasePerson() throws Exception {
+	void appliesDeferredUpdatesToPersonSavedDuringCaseCreation() throws Exception {
 		// PREPARE
 		CountryReferenceDto birthCountry = CountryFacadeEjb.toReferenceDto(creator.createCountry("France", "FR", "250"));
 		CountryReferenceDto citizenship = CountryFacadeEjb.toReferenceDto(creator.createCountry("Germany", "DE", "276"));
 		PersonDto savedPerson = creator.createPerson("Given", "Family");
+		PersonDto draftPerson = PersonDto.build();
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			savedPerson.toReference(),
@@ -119,9 +119,11 @@ class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
 		ExternalMessageDto message = createDoctorDeclarationMessage(m -> {
 			m.setPersonBirthCountry(birthCountry);
 			m.setPersonCitizenship(citizenship);
+			m.setPersonGuardianFirstName("Jane");
+			m.setPersonGuardianLastName("Family");
 		});
 		victim = createFlow(message);
-		ExternalMessageProcessingResult resultData = new ExternalMessageProcessingResult().withPerson(savedPerson, false).withCreatedCase(caze);
+		ExternalMessageProcessingResult resultData = new ExternalMessageProcessingResult().withPerson(draftPerson, true).withCreatedCase(caze);
 
 		// EXECUTE
 		victim.exposeHandleProcessingDone(ProcessingResult.of(ProcessingResultStatus.DONE, resultData)).toCompletableFuture().get();
@@ -130,6 +132,7 @@ class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
 		PersonDto updatedPerson = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
 		assertEquals(birthCountry, updatedPerson.getBirthCountry());
 		assertEquals(citizenship, updatedPerson.getCitizenship());
+		assertEquals("Jane Family", updatedPerson.getNamesOfGuardians());
 	}
 
 	@Test
@@ -461,8 +464,7 @@ class DoctorDeclarationMessageProcessingFlowTest extends AbstractUiBeanTest {
 	}
 
 	private TestDoctorDeclarationFlow createFlow(ExternalMessageDto externalMessage) {
-		ExternalMessageMapper mapper =
-			new ExternalMessageMapper(externalMessage, processingFacade, org.mockito.Mockito.mock(CustomizableEnumFacade.class));
+		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessage, processingFacade, FacadeProvider.getCustomizableEnumFacade());
 		try (MockedStatic<UiUtil> uiUtilMock = Mockito.mockStatic(UiUtil.class)) {
 			uiUtilMock.when(UiUtil::getUser).thenReturn(user);
 			return new TestDoctorDeclarationFlow(externalMessage, mapper, processingFacade);
