@@ -105,6 +105,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	private CaseImportedStatus caseImportedStatus;
 
 	@Diseases({
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GIARDIASIS,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
@@ -190,6 +191,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	private String infectionSourceText;
 
 	@Diseases({
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GIARDIASIS,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
