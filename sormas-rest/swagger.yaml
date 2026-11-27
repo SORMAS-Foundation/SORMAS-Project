@@ -19098,6 +19098,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        healthcareAssociatedExposure:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         inJurisdiction:
           type: boolean
         indoors:
@@ -19107,6 +19113,12 @@ components:
           - "NO"
           - UNKNOWN
         internationalSwimming:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        laboratoryAssociatedExposure:
           type: string
           enum:
           - "YES"
