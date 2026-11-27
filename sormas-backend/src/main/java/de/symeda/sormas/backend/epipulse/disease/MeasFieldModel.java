@@ -42,6 +42,7 @@ import de.symeda.sormas.backend.epipulse.fieldmodel.EpipulseRow;
 import de.symeda.sormas.backend.epipulse.fieldmodel.FieldModel;
 import de.symeda.sormas.backend.epipulse.fieldmodel.ValueDef;
 import de.symeda.sormas.backend.epipulse.sql.EpipulseHospitalisationSql;
+import de.symeda.sormas.backend.epipulse.sql.EpipulseLabResultSql;
 import de.symeda.sormas.backend.epipulse.sql.EpipulsePlaceOfInfectionSql;
 import de.symeda.sormas.backend.epipulse.sql.EpipulseVaccinationSql;
 import de.symeda.sormas.backend.epipulse.sql.MeasSql;
@@ -69,6 +70,7 @@ final class MeasFieldModel {
 			MeasSql.spec()
 				.plus(EpipulseHospitalisationSql.spec())
 				.plus(EpipulseVaccinationSql.spec())
+				.plus(EpipulseLabResultSql.spec())
 				.plus(EpipulsePlaceOfInfectionSql.spec(EpipulsePlaceOfInfectionSql.Rule.IMPORTED_COUNTRY)),
 			0);
 	}
@@ -165,7 +167,7 @@ final class MeasFieldModel {
 		fields.add(
 			ValueDef.direct(
 				"lab_result_date",
-				"vd.lab_result_date",
+				"case_lab_result.lab_result_date",
 				(dto, row) -> dto.setDateOfLaboratoryResult((Date) row.get("lab_result_date")),
 				EpipulseVariable.DATE_OF_LAB_RESULT,
 				EpipulseMapping::dateOfLaboratoryResult));

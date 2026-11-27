@@ -25,10 +25,10 @@ import static de.symeda.sormas.backend.epipulse.sql.EpipulseCommonSql.exportDise
  * Disease-specific SQL for rubella.
  *
  * <p>
- * Adds five CTEs plus one direct {@code epidata} join. Rubella exports laboratory variables
- * similar to measles but with different derivations (e.g. lab-result date rule, specimen for
- * virus detection, serology precedence), so this remains a separate implementation from
- * {@link MeasSql}.
+ * Adds four CTEs plus one direct {@code epidata} join. Rubella exports laboratory variables
+ * similar to measles but with different derivations (e.g. specimen for virus detection, serology
+ * precedence), so this remains a separate implementation from {@link MeasSql}.
+ * {@code DateOfLabResult} is shared SQL from {@link EpipulseLabResultSql}.
  *
  * <p>
  * As in other disease fragments, aliases used by the field model are defined here and must match.
@@ -66,14 +66,13 @@ public final class RubeSql {
 	public static SqlQueryModel spec() {
 
 		return SqlQueryModel.builder()
-			.ctes(buildSpecimenCte(), buildVirusDetectionCte(), buildGenotypeCte(), buildLabResultCte(), buildSerologyCte())
+			.ctes(buildSpecimenCte(), buildVirusDetectionCte(), buildGenotypeCte(), buildSerologyCte())
 			.joins(
 				// ClusterRelated, ClusterId, ClusterSetting, ImportedStatus
 				"LEFT JOIN epidata rube_epidata ON c.epidata_id = rube_epidata.id",
 				"LEFT JOIN rube_specimen ON rube_specimen.case_id = c.id",
 				"LEFT JOIN rube_virus_detection ON rube_virus_detection.case_id = c.id",
 				"LEFT JOIN rube_genotype ON rube_genotype.case_id = c.id",
-				"LEFT JOIN rube_lab_result ON rube_lab_result.case_id = c.id",
 				"LEFT JOIN rube_serology ON rube_serology.case_id = c.id")
 			.build();
 	}
@@ -147,26 +146,6 @@ public final class RubeSql {
 			   "                          ORDER BY COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate) ASC, pt.id ASC " +
 			   "                          LIMIT 1) as genotype_raw " +
 			   "                  FROM filtered_cases c)";
-		//@formatter:on
-	}
-
-	/**
-	 * Builds {@code DateOfLabResult} as the oldest positive, verified test date (any test type).
-	 *
-	 * <p>
-	 * Filters are applied in the join so every case remains in the result set; cases without a
-	 * qualifying test return null date.
-	 */
-	private static String buildLabResultCte() {
-		//@formatter:off
-		return "rube_lab_result AS (SELECT c.id as case_id," +
-			   "                           MIN(COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate)) as lab_result_date " +
-			   "                    FROM filtered_cases c " +
-			   "                    LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false " +
-			   "                    LEFT JOIN pathogentest pt ON pt.sample_id = s.id AND " + exportDiseaseTest("pt") + " " +
-			   "                        AND pt.testresultverified = true " +
-			   "                        AND pt.testresult = 'POSITIVE' " +
-			   "                    GROUP BY c.id)";
 		//@formatter:on
 	}
 

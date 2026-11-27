@@ -296,7 +296,8 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 
 		// MEAS's own laboratory columns
 		assertThat(export.value(entry, DATE_OF_SPECIMEN), is("2024-06-11"));
-		assertThat(export.value(entry, DATE_OF_LAB_RESULT), is("2024-06-13"));
+		// the verified positive IgM on the serum is the first result, ahead of the PCR
+		assertThat(export.value(entry, DATE_OF_LAB_RESULT), is("2024-06-12"));
 		assertThat(export.values(entry, SPECIMEN_VIR_DETECT), contains("NASALSWAB", "SER"));
 		assertThat(export.values(entry, SPECIMEN_SERO), contains("SER"));
 		assertThat(export.value(entry, RESULT_VIR_DETECT), is("POS"));
@@ -447,29 +448,30 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	/**
-	 * {@code DateOfSpecimen}: earliest specimen (any). {@code DateOfLabResult}: earliest
-	 * virus-detection test. Different populations, both "earliest".
+	 * {@code DateOfSpecimen}: earliest specimen (any). {@code DateOfLabResult}: "first validated
+	 * result to confirm or invalidate the case" - the earliest verified positive or negative test,
+	 * of any test type.
 	 */
 	@Test
-	@DisplayName("DateOfLabResult is the earliest virus-detection test, dated by test date, report date, then creation")
-	public void dateOfLabResultIsTheEarliestVirusDetectionTest() {
+	@DisplayName("DateOfLabResult is the earliest verified test that confirmed or ruled out the case, of any type")
+	public void dateOfLabResultIsTheFirstConfirmingOrInvalidatingTest() {
 
-		// IFA counts toward date but not toward ResultVirDetect; these lists differ
-		CaseDataDto earliestIsAnAssay = fixture.caze(creator.createPerson().toReference(), ONSET);
+		// a negative result invalidates the case, so it is the first result too
+		CaseDataDto negativeFirst = fixture.caze(creator.createPerson().toReference(), ONSET);
 		fixture.testOn(
-			fixture.specimen(earliestIsAnAssay, SampleMaterial.SERA, FIRST_SPECIMEN),
-			PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
-			PathogenTestResultType.POSITIVE,
+			fixture.specimen(negativeFirst, SampleMaterial.NASAL_SWAB, FIRST_SPECIMEN),
+			PathogenTestType.PCR_RT_PCR,
+			PathogenTestResultType.NEGATIVE,
 			true,
 			EARLIER_TEST);
 		fixture.testOn(
-			fixture.specimen(earliestIsAnAssay, SampleMaterial.NASAL_SWAB, SECOND_SPECIMEN),
+			fixture.specimen(negativeFirst, SampleMaterial.NASAL_SWAB, SECOND_SPECIMEN),
 			PathogenTestType.PCR_RT_PCR,
 			PathogenTestResultType.POSITIVE,
 			true,
 			LATER_TEST);
 
-		// No virus detection, only serology: no date to report
+		// any test type counts, serology included
 		CaseDataDto serologyOnly = fixture.caze(creator.createPerson().toReference(), ONSET);
 		fixture.testOn(
 			fixture.specimen(serologyOnly, SampleMaterial.SERA, FIRST_SPECIMEN),
@@ -477,6 +479,13 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 			PathogenTestResultType.POSITIVE,
 			true,
 			EARLIER_TEST);
+
+		// an unverified result and a verified pending one neither confirm nor invalidate
+		CaseDataDto notYetDecided = fixture.caze(creator.createPerson().toReference(), ONSET);
+		SampleDto undecidedSpecimen = fixture.specimen(notYetDecided, SampleMaterial.SERA, FIRST_SPECIMEN);
+		fixture.testOn(undecidedSpecimen, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE, false, EARLIER_TEST);
+		fixture.testOn(undecidedSpecimen, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.PENDING, true, EARLIER_TEST);
+		fixture.testOn(undecidedSpecimen, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.NEGATIVE, true, LATER_TEST);
 
 		// Test without date must sort against others (fallback to report date, then creation)
 		CaseDataDto undatedTest = fixture.caze(creator.createPerson().toReference(), ONSET);
@@ -493,14 +502,15 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.MEAS, PERIOD_START, PERIOD_END);
 
-		assertThat(export.value(export.entryFor(earliestIsAnAssay.getUuid()), DATE_OF_LAB_RESULT), is("2024-06-12"));
-		assertThat(export.value(export.entryFor(serologyOnly.getUuid()), DATE_OF_LAB_RESULT), is(blankOrNullString()));
+		assertThat(export.value(export.entryFor(negativeFirst.getUuid()), DATE_OF_LAB_RESULT), is("2024-06-12"));
+		assertThat(export.value(export.entryFor(serologyOnly.getUuid()), DATE_OF_LAB_RESULT), is("2024-06-12"));
+		assertThat(export.value(export.entryFor(notYetDecided.getUuid()), DATE_OF_LAB_RESULT), is("2024-06-13"));
 		assertThat(export.value(export.entryFor(undatedTest.getUuid()), DATE_OF_LAB_RESULT), is("2024-06-12"));
 		assertThat(export.value(export.entryFor(noTest.getUuid()), DATE_OF_LAB_RESULT), is(blankOrNullString()));
 
 		// Specimen date is earliest specimen, whether tested or not
 		assertThat(export.value(export.entryFor(noTest.getUuid()), DATE_OF_SPECIMEN), is("2024-06-11"));
-		assertThat(export.value(export.entryFor(earliestIsAnAssay.getUuid()), DATE_OF_SPECIMEN), is("2024-06-11"));
+		assertThat(export.value(export.entryFor(negativeFirst.getUuid()), DATE_OF_SPECIMEN), is("2024-06-11"));
 	}
 
 	/**
@@ -1002,7 +1012,7 @@ public class MeaslesEpipulseExportTest extends AbstractEpipulseExportTest {
 
 		EpipulseDiseaseExportEntryDto live = export.entryFor(kept.getUuid());
 
-		assertThat(export.value(live, DATE_OF_LAB_RESULT), is("2024-06-13"));
+		assertThat(export.value(live, DATE_OF_LAB_RESULT), is("2024-06-12"));
 		assertThat(export.value(live, RESULT_VIR_DETECT), is("POS"));
 		assertThat(export.value(live, GENOTYPE), is("MEASV_D8"));
 		assertThat(export.value(live, RESULT_IG_G), is("POS"));
