@@ -61,6 +61,14 @@ public class CustomizableFieldInputCheckbox extends CustomizableFieldInput<Boole
 		return Boolean.class;
 	}
 
+	/**
+	 * A mandatory checkbox must be ticked; unticked ({@code false}) and never touched ({@code null}) are both empty.
+	 */
+	@Override
+	protected boolean isValueEmpty(Boolean value) {
+		return !Boolean.TRUE.equals(value);
+	}
+
 	@Override
 	protected Component buildInputComponent() {
 		checkBox = new CheckBox();

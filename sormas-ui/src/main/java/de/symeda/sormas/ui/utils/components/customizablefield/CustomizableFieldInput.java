@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.utils.components.customizablefield;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,6 +24,8 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.HasValue;
+import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.Setter;
 import com.vaadin.ui.Component;
@@ -33,6 +36,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 
 /**
  * Abstract base for editable customizable field input components (Vaadin v8).
@@ -79,6 +83,10 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 	 * Vaadin only after the equality check has already passed.
 	 */
 	private transient T currentValue;
+	/**
+	 * The inner widget returned by {@link #buildInputComponent()}; {@code null} until the content is built.
+	 */
+	private Component inputComponent;
 
 	/**
 	 * Constructs the input and wires a {@link Binder} that keeps the DTO's {@code value} field
@@ -93,7 +101,12 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 		binder = new Binder<>(CustomizableFieldValueDto.class);
 		Binder.BindingBuilder<CustomizableFieldValueDto, T> bindingBuilder = binder.forField(this);
 		if (metadata.isMandatory()) {
-			bindingBuilder = bindingBuilder.asRequired();
+			// Vaadin's asRequired() only rejects null (CustomField's empty value), letting cleared text ("")
+			// and empty checkbox lists through. We use our own emptiness check with a real error message.
+			bindingBuilder = bindingBuilder.asRequired(
+				(value, context) -> isValueEmpty(value)
+					? ValidationResult.error(I18nProperties.getValidationError(Validations.requiredField))
+					: ValidationResult.ok());
 		}
 		bindingBuilder = configureBinding(bindingBuilder);
 		bindingBuilder.bind(getValueGetter(), getValueSetter());
@@ -118,6 +131,30 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 	}
 
 	/**
+	 * Returns whether {@code value} counts as empty for the mandatory check.
+	 * {@code null}, blank strings, and empty collections are empty; subclasses may
+	 * widen this (e.g. an unticked checkbox).
+	 * <p>
+	 * Called during validation, so overrides may use instance state.
+	 *
+	 * @param value
+	 *            the field value; may be {@code null}
+	 * @return {@code true} if a mandatory field with this value must be rejected
+	 */
+	protected boolean isValueEmpty(T value) {
+		if (value == null) {
+			return true;
+		}
+		if (value instanceof CharSequence) {
+			return StringUtils.isBlank((CharSequence) value);
+		}
+		if (value instanceof Collection) {
+			return ((Collection<?>) value).isEmpty();
+		}
+		return false;
+	}
+
+	/**
 	 * Build and return the inner editable UI component.
 	 * Called exactly once during {@link #initContent()}.
 	 * <p>
@@ -131,7 +168,24 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 
 	@Override
 	protected final Component initContent() {
-		return buildInputComponent();
+		inputComponent = buildInputComponent();
+		applyReadOnlyToWidget(isReadOnly());
+		return inputComponent;
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		boolean effectiveReadOnly = readOnly || (fieldMetadata != null && fieldMetadata.isReadOnly());
+		super.setReadOnly(effectiveReadOnly);
+		if (inputComponent != null) {
+			applyReadOnlyToWidget(effectiveReadOnly);
+		}
+	}
+
+	protected void applyReadOnlyToWidget(boolean readOnly) {
+		if (inputComponent instanceof HasValue) {
+			((HasValue<?>) inputComponent).setReadOnly(readOnly);
+		}
 	}
 
 	/**

@@ -1053,6 +1053,12 @@ public class ContactController {
 		epiDataForm.addCustomizableFieldValueChangeListener(e -> editView.setDirty(true));
 		editView.addDiscardListener(epiDataForm::resetCustomizableFieldValues);
 
+		editView.setPreCommitListener(successCallback -> {
+			if (epiDataForm.validateCustomizableFields()) {
+				successCallback.run();
+			}
+		});
+
 		editView.addCommitListener(() -> {
 			ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 			contactDto.setEpiData(epiDataForm.getValue());

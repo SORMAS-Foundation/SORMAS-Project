@@ -232,7 +232,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 					I18nProperties.getString(Strings.messageExposureContainsDeprecatedValues),
 					Notification.Type.WARNING_MESSAGE,
 					-1);
-			} else {
+			} else if (exposureForm.validateCustomizableFields()) {
 				successCallback.run();
 			}
 		});
