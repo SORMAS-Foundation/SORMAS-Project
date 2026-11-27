@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.exposure;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
@@ -75,6 +77,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private static final String COLUMN_DATE = Captions.date;
 	private static final String COLUMN_DESCRIPTION = ExposureDto.DESCRIPTION;
 	private static final String COLUMN_PROPHYLAXIS_ADHERENCE = ExposureDto.PROPHYLAXIS_ADHERENCE;
+	private static final String COLUMN_EXPOSURE_CONTEXT = "exposureContext";
 
 	private static final Map<Disease, ExposureCategory> DEFAULT_DISEASE_EXPOSURE_CATEGORY_DICTIONARY =
 		Map.of(Disease.SYPHILIS, ExposureCategory.DIRECT_CONTACT, Disease.GONOCOCCAL_INFECTION, ExposureCategory.DIRECT_CONTACT);
@@ -110,6 +113,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			table.setVisibleColumns(
 				ACTION_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
+				COLUMN_EXPOSURE_CONTEXT,
 				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
 				COLUMN_TYPE_OF_PLACE,
@@ -118,6 +122,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			table.setVisibleColumns(
 				ACTION_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
+				COLUMN_EXPOSURE_CONTEXT,
 				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
 				COLUMN_TYPE_OF_PLACE,
@@ -171,6 +176,17 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			return exposure.getProphylaxisAdherence() != null ? exposure.getProphylaxisAdherence().toString() : "";
 		});
+		table.addGeneratedColumn(COLUMN_EXPOSURE_CONTEXT, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			ExposureDto exposure = (ExposureDto) itemId;
+			List<String> contexts = new ArrayList<>();
+			if (exposure.getHealthcareAssociatedExposure() == YesNoUnknown.YES) {
+				contexts.add(I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, ExposureDto.HEALTHCARE_ASSOCIATED_EXPOSURE));
+			}
+			if (exposure.getLaboratoryAssociatedExposure() == YesNoUnknown.YES) {
+				contexts.add(I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, ExposureDto.LABORATORY_ASSOCIATED_EXPOSURE));
+			}
+			return String.join(", ", contexts);
+		});
 	}
 
 	@Override
@@ -191,7 +207,9 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			|| isModifiedObject(oldEntry.getRiskArea(), newEntry.getRiskArea())
 			|| isModifiedObject(oldEntry.getLocation(), newEntry.getLocation())
 			|| isModifiedObject(oldEntry.getDescription(), newEntry.getDescription())
-			|| isModifiedObject(oldEntry.getContactToCase(), newEntry.getContactToCase());
+			|| isModifiedObject(oldEntry.getContactToCase(), newEntry.getContactToCase())
+			|| isModifiedObject(oldEntry.getHealthcareAssociatedExposure(), newEntry.getHealthcareAssociatedExposure())
+			|| isModifiedObject(oldEntry.getLaboratoryAssociatedExposure(), newEntry.getLaboratoryAssociatedExposure());
 	}
 
 	@Override
@@ -263,7 +281,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 					popupWindow.close();
 					ExposuresField.this.removeEntry(entry);
 					pendingCustomizableFieldValues.remove(entry.getUuid());
-				}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
+				}, I18nProperties.getString(Strings.entityExposure));
 			}
 		} else {
 			component.getCommitButton().setVisible(false);

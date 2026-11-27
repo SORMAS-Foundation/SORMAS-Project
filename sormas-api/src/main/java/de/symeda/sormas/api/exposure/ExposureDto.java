@@ -143,6 +143,8 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String TRAVEL_PURPOSE_DETAILS = "travelPurposeDetails";
 	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
 	public static final String SEXUAL_CONTACT = "sexualContact";
+	public static final String HEALTHCARE_ASSOCIATED_EXPOSURE = "healthcareAssociatedExposure";
+	public static final String LABORATORY_ASSOCIATED_EXPOSURE = "laboratoryAssociatedExposure";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -463,6 +465,9 @@ public class ExposureDto extends PseudonymizableDto {
 
 	@SensitiveData
 	private SexualContact sexualContact;
+
+	private YesNoUnknown healthcareAssociatedExposure;
+	private YesNoUnknown laboratoryAssociatedExposure;
 
 	public static ExposureDto build(ExposureType exposureType) {
 
@@ -1173,6 +1178,22 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setSexualContact(SexualContact sexualContact) {
 		this.sexualContact = sexualContact;
+	}
+
+	public YesNoUnknown getHealthcareAssociatedExposure() {
+		return healthcareAssociatedExposure;
+	}
+
+	public void setHealthcareAssociatedExposure(YesNoUnknown healthcareAssociatedExposure) {
+		this.healthcareAssociatedExposure = healthcareAssociatedExposure;
+	}
+
+	public YesNoUnknown getLaboratoryAssociatedExposure() {
+		return laboratoryAssociatedExposure;
+	}
+
+	public void setLaboratoryAssociatedExposure(YesNoUnknown laboratoryAssociatedExposure) {
+		this.laboratoryAssociatedExposure = laboratoryAssociatedExposure;
 	}
 
 	@Override

@@ -203,6 +203,8 @@ public class Exposure extends AbstractDomainObject {
 
 	private String shoppingForFoodDetails;
 	private SexualContact sexualContact;
+	private YesNoUnknown healthcareAssociatedExposure;
+	private YesNoUnknown laboratoryAssociatedExposure;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -1008,5 +1010,23 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setSexualContact(SexualContact sexualContact) {
 		this.sexualContact = sexualContact;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHealthcareAssociatedExposure() {
+		return healthcareAssociatedExposure;
+	}
+
+	public void setHealthcareAssociatedExposure(YesNoUnknown healthcareAssociatedExposure) {
+		this.healthcareAssociatedExposure = healthcareAssociatedExposure;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getLaboratoryAssociatedExposure() {
+		return laboratoryAssociatedExposure;
+	}
+
+	public void setLaboratoryAssociatedExposure(YesNoUnknown laboratoryAssociatedExposure) {
+		this.laboratoryAssociatedExposure = laboratoryAssociatedExposure;
 	}
 }

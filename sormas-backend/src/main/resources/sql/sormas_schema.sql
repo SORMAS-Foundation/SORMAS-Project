@@ -18687,4 +18687,12 @@ END $$;
 
 INSERT INTO schema_version (version_number, comment) VALUES (697, '#14524 - Set disease configuration to pre-select relevant exposure pathways for specific diseases');
 
+-- ##14298 - Healthcare-associated and laboratory-associated exposure on the exposure event
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS healthcareassociatedexposure varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS laboratoryassociatedexposure varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS healthcareassociatedexposure varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS laboratoryassociatedexposure varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (698, '##14298 - Healthcare-associated and laboratory-associated exposure');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

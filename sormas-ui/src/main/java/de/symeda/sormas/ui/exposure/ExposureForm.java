@@ -111,8 +111,14 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	//@formatter:off
 	private static final String GENERAL_DETAILS_LAYOUT =
-			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE, "", "") +
-					fluidRowLocs(ExposureDto.EXPOSURE_TYPE, ExposureDto.EXPOSURE_TYPE_DETAILS) +
+			fluidRow(
+					fluidColumn(8, 0,
+							fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE) +
+							fluidRowLocs(ExposureDto.EXPOSURE_TYPE, ExposureDto.EXPOSURE_TYPE_DETAILS)),
+					fluidColumn(4, 0, locs(
+							ExposureDto.HEALTHCARE_ASSOCIATED_EXPOSURE,
+							ExposureDto.LABORATORY_ASSOCIATED_EXPOSURE))
+			) +
 					fluidRowLocs(ExposureDto.TRAVEL_PURPOSE, ExposureDto.TRAVEL_PURPOSE_DETAILS) +					
 					fluidRowLocs(ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS) +
 					loc(ExposureDto.DESCRIPTION);
@@ -349,6 +355,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		exposureTypeField.addValueChangeListener(e -> updateTravelRelatedFieldVisibility());
 
 		addField(generalDetailsLayout, ExposureDto.EXPOSURE_TYPE_DETAILS, TextField.class);
+
+		addField(generalDetailsLayout, ExposureDto.HEALTHCARE_ASSOCIATED_EXPOSURE, NullableOptionGroup.class);
+		addField(generalDetailsLayout, ExposureDto.LABORATORY_ASSOCIATED_EXPOSURE, NullableOptionGroup.class);
 
 		prophylaxisAdherenceField = addField(generalDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE, ComboBox.class);
 		prophylaxisAdherenceField.setVisible(false);
