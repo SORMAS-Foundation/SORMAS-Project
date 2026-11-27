@@ -18640,4 +18640,51 @@ ALTER TABLE exposures ENABLE TRIGGER versioning_trigger;
 
 INSERT INTO schema_version (version_number, comment) VALUES (696, '#14495 - Fill the exposure pathway and setting for retired activities');
 
+-- #14524 - Set disease configuration to pre-select relevant exposure pathways for specific diseases
+DO $$
+BEGIN
+    CREATE TEMP TABLE tmp_exposurecategory_defaults (disease varchar(255) PRIMARY KEY, exposurecategories varchar(255) NOT NULL) ON COMMIT DROP;
+
+    INSERT INTO tmp_exposurecategory_defaults (disease, exposurecategories) VALUES
+        ('CRYPTOSPORIDIOSIS',                'PERSON_TO_PERSON,FOOD_BORNE,WATER_BORNE,SEXUAL,ANIMAL_CONTACT'),
+        ('GIARDIASIS',                       'ANIMAL_CONTACT,FOOD_BORNE,SEXUAL,WATER_BORNE,PERSON_TO_PERSON'),
+        ('DENGUE',                           'VECTOR_BORNE,BLOOD_PARENTERAL'),
+        ('MALARIA',                          'VECTOR_BORNE,BLOOD_PARENTERAL'),
+        ('INVASIVE_MENINGOCOCCAL_INFECTION', 'PERSON_TO_PERSON,RESPIRATORY'),
+        ('INVASIVE_PNEUMOCOCCAL_INFECTION',  'PERSON_TO_PERSON,RESPIRATORY'),
+        ('MEASLES',                          'PERSON_TO_PERSON,RESPIRATORY'),
+        ('PERTUSSIS',                        'PERSON_TO_PERSON,RESPIRATORY'),
+        ('INFLUENZA',                        'PERSON_TO_PERSON,RESPIRATORY,FOMITE_TRANSMISSION'),
+        ('RESPIRATORY_SYNCYTIAL_VIRUS',      'PERSON_TO_PERSON,RESPIRATORY'),
+        ('SALMONELLOSIS',                    'FOOD_BORNE,WATER_BORNE,PERSON_TO_PERSON,ANIMAL_CONTACT'),
+        ('SHIGELLOSIS',                      'PERSON_TO_PERSON,FOOD_BORNE,WATER_BORNE,FOMITE_TRANSMISSION,SEXUAL,ANIMAL_CONTACT,OTHER'),
+        ('TUBERCULOSIS',                     'RESPIRATORY'),
+        ('DIPHTHERIA',                       'RESPIRATORY,PERSON_TO_PERSON,ANIMAL_CONTACT,FOMITE_TRANSMISSION'),
+        ('MUMPS',                            'PERSON_TO_PERSON'),
+        ('RUBELLA',                          'PERSON_TO_PERSON,VERTICAL_TRANSMISSION'),
+        ('SYPHILIS',                         'PERSON_TO_PERSON,SEXUAL,VERTICAL_TRANSMISSION'),
+        ('YERSINIOSIS',                      'PERSON_TO_PERSON,ANIMAL_CONTACT,FOOD_BORNE,WATER_BORNE'),
+        ('GONOCOCCAL_INFECTION',             'SEXUAL,PERSON_TO_PERSON,VERTICAL_TRANSMISSION');
+
+    INSERT INTO diseaseconfiguration (id, uuid, changedate, creationdate, disease)
+    SELECT nextval('entity_seq'),
+           upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)),
+           now(), now(), d.disease
+      FROM tmp_exposurecategory_defaults d
+     WHERE NOT EXISTS (SELECT 1 FROM diseaseconfiguration dc WHERE dc.disease = d.disease);
+
+    UPDATE diseaseconfiguration dc
+       SET exposurecategories = d.exposurecategories,
+           changedate = now()
+      FROM tmp_exposurecategory_defaults d
+     WHERE dc.disease = d.disease
+       AND (dc.exposurecategories IS NULL
+            OR ARRAY(SELECT unnest(string_to_array(dc.exposurecategories, ',')) ORDER BY 1)
+               IS DISTINCT FROM ARRAY(SELECT unnest(string_to_array(d.exposurecategories, ',')) ORDER BY 1));
+
+    DROP TABLE tmp_exposurecategory_defaults;
+END $$;
+
+INSERT INTO schema_version (version_number, comment) VALUES (697, '#14524 - Set disease configuration to pre-select relevant exposure pathways for specific diseases');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
