@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2026 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -205,9 +205,9 @@ final class SymptomGroupLayout {
 	 * has no {@code @Order} gets {@code Integer.MAX_VALUE - fieldCount + declarationIndex}, so all of them come after every
 	 * ordered field and keep their declaration order among themselves. The map is immutable.
 	 * <p>
-	 * Example: {@code getTemperature()} has {@code @Order(0)}, {@code getAsymptomatic()} {@code @Order(25)} and
+	 * Example: {@code getTemperature()} has {@code @Order(0)}, {@code getAsymptomatic()} {@code @Order(24)} and
 	 * {@code getOtherClinicalCriteria()} {@code @Order(520)}, so {@code FIELD_POSITION} maps {@code "temperature" -> 0},
-	 * {@code "asymptomatic" -> 25} and {@code "otherClinicalCriteria" -> 520}, and Temperature is laid out before Asymptomatic.
+	 * {@code "asymptomatic" -> 24} and {@code "otherClinicalCriteria" -> 520}, and Temperature is laid out before Asymptomatic.
 	 */
 	private static final Map<String, Integer> FIELD_POSITION;
 
@@ -260,6 +260,33 @@ final class SymptomGroupLayout {
 		value -> value == CongenitalHeartDiseaseType.OTHER,
 		SymptomsDto.SYPHILIS_INFECTION_SITES,
 		value -> value instanceof Set<?> && ((Set<?>) value).contains(SyphilisInfectionSite.OTHER));
+
+	/**
+	 * Parents whose slot comes directly below their row, before the slots of the other field of the row, by property id. All
+	 * other slots keep the order of the row's fields (left first).
+	 * <p>
+	 * Example: Luxembourg Tuberculosis, Extrapulmonary, both sites Other:
+	 *
+	 * <pre>
+	 * | Diagnosis                           | Minor site                          |
+	 * | Other minor site                                                          |   (slot of minorSite)
+	 * | Major site                          | (spacer)                            |   (slot of diagnosis)
+	 * | Other major site                                                          |
+	 * </pre>
+	 */
+	private static final Set<String> PARENTS_WITH_LEADING_SLOT = Set.of(SymptomsDto.MINOR_SITE);
+
+	/**
+	 * Fields that end their row, so the next field starts a new row, by property id.
+	 * <p>
+	 * Example: Luxembourg Tuberculosis, "Date of onset known" enables the onset date:
+	 *
+	 * <pre>
+	 * | Date of onset known                 | (spacer)                            |
+	 * | Date of symptom onset               | Symptom resolution date             |
+	 * </pre>
+	 */
+	private static final Set<String> FIELDS_ENDING_ROW = Set.of(SymptomsDto.DATE_OF_ONSET_KNOWN);
 
 	/**
 	 * The vertical layout of the form that receives all group sections, one below the other, in the order they are created
@@ -635,6 +662,7 @@ final class SymptomGroupLayout {
 	 * <li>Dependents are skipped here; they are placed in a slot by their parent.</li>
 	 * <li>A {@link TextArea} gets a full-width row of its own. A half-filled row before it is closed with a spacer first.</li>
 	 * <li>A single field in the last row is followed by a spacer, so it keeps its half width.</li>
+	 * <li>A field in {@link #FIELDS_ENDING_ROW} ends its row, so the next field starts a new row.</li>
 	 * <li>As soon as a row is complete, a slot is added below it for every field of the row that has dependents.</li>
 	 * </ul>
 	 * Example: the group GENERAL with the visible fields {@code fever, headache, otherGeneralSymptoms,
@@ -710,6 +738,10 @@ final class SymptomGroupLayout {
 			if (column == 2) {
 				addDependentSlotsForRow(rowsContainer, currentRowFields, group, row);
 				column = 0;
+			} else if (field.getId() != null && FIELDS_ENDING_ROW.contains(field.getId())) {
+				// null check because Set.of() throws for contains(null)
+				closeRowWithSpacer(rowsContainer, currentRowFields, group, row);
+				column = 0;
 			}
 		}
 
@@ -761,7 +793,7 @@ final class SymptomGroupLayout {
 	 * </pre>
 	 *
 	 * If both fields of a row had dependents, the slot of the left field would come first, directly below the row, and the
-	 * slot of the right field below it.
+	 * slot of the right field below it, unless the right field is in {@link #PARENTS_WITH_LEADING_SLOT}.
 	 *
 	 * @param rowsContainer
 	 *            the container of the group's rows
@@ -778,9 +810,16 @@ final class SymptomGroupLayout {
 		SymptomGroup currentGroup,
 		HorizontalLayout anchorRow) {
 
-		// each slot is inserted after the previous one, so the slots keep the order of the row's fields
+		// slots of PARENTS_WITH_LEADING_SLOT come first, the stable sort keeps the row order otherwise;
+		// null checks because Set.of() throws for contains(null)
+		List<Field<?>> slotParents = rowFields != null ? new ArrayList<>(rowFields) : new ArrayList<>();
+		slotParents.sort(
+			Comparator.comparingInt(
+				field -> field != null && field.getId() != null && PARENTS_WITH_LEADING_SLOT.contains(field.getId()) ? 0 : 1));
+
+		// each slot is inserted after the previous one, so the slots keep the order of slotParents
 		Component insertAfter = anchorRow;
-		for (Field<?> parentField : rowFields) {
+		for (Field<?> parentField : slotParents) {
 			// Look up registered dependents for this parent field
 			Map<SymptomGroup, List<Field<?>>> dependentsByGroup = dependentsByParent.get(parentField);
 			if (dependentsByGroup == null || dependentsByGroup.isEmpty()) {
