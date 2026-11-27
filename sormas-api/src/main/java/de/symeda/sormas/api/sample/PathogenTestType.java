@@ -694,7 +694,8 @@ public enum PathogenTestType {
 		Disease.SYPHILIS,
 		Disease.NEW_INFLUENZA,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MEASLES })
 	// Sits with the serology methods but is Antigen Detection since Nov 2026
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)

@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -46,6 +49,7 @@ import de.symeda.sormas.api.therapy.SusceptibilityMethod;
 import de.symeda.sormas.api.utils.AnnotationFieldHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -170,7 +174,7 @@ public class CaseLabResultsView extends AbstractCaseView {
 			.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE));
 		grid.addColumn(PathogenTestDto::getTestResult)
 			.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT));
-		grid.addColumn(PathogenTestDto::getTestResultText)
+		grid.addColumn(CaseLabResultsView::resultDetailsOf)
 			.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_TEXT));
 		grid.addColumn(t -> t.getSample() != null ? t.getSample().buildCaption() : null)
 			.setCaption(I18nProperties.getCaption(Captions.caseLabResultsSample));
@@ -181,7 +185,8 @@ public class CaseLabResultsView extends AbstractCaseView {
 			.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		grid.addColumn(PathogenTestDto::getRetestRequested)
-			.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.RETEST_REQUESTED));
+			.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.RETEST_REQUESTED))
+			.setRenderer(new BooleanRenderer());
 		grid.addColumn(t -> t.getLab() != null ? t.getLab().buildCaption() : null)
 			.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.LAB));
 
@@ -329,6 +334,16 @@ public class CaseLabResultsView extends AbstractCaseView {
 			}
 		}
 		return null;
+	}
+
+	private static String resultDetailsOf(PathogenTestDto test) {
+		String genoType = null;
+		if (test.getGenoType() != null) {
+			genoType = test.getGenoType() == GenoType.OTHER && StringUtils.isNotBlank(test.getGenoTypeText())
+				? test.getGenoTypeText()
+				: I18nProperties.getEnumCaption(test.getGenoType());
+		}
+		return Stream.of(genoType, test.getTestResultText()).filter(StringUtils::isNotBlank).collect(Collectors.joining(" - "));
 	}
 
 	private static java.util.Date collectionDateOf(PathogenTestDto test, Map<String, SampleDto> sampleByUuid) {
