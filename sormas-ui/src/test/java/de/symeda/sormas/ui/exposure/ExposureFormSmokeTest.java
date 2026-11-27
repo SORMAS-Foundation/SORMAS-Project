@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -48,6 +49,53 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
 
 class ExposureFormSmokeTest extends AbstractUiBeanTest {
+
+	@Test
+	void shouldKeepMigratedRetiredActivityExposuresSaveable() {
+		for (Disease disease : List.of(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS)) {
+			assertMigratedExposureValid(disease, ExposureType.RECREATIONAL_WATER, ExposureCategory.WATER_BORNE, ExposureSetting.RECREATIONAL_WATER);
+			assertMigratedExposureValid(disease, ExposureType.FLOOD_EXPOSURE, ExposureCategory.WATER_BORNE, ExposureSetting.UNKNOWN);
+			assertMigratedExposureValid(disease, ExposureType.FOOD, ExposureCategory.FOOD_BORNE, ExposureSetting.UNKNOWN);
+		}
+	}
+
+	@Test
+	void shouldRequireSettingForPathwayOnlyRetiredActivityExposure() {
+		ExposureForm form = newExposureForm(Disease.CRYPTOSPORIDIOSIS);
+		ExposureDto exposure = ExposureDto.build(ExposureType.FOOD);
+		exposure.setExposureCategory(ExposureCategory.FOOD_BORNE);
+
+		form.setValue(exposure);
+
+		assertFalse(form.getField(ExposureDto.EXPOSURE_SETTING).isValid());
+	}
+
+	private static void assertMigratedExposureValid(Disease disease, ExposureType type, ExposureCategory category, ExposureSetting setting) {
+		ExposureForm form = newExposureForm(disease);
+		ExposureDto exposure = ExposureDto.build(type);
+		exposure.setExposureCategory(category);
+		exposure.setExposureSetting(setting);
+
+		form.setValue(exposure);
+
+		Field<?> settingField = form.getField(ExposureDto.EXPOSURE_SETTING);
+		String context = disease + " " + type;
+		assertEquals(setting, settingField.getValue(), context);
+		assertTrue(settingField.isValid(), context);
+		assertEquals(type, form.getField(ExposureDto.EXPOSURE_TYPE).getValue(), context);
+	}
+
+	private static ExposureForm newExposureForm(Disease disease) {
+		return new ExposureForm(
+			false,
+			CaseDataDto.class,
+			Collections.emptyList(),
+			FieldVisibilityCheckers.withDisease(disease),
+			UiFieldAccessCheckers.getNoop(),
+			disease,
+			Collections.emptyList(),
+			Collections.emptyMap());
+	}
 
 	@Test
 	void shouldControlTravelFieldsByExposureTypeForMalaria() {
