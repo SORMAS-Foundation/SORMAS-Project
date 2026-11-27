@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
 
 /**
@@ -103,35 +104,6 @@ public final class EpipulseCaseDates {
 	}
 
 	/**
-	 * The date one vaccination counts as having been administered on.
-	 *
-	 * <ol>
-	 * <li>{@code Vaccination.vaccinationDate}</li>
-	 * <li>{@code Vaccination.reportDate}</li>
-	 * </ol>
-	 *
-	 * <p>
-	 * A dose recorded without a vaccination date defaults to it's report date.
-	 */
-	public static Date vaccinationDate(EpipulseVaccinationCheckDto vaccination) {
-
-		return vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : vaccination.getReportDate();
-	}
-
-	/**
-	 * For deciding whether a vaccination with no doses on record preceded the onset.
-	 * The date of immunization counts as having been recorded from fields:
-	 * <ol>
-	 * <li>{@code Immunization.startDate}</li>
-	 * <li>{@code Immunization.reportDate}</li>
-	 * </ol>
-	 */
-	public static Date immunizationDate(EpipulseImmunizationCheckDto immunization) {
-
-		return immunization.getStartDate() != null ? immunization.getStartDate() : immunization.getReportDate();
-	}
-
-	/**
 	 * The date {@code VaccinationStatus} and {@code DateOfLastVaccination} are measured against.
 	 *
 	 * <ol>
@@ -150,6 +122,28 @@ public final class EpipulseCaseDates {
 		}
 
 		return entry.getReportDate();
+	}
+
+	/** Used when the disease configures no {@code vaccinationProtectionStartOffsetDays}. */
+	public static final int DEFAULT_VACCINATION_PROTECTION_START_OFFSET_DAYS = 14;
+
+	/**
+	 * The last day a dose can have been given on and still count for {@code VaccinationStatus}:
+	 * the start of the {@link #vaccinationReferenceDate} day minus the disease's
+	 * {@code vaccinationProtectionStartOffsetDays} (default
+	 * {@value #DEFAULT_VACCINATION_PROTECTION_START_OFFSET_DAYS}), the time a dose needs to
+	 * protect. Null when there is no reference date.
+	 */
+	public static Date vaccinationCutoffDate(EpipulseDiseaseExportEntryDto entry) {
+
+		Date reference = vaccinationReferenceDate(entry);
+		if (reference == null) {
+			return null;
+		}
+
+		Integer offset = entry.getVaccinationProtectionStartOffsetDays();
+		return DateHelper
+			.subtractDays(DateHelper.getStartOfDay(reference), offset != null ? offset : DEFAULT_VACCINATION_PROTECTION_START_OFFSET_DAYS);
 	}
 
 	/**

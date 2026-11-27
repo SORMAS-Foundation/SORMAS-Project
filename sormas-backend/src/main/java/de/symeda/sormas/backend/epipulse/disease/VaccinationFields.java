@@ -63,8 +63,8 @@ final class VaccinationFields {
 	}
 
 	/**
-	 * Parses {@code case_all_vaccinations} records: {@code vaccinationDate|reportDate}, separated by
-	 * {@code #}.
+	 * Parses {@code case_all_vaccinations} records: {@code immunizationId|vaccinationDate},
+	 * separated by {@code #}.
 	 *
 	 * <p>
 	 * Field order and separators are coupled to {@code EpipulseVaccinationSql}. Package-private for
@@ -76,29 +76,34 @@ final class VaccinationFields {
 
 		return FieldReaders.parseRecords(dbVaccinationStr, 2, vaccinationArr -> {
 			EpipulseVaccinationCheckDto dto = new EpipulseVaccinationCheckDto();
-			dto.setVaccinationDate(parseDate(vaccinationArr[0], dbDateFormat));
-			dto.setReportDate(parseDate(vaccinationArr[1], dbDateFormat));
+			dto.setImmunizationId(parseId(vaccinationArr[0]));
+			dto.setVaccinationDate(parseDate(vaccinationArr[1], dbDateFormat));
 
 			return dto;
 		});
 	}
 
 	/**
-	 * Parses {@code case_all_immunizations} records: {@code meansOfImmunization|startDate|reportDate},
-	 * separated by {@code #}.
+	 * Parses {@code case_all_immunizations} records:
+	 * {@code id|meansOfImmunization|validFrom|validUntil}, separated by {@code #}.
 	 */
 	static List<EpipulseImmunizationCheckDto> parseImmunizations(String dbImmunizationStr) {
 
 		SimpleDateFormat dbDateFormat = FieldReaders.dbDateFormat();
 
-		return FieldReaders.parseRecords(dbImmunizationStr, 3, immunizationArr -> {
+		return FieldReaders.parseRecords(dbImmunizationStr, 4, immunizationArr -> {
 			EpipulseImmunizationCheckDto dto = new EpipulseImmunizationCheckDto();
-			dto.setMeansOfImmunization(FieldReaders.parseEnum(MeansOfImmunization.class, immunizationArr[0]));
-			dto.setStartDate(parseDate(immunizationArr[1], dbDateFormat));
-			dto.setReportDate(parseDate(immunizationArr[2], dbDateFormat));
+			dto.setId(parseId(immunizationArr[0]));
+			dto.setMeansOfImmunization(FieldReaders.parseEnum(MeansOfImmunization.class, immunizationArr[1]));
+			dto.setValidFrom(parseDate(immunizationArr[2], dbDateFormat));
+			dto.setValidUntil(parseDate(immunizationArr[3], dbDateFormat));
 
 			return dto;
 		});
+	}
+
+	private static Long parseId(String value) {
+		return StringUtils.isBlank(value) ? null : Long.valueOf(value.trim());
 	}
 
 	private static Date parseDate(String value, SimpleDateFormat dbDateFormat) {

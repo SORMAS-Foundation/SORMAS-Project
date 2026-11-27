@@ -30,22 +30,7 @@ import static de.symeda.sormas.backend.epipulse.sql.EpipulseCommonSql.exportDise
  */
 public final class MeasSql {
 
-	// REVIEW: These lists intentionally differ.
-	// DateOfLabResult includes DIRECT/INDIRECT_FLUORESCENT_ANTIBODY and excludes
-	// SANGER_SEQUENCING; ResultVirDetect does the opposite. This can produce a date without a
-	// result (or vice versa). Both lists are taken from the source analysis.
-
-	/**
-	 * Test types used for {@code DateOfLabResult}; intentionally differs from
-	 * {@link #VIRUS_DETECTION_RESULT_TEST_TYPES}.
-	 */
-	private static final String VIRUS_DETECTION_DATE_TEST_TYPES =
-		"('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY', 'SEQUENCING', 'GENOTYPING')";
-
-	/**
-	 * Test types used for {@code ResultVirDetect}; intentionally differs from
-	 * {@link #VIRUS_DETECTION_DATE_TEST_TYPES}.
-	 */
+	/** Test types used for {@code ResultVirDetect}. */
 	private static final String VIRUS_DETECTION_RESULT_TEST_TYPES =
 		"('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'SEQUENCING', 'GENOTYPING', 'SANGER_SEQUENCING')";
 
@@ -114,17 +99,14 @@ public final class MeasSql {
 	}
 
 	/**
-	 * Builds {@code DateOfLabResult}, {@code ResultVirDetect}, and {@code Genotype}.
-	 *
-	 * <p>
-	 * These values are selected independently: earliest virus-detection date across the date test
-	 * list, first verified result across the result test list, and first verified non-null
-	 * genotype. Tests are ordered by {@code COALESCE(testdatetime, reportdate, creationdate)}.
+	 * Builds {@code ResultVirDetect} and {@code Genotype}: the first verified result across the
+	 * result test list, and the first verified non-null genotype. Tests are ordered by
+	 * {@code COALESCE(testdatetime, reportdate, creationdate)}. {@code DateOfLabResult} is shared
+	 * SQL from {@link EpipulseLabResultSql}.
 	 */
 	private static String buildVirusDetectionDataCte() {
 		//@formatter:off
 		return "virus_detection_data AS (SELECT c.id as case_id," +
-			   "                                 MIN(COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate)) as lab_result_date," +
 			   "                                 (SELECT pt2.testresult " +
 			   "                                  FROM samples s2 " +
 			   "                                  JOIN pathogentest pt2 ON pt2.sample_id = s2.id AND " + exportDiseaseTest("pt2") + " " +
@@ -143,11 +125,7 @@ public final class MeasSql {
 			   "                                    AND pt3.genotype IS NOT NULL " +
 			   "                                  ORDER BY COALESCE(pt3.testdatetime, pt3.reportdate, pt3.creationdate) ASC " +
 			   "                                  LIMIT 1) as genotype_raw " +
-			   "                          FROM filtered_cases c " +
-			   "                          LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false " +
-			   "                          LEFT JOIN pathogentest pt ON pt.sample_id = s.id AND " + exportDiseaseTest("pt") + " " +
-			   "                              AND pt.testtype IN " + VIRUS_DETECTION_DATE_TEST_TYPES + " " +
-			   "                          GROUP BY c.id)";
+			   "                          FROM filtered_cases c)";
 		//@formatter:on
 	}
 
@@ -191,7 +169,7 @@ public final class MeasSql {
 		//@formatter:off
 		return "epidata_cluster AS (SELECT c.id as case_id," +
 			   "                            epi.clusterrelated," +
-			   "                            epi.clustertypetext," +
+			   "                            epi.clusteridentifier," +
 			   "                            epi.clustertype," +
 			   "                            epi.caseimportedstatus " +
 			   "                     FROM filtered_cases c " +

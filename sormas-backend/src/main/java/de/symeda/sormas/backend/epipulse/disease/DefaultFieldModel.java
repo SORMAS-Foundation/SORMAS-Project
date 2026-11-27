@@ -21,6 +21,7 @@ package de.symeda.sormas.backend.epipulse.disease;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.epipulse.EpipulseMapping;
 import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.api.epipulse.EpipulseSubjectCodeVariables;
 import de.symeda.sormas.api.epipulse.EpipulseVariable;
@@ -34,9 +35,9 @@ import de.symeda.sormas.backend.epipulse.sql.SqlQueryModel;
  * Default model for subject codes without a dedicated implementation.
  *
  * <p>
- * Uses shared fields filtered by subject-code metadata, plus optional hospitalisation/vaccination
- * SQL blocks when declared. This keeps all subject codes exportable while allowing dedicated
- * models where shared logic is insufficient.
+ * Uses shared fields filtered by subject-code metadata, plus optional hospitalisation, vaccination
+ * and cluster identifier blocks when declared. This keeps all subject codes exportable while
+ * allowing dedicated models where shared logic is insufficient.
  */
 final class DefaultFieldModel {
 
@@ -60,6 +61,19 @@ final class DefaultFieldModel {
 			|| EpipulseSubjectCodeVariables.defines(subjectCode, EpipulseVariable.VACCINATION_STATUS)) {
 			VaccinationFields.addVaccinationFields(fields);
 			sql = sql.plus(EpipulseVaccinationSql.spec());
+		}
+
+		if (EpipulseSubjectCodeVariables.defines(subjectCode, EpipulseVariable.CLUSTER_ID)) {
+			// the cluster identifier the country epidemiologist assigned, reported as recorded -
+			// the same column MEAS, RUBE and DENGUE read in their own models
+			fields.add(
+				ValueDef.direct(
+					"cluster_identifier",
+					"default_epidata.clusteridentifier",
+					(dto, row) -> dto.setClusterIdentification((String) row.get("cluster_identifier")),
+					EpipulseVariable.CLUSTER_ID,
+					EpipulseMapping::clusterIdentification));
+			sql = sql.plus(SqlQueryModel.builder().joins("LEFT JOIN epidata default_epidata ON c.epidata_id = default_epidata.id").build());
 		}
 
 		// PathogenDetectionMethod is intentionally excluded here: mapping is subject-code specific.

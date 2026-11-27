@@ -60,6 +60,7 @@ import static de.symeda.sormas.api.epipulse.EpipulseVariable.STATUS;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUBJECT_CODE;
 import static de.symeda.sormas.api.epipulse.EpipulseVariable.SUSPECTED_VEHICLE;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
@@ -254,8 +255,9 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 		expected.put(SIR_TCY, blank());
 		expected.put(SIR_TMP, blank());
 
-		// the six characterisation columns SORMAS has no field for
+		// no serotyping test on this case
 		expected.put(SEROTYPE, blank());
+		// the five characterisation columns SORMAS has no field for
 		expected.put(ISOLATE_ID, blank());
 		expected.put(SEQUENCE_TYPE, blank());
 		expected.put(DATE_OF_RECEIPT_SOURCE_LAB, blank());
@@ -385,6 +387,51 @@ public class SalmonellosisEpipulseExportTest extends AbstractEpipulseExportTest 
 	// ---------------------------------------------------------------------------------------
 	// susceptibility
 	// ---------------------------------------------------------------------------------------
+
+	@Test
+	@DisplayName("Serotype is the trimmed serotype text of the earliest verified serotyping test")
+	public void serotypeIsTheEarliestVerifiedSerotypingText() {
+
+		// earliest verified wins, surrounding whitespace removed
+		String earliestWins = fixture.caze(newPerson(), ONSET).getUuid();
+		serotyping(earliestWins, true, FIRST_LOCAL_TEST, "  Enteritidis ");
+		serotyping(earliestWins, true, REFERENCE_TEST, "Typhimurium");
+
+		// an unverified result is skipped, and so is a verified one with no text
+		String skipped = fixture.caze(newPerson(), ONSET).getUuid();
+		serotyping(skipped, false, FIRST_LOCAL_TEST, "Typhimurium");
+		serotyping(skipped, true, FIRST_LOCAL_TEST, "   ");
+		serotyping(skipped, true, REFERENCE_TEST, "Infantis");
+
+		// serotype text on a test of another type is not a serotyping result
+		CaseDataDto otherType = fixture.caze(newPerson(), ONSET);
+		fixture.pathogenTest(
+			otherType,
+			PathogenTestType.PCR_RT_PCR,
+			PathogenTestResultType.POSITIVE,
+			true,
+			FIRST_LOCAL_TEST,
+			test -> test.setSerotypeText("Typhi"));
+
+		String none = fixture.caze(newPerson(), ONSET).getUuid();
+
+		ExportedEntries export = runExport(EpipulseSubjectCode.SALM, PERIOD_START, PERIOD_END);
+
+		assertThat(export.value(export.entryFor(earliestWins), SEROTYPE), is("Enteritidis"));
+		assertThat(export.value(export.entryFor(skipped), SEROTYPE), is("Infantis"));
+		assertThat(export.value(export.entryFor(otherType.getUuid()), SEROTYPE), is(blankOrNullString()));
+		assertThat(export.value(export.entryFor(none), SEROTYPE), is(blankOrNullString()));
+	}
+
+	private void serotyping(String caseUuid, boolean verified, Date testDate, String serotypeText) {
+		fixture.pathogenTest(
+			getCaseFacade().getCaseDataByUuid(caseUuid),
+			PathogenTestType.SEROTYPING,
+			PathogenTestResultType.POSITIVE,
+			verified,
+			testDate,
+			test -> test.setSerotypeText(serotypeText));
+	}
 
 	@Test
 	@DisplayName("the susceptibility columns come from the newest panel")

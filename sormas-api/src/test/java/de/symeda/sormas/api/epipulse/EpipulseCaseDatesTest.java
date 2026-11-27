@@ -47,12 +47,6 @@ public class EpipulseCaseDatesTest {
 	private static final Date DOCTOR_DIAGNOSIS = DateHelper.getDateZero(2024, 2, 11);
 	private static final Date CASE_REPORT = DateHelper.getDateZero(2024, 7, 20);
 
-	// Vaccination dates are constants because DateHelper.getDateZero zeroes hours, minutes, and
-	// seconds but not milliseconds. Two calls with the same arguments therefore produce unequal
-	// Dates. Using the same instance avoids that issue in these tests.
-	private static final Date DOSE_LATEST_BEFORE_ONSET = DateHelper.getDateZero(2024, 1, 20);
-	private static final Date DOSE_REPORTED_LATER = DateHelper.getDateZero(2024, 2, 1);
-
 	// --- DateOfOnset ---
 
 	@Test
@@ -173,35 +167,35 @@ public class EpipulseCaseDatesTest {
 		assertNull(EpipulseCaseDates.dateOfDiagnosis(entry));
 	}
 
-	// --- the date a dose counts as given on ---
+	// --- the VaccinationStatus cutoff ---
 
 	@Test
-	@DisplayName("a dose with no date of administration falls back to the date it was reported")
-	public void doseWithoutAnAdministrationDateUsesTheReportDate() {
+	@DisplayName("the vaccination cutoff is the onset minus the disease's protection start offset")
+	public void vaccinationCutoffSubtractsTheConfiguredOffset() {
 
-		EpipulseVaccinationCheckDto undated = new EpipulseVaccinationCheckDto();
-		undated.setReportDate(DOSE_LATEST_BEFORE_ONSET);
+		EpipulseDiseaseExportEntryDto entry = entry();
+		entry.setSymptomOnsetDate(ONSET);
+		entry.setReportDate(CASE_REPORT);
+		entry.setVaccinationProtectionStartOffsetDays(7);
 
-		// it still happened, and it was recorded at some point, so the dose is dated rather than
-		// dropped. Which column uses that date is decided in EpipulseMapping.
-		assertEquals(DOSE_LATEST_BEFORE_ONSET, EpipulseCaseDates.vaccinationDate(undated));
+		assertEquals(DateHelper.getStartOfDay(DateHelper.getDateZero(2024, 2, 3)), EpipulseCaseDates.vaccinationCutoffDate(entry));
 	}
 
 	@Test
-	@DisplayName("the date of administration wins over the report date when both are recorded")
-	public void administrationDateWinsOverTheReportDate() {
+	@DisplayName("without a configured offset the vaccination cutoff is 14 days before the reference date")
+	public void vaccinationCutoffDefaultsToFourteenDays() {
 
-		EpipulseVaccinationCheckDto vaccination = new EpipulseVaccinationCheckDto();
-		vaccination.setVaccinationDate(DOSE_LATEST_BEFORE_ONSET);
-		vaccination.setReportDate(DOSE_REPORTED_LATER);
+		EpipulseDiseaseExportEntryDto entry = entry();
+		entry.setReportDate(CASE_REPORT);
 
-		assertEquals(DOSE_LATEST_BEFORE_ONSET, EpipulseCaseDates.vaccinationDate(vaccination));
+		// no onset: the notification date is the reference, the offset still applies
+		assertEquals(DateHelper.getStartOfDay(DateHelper.getDateZero(2024, 7, 6)), EpipulseCaseDates.vaccinationCutoffDate(entry));
 	}
 
 	@Test
-	@DisplayName("a dose with neither date has no date at all")
-	public void doseWithNoDatesAtAllHasNoDate() {
-		assertNull(EpipulseCaseDates.vaccinationDate(new EpipulseVaccinationCheckDto()));
+	@DisplayName("with no reference date there is no vaccination cutoff")
+	public void vaccinationCutoffIsNullWithoutAReferenceDate() {
+		assertNull(EpipulseCaseDates.vaccinationCutoffDate(entry()));
 	}
 
 	// --- the date Age is measured against ---

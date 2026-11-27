@@ -45,7 +45,7 @@ import de.symeda.sormas.api.utils.DateHelper;
  */
 public class EpipulseMappingTest {
 
-	/** The onset date every case below is measured against: 2024-03-10. */
+	/** The onset date every case below is measured against: 2024-03-10; its default cutoff is 2024-02-25. */
 	private static final Date REFERENCE = DateHelper.getDateZero(2024, 2, 10);
 
 	private static final Date BEFORE = DateHelper.getDateZero(2023, 5, 1);
@@ -143,21 +143,60 @@ public class EpipulseMappingTest {
 	public void theOtherRulesUseTheNotificationDateToo() {
 
 		EpipulseDiseaseExportEntryDto dosesAfter = withDoses(entry(), dose(AFTER));
-		EpipulseDiseaseExportEntryDto recordedBefore = entry(immunization(MeansOfImmunization.VACCINATION, BEFORE));
-		EpipulseDiseaseExportEntryDto recordedAfter = entry(immunization(MeansOfImmunization.VACCINATION, DOSE_LATEST));
+		EpipulseDiseaseExportEntryDto validBefore = entry(immunization(MeansOfImmunization.VACCINATION, BEFORE));
+		EpipulseDiseaseExportEntryDto validAfter = entry(immunization(MeansOfImmunization.VACCINATION, DOSE_LATEST));
 
-		for (EpipulseDiseaseExportEntryDto entry : Arrays.asList(dosesAfter, recordedBefore, recordedAfter)) {
+		for (EpipulseDiseaseExportEntryDto entry : Arrays.asList(dosesAfter, validBefore, validAfter)) {
 			entry.setSymptomOnsetDate(null);
 			entry.setReportDate(NOTIFIED);
 		}
 
 		assertEquals("NOTVACC", status(dosesAfter, STANDARD));
-		assertEquals("UNKDOSE", status(recordedBefore, STANDARD));
-		assertEquals("", status(recordedAfter, STANDARD));
+		assertEquals("UNKDOSE", status(validBefore, STANDARD));
+		assertEquals("NOTVACC", status(validAfter, STANDARD));
 		assertEquals("", lastVaccination(dosesAfter));
 	}
 
-	// rule 2: doses up to the onset day
+	// the cutoff: the reference date minus the protection start offset
+
+	@Test
+	@DisplayName("a dose given on the cutoff day counts, and is the last vaccination")
+	public void aDoseOnTheCutoffDayCounts() {
+
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(daysBeforeReference(14)));
+
+		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("2024-02-25", lastVaccination(entry));
+	}
+
+	@Test
+	@DisplayName("a dose given inside the protection window before onset is neither counted nor dated")
+	public void aDoseInsideTheProtectionWindowIsIgnored() {
+
+		// given before onset, but too late to have protected the patient
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(daysBeforeReference(13)), dose(REFERENCE));
+
+		assertEquals("1DOSE", status(entry, STANDARD));
+		assertEquals("2023-01-05", lastVaccination(entry));
+	}
+
+	@Test
+	@DisplayName("the disease's configured protection start offset replaces the 14 days")
+	public void theConfiguredOffsetIsUsed() {
+
+		EpipulseDiseaseExportEntryDto noOffset = withDoses(entry(), dose(DOSE_OLDER), dose(REFERENCE));
+		noOffset.setVaccinationProtectionStartOffsetDays(0);
+		assertEquals("2DOSE", status(noOffset, STANDARD));
+		assertEquals("2024-03-10", lastVaccination(noOffset));
+
+		// DOSE_LATEST is 19 days before onset
+		EpipulseDiseaseExportEntryDto longOffset = withDoses(entry(), dose(DOSE_OLDER), dose(DOSE_LATEST));
+		longOffset.setVaccinationProtectionStartOffsetDays(30);
+		assertEquals("1DOSE", status(longOffset, STANDARD));
+		assertEquals("2023-01-05", lastVaccination(longOffset));
+	}
+
+	// rule 2: doses up to the cutoff
 
 	@Test
 	@DisplayName("the status is the number of doses received, and the date is the last of them")
@@ -167,16 +206,6 @@ public class EpipulseMappingTest {
 
 		assertEquals("3DOSE", status(entry, STANDARD));
 		assertEquals("2024-02-20", lastVaccination(entry));
-	}
-
-	@Test
-	@DisplayName("a dose given on the onset day counts, and is the last vaccination")
-	public void aDoseOnTheOnsetDayCounts() {
-
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), dose(REFERENCE));
-
-		assertEquals("2DOSE", status(entry, STANDARD));
-		assertEquals("2024-03-10", lastVaccination(entry));
 	}
 
 	@Test
@@ -191,22 +220,32 @@ public class EpipulseMappingTest {
 	}
 
 	@Test
+	@DisplayName("a dated dose counts on its own date, even when a later dose of its immunization is too late")
+	public void datedDosesCountOneByOne() {
+
+		// a course of three, the last dose given after onset: the first two still protected
+		EpipulseImmunizationCheckDto course = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(course), dose(course, DOSE_OLDEST), dose(course, DOSE_OLDER), dose(course, AFTER));
+
+		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("2023-01-05", lastVaccination(entry));
+	}
+
+	@Test
 	@DisplayName("doses under different immunizations are added together")
 	public void dosesUnderDifferentImmunizationsAreAdded() {
 
-		// The doses arrive flat, whatever immunization they were recorded under: a course followed
-		// by another shot recorded separately is still three doses received.
-		EpipulseDiseaseExportEntryDto entry = withDoses(
-			entry(immunization(MeansOfImmunization.VACCINATION, DOSE_OLDEST), immunization(MeansOfImmunization.VACCINATION, DOSE_LATEST)),
-			dose(DOSE_OLDEST),
-			dose(DOSE_OLDER),
-			dose(DOSE_LATEST));
+		// a course followed by another shot recorded separately is still three doses received
+		EpipulseImmunizationCheckDto course = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseImmunizationCheckDto booster = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseDiseaseExportEntryDto entry =
+			withDoses(entry(course, booster), dose(course, DOSE_OLDEST), dose(course, DOSE_OLDER), dose(booster, DOSE_LATEST));
 
 		assertEquals("3DOSE", status(entry, STANDARD));
 	}
 
 	@Test
-	@DisplayName("two doses on the same day count once")
+	@DisplayName("two dated doses on the same day count once")
 	public void dosesOnTheSameDayCountOnce() {
 
 		// Guard against the same dose recorded under two immunizations.
@@ -216,26 +255,51 @@ public class EpipulseMappingTest {
 	}
 
 	@Test
-	@DisplayName("a dose with no date of administration is dated by its report date")
-	public void anUndatedDoseUsesItsReportDate() {
+	@DisplayName("quick entry: undated doses take the date of their immunization's last dose, and each one counts")
+	public void undatedDosesTakeTheLastDoseOfTheirImmunization() {
 
-		EpipulseVaccinationCheckDto undated = new EpipulseVaccinationCheckDto();
-		undated.setReportDate(DOSE_LATEST);
+		// "3 doses, the last on DOSE_LATEST": the two others came on or before it
+		EpipulseImmunizationCheckDto quick = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(quick), dose(quick, null), dose(quick, null), dose(quick, DOSE_LATEST));
 
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), dose(DOSE_OLDER), undated);
-
-		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("3DOSE", status(entry, STANDARD));
 		assertEquals("2024-02-20", lastVaccination(entry));
 	}
 
 	@Test
-	@DisplayName("a dose with neither date is skipped rather than blanking the columns")
-	public void aDoseWithNoDatesIsSkipped() {
+	@DisplayName("an undated dose follows its own immunization's last dose, not another immunization's")
+	public void undatedDosesFollowTheirOwnImmunization() {
 
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(), new EpipulseVaccinationCheckDto(), dose(DOSE_LATEST));
+		EpipulseImmunizationCheckDto earlier = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseImmunizationCheckDto later = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseDiseaseExportEntryDto entry =
+			withDoses(entry(earlier, later), dose(earlier, null), dose(earlier, DOSE_OLDEST), dose(later, null), dose(later, AFTER));
+
+		assertEquals("2DOSE", status(entry, STANDARD));
+		assertEquals("2022-06-01", lastVaccination(entry));
+	}
+
+	@Test
+	@DisplayName("quick entry whose last dose is after the cutoff counts nothing and is NOTVACC")
+	public void quickEntryAfterTheCutoffIsNotVacc() {
+
+		EpipulseImmunizationCheckDto quick = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(quick), dose(quick, null), dose(quick, null), dose(quick, AFTER));
+
+		assertEquals("NOTVACC", status(entry, STANDARD));
+		assertEquals("", lastVaccination(entry));
+	}
+
+	@Test
+	@DisplayName("an undated dose in an immunization with no dated dose is not counted")
+	public void undatedDosesWithoutADatedDoseAreNotCounted() {
+
+		EpipulseImmunizationCheckDto undatedOnly = immunization(MeansOfImmunization.VACCINATION, BEFORE);
+		EpipulseImmunizationCheckDto dated = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(undatedOnly, dated), dose(undatedOnly, null), dose(dated, DOSE_OLDER));
 
 		assertEquals("1DOSE", status(entry, STANDARD));
-		assertEquals("2024-02-20", lastVaccination(entry));
+		assertEquals("2023-01-05", lastVaccination(entry));
 	}
 
 	@Test
@@ -271,60 +335,47 @@ public class EpipulseMappingTest {
 		assertEquals("4DOSE", status(fourDoses, MENI));
 	}
 
-	// rule 3: doses on record, all after onset
+	// rule 3: a vaccination with no dated dose, valid from before the reference date
 
 	@Test
-	@DisplayName("doses on record that all came after onset make the patient NOTVACC")
-	public void dosesOnlyAfterOnsetAreNotVacc() {
-
-		// the dates themselves show no dose had been given by onset: evidence, not a missing record
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(immunization(MeansOfImmunization.VACCINATION, AFTER)), dose(AFTER));
-
-		assertEquals("NOTVACC", status(entry, STANDARD));
-		assertEquals("", lastVaccination(entry));
-	}
-
-	@Test
-	@DisplayName("any dose on record rules out UNKDOSE, even one given after onset")
-	public void anyDoseRulesOutUnknownDose() {
-
-		// UNKDOSE is for a vaccination recorded with no doses entered at all. Here doses were
-		// entered; they just came later.
-		EpipulseDiseaseExportEntryDto entry = withDoses(entry(immunization(MeansOfImmunization.VACCINATION, BEFORE)), dose(AFTER));
-
-		assertEquals("NOTVACC", status(entry, STANDARD));
-	}
-
-	// rule 4: a vaccination recorded with no doses
-
-	@Test
-	@DisplayName("a vaccination recorded up to onset with no doses entered is UNKDOSE")
-	public void aVaccinationWithoutDosesIsUnknownDose() {
+	@DisplayName("a vaccination valid from up to the reference date with no dated dose is UNKDOSE")
+	public void aVaccinationWithoutDatedDosesIsUnknownDose() {
 
 		// exactly what UNKDOSE is for: vaccinated, number of doses unknown
 		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION, BEFORE)), STANDARD));
 		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION_RECOVERY, BEFORE)), STANDARD));
+		// valid from already includes the protection offset, so it is compared with the reference day
 		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION, REFERENCE)), STANDARD));
 
+		// doses entered without dates do not change that
+		EpipulseImmunizationCheckDto undated = immunization(MeansOfImmunization.VACCINATION, BEFORE);
+		EpipulseDiseaseExportEntryDto withUndatedDoses = withDoses(entry(undated), dose(undated, null), dose(undated, null));
+		assertEquals("UNKDOSE", status(withUndatedDoses, STANDARD));
+
 		assertEquals("", lastVaccination(entry(immunization(MeansOfImmunization.VACCINATION, BEFORE))));
+		assertEquals("", lastVaccination(withUndatedDoses));
 	}
 
 	@Test
-	@DisplayName("a vaccination recorded after onset with no doses entered says nothing")
-	public void aVaccinationAfterOnsetWithoutDosesIsBlank() {
+	@DisplayName("without valid from, a valid until up to the reference date still shows the vaccination came before it")
+	public void validUntilIsTheFallback() {
 
-		// it may well be vaccination given after the illness, so it is no evidence either way
-		assertEquals("", status(entry(immunization(MeansOfImmunization.VACCINATION, AFTER)), STANDARD));
-	}
-
-	@Test
-	@DisplayName("a vaccination is dated by its start date, and by its report date only without one")
-	public void aVaccinationIsDatedByItsStartDate() {
-
+		// expired by onset: vaccinated all the same
 		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION, null, BEFORE)), STANDARD));
+		assertEquals("UNKDOSE", status(entry(immunization(MeansOfImmunization.VACCINATION, BEFORE, BEFORE)), STANDARD));
 
-		// started after onset, recorded before it: the start date is the one that matters
-		assertEquals("", status(entry(immunization(MeansOfImmunization.VACCINATION, AFTER, BEFORE)), STANDARD));
+		// a valid until after the reference date does not say when the vaccination was
+		assertEquals("", status(entry(immunization(MeansOfImmunization.VACCINATION, null, AFTER)), STANDARD));
+	}
+
+	@Test
+	@DisplayName("a vaccination known to precede the reference date outweighs doses that came too late")
+	public void aVaccinationBeforeOutweighsLateDoses() {
+
+		EpipulseImmunizationCheckDto late = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(immunization(MeansOfImmunization.VACCINATION, BEFORE), late), dose(late, AFTER));
+
+		assertEquals("UNKDOSE", status(entry, STANDARD));
 	}
 
 	@Test
@@ -341,6 +392,40 @@ public class EpipulseMappingTest {
 		}
 	}
 
+	// rule 4: every vaccination known to postdate the cutoff
+
+	@Test
+	@DisplayName("doses on record that all came after the cutoff make the patient NOTVACC")
+	public void dosesOnlyAfterTheCutoffAreNotVacc() {
+
+		// the dates themselves show no dose had been given in time: evidence, not a missing record
+		EpipulseImmunizationCheckDto late = immunization(MeansOfImmunization.VACCINATION, AFTER);
+		assertEquals("NOTVACC", status(withDoses(entry(late), dose(late, AFTER)), STANDARD));
+		assertEquals("", lastVaccination(withDoses(entry(late), dose(late, AFTER))));
+
+		// given before onset, but inside the protection window
+		EpipulseImmunizationCheckDto window = immunization(MeansOfImmunization.VACCINATION, null);
+		assertEquals("NOTVACC", status(withDoses(entry(window), dose(window, daysBeforeReference(5))), STANDARD));
+	}
+
+	@Test
+	@DisplayName("a vaccination valid from after the reference date with no dated dose is NOTVACC")
+	public void aVaccinationValidAfterTheReferenceIsNotVacc() {
+		assertEquals("NOTVACC", status(entry(immunization(MeansOfImmunization.VACCINATION, AFTER)), STANDARD));
+	}
+
+	@Test
+	@DisplayName("a vaccination with no date at all keeps late doses from asserting NOTVACC")
+	public void anUndatableVaccinationIsNoEvidence() {
+
+		// it may have come before onset, so NOTVACC cannot be asserted
+		EpipulseImmunizationCheckDto late = immunization(MeansOfImmunization.VACCINATION, null);
+		EpipulseDiseaseExportEntryDto entry = withDoses(entry(immunization(MeansOfImmunization.VACCINATION, null), late), dose(late, AFTER));
+
+		assertEquals("", status(entry, STANDARD));
+		assertEquals("", status(entry(immunization(MeansOfImmunization.VACCINATION, null)), STANDARD));
+	}
+
 	// rule 5: an explicit record of no immunization
 
 	@Test
@@ -349,10 +434,11 @@ public class EpipulseMappingTest {
 
 		assertEquals("NOTVACC", status(entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE)), STANDARD));
 		assertEquals("NOTVACC", status(entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, AFTER)), STANDARD));
+		assertEquals("NOTVACC", status(entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, null)), STANDARD));
 	}
 
 	@Test
-	@DisplayName("recorded doses and recorded vaccinations outweigh a NOT_IMMUNIZED record")
+	@DisplayName("counted doses and a vaccination before the reference date outweigh a NOT_IMMUNIZED record")
 	public void evidenceOfVaccinationOutweighsNotImmunized() {
 
 		EpipulseDiseaseExportEntryDto withDose = withDoses(entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE)), dose(DOSE_OLDER));
@@ -361,6 +447,16 @@ public class EpipulseMappingTest {
 		EpipulseDiseaseExportEntryDto withVaccination =
 			entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE), immunization(MeansOfImmunization.VACCINATION, BEFORE));
 		assertEquals("UNKDOSE", status(withVaccination, STANDARD));
+	}
+
+	@Test
+	@DisplayName("a NOT_IMMUNIZED record outweighs a vaccination with no date at all")
+	public void notImmunizedOutweighsAnUndatableVaccination() {
+
+		EpipulseDiseaseExportEntryDto entry =
+			entry(immunization(MeansOfImmunization.NOT_IMMUNIZED, BEFORE), immunization(MeansOfImmunization.VACCINATION, null));
+
+		assertEquals("NOTVACC", status(entry, STANDARD));
 	}
 
 	// rule 6: nothing recorded
@@ -724,28 +820,44 @@ public class EpipulseMappingTest {
 		return entry;
 	}
 
-	/** One immunization started - and recorded - on the given date. */
-	private static EpipulseImmunizationCheckDto immunization(MeansOfImmunization means, Date started) {
-		return immunization(means, started, started);
+	/** One immunization valid from the given date, with no valid until. */
+	private static EpipulseImmunizationCheckDto immunization(MeansOfImmunization means, Date validFrom) {
+		return immunization(means, validFrom, null);
 	}
 
-	private static EpipulseImmunizationCheckDto immunization(MeansOfImmunization means, Date started, Date reported) {
+	private static EpipulseImmunizationCheckDto immunization(MeansOfImmunization means, Date validFrom, Date validUntil) {
 
 		EpipulseImmunizationCheckDto immunization = new EpipulseImmunizationCheckDto();
+		immunization.setId(++lastImmunizationId);
 		immunization.setMeansOfImmunization(means);
-		immunization.setStartDate(started);
-		immunization.setReportDate(reported);
+		immunization.setValidFrom(validFrom);
+		immunization.setValidUntil(validUntil);
 
 		return immunization;
 	}
 
-	/** One dose, dated. Which immunization it was given under does not matter to the rule. */
+	private static long lastImmunizationId;
+
+	/** One dated dose, where the immunization it was given under does not matter to the rule. */
 	private static EpipulseVaccinationCheckDto dose(Date administered) {
 
 		EpipulseVaccinationCheckDto vaccination = new EpipulseVaccinationCheckDto();
 		vaccination.setVaccinationDate(administered);
 
 		return vaccination;
+	}
+
+	/** One dose recorded under the given immunization; a null date is a dose entered undated. */
+	private static EpipulseVaccinationCheckDto dose(EpipulseImmunizationCheckDto under, Date administered) {
+
+		EpipulseVaccinationCheckDto vaccination = dose(administered);
+		vaccination.setImmunizationId(under.getId());
+
+		return vaccination;
+	}
+
+	private static Date daysBeforeReference(int days) {
+		return DateHelper.subtractDays(REFERENCE, days);
 	}
 
 	private static EpipulseDiseaseExportEntryDto withDoses(EpipulseDiseaseExportEntryDto entry, EpipulseVaccinationCheckDto... doses) {

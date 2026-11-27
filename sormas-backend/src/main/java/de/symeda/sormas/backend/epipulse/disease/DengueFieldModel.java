@@ -140,8 +140,7 @@ final class DengueFieldModel {
 		// EpiPulse asks for this "only for autochthonous cases", which is guidance on when the
 		// answer is informative rather than a condition on the column; a recorded identifier is
 		// reported whatever the case's travel history, with Imported and PlaceOfInfection beside
-		// it. Measles reads epidata.clustertypetext into the same DTO field - a different column
-		// for a different disease, which is why the choice sits in each model rather than shared.
+		// it. Measles and rubella read the same column into the same DTO field.
 		fields.add(
 			ValueDef.direct(
 				"cluster_identifier",

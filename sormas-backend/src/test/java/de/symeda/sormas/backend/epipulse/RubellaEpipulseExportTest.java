@@ -463,18 +463,19 @@ public class RubellaEpipulseExportTest extends AbstractEpipulseExportTest {
 	}
 
 	@Test
-	@DisplayName("DateOfLabResult is the oldest positive verified test, of any type")
-	public void theLabResultDateIsTheOldestPositiveVerifiedTest() {
+	@DisplayName("DateOfLabResult is the earliest verified test that confirmed or ruled out the case, of any type")
+	public void theLabResultDateIsTheFirstConfirmingOrInvalidatingTest() {
 
 		CaseDataDto caze = fixture.caze(creator.createPerson().toReference(), ONSET);
 		SampleDto specimen = fixture.specimen(caze, SampleMaterial.SERA, FIRST_SPECIMEN);
 
-		// Earliest of the three and negative, so it does not confirm the case and is not the date.
-		fixture.testOn(specimen, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.NEGATIVE, true, EARLIER_TEST);
+		// Earliest, but neither confirms nor invalidates: one unverified, one still pending.
+		fixture.testOn(specimen, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE, false, EARLIER_TEST);
+		fixture.testOn(specimen, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.PENDING, true, EARLIER_TEST);
 
-		// An antibody test, which is not in the virus-detection list measles dates itself from -
-		// rubella's rule is about the result rather than about the kind of test, this counts.
-		fixture.testOn(specimen, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE, true, LATER_TEST);
+		// A verified negative antibody test invalidates the case: the first result, whatever the
+		// test type and although a positive follows.
+		fixture.testOn(specimen, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.NEGATIVE, true, LATER_TEST);
 		fixture.testOn(specimen, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE, true, LATEST_TEST);
 
 		ExportedEntries export = runExport(EpipulseSubjectCode.RUBE, PERIOD_START, PERIOD_END);
