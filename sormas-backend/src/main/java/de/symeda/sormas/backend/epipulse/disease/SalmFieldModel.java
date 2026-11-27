@@ -110,8 +110,14 @@ final class SalmFieldModel {
 				EpipulseVariable.MODE_OF_TRANSMISSION,
 				EpipulseMapping::modeOfTransmission));
 
-		// REVIEW - Serotype: salmonellosis serotype
-		fields.add(ValueDef.blank(EpipulseVariable.SEROTYPE));
+		// the serotype as the laboratory wrote it, see SalmSql.buildSalmSerotypeCte
+		fields.add(
+			ValueDef.direct(
+				"serotype",
+				"salm_serotype.serotype",
+				(dto, row) -> dto.setSerotype((String) row.get("serotype")),
+				EpipulseVariable.SEROTYPE,
+				EpipulseMapping::serotype));
 
 		fields.add(
 			ValueDef.direct(

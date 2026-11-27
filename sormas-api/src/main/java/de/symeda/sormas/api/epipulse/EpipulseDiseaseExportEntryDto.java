@@ -204,7 +204,7 @@ public class EpipulseDiseaseExportEntryDto {
 	// ModeOfTransmission, PathogenDetectionMethod and PlaceOfInfection are declared above and
 	// reused as they stand. modeOfTransmission holds a code from DENGUE's value set - a property
 	// of the derivation the field model chose, not of the field.
-	private String serotype; // PathogenTest.serotype mapped to DENV1-DENV4/DENVOTH
+	private String serotype; // DENGUE: PathogenTest.serotype mapped to DENV1-DENV4/DENVOTH; SALM: PathogenTest.serotypeText, trimmed
 	private Boolean seroconversionOrTitreRise; // PathogenTest.seroConversion or fourFoldIncreaseAntibodyTiter
 
 	// -- GONO (Gonorrhoea) --

@@ -23,14 +23,15 @@ import static de.symeda.sormas.backend.epipulse.sql.EpipulseCommonSql.exportDise
 import java.util.Arrays;
 
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.epipulse.sql.EpipulseAstSql.AstDrugField;
 
 /**
  * Disease-specific SQL for SALM.
  *
  * <p>
- * Defines SALM's two CTEs and three joins. {@code epidata} is joined directly (1:1 by case FK),
- * while AST and reference-lab specimen data require CTEs.
+ * Defines SALM's three CTEs and four joins. {@code epidata} is joined directly (1:1 by case FK),
+ * while AST, reference-lab specimen and serotype data require CTEs.
  */
 public final class SalmSql {
 
@@ -39,17 +40,18 @@ public final class SalmSql {
 
 	/**
 	 * Declares SALM CTEs and joins:
-	 * {@code epidata}, {@code salm_ast_data}, {@code salm_reference_lab}.
+	 * {@code epidata}, {@code salm_ast_data}, {@code salm_reference_lab}, {@code salm_serotype}.
 	 */
 	public static SqlQueryModel spec() {
 
 		return SqlQueryModel.builder()
-			.ctes(buildSalmAstDataCte(), buildSalmReferenceLabCte())
+			.ctes(buildSalmAstDataCte(), buildSalmReferenceLabCte(), buildSalmSerotypeCte())
 			.joins(
 				// Imported, ModeOfTransmission, SuspectedVehicle
 				"LEFT JOIN epidata salm_epidata ON c.epidata_id = salm_epidata.id",
 				"LEFT JOIN salm_ast_data salm_ast ON salm_ast.case_id = c.id",
-				"LEFT JOIN salm_reference_lab salm_lab ON salm_lab.case_id = c.id")
+				"LEFT JOIN salm_reference_lab salm_lab ON salm_lab.case_id = c.id",
+				"LEFT JOIN salm_serotype ON salm_serotype.case_id = c.id")
 			.build();
 	}
 
@@ -95,6 +97,32 @@ public final class SalmSql {
 			   "      AND pt.testresult = '" + PathogenTestResultType.POSITIVE.name() + "' " +
 			   "      AND pt.testresultverified = true " +
 			   "    ORDER BY c.id, COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate) ASC, pt.id ASC)";
+		//@formatter:on
+	}
+
+	/**
+	 * Builds {@code Serotype}: the trimed {@code serotypetext} of the earliest
+	 * verified {@code SEROTYPING} test that has one.
+	 *
+	 * <p>
+	 * The free-text field is read instead of {@code serotype}
+	 * SORMAS's serotype list has no salmonella values (would need ~2000 entries).
+	 */
+	private static String buildSalmSerotypeCte() {
+		//@formatter:off
+		return "salm_serotype AS (" +
+			   "    SELECT c.id as case_id," +
+			   "           (SELECT TRIM(pt.serotypetext) " +
+			   "            FROM samples s " +
+			   "            JOIN pathogentest pt ON pt.sample_id = s.id AND " + exportDiseaseTest("pt") + " " +
+			   "            WHERE s.associatedcase_id = c.id " +
+			   "              AND s.deleted = false " +
+			   "              AND pt.testtype = '" + PathogenTestType.SEROTYPING.name() + "' " +
+			   "              AND pt.testresultverified = true " +
+			   "              AND TRIM(pt.serotypetext) <> '' " +
+			   "            ORDER BY COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate) ASC, pt.id ASC " +
+			   "            LIMIT 1) as serotype " +
+			   "    FROM filtered_cases c)";
 		//@formatter:on
 	}
 }
