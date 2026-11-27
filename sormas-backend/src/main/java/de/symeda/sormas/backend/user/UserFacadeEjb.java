@@ -777,6 +777,7 @@ public class UserFacadeEjb implements UserFacade {
 					break;
 				case UserDto.USER_NAME:
 				case UserDto.USER_EMAIL:
+				case UserDto.EXTERNAL_ID:
 					order = orderBuilder.build(cb.lower(user.get(sortProperty.propertyName)));
 					break;
 				case UserDto.NAME:
