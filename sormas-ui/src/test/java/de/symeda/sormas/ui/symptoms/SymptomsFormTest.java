@@ -210,18 +210,10 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 	}
 
 	@Test
-	void shouldHideClinicalMeasurementsForCryptosporidiosis() {
+	void shouldShowClinicalMeasurementsForCryptosporidiosis() {
 		SymptomsForm form = createForm(Disease.CRYPTOSPORIDIOSIS);
 
-		assertFalse(isDisplayed(form, form.getField(SymptomsDto.TEMPERATURE)));
-		assertFalse(isDisplayed(form, form.getField(SymptomsDto.TEMPERATURE_SOURCE)));
-		assertFalse(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.CLINICAL_MEASUREMENTS)));
-	}
-
-	@Test
-	void shouldKeepClinicalMeasurementsForGiardiasis() {
-		SymptomsForm form = createForm(Disease.GIARDIASIS);
-
+		assertTrue(isDisplayed(form, form.getField(SymptomsDto.TEMPERATURE)));
 		assertTrue(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.CLINICAL_MEASUREMENTS)));
 	}
 

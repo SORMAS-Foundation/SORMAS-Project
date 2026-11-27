@@ -316,7 +316,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			return;
 		}
 
-		final boolean hideClinicalMeasurements = isSyphilis || disease == Disease.DIPHTHERIA || disease == Disease.CRYPTOSPORIDIOSIS;
+		// Clinical measurements are not displayed for Syphilis and Diphtheria
+		final boolean hideClinicalMeasurements = isSyphilis || disease == Disease.DIPHTHERIA;
 
 		Label signsAndSymptomsHeadingLabel =
 			createLabel(I18nProperties.getString(Strings.headingSignsAndSymptoms), H3, SIGNS_AND_SYMPTOMS_HEADING_LOC);
@@ -856,6 +857,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		if (hideClinicalMeasurements) {
+			// Clinical measurements are not displayed for Syphilis and Diphtheria
+			// regardless of context
 			setVisible(
 				false,
 				TEMPERATURE,
@@ -1316,7 +1319,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDaysDuration));
 		}
 
-		// LUX Dengue and Tuberculosis (#14029) hide temperature too
+		// temperature and its source hide for LUX's Dengue, Tuberculosis (#14029),
+		// Syphilis and Diphtheria
 		boolean hideTemperature = isLuxDengue || disease == Disease.TUBERCULOSIS || hideClinicalMeasurements;
 		temperature.setVisible(!hideTemperature);
 		getField(TEMPERATURE_SOURCE).setVisible(!hideTemperature);
