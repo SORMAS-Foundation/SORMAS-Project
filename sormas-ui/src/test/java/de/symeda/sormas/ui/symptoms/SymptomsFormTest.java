@@ -209,6 +209,22 @@ class SymptomsFormTest extends AbstractUiBeanTest {
 		assertTrue(isButtonDisplayed(form, I18nProperties.getCaption(Captions.symptomsSetClearedToUnknown)));
 	}
 
+	@Test
+	void shouldHideClinicalMeasurementsForCryptosporidiosis() {
+		SymptomsForm form = createForm(Disease.CRYPTOSPORIDIOSIS);
+
+		assertFalse(isDisplayed(form, form.getField(SymptomsDto.TEMPERATURE)));
+		assertFalse(isDisplayed(form, form.getField(SymptomsDto.TEMPERATURE_SOURCE)));
+		assertFalse(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.CLINICAL_MEASUREMENTS)));
+	}
+
+	@Test
+	void shouldKeepClinicalMeasurementsForGiardiasis() {
+		SymptomsForm form = createForm(Disease.GIARDIASIS);
+
+		assertTrue(isLabelDisplayed(form, I18nProperties.getEnumCaption(SymptomGroup.CLINICAL_MEASUREMENTS)));
+	}
+
 	// --- First symptom drop-down
 	// ----------------------------------------------------------------------------------------
 
