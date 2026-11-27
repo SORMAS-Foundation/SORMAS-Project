@@ -2268,6 +2268,7 @@ public interface Captions {
 	String Exposure_endDate = "Exposure.endDate";
 	String Exposure_exposureCategory = "Exposure.exposureCategory";
 	String Exposure_exposureComment = "Exposure.exposureComment";
+	String Exposure_exposureContext = "Exposure.exposureContext";
 	String Exposure_exposureDate = "Exposure.exposureDate";
 	String Exposure_exposureRole = "Exposure.exposureRole";
 	String Exposure_exposureSetting = "Exposure.exposureSetting";
@@ -2282,10 +2283,12 @@ public interface Captions {
 	String Exposure_habitationType = "Exposure.habitationType";
 	String Exposure_handlingAnimals = "Exposure.handlingAnimals";
 	String Exposure_handlingSamples = "Exposure.handlingSamples";
+	String Exposure_healthcareAssociatedExposure = "Exposure.healthcareAssociatedExposure";
 	String Exposure_imi_longFaceToFaceContact = "Exposure.imi.longFaceToFaceContact";
 	String Exposure_imi_shortDistance = "Exposure.imi.shortDistance";
 	String Exposure_indoors = "Exposure.indoors";
 	String Exposure_internationalSwimming = "Exposure.internationalSwimming";
+	String Exposure_laboratoryAssociatedExposure = "Exposure.laboratoryAssociatedExposure";
 	String Exposure_largeAttendanceNumber = "Exposure.largeAttendanceNumber";
 	String Exposure_location = "Exposure.location";
 	String Exposure_longFaceToFaceContact = "Exposure.longFaceToFaceContact";
