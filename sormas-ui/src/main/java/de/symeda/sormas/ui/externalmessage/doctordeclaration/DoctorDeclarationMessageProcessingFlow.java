@@ -223,12 +223,17 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 			return;
 		}
 
-		PersonDto person = resultData.getPerson();
-		if (person != null) {
-			applyPersonUpdates(person.getUuid());
+		CaseDataDto caze = resultData.getCase();
+		if (caze != null && resultData.getSelectedCase().isNew()) {
+			// The case form assigns a new UUID when it saves a new person.
+			applyPersonUpdates(caze.getPerson().getUuid());
+		} else {
+			PersonDto person = resultData.getPerson();
+			if (person != null) {
+				applyPersonUpdates(person.getUuid());
+			}
 		}
 
-		CaseDataDto caze = resultData.getCase();
 		if (caze != null) {
 			applyNotifierUpdate(caze, getExternalMessage());
 		}
