@@ -18622,4 +18622,22 @@ ALTER TABLE epipulse_export ENABLE TRIGGER versioning_trigger;
 
 INSERT INTO schema_version (version_number, comment) VALUES (695, '#14472 - EpiPulse export subject code and data source');
 
+-- #14495 - Fill the pathway and setting of exposures with a retired activity
+ALTER TABLE exposures DISABLE TRIGGER versioning_trigger;
+UPDATE exposures SET exposurecategory = CASE exposuretype WHEN 'FOOD' THEN 'FOOD_BORNE' ELSE 'WATER_BORNE' END, changedate = now()
+    WHERE exposuretype IN ('FOOD', 'RECREATIONAL_WATER', 'FLOOD_EXPOSURE') AND exposurecategory IS NULL;
+UPDATE exposures SET exposuresetting = CASE exposuretype WHEN 'RECREATIONAL_WATER' THEN 'RECREATIONAL_WATER' ELSE 'UNKNOWN' END, changedate = now()
+    WHERE ((exposuretype = 'FOOD' AND exposurecategory = 'FOOD_BORNE')
+        OR (exposuretype IN ('RECREATIONAL_WATER', 'FLOOD_EXPOSURE') AND exposurecategory = 'WATER_BORNE'))
+    AND exposuresetting IS NULL;
+UPDATE exposures_history SET exposurecategory = CASE exposuretype WHEN 'FOOD' THEN 'FOOD_BORNE' ELSE 'WATER_BORNE' END
+    WHERE exposuretype IN ('FOOD', 'RECREATIONAL_WATER', 'FLOOD_EXPOSURE') AND exposurecategory IS NULL;
+UPDATE exposures_history SET exposuresetting = CASE exposuretype WHEN 'RECREATIONAL_WATER' THEN 'RECREATIONAL_WATER' ELSE 'UNKNOWN' END
+    WHERE ((exposuretype = 'FOOD' AND exposurecategory = 'FOOD_BORNE')
+        OR (exposuretype IN ('RECREATIONAL_WATER', 'FLOOD_EXPOSURE') AND exposurecategory = 'WATER_BORNE'))
+    AND exposuresetting IS NULL;
+ALTER TABLE exposures ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (696, '#14495 - Fill the exposure pathway and setting for retired activities');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

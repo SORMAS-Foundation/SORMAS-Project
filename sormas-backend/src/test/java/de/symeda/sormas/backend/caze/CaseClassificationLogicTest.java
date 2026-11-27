@@ -38,6 +38,7 @@ import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
@@ -1599,6 +1600,40 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testCryptosporidiosisProbableFromWaterBornePathway() {
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CRYPTOSPORIDIOSIS);
+		caze.getSymptoms().setDiarrhea(SymptomState.YES);
+		caze.getEpiData().getExposures().add(buildPathwayExposure(ExposureCategory.WATER_BORNE));
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testGiardiasisProbableFromFoodBornePathway() {
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.GIARDIASIS);
+		caze.getSymptoms().setBloating(SymptomState.YES);
+		caze.getEpiData().getExposures().add(buildPathwayExposure(ExposureCategory.FOOD_BORNE));
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testCryptosporidiosisNotProbableFromLegacyActivityWithoutPathway() {
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CRYPTOSPORIDIOSIS);
+		caze.getSymptoms().setDiarrhea(SymptomState.YES);
+		caze.getEpiData().getExposures().add(ExposureDto.build(ExposureType.RECREATIONAL_WATER));
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+	}
+
+	private static ExposureDto buildPathwayExposure(ExposureCategory pathway) {
+		ExposureDto exposure = ExposureDto.build(ExposureType.OTHER);
+		exposure.setExposureTypeDetails("Swimming pool");
+		exposure.setExposureCategory(pathway);
+		return exposure;
 	}
 
 	@Test

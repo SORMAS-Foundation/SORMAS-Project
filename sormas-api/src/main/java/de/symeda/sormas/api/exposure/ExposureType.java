@@ -71,11 +71,11 @@ public enum ExposureType {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
-	RECREATIONAL_WATER(false, ExposureCategory.WATER_BORNE),
+	RECREATIONAL_WATER(false),
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
-	FOOD(false, ExposureCategory.FOOD_BORNE),
+	FOOD(false),
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
@@ -86,7 +86,7 @@ public enum ExposureType {
 	@Diseases({
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.GIARDIASIS })
-	FLOOD_EXPOSURE(false, ExposureCategory.WATER_BORNE),
+	FLOOD_EXPOSURE(false),
 	OTHER(true),
 	UNKNOWN(true);
 

@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -110,6 +111,10 @@ public class ClassificationExposureCriteriaDto extends ClassificationCaseCriteri
 					.append(exposureType.toString());
 			}
 
+		} else if (propertyId != null) {
+			sb.append(I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, propertyId))
+				.append(": ")
+				.append(propertyValues.stream().map(String::valueOf).collect(Collectors.joining(", ")));
 		}
 
 		return sb.toString();

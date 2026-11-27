@@ -64,6 +64,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.Cla
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
@@ -640,9 +641,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			xOf(
 				1,
 				exposure(ExposureType.ANIMAL_CONTACT),
-				exposure(ExposureType.RECREATIONAL_WATER),
-				exposure(ExposureType.FOOD),
-				exposure(ExposureType.FLOOD_EXPOSURE),
+				exposure(ExposureDto.EXPOSURE_CATEGORY, null, ExposureCategory.WATER_BORNE, ExposureCategory.FOOD_BORNE),
 				exposure(ExposureType.SEXUAL_CONTACT)));
 		confirmed = allOf(
 			xOf(
@@ -659,10 +658,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			xOf(1, symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.ABDOMINAL_PAIN)),
 			xOf(
 				1,
-				exposure(ExposureType.FOOD),
-				exposure(ExposureType.RECREATIONAL_WATER),
+				exposure(ExposureDto.EXPOSURE_CATEGORY, null, ExposureCategory.WATER_BORNE, ExposureCategory.FOOD_BORNE),
 				exposure(ExposureType.SEXUAL_CONTACT),
-				exposure(ExposureType.FLOOD_EXPOSURE),
 				exposure(ExposureType.SYMPTOMATIC_CONTACT),
 				exposure(ExposureType.ANIMAL_CONTACT)));
 		confirmed = allOf(
